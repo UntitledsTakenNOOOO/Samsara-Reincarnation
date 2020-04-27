@@ -1,0 +1,2026 @@
+#library "samsara"
+#include "zcommon.acs"
+
+#include "commonFuncs.h"
+
+#include "samsaraDefs.h"
+#include "samsaraWeps.h"
+#include "samsaraSounds.h"
+#include "samsaraMsgs.h"
+#include "samsaraStrife.h"
+#include "Strifeguy.h"
+#include "rebelmoon.h"
+#include "wanghead.h"
+#include "bitterman.acs"
+
+int array_wolfmove[PLAYERMAX];
+int array_vanillaAnim[PLAYERMAX];
+int array_ballgag[PLAYERMAX];
+int array_weaponBar[PLAYERMAX];
+int array_pickupswitch[PLAYERMAX];
+int array_rottbar[PLAYERMAX];
+int DukeQuoteCooldown[PLAYERMAX];
+int LeonardQuoteCooldown[PLAYERMAX];
+int ServerEnterTimes[PLAYERMAX];
+int WolfenEnterTimes[PLAYERMAX];
+int ClientEnterTimes[PLAYERMAX];
+int ClientTipboxes[PLAYERMAX];
+int ResonantTimes[PLAYERMAX][RESCOUNT];
+int ScheduledTimes[PLAYERMAX][3];
+
+int SamsaraWepType, SamsaraClientClass, SamsaraItemFlash;
+int SamsaraClientWeps[SLOTCOUNT] = {0};
+int SamsaraClientWepFlashes[SLOTCOUNT] = {0};
+int IsServer = 0;
+int LMSMessaged = 0;
+int UnloadingNow = 0;
+int ArmorMode = -1;
+int IsPunchdrunk = 0;
+int MapArmors[ARMORCOUNT] = {-1};
+int ClientTipboxModifier, ClientTipClassModifier;
+
+global int 0:SamsaraGlobal[];
+
+#include "samsaraFuncs.h"
+
+#include "script_auto.h"
+#include "script_pickup.h"
+#include "script_marathon.h"
+#include "script_quake.h"
+#include "script_tipbox.h"
+#include "script_strife.h"
+#include "script_scheduled.h"
+#include "script_pdwtak.h"
+#include "script_doom64.h"
+
+script SAMSARA_DECORATE (int choice, int arg1, int arg2)
+{
+    int clipcount;
+    int result;
+    int i, j, k;
+    int x, y, z;
+    int armorIndex, armorToSet;
+    int pln = PlayerNumber();
+    
+    switch (choice)
+    {
+      case 1:
+        result = GetActorProperty(0, APROP_Dropped);
+        break;
+        
+      case 2:
+        if (CheckInventory("WolfenMovement") == 1) { SetActorState(0, "Spawn"); }
+        break;
+        
+      case 3:
+        result = !(GetCVar("sv_itemrespawn") || GetCVar("sv_weaponstay"));
+        break;
+        
+      case 4:
+        result = isInvasion() || !(isCoop() || isSinglePlayer());
+        break;
+
+      case 5:
+        SetActivatorToTarget(0);
+        result = CheckInventory("Cell");
+        if (arg1) { TakeInventory("Cell", result); }
+        break;
+
+      case 6:
+        result = GetCVar("skulltag");
+        break;
+      
+      case 7:
+        if (arg2 != 1)
+        {
+            GiveQuad(arg1);
+        }
+        else
+        {
+            if (isLMS())
+            {
+                if (GetCvar("samsara_permaquad") == 1)
+                { GiveInventory("QuadDamageItem", 1); }
+                break;
+            }
+
+            GiveQuad(arg1);
+
+            if (GetCvar("samsara_permaquad") == 1)//if (isCoop() || isSinglePlayer())
+            { GiveInventory("QuadDamageItem", 1); }
+        }
+        break;
+
+      case 8:
+        result = defaultCVar("samsara_cl_expparticles", 0);
+        if (!result) { result = 100; }
+
+        result = max(0, result);
+
+        result *= max(arg1, 1);
+        result /= max(arg2, 1);
+
+        GiveInventory("QuakeExplosionCounter", result);
+        break;
+
+      case 9:
+        clipcount = CheckInventory("Clip");
+
+        if (clipcount < 50)
+        {
+            GiveInventory("Clip", 50 - clipcount);
+            TakeInventory("Clip", CheckInventory("Clip") - 50);
+            result = 1;
+        }
+        break;
+
+      case 10:
+        TakeInventory("QuakeExplosionCounter", arg1);
+        result = CheckInventory("QuakeExplosionCounter");
+        break;
+
+      case 15:
+        SetActorProperty(0, APROP_Speed, percFloat(arg1, arg2));
+        break;
+        
+      case 16:
+        if (GameType () != GAME_SINGLE_PLAYER)
+        {
+            SetHudSize(400, 300, 0);
+            Hudmessage(l:"DUKEDEADMESSAGE";
+            HUDMSG_PLAIN,1,CR_LIGHTBLUE,200.4,9.1,1.75);
+            delay(15);
+
+            if (!CheckInventory("DukeBallgag"))
+            {
+                LocalAmbientSound("duke/mpdeath",127);
+                GiveInventory("DukeTauntCooldown",5);
+                ACS_ExecuteAlways(205,0,0);
+            }
+        }
+        break;
+
+      case 17:
+        if (arg1) { result = GetCVar("samsara_permault"); }
+        else { result = GetCVar("sv_weaponstay"); }
+        break;
+
+      case 18:
+        if (MapArmors[0] == -1) { CheckMapArmors(); }
+        SetArmorMode();
+
+        i = Timer() != 0;
+
+        if (MapArmors[ARMOR_YELLOW] == 1) { i += 2; }
+
+        SetActorState(0, ArmorModeStates[ArmorMode][i]);
+        break;
+
+      case 19:
+        result = isLMS();
+        break;
+
+      case 20:
+        SetArmorMode();
+
+        armorIndex = -1;
+        armorToSet = arg1;
+
+        for (i = 0; i < ARMORCOUNT; i++)
+        {
+            if (GetArmorType(ArmorItems[ArmorMode][i][0], pln))
+            {
+                armorIndex = i;
+                break;
+            }
+        }
+
+        arg1 = middle(0, arg1, ARMORCOUNT-1);
+        i = CheckInventory("Armor");
+        j = ArmorItems[ArmorMode][arg1][1];
+
+        if (j == 0) { result = 0; break; }
+
+
+        /* If we're adding armor, always follow through
+           Else, if the ending armor count is lower than the current armor count
+           and we're not upgrading our armor, give up now */
+
+        if (arg2 > 0)
+        {
+            if (arg1 <= armorIndex) { armorToSet = armorIndex; }
+        }
+        else if (((arg2 == 0 && i > j) || (arg2 < 0 && i > -arg2)) && (arg1 <= armorIndex))
+        {
+            result = 0;
+            break;
+        }
+
+        if (arg2 <= 0)
+        {
+            TakeInventory("BasicArmor", i);
+            GiveInventory(ArmorItems[ArmorMode][armorToSet][0], 1);
+
+            k = CheckInventory("Armor");
+
+            if (arg2 == 0) { break; }
+
+            TakeInventory("BasicArmor", k-1);
+            GiveInventory("InfiniteArmorBonus", -arg2 - 1);
+        }
+        else
+        {
+            TakeInventory("BasicArmor", i);
+            GiveInventory(ArmorItems[ArmorMode][armorToSet][0], 1);
+
+            k = CheckInventory("Armor");
+            TakeInventory("BasicArmor", k-1);
+
+            GiveInventory("InfiniteArmorBonus", (i + arg2) - 1);
+        }
+
+        result = 1;
+        break;
+
+      case 21:
+        i = CheckInventory("Armor");
+        if (i < arg1) { result = 0; break; }
+
+        TakeInventory("BasicArmor", i-arg1);
+        result = 1;
+        break;
+
+      case 22:
+        result = GetCVar("samsara_nohealthcap");
+        break;
+
+      case 23:
+        GiveInventory("TimeBombPause", 1);
+        Delay(arg1);
+        TakeInventory("TimeBombPause", 1);
+        break;
+
+      case 24:
+        result = GetCVar("samsara_noult");
+        break;
+
+      case 25:
+        if (GameType() == GAME_NET_COOPERATIVE)
+		{ AmbientSound("quake/invisannouncer",127); }
+		else
+		{ LocalAmbientSound("quake/invisannouncer",127); }
+        break;
+		
+	  case 26:
+	    if (CheckInventory("PowerInvisibility") == 0)
+		{ GiveInventory("PowerInvisibility",1); }
+		else
+		{ TakeInventory("PowerInvisibility",1); 
+		delay(1);
+		GiveInventory("PowerShadow",1);
+		delay(1);
+		GiveInventory("PowerShadow",1); }
+	    break;
+
+      case 27:
+        result = GetCVar("samsara_nounique");
+        break;
+
+      case 28:
+        result = GetCVar("samsara_noinvuln");
+        break;
+
+      case 29:
+        result = GetCVar("instagib");
+        break;
+
+      case 30:
+		if (GetCVar("samsara_runninginzdoom") == 1)
+		{
+			result = GetCVar("samsara_zd_bloodyhell");
+			//log(s:"ZDoom ",i:result);
+		} else {
+			result = GetCVar("samsara_cl_bloodyhell");
+			//log(s:"Zandro ",i:result);
+		}
+        break;
+
+      case 31:
+        if (GetCVar("samsara_runninginzdoom") == 1)
+		{
+			result = GetCVar("samsara_zd_bloodypersistent");
+		} else {
+			result = GetCVar("samsara_cl_bloodypersistent");
+		}
+        break;
+
+      case 32:
+        result = GetCVar("samsara_nohealth");
+        break;
+
+      case 33:
+        result = GetCVar("samsara_vanillaquake");
+        break;
+		
+		case 34:
+            if (!CheckInventory("EleenaBallgag"))
+            {
+                LocalAmbientSound("Eleena/Suicide",127);
+                GiveInventory("EleenaTauntCooldown",5);
+                ACS_ExecuteAlways(610,0,0);
+            }
+        break;		
+		
+	  case 35:
+		i = CheckInventory("Clip");
+		j = CheckInventory("Shell");
+		k = CheckInventory("RocketAmmo");
+		x = CheckInventory("Cell");
+		
+		if(i >= WitchavenSpellCost[arg1][0]
+		&& j >= WitchavenSpellCost[arg1][1]
+		&& k >= WitchavenSpellCost[arg1][2]
+		&& x >= WitchavenSpellCost[arg1][3])
+		{	result = 1;
+			TakeInventory("Clip",WitchavenSpellCost[arg1][0]);
+			TakeInventory("Shell",WitchavenSpellCost[arg1][1]);
+			TakeInventory("RocketAmmo",WitchavenSpellCost[arg1][2]);
+			TakeInventory("Cell",WitchavenSpellCost[arg1][3]);}
+		else
+		{	result = 0;}
+		break;
+		
+	  case 36:
+		if(arg1 == 1)
+			result = GetCVar("samsara_microwavepop");
+			
+		else
+			result = SpawnForced("RPGExplosion", GetActorX(0), GetActorY(0), GetActorZ(0) + (GetActorProperty(0,APROP_Height) * 2), 0, 0);
+			
+		break;
+		
+	  case 37:
+        if (GameType () != GAME_SINGLE_PLAYER)
+        {
+            SetHudSize(400, 300, 0);
+            Hudmessage(s:"Mash activator key to kill again!"; HUDMSG_PLAIN,1,CR_WHITE,200.4,9.1,1.75);
+            delay(15);
+
+            if (!CheckInventory("LeonardBallgag"))
+            {
+                LocalAmbientSound("leonard/mpdeath",127);
+                GiveInventory("LeonardTauntCooldown",5);
+                ACS_ExecuteAlways(706,0,0);
+            }
+        }
+        break;
+    }
+    
+    SetResultValue(result);
+}
+
+//+Added
+script SAMSARA_WITCHAVEN (int which, int arg1, int arg2)
+{
+	switch(which)
+	{
+	case 0:
+		break;
+	case 1:
+		if(CheckInventory("WTHealthPhial") > 0)
+		{	TakeInventory("WTHealthPhial",1);
+			SpawnProjectile(0,"WTHealthPhial",GetActorAngle(0) >> 8, 40, 10, 1, 0);}
+		break;
+	case 2:
+		SetActorProperty(0,APROP_HEALTH, GetActorProperty(0,APROP_HEALTH) - 1);
+		break;
+	case 3:
+		GiveInventory("WTSpellCounter",1);
+		if(CheckInventory("WTSpellCounter") > 6)
+		{	TakeInventory("WTSpellCounter",999);
+			GiveInventory("WTSpellCounter",1);
+		}
+		int i = CheckInventory("WTSpellCounter");
+		SetHUDSize(1240,1024,1);
+		SetFont(WitchavenSpellScroll[i][1]);
+		HudMessage(s:"A";HUDMSG_PLAIN,554,CR_UNTRANSLATED,330.0,205.0,8.0);
+		SetFont("WTFFONT");
+		HudMessage(s:WitchavenSpellScroll[i][0];HUDMSG_PLAIN,559,CR_UNTRANSLATED,330.0,275.0,8.0);
+		HudMessage(s:"* Usage: Ammo 1: ",d:WitchavenSpellCost[i][0],s:" | Ammo 2: ",d:WitchavenSpellCost[i][1],s:" | Ammo 3: ",d:WitchavenSpellCost[i][2],s:" | Ammo 4: ",d:WitchavenSpellCost[i][3],
+					s:"\n* Info: ",s:WitchavenSpellInfo[i];HUDMSG_PLAIN,558,CR_UNTRANSLATED,710.0,205.0,8.0);
+		break;
+	case 4:
+		SetFont("WTFFONT");
+		SetHudSize(1240,1024,1);
+		HudMessage(s:WitchavenStrings[arg1][0];HUDMSG_PLAIN,556,CR_UNTRANSLATED,WitchavenStrings[arg1][1] << 16,WitchavenStrings[arg1][2] << 16,3.0);
+		break;
+	default:
+		break;
+	}
+}
+
+//+Added
+script SAMSARA_WT_AUTOHEALER (void)
+{
+	while(GetActorProperty(0,APROP_HEALTH) > 0)
+	{
+		if(GetActorProperty(0,APROP_HEALTH) < 25
+		&& GetActorProperty(0,APROP_HEALTH) > 0)
+		{
+			if(CheckInventory("WTHealthPhial"))
+			{
+				SetActorProperty(0,APROP_HEALTH, GetActorProperty(0,APROP_HEALTH) + 25);
+				TakeInventory("WTHealthPhial",1);
+				ActivatorSound("gplayer/drink",127);
+			}
+			else
+			{
+				SetFont("WTFFONT");
+				SetHudSize(1240,1024,1);
+				HudMessage(s:WitchavenStrings[12][0];HUDMSG_PLAIN,556,CR_UNTRANSLATED,WitchavenStrings[12][1] << 16,WitchavenStrings[12][2] << 16,0.5);
+			}
+		}
+		Delay(2);
+	}
+}
+
+//+Added
+script SAMSARA_WT_CLIP (void)
+{
+	int i = 0;
+	
+	while(GetActorProperty(0,APROP_HEALTH) > 0)
+	{
+		for(i = 0; i < CLIPAMOUNT; i++)
+		{
+			if(CheckInventory(WitchavenClips[i]) > 0)
+			{
+				SetFont("WTFFONT");
+				SetHudSize(1240,1024,1);
+				HudMessage(s:"Melee mode active";HUDMSG_PLAIN,560,CR_UNTRANSLATED,180.0,215.0,0.1);
+				break;
+			}
+		}
+		Delay(2);
+	}
+}
+
+//+Added
+script HL_GAUSS_SCRIPT (void)
+{
+	if((CheckInventory("HLGaussCounter") < 30) && (CheckInventory("HLGaussCharged") >= (CheckInventory("HLGaussCounter") * 10)))
+	{
+		SetResultValue(1);
+		GiveInventory("HLGaussCounter",1);
+	}
+	else
+		SetResultValue(0);
+}
+
+
+script SAMSARA_CLIENT_DECORATE (int which, int a1, int a2) clientside
+{
+    int i, j, k;
+    int x, y, z;
+	int result;
+    int deathresult;
+    int xdeathresult;
+
+    SetFont("SMALLFONT");
+    switch (which)
+    {
+      case 1:
+        Print(l:"NOTUNLESSINJURED");
+        break;
+        
+      case 2:
+        Print(s:"");
+        break;
+        
+      case 3:
+        SetHudSize(400, 300, 0);
+        Hudmessage(l:"FOOTENGAGED";
+        HUDMSG_PLAIN,1,CR_LIGHTBLUE,200.4,9.1,1.0);
+        break;
+
+      case 4:
+        while (1)
+        {
+            if (defaultCVar("samsara_cl_noadditivepickups", 0))
+            {
+                SetActorProperty(0, APROP_RenderStyle, STYLE_Normal);
+                SetActorProperty(0, APROP_Alpha, itof(a1)/100);
+            }
+            else
+            {
+                SetActorProperty(0, APROP_RenderStyle, STYLE_Add);
+                SetActorProperty(0, APROP_Alpha, itof(a2)/100);
+            }
+
+            Delay(35);
+        }
+        break;
+        
+      case 5:
+        Print(l:"NOFUEL");
+        break;
+        
+      case 6:
+        Print(l:"NOPOWER");
+        break;
+        
+      case 7:
+        Print(l:"ALREADYFLYING");
+        break;
+
+      case 8:
+        if (IsServer) { terminate; }
+        IsPunchdrunk = a1;
+        break;
+
+      case 9:
+        x = GetActorX(0); y = GetActorY(0); z = GetActorZ(0);
+        i = GetActorPitch(0);
+        j = GetActorAngle(0);
+        k = unusedTID(4000, 14000);
+
+        z += itof(cond(keyDown(BT_CROUCH), random(10, 14), random(30, 34)));
+        Spawn("GauntletSparks", x + FixedMul(cos(i), 16 * cos(j)), y + FixedMul(cos(i), 16 * sin(j)), z - (16 * sin(i)), k);
+        SetActorVelocity(k, GetActorVelX(0), GetActorVelY(0), GetActorVelZ(0), 0,0);
+        break;
+		
+    case 10:
+        if (GetCVar("samsara_runninginzdoom") == 1)
+		{
+			if(GetCvar("samsara_zd_bloodyhell") == -1) { SetActorState(0,"XDeathHappyfun"); }
+			if(GetCvar("samsara_zd_bloodyhell") == 1) { SetActorState(0,"XDeathNashgore"); }
+			if(GetCvar("samsara_zd_bloodyhell") == 2) { SetActorState(0,"XDeathBrutal"); }
+			if(GetCvar("samsara_zd_bloodyhell") == 3) { xdeathresult = random(1,2);	
+			if(xdeathresult==1) { SetActorState(0,"XDeathNightmare1"); }
+			if(xdeathresult==2) { SetActorState(0,"XDeathNightmare2"); } }	
+		} else {
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == -1) { SetActorState(0,"XDeathHappyfun"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 1) { SetActorState(0,"XDeathNashgore"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 2) { SetActorState(0,"XDeathBrutal"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 3) { xdeathresult = random(1,2);
+			if(xdeathresult==1) { SetActorState(0,"XDeathNightmare1"); }
+			if(xdeathresult==2) { SetActorState(0,"XDeathNightmare2"); } }
+		}
+        break;
+		
+    case 11:
+	    if (GetCVar("samsara_runninginzdoom") == 1)
+		{
+			if(GetCvar("samsara_zd_bloodyhell") == -1) { SetActorState(0,"DeathHappyfun"); }
+			if(GetCvar("samsara_zd_bloodyhell") == 1) { SetActorState(0,"DeathNashgore"); }
+			if(GetCvar("samsara_zd_bloodyhell") == 2) { SetActorState(0,"DeathBrutal"); }
+			if(GetCvar("samsara_zd_bloodyhell") == 3) { deathresult = random(1,6);
+			if(deathresult==1) { SetActorState(0,"DeathNightmare1"); }
+			if(deathresult==2) { SetActorState(0,"DeathNightmare2"); }
+			if(deathresult==3) { SetActorState(0,"DeathNightmare3"); }
+			if(deathresult==4) { SetActorState(0,"DeathNightmare4"); }
+			if(deathresult==5) { SetActorState(0,"DeathNightmare5"); }
+			if(deathresult==6) { SetActorState(0,"DeathNightmare6"); } }
+			break;
+		} else {
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == -1) { SetActorState(0,"DeathHappyfun"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 1) { SetActorState(0,"DeathNashgore"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 2) { SetActorState(0,"DeathBrutal"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 3) { deathresult = random(1,6);
+			if(deathresult==1) { SetActorState(0,"DeathNightmare1"); }
+			if(deathresult==2) { SetActorState(0,"DeathNightmare2"); }
+			if(deathresult==3) { SetActorState(0,"DeathNightmare3"); }
+			if(deathresult==4) { SetActorState(0,"DeathNightmare4"); }
+			if(deathresult==5) { SetActorState(0,"DeathNightmare5"); }
+			if(deathresult==6) { SetActorState(0,"DeathNightmare6"); } }
+			break;
+		}
+        break;
+		
+	case 12:
+	    if (GetCVar("samsara_runninginzdoom") == 1)
+		{
+			result = GetCVar("samsara_zd_bloodyhell");
+		} else {
+			result = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell");
+		}
+        break;
+	
+	case 13:
+	    if (GetCVar("samsara_runninginzdoom") == 1)
+		{
+			result = GetCVar("samsara_zd_bloodypersistent");
+		} else {
+			result = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodypersistent");
+		}
+        break;
+	
+	case 14:
+		if (GetCVar("samsara_runninginzdoom") == 1)
+			result = GetCVar("samsara_cl_dkclab");
+			
+		else
+			result = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_dkclab");
+			
+		break;
+    }
+    
+    SetResultValue(result);
+}
+
+script SAMSARA_GETSETTINGS (void) net
+{
+    int lmsLevel = middle(0, GetCVar("samsara_lmslife"), LMSMODES-1);
+    int lmsHP, lmsArmor;
+    int lmsUlt, lmsUnique;
+    int ultStay, highLow;
+
+    if (lmsLevel) { lmsHP    = 100*lmsLevel; lmsArmor = 100*lmsLevel; }
+    else { lmsHP = 100; lmsArmor = 0; }
+
+    if (GetCVar("samsara_lmsunique")) { lmsUnique = "\cdwith"; }
+    else { lmsUnique = "\cgwithout"; }
+
+    if (GetCVar("samsara_lmsult")) { lmsUlt = "\cdwith"; }
+    else { lmsUlt = "\cgwithout"; }
+
+    if (GetCVar("samsara_permault")) { ultStay = "\cdstay"; }
+    else { ultStay = "\cado not stay"; }
+
+    if (GetCVar("samsara_jumpmod") < 0) { highLow = "\calower"; }
+    else { highLow = "\cfhigher"; }
+
+    SetHudSize(640, 480, 1);
+
+    if (isLMS())
+    {
+        HudMessage(s:"Spawning with \ca", d:lmsHP, s:" health\c- and \cd", d:lmsArmor, s:" armor\c-";
+            HUDMSG_FADEOUT, 6761, CR_WHITE, 50.1, 80.0, 3.0, 1.0);
+        
+        HudMessage(s:"You spawn ", s:lmsUnique, s:"\c- your unique and ", s:lmsUlt, s:"\c- your slot 7";
+            HUDMSG_FADEOUT, 6762, CR_WHITE, 50.1, 104.0, 3.0, 1.0);
+    }
+    else
+    {
+        HudMessage(s:"Slot 7 pickups ", s:ultStay, s:"\c- on pickup";
+            HUDMSG_FADEOUT, 6761, CR_WHITE, 50.1, 80.0, 3.0, 1.0);
+
+        HudMessage(s:"Armor mode is \cf", s:ArmorModeNames[ArmorMode];
+            HUDMSG_FADEOUT, 6762, CR_WHITE, 50.1, 96.0, 3.0, 1.0);
+    }
+
+    if (GetCVar("samsara_jumpmod"))
+    {
+        HudMessage(s:"You jump \cn", d:abs(GetCVar("samsara_jumpmod")), s:"\c- units ", s:highLow, s:"\c- than normal";
+                HUDMSG_FADEOUT, 6763, CR_WHITE, 50.1, 112.0, 3.0, 1.0);
+    }
+    else
+    {
+        HudMessage(s:"Jumping is \cbnormal";
+                HUDMSG_FADEOUT, 6763, CR_WHITE, 50.1, 112.0, 3.0, 1.0);
+    }
+
+
+    if (GetCVar("samsara_banjetpack"))
+    {
+        HudMessage(s:"Duke's and Rebel Moon Commando's jetpack is \cgBANNED.";
+                HUDMSG_FADEOUT, 6764, CR_WHITE, 50.1, 128.0, 3.0, 1.0);
+    }
+    else
+    {
+        HudMessage(s:"Duke's and Rebel Moon Commando's jetpack is \cdALLOWED.";
+                HUDMSG_FADEOUT, 6764, CR_WHITE, 50.1, 128.0, 3.0, 1.0);
+    }
+
+    if (GetCVar("samsara_banwolfmove"))
+    {
+        HudMessage(s:"Wolfenstein movement is \cgBANNED.";
+                HUDMSG_FADEOUT, 6765, CR_WHITE, 50.1, 144.0, 3.0, 1.0);
+    }
+    else
+    {
+        HudMessage(s:"Wolfenstein movement is \cdALLOWED.";
+                HUDMSG_FADEOUT, 6765, CR_WHITE, 50.1, 144.0, 3.0, 1.0);
+    }
+
+    if (GetCVar("samsara_nocustomgravity"))
+    {
+        HudMessage(s:"Custom gravities are \cadisabled.";
+                HUDMSG_FADEOUT, 6766, CR_WHITE, 50.1, 160.0, 3.0, 1.0);
+    }
+    else
+    {
+        HudMessage(s:"Custom gravities are \cdenabled.";
+                HUDMSG_FADEOUT, 6766, CR_WHITE, 50.1, 160.0, 3.0, 1.0);
+    }
+
+    HudMessage(s:"Party mode is ", s:cond(GetCVar("samsara_peoplediewhentheyarekilled"), "\cdON.", "\caOFF."), s:"\c- (", d:GetCVar("samsara_peoplediewhentheyarekilled"), s:")";
+            HUDMSG_FADEOUT, 6767, CR_WHITE, 50.1, 176.0, 3.0, 1.0);
+
+    HudMessage(s:"Gentleman mode is ", s:cond(GetCVar("samsara_punchdrunk"), "\cdON.", "\caOFF."), s:"\c- (", d:GetCVar("samsara_punchdrunk"), s:")";
+            HUDMSG_FADEOUT, 6768, CR_WHITE, 50.1, 192.0, 3.0, 1.0);
+
+    HudMessage(s:"Limitless health is ", s:cond(GetCVar("samsara_nohealthcap"), "\cdON.", "\caOFF.");
+            HUDMSG_FADEOUT, 6769, CR_WHITE, 50.1, 208.0, 3.0, 1.0);
+
+    HudMessage(s:"Chainsaw/unique start: \ca", d:GetCVar("samsara_chainsawstart"), s:"\c- / \cn", d:GetCvar("samsara_uniquestart");
+            HUDMSG_FADEOUT, 6770, CR_WHITE, 50.1, 224.0, 3.0, 1.0);
+}
+
+/*
+ *
+ * This is still to be converted.
+ *
+ */
+
+int keys[3][26] = {{0},
+    {"RedCard", "YellowCard", "BlueCard", "RedSkull", "YellowSkull", "BlueSkull", "KeyBlue", "KeyGreen", "KeyYellow", "ChexRedCard", "ChexYellowCard", "ChexBlueCard", "RedFlemKey", "YellowFlemKey", "BlueFlemKey", "KeyAxe", "KeyCastle", "KeyCave", "KeyDungeon", "KeyEmerald", "KeyFire", "KeyHorn", "KeyRusted", "KeySilver", "KeySteel", "KeySwamp"},
+{"\cgRed Keycard", "\ckYellow Keycard", "\chBlue Keycard", "\cgRed Skull", "\ckYellow Skull", "\chBlue Skull", "\chBlue Prism Key", "\cqGreen Prism Key", "\ckYellow Prism Key", "\cgRed Card", "\ckYellow Card", "\chBlue Card", "\cgRed Flem Key", "\ckYellow Flem Key", "\chBlue Flem Key", "\cuAxe Key", "\cfCastle Key", "\csCave Key", "\cuDungeon Key", "\cdEmerald Key", "\cgFire Key", "\ceHorn Key", "\cbRusted Key", "\cuSilver Key", "\cmSteel Key", "\cpSwamp Key"}};
+//0, 1, 2: Doom R/Y/B Keycard. - \cg, \ck, \ch
+//3, 4, 5: Doom R/Y/B Skull. - \cg, \ck, \ch
+//6, 7, 8: Heretic B/G/Y Prism Key. - \ch, \cq, \ck
+//9, 10, 11: Chex Quest R/Y/B Keycard. - \cg, \ck, \ch
+//12, 13, 14: Chex Quest R/Y/B Flem Key. - \cg, \ck, \ch
+//15: Axe Key - \cu (Grey)
+//16: Castle Key - \cf (Gold)
+//17: Cave Key - \cs (Brown)
+//18: Dungeon Key - \cu (Grey)
+//19: Emerald Key - \cd (Light Green)
+//20: Fire Key - \cg (Red)
+//21: Horn Key - \ce (Beige)
+//22: Rusted Key - \cb (Very light off-white)
+//23: Silver Key - \cu (Grey)
+//24: Steel Key - \cm (Black)
+//25: Swamp Key - \cp (Drab green-brown)
+//SCRIPTS
+//200:
+//201: Check if SP/DM/co-op for the Tome of Power/Morph Ovum.
+//202: Cooldown for Tome of Power.
+//203: Take away all the shit on level ending!
+//204: Boss monologues.
+//205: Cooldown for Duke's taunts.
+//207: Flechette cooldown.
+//208: Buddha mode for B.J.'s Extra Life.
+//209: Activate Send Full Button Info and activate sv_banjetpack/sv_lmslife/sv_lmsult.
+//212: Displaying text.
+//214: Duke Jetpack/Visor fuel draining.
+//901-902: I'm pretty sure Synert is a wizard, too.
+//224: Doomguy's vanilla animations. By Ijon Tichy, transcribed by Llewellyn.
+//225: Weapon bar. By Ijon Tichy, transcribed by Llewellyn.
+////////////////////
+// SHARED KEYS
+// (by Synert)
+/////////////////
+
+// Give keys as needed, for people joining the game.
+
+script 901 ENTER
+{
+    if (!(IsSinglePlayer() || IsCoop())) { terminate; }
+
+    while (1)
+    {
+        for (int a = 0; a < 26; a++)
+        {
+            if (keys[0][a] == 1)
+            {
+                GiveInventory(keys[1][a], 1);
+            }
+        }
+        delay(10);
+    }
+}
+
+script 902 (int a) { // Picked up a key, broadcast that shit to the whole world!
+    if(keys[0][a] == 0 && isCoop() && !isSinglePlayer()) {
+        Log(n:0,s:"\c* has picked up the ",s:keys[2][a],s:"\c*."); // Let the server admins know.
+        HudMessageBold(n:0,s:"\c* has picked up the ",s:keys[2][a],s:"\c*.";HUDMSG_FADEOUT, 900, CR_GOLD, 0.5, 0.1, 3.0, 0.5);
+    }
+    keys[0][a] = 1;
+}
+
+///////////////
+// ITEM STUFF
+//////////////
+
+script 214 (int dukeshit)
+{
+    switch(dukeshit)
+    {
+      case 1:
+        if (CheckInventory("DukeFlying") == 1)
+        {
+			if(CheckInventory("DukeJPMotor") < 1)
+			{
+				GiveInventory("DukeJPMotor",1);
+				PlaySound(0,"duke/jetpackidle",CHAN_BODY,1.0,true,ATTN_NORM);
+			}
+            
+			if (CheckInventory("DukeJetpackFuel") > 0)
+            {
+                delay(15);
+                TakeInventory("DukeJetpackFuel",1);
+                restart;
+            }
+            else
+            {
+                TakeInventory("DukeFlying",1);
+                TakeInventory("DukePetJack",1);
+				TakeInventory("DukeJPMotor",1);
+				GiveInventory("DukeJetPackIdleRemover",1);
+            }
+        }
+		else
+		{
+			if(CheckInventory("DukeJPMotor") > 0)
+			{
+				TakeInventory("DukeJPMotor",1);
+				GiveInventory("DukeJetPackIdleRemover",1);
+			}
+		}
+        break;
+        
+      case 2:
+        if (CheckInventory("DukeVision") == 1)
+        {
+            if (CheckInventory("DukeVisionFuel") > 0)
+            {
+                delay(10);
+                TakeInventory("DukeVisionFuel",1);
+                restart;
+            }
+            else
+            {
+                TakeInventory("DukeVision",1);
+                TakeInventory("PowerLightAmp",1);
+            }
+        }
+        break;
+    }
+}
+
+script 202 (void)
+{
+    while (CheckInventory("TomeOfPowerCooldown") > 0)
+    {
+        Delay(35);
+
+        if (CheckInventory("TomeOfPowerCooldown") > 240)
+        {
+            TakeInventory("TomeOfPowerCooldown",1);
+        }
+        else
+        {
+            TakeInventory("TomeOfPowerCooldown",1);
+            TakeInventory("RainTracker",1);
+        }
+
+        if (CheckInventory("TomeOfPowerCooldown") == 160)  // To end the spectral effect when the tome ends
+        {
+            TakeInventory("SpectralFiring", 0x7FFFFFFF);
+//          ActivatorSound("weapons/sigil", 127);
+        }
+    }
+}
+
+script 207 (void)
+{
+    if (CheckInventory("DiscOfRepulsionCooldown") > 0)
+    {
+        delay(35);
+        TakeInventory("DiscOfRepulsionCooldown",1);
+        restart;
+    }
+}
+
+script 203 unloading
+{
+    int i;
+    UnloadingNow = 1;
+
+    for (i = 0; i < UNLOADCOUNT; i++) { TakeInventory(UnloadRemove[i], 0x7FFFFFFF); }
+}
+
+/////////////////
+// BOSS STUFF
+//////////////
+
+script 204 (int bossmonologueshit)
+{
+    switch(bossmonologueshit)
+    {
+      case 1: // KORAX
+	  if (GetCVar("samsara_nomonologues"))
+	  {
+		SetActorState(0,"Idle");
+	  }
+	  else
+	  {
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_KORAX01"; HUDMSG_FADEOUT,15, CR_RED,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_KORAX02"; HUDMSG_FADEOUT, 15, CR_RED,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_KORAX03"; HUDMSG_FADEOUT, 15, CR_RED,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_KORAX04"; HUDMSG_FADEOUT, 15, CR_RED,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_KORAX05"; HUDMSG_FADEOUT, 15, CR_RED,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_KORAX06"; HUDMSG_FADEOUT,15, CR_RED,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_KORAX07"; HUDMSG_FADEOUT, 15, CR_RED,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_KORAX08"; HUDMSG_FADEOUT, 15, CR_RED,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_KORAX09"; HUDMSG_FADEOUT, 15, CR_RED,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_KORAX10"; HUDMSG_FADEOUT, 15, CR_RED,320.4, 150.0, 5.5, 1.0);
+        delay(100);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_KORAX11"; HUDMSG_FADEOUT, 15, CR_RED,320.4, 150.0, 5.5, 1.0);
+		}
+        break;
+        
+      case 2: // LORD SNOTFOLUS
+	  if (GetCVar("samsara_nomonologues"))
+	  {
+		SetActorState(0,"Idle");
+	  }
+	  else
+	  {
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_CHEX01"; HUDMSG_FADEOUT,15, CR_GREEN,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_CHEX02"; HUDMSG_FADEOUT, 15, CR_GREEN,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_CHEX03"; HUDMSG_FADEOUT, 15, CR_GREEN,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_CHEX04"; HUDMSG_FADEOUT, 15, CR_GREEN,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_CHEX05"; HUDMSG_FADEOUT, 15, CR_GREEN,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_CHEX06"; HUDMSG_FADEOUT,15, CR_GREEN,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_CHEX07"; HUDMSG_FADEOUT, 15, CR_GREEN,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_CHEX08"; HUDMSG_FADEOUT, 15, CR_GREEN,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_CHEX09"; HUDMSG_FADEOUT, 15, CR_GREEN,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_CHEX10"; HUDMSG_FADEOUT, 15, CR_GREEN,320.4, 150.0, 5.5, 1.0);
+        delay(100);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_CHEX11"; HUDMSG_FADEOUT, 15, CR_GREEN,320.4, 150.0, 5.5, 1.0);
+		}
+        break;
+        
+      case 3: // D'SPARIL
+	  if (GetCVar("samsara_nomonologues"))
+	  {
+		SetActorState(0,"Idle");
+	  }
+	  else
+	  {
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_DSPARIL01"; HUDMSG_FADEOUT,15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_DSPARIL02"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_DSPARIL03"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_DSPARIL04"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_DSPARIL05"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_DSPARIL06"; HUDMSG_FADEOUT,15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_DSPARIL07"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_DSPARIL08"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_DSPARIL09"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_DSPARIL10"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(140);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_DSPARIL11"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+		}
+        break;
+        
+      case 4: // THE ENTITY
+	  if (GetCVar("samsara_nomonologues"))
+	  {
+		SetActorState(0,"Idle");
+	  }
+	  else
+	  {
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ENTITY01"; HUDMSG_FADEOUT,15, CR_WHITE,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ENTITY02"; HUDMSG_FADEOUT, 15, CR_WHITE,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ENTITY03"; HUDMSG_FADEOUT, 15, CR_WHITE,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ENTITY04"; HUDMSG_FADEOUT, 15, CR_WHITE,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ENTITY05"; HUDMSG_FADEOUT, 15, CR_WHITE,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ENTITY06"; HUDMSG_FADEOUT,15, CR_WHITE,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ENTITY07"; HUDMSG_FADEOUT, 15, CR_WHITE,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ENTITY08"; HUDMSG_FADEOUT, 15, CR_WHITE,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ENTITY09"; HUDMSG_FADEOUT, 15, CR_WHITE,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ENTITY10"; HUDMSG_FADEOUT, 15, CR_WHITE,320.4, 150.0, 5.5, 1.0);
+        delay(140);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ENTITY11"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+		}
+        break;
+		
+      case 5: // THE ICON OF SIN
+	  if (GetCVar("samsara_nomonologues"))
+	  {
+		SetActorState(0,"Idle");
+	  }
+	  else
+	  {
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ICON01"; HUDMSG_FADEOUT,15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ICON02"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ICON03"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ICON04"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ICON05"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ICON06"; HUDMSG_FADEOUT,15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ICON07"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ICON08"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ICON09"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(154);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ICON10"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+        delay(140);
+        SetHudSize(640, 400, 0);
+        SetFont("BIGFONT");
+        HudMessageBold(l:"BOSS_MONOLOGUE_ICON11"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);
+		}
+        break;
+    }
+}
+
+script 205 (void)
+{
+    while (CheckInventory("DukeTauntCooldown") > 0)
+    {
+        Delay(35);
+        TakeInventory("DukeTauntCooldown", 1);
+    }
+}
+
+script 583 (int x, int y, int z)
+{
+    if (GetActorZ(0) - GetActorFloorZ(0) > 4.0)
+    {
+        SetResultValue(1);
+    }
+    else
+    {
+        SetResultValue(sqrt(x*x + y*y + z*z) );
+    }
+}
+
+script 586 (int divI, int divF, int divF1)
+{
+    int div = percFloat2(divI, divF, divF1);
+
+    int x = GetActorVelX(0);
+    int y = GetActorVelY(0);
+    int z = GetActorVelZ(0);
+
+    SetActorVelocity(0, FixedMul(x, div), FixedMul(y, div), FixedMul(z, div), 0, 1);
+}
+
+script 678 (int which)
+{
+    int x, y, z;
+
+    x = GetActorX(0); y = GetActorY(0); z = GetActorZ(0);
+    SetActivatorToTarget(0);
+
+	switch(which)
+	{
+	case 1:
+		ACS_ExecuteAlways(682, 0, x, y, z);
+		break;
+	case 2:
+		ACS_ExecuteAlways(721, 0, x, y, z);
+		ACS_ExecuteWithResult(681, x, y, z);
+		break;		
+	case 3:
+		ACS_ExecuteAlways(721, 0, x, y, z);
+		break;				
+	default:
+		ACS_ExecuteAlways(679, 0, x, y, z);
+		break;
+	}
+}
+
+////////////////////////////////
+#libdefine PUFF_DIST 8.0
+#libdefine PLAYER_VIEWHEIGHT 34.0
+script 721 (int px, int py, int pz) CLIENTSIDE
+{ 
+	int tx, ty, tz;
+	int vx, vy, vz;
+	int repeat, vl;
+	int angle, pitch;
+	int i;
+
+	angle = GetActorAngle(0) - 0.05;
+	pitch = GetActorPitch(0);
+	tx = GetActorX(0) + cos(angle) * ftoi(15 * cos(pitch));
+	ty = GetActorY(0) + sin(angle) * ftoi(15 * cos(pitch));
+	
+	if(pitch <= 0.0)
+		tz = GetActorZ(0) + 34.0 + 15 * (1.0 - cos(pitch));
+	else
+		tz = GetActorZ(0) + 34.0 - 15 * (1.0 - cos(pitch));
+	
+	vx = px - tx;
+	vy = py - ty;
+	vz = pz - tz;
+	vl = magnitudeThree_f(vx,vy,vz);
+	
+	vx = FixedMul(FixedDiv(vx,vl),PUFF_DIST);
+	vy = FixedMul(FixedDiv(vy,vl),PUFF_DIST);
+	vz = FixedMul(FixedDiv(vz,vl),PUFF_DIST);
+	
+	repeat = (FixedDiv(vl,PUFF_DIST)) >> 16;
+	
+	if(repeat <= 0)
+		terminate;
+		
+	for(i = 1; i <= repeat; i++)
+	{
+		Spawn("HLEgonParticle",tx + (i * vx),ty + (i * vy),tz + (i * vz),0,0);
+		
+		if(i % 125 == 0)
+			Delay(1); //Force delay to reduce lag
+	}
+}
+
+#libdefine D_PUFF_DIST_E1 	5.0
+#libdefine D_PUFF_DIST_ROT	2
+#libdefine D_PUFF_CHOOSER	2
+#libdefine D_PUFF_DELAY		1000
+#libdefine PUFF_ROT_UP		100
+
+script 681 (int px, int py, int pz) CLIENTSIDE
+{
+	int tx, ty, tz;
+	int e1x, e1y, e1z, e1l;
+	int e2x, e2y, e2z, e2l;
+	int e3x, e3y, e3z, e3l;
+	int kf1, kf2, kf3, kfd;
+	int repeat, helper;
+	int angle, pitch, i;
+	
+	int puff_dist_e1 = GetCVAR("hl_pd_line");
+	int puff_dist_rot = GetCVAR("hl_pd_rot");
+	int puff_chooser = GetCVAR("hl_puff_chooser");
+	int puff_delay = GetCVAR("hl_puff_delay");
+	
+	if(puff_dist_e1 <= 0)
+		puff_dist_e1 = D_PUFF_DIST_E1;
+	else
+		puff_dist_e1 = puff_dist_e1 << 16;
+		
+	if(puff_dist_rot <= 0)
+		puff_dist_rot = D_PUFF_DIST_ROT;
+		
+	if(puff_chooser <= 0)
+		puff_chooser = D_PUFF_CHOOSER;
+		
+	if(puff_delay <= 0)
+		puff_delay = D_PUFF_DELAY;
+	
+	angle = GetActorAngle(0) - 0.05;
+	pitch = GetActorPitch(0);
+	tx = GetActorX(0) + cos(angle) * ftoi(15 * cos(pitch));
+	ty = GetActorY(0) + sin(angle) * ftoi(15 * cos(pitch));
+	
+	if(pitch <= 0.0)
+		tz = GetActorZ(0) + 34.0 + 15 * (1.0 - cos(pitch));
+	else
+		tz = GetActorZ(0) + 34.0 - 15 * (1.0 - cos(pitch));
+
+	e1x = px - tx;
+	e1y = py - ty;
+	e1z = pz - tz;
+	
+	e1l = magnitudeThree_f(e1x,e1y,e1z);
+	e1x = FixedDiv(e1x,e1l);
+	e1y = FixedDiv(e1y,e1l);
+	e1z = FixedDiv(e1z,e1l);
+	
+	kf1 = e1x;
+	kf2 = e1y;
+	kf3 = e1z;
+	
+	kfd = FixedMul(tx,kf1);
+	kfd += FixedMul(ty,kf2);
+	kfd += FixedMul(tz,kf3);
+	
+	if(kf1 == 0)
+	{
+		if(kf2 == 0)
+		{
+			if(kf3 == 0)
+				terminate;
+			
+			e2x = 0;
+			e2y = FixedDiv(kfd,kf2);
+			e2z = 0;
+		}
+		else if(kf3 == 0)
+		{
+			e2x = 0;
+			e2y = 0;
+			e2z = FixedDiv(kfd,kf3);
+		}
+		else
+		{
+			e2x = FixedDiv(kfd,kf1);
+			e2y = 0;
+			e2z = 0;
+		}
+	}
+	else if(kf2 == 0)
+	{
+		if(kf3 == 0)
+		{
+			e2x = 0;
+			e2y = 0;
+			e2z = FixedDiv(kfd,kf3);
+		}
+		else
+		{
+			e2x = 0;
+			e2y = FixedDiv(kfd,kf2);
+			e2z = 0;
+		}
+	}
+	else if(kf3 == 0)
+	{
+		e2x = 0;
+		e2y = 0;
+		e2z = FixedDiv(kfd,kf3);
+	}
+	else
+	{
+		e2x = 0;
+		e2y = 0;
+		e2z = FixedDiv(kfd,kf3);
+	}
+	
+	e2x = e2x - tx;
+	e2y = e2y - ty;
+	e2z = e2z - tz;
+	 
+	e2l = magnitudeThree_f(e2x,e2y,e2z);
+	e2x = FixedDiv(e2x,e2l);
+	e2y = FixedDiv(e2y,e2l);
+	e2z = FixedDiv(e2z,e2l);
+	
+	e3x = FixedMul(e1y,e2z) - FixedMul(e1z,e2y);
+	e3y = FixedMul(e1z,e2x) - FixedMul(e1x,e2z);
+	e3z = FixedMul(e1x,e2y) - FixedMul(e1y,e2x);
+	
+	e3l = magnitudeThree_f(e3x,e3y,e3z);
+	e3x = FixedDiv(e3x,e3l);
+	e3y = FixedDiv(e3y,e3l);
+	e3z = FixedDiv(e3z,e3l);
+	
+	repeat = (FixedDiv(e1l,PUFF_DIST)) >> 16;
+	repeat *= 8;
+	
+	if(repeat <= 0)
+		terminate;
+		
+	for(i = 1; i <= repeat; i++)
+	{
+		if(i % puff_chooser == 0)
+		{
+			kf1 = tx;
+			kf1 += (i * e1x);
+			kf2 = ty;
+			kf2 += (i * e1y);
+			kf3 = tz;
+			kf3 += (i * e1z);
+			
+			helper = puff_dist_rot * i;
+			helper = ((helper + CheckInventory("HLEgonByteIncr")) % 256) << 8;
+			
+			if(i < PUFF_ROT_UP)
+			{
+				kf1 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),sin(helper)),e2x);
+				kf2 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),sin(helper)),e2y);
+				kf3 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),sin(helper)),e2z);
+				
+				kf1 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),cos(helper)),e3x);
+				kf2 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),cos(helper)),e3y);
+				kf3 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),cos(helper)),e3z);
+			}
+			else
+			{
+				kf1 += FixedMul(FixedMul(puff_dist_e1,sin(helper)),e2x);
+				kf2 += FixedMul(FixedMul(puff_dist_e1,sin(helper)),e2y);
+				kf3 += FixedMul(FixedMul(puff_dist_e1,sin(helper)),e2z);
+				
+				kf1 += FixedMul(FixedMul(puff_dist_e1,cos(helper)),e3x);
+				kf2 += FixedMul(FixedMul(puff_dist_e1,cos(helper)),e3y);
+				kf3 += FixedMul(FixedMul(puff_dist_e1,cos(helper)),e3z);
+			}
+			
+			Spawn("HLEgonParticleHelix",kf1,kf2,kf3,0,0);
+		}
+		
+		if(i % puff_delay == 0)
+			Delay(1); //Force delay to reduce lag
+	}
+}
+
+str lolpages[2] =
+{ "HLGaussParticleYellow", "HLGaussParticleWhite" };
+
+script 682 (int tx, int ty, int tz) clientside
+{
+    int t, i, k = 0, l, angle, pitch;
+    int x, y, z;
+    int vx, vy, vz, mag, magI;
+	str particle;
+	
+	particle = lolpages[CheckInventory("SamsaraRGPPage")];
+
+	angle = GetActorAngle(0) - 0.1;
+	pitch = GetActorPitch(0);
+	
+	if(angle < 0)
+		angle += 1.0;
+		
+    x = GetActorX(0) + cos(angle) * ftoi(10 * cos(pitch));
+	y = GetActorY(0) + sin(angle) * ftoi(10 * cos(pitch));
+	
+	if(pitch <= 0.0)
+		z = GetActorZ(0) + 34.0 + 10 * (1.0 - cos(pitch));
+	else
+		z = GetActorZ(0) + 34.0 - 10 * (1.0 - cos(pitch));
+		
+
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+
+    for (i = 0; i < magI; i += 2)
+    {
+        Spawn(particle, x+(vx*i), y+(vy*i), z+(vz*i));
+		if(i % 1500 == 0)
+			Delay(1);
+    }
+}
+
+////////////////////////////////
+
+script 802 (void) clientside //without this = bye bye server
+{
+	int px, py, pz;
+	int tx, ty, tz;
+	int vx, vy, vz;
+	int repeat, vl;
+	int angle, pitch;
+	int i;
+	
+	px = GetActorX(0);
+	py = GetActorY(0);
+	pz = GetActorZ(0);
+	
+	SetActivatorToTarget(0);
+	
+	angle = GetActorAngle(0) - 0.05;
+	pitch = GetActorPitch(0);
+	tx = GetActorX(0) + cos(angle) * ftoi(15 * cos(pitch));
+	ty = GetActorY(0) + sin(angle) * ftoi(15 * cos(pitch));
+	
+	if(pitch <= 0.0)
+		tz = GetActorZ(0) + 34.0 + 12 * (1.0 - cos(pitch));
+	else
+		tz = GetActorZ(0) + 34.0 - 12* (1.0 - cos(pitch));
+	
+	vx = px - tx;
+	vy = py - ty;
+	vz = pz - tz;
+	vl = magnitudeThree_f(vx,vy,vz);
+	
+	vx = FixedMul(FixedDiv(vx,vl),2.0);
+	vy = FixedMul(FixedDiv(vy,vl),2.0);
+	vz = FixedMul(FixedDiv(vz,vl),2.0);
+	
+	repeat = (FixedDiv(vl,2.0)) >> 16;
+	
+	if(repeat <= 0)
+		terminate;
+		
+	for(i = 0; i <= repeat; i++)
+	{
+		Spawn("HLBarnacleTrail",tx + (i * vx),ty + (i * vy),tz + (i * vz),0,0);
+		if(i % 500 == 0)
+			Delay(1);
+	}
+}
+
+#libdefine HL_BARNACLE_PULL_FACTOR 25.0
+script 803 (void) clientside
+{
+	int px, py, pz;
+	int tx, ty, tz;
+	int vx, vy, vz;
+	int repeat, vl;
+	int angle, pitch;
+	int i;
+	
+	px = GetActorX(0);
+	py = GetActorY(0);
+	pz = GetActorZ(0) - 32.0;
+	
+	SetActivatorToTarget(0);
+	
+	tx = GetActorX(0);
+	ty = GetActorY(0);
+	tz = GetActorZ(0);
+	
+	vx = px - tx;
+	vy = py - ty;
+	vz = pz - tz;
+	vl = magnitudeThree_f(vx,vy,vz);
+	
+	vx = FixedDiv(vx,vl);
+	vy = FixedDiv(vy,vl);
+	vz = FixedDiv(vz,vl);
+	
+	SetActorVelocity(0,FixedMul(vx,HL_BARNACLE_PULL_FACTOR),FixedMul(vy,HL_BARNACLE_PULL_FACTOR),FixedMul(vz,HL_BARNACLE_PULL_FACTOR),0,0);
+}
+
+//+Modified
+script 679 (int tx, int ty, int tz) clientside
+{
+    int t, i, k = 0, l;
+    int x, y, z;
+    int vx, vy, vz, mag, magI;
+	int particle, dist, hasdelay;
+	int classnumb = samsaraClassNum();
+	int pagenumb = CheckInventory("SamsaraRGPPage");
+
+	if((classnumb == -1) || (pagenumb >= SAMSARA_RGP_PAGES))
+		terminate;
+		
+	particle = SamsaraRGP[classnumb][pagenumb];
+	hasdelay = SamsaraRGPProperties[classnumb][pagenumb][SAMSARA_RGP_HASDELAY];
+	dist = SamsaraRGPProperties[classnumb][pagenumb][SAMSARA_RGP_DISTANCE];
+	
+	if((!StrLen(particle)) || (dist < 1))
+		terminate;
+
+    x  = GetActorX(0); y =  GetActorY(0);  z = GetActorZ(0) + 24.0;
+
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+
+    for (i = dist; i < magI; i += dist)
+    {
+        Spawn(particle, x+(vx*i), y+(vy*i), z+(vz*i));
+        
+		if(hasDelay)
+		{
+			l += (i - k);
+			Delay(l / 512);
+			l %= 512;
+			k = i;
+		}
+    }
+}
+
+Script 2530 (int mode) // Samsara Extra Death Special Effects
+{
+	Switch(mode)
+	{
+		Case 1:
+			SetActorProperty(0, APROP_RenderStyle, STYLE_TRANSLUCENTSTENCIL);
+			SetActorProperty(0, APROP_StencilColor, 0x000000);
+			break;
+		Case 2:
+			SetActorProperty(0, APROP_RenderStyle, STYLE_OptFuzzy);
+			ThrustThingZ(0,5,0,0);
+			break;
+	}
+}
+
+Script 2560 (int mode)
+{
+	Switch(mode)
+	{
+		Case 0:
+			Delay(160);
+			GiveInventory("AllyCellPhoneHax1",1);
+			break;
+		Case 1:
+			Delay(160);
+			GiveInventory("AllyCellPhoneHax2",1);
+			break;
+	}
+}
+
+str gameClassesSTR[CLASSCOUNT] = {
+	"DoomguyClass", "ChexClass", "CorvusClass", "WolfenClass", "HexenClass", "DukeClass", "MarathonClass", "QuakeClass", "RottClass", "BlakeClass",
+	"CalebClass", "StrifeClass", "Doom64GuyClass", "EradClass", "C7Class", "RMRClass", "KatarnClass", "POGreedClass", "DisruptorClass", "WitchavenClass", 
+	"HalfLifeClass", "SWClass", "CMClass", "JonClass", "RRClass", "BittermanClass"
+};
+
+Script "TauntButton" (void) NET
+{
+	if(!GetCVar("samsara_runninginzdoom") && GetCVar("samsara_runninginzandro"))
+		Print(s:"Zandronum detected, use traditional taunt bind instead");
+	
+	else
+		UseInventory("TauntButton");
+}
+
+Script "AllyCellPhone" ENTER
+{
+	If(CheckInventory("HexenClass") || CheckInventory("RoTTClass") || CheckInventory("POGreedClass") || CheckInventory("EradClass") || CheckInventory("RRClass"))
+	{
+		if(!CheckInventory("AllyCellPhone") && CheckInventory("KillCountBar") == 250 && !CheckInventory("CellPhoneGiven"))
+		{
+			GiveInventory("AllyCellPhone", 1);
+			GiveInventory("CellPhoneGiven", 1);
+		}
+		else if(CheckInventory("CellPhoneGiven") && !CheckInventory("AllyCellPhone"))
+		{
+			TakeInventory("CellPhoneGiven", 1);
+			TakeInventory("KillCountBar", 250);
+		}
+		delay(1);
+		restart;
+	}
+	else
+	{
+		terminate;
+	}
+}
+
+// Until Zandronum doesn't crash with the old keybindings in KEYCONF, this will be required, I'm afraid
+
+Script "Samsara_Keybinds" (int button) net
+{
+	Switch(button)
+	{
+		Case 1:
+			SetUserCvar(PlayerNumber(),"samsara_cl_vanilladoom", !GetUserCvar(PlayerNumber(),"samsara_cl_vanilladoom"));
+			break;
+		
+		Case 2:
+			SetUserCvar(PlayerNumber(),"samsara_cl_wolfmove", !GetUserCvar(PlayerNumber(),"samsara_cl_wolfmove"));
+			break;
+			
+		Case 3:
+			SetUserCvar(PlayerNumber(),"samsara_cl_ballgag", !GetUserCvar(PlayerNumber(),"samsara_cl_ballgag"));
+			break;
+
+		Case 4:
+			SetUserCvar(PlayerNumber(),"samsara_cl_weaponhud", !GetUserCvar(PlayerNumber(),"samsara_cl_weaponhud"));
+			break;
+			
+		Case 5:
+			SetUserCvar(PlayerNumber(),"samsara_cl_moremessages", !GetUserCvar(PlayerNumber(),"samsara_cl_moremessages"));
+			break;
+			
+		Case 6:
+			SetUserCvar(PlayerNumber(),"samsara_cl_printpickup", !GetUserCvar(PlayerNumber(),"samsara_cl_printpickup"));
+			break;
+			
+		Case 7:
+			SetUserCvar(PlayerNumber(),"samsara_cl_norecoil", !GetUserCvar(PlayerNumber(),"samsara_cl_norecoil"));
+			break;
+			
+		Case 8:
+			SetUserCvar(PlayerNumber(),"samsara_cl_heromusic", !GetUserCvar(PlayerNumber(),"samsara_cl_heromusic"));
+			
+			If(GetCvar("samsara_cl_heromusic") == false) 
+				LocalSetMusic("*",0);
+			else 
+				ACS_NamedExecuteAlways("SamsaraOST_Enter",0,0,0,0);		
+			break;
+		
+		Case 9:
+			SetUserCvar(PlayerNumber(),"samsara_cl_dkclab", !GetUserCvar(PlayerNumber(),"samsara_cl_dkclab"));
+			break;
+			
+		Case 10:
+			SetUserCvar(PlayerNumber(),"samsara_cl_rottbar", !GetUserCvar(PlayerNumber(),"samsara_cl_rottbar"));
+			break;
+	}
+}
+
+//sigh, this one's handled different
+
+Script "Samsara_PickupMode" (void) net clientside
+{
+			
+	if(GetUserCvar(PlayerNumber(),"samsara_cl_pickupmode") < 2)
+		SetUserCvar(PlayerNumber(),"samsara_cl_pickupmode", GetUserCvar(PlayerNumber(),"samsara_cl_pickupmode")+1);
+			
+	else
+		SetUserCvar(PlayerNumber(),"samsara_cl_pickupmode", 0);
+}
+
+Script "Samsara_Shrinker" (int use, int value)
+{
+	if(use == 1)
+	{
+		if(CheckInventory("ShrunkToken") == 0)
+		{
+			int oldTID, target;
+			oldTID = ActivatorTID();
+			target = UniqueTID();
+			Thing_ChangeTID(0, target);
+			SetActivator(0, AAPTR_Master);
+			int originalhealth = GetActorProperty(0, APROP_Health);
+			int spawnhealth = GetActorProperty(0, APROP_SpawnHealth);
+			SetActivator(target);
+			Thing_ChangeTID(target, oldTID);
+			GiveInventory("ShrunkToken", 1);
+			GiveInventory("ShrunkMasterHealthTokens", spawnhealth);
+			SetActorProperty(0, APROP_Health, 1);
+			for(int c = 0; c < 385; c++)
+			{
+				if(GetActorProperty(0, APROP_Health) <= 0 || CheckInventory("SquishToken"))
+				{
+					terminate;
+				}
+				if(c == 384)
+				{
+					TakeInventory("ShrunkToken", 1);
+					GiveInventory("ShrunkHealthTokens", spawnhealth - originalhealth);
+					SetActorState(0, "Grow", true);
+					terminate;
+				}
+				Delay(1);
+			}
+		}
+	}
+	else if(use == 2)
+	{
+		SetResultValue(CheckInventory("ShrunkHealthTokens"));
+	}
+	else if(use == 3)
+	{
+		SetActivatorToTarget(0);
+		
+		if(ClassifyActor(0) != 34)
+			SetResultValue(0);
+			
+		else
+			SetResultValue(1);
+	}
+}
+
+Script "Samsara_Shrinker_Stomp" (void)
+{
+	int index;
+	str weapon = GetWeapon();
+	GiveInventory("Mighty Stomp", 1);
+	GiveInventory("DukeKicking", 1);
+	SetWeapon("Mighty Stomp");
+	Delay(20);
+	TakeInventory("DukeKicking", 1);
+	TakeInventory("DukeStomp", 1);
+	SetWeapon(weapon);
+	terminate;
+}
+
+Script "Samsara_Expander" (int use)
+{
+	if(use == 0)
+	{
+		SetActivator(0, AAPTR_Tracer);
+		Thing_Damage2(0,15,"ExpanderDMG");
+	}
+	else if(use == 1)
+	{
+		SetResultValue(CheckInventory("ExpanderGrowthX"));
+	}
+	else if(use == 2)
+	{
+		SetResultValue(CheckInventory("ExpanderGrowthY"));
+	}
+	else if(use == 3)
+	{
+		SetResultValue(CheckInventory("ExpanderDoubleX"));
+	}
+	else if(use == 4)
+	{
+		SetActivator(0, AAPTR_Master);
+		int height = GetActorProperty(0, APROP_Height) * 4;
+		int radius = GetActorProperty(0, APROP_Radius);
+		int health = GetActorProperty(0, APROP_SpawnHealth);
+		int damage = FixedMul((height + radius) / 2,FixedMul(1.75,FixedDiv(health+1000,1000))); 
+		SetResultValue(damage>>16);
+	}
+}
+
+
+str rottdropstrings[4] = {"DropTaradino","DropThi","DropLorelli","DropDoug"};
+str hexendropstrings[2] = {"DropFighter","DropMage"};
+str eradicatordropstrings[3] = {"DropDan","DropKamechak","DropMarine"};
+str ipogdropstrings[4] = {"DropCyborg","DropLizard","DropSpecimen","DropDominatrix"};
+
+Script 2999 (int class)
+{
+	int resultcounter = 0;	
+	int maxallies = 2;
+	Switch(class)
+	{
+		Case 1:	
+		maxallies = 4;
+		For(int a = 0; a < 36; a++)
+		{
+			Delay(1);
+			If(a==35)
+			{
+				If(resultcounter == maxallies)
+				{
+					SetActorState(0,"Death",TRUE);
+					terminate;
+				}
+				SetActorState(0,rottdropstrings[resultcounter],TRUE);
+				a=0;
+				resultcounter++;
+			}
+		}
+		break;
+		Case 2:	
+		maxallies = 2;
+		For(int b = 0; b < 36; b++)
+		{
+			Delay(1);
+			If(b==35)
+			{
+				If(resultcounter == maxallies)
+				{
+					SetActorState(0,"Death",TRUE);
+					terminate;
+				}
+				SetActorState(0,hexendropstrings[resultcounter],TRUE);
+				b=0;
+				resultcounter++;
+			}
+		}
+		break;
+		Case 3:	
+		maxallies = 3;
+		For(int c = 0; c < 36; c++)
+		{
+			Delay(1);
+			If(c==35)
+			{
+				If(resultcounter == maxallies)
+				{
+					SetActorState(0,"Death",TRUE);
+					terminate;
+				}
+				SetActorState(0,eradicatordropstrings[resultcounter],TRUE);
+				c=0;
+				resultcounter++;
+			}
+		}
+		break;
+		Case 4:	
+		maxallies = 4;
+		For(int d = 0; d < 36; d++)
+		{
+			Delay(1);
+			If(d==35)
+			{
+				If(resultcounter == maxallies)
+				{
+					SetActorState(0,"Death",TRUE);
+					terminate;
+				}
+				SetActorState(0,ipogdropstrings[resultcounter],TRUE);
+				d=0;
+				resultcounter++;
+			}
+		}
+		break;
+	}
+}
+
+int placementmatrices[8][2] = 
+{
+	{ 64, 0 },
+	{ 0, 64 },
+	{ 64, 64 },
+	{ 64, -64 },
+	{ -64, 0 },
+	{ 0, -64 },
+	{ -64, -64 },
+	{ -64, 64 }
+};
+
+Script "Duke3DEnemyMinionSpawner" (void)
+{
+	
+	int draw = random(1,28);
+	int matrice = random(0,7);
+	int newmatrice, newestmatrice; // I'm in a rush, okay?
+		
+	if(draw < 16)
+	{
+		Spawn("DukeNukemTeleport", GetActorX(0) + 1.0*placementmatrices[matrice][0], GetActorY(0) + 1.0*placementmatrices[matrice][1], GetActorZ(0) + 24.0, 0, GetActorAngle(0));
+		
+		Spawn("Zombieman", GetActorX(0) + 1.0*placementmatrices[matrice][0], GetActorY(0) + 1.0*placementmatrices[matrice][1], GetActorZ(0), 0, GetActorAngle(0));	
+	}
+	else if(draw < 24)
+	{
+		newmatrice = random(0,7);
+		if(newmatrice == matrice)
+			{
+				if(newmatrice == 7)
+					newmatrice = 0;
+				else
+					newmatrice = matrice-1;
+			}
+			
+		Spawn("DukeNukemTeleport", GetActorX(0) + 1.0*placementmatrices[matrice][0], GetActorY(0) + 1.0*placementmatrices[matrice][1], GetActorZ(0) + 24.0, 0, GetActorAngle(0));
+		Spawn("DukeNukemTeleport", GetActorX(0) + 1.0*placementmatrices[newmatrice][0], GetActorY(0) + 1.0*placementmatrices[newmatrice][1], GetActorZ(0) + 24.0, 0, GetActorAngle(0));
+
+		Spawn("Zombieman", GetActorX(0) + 1.0*placementmatrices[matrice][0], GetActorY(0) + 1.0*placementmatrices[matrice][1], GetActorZ(0), 0, GetActorAngle(0));
+		Spawn("Zombieman", GetActorX(0) + 1.0*placementmatrices[newmatrice][0], GetActorY(0) + 1.0*placementmatrices[newmatrice][1], GetActorZ(0), 0, GetActorAngle(0));
+	}
+	else if(draw <= 28)
+	{
+		newmatrice = random(0,7);
+		if(newestmatrice == matrice || newestmatrice == newmatrice)
+		{
+			if(newmatrice == 7 && matrice == 0)
+				newestmatrice = 3;
+			else if(newmatrice == 0 && matrice == 7)
+				newestmatrice = 3;
+			else if(newmatrice+1 == matrice && newmatrice != 0)
+				newestmatrice = newmatrice-1;
+			else if(matrice+1 == newmatrice && matrice != 0)
+				newestmatrice = matrice-1;
+			else if(newmatrice+1 == matrice && newmatrice == 0)
+				newestmatrice = 7;
+			else if(matrice+1 == newmatrice && matrice == 0)
+				newestmatrice = 7;
+		}
+			
+		Spawn("DukeNukemTeleport", GetActorX(0) + 1.0*placementmatrices[matrice][0], GetActorY(0) + 1.0*placementmatrices[matrice][1], GetActorZ(0) + 24.0, 0, GetActorAngle(0));
+		Spawn("DukeNukemTeleport", GetActorX(0) + 1.0*placementmatrices[newmatrice][0], GetActorY(0) + 1.0*placementmatrices[newmatrice][1], GetActorZ(0) + 24.0, 0, GetActorAngle(0));
+		Spawn("DukeNukemTeleport", GetActorX(0) + 1.0*placementmatrices[newestmatrice][0], GetActorY(0) + 1.0*placementmatrices[newestmatrice][1], GetActorZ(0) + 24.0, 0, GetActorAngle(0));
+		
+		Spawn("Zombieman", GetActorX(0) + 1.0*placementmatrices[matrice][0], GetActorY(0) + 1.0*placementmatrices[matrice][1], GetActorZ(0), 0, GetActorAngle(0));
+		Spawn("Zombieman", GetActorX(0) + 1.0*placementmatrices[newmatrice][0], GetActorY(0) + 1.0*placementmatrices[newmatrice][1], GetActorZ(0), 0, GetActorAngle(0));
+		Spawn("Zombieman", GetActorX(0) + 1.0*placementmatrices[newestmatrice][0], GetActorY(0) + 1.0*placementmatrices[newestmatrice][1], GetActorZ(0), 0, GetActorAngle(0));
+	}
+}
+
+//Replace this script and inject code into it for other tcs when actors die. Override 1 is for base samsara monsters. Override 2 is shrunk actors to get their parent.
+
+Script "Samsara_KillCount" (int override)
+{
+	if(!(ClassifyActor(0) & ACTOR_MONSTER))
+		terminate;
+		
+	int health;
+	int healthtokens = CheckInventory("ShrunkMasterHealthTokens");
+
+	if(healthtokens == 0)
+		health = GetActorProperty(0, APROP_SpawnHealth);	
+	else
+		health = healthtokens;
+	
+	SetActivatorToTarget(0);
+	
+	if(override != 1)
+		GiveInventory("KillCount", 1);
+}

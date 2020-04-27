@@ -1,0 +1,185 @@
+#library "CALEB"
+#include "zcommon.acs"
+#include "commonFuncs.h"
+
+//Look at crashes, weapon taking crashes!
+
+Script 599 (void)
+{
+	int u = ActivatorTID();
+	SetActivatorToTarget(0);
+	Thing_ChangeTID(u, CheckInventory("Voodoo")/2+1);
+}
+
+script 600 (void)
+{
+    while (CheckInventory("CalebTauntCooldown") > 0)
+    {
+        Delay(35);
+        TakeInventory("CalebTauntCooldown", 1);
+    }
+}
+
+Script 601 (int type) NET
+{
+	if(CheckInventory("CalebBallgag"))
+	{
+		TakeInventory("CalebBallgag", 1);
+		Print(s:"Ballgag Off");
+	}
+	else
+	{
+		GiveInventory("CalebBallGag", 1);
+		Print(s:"Ballgag On");
+	}
+}
+
+Script 602 (void)
+{
+	if(CheckInventory("TeslaCounterX") > 7)
+	{
+		TakeInventory("TeslaCounterX", 24);
+	}
+}
+
+Script 603 (void)
+{
+	int LifeLeechAmmo = CheckInventory("Cell");
+	
+	if(CheckWeapon("LifeLeech"))
+	{
+		if(LifeLeechAmmo >= 1)
+		{
+			TakeInventory("Cell", 2);
+		}
+		else
+			Thing_Damage2(0, 1, "Suicide");
+	}
+}
+
+Script 604 (void)
+{
+	if( GameType() == GAME_NET_COOPERATIVE || GetCVar("cooperative") || GetCVar("invasion") || GetCVar("survival") )
+		SetResultValue(1);
+	else
+		SetResultValue(0);
+}
+
+Script 605 (int stid)
+{
+	if(CheckInventory("CalebClass") && GetActorProperty(stid, APROP_HEALTH) >= 1)
+	{
+		GiveInventory("Lifeleech", 1);
+		SetActorProperty(stid, APROP_MASTERTID, 0); // this change fixes the point bug, so caleb won't spam points
+//		printbold(d: ActivatorTID());
+		Thing_Damage(stid, 10000000000000, MOD_EXIT);
+	}
+}
+
+Script 1824 ENTER
+{
+	if(CheckInventory("CalebClass"))
+	{
+		Thing_ChangeTid(0, PlayerNumber() + 1000);
+        GiveInventory("MyTID", PlayerNumber()+1);
+		TakeInventory("StopFromPickingTurrets_", 999);
+	}
+}
+
+Script 1826 RESPAWN
+{
+	if(CheckInventory("CalebClass"))
+	{
+		Thing_ChangeTid(0, PlayerNumber() + 1000);
+		GiveInventory("MyTID", PlayerNumber()+1);
+	}
+}
+
+Script 1825 Death
+{
+	if(CheckInventory("CalebClass"))
+	{
+		Thing_ChangeTid(PlayerNumber() + 1000, 0);
+		TakeInventory("MyTID", 1+PlayerNumber());
+	}
+}
+
+Script "FlareGunPitch" (void)
+{
+	SetActivator(0, AAPTR_Target);
+	int angle = GetActorPitch(0);
+	SetResultValue(angle);
+}
+
+Script "Caleb_BurningManVoice" (int mode)
+{
+	str painsound, deathsound;
+	int oldTID, master;
+	int speed;
+	oldTID = ActivatorTID();
+	master = UniqueTID();
+	Thing_ChangeTID(0, master);
+	SetActivator(0, AAPTR_Master);
+	
+	if(GetCvar("Samsara_CrashDebugger") == true)
+	{
+		Log(s:"Debugger: Burning Enemy: ", s:GetActorClass(0));
+	}
+	
+	Switch(mode)
+	{
+		case 1:		
+			speed = GetActorProperty(0, APROP_Speed);
+			
+			painsound = GetActorProperty(0, APROP_PainSound);
+			deathsound = GetActorProperty(0, APROP_DeathSound);
+			SetActivator(master);
+			
+			if(painsound != "")
+				SetActorProperty(0, APROP_PainSound, painsound);
+				
+			if(deathsound != "")
+				SetActorProperty(0, APROP_DeathSound, deathsound);
+			
+			if(GetCvar("Samsara_CrashDebugger") == true)
+			{
+				Log(s:"Debugger: Pass");
+			}
+			
+			SetActorProperty(0, APROP_Speed, speed/2);
+			break;
+		
+		case 2:
+			speed = GetActorProperty(0, APROP_Speed);
+
+			deathsound = GetActorProperty(0, APROP_DeathSound);
+			SetActivator(master);
+			
+			if(deathsound != "")
+				SetActorProperty(0, APROP_DeathSound, deathsound);
+			
+			if(GetCvar("Samsara_CrashDebugger") == true)
+			{
+				Log(s:"Debugger: Pass");
+			}
+			
+			SetActorProperty(0, APROP_Speed, speed/2);
+			break;
+		
+	}
+	
+}
+
+Script "BurningManSpeed" (void) // will just have to wait until 4.0 before you can use a_setspeed I guess
+{
+	SetActorProperty(0, APROP_Speed, 7 << 16);
+}
+
+Script "BurningManContinue" (void) // bleh
+{
+	SetActivatorToTarget(0);
+	if(!(ClassifyActor(0) & ACTOR_PLAYER))
+		SetResultValue(false);
+	else
+		SetResultValue(true);
+}

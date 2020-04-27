@@ -1,0 +1,315 @@
+Actor HL9mmCounter : Ammo
+{
+	+INVENTORY.IGNORESKILL
+	Inventory.Amount 1
+	Inventory.MaxAmount 17
+}
+Actor "9mm Pistol" : HLWeapon
+{
+	Weapon.Slotnumber 1
+	Weapon.SelectionOrder 3750
+	Inventory.Pickupmessage "You got the 9mm!"
+	Inventory.Pickupsound "halflife/weaponpickup"
+	DamageType "HLBullet"
+	Weapon.AmmoType "HL9mmCounter"
+    Weapon.AmmoUse 0
+    Weapon.AmmoGive 17
+	Inventory.RestrictedTo "HalfLifePlayer"	
+	states
+	{
+	Spawn:
+		HWP0 Z -1
+		stop
+	Select:
+		TNT1 A 0 A_TakeInventory("freeman_fistselected",1)	
+		TNT1 A 0 A_TakeInventory("freeman_slot1selected",1)		
+		TNT1 A 0 A_TakeInventory("freeman_slot2selected",1)		
+		TNT1 A 0 A_TakeInventory("freeman_slot3selected",1)		
+		TNT1 A 0 A_TakeInventory("freeman_slot4selected",1)		
+		TNT1 A 0 A_TakeInventory("freeman_slot5selected",1)		
+		TNT1 A 0 A_TakeInventory("freeman_slot6selected",1)
+		TNT1 A 0 A_TakeInventory("freeman_slot7selected",1)				
+		TNT1 A 0 A_GiveInventory("freeman_pistolselected",1)
+	SelectLoop:	
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
+		TNT1 A 1 A_Raise
+		loop
+	Deselect:
+		TNT1 A 0 A_TakeInventory("freeman_pistolselected",1)
+	DeselectLoop:	
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+		TNT1 A 1 A_Lower
+		loop
+	Ready:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReadyOpp")
+		TNT1 A 0 A_PlayWeaponSound("halflife/weaponselect")
+		HWP0 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		goto WIdle
+	ReadyOpp:
+		TNT1 A 0 A_PlayWeaponSound("halflife/weaponselect")
+		OPP0 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		goto WIdle
+	WIdle:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "WIdleOpp")
+		HWP9 A 2 A_WeaponReady(WRF_ALLOWRELOAD)
+		TNT1 A 0 A_Jump(4,"A")
+		TNT1 A 0 A_Jump(3,"A")
+		TNT1 A 0 A_Jump(2,"A")		
+		TNT1 A 0 A_Jump(1,"Idle1","Idle2","Idle3")
+	A:
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"WIdle")
+		goto Reload
+	Idle1:
+        HWP9 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		HWP8 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		HWP7 ABCDEFGHIJ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		Goto WIdle
+	Idle2:
+        HW10 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+        HW11 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_ALLOWRELOAD)		
+		Goto WIdle		
+	Idle3:
+        HW12 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+        HW13 ABCDEFGHIJKLMNOPQRSTUVW 1 A_WeaponReady(WRF_ALLOWRELOAD)		
+		Goto WIdle
+	WIdleOpp:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
+		Goto WIdle
+		OPP9 A 2 A_WeaponReady(WRF_ALLOWRELOAD)
+		TNT1 A 0 A_Jump(4,"A")
+		TNT1 A 0 A_Jump(3,"A")
+		TNT1 A 0 A_Jump(2,"A")		
+		TNT1 A 0 A_Jump(1,"Idle1Opp","Idle2Opp","Idle3Opp")
+	AOpp:
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"WIdle")
+		goto Reload
+	Idle1Opp:
+        OPP9 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		OPP8 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		OPP7 ABCDEFGHIJ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		Goto WIdleOpp
+	Idle2Opp:
+        OP10 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+        OP11 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_ALLOWRELOAD)		
+		Goto WIdleOpp	
+	Idle3Opp:
+        OP12 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+        OP13 ABCDEFGHIJKLMNOPQRSTUVW 1 A_WeaponReady(WRF_ALLOWRELOAD)		
+		Goto WIdleOpp
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"Hold")
+		goto FireReload
+	Hold:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "HoldOpp")
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,1)
+		goto FireReloadHold
+		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
+		TNT1 A 0 A_AlertMonsters
+		HWP2 A 1 bright A_TakeInventory("HL9mmCounter",1)
+		HWP2 B 1 bright A_PlayWeaponSound("halflife/9mm_shoot")	
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"FireCoop")
+		TNT1 A 0 A_FireCustomMissile("HL9mmBullet",frandom(-1.21,1.21),0,5,3,0,frandom(-1.88,1.88))
+		goto FireDone
+	FireCoop:
+		TNT1 A 0 A_FireCustomMissile("HL9mmBulletCoop",frandom(-1.21,1.21),0,5,3,0,frandom(-1.88,1.88))
+		goto FireDone
+	FireDone:
+		HWP3 A 2
+		HWP3 B 2 A_FireCustomMissile("HLBrassShellCaser",0,0,0,0,0,0)
+		HWP3 CDEF 2
+		HWP3 GHIJKLMN 2 A_Refire
+		goto WIdle
+	HoldOpp:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
+		Goto Hold+1
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,1)
+		goto FireReloadHoldOpp
+		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
+		TNT1 A 0 A_AlertMonsters
+		OPP2 A 1 bright A_TakeInventory("HL9mmCounter",1)
+		OPP2 B 1 bright A_PlayWeaponSound("halflife/9mm_shoot")	
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"FireCoopOpp")
+		TNT1 A 0 A_FireCustomMissile("HL9mmBullet",frandom(-1.21,1.21),0,5,3,0,frandom(-1.88,1.88))
+		goto FireDoneOpp
+	FireCoopOpp:
+		TNT1 A 0 A_FireCustomMissile("HL9mmBulletCoop",frandom(-1.21,1.21),0,5,3,0,frandom(-1.88,1.88))
+		goto FireDoneOpp
+	FireDoneOpp:
+		OPP3 A 2
+		OPP3 B 2 A_FireCustomMissile("HLBrassShellCaser",0,0,0,0,0,0)
+		OPP3 CDEF 2
+		OPP3 GHIJKLMN 2 A_Refire
+		goto WIdleOpp
+	AltFire:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "AltFireOpp")
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"AltHold")
+		goto FireReload
+	AltHold:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "AltHoldOpp")
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,1)
+		goto FireReloadHoldAlt
+		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
+		TNT1 A 0 A_AlertMonsters
+		TNT1 A 0 A_PlayWeaponSound("halflife/9mm_shoot")
+		HWP2 B 1 bright A_TakeInventory("HL9mmCounter",1)
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"AltFireCoop")
+		TNT1 A 0 A_FireCustomMissile("HL9mmBullet",frandom(-5.00,5.00),0,5,3,0,frandom(-5.00,5.00))
+		goto AltFireDone
+	AltFireCoop:
+		TNT1 A 0 A_FireCustomMissile("HL9mmBulletCoop",frandom(-5.00,5.00),0,5,3,0,frandom(-5.00,5.00))
+		goto AltFireDone
+	AltFireDone:
+		HWP3 A 2
+		HWP3 B 2 A_FireCustomMissile("HLBrassShellCaser",0,0,0,0,0,0)
+		HWP3 CD 2
+		HWP3 EFGHIJKLM 2 A_Refire
+		goto WIdle
+	AltFireOpp:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
+		Goto AltFire+1
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"AltHoldOpp")
+		goto FireReloadOpp
+	AltHoldOpp:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
+		Goto AltHold+1
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,1)
+		goto FireReloadHoldAltOpp
+		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
+		TNT1 A 0 A_AlertMonsters
+		TNT1 A 0 A_PlayWeaponSound("halflife/9mm_shoot")
+		OPP2 B 1 bright A_TakeInventory("HL9mmCounter",1)
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"AltFireCoopOpp")
+		TNT1 A 0 A_FireCustomMissile("HL9mmBullet",frandom(-5.00,5.00),0,5,3,0,frandom(-5.00,5.00))
+		goto AltFireDoneOpp
+	AltFireCoopOpp:
+		TNT1 A 0 A_FireCustomMissile("HL9mmBulletCoop",frandom(-5.00,5.00),0,5,3,0,frandom(-5.00,5.00))
+		goto AltFireDoneOpp
+	AltFireDoneOpp:
+		OPP3 A 2
+		OPP3 B 2 A_FireCustomMissile("HLBrassShellCaser",0,0,0,0,0,0)
+		OPP3 CD 2
+		OPP3 EFGHIJKLM 2 A_Refire
+		goto WIdleOpp
+	FireReload:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "FireReloadOpp")
+		HWP2 A 1 A_PlayWeaponSound("halflife/weaponempty") //Break 0-tic-cycle
+		HWP2 A 3
+		goto Reload
+	FireReloadHold:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "FireReloadHoldOpp")
+		TNT1 A 0 A_PlayWeaponSound("halflife/weaponempty")
+		HWP3 GHI 1
+		HWP3 J 1 A_ClearRefire
+		HWP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+		goto Reload
+	FireReloadHoldAlt:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "FireReloadHoldAltOpp")
+		TNT1 A 0 A_PlayWeaponSound("halflife/weaponempty")
+		HWP3 EFGHIJ 1
+		HWP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+		goto Reload
+	FireReloadOpp:
+		OPP2 A 1 A_PlayWeaponSound("halflife/weaponempty") //Break 0-tic-cycle
+		OPP2 A 3
+		goto Reload
+	FireReloadHoldOpp:
+		TNT1 A 0 A_PlayWeaponSound("halflife/weaponempty")
+		OPP3 GHI 1
+		OPP3 J 1 A_ClearRefire
+		OPP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+		goto Reload
+	FireReloadHoldAltOpp:
+		TNT1 A 0 A_PlayWeaponSound("halflife/weaponempty")
+		OPP3 EFGHIJ 1
+		OPP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+		goto Reload
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReloadOpp")
+//		TNT1 A 0 A_TakeInventory("HLReloadTrigger",999)
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",17,"WIdle")
+		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadCheckAmmo")
+		goto ReloadSuccess
+	ReloadCheckAmmo:
+		TNT1 A 0 A_JumpIfInventory("Clip",1,"ReloadSuccess")
+		goto WIdle
+	ReloadSuccess:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReloadSuccessOpp")
+		HWP4 A 2 //A_TakeInventory("HL9mmCounter",999) //You lose your ammo, fuck you
+		HWP4 BDFHI 2
+		HWP4 J 2 A_PlayWeaponSound("halflife/9mm_reload1")
+		HWP4 KLMNOQSUWXYZ 2
+		HWP5 A 2 A_PlayWeaponSound("halflife/9mm_reload0")
+		HWP5 BC 2
+		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"SetAmmoPistolMode")
+		goto SetAmmo
+	SetAmmo:
+		TNT1 A 0 A_GiveInventory("HL9mmCounter",17)
+		goto ReloadFinish
+	SetAmmoPistolMode:
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",17,"ReloadFinish")
+		TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+		goto ReloadFinish
+		TNT1 A 0 A_GiveInventory("HL9mmCounter",1)
+		TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+		loop
+	ReloadFinish:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReloadFinishOpp")
+		HWP5 DFHIKLNO 2 
+		goto WIdle
+	ReloadOpp:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
+		Goto Reload+1
+//		TNT1 A 0 A_TakeInventory("HLReloadTrigger",999)
+		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",17,"WIdle")
+		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadCheckAmmo")
+		goto ReloadSuccessOpp
+	ReloadSuccessOpp:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
+		Goto ReloadSuccessOpp+1
+		OPP4 A 2 //A_TakeInventory("HL9mmCounter",999) //You lose your ammo, fuck you
+		OPP4 BDFHI 2
+		OPP4 J 2 A_PlayWeaponSound("halflife/9mm_reload1")
+		OPP4 KLMNOQSUWXYZ 2
+		OPP5 A 2 A_PlayWeaponSound("halflife/9mm_reload0")
+		OPP5 BC 2
+		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"SetAmmoPistolMode")
+		goto SetAmmo
+	ReloadFinishOpp:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
+		Goto ReloadFinish+1
+		OPP5 DFHIKLNO 2
+		goto WIdleOpp
+	}
+}
+
+Actor HL9mmBullet : HLBullet { Damage (random(11,17)) }
+Actor HL9mmBulletCoop : HLBulletCoop { Damage (random(11,17)) }
+
+Actor HL9MMMuzzleFlash
+{
+	+FORCEXYBILLBOARD
+	+NOINTERACTION
+	+CLIENTSIDEONLY
+	-SOLID
+	+NOCLIP
+	Speed 0
+	RenderStyle Add
+	Alpha 1.0
+	Scale 0.2
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			HW29 J 1 Bright A_Warp(AAPTR_Master,cos(pitch)*30,4,35-(sin(pitch)*30),0,WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE)
+			HW29 K 1 A_Warp(AAPTR_Master,cos(pitch)*30,4,35-(sin(pitch)*30),0,WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE)
+			Stop
+	}
+}
+
+Actor freeman_pistolselected : Inventory
+{
+	Inventory.MaxAmount 1
+	+INVENTORY.IGNORESKILL
+	+INVENTORY.UNDROPPABLE
+	-INVENTORY.INVBAR
+}

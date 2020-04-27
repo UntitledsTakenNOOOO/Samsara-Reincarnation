@@ -1,0 +1,251 @@
+Actor HLCrowHit : HLBoolean {}
+Actor "Crowbar" : HLWeapon
+{
+	Inventory.PickupSound "halflife/weaponpickup"
+	Inventory.Pickupmessage "You got the crowbar!"
+	Weapon.SlotNumber 0
+	Weapon.SelectionOrder 4000
+	+WEAPON.MELEEWEAPON
+	+WEAPON.WIMPY_WEAPON
+	Inventory.RestrictedTo "HalfLifePlayer"	
+	States
+	{
+	Spawn:
+		HWF0 Z -1
+		stop
+	Select:
+		TNT1 A 0 A_TakeInventory("freeman_pistolselected",1)	
+		TNT1 A 0 A_TakeInventory("freeman_slot1selected",1)		
+		TNT1 A 0 A_TakeInventory("freeman_slot2selected",1)		
+		TNT1 A 0 A_TakeInventory("freeman_slot3selected",1)		
+		TNT1 A 0 A_TakeInventory("freeman_slot4selected",1)		
+		TNT1 A 0 A_TakeInventory("freeman_slot5selected",1)		
+		TNT1 A 0 A_TakeInventory("freeman_slot6selected",1)
+		TNT1 A 0 A_TakeInventory("freeman_slot7selected",1)	
+		TNT1 A 0 A_GiveInventory("freeman_fistselected",1)
+	SelectLoop:	
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
+		TNT1 A 1 A_Raise
+		loop
+	Deselect:
+		TNT1 A 0 A_TakeInventory("freeman_fistselected",1)
+	DeselectLoop:
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+		TNT1 A 1 A_Lower
+		loop		
+	Ready:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReadyOpp")
+		TNT1 A 0 A_PlayWeaponSound("halflife/weaponselect")
+		TNT1 A 1
+		HWF0 ABCDEFGHIJKL 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		goto WIdle
+	ReadyOpp:
+		TNT1 A 0 A_PlayWeaponSound("halflife/weaponselect")
+		TNT1 A 1
+		OP02 ABCDEFGHIJK 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		goto WIdle
+	WIdle:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "WIdleOpp")
+		HWF1 A 2 A_WeaponReady
+		TNT1 A 0 A_Jump(4,"WIdle")
+		TNT1 A 0 A_Jump(3,"WIdle")
+		TNT1 A 0 A_Jump(2,"WIdle")				
+		TNT1 A 0 A_Jump(1,"Idle1")
+		loop
+	Idle1:
+		HWF1 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		HWF0 MNOPQRSTUV 1 A_WeaponReady
+		Goto WIdle
+	WIdleOpp:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
+		Goto WIdle+1
+		OP00 A 2 A_WeaponReady
+		TNT1 A 0 A_Jump(4,"WIdleOpp")
+		TNT1 A 0 A_Jump(3,"WIdleOpp")
+		TNT1 A 0 A_Jump(2,"WIdleOpp")				
+		TNT1 A 0 A_Jump(1,"Idle1Opp","Idle2Opp","Idle3Opp")
+		loop
+	Idle1Opp:
+		OP00 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		OP01 ABCDEFGHI 1 A_WeaponReady
+		Goto WIdleOpp
+	Idle2Opp:
+		OP10 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		OP11 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		OP12 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		OP13 AB 1 A_WeaponReady
+		Goto WIdleOpp
+	Idle3Opp:
+		OP14 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		OP15 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		OP16 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		OP17 AB 1 A_WeaponReady
+		Goto WIdleOpp
+	Fire:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "FireOpp")
+		HWF1 A 1
+		HWF1 A 0 A_PlayWeaponSound("halflife/crow_swing")
+		goto Attack1
+	Attack1:
+		HWF1 A 0 A_Jump(128,"Attack2","Attack3")	
+		HWF3 AB 2
+		HWF3 C 1 A_FireCustomMissile("HLCrowbarMissile",0,0,0,4)
+		HWF3 CD 2
+		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack1Hit")
+		goto Attack1Fail
+	Attack1Fail:
+		HWF4 AB 2
+		HWF4 CD 2
+		HWF4 EFG 2 A_Refire
+		goto WIdle
+	Attack1Hit:
+		TNT1 A 0 A_TakeInventory("HLCrowHit",999)
+		HWF3 EF 1
+		HWF3 GHIJK 1 A_Refire
+		goto WIdle
+	Attack2:
+		HWF5 AB 2
+		HWF5 C 1 A_FireCustomMissile("HLCrowbarMissile",0,0,0,4)
+		HWF5 CD 2
+		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack2Hit")
+		goto Attack2Fail
+	Attack2Fail:
+		HWF5 EFGH 1
+		HWF5 IJKLMN 1 A_Refire
+		goto WIdle
+	Attack2Hit:
+		TNT1 A 0 A_TakeInventory("HLCrowHit",999)
+		HWF6 AB 1
+		HWF6 CDEFGHIJ 1 A_Refire
+		goto WIdle
+	Attack3:
+		HWF7 ABC 1
+		HWF7 D 1 A_FireCustomMissile("HLCrowbarMissile",0,0,0,4)
+		HWF7 DE 1
+		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack3Hit")
+		goto Attack3Fail
+	Attack3Fail:
+		HWF7 F 1
+		HWF7 GHI 1
+		HWF7 JKLMMNOPQRS 1 A_Refire
+		goto WIdle
+	Attack3Hit:
+		TNT1 A 0 A_TakeInventory("HLCrowHit",999)
+		HWF8 AB 1
+		HWF8 CDEFGHIJKLMN 1 A_Refire
+		goto WIdle
+	FireOpp:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
+		Goto Fire+1
+		OP00 A 1
+		OP00 A 0 A_PlayWeaponSound("HLKnife/Swing")
+		goto Attack1Opp
+	Attack1Opp:
+		OP04 A 0 A_Jump(128,"Attack2Opp","Attack3Opp")	
+		OP04 AB 2
+		OP04 C 0 A_FireCustomMissile("HLKnifeMissile",0,0,0,4)
+		OP04 CD 2
+		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack1HitOpp")
+		goto Attack1FailOpp
+	Attack1FailOpp:
+		OP05 EF 2
+		OP05 GH 2
+		OP05 IJ 2 A_Refire
+		goto WIdle
+	Attack1HitOpp:
+		TNT1 A 0 A_TakeInventory("HLCrowHit",999)
+		OP04 EF 1
+		OP04 GGHIJ 1 A_Refire
+		goto WIdle
+	Attack2Opp:
+		OP06 AB 2
+		OP06 C 0 A_FireCustomMissile("HLKnifeMissile",0,0,0,4)
+		OP06 CD 2
+		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack2HitOpp")
+		goto Attack2FailOpp
+	Attack2FailOpp:
+		OP06 EFGH 1
+		OP06 IJKLM 1 A_Refire
+		goto WIdle
+	Attack2HitOpp:
+		TNT1 A 0 A_TakeInventory("HLCrowHit",999)
+		OP07 AB 1
+		OP07 CDEFGHIJKLM 1 A_Refire
+		goto WIdle
+	Attack3Opp:
+		OP08 ABC 1
+		OP08 D 0 A_FireCustomMissile("HLKnifeMissile",0,0,0,4)
+		OP08 DE 1
+		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack3HitOpp")
+		goto Attack3FailOpp
+	Attack3FailOpp:
+		OP08 F 1
+		OP08 GHI 1
+		OP08 IJKLMNOPQR 1 A_Refire
+		goto WIdle
+	Attack3HitOpp:
+		TNT1 A 0 A_TakeInventory("HLCrowHit",999)
+		OP09 AB 1
+		OP09 CDEFGHIJKLMNOPQR 1 A_Refire
+		goto WIdle
+	}
+}
+
+Actor HLCrowbarMissile : FastProjectile
+{
+	PROJECTILE
+	+BLOODSPLATTER
+	+NOEXTREMEDEATH
+	+NOTARGETSWITCH
+	Radius 6
+	Height 8
+	Speed 40
+	Damage (random(5,9)*2)
+	//Obituary "%o died....somehow?"
+	DamageType "HLCrowbar"
+	scale 0.25
+	States
+	{
+	Spawn:
+		TNT1 A 1
+		stop
+	Death:
+	Crash:
+		TNT1 A 0 A_GiveToTarget("HLCrowHit",1)
+		TNT1 A 1 A_PlaySound("halflife/crow_clonk",CHAN_BODY)
+		stop
+	XDeath:
+		TNT1 A 0 A_GiveToTarget("HLCrowHit",1)
+		TNT1 A 1 A_PlaySound("halflife/crow_flesh",CHAN_BODY)
+		stop
+	}
+}
+
+Actor HLKnifeMissile : HLCrowbarMissile
+{
+	Damage (random(5,9)*3)
+	//Obituary "%o died....somehow?"
+	States
+	{
+	Spawn:
+		TNT1 A 1
+		stop
+	Death:
+	Crash:
+		TNT1 A 0 A_GiveToTarget("HLCrowHit",1)
+		TNT1 A 1 A_PlaySound("HLKnife/Wall",CHAN_BODY)
+		stop
+	XDeath:
+		TNT1 A 0 A_GiveToTarget("HLCrowHit",1)
+		TNT1 A 1 A_PlaySound("HLKnife/Flesh",CHAN_BODY)
+		stop
+	}
+}
+
+Actor freeman_fistselected : Inventory
+{
+	Inventory.MaxAmount 1
+	+INVENTORY.IGNORESKILL
+	+INVENTORY.UNDROPPABLE
+	-INVENTORY.INVBAR
+}

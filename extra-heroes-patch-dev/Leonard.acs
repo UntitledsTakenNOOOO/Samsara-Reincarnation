@@ -1,0 +1,495 @@
+#library "RR"
+#include "zcommon.acs"
+#include "commonFuncs.h"
+
+script 706 (void)
+{
+    while (CheckInventory("LeonardTauntCooldown") > 0)
+    {
+        Delay(35);
+        TakeInventory("LeonardTauntCooldown", 1);
+    }
+}
+
+Script 1830 (int type) NET
+{
+	if(CheckInventory("LeonardBallgag"))
+	{
+		TakeInventory("LeonardBallgag", 1);
+		Print(s:"Ballgag Off");
+	}
+	else
+	{
+		GiveInventory("LeonardBallGag", 1);
+		Print(s:"Ballgag On");
+	}
+}
+
+Script "DynamiteHold" (void)
+{
+	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
+	if (buttonPress & BT_Attack)
+	{
+		SetResultValue (1);
+	}
+	else
+	{
+		SetResultValue (0);
+	}
+}
+
+Script "BubbaGiver" (int type) // Decorate isn't working, try something else
+{
+	Switch(type)
+	{
+		Case 0:
+			SetActivator(0, AAPTR_MASTER);
+			GiveInventory("BubbaDropper", 1);
+			break;
+		Case 1:
+			SetActivator(0, AAPTR_MASTER);
+			GiveInventory("BubbaElvisDropper", 1);
+			break;
+	}
+}
+
+Script "LeonardLoop" enter
+{
+	int drinkdecay, fooddecay;
+	If(CheckInventory("RRClass"))
+	{
+		if(!GetCvar("samsara_rr_alcoholgut"))
+		{
+			if(!CheckWeapon("RedneckMotorcycle"))
+				SetActorProperty(0, APROP_Speed, 1.0);
+				
+			TakeInventory("RRDrunkToken", 1);
+		}
+		else // no escaping the consequences of your actions, so these will just freeze
+		{
+			if(CheckInventory("RRDrunkAmount") >= 70)
+			{
+				if(!CheckWeapon("RedneckMotorcycle"))
+					SetActorProperty(0, APROP_Speed, -1.0);
+					
+				GiveInventory("RRDrunkToken", 1);
+			}
+			else
+			{
+				if(!CheckWeapon("RedneckMotorcycle"))
+					SetActorProperty(0, APROP_Speed, 1.0);
+					
+				TakeInventory("RRDrunkToken", 1);
+			}
+
+			if(CheckInventory("RRDrunkAmount") == 100)
+			{
+				if(!CheckWeapon("RedneckMotorcycle"))
+					SetActorProperty(0, APROP_Speed, -1.0);
+				
+				Playsound(0, "Leonard/Vomit", CHAN_VOICE, 1.0, false);
+				TakeInventory("RRDrunkAmount", 10);
+			}
+			
+		
+			if(CheckInventory("RRFoodAmount") >= 50)
+			{
+				int fartchance = random(0,50000);
+				if(fartchance < CheckInventory("RRFoodAmount"))
+				{
+					Playsound(0, "Leonard/Fart", CHAN_VOICE, 1.0, false);
+					ThrustThing(GetActorAngle(0) >> 8, 4, 0, 0);
+					SpawnProjectile(0,"RRFartAlert",0,0,0,0,0);
+				}
+			}
+			
+			drinkdecay++;
+			fooddecay++;
+			
+			if(drinkdecay >= 35 && CheckInventory("RRDrunkAmount") >= 70) { drinkdecay = 0; TakeInventory("RRDrunkAmount", 1); }
+			else if(drinkdecay >= 840) { drinkdecay = 0; TakeInventory("RRDrunkAmount", 1); }
+			
+			if(fooddecay >= 4200) { fooddecay = 0; TakeInventory("RRFoodAmount", 5); }
+		}
+		
+		Delay(1);
+		restart;
+	}
+	else { terminate; }
+}
+
+//mode 1 = check if greater than 100
+//mode 2 = add pie
+//mode 3 = add beer
+//mode 4 = add whiskey
+//mode 5 = add pie infinite
+//mode 6 = add beer infinite
+//mode 7 = add whiskey infinite
+
+Script "LeonardInventoryPickupsCheck" (void)
+{
+	SetResultValue(GetCvar("samsara_rr_inventoryhealth"));
+}
+
+Script "LeonardHealthItem" (int mode, int add)
+{
+	int a;
+	int health = GetActorProperty(0, APROP_Health);
+	int spawnhealth = GetActorProperty(0, APROP_SpawnHealth);
+	
+	if(spawnhealth == 0)
+				spawnhealth = 100;
+	
+	switch(mode)
+	{
+		case 1:
+			if(health >= spawnhealth)
+				SetResultValue(1);
+				
+			else
+				SetResultValue(0);
+			
+			break;
+		
+		case 2:	
+			for(a = 0; a < add; a++)
+			{
+				if(GetActorProperty(0, APROP_Health) >= spawnhealth) { break; }
+				else {
+					GiveInventory("RRFoodAmount", 1);
+					GiveInventory("FiniteHealth", 1);
+					TakeInventory("RRDrunkAmount", 1);
+				}	
+			}
+			SetResultValue(1);
+			break;
+		
+		case 3:
+			for(a = 0; a < add; a++)
+			{
+				if(GetActorProperty(0, APROP_Health) >= spawnhealth) { break; }
+				else {
+					GiveInventory("RRDrunkAmount", 1);
+					GiveInventory("FiniteHealth", 1);
+					TakeInventory("RRFoodAmount", 1);
+				}	
+			}
+			SetResultValue(1);
+			break;
+		
+		case 4:
+			GiveInventory("RRCheapAssWhiskey", 1);
+			
+			for(a = 0; a < add; a++)
+			{
+				if(GetActorProperty(0, APROP_Health) >= spawnhealth || CheckInventory("RRCheapAssWhiskey") < 1) { SetResultValue(1); break; }
+				else {
+					GiveInventory("RRDrunkAmount", 1);
+					GiveInventory("FiniteHealth", 1);
+					TakeInventory("RRFoodAmount", 1);
+					TakeInventory("RRCheapAssWhiskey", 1);
+				}	
+			}
+			SetResultValue(1);
+			break;
+		
+		case 5:	
+			for(a = 0; a < add; a++)
+			{
+				GiveInventory("RRFoodAmount", 1);
+				GiveInventory("InfiniteHealth", 1);
+				TakeInventory("RRDrunkAmount", 1);
+			}
+			SetResultValue(1);
+			break;
+		
+		case 6:
+			for(a = 0; a < add; a++)
+			{
+				GiveInventory("RRDrunkAmount", 1);
+				GiveInventory("InfiniteHealth", 1);
+				TakeInventory("RRFoodAmount", 1);	
+			}
+			SetResultValue(1);
+			break;
+		
+		case 7:
+			GiveInventory("RRCheapAssWhiskey", 1);
+			
+			for(a = 0; a < add; a++)
+			{
+				if(CheckInventory("RRCheapAssWhiskey") < 1) { SetResultValue(1); break; }
+				else {
+					GiveInventory("RRDrunkAmount", 1);
+					GiveInventory("InfiniteHealth", 1);
+					TakeInventory("RRFoodAmount", 1);
+					TakeInventory("RRCheapAssWhiskey", 1);
+				}	
+			}
+			SetResultValue(1);
+			break;
+	}
+}
+
+Script "LeonardMotorCycle" (void)
+{
+	bool init;
+	int angle;
+	int soundbox;
+	int speedcounter;
+	int forwardmove = GetPlayerInput(0, INPUT_FORWARDMOVE);
+	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
+	int yaw = GetPlayerInput(0, INPUT_YAW) * -1;
+	int sidemove = GetPlayerInput(0, INPUT_SIDEMOVE);
+	int oldpresscounter;
+	
+	if(GetActorProperty(0, APROP_Health) < 1 || !PlayerInGame(0) || ClassifyActor(0) == 64)
+	{
+		soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 4, 0, 0, 0);
+		soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 5, 0, 0, 0);
+		oldpresscounter = 0;
+		init = false;
+		speedcounter = 0;
+		TakeInventory("RedneckMotorcycle", 1);
+		terminate;
+	}
+	
+	if(CheckInventory("RRDrunkToken")) { forwardmove *= -1; }
+	
+	if(yaw > 32 || buttonPress & BT_Right || sidemove > 0)
+	{
+		if(!CheckInventory("RRDrunkToken"))
+			GiveInventory("BikeAngle", 1);
+			
+		else
+			TakeInventory("BikeAngle", 1);
+	}
+	else if(yaw < -32 || buttonPress & BT_Left || sidemove < 0)
+	{
+		if(!CheckInventory("RRDrunkToken"))
+			TakeInventory("BikeAngle", 1);
+			
+		else
+			GiveInventory("BikeAngle", 1);	
+	}
+	else
+	{
+		TakeInventory("BikeAngle", 5);
+		GiveInventory("BikeAngle", 3);
+	}
+		
+	if(forwardmove == 0)
+	{
+		if(speedcounter > 0)
+			speedcounter -= 2;
+				
+		soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 1, 0, 0, 0);
+			
+		if(speedcounter > 5)
+			soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 3, 0, 0, 0);
+				
+		else
+			soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 5, 0, 0, 0);
+	}
+	else if(forwardmove > 0)
+	{
+		if(CheckInventory("RRDrunkToken")) { forwardmove *= -1; }
+	
+		if(speedcounter == 0)
+		{
+			soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 4, 0, 0, 0);
+			PlaySound(0, "RRBike/Accelerate", CHAN_6);
+		}
+		else
+		{
+			soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 2, 0, 0, 0);
+		}
+				
+		speedcounter++;
+		if(speedcounter > 40)
+			speedcounter = 40;
+				
+		angle += ((CheckInventory("BikeAngle") - 3) * speedcounter * 6) * -1; 
+		SetActorAngle(0, angle);
+
+		SetActorProperty(0, APROP_Speed, 0 + ((0.0275 * speedcounter) * sign(forwardmove)));
+				
+		soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 5, 0, 0, 0);
+	}
+	else if(forwardmove < 0)
+	{
+		if(CheckInventory("RRDrunkToken")) { forwardmove *= -1; }
+	
+		speedcounter++;
+		if(speedcounter > 40)
+			speedcounter = 40;
+				
+		angle += ((CheckInventory("BikeAngle") - 3) * speedcounter * 6); 
+		SetActorAngle(0, angle);
+				
+		SetActorProperty(0, APROP_Speed, 0 + (((0.0125 * speedcounter) / 8) * -sign(forwardmove)));
+				
+		soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 5, 0, 0, 0);
+		soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 1, 0, 0, 0);
+	}
+	else
+	{
+		if(speedcounter > 0)
+			speedcounter -= 2;
+				
+		soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 1, 0, 0, 0);
+			
+		if(speedcounter > 5)
+			soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 3, 0, 0, 0);
+				
+		else
+			soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 5, 0, 0, 0);
+	}
+	
+	if(init == false)
+	{
+		TakeInventory("BikeAngle", 5);
+		GiveInventory("BikeAngle", 3);
+		angle = GetActorAngle(0);
+		init = true;
+		PlaySound(0, "RRBike/Start", CHAN_BODY);
+	}
+	else
+	{
+		SetActorAngle(0, angle);
+	}
+	
+	SetActorPitch(0, -(speedcounter * 25));
+	
+	if(CheckInventory("RRDrunkToken")) { forwardmove *= -1; }
+	if(speedcounter && forwardmove > 0)
+	{
+		NoiseAlert(0, 0);
+		
+		LineAttack(0,random(GetActorAngle(0)-0.05,GetActorAngle(0)+0.05),random(GetActorPitch(0)-0.15,GetActorPitch(0)+0.15), random((speedcounter * 0.9) >> 16, (speedcounter * 1.25) >> 16), "RRBikePuff", "LeonardDamage2", 32.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL, 0);
+	}
+	
+	Delay(1);
+		
+	if(buttonPress & BT_Use)
+	{
+		if(oldpresscounter >= 10)
+		{
+			soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 4, 0, 0, 0);
+			soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 5, 0, 0, 0);
+			oldpresscounter = 0;
+			speedcounter = 0;
+			TakeInventory("RedneckMotorcycle", 1);
+			terminate;
+		}
+		else
+		{
+			oldpresscounter++;
+		}
+	}
+	else
+	{
+		oldpresscounter = 0;
+	}
+	restart;
+}
+
+Script "RRMotorcycleHealthCounter" (void)
+{
+	
+	int angle = GetActorAngle(0);
+	SetActivator(0, AAPTR_Target);
+	
+	int oldtid = ActivatorTid();
+	int usertid = UniqueTid(0);
+	int dummytid = UniqueTid(0);
+	
+	SpawnSpotForced("TranslationDummy",0,dummytid,0);
+	Thing_SetTranslation(dummytid, -1);
+	
+	int health = GetActorProperty(0, APROP_Health);
+	Delay(4);
+	GiveInventory("RedneckMotorCycle", 1);
+	
+	Thing_ChangeTid(0, usertid);
+	SetActivator(dummytid, AAPTR_Default);
+	Thing_SetTranslation(usertid, -1);
+	SetActivator(usertid, AAPTR_Default);
+	Thing_ChangeTid(usertid, oldtid);
+	
+	SetWeapon("RedneckMotorcycle");
+	SetActorAngle(0, angle);
+	SetActorProperty(0, APROP_Health, health);
+	ACS_NamedExecuteAlways("LeonardMotorCycle", 0, 0, 0, 0);
+	ACS_NamedExecuteAlways("RRDismountReal", 0, 0, 0, 0);
+}
+
+// all of this to ensure everything works online
+ 
+Script "RRDismountReal" (void) NET
+{
+	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
+	int oldpresscounter;
+	if(buttonPress & BT_Use)
+	{
+		if(oldpresscounter >= 10)
+		{
+			int health = GetActorProperty(0, APROP_Health);
+			UnMorphActor(0, true);
+			SetActorProperty(0, APROP_Health, health);
+			SetActorProperty(0, APROP_Speed, 1.0);
+			TakeInventory("RedneckMotorcycle", 1);
+			TakeInventory("RRHasBike", 1);
+			SpawnForced("LeonardMotorcycle", GetActorX(0) + (48 * cos(GetActorAngle(0))), GetActorY(0) + (48 * sin(GetActorAngle(0))), GetActorZ(0), 0, GetActorAngle(0) >> 8);
+			terminate;
+		}
+		else
+		{
+			oldpresscounter++;
+		}
+	}
+	else
+	{
+		oldpresscounter = 0;
+	}
+	
+	Delay(1);
+	restart;
+}
+
+//0 = none
+//1 = loop idle
+//2 = loop accelerate
+//3 = loop skid
+//4 = stop CHAN_BODY
+//5 = stop CHAN_5
+
+Script "RRMotorcycleSoundbox" (int sound) clientside
+{
+	switch(sound)
+	{
+		case 0:
+			SetResultValue(0);
+			break;
+		case 1:
+			PlaySound(0, "RRBike/Idle", CHAN_BODY, 1.0, true);
+			SetResultValue(1);
+			break;
+		case 2:
+			PlaySound(0, "RRBike/Loop", CHAN_BODY, 1.0, true);
+			SetResultValue(1);
+			break;
+		case 3:
+			PlaySound(0, "RRBike/Skid", CHAN_5, 1.0, true);	
+			SetResultValue(1);
+			break;
+		case 4:
+			StopSound(0, CHAN_BODY);
+			SetResultValue(1);
+			break;
+		case 5:
+			StopSound(0, CHAN_5);
+			SetResultValue(1);
+			break;
+	}
+}
