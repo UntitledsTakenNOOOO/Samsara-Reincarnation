@@ -2024,3 +2024,12 @@ Script "Samsara_KillCount" (int override)
 	if(override != 1)
 		GiveInventory("KillCount", 1);
 }
+
+Script "Samsara_GZDoomChecker" (void)
+{
+	if(GetCvar("samsara_runninginzdoom"))
+		SetResultValue(1);
+	
+	else
+		SetResultValue(0);
+}
