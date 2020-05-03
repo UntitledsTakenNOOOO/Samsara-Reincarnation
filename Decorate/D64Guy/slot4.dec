@@ -1,0 +1,119 @@
+actor Doom64ChaingunRefireCount : Boolean {}
+
+actor "   Chaingun   " : Weapon// : Chaingun
+{
+    Weapon.SelectionOrder 700
+    Weapon.AmmoUse 1
+    Weapon.AmmoGive 20
+    Weapon.AmmoType "Clip"
+    Decal BulletChip
+    Weapon.SlotNumber 4
+    Inventory.PickupMessage "You got the Chaingun!"
+    +THRUGHOST
+    +INVENTORY.UNDROPPABLE
+    Obituary "%k \cpfilled\c- %o \cpwith the Chaingun's lead.\c-"
+    Inventory.RestrictedTo "Doom64GuyPlayer"		
+    States
+    {
+      Ready:
+        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
+        64CG A 1 A_WeaponReady
+        Loop
+
+      Deselect:
+        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
+        64CG A 1 A_Lower
+        Loop
+
+      Select:
+        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
+        64CG A 1 A_Raise
+        Loop
+
+      Fire:
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
+        64CG A 0 A_GunFlash
+        64CG A 0 A_FireBullets(5.6, 0, 1, 5, "Doom64BulletPuff")
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG A 4 A_PlayWeaponSound("doom64guy/chngun")
+        64CG B 0 A_FireBullets(5.6, 0, 1, 5, "Doom64BulletPuff")
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG B 3 A_PlaySound("doom64guy/chngun")
+        64CG B 0 A_ReFire
+        Goto Ready
+
+      Hold:
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHold")
+        TNT1 A 0 A_JumpIfInventory("Doom64ChaingunRefireCount", 1, "Hold2")
+        TNT1 A 0 A_GunFlash
+        64CG A 0 A_FireBullets(5.6, 0, 1, 5, "Doom64BulletPuff")
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG A 4 A_PlaySound ("doom64guy/chngun", 6)
+        64CG B 0 A_FireBullets(5.6, 0, 1, 5, "Doom64BulletPuff")
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG B 3 A_PlaySound ("doom64guy/chngun", 7)
+        64CG A 0 A_GiveInventory("Doom64ChaingunRefireCount", 1)
+        64CG A 0 A_ReFire
+        Goto Ready
+		
+      Hold2:
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHold2")
+        TNT1 A 0 A_GunFlash
+        64CG A 0 A_FireBullets(5.6, 0, 1, 5, "Doom64BulletPuff")
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG A 4 A_PlayWeaponSound("doom64guy/chngun")
+        64CG B 0 A_FireBullets(5.6, 0, 1, 5, "Doom64BulletPuff")
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG B 3 A_PlaySound("doom64guy/chngun")
+        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
+        64CG A 0 A_ReFire
+        Goto Ready
+        
+      CoopFire:
+        TNT1 A 0 A_GunFlash
+        64CG A 0 A_FireCustomMissile("Doom64Bullet", 0, 1, 0, 1)
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG A 4 A_PlayWeaponSound("doom64guy/chngun")
+        64CG B 0 A_FireCustomMissile("Doom64Bullet", 0, 1, 0, 1)
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG B 3 A_PlaySound("doom64guy/chngun")
+        64CG B 0 A_ReFire
+        Goto Ready
+
+      CoopHold:
+        TNT1 A 0 A_JumpIfInventory("Doom64ChaingunRefireCount", 1, "CoopHold2")
+        TNT1 A 0 A_GunFlash
+        64CG A 0 A_FireCustomMissile("Doom64Bullet", random(-560, 560)/100.00, 1, 0, 1)
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG A 4 A_PlaySound ("doom64guy/chngun", 6)
+        64CG B 0 A_FireCustomMissile("Doom64Bullet", random(-560, 560)/100.00, 1, 0, 1)
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG B 3 A_PlaySound ("doom64guy/chngun", 7)
+        64CG A 0 A_GiveInventory("Doom64ChaingunRefireCount", 1)
+        64CG A 0 A_ReFire
+        Goto Ready
+		
+      CoopHold2:
+        TNT1 A 0 A_GunFlash
+        64CG A 0 A_FireCustomMissile("Doom64Bullet", random(-560, 560)/100.00, 1, 0, 1)
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG A 4 A_PlayWeaponSound("doom64guy/chngun")
+        64CG B 0 A_FireCustomMissile("Doom64Bullet", random(-560, 560)/100.00, 1, 0, 1)
+        64CG A 0 ACS_ExecuteAlways(312, 0, 2, 3, 11)
+        64CG B 3 A_PlaySound("doom64guy/chngun")
+        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
+        64CG A 0 A_ReFire
+        Goto Ready
+        
+      Flash:
+        64CM A 3 Bright
+        TNT1 A 1
+        64CM B 2 Bright
+        TNT1 A 2
+        Goto LightDone
+
+      Spawn:
+        64CG Z -1
+        Stop
+    }
+}

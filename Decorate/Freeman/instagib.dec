@@ -1,0 +1,70 @@
+Actor "Shock Ant" : HLWeapon
+{
+	Weapon.Slotnumber 0
+	Weapon.SelectionOrder 1500
+	Inventory.Pickupmessage "You got the shock ant!"
+	Inventory.Pickupsound "halflife/weaponpickup"
+	-WEAPON.NOALERT
+	Inventory.RestrictedTo "HalfLifePlayer"	
+	states
+	{
+	Spawn:
+		NULL A 0
+		stop
+		
+	Select:
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
+		TNT1 A 1 A_Raise
+		loop
+	
+	Deselect:
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+		TNT1 A 1 A_Lower
+		loop
+		
+	Ready:
+		TNT1 A 0
+		goto Draw
+	Draw:
+		TNT1 A 0 A_PlayWeaponSound("halflife/weaponselect")
+		HWI0 ACEGIKMOQSUWY 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		HWI1 A 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		goto WIdle
+		
+	WIdle:
+		HWI3 A 2 A_WeaponReady
+		loop
+		
+	Fire:
+		HWI4 A 2 bright
+		HWI4 B 2 bright A_PlayWeaponSound("halflife/shock_shoot")
+		HWI4 C 2 bright A_FireCustomMissile("HLShockInstagib",0,0,5,3)
+		HWI4 DEF 2 bright
+		HWI4 GHI 2
+		HWI3 A 2
+		goto WIdle
+	}
+}
+
+Actor HLShockInstagib : FastProjectile
+{
+	PROJECTILE
+	+EXTREMEDEATH
+	Speed 175
+	Radius 7
+	Height 8
+	Damagetype "HLShock"
+	Damage (10000)
+	scale 0.7
+	Renderstyle add
+	States
+	{
+	Spawn:
+		HPI0 A 5 bright
+		loop
+	Death:
+		TNT1 A 0 A_PlaySound("halflife/shock_hit",CHAN_BODY)
+		HPI0 BCD 2 bright
+		stop
+	}
+}

@@ -1,0 +1,56 @@
+Actor "Double Pistols" : Weapon
+{
+     Weapon.SlotNumber 2
+     Weapon.SelectionOrder 2850
+     Inventory.PickupSound "gen/pickup"
+     Weapon.UpSound "gen/wepswitch"
+     Inventory.Pickupmessage "You got an extra pistol!"
+     Obituary "%k \cbwasted\c- %o \cbwith two pistols\c-"
+	 Inventory.RestrictedTo "IPFreeley"	 
+     States 
+     { 
+     Spawn: 
+        PPST A -1 
+        Stop 
+     Ready:
+		TNT1 A 0 A_GiveInventory("UsingFirearm", 1)
+        PIX2 A 1 A_WeaponReady 
+        Goto Ready+1 
+     Deselect: 
+        PIX2 A 1 A_Lower 
+        Loop 
+     Select:
+        PIX2 A 1 A_Raise 
+        Loop 
+     Fire: 
+		TNT1 A 0 A_GunFlash
+		TNT1 A 0 A_PlayWeaponSound("rott/pistol2f")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire2")
+		TNT1 A 0 A_FireBullets(2.7,1.6,1,6,"RottPuff",1) 
+	Continue2:
+        PIX2 A 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		PIX2 E 8 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_PlayWeaponSound("rott/pistol2f")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
+        TNT1 A 0 A_FireBullets(2.7,1.6,1,6,"RottPuff",1)
+	Continue:
+		PIX2 F 3 Bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		PIX2 G 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		PIX2 E 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        PIX2 E 0 a_refire
+        Goto Ready+1
+     Flash:
+        PIX2 C 3 Bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		PIX2 D 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		PIX2 B 14 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        stop 
+	CoopFire:
+		TNT1 A 0 A_FireCustomMissile("RottPistolBullet2",random(-27,27)/10.0,0,0,1,0,random(-16,16)/10.0)
+		Goto Continue
+	CoopFire2:
+		TNT1 A 0 A_FireCustomMissile("RottPistolBullet2",random(27,27)/10.0,0,0,1,0,random(-16,16)/10.0)
+		Goto continue2
+     } 
+}
+
+Actor RottPistolBullet2 : RottPistolBullet { Damage (13) Obituary "%k \cbwasted\c- %o \cbwith two pistols\c-" }

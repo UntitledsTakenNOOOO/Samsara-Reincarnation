@@ -1,0 +1,68 @@
+actor "Flame Thrower" : FlameThrower
+{
+  +INVENTORY.UNDROPPABLE
+  +NOAUTOAIM
+  Weapon.SelectionOrder 1500
+  Weapon.Kickback 100
+  Weapon.AmmoUse 1
+  Weapon.AmmoGive 100
+  Weapon.SlotNumber 6
+  Inventory.PickUpSound "strife/weaponget"
+  Weapon.UpSound "strife/flameidle"
+  Weapon.ReadySound "strife/flameidle"
+  Weapon.AmmoType "Cell"
+  Inventory.PickupMessage "You picked up the Flame Thrower."
+  Obituary "%k \cibarbecued\c- %o\ci."
+  Inventory.RestrictedTo "StrifeguyPlayer"  
+  States
+  {
+  Spawn:
+    SFLM A -1
+    Stop
+  Ready:
+    SFLT AB 3 A_WeaponReady
+    Loop
+  Deselect:
+    SFLT A 1 A_Lower
+    Loop
+  Select:
+    SFLT A 1 A_Raise
+    Loop
+  Fire:
+    SFLT D 0 bright A_SetAngle(angle + (Random(0, 255) - Random(0, 255)) * 90.0 / 4096.0)
+	SFLT D 0 bright A_JumpIfInventory("CoopModeOn",1,"CoopFire")
+    SFLT D 2 bright A_FireCustomMissile("StrifeFlameMissile",0,1,0,0,0,12)
+    SFLT E 3 bright A_ReFire
+    Goto Ready
+  CoopFire:
+    SFLT D 2 bright A_FireCustomMissile("StrifeFlameMissile2",0,1,0,0,0,12)
+    SFLT E 3 bright A_ReFire
+    Goto Ready
+  }
+}
+
+actor StrifeFlameMissile : FlameMissile
+{
+  Damage (random(1,4)*8)
+  Speed 21 //Originally 15  
+  -STRIFEDAMAGE
+  +WINDTHRUST
+  +NOBLOOD
+  +BLOODLESSIMPACT
+  SeeSound "strife/flamefire"
+  Obituary "%k \cibarbecued\c- %o\ci."
+  DamageType "Fire"
+  States
+  {
+  Spawn:
+    SFMS AB 3 Bright
+    SFMS C 3 Bright A_Countdown
+    Loop
+  Death:
+    SFMS D 5 Bright A_FlameDie
+    SFMS EFGHI 5 Bright
+    Stop
+  }
+}
+
+actor StrifeFlameMissile2 : StrifeFlameMissile { +THRUSPECIES Species "Player" }

@@ -1,0 +1,95 @@
+actor "RMR Grenade Launcher" : Weapon
+{
+    Weapon.SelectionOrder 200
+    Weapon.SlotNumber 5
+	Weapon.AmmoType "RocketAmmo"
+	Weapon.AmmoGive 9
+	Weapon.AmmoUse 1
+    Inventory.PickupSound "RMR/pickup" 		
+    -WEAPON.NOAUTOFIRE
+	Tag "Grenade Launcher"	
+    Inventory.PickupMessage "You picked up a Grenade Launcher!"
+    Inventory.RestrictedTo "RebelMoonCommando"	
+    States
+    {
+      Ready:
+        RM9Y A 1 A_WeaponReady
+        Loop
+
+      Deselect:
+		TNT1 A 0 A_Lower
+        RM9Y A 1 A_Lower
+        Loop
+
+      Select:
+		TNT1 A 0 A_Raise
+        RM9Y A 1 A_Raise
+        Loop
+
+      Fire:
+	    TNT1 A 0 A_PlaySound("RMR/PIGFIRE")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")	  
+		TNT1 A 0
+        RM9Y B 1 bright A_FireCustomMissile("RMRDISCOBALL")
+		RM9Y CD 3 Bright
+        RM9Y DD 3 Bright
+        RM9Y CB 4 Bright
+        RM9Y AA 5 Bright
+        Goto Ready
+        
+	  CoopFire:
+        RM9Y B 1 bright A_FireCustomMissile("COOPRMRDISCOBALL")
+		RM9Y CD 3 Bright
+        RM9Y DD 3 Bright
+        RM9Y CB 4 Bright
+        RM9Y AA 5 Bright
+        Goto Ready
+	  Spawn:
+		RM9Y E -1 Bright
+		Loop
+    }
+}
+
+actor RMRDISCOBALL : Rocket
+{
+	Decal Sorch
+    Speed 55
+	Damage (Random(83,102))
+	SeeSound ""
+	DeathSound ""
+	Scale 0.40
+	+NOBLOOD
+	+BLOODLESSIMPACT
+	-FIREDAMAGE
+	+THRUGHOST	
+	+FORCEXYBILLBOARD
+    -ROCKETTRAIL	
+	Obituary "%o didnt join %k's disco party."
+    DamageType "RMR-DiscoBall"	
+    States
+    {
+      Spawn:
+        RMZ2 NO 1 bright
+        Loop
+
+      Death:
+	    TNT1 A 0 A_Explode(126,102)	
+		TNT1 A 0 A_SpawnItemEx("RMRExplosion",0,0,0,0,0,0,0,128,0)
+		TNT1 A 5 A_PlaySound("RMR/DiscoBoom")
+        Stop
+    }
+}
+
+actor COOPRMRDISCOBALL : RMRDISCOBALL
+{
+	Species "Player" 
+	+ThruSpecies 
+    States
+	{
+      Death:
+	    TNT1 A 0 A_Explode(126,102)	
+		TNT1 A 0 bright A_SpawnITemEx("RMRExplosion",0,0,0,0,0,0,0,128,0)
+		TNT1 A 5 A_PlaySound("RMR/DiscoBoom")
+        Stop
+	}	
+}

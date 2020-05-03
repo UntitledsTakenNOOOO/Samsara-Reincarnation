@@ -1,0 +1,49 @@
+Actor " Aldus Pistol " : Weapon
+{
+	Weapon.Slotnumber 1
+	Weapon.SelectionOrder 3750
+	Inventory.Pickupmessage "You have stolen Cyborg's Pistol! He's going to be mad at you..."
+	Inventory.Pickupsound "greed/pickup"
+	DamageType "PGBullet"
+	+INVENTORY.UNDROPPABLE
+	Tag "Pistol"	
+	Obituary "$SAMSARA_GREED_OB_SLOT_PISTOL"
+    Inventory.RestrictedTo "POGreedPlayer"	 		
+	states
+	{
+	Ready:
+		GWP0 A 1 A_WeaponReady
+		loop
+	Fire:
+		GWP0 A 0 A_JumpIfInventory("PistolModeOn",1,"CheckAmmo")
+	FireDo:
+		GWP0 B 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")	
+		GWP0 B 0 A_PlayWeaponSound("greed/pistol")		
+		GWP0 B 3 bright A_FireBullets(1,1,-1,10,"PGBulletPuff",FBF_NORANDOM)
+		GWP0 C 3
+		GWP0 A 4
+		goto Ready
+	CoopFire:
+		GWP0 B 0 A_PlayWeaponSound("greed/pistol")	
+		GWP0 B 3 bright A_FireCustomMissile("PGPistolBulletCoop",frandom(-1.00,1.00),0,0,0,0,frandom(-1.00,1.00))		
+		GWP0 C 3
+		GWP0 A 4
+		goto Ready
+	Select:
+		TNT1 AAA 0 A_Raise
+		GWP0 A 1 A_Raise
+		Loop
+	Deselect:
+		TNT1 AAA 0 A_Lower
+		GWP0 A 1 A_Lower
+		Loop
+	CheckAmmo:
+		GWP0 A 0 A_JumpIfInventory("Clip",1,2)
+		GWP0 A 0 A_SelectWeapon(" Tazer ")
+		goto Deselect
+		GWP0 A 0 A_TakeInventory("Clip",1)
+		goto FireDo
+	}
+}
+
+Actor PGPistolBulletCoop : PGBulletCoop { Damage (10) }

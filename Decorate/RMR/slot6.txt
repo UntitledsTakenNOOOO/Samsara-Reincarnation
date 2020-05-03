@@ -1,0 +1,77 @@
+ACTOR "RMR Railgun" : Weapon //Alright, i dont know why this is named "Railgun"
+{
+  Weapon.SelectionOrder 400
+  Weapon.SlotNumber 6  
+  Weapon.AmmoUse 1
+  Weapon.AmmoGive 36
+  Weapon.AmmoType "Cell"
+  Inventory.PickupMessage "You got the Railgun... wait, wat"
+  Inventory.PickupSound "RMR/pickup" 	  
+  Obituary "%k murdered %o with the railgun... wait, wat"	 
+  Tag "Railgun"  
+  Inventory.RestrictedTo "RebelMoonCommando"  
+  States
+  {
+  Ready:
+    RM2W A 1 A_WeaponReady
+    Loop
+  Deselect:
+	TNT1 A 0 A_Lower  
+    RM2W A 1 A_Lower
+	Loop
+  Select:
+	TNT1 A 0 A_Raise
+    RM2W A 1 A_Raise
+    Loop
+  Fire:
+    TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")  
+    TNT1 A 0 A_PlaySound("RMR/RLGUNSHOT")
+	RM2W B 1 bright A_FireBullets(4.5, 5,1, Random(4.8*4,5.4*Random(4.3,5)), "RMRPuff")
+	RM2W C 1 Bright
+	RM2W DD 1 Bright
+    RM2W D 1 Bright A_ReFire	
+    Goto Ready
+  CoopFire:
+    TNT1 A 0 A_PlaySound("RMR/RLGUNSHOT")  
+	RM2W B 1 bright A_FireCustomMissile("RMRBullet",fRandom(-3.33,3.33),1,0,fRandom(-4.33,4.33))
+	RM2W C 1 Bright
+	RM2W DD 1 Bright
+    RM2W D 1 Bright A_ReFire	
+    Goto Ready
+  Spawn:
+	RM2W E -1 Bright
+	Loop
+  }
+}
+
+Actor RMRBullet : FastProjectile
+{
+	Damage (Random(23,random(29,25))/Random(1.2,1)+1)
+    Radius 1
+    Height 1
+    Speed 300
+    Projectile
+    Renderstyle Normal
+    Species "Player"
+    DamageType "RMR-Bullet"	
+	Obituary "%k murdered %o with the railgun... wait, wat"	
+    +BLOODSPLATTER
+    +THRUSPECIES
+    +NOTIMEFREEZE
+	-EXTREMEDEATH
+	+NOEXTREMEDEATH
+	+THRUGHOST	
+    States
+    {
+      Spawn:
+        TNT1 A 1
+        loop
+      Death:
+	  Crash:	  
+        TNT1 A 1 A_SpawnItemEx("RMRPuff",0,fRandom(fRandom(5.60,6.60)*fRandom(frandom(2.00,1.50),1),fRandom(-5.60,-6.60)*fRandom(frandom(2.00,1.50),1)),fRandom(fRandom(5.60,6.60)*fRandom(frandom(2.00,1.50),1),fRandom(-5.60,-6.60)*fRandom(frandom(2.00,1.50),1)),0,0,0,0,0,0) //128,0) </3
+        stop
+	  XDeath:
+		TNT1 A 1
+		Stop
+    }
+}

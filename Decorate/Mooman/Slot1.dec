@@ -1,0 +1,91 @@
+Actor " Toxic Mutant Gun " : Weapon
+{
+	Weapon.Slotnumber 1
+	Weapon.SelectionOrder 2501
+	Inventory.Pickupmessage "You got the Specimen 7's Toxic Mutant Gun!"
+	Inventory.Pickupsound "greed/pickup"
+	Weapon.AmmoType "Cell"
+    Weapon.AmmoUse 1
+    Weapon.AmmoGive 25
+	scale 0.65
+	Obituary "$SAMSARA_GREED_OB_SLOT_I"
+    Inventory.RestrictedTo "POGreedPlayer"	 		
+	states
+	{
+	Spawn:
+		GW80 Z -1
+		stop
+	Ready:
+		GW80 A 1 A_WeaponReady
+		loop
+	Select:
+		TNT1 AAA 0 A_Raise
+		GW80 A 1 A_Raise
+		Loop
+	Deselect:
+		TNT1 AAA 0 A_Lower
+		GW80 A 1 A_Lower
+		Loop
+	Fire:
+		GW80 C 2 bright A_PlayWeaponSound("greed/mutant")
+		GW80 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
+		GW80 D 3 bright A_FireCustomMissile("PGPoisonBall",0,1,0,0)
+		GW80 C 3 bright
+		GW80 B 3 bright
+		GW80 A 4 A_Refire
+		Goto Ready
+	CoopFire:
+		GW80 D 3 bright A_FireCustomMissile("PGPoisonBallCoop",0,1,0,0)
+		GW80 C 3 bright
+		GW80 B 3 bright
+		GW80 A 4 A_Refire
+		Goto Ready
+	}
+}
+
+Actor PGPoisonBall
+{
+	Radius 8
+	Height 12
+	Speed 35
+	PROJECTILE
+	+NOEXTREMEDEATH
+	PoisonDamage 7,5,15
+	//+ADDITIVEPOISONDAMAGE
+	+ADDITIVEPOISONDURATION
+	Damage (0)
+	renderstyle add
+	DamageType "PGPlasma"
+	DeathSound "DSNONE"
+	Scale 0.9
+	states
+	{
+	Spawn:
+		GP80 AB 4 bright
+		loop
+	Death:
+		GP80 C 1 A_SpawnItemEx("PGPoisonBallPuff",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+		stop
+	}
+}
+
+Actor PGPoisonBallPuff
+{
+	+CLIENTSIDEONLY
+	+NOINTERACTION
+	-SOLID
+	+NOBLOCKMAP
+	+NOGRAVITY
+	scale 0.3
+	renderstyle add
+	states
+	{
+	Spawn:
+		GP70 B 0
+		GP70 B 0 A_PlaySound("greed/plasmahit",CHAN_BODY)
+		GP70 BCDE 6 bright
+		stop
+	}
+}
+
+Actor PGPoisonBallCoop : PGPoisonBall { +THRUSPECIES Species "Player" Damage (5) }

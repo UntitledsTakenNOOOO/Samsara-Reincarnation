@@ -1,0 +1,73 @@
+/* Old Unique - Saved for future use
+actor KatarnShieldCharge : BasicArmorPickup
+{
+  Armor.SavePercent 100
+  Armor.SaveAmount 300
+  Inventory.PickUpSound "katarn/itemup"
+}
+actor KatarnArmorBonus : BasicArmorBonus
+{
+  Armor.SavePercent 90
+  Armor.MaxSaveAmount 200
+  Armor.SaveAmount 20
+}
+*/
+
+// New Unique System Testing
+// 12s stored inventory item, stackable to 60s
+
+actor KatarnFireRateUp : Inventory // Dummy Item - Tells weapons to fire at 2x speed
+{
+  Inventory.Amount 1
+  Inventory.MaxAmount 1
+  States
+  {
+  Held:
+	TNT1 A 35 A_TakeInventory ("KatarnBlazeIt", 1)
+	TNT1 A 0 A_JumpIfInventory ("KatarnBlazeIt", 1, "Held")
+	TNT1 A 1 A_TakeInventory ("KatarnFireRateUp", 1)
+	stop
+  }
+}
+
+actor KatarnBlazeIt : Inventory // Invisible Timer
+{
+  Inventory.Amount 1
+  Inventory.MaxAmount 60
+}
+
+actor KatarnSupercharge : CustomInventory // Physical Powerup - Adds to timer
+{
+  +AUTOACTIVATE
+  States
+  {
+  Pickup:
+    TNT1 A 0 A_GiveInventory ("KatarnBlazeIt", 12)
+	TNT1 A 0 A_JumpIfInventory ("KatarnFireRateUp", 1, 2)
+	TNT1 A 0 A_GiveInventory ("DFSuperCharge", 1)
+	TNT1 A 0
+    stop
+  }
+}
+
+//actor name changed from KatarnInvBarDummy to DFSuperCharge since names are visable in newer versions of zandronum
+//and InvBarDummy was confusing players.
+actor DFSuperCharge : CustomInventory
+{
+  Inventory.Amount 1
+  Inventory.MaxAmount 1
+  Inventory.Icon "J9-_A0"
+  Tag "Super Charge"    
+  +INVBAR
+  +HUBPOWER
+  +UNDROPPABLE
+  -INTERHUBSTRIP
+  Inventory.RestrictedTo "KatarnPlayer"  
+  States
+  {
+  Use:
+    TNT1 A 0 A_GiveInventory ("KatarnFireRateUp", 1)
+	TNT1 A 0 A_TakeInventory ("DFSuperCharge", 1)
+	Stop
+  }
+}

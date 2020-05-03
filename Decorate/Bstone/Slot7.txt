@@ -1,0 +1,114 @@
+actor "Anti-Plasma Cannon": InstantSwitchWeapon
+{
+    Weapon.SelectionOrder 1000
+    Weapon.SlotNumber 7
+    Inventory.PickUpSound "wolfen/knifeget"
+    Obituary "%k \cvobliterated\c- %o \cvwith the Anti-Plasma Cannon\c-"
+    Inventory.PickupMessage "You got an Anti-Plasma Cannon!"
+    DamageType "BlakePlasma"
+    Weapon.AmmoUse 15
+    Weapon.AmmoGive 50
+	Weapon.AmmoType "Cell"
+    +INVENTORY.UNDROPPABLE
+    Weapon.YAdjust 12
+	Inventory.RestrictedTo "BlakeStone"		
+    States
+    {
+      Spawn:
+        BWP7 A -1
+        Loop
+
+      Ready:
+        DCAN A 1 A_WeaponReady
+        loop
+
+      Fire:
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
+        DCAN B 3
+        TNT1 A 0 A_PlayWeaponSound("DRifle/Fire")
+        DCAN C 3 BRIGHT A_FireCustomMissile("DCannonProj", 0, 1, 0, 4)
+		DCAN DE 3
+		DCAN A 5 A_Refire
+        Goto Ready	
+      CoopFire:
+        DCAN B 3
+        TNT1 A 0 A_PlayWeaponSound("DRifle/Fire")
+        DCAN C 3 BRIGHT A_FireCustomMissile("DCannonProjCoop", 0, 1, 0, 4)
+		DCAN DE 3
+		DCAN A 5 A_Refire
+		Goto Ready
+    }
+}
+
+Actor DCannonProj
+{
+	PROJECTILE
+//  Damage (150)
+	Radius 12
+	Height 8
+	Scale 1.25
+	Speed 32
+	Decal Scorch
+	DeathSound "BCannon/Boom"
+	DamageType "DCannonProj"
+//	ProjectileKickBack 0.8 --> Damn u Zandronum	
+	+EXTREMEDEATH
+	-NOEXTREMEDEATH
+	+FORCERADIUSDMG
+	+RIPPER
+	+BLOODLESSIMPACT
+	+FORCEXYBILLBOARD	
+	+THRUACTORS
+//	+NOTIMEFREEZE
+//	+WINDTHRUST
+	States
+	{
+		Spawn:
+			9C0P A 1 Bright A_CustomMissile("DCannonProjRipper",0,0,0,CMF_TRACKOWNER)
+		Loop
+		Death:
+			TNT1 A 0 A_Explode(255, 128)
+			DCAP BCDEFGHI 3 Bright
+		Stop
+	}
+}
+
+ACTOR DCannonProjRipper
+{
+	Damage (100)//(150)
+	PROJECTILE
+	Radius 12
+	Height 8
+	Scale 1.25
+	Decal Scorch
+	DamageType "DCannonProj"
+	DeathSound "BCannon/Boom"
+	+EXTREMEDEATH
+	-NOEXTREMEDEATH
+	+BLOODLESSIMPACT
+	+NOTIMEFREEZE	
+	States
+	{
+		Spawn:
+		TNT1 A 1 Bright
+		Stop
+	}
+}
+
+Actor DCannonProjCoop : DCannonProj
+{
+	Species "Player"
+	+THRUSPECIES
+	+DONTHARMCLASS
+	+DONTHARMSPECIES
+	+MTHRUSPECIES
+	+NODAMAGETHRUST
+	States
+	{
+		Spawn:
+			9C0P A 1 Bright A_CustomMissile("DCannonProjRipper_2",0,0,0,CMF_TRACKOWNER)
+		Loop		
+	}	
+}
+
+Actor DCannonProjRipper_2 : DCannonProjRipper { Species "Player" +THRUSPECIES +DONTHARMCLASS +NODAMAGETHRUST +DONTHARMSPECIES +MTHRUSPECIES }

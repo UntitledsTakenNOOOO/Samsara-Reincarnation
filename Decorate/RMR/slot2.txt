@@ -1,0 +1,86 @@
+ACTOR "ACR Laser Rifle" : Weapon
+{
+  Weapon.SelectionOrder 1500
+  Weapon.SlotNumber 2  
+  Weapon.AmmoUse 1
+  Weapon.AmmoGive 10
+  Weapon.AmmoType "Shell"
+  Inventory.PickupSound "RMR/pickup" 	  
+  Inventory.PickupMessage "You got the Autofiring Combat Laser!"
+  Inventory.RestrictedTo "RebelMoonCommando"  
+  States
+  {
+  Ready:
+    RM3Z A 1 A_WeaponReady
+    Loop
+  Deselect:
+	TNT1 A 0 A_Lower  
+    RM3Z A 1 A_Lower
+	Loop
+  Select:
+	TNT1 A 0 A_Raise
+    RM3Z A 1 A_Raise
+    Loop
+  Fire:
+    TNT1 A 0 A_PlaySound("RMR/ACRSHOT")
+    TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"ACRCoopFire")  
+    TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"ACRCoopFire")  
+	TNT1 A 0
+	RM3Z B 3 bright A_FireCustomMissile("RMRLaser2",0,1,0,0)
+	RM3Z CC 1 Bright	
+	RM3Z CD 1 Bright
+	RM3Z DD 1 Bright
+    RM3Z CC 1 Bright
+    RM3Z CA 1 Bright
+    RM3Z AA 1 Bright A_ReFire	
+    Goto Ready
+  ACRCoopFire:
+	RM3Z B 3 bright A_FireCustomMissile("RMRLaser2Coop",0,1,0,0)
+	RM3Z CC 1 Bright	
+	RM3Z CD 1 Bright
+	RM3Z DD 1 Bright
+    RM3Z CC 1 Bright
+    RM3Z CA 1 Bright
+    RM3Z AA 1 Bright A_ReFire	
+    Goto Ready
+  Spawn:
+    RM3Z E -1 Bright
+    Loop	
+  }
+}
+
+Actor RMRLaser2
+{
+   Radius 5
+   Height 4
+   Damage (Random(15,23)+6)
+   Speed 55
+   Scale 0.30
+   -EXTREMEDEATH
+   +NOEXTREMEDEATH
+   -SKYEXPLODE   
+   -THRUGHOST
+   +BLOODSPLATTER   
+   +FORCEXYBILLBOARD
+   DeathSound "RMR/LaserPuff2"   
+   DamageType "RMR-YellowPlasma"   
+   Obituary "%o ate %k's cheese puffs."   
+   Projectile
+   States
+   {
+   Spawn:
+      RMZ2 G 1 Bright
+      Loop
+   XDeath:
+    Crash:
+      TNT1 A 0 A_SpawnItemEx("RMRPlasmaSplash",0,0,0,0,0,0,0,128,0)
+	  TNT1 A 1 A_PlaySound("RMR/LaserPuff2")	  
+      stop		
+   Death:
+   	  RMZ2 H 3 Bright 
+   	  RMZ2 I 2 Bright A_FadeOut(1.0/5.0)	  
+      Wait	  
+   }
+}   
+
+Actor RMRLaser2Coop : RMRLaser2 { Damage (Random(24,31.6)+12) Species "Player" +THRUSPECIES }

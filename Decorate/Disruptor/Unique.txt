@@ -1,0 +1,207 @@
+actor DisruptorEnergyBall : CustomInventory
+{
+	Inventory.Amount 5
+	Inventory.MaxAmount 20	
+	+INVENTORY.INVBAR
+	+INVENTORY.PICKUPFLASH
+	Inventory.Icon "SQ91Q0"
+    Inventory.PickupMessage "You picked up an Energy Ball!"
+	Inventory.UseSound "Disruptor/EnergyBallA"	
+    +INVENTORY.UNDROPPABLE
+    +INVENTORY.HUBPOWER
+	+INVENTORY.PERSISTENTPOWER	
+    Renderstyle Add
+	Alpha 1.0
+    Inventory.RestrictedTo "DisruptorPlayer"	
+	Tag "Energy Ball"	
+	States
+	{
+		Spawn:
+			SQ72 X 1 Bright
+			Loop
+		Use:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"UseCoop")
+			TNT1 A 0 A_FireCustomMissile("DisruptorEnergyBomb")
+		Stop
+		UseCoop:
+			TNT1 A 0 A_FireCustomMissile("DisruptorEnergyBomb_2")
+		Stop		
+	}	
+}
+
+Actor DisruptorEnergyBomb
+{
+	Projectile
+	Height 5
+	Radius 5
+    Speed 10
+    Renderstyle Add
+	Alpha 1.0
+    +BRIGHT
+    +DONTREFLECT
+    +BLOODLESSIMPACT
+	+NOBLOOD
+	+SEEKERMISSILE
+	+SCREENSEEKER
+	DamageType "Disruptoruniversaldamageshit4"	
+	Damage (80)
+	States
+	{
+		Spawn:
+			SQ92 IIIJJJKKKLLLMMMNNNOOOPPPQQQ 1 BRIGHT
+		SpawnLoop:
+			SQ92 IIIJJJKKKLLLMMMNNNOOOPPPQQQ 1 BRIGHT A_SeekerMissile(90,90,SMF_LOOK|SMF_PRECISE,128,10)		
+			Loop
+		Death:
+			TNT1 A 0 A_PlaySound("Disruptor/EnergyBallB")
+			SQ92 RRSSTTUUVVWWXX 3 BRIGHT
+			SQ92 YYZZ 2 BRIGHT A_FadeOut		
+			Stop
+		XDeath:
+			TNT1 A 0 A_Explode(60,90,0)		
+			TNT1 A 0 A_PlaySound("Disruptor/EnergyBallE")
+			TNT1 A 0 A_BFGSpray("DisruptorSissyEffect",40,3)
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark1")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark2")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark1")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark2")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark1")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark2")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark1")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark2")			
+			TNT1 AA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(random(-30,-60),random(30,60))/10.00,random(random(-30,-60),random(30,60))/10.00,random(50,150)/10.00)
+			TNT1 AA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(random(-30,-60),random(30,60))/10.00,random(random(-30,-60),random(30,60))/10.00,random(50,150)/10.00)
+			TNT1 AA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(random(-30,-60),random(30,60))/10.00,random(random(-30,-60),random(30,60))/10.00,random(50,150)/10.00)
+			TNT1 AA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(random(-30,-60),random(30,60))/10.00,random(random(-30,-60),random(30,60))/10.00,random(50,150)/10.00)
+			TNT1 AA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(random(-30,-60),random(30,60))/10.00,random(random(-30,-60),random(30,60))/10.00,random(50,150)/10.00)	
+			SQ92 RRSSTTUUVVWWXX 3 BRIGHT
+			SQ92 YYZZ 2 BRIGHT
+			Stop
+	 }
+}	 
+
+actor DisruptorSissyEffect
+{
+    +NOBLOCKMAP
+    +NOGRAVITY
+    RenderStyle Normal
+    States
+    {
+      Spawn:
+			TNT1 A 0
+        Goto Death
+	  Death:
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark1")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark2")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark1")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark2")			
+			TNT1 A 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(-30,30)/10.00,random(-30,30)/10.00,random(50,150)/10.00)
+			TNT1 AA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(-30,30)/10.00,random(-30,30)/10.00,random(50,150)/10.00)
+			TNT1 AAA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(-30,30)/10.00,random(-30,30)/10.00,random(50,150)/10.00)		
+			TNT1 A 1 A_PlaySound("Disruptor/EnergyBallF")		
+        stop
+    }
+}
+
+Actor DisruptorSpark1
+{
+	Projectile
+	Radius 1
+	Height 1
+	health 2
+	speed 3
+	+CLIENTSIDEONLY
+	-NOGRAVITY
+	+LOWGRAVITY
+	+FLOAT
+	+NOTELEPORT
+	-TELESTOMP
+	-SOLID
+    +WINDTHRUST
+    +NOBLOCKMAP
+    +NOBLOCKMONST	
+	RenderStyle Add
+	Alpha 1.0
+	ReactionTime 80
+	Gravity 0.6	
+	States
+	{	
+		Spawn:
+			SQ91 AAABBBCCCDDDDCCCBBBAAA 1 BRIGHT A_CountDown
+			Loop
+		Death:
+			SQ91 AABBCCDD 1 BRIGHT
+			Stop
+	}
+}	
+
+Actor DisruptorSpark2 : DisruptorSpark1
+{
+	States
+		{
+		Spawn:
+			SQ91 EEEFFFGGGHHHHGGGFFFEEE 1 BRIGHT A_CountDown
+			Loop
+		Death:
+			SQ91 EEFFGGHH 1 BRIGHT
+			Stop			
+		}
+}
+		
+Actor DisruptorHealBall : HealthBonus
+{
+	Health 7
+	+INVENTORY.PICKUPFLASH
+    Inventory.PickupSound "Disruptor/EnergyBallC"	
+	RenderStyle ADD
+	Alpha 1.0
+	ReactionTime 800
+	+FLOATBOB
+	+NOTELEPORT
+	-TELESTOMP
+	States
+	{
+		Spawn:
+			SQ91 IIIJJJKKKLLL 1 BRIGHT A_CountDown
+			Loop
+		Death:
+			TNT1 A 0 A_PlaySound("Disruptor/HealBD")
+			SQ91 MMNNOO 3 BRIGHT
+			SQ91 PP 2 BRIGHT
+			Stop
+	}
+}
+
+Actor DisruptorEnergyBomb_2	: DisruptorEnergyBomb 
+{
+	Species "Player" 
+	+THRUSPECIES 
+	+DONTHARMCLASS 
+	+MTHRUSPECIES
+	+DONTHARMSPECIES
+	States
+		{
+		XDeath:
+			TNT1 A 0 A_Explode(20,40,0)				
+			TNT1 A 0 A_PlaySound("Disruptor/EnergyBallE")			
+			TNT1 A 0 A_BFGSpray("DisruptorSissyEffect2",50,5)
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark1")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark2")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark1")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark2")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark1")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark2")	
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark1")
+			TNT1 A 0 A_SpawnDebris("DisruptorSpark2")			
+			TNT1 AA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(-30,30)/10.00,random(-30,30)/10.00,random(50,150)/10.00)
+			TNT1 AA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(-30,30)/10.00,random(-30,30)/10.00,random(50,150)/10.00)
+			TNT1 AA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(-30,30)/10.00,random(-30,30)/10.00,random(50,150)/10.00)
+			TNT1 AA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(-30,30)/10.00,random(-30,30)/10.00,random(50,150)/10.00)
+			TNT1 AA 0 A_SpawnItemEx("DisruptorHealBall",0,0,0,random(-30,30)/10.00,random(-30,30)/10.00,random(50,150)/10.00)	
+			SQ92 RRSSTTUUVVWWXX 3 BRIGHT
+			SQ92 YYZZ 2 BRIGHT
+			Stop
+		}
+}		
+
+actor DisruptorSissyEffect2 : DisruptorSissyEffect { Species "Player" +THRUSPECIES	+DONTHARMCLASS	+DONTHARMSPECIES +MTHRUSPECIES }

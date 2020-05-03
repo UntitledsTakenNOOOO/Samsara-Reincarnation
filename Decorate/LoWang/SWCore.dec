@@ -1,0 +1,211 @@
+//Core: ////////////////////////////////////////////////////////////////////////
+Actor SWBoolean : Inventory
+{
+	Inventory.Amount 1
+	Inventory.MaxAmount 1
+	+INVENTORY.IGNORESKILL
+	+INVENTORY.UNDROPPABLE
+	-INVENTORY.INVBAR
+}
+
+Actor SWCounter : Inventory
+{
+	Inventory.Amount 1
+	Inventory.MaxAmount 255
+	+INVENTORY.IGNORESKILL
+	+INVENTORY.UNDROPPABLE
+	-INVENTORY.INVBAR
+}
+
+Actor SWACSTrigger : CustomInventory
+{
+	+INVENTORY.ALWAYSPICKUP
+	+INVENTORY.AUTOACTIVATE
+	+INVENTORY.IGNORESKILL
+	+INVENTORY.UNDROPPABLE
+	-INVENTORY.INVBAR
+	Inventory.PickupMessage "kek"
+	states
+	{
+	Spawn:
+		TNT1 A -1
+		stop
+	Use:
+		TNT1 A 1
+		stop
+	}
+}
+
+Actor SWLoWangBloody : SWBoolean { }
+
+Actor SWPuffSmoke
+{
+	+NOBLOCKMAP
+	+NOGRAVITY
+	+RANDOMIZE
+	VSpeed 1
+	Mass 5
+	scale 0.4
+	renderstyle translucent
+	alpha 0.5
+	states
+	{
+	Spawn:
+		WMI2 ABCDE 5
+		stop
+	}
+}
+
+Actor SWPuff
+{
+	+NOBLOCKMAP
+	+NOGRAVITY
+	+RANDOMIZE
+	+ALLOWPARTICLES
+	scale 0.35
+	states
+	{
+	Spawn:
+		WMI1 A 0
+		WMI1 A 0 A_SpawnItemEx("SWPuffSmoke",0,0,0,0,0,random(1,2) * 0.4,0,SXF_CLIENTSIDE)
+		WMI1 ABC 3 bright
+		stop
+	}
+}
+
+Actor BulletPuffSW : SWPuff
+{
+	+NOBLOCKMAP
+	+NOGRAVITY
+	+RANDOMIZE
+	+ALLOWPARTICLES
+	scale 0.35
+	VSpeed 0
+	DamageType "SWBullet"
+	Renderstyle Translucent
+	Alpha 0.75	
+	States
+	{
+		Spawn:
+		Crash:
+		TNT1 A 0 A_PlaySound("SWBullet/Ricochet")		
+		WMI1 A 0 A_SpawnItemEx("SWPuffSmoke",0,0,0,0,0,random(1,2) * 0.4,0,SXF_CLIENTSIDE)
+		WMI1 ABC 3 bright
+			Stop
+		Melee:
+			TNT1 A 1
+			Stop
+	}
+}
+
+//Casing effects written from scratch by Ghastly_dragon, based on the casing effects in KDiZD,
+//Coded by TheDarkArchon.
+
+Actor SWShellCasingSpawner {
+	Height 1
+	Radius 1
+	+NOCLIP
+	+MISSILE
+	+NOBLOCKMAP
+	+NOGRAVITY
+	+DROPOFF
+	+NOTELEPORT
+	+CLIENTSIDEONLY
+	States {
+		Spawn:
+		TNT1 A 0
+		TNT1 A 1 A_CustomMissile("SWShellCasing",0,0,random(0,360),2,random(100,80))
+		Stop
+	}
+}
+
+Actor SWShellCasing
+{
+	Height 2
+	Radius 2
+	Speed 4
+	Scale 0.15	
+	BounceFactor 0.4
+	Gravity 0.23
+	Projectile
+	+DOOMBOUNCE
+	+DROPOFF
+	+NOTELEPORT
+	-NOGRAVITY
+	+CLIENTSIDEONLY
+    SeeSound "Weapons/ShellCasing"
+  States
+  {
+  Spawn:
+    CASS ABCDEFGH 1
+    Loop
+  Death:
+    TNT1 A 0 A_Jump(128, "D", "F", "H")
+    CASS B 10 A_FadeOut(0.03)
+    Goto Death+1
+	D:
+    CASS D 10 A_FadeOut(0.03)
+    Loop
+	F:
+    CASS F 10 A_FadeOut(0.03)
+    Loop
+	H:
+    CASS H 10 A_FadeOut(0.03)
+    Loop
+  }
+}
+
+Actor SWBulletCasingSpawner {
+	+NOCLIP
+	+MISSILE
+	+NOBLOCKMAP
+	+NOGRAVITY
+	+DROPOFF
+	+NOTELEPORT
+	+CLIENTSIDEONLY
+	States {
+		Spawn:
+			TNT1 A 0
+			TNT1 A 1 A_CustomMissile("SWBulletCasing",0,0,random(-80,-100),2,random(45,80))
+		Stop
+	}
+}
+
+Actor SWBulletCasing {
+	Scale 0.15
+	Radius 2
+	Height 2
+	Speed 3
+	Gravity 0.20
+	+DOOMBOUNCE
+	+MISSILE
+	+DROPOFF
+	+NOTELEPORT
+	+CLIENTSIDEONLY
+	bouncefactor 0.5
+	SeeSound "Weapons/BulletCasing"
+	States {
+		Spawn:
+			BCAS ABCDEF 2
+			Goto Spawn+1
+		Death:
+			TNT1 A 0 A_Jump(128, "B", "C", "D", "E", "F")
+			BCAS A 16 A_FadeOut(0.03)
+			Goto Death+1
+		B:
+			BCAS B 16 A_FadeOut(0.03)
+			Loop
+		C:
+			BCAS C 16 A_FadeOut(0.03)
+			Loop
+		D:
+			BCAS D 16 A_FadeOut(0.03)
+			Loop
+		E:
+			BCAS E 16 A_FadeOut(0.03)
+			Loop
+		F:
+			BCAS F 16 A_FadeOut(0.03)
+			Loop	
+	}
+}

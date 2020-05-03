@@ -1,0 +1,198 @@
+Actor SWRipperHeart : Weapon
+{
+	Weapon.SlotNumber 8
+	Weapon.SelectionOrder 4000
+	Inventory.PickupSound "Item/SWpickup"
+	Weapon.AmmoType "HeartAmmo"
+	Weapon.AmmoGive 5
+	Weapon.AmmoUse 1
+	inventory.pickupmessage "You got a Ripper's Heart!"
+	Radius 16
+	Tag "Ripper's Heart"	
+	+Weapon.NOAUTOAIM
+	+IGNORESKILL
+	Inventory.RestrictedTo "LoWangPlayer"		
+	States
+	{
+		Spawn:
+			HRT2 WX 24
+		Loop
+		Select:
+			TNT1 A 0 A_CheckReload
+		SelectLoop:
+			HART A 1 A_Raise
+			TNT1 A 0 A_Raise
+		Loop
+		Deselect:
+			TNT1 A 0 A_StopSound(CHAN_WEAPON)
+			HART A 1 A_Lower
+			TNT1 A 0 A_Lower
+		Loop
+		Ready:
+			TNT1 A 0 A_JumpIfInventory("LoWangReady",1,"IntroTaunt")
+			TNT1 A 0 A_CheckReload
+			TNT1 A 0 A_PlayWeaponSound("Weapons/HeartBeat")
+			HART A 18 A_WeaponReady
+			HART BCDEFGHIJKLMNOPQR 1 A_WeaponReady
+		Loop
+		Fire:
+			TNT1 A 0 A_JumpIfInventory("HasWang", 1, "RemoveWang")
+		FireCont:
+			HART S 1 A_WeaponReady(WRF_NOBOB | WRF_NOFIRE)
+			HRT2 A 0 A_PlaySound("Weapons/HeartSqueeze")
+			HRT2 BC 1 A_WeaponReady(WRF_NOBOB | WRF_NOFIRE)
+			TNT1 A 0 A_SpawnItem("LoWangClone", 64, 0, 0, 1)
+			HRT2 D 1 A_SpawnItem("LoWangCloneFog", 64, 8)
+			TNT1 AAAA 0 A_SpawnItemEx("SWBlood", 4, 0, 8, random(-4,4), random(-4,4), random(4,8), SXF_CLIENTSIDE)
+			TNT1 A 0 ACS_ExecuteAlways(710, 0)
+			TNT1 A 0 A_GiveInventory("HasWang", 1)
+			TNT1 A 0 A_Jump(128, 2)
+			TNT1 A 0 A_PlaySound("Wang/TwoWangs")
+			HRT2 EFGHIJKLMNOPQRSTUV 1 A_WeaponReady(WRF_NOBOB | WRF_NOFIRE)
+		Goto Ready
+		RemoveWang:
+			TNT1 A 0 ACS_ExecuteAlways(711, 0)
+			TNT1 A 0 A_TakeInventory("HasWang", 1)
+		Goto FireCont
+		IntroTaunt:
+			TNT1 A 0 A_JumpIfInventory("LoWangBallgag",1,2)
+			TNT1 A 0 A_PlaySoundEx("LoWang/Enter", "SoundSlot7", 0, 0)
+			TNT1 A 0 A_TakeInventory("LoWangReady", 1)
+			TNT1 A 0 A_GiveInventory("LoWangTauntCooldown",5)
+			TNT1 A 0 ACS_ExecuteAlways(719, 0)
+		Goto Ready		
+	}
+}
+
+Actor HeartAmmo : Ammo
+{
+	inventory.amount 0
+	inventory.maxamount 5
+	ammo.backpackamount 0
+	+IGNORESKILL
+	Inventory.Icon HRT2W0
+}
+
+Actor HasWang : Inventory
+{
+	inventory.maxamount 1
+}
+
+Actor LoWangCloneFog
+{
+	+NOINTERACTION
+	+CLIENTSIDEONLY
+	+NOGRAVITY
+	Alpha 0.75
+	Scale 0.75
+	Renderstyle Translucent
+	
+	States
+	{
+		Spawn:
+			SWTE ABCDEFGHIJKLMNOPQR 2 Bright
+		Stop
+	}
+}
+
+Actor ActiveCount : Inventory
+{
+	inventory.maxamount 400
+}
+
+ACTOR LoWangClone
+{
+  Health 250
+  Radius 24
+  Height 56
+  Speed 15
+  PainChance 96
+  Monster
+  Alpha 0.75
+  Renderstyle Translucent
+  Species "Player"
+  +THRUSPECIES
+  +DONTHARMCLASS
+  +DONTHARMSPECIES
+  +MTHRUSPECIES
+  +FRIENDLY
+  +TELEPORT //:WHYNOT?:
+  -NOTELEPORT
+  +NOTELEFRAG
+  -TELESTOMP
+  -SOLID
+  +NEVERFAST
+  +QUICKTORETALIATE
+  XScale 0.51
+  YScale 0.4
+  DamageFactor "Boss", 1.75
+  DamageFactor "Boss2", 1.75
+  PainSound "Ninja/Pain"
+  DeathSound "Squishy"
+  Obituary "%o wasn't expecting %k's Wang!"
+  States
+  {
+  Spawn:
+    TNT1 A 0
+	TNT1 A 0 Thing_ChangeTID(0,3000)
+  SpawnLoop:
+	TNT1 A 0 A_JumpIfInventory("ActiveCount", 45, "DeathX")
+    SPL1 A 10 A_Look
+	TNT1 A 0 A_GiveInventory("ActiveCount", 1)
+    Loop
+  See:
+    TNT1 A 0 A_JumpIfInventory("ActiveCount", 45, "DeathX")
+    SPL1 AABBCCDD 2 A_Chase
+	TNT1 A 0 A_GiveInventory("ActiveCount", 1)
+    Loop
+  Missile:
+    TNT1 A 0 A_JumpIfInventory("ActiveCount", 45, "DeathX")
+	SPL1 E 4 A_FaceTarget
+	TNT1 A 0 A_AlertMonsters
+	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopMissile")
+	SPL1 F 1 A_PlaySound("Weapons/RailgunFire")
+	TNT1 A 0 A_CustomMissile("RailgunShotWeak")
+	TNT1 A 0 A_GiveInventory("ActiveCount", 1)
+	SPL1 E 4 A_FaceTarget
+	TNT1 A 0 A_Jump(96, "Missile")
+	SPL1 E 1 A_FaceTarget
+    Goto See
+  CoopMissile:
+	SPL1 F 1 A_PlaySound("Weapons/RailgunFire")
+	TNT1 A 0 A_CustomMissile("RailgunShotWeakCoop")
+	TNT1 A 0 A_GiveInventory("ActiveCount", 1)
+	SPL1 E 4 A_FaceTarget
+	TNT1 A 0 A_Jump(96, "Missile")
+	SPL1 E 1 A_FaceTarget
+    Goto See	
+  Pain:
+    SPL1 A 3
+    SPL1 A 3 A_Pain
+    Goto See
+  DeathX:
+	TNT1 A 1 Thing_Damage(0, 999, 0)
+	Goto See
+	Death.SWFist:	
+		TNT1 A 0 A_GiveToTarget("SWLoWangBloody", 1)
+		TNT1 A 0 A_NoBlocking
+		TNT1 A 1 A_SpawnItemEx("SWFisted")
+		goto Super::Death
+	Death.SWKatana:
+		TNT1 A 0 A_GiveToTarget("SWLoWangBloody", 1)
+		TNT1 A 0 A_NoBlocking
+		TNT1 A 1 A_SpawnItemEx("SWKatanad")
+		goto Super::Death
+	Death.SWShuriken:
+		TNT1 A 0 A_NoBlocking
+		TNT1 A 1 A_SpawnItemEx("SWShurikend")
+		goto Super::Death
+	Death.SWSticky:
+	Death.SWGrenade:
+		TNT1 A 0 A_SpawnItemEx("SWHumanGibSpawner")
+		goto Super::XDeath
+	Death:
+		TNT1 A 0 A_Scream
+		TNT1 A 5 A_SpawnItemEx("SWHumanGibSpawner", 0, 0, 0, 0, 0, 0, 0, 160) //, SXF_CLIENTSIDE)
+		Stop
+  }
+}

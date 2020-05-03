@@ -1,0 +1,140 @@
+actor "Concussion Rifle" : Weapon
+{
+  Weapon.SelectionOrder 500
+  Weapon.AmmoUse        4
+  Weapon.AmmoUse2       4
+  Weapon.AmmoGive       48
+  Weapon.AmmoType       "Cell"
+  Weapon.AmmoType2      "Cell"
+  Weapon.SlotNumber     6
+  Weapon.UpSound        "katarn/wepslct"
+  Obituary              "%k \c[M8]ripped apart\c- %o \c[M8]with the concussion rifle.\c-"
+  +WEAPON.EXPLOSIVE
+  +WEAPON.NOAUTOFIRE
+  +INVENTORY.UNDROPPABLE
+  Inventory.RestrictedTo "KatarnPlayer"    
+  States
+  {
+    Ready:
+      KCON A 2 A_WeaponReady
+      Loop
+
+    Deselect:
+      TNT1 A 0 A_Lower
+      KCON A 1 A_Lower
+      Loop
+
+    Select:
+      TNT1 A 0 A_Raise
+      KCON A 1 A_Raise
+      Loop
+
+    AltFire:
+    Fire:
+      TNT1 A 0 A_JumpIfInventory("KatarnFireRateUp",1,"FastFire")
+      TNT1 A 0 A_JumpIfInventory("SPModeOn", 1, "CoopFire")	  
+      TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
+      KCON B 1 BRIGHT 
+      KCON B 0 A_PlayWeaponSound("katarn/conshot")	  
+      KCON B 9 BRIGHT A_FireCustomMissile("concussion_projectile",frandom(-4.00,4.00),1,0,0,0,frandom(-3.64,3.64))
+      KCON B 0 A_GunFlash
+      KCON C 2
+      KCON A 14
+      KCON AAAA 1 A_ReFire
+      KCON AAAA 1 A_ReFire
+      Goto Ready
+
+    CoopFire:
+      KCON B 1 BRIGHT
+      KCON B 0 A_PlayWeaponSound("katarn/conshot")	  
+      KCON B 9 BRIGHT A_FireCustomMissile("concussion_projectile2",frandom(-4.40,4.40),1,0,0,0,frandom(-3.80,3.80))
+      KCON B 0 A_GunFlash
+      KCON C 2
+      KCON A 14
+      KCON AAAA 1 A_ReFire
+      KCON AAAA 1 A_ReFire
+      Goto Ready
+
+    FastFire:
+      TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFastFire")
+      KCON B 1 BRIGHT
+      KCON B 0 A_PlayWeaponSound("katarn/conshot")	  
+      KCON B 4 BRIGHT A_FireCustomMissile("concussion_projectile",frandom(-4.00,4.00),1,0,0,0,frandom(-3.64,3.64))
+      KCON B 0 A_GunFlash
+      KCON C 1
+      KCON A 7
+      KCON AAAA 1 A_ReFire
+      KCON AAAA 1 A_ReFire
+      Goto Ready
+
+    CoopFastFire:
+      KCON B 1 BRIGHT
+      KCON B 0 A_PlayWeaponSound("katarn/conshot")	  
+      KCON B 4 BRIGHT A_FireCustomMissile("concussion_projectile2",frandom(-4.40,4.40),1,0,0,0,frandom(-3.80,3.80))
+      KCON B 0 A_GunFlash
+      KCON C 1
+      KCON A 7
+      KCON AAAA 1 A_ReFire
+      Goto Ready
+
+    Flash:
+      TNT1 A 1 A_Light(1.5)
+      TNT1 A 1 A_Light(0.5)
+      TNT1 A 1 A_Light(0.0)
+      Stop
+
+    Spawn:
+      ICON A -1
+      Stop
+  }
+}
+
+//weapon was changed to mimic Jedi Knights behavior instead of DarkForces.
+//This was to avoid calling bfgspray to try and mimic the original behavior.
+ACTOR concussion_projectile : FastProjectile
+{
+  +DONTBLAST
+  Radius 3
+  Height 3
+  Speed 500
+  Damage (1)
+  Projectile
+  -ROCKETTRAIL
+  +DONTSPLASH
+  +NOTELEPORT
+  +OLDRADIUSDMG
+  +FORCERADIUSDMG
+  DONTHURTSHOOTER
+  SeeSound ""
+  DeathSound ""
+  Obituary "%o destroyed by %k Concussion Rifle"
+  Damagetype Laser
+  States
+  {
+  Spawn:
+    TNT1 A 1 Bright
+    Loop
+  Death:
+    EXCN A 1 A_PlaySound("katarn/exmiss",6,1.0,0,ATTN_NORM)
+	EXCN A 0 A_Explode(60,128,0)
+    EXCN BCDDEEFFGGHH 1 BRIGHT 
+    Stop
+  }
+}
+
+ACTOR concussion_projectile2 : concussion_projectile
+{
+  Species "Player"
+  +THRUSPECIES
+  +DONTHARMCLASS
+  +DONTHARMSPECIES
+  +MTHRUSPECIES
+  States
+  {
+  Death:
+    EXCN A 1 A_PlaySound("katarn/exmiss",6,1.0,0,ATTN_NORM)
+	EXCN A 0 A_Explode(240-Random(40,60),128,0)
+    EXCN BCDDEEFFGGHH 1 BRIGHT 
+    Stop
+  }  
+}

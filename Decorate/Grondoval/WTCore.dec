@@ -1,0 +1,512 @@
+//Core stuff, Witchaven specific (to be compatible with future updates)
+//Do not inherit from each other!
+Actor WTBoolean : Inventory
+{
+	+INVENTORY.UNDROPPABLE
+	-INVENTORY.INVBAR
+	
+	Inventory.Amount 1
+	Inventory.MaxAmount 1
+}
+
+Actor WTCounter : Inventory
+{
+	+INVENTORY.UNDROPPABLE
+	-INVENTORY.INVBAR
+	
+	Inventory.Amount 1
+	Inventory.MaxAmount 255
+}
+
+Actor WTACSTrigger : CustomInventory
+{
+	+INVENTORY.AUTOACTIVATE
+	+INVENTORY.ALWAYSPICKUP
+}
+
+Actor WTAttackClip : WTBoolean {}
+
+Actor WTSlotIIClip : WTBoolean {}
+Actor WTSlotIIIClip : WTBoolean {}
+Actor WTSlotIVClip : WTBoolean {}
+Actor WTSlotVClip : WTBoolean {}
+Actor WTSlotVIIClip : WTBoolean {}
+
+//Gib defines:
+// Normal - 1x gib
+// Mega - 3x gibs
+// Giga - 6x gibs
+//By default the metal-hit sounds are played
+Actor WTMeleeProjectile : FastProjectile
+{
+	PROJECTILE
+	-BLOODLESSIMPACT //:WHYNOT?:
+	+NOEXTREMEDEATH
+	+NOTARGETSWITCH
+	+BLOODSPLATTER
+	Radius 8
+	Height 12
+	
+	//If you wish to inherit from this projectile, change the following
+	Speed 0 //To adjust the range
+	Damage (0)
+	Obituary "%o died....somehow?"
+	DamageType "WTMelee" //Optional
+	
+	States
+	{
+	Spawn:
+		TNT1 A 1
+		stop
+	Death:
+		TNT1 A 1 A_PlaySoundEx("ggen/hardhit",CHAN_AUTO,0,0)
+		stop
+	Crash:
+		TNT1 A 1 A_PlaySoundEx("ggen/metal_s",CHAN_AUTO,0,0)
+		stop
+	XDeath: //If we hit a bleeding actor, we spawn some gibs
+		TNT1 A 0 A_SpawnItemEx("WTGore",0,0,0,random(-3,3),random(-3,3),random(0,4))
+		TNT1 A 1 A_PlaySoundEx("ggen/metal_l",CHAN_BODY,0,0)
+		stop
+	}
+}
+
+Actor WTMegaMeleeProjectile : FastProjectile
+{
+	PROJECTILE
+	-BLOODLESSIMPACT
+	+NOEXTREMEDEATH
+	+NOTARGETSWITCH
+	+BLOODSPLATTER	
+	Radius 8
+	Height 12
+	
+	//If you wish to inherit from this projectile, change the following
+	Speed 0 //To adjust the range
+	Damage (0)
+	Obituary "%o died....somehow?"
+	DamageType "WTMelee" //Optional
+	
+	States
+	{
+	Spawn:
+		TNT1 A 1
+		stop
+	Death:
+		TNT1 A 1 A_PlaySoundEx("ggen/hardhit",CHAN_AUTO,0,0)
+		stop
+	Crash:
+		TNT1 A 1 A_PlaySoundEx("ggen/metal_s",CHAN_AUTO,0,0)
+		stop
+	XDeath: //If we hit a bleeding actor, we spawn some gibs
+		TNT1 AAA 0 A_SpawnItemEx("WTGore",0,0,0,random(-3,3),random(-3,3),random(0,4))
+		TNT1 A 1 A_PlaySoundEx("ggen/metal_l",CHAN_AUTO,0,0)
+		stop
+	}
+}
+
+Actor WTGigaMeleeProjectile : FastProjectile
+{
+	PROJECTILE
+	-BLOODLESSIMPACT
+	+NOEXTREMEDEATH
+	+NOTARGETSWITCH
+	+BLOODSPLATTER	
+	Radius 8
+	Height 12
+	
+	//If you wish to inherit from this projectile, change the following
+	Speed 0 //To adjust the range
+	Damage (0)
+	Obituary "%o died....somehow?"
+	DamageType "WTMelee" //Optional
+	
+	States
+	{
+	Spawn:
+		TNT1 A 1
+		stop
+	Death:
+		TNT1 A 1 A_PlaySoundEx("ggen/hardhit",CHAN_AUTO,0,0)
+		stop
+	Crash:
+		TNT1 A 1 A_PlaySoundEx("ggen/metal_s",CHAN_AUTO,0,0)
+		stop
+	XDeath: //If we hit a bleeding actor, we spawn some gibs
+		TNT1 AAAAAA 0 A_SpawnItemEx("WTGore",0,0,0,random(-4,4),random(-4,4),random(0,5))
+		TNT1 A 1 A_PlaySoundEx("ggen/metal_l",CHAN_AUTO,0,0)
+		stop
+	}
+}
+
+//Always check each second if below water to reduce lag
+//Display for 2 seconds
+Actor WTGore
+{
+	-SOLID
+	//+NOINTERACTION
+	//+NOBLOCKMAP
+	//+ALLOWCLIENTSPAWN
+	+CLIENTSIDEONLY
+	-NOGRAVITY
+	-FLOAT
+	scale 0.6
+	States
+	{
+	Spawn:
+		TNT1 A 0
+		TNT1 A 0 A_PlaySoundEx("ggore/splat",CHAN_AUTO,0,0)
+		TNT1 A 1 A_Jump(256,"Gore1","Gore2","Gore3","Gore4","Gore5","Gore6","Gore7","Gore8","Gore9","Gore10")
+		stop
+	GoreBegone:
+		TNT1 A 5 A_FadeOut
+		stop
+	Gore1:
+		WBG0 AA 36 A_JumpIf(waterlevel > 1, "GoreBegone")
+		stop
+	Gore2:
+		WBG0 BB 36 A_JumpIf(waterlevel > 1, "GoreBegone")
+		stop
+	Gore3:
+		WBG0 CC 36 A_JumpIf(waterlevel > 1, "GoreBegone")
+		stop
+	Gore4:
+		WBG0 DD 36 A_JumpIf(waterlevel > 1, "GoreBegone")
+		stop
+	Gore5:
+		WBG0 EE 36 A_JumpIf(waterlevel > 1, "GoreBegone")
+		stop
+	Gore6:
+		WBG0 FF 36 A_JumpIf(waterlevel > 1, "GoreBegone")
+		stop
+	Gore7:
+		WBG0 GG 36 A_JumpIf(waterlevel > 1, "GoreBegone")
+		stop
+	Gore8:
+		WBG0 HH 36 A_JumpIf(waterlevel > 1, "GoreBegone")
+		stop
+	Gore9:
+		WBG0 II 36 A_JumpIf(waterlevel > 1, "GoreBegone")
+		stop
+	Gore10:
+		WBG0 JJ 36 A_JumpIf(waterlevel > 1, "GoreBegone")
+		stop
+	}
+}
+
+//For testing purposes. E.g.: Melee projectile range
+Actor WTDummy : Zombieman
+{
+	PainChance 256
+	Speed 0
+	Health 15000
+	+FRIENDLY
+}
+
+Actor NukeAsh
+{
+	Height 1
+	Radius 1
+	Speed 2
+	Damage 0
+	Alpha 0.9
+	Scale 0.1
+	Renderstyle Translucent
+	-SOLID
+	-SHOOTABLE
+	+NOGRAVITY
+	+RIPPER
+	+NOTELEPORT
+	+BLOODLESSIMPACT
+	+CLIENTSIDEONLY
+	+NOBLOCKMAP
+	States
+	{
+		Spawn:
+			QPRT C 4 Bright A_FadeOut(0.075)
+			Wait
+	}
+}	
+
+Actor NukeAshSpawner
+{
+	Speed 0
+	Damage 0
+	-SOLID
+	-SHOOTABLE
+	-TELESTOMP
+	+NOGRAVITY
+	+NOTELEPORT
+	+CLIENTSIDEONLY
+	States
+	{
+		Spawn:
+			TNT1 AAAAAAAAA 2 A_SpawnItemEx("NukeAsh", random(-2,2), random(-2,2), random(-2,2), random(-2,2), random(-2,2), random(-2,2),0,SXF_CLIENTSIDE)
+			Stop
+	}
+}
+
+Actor WTNukeDeathSmall
+{
+	Radius 8
+	Height 8
+	Scale .1
+	+CLIENTSIDEONLY
+	-SHOOTABLE
+	-TELESTOMP
+	-SOLID	
+	+NOGRAVITY
+	States
+	{
+		Spawn:
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.1)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.1)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.1)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.1)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.1)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.1)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.1)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.1)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.1)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			Stop
+	}
+}
+
+Actor WTNukeDeathTiny
+{
+	Radius 8
+	Height 8
+	Scale .06
+	+CLIENTSIDEONLY
+	-SHOOTABLE
+	-TELESTOMP
+	-SOLID	
+	+NOGRAVITY
+	States
+	{
+		Spawn:
+			NK17 G 3 Bright A_SetScale(ScaleX+0.06,ScaleY+0.06)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,16)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.06,ScaleY+0.06)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,16)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.06,ScaleY+0.06)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,16)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.06,ScaleY+0.06)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,16)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.06,ScaleY+0.06)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,16)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.06,ScaleY+0.06)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,16)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.06,ScaleY+0.06)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,16)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.06,ScaleY+0.06)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,16)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.06,ScaleY+0.06)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,16)
+			Stop
+	}
+}
+
+Actor WTNukeDeathSuperTiny
+{
+	Radius 8
+	Height 8
+	Scale .036
+	+CLIENTSIDEONLY
+	-SHOOTABLE
+	-TELESTOMP
+	-SOLID	
+	+NOGRAVITY
+	States
+	{
+		Spawn:
+			NK17 G 3 Bright A_SetScale(ScaleX+0.036,ScaleY+0.036)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,8)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.036,ScaleY+0.036)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,8)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.036,ScaleY+0.036)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,8)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.036,ScaleY+0.036)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,8)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.036,ScaleY+0.036)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,8)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.036,ScaleY+0.036)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,8)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.036,ScaleY+0.036)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,8)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.036,ScaleY+0.036)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,8)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.036,ScaleY+0.036)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,8)
+			Stop
+	}
+}
+
+Actor WTNukeDeathBig
+{
+	Radius 8
+	Height 8
+	Scale .13
+	+CLIENTSIDEONLY
+	-SHOOTABLE
+	-TELESTOMP
+	-SOLID	
+	+NOGRAVITY
+	States
+	{
+		Spawn:
+			NK17 G 3 Bright A_SetScale(ScaleX+0.13,ScaleY+0.13)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,48)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.13,ScaleY+0.13)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,48)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.13,ScaleY+0.13)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,48)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.13,ScaleY+0.13)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,48)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.13,ScaleY+0.13)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,48)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.13,ScaleY+0.13)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,48)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.13,ScaleY+0.13)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,48)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.13,ScaleY+0.13)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,48)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.13,ScaleY+0.13)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,48)
+			Stop
+	}
+}
+
+Actor WTNukeDeathWide
+{
+	Radius 8
+	Height 8
+	YScale .1
+	XScale .15
+	+CLIENTSIDEONLY
+	-SHOOTABLE
+	-TELESTOMP
+	-SOLID	
+	+NOGRAVITY
+	States
+	{
+		Spawn:
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.15)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.15)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.15)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.15)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.15)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.15)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.15)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.15)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.1,ScaleY+0.15)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,36)
+			Stop
+	}
+}
+
+Actor WTNukeDeathHuge
+{
+	Radius 8
+	Height 8
+	Scale .2
+	+CLIENTSIDEONLY
+	-SHOOTABLE
+	-TELESTOMP
+	-SOLID	
+	+NOGRAVITY
+	States
+	{
+		Spawn:
+			NK17 G 3 Bright A_SetScale(ScaleX+0.2,ScaleY+0.2)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,64)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.2,ScaleY+0.2)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,64)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.2,ScaleY+0.2)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,64)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.2,ScaleY+0.2)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,64)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.2,ScaleY+0.2)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,64)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.2,ScaleY+0.2)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,64)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.2,ScaleY+0.2)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,64)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.2,ScaleY+0.2)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,64)
+			NK17 G 3 Bright A_SetScale(ScaleX+0.2,ScaleY+0.2)
+			NK17 G 0 Bright A_Fadeout(0.1)
+			NK17 GGGGG 0 Bright A_SpawnItemEx("NukeAshSpawner",0,0,64)
+			Stop
+	}
+}

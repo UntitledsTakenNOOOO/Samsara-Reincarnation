@@ -1,0 +1,158 @@
+actor C7ProxyMineAmmo : Ammo
+{
+    Inventory.Amount 5
+    Inventory.MaxAmount 30
+    Ammo.BackpackMaxAmount 30
+}
+
+actor C7ProxyMinePickup : C7ProxyMineAmmo
+{
+    Inventory.PickupMessage "You got a package of Proximity Mines!" 
+    Inventory.Amount 5
+    Ammo.BackpackAmount 1
+    Inventory.Icon "7MN2A0"
+    States
+    {
+      Spawn:
+        7MN2 A -1
+        Stop
+    }
+}
+
+Actor C7ProxyMine
+{
+	Monster
+	-COUNTKILL
+	+NOBLOCKMAP
+	+NOBLOCKMONST
+	+DROPOFF
+	+MOVEWITHSECTOR
+	-SOLID	
+	+NONSHOOTABLE
+	+THRUACTORS
+	-SHOOTABLE	
+	Speed 0
+	Health 3
+	Radius 2
+	Height 3
+	MeleeRange 32
+	States
+	{
+	Spawn:
+		C7MN B 0 NoDelay A_PlaySound("C7MinePlace", CHAN_BODY)
+		C7MN B 35
+	Active:
+		C7MN B 0 A_ClearTarget
+		TNT1 A 0 A_ChangeFlag("THRUACTORS",0)
+		TNT1 A 0 A_ChangeFlag("SHOOTABLE",1)		
+		TNT1 A 0 A_ChangeFlag("SOLID",1)		
+		TNT1 A 0 A_ChangeFlag("NONSHOOTABLE",0)	
+		TNT1 A 0 A_ChangeFlag("NOBLOCKMAP",0)		
+		TNT1 A 0 A_ChangeFlag("ISMONSTER",1)	
+		TNT1 A 0 A_ChangeFlag("NOBLOOD",1)		
+	ActiveLoop:		
+		C7MN B 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN C 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN D 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN E 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN F 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN G 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN H 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN A 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN A 0 A_PlaySound("C7MineBeep")
+		C7MN H 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN G 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN F 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN E 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN D 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN C 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		Loop
+	See:
+	    C7MN I 0 A_Playsound("C7/Explosion")
+		C7MN I 2 BRIGHT A_CustomMissile("C7MineExplosion",0,0,0)
+		C7MN J 2 BRIGHT A_SetShootable
+		C7MN KLMN 2 BRIGHT
+		C7MN O 2 A_Die
+	Death:
+		C7MN O 1
+		C7MN O 1 A_FadeOut (1.0 / 35.0)
+		Wait
+	}
+}
+
+actor C7MineExplosion
+{
+    Radius 1
+    Height 1
+    Speed 0
+    Damage 0
+    Projectile
+    +FORCERADIUSDMG
+    Decal Scorch
+    DeathSound "C7/Explosion"
+    Obituary "%o didn't see %k's proximity mine."
+    States
+    {
+      Spawn:
+        TNT1 A 1 A_Die
+        Goto Death
+
+      Death:
+        TNT1 A 2 Bright A_Explode(128,160,0)
+        Stop
+    }
+}
+
+Actor C7CoopProxyMine: C7ProxyMine
+{
+	Species "Player"
+	+THRUSPECIES
+	+DONTHARMCLASS
+	+DONTHARMSPECIES
+	+MTHRUSPECIES
+	States
+	{
+	Spawn:
+		C7MN B 0 NoDelay A_PlaySound("C7MinePlace", CHAN_BODY)
+		C7MN B 35
+	Active:
+		C7MN B 0 A_ClearTarget	
+	ActiveLoop:
+		C7MN B 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN C 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN D 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN E 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN F 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN G 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN H 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN A 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN A 0 A_PlaySound("C7MineBeep")
+		C7MN H 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN G 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN F 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN E 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN D 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		C7MN C 2 A_LookEx (LOF_NOSOUNDCHECK, 0, 32)
+		Loop	
+	See:
+	    C7MN I 0 A_Playsound("C7/Explosion")
+		C7MN I 2 BRIGHT A_CustomMissile("C7CoopMineExplosion",0,0,0)
+		C7MN J 2 BRIGHT A_SetShootable
+		C7MN KLMN 2 BRIGHT
+		C7MN O 2 A_Die
+	Death:
+		C7MN O 1
+		C7MN O 1 A_FadeOut (1.0 / 35.0)
+		Wait
+    }
+}
+
+Actor C7CoopMineExplosion : C7MineExplosion
+{
+	Species "Player"
+	+THRUSPECIES
+	+MTHRUSPECIES
+	+DONTHARMCLASS
+	+DONTHARMSPECIES
+	DamageType "C7MineBoom"
+}

@@ -1,0 +1,73 @@
+ACTOR "Subestron Arm" : Weapon
+{
+  Weapon.SelectionOrder 600
+  Weapon.SlotNumber 8  
+  Weapon.AmmoUse 20
+  Weapon.AmmoGive 10
+  Weapon.AmmoType "Cell"
+  Inventory.PickupSound "RMR/pickup" 	  
+  Inventory.PickupMessage "You got a Mechanical Weapon Arm!"
+  Inventory.RestrictedTo "RebelMoonCommando"  
+  States
+  {
+  Ready:
+    RM2X E 1 A_WeaponReady
+    Loop
+  Deselect:
+	TNT1 A 0 A_Lower
+    RM2X E 1 A_Lower
+	Loop
+  Select:
+	TNT1 A 0 A_Raise  
+    RM2X E 1 A_Raise
+    Loop
+  Fire:
+    TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"CoopFire")    
+    TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")  
+    TNT1 A 0 A_PlaySound("RMR/RPlasma")
+	RM2X F 10 bright A_FireCustomMissile("RMR-RedPlasma",0,1,0,0)
+	RM2X G 10 bright
+ 	RM2X G 1 bright A_Refire
+    Goto Ready
+  CoopFire:
+    TNT1 A 0 A_PlaySound("RMR/RPlasma")
+	RM2X F 10 bright A_FireCustomMissile("RMR-RedPlasmaCoop",0,1,0,0)
+	RM2X G 10 bright 	
+ 	RM2X G 1 bright A_Refire	
+	Goto Ready
+  Spawn:
+	RM2X H 0 Bright
+	TNT1 A 1 Bright A_SpawnItemEx("SamsaraSlotSevenPickup")
+	Stop
+  }
+}
+
+Actor RMR-RedPlasma
+{
+    Damage (Random(40,50))
+    Radius 5
+    Height 5
+    Speed 65
+    Projectile
+	+WINDTHRUST
+	+RIPPER
+//	+NOBLOOD
+	-SKYEXPLODE
+//	+BLOODLESSIMPACT	
+	DeathSound "RMR/RPlasmaB"
+    DamageType "RMR-BigPlasma"		
+	Obituary "%k killed %o with spicy doritos."
+	Scale 0.50
+    States
+    {
+      Spawn:
+        RMZ3 GH 1 bright
+        loop
+      Death:
+        RMZ3 IJK 4 bright
+		RMZ3 L 3 bright A_FadeOut
+        stop
+    }
+}
+
+Actor RMR-RedPlasmaCoop : RMR-RedPlasma { Damage (Random(667,784)) Species "Player" +THRUSPECIES }

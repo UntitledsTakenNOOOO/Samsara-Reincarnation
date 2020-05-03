@@ -1,0 +1,807 @@
+actor QuakeRegenTimer: Counter {}
+
+actor "Thunderbolt": InstantSwitchWeapon
+{
+    Weapon.BobRangeX 0
+    Weapon.BobRangeY 0.5
+    Weapon.BobSpeed 1.1
+    Weapon.BobStyle Alpha
+    Weapon.Kickback 100
+    Weapon.SelectionOrder 1
+    Weapon.AmmoUse 1
+    Weapon.AmmoGive 60
+    Weapon.AmmoType "Cell"
+	Weapon.AmmoGive2 0
+    Weapon.AmmoType2 "PlasmaCell"
+    +NOALERT
+    +NOAUTOAIM
+    +UNDROPPABLE
+    Weapon.SisterWeapon "Spectral LG"
+    Inventory.Icon "QLTGZ0"
+	Inventory.RestrictedTo "QuakePlayer"
+    Inventory.PickupSound "quakeweps/weaponget"
+    Inventory.PickupMessage "You got the thunderbolt"
+    Obituary "$SAMSARA_RANGER_OB_SLOT7_1"
+
+    States
+    {
+      Select:
+        TNT1 A 0 A_GiveInventory("Ranger_PlasmaSelected", 1)
+		TNT1 A 0 A_TakeInventory("Ranger_GunSelected", 1)
+        TNT1 A 0 A_TakeInventory("Ranger_ExplosiveSelected", 1)
+		TNT1 A 0 A_TakeInventory("Ranger_NailSelected", 1)
+		TNT1 A 0 A_TakeInventory("Ranger_AxeSelected", 1)
+		TNT1 A 0 A_GiveInventory("UsingLG")
+        goto Super::Select
+
+      Deselect:
+        TNT1 A 0 A_TakeInventory("Ranger_PlasmaSelected", 1)
+		TNT1 A 0 A_TakeInventory("UsingLG")
+        TNT1 A 0 A_StopSound(6)
+        TNT1 A 0 A_StopSound(7)
+        goto Super::Deselect
+
+      Ready:
+        QLTG A 0 A_StopSound(6)
+        TNT1 A 0 A_JumpIfInventory("FiredPlasmaCell",1,"PlasmaReady")
+		QLTG A 1 A_WeaponReady
+		TNT1 A 0 A_TakeInventory("FiredPlasmaCell",1)
+        TNT1 A 0 A_TakeInventory("UsingDoEAmmo",1)
+        Loop
+		
+	  PlasmaReady:
+        PLS2 A 1 A_WeaponReady
+        TNT1 A 0 A_GiveInventory("FiredPlasmaCell",1)
+        TNT1 A 0 A_GiveInventory("UsingDoEAmmo",1)
+        loop
+      
+	  Fire:
+        TNT1 A 0 A_JumpIfInventory("FiredPlasmaCell",1,"PlasmaFire")
+		TNT1 A 0 A_JumpIfInventory("QuadDamagePower", 1, "QuadSound")
+        goto AfterSound
+
+      QuadSound:
+        TNT1 A 0 A_StopSound(7)
+        TNT1 A 0 A_PlaySound("quakeweps/quadfire", 7, 1.0, 1)
+        goto AfterSound
+
+      AfterSound:
+        TNT1 A 0 A_JumpIfInventory("QuakeInvisTimer", 1, 2)
+        TNT1 A 0 A_AlertMonsters
+        QLTG A 0 A_PlaySound("quakeweps/lightning", 6, 1.0, 1)
+        QLTG A 0 A_PlaySound("quakeweps/lightningstart", CHAN_WEAPON)
+        goto Hold
+
+      Hold:
+        QLTG A 0 A_JumpIf(waterlevel > 1, "Discharge")
+        QLTG A 0 A_GunFlash
+        TNT1 A 0 A_JumpIfInventory("QuadDamagePower", 1, 2)
+        TNT1 A 0 A_StopSound(7)
+        TNT1 A 0 A_FireBullets(0, 0, 1, 30, "LGPuff", FBF_USEAMMO | FBF_NORANDOM, 512)
+
+        QLTG A 0 A_JumpIfInventory("LGFrame", 3, "Fire3")
+        QLTG A 0 A_JumpIfInventory("LGFrame", 2, "Fire2")
+        QLTG A 0 A_JumpIfInventory("LGFrame", 1, "Fire1")
+        goto Fire0
+
+      Fire0:
+        QLTG B 0 A_GiveInventory("LGFrame")
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG B 1 A_FireCustomMissile("LGBeamProjectile15", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG B 1 A_FireCustomMissile("LGBeamProjectile15", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG B 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG B 1 A_FireCustomMissile("LGBeamProjectile15", 0, 1)
+        goto FireEnd
+
+      Fire1:
+        QLTG C 0 A_GiveInventory("LGFrame")
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG C 1 A_FireCustomMissile("LGBeamProjectile15", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG C 1 A_FireCustomMissile("LGBeamProjectile15", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG C 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG C 1 A_FireCustomMissile("LGBeamProjectile15", 0, 1)
+        goto FireEnd
+
+      Fire2:
+		QLTG D 0 A_GiveInventory("LGFrame")
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG D 1 A_FireCustomMissile("LGBeamProjectile15", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG D 1 A_FireCustomMissile("LGBeamProjectile15", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG D 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG D 1 A_FireCustomMissile("LGBeamProjectile15", 0, 1)
+        goto FireEnd
+
+      Fire3:
+		QLTG E 0 A_GiveInventory("LGFrame")
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG E 1 A_FireCustomMissile("LGBeamProjectile15", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG E 1 A_FireCustomMissile("LGBeamProjectile15", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile0", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile1", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile2", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile3", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile4", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile5", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile6", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile7", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile8", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile9", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile10", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile11", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile12", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile13", 0, 0)
+		QLTG E 0 A_FireCustomMissile("LGBeamProjectile14", 0, 0)
+		QLTG E 1 A_FireCustomMissile("LGBeamProjectile15", 0, 1)
+        goto FireEnd
+
+      FireEnd:
+        QLTG E 0 A_Refire
+        QLTG E 0 A_TakeInventory("LGFrame")
+        QLTG E 0 A_PlaySound("quakeweps/lightningstart", CHAN_WEAPON)
+        QLTG E 0 A_StopSound(7)
+        TNT1 A 0 A_JumpIfInventory("QuadDamagePower", 1, "QuadSound2")
+        goto End2
+
+      QuadSound2:
+        TNT1 A 0 A_PlaySound("quakeweps/quadfire", 6)
+        goto End2
+
+      End2:
+        QLTG F 2 A_WeaponReady
+        QLTG GH 1 A_WeaponReady
+        goto Ready
+
+      AltFire:
+        TNT1 A 0 A_StopSound(6)
+		TNT1 A 0 A_JumpIfInventory("QuakeModeOn",1,"Ready")
+        TNT1 A 0 A_JumpIfInventory("FiredPlasmaCell",1,"Swap2")
+        TNT1 A 0 A_PlaySound("quakeweps/doeammochange")
+        TNT1 A 0 A_GiveInventory("FiredPlasmaCell",1)
+        TNT1 A 0 A_GiveInventory("UsingDoEAmmo",1)
+        PLS2 A 5 A_WeaponReady(12)
+        TNT1 A 0 A_GiveInventory("FiredPlasmaCell",1)
+        PLS2 A 10 A_WeaponReady(8)
+        goto PlasmaReady
+	  
+	  Swap2:
+        TNT1 A 0 A_PlaySound("quakeweps/doeammochange")
+        TNT1 A 0 A_TakeInventory("FiredPlasmaCell",1)
+        TNT1 A 0 A_TakeInventory("UsingDoEAmmo",1)
+        QLTG A 5 A_WeaponReady(12)
+        TNT1 A 0 A_TakeInventory("FiredPlasmaCell",1)
+        QLTG A 10 A_WeaponReady(8)
+        goto Ready   
+        
+      PlasmaFire:
+		PLS2 A 0 A_JumpIfInventory("PlasmaCell",1,"PlasmaPreFire1")
+		Goto Swap2
+	  PlasmaPreFire1:
+		PLS2 A 0 A_TakeInventory("PlasmaCell",1,TIF_NOTAKEINFINITE)
+		PLS2 A 0 A_JumpIfInventory("QuadDamagePower",1,"PlasmaQuad")
+		Goto PlasmaPreFire2
+	  PlasmaQuad:
+		PLS2 A 0 A_PlaySound("quakeweps/quadfire", 3)
+		Goto PlasmaPreFire2
+	  PlasmaPreFire2:
+		PLS2 A 0 A_JumpIf(waterlevel > 1, "Discharge")
+		Goto PlasmaStandardFire
+	  PlasmaStandardFire:
+		PLS2 A 0 A_PlaySound("Plasmacell/Fire")
+		PLS2 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopPlasmaStandarFire")
+		PLS2 A 3 Bright A_SpawnItemEX("PlasmaCellBall",cos(pitch)*32,0,40-(sin(pitch)*32),cos(pitch)*24,0,-sin(pitch)*24,0,SXF_SETMASTER|SXF_NOCHECKPOSITION,0,tid)
+		PLS2 BCDA 3 Bright
+		Goto PlasmaPostFire
+	  PlasmaPostFire:
+		PLS2 A 13
+		PLS2 A 3 A_ReFire("PlasmaFire")
+		Goto Ready
+	  CoopPlasmaStandarFire:
+		PLS2 A 3 Bright A_SpawnItemEX("PlasmaCellBall_Coop",cos(pitch)*32,0,40-(sin(pitch)*32),cos(pitch)*24,0,-sin(pitch)*24,0,SXF_SETMASTER|SXF_NOCHECKPOSITION,0,tid)
+		PLS2 BCDA 3 Bright
+		Goto PlasmaPostFire
+		
+	  Discharge:
+        QLTG A 0 A_StopSound(6)
+        QLTG A 0 A_StopSound(7)
+        TNT1 A 0 A_JumpIfInventory("QuakeInvisTimer", 1, 2)
+        TNT1 A 0 A_AlertMonsters
+        QLTG A 0 A_PlaySound("quakeweps/lightningdischarge", 6, 1, 0, ATTN_NONE)
+		TNT1 A 0 A_JumpIfInventory("UsingDoEAmmo",1,"Discharge2")
+        QLTG A 1 A_FireCustomMissile("LGDischarge")
+        goto Ready  // you're probably dead now
+
+	  Discharge2:
+	    PLS2 A 1 A_FireCustomMissile("LGDischarge")
+        goto Ready
+
+      Flash:
+        TNT1 A 0 ACS_ExecuteAlways(312, 0, -66, 0, 3)
+        TNT1 A 2 A_Light2
+        TNT1 A 1 A_Light1
+        goto LightDone
+
+      Spawn:
+        QLTG Z -1
+        Stop
+    }
+}
+
+actor "Spectral LG": Thunderbolt
+{
+    Weapon.SisterWeapon "Thunderbolt"
+    +POWERED_UP
+
+    Weapon.AmmoType ""
+    Weapon.AmmoUse 0
+    Weapon.AmmoGive 0
+
+    States
+    {
+      Fire:
+        TNT1 A 0 A_JumpIfInventory("QuakeInvisTimer", 1, 2)
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_StopSound(7)
+        TNT1 A 0 A_PlaySound("quakeweps/quadfire", 7, 1.0, 1)
+        QLTG A 0 A_PlaySound("quakeweps/lightning", 6, 1.0, 1)
+        QLTG A 0 A_PlaySound("quakeweps/lightningstart", CHAN_WEAPON)
+        goto Hold
+
+      Hold:
+        QLTG A 0 A_JumpIf(waterlevel > 1, "Discharge")
+        TNT1 A 0 ACS_ExecuteAlways(317, 0, 8)
+        QLTG A 0 A_GunFlash
+        TNT1 A 0 A_JumpIfInventory("QuadDamagePower", 1, 2)
+        TNT1 A 0 A_StopSound(7)
+        TNT1 A 0 A_FireCustomMissile("SpectralLGPuff")
+
+        QLTG A 0 A_JumpIfInventory("LGFrame", 3, "Fire3")
+        QLTG A 0 A_JumpIfInventory("LGFrame", 2, "Fire2")
+        QLTG A 0 A_JumpIfInventory("LGFrame", 1, "Fire1")
+        goto Fire0
+
+      Discharge:
+        QLTG A 0 A_StopSound(6)
+        QLTG A 0 A_StopSound(7)
+        TNT1 A 0 A_JumpIfInventory("QuakeInvisTimer", 1, 2)
+        TNT1 A 0 A_AlertMonsters
+        QLTG A 0 A_PlaySound("weapons/lightningdischarge", CHAN_BODY)
+        QLTG A 1 A_FireCustomMissile("SpectralLGDischarge")
+        goto Ready  // you're probably dead now
+    }
+}
+
+actor LGDischarge
+{
+    Radius 8
+    Height 8
+
+    +NODAMAGETHRUST
+    +FORCERADIUSDMG
+    +NOTIMEFREEZE
+
+    Projectile
+
+    Obituary "$SAMSARA_RANGER_OB_SLOT7_2"
+
+    States
+    {
+      Spawn:
+        TNT1 A 1
+        TNT1 A 0 A_Explode(18 * (ACS_ExecuteWithResult(SAMSARA_DECORATE, 5)), 4096, 0)
+        TNT1 A 0 A_Explode(17 * (ACS_ExecuteWithResult(SAMSARA_DECORATE, 5)), 4096)
+        TNT1 A 0 A_TakeFromTarget("Cell")
+        stop
+    }
+}
+
+actor SpectralLGDischarge: LGDischarge { DamageType "Spectral" }
+
+actor LGFrame: Inventory
+{
+    inventory.maxamount 0x7FFFFFFF
+    +UNDROPPABLE
+}
+
+actor UsingLG: Boolean {}
+
+actor SpectralLGPuff: FastProjectile
+{
+    Speed 512
+    Damage (30)
+
+    DamageType "Spectral"
+
+    Alpha 0.5
+    RenderStyle Add
+
+    States
+    {
+      Spawn:
+        TNT1 A 1
+        goto Death
+
+      Death:
+         TNT1 A 1 A_Stop
+         SPKW ABCDE 4 bright
+         stop
+    }
+}
+
+actor LGBeam : BulletPuff
+{
+    +ALWAYSPUFF
+    +BLOODLESSIMPACT
+//  +NOTIMEFREEZE
+    +NOPAIN
+    VSpeed 0
+	Scale 0.225
+	DamageType "QuakeElectric"
+    States
+    {
+      Spawn:
+        TNT1 A 0
+		TNT1 A 0
+        TNT1 A 0 A_Jump(128, "C", "D", "E")
+      B:
+        _BLT A 1 bright
+        _BLT A 0 A_Stop
+        _BLT A 1 bright
+        stop
+      C:
+        _BLT B 1 bright
+        _BLT B 0 A_Stop
+        _BLT B 1 bright
+        stop
+      D:
+        _BLT C 1 bright
+        _BLT C 0 A_Stop
+        _BLT C 1 bright
+        stop
+      E:
+        _BLT D 1 bright
+        _BLT D 0 A_Stop
+        _BLT D 1 bright
+        stop		
+    }
+}
+
+actor LGBeamProjectile0
+{
+	Radius 4
+//  +NOTIMEFREEZE
+    +NOPAIN
+	Projectile
+	Speed 16
+	Scale 0.225
+	DamageType "QuakeElectric"
+    States
+    {
+      Spawn:
+        TNT1 A 0
+		TNT1 A 0 A_SetPitch(-CallACS("FlareGunPitch")/182)
+        TNT1 A 0 A_Jump(128, "C", "D", "E")
+      B:
+        _BLT A 1 bright
+        _BLT A 0 A_Stop
+        _BLT A 1 bright
+        stop
+      C:
+        _BLT B 1 bright
+        _BLT B 0 A_Stop
+        _BLT B 1 bright
+        stop
+      D:
+        _BLT C 1 bright
+        _BLT C 0 A_Stop
+        _BLT C 1 bright
+        stop
+      E:
+        _BLT D 1 bright
+        _BLT D 0 A_Stop
+        _BLT D 1 bright
+        stop		
+    }
+}
+
+actor LGBeamProjectile1 : LGBeamProjectile0 { Speed 48 }
+actor LGBeamProjectile2 : LGBeamProjectile0 { Speed 80 }
+actor LGBeamProjectile3 : LGBeamProjectile0 { Speed 112 }
+actor LGBeamProjectile4 : LGBeamProjectile0 { Speed 144 }
+actor LGBeamProjectile5 : LGBeamProjectile0 { Speed 176 }
+actor LGBeamProjectile6 : LGBeamProjectile0 { Speed 208 }
+actor LGBeamProjectile7 : LGBeamProjectile0 { Speed 240 }
+actor LGBeamProjectile8 : LGBeamProjectile0 { Speed 272 }
+actor LGBeamProjectile9 : LGBeamProjectile0 { Speed 304 }
+actor LGBeamProjectile10 : LGBeamProjectile0 { Speed 336 }
+actor LGBeamProjectile11 : LGBeamProjectile0 { Speed 368 }
+actor LGBeamProjectile12 : LGBeamProjectile0 { Speed 400 }
+actor LGBeamProjectile13 : LGBeamProjectile0 { Speed 432 }
+actor LGBeamProjectile14 : LGBeamProjectile0 { Speed 464 }
+actor LGBeamProjectile15 : LGBeamProjectile0 { Speed 496 }
+
+actor LGPuff: BulletPuff
+{
+    +ALWAYSPUFF
+    +PUFFONACTORS
+    +PUFFGETSOWNER
+    +BLOODLESSIMPACT
+    //+FORCERADIUSDMG
+    +NODAMAGETHRUST
+    VSpeed 0
+    Scale 0.2
+    RenderStyle Add
+	DamageType "QuakeElectric"
+    //Obituary "%o \csaccepts\c- %k's \csshaft.\c-"
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        TNT1 A 0 A_Jump(128,"A","B","C","D","E","F")
+	  A:
+        SPKW AA 1 bright
+        stop
+	  B:
+		SPKW BB 1 Bright
+		Stop
+	  C:
+		SPKW CC 1 Bright
+		Stop		
+	  D:
+		SPKW DD 1 Bright
+		Stop
+	  E:
+		SPKW EE 1 Bright
+		Stop
+	  F:
+		SPKW FF 1 Bright
+		Stop		
+    }
+}
+
+actor LGDischarge
+{
+    Radius 8
+    Height 8
+
+    +NODAMAGETHRUST
+    +FORCERADIUSDMG
+    +NOTIMEFREEZE
+
+    Projectile
+
+    Obituary "$SAMSARA_RANGER_OB_SLOT7_2"
+
+    States
+    {
+      Spawn:
+        TNT1 A 1
+        TNT1 A 0 A_Explode(18 * (ACS_ExecuteWithResult(SAMSARA_DECORATE, 5)), 4096, 0)
+        TNT1 A 0 A_Explode(17 * (ACS_ExecuteWithResult(SAMSARA_DECORATE, 5)), 4096)
+        TNT1 A 0 A_TakeFromTarget("Cell")
+        stop
+    }
+}
+
+actor SpectralLGDischarge : LGDischarge { DamageType "Spectral" }
+
+actor LGFrame : Inventory
+{
+    inventory.maxamount 0x7FFFFFFF
+    +UNDROPPABLE
+}
+
+actor UsingLG : Boolean {}
+actor FiredPlasmaCell : Boolean {}
+
+actor SpectralLGPuff : FastProjectile
+{
+    Speed 512
+    Damage (30)
+
+    DamageType "Spectral"
+
+    Alpha 0.5
+    RenderStyle Add
+
+    States
+    {
+      Spawn:
+        TNT1 A 1
+        goto Death
+
+      Death:
+         TNT1 A 1 A_Stop
+         DPLE ABCDE 4 bright
+         stop
+    }
+}
+
+Actor PlasmaCellBall
+{
+	Radius 3
+	Height 5
+	Speed 24
+	Damage (Random(2,8)*64)
+	Projectile
+	+FORCERADIUSDMG
+	DeathSound "plasmacell/hit"
+	Obituary "o% was obliterated by %k."
+	DamageType "QuakeElectric"
+	States
+	{
+	Spawn:
+		BAL7 A 0 NoDelay A_PlaySound("PlasmaCell/Fly",3,1.0,1,ATTN_NORM)
+	SpawnLoop:	
+		BAL7 A 1 Bright A_SpawnItemEx("PlasmaCellBallZapper",0,0,0,0,0,0,Random(-180,180),SXF_SETMASTER|SXF_NOCHECKPOSITION,128)
+		BAL7 A 0 A_KillChildren		
+		Loop
+	Death:
+		BAL7 A 0 A_StopSound(3)
+		BAL7 AAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("PlasmaDebris",Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1)
+		BAL7 AAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("PlasmaDebrisS",Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1)
+		BAL7 AAAAAAAAAAAAAAAA 0 A_SpawnItemEx("PlasmaDebrisSS",Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1,Random(-3,3)+1)
+		BAL7 A 0 Bright
+		BAL7 A 5 Bright A_Explode(150,256)
+		Stop
+	}
+}
+
+Actor PlasmaCellBall_Coop : PlasmaCellBall
+{
+	+THRUSPECIES
+	+DONTHARMCLASS
+	+DONTHARMSPECIES
+	+MTHRUSPECIES
+	Species "Player"
+	DamageType "QuakeElectric"
+	States
+	{
+	Spawn:
+		BAL7 A 0 NoDelay A_PlaySound("PlasmaCell/Fly",3,1.0,1,ATTN_NORM)
+	SpawnLoop:	
+		BAL7 A 1 Bright A_SpawnItemEx("PlasmaCellBallZapper_Coop",0,0,0,0,0,0,Random(-180,180),SXF_SETMASTER|SXF_NOCHECKPOSITION,128)
+		BAL7 A 0 A_KillChildren		
+		Loop		
+	}
+}
+
+Actor PlasmaCellBallZapper
+{
+	Height 0
+	Projectile
+	+ISMONSTER
+	+FRIENDLY
+	+LOOKALLAROUND
+	+QUICKTORETALIATE
+	+NOTARGET
+	+NOCLIP
+	-COUNTKILL
+	States
+	{
+	Spawn:
+		TNT1 A 0
+		TNT1 AAAA 0 A_Look
+		Stop
+	See:
+		TNT1 A 0
+		TNT1 A 0 A_JumpIfCloser(800,"Missile")
+		Stop
+	Missile:
+		TNT1 A 0 A_FaceTarget
+		TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 16)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 48)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 80)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 112)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 144)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 176)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 208)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 240)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 272)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 304)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 336)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 368)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 400)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 432)
+        TNT1 A 0 A_CustomBulletAttack(0,0,1,2, "LGBeam", 464)
+        TNT1 A 1 A_CustomBulletAttack(0,0,1,2, "LGBeam", 496)
+		goto Death
+	Death:
+		TNT1 A 1
+		Stop
+	}
+}
+
+Actor PlasmaCellBallZapper_Coop : PlasmaCellBallZapper
+{
+	Species "Player"
+	+THRUSPECIES
+	+DONTHARMCLASS
+	+DONTHARMSPECIES
+	+MTHRUSPECIES
+}
+
+ACTOR PlasmaDebris
+{
+	Radius 1
+	Height 1
+	Projectile
+	Speed 4
+	+NOBLOCKMAP
+	+DROPOFF
+	+CANNOTPUSH
+	+SKYEXPLODE
+	+NOBLOCKMONST
+	+CLIENTSIDEONLY
+	+THRUACTORS
+	DamageType PainKill
+	States
+	{
+	Spawn:
+		QPRT FGHIJ 5 BRIGHT
+		Stop
+	Death:
+		TNT1 A 5
+		Stop
+	}
+}
+
+ACTOR PlasmaDebrisS : PlasmaDebris { Speed 2 }
+ACTOR PlasmaDebrisSS : PlasmaDebris { Speed 1 }

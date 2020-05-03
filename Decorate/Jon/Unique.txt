@@ -1,0 +1,104 @@
+Actor "Ring of RA" : Weapon
+{
+	Inventory.PickupSound "PS/Ipickup2"
+	Weapon.selectionorder 200
+	Weapon.AmmoUse 1
+	Weapon.AmmoGive 48
+	Weapon.AmmoType "Cell"
+	Weapon.SlotNumber 8
+	Weapon.SlotPriority 8
+	Inventory.PickupMessage "You found the Ring of RA!"
+	Obituary "%k balls were too hot for %o."
+	+FLOATBOB
+	Inventory.RestrictedTo "PSPlayer"	
+	States
+	{
+		Select:
+			TNT1 A 0 A_Raise
+			C_D9 A 1 A_Raise
+			Loop
+		Deselect:
+			TNT1 A 0 A_Lower
+			C_D9 A 1 A_Lower
+			Loop
+		Ready:
+			C_D9 AAAABBBBAAAABBBB 1 A_WeaponReady
+			Loop
+		Fire:
+			C_D9 CC 1 Bright
+		Hold:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopHold")
+			C_D9 B 1 Bright
+			C_D9 D 1 offset(-4,39) Bright
+			TNT1 A 0 A_FireCustomMissile("RingofRaFireball",0+random(-10,10),1,-10,-10,0,15)			
+			C_D9 D 1 offset(-2,38) Bright			
+			C_D9 B 1 offset(0,37) Bright
+			C_D9 D 1 offset(4,39)  Bright
+			TNT1 A 0 A_FireCustomMissile("RingofRaFireball",0+random(-10,10),1,10,-10,0,15)			
+			C_D9 D 1 offset(2,38)  Bright			
+			C_D9 B 1 offset(0,37) Bright A_Refire
+			Goto Ready
+		CoopHold:
+			C_D9 B 1 Bright
+			C_D9 D 1 offset(-4,39) Bright
+			TNT1 A 0 A_FireCustomMissile("RingofRaFireball_2",0+random(-10,10),1,-10,-10,0,15)			
+			C_D9 D 1 offset(-2,38) Bright			
+			C_D9 B 1 offset(0,37) Bright
+			C_D9 D 1 offset(4,39)  Bright
+			TNT1 A 0 A_FireCustomMissile("RingofRaFireball_2",0+random(-10,10),1,10,-10,0,15)			
+			C_D9 D 1 offset(2,38)  Bright			
+			C_D9 B 1 offset(0,37) Bright A_Refire
+			Goto Ready		
+		Spawn:
+			WROR A -1 Bright
+			Stop
+	}
+}		
+
+Actor RingofRaFireball
+{
+    radius 4
+    height 4
+    damage 6
+    speed 15
+    Scale 0.3
+    bouncefactor 0.90
+    PROJECTILE
+	DamageType "PSRAPower"
+    +MISSILE
+    +DOOMBOUNCE
+	+FIREDAMAGE
+	+SPECIALFIREDAMAGE
+    states
+    {
+    Spawn:
+	C_D9 E 0
+	C_D9 E 0 A_PlaySound("Jon/RAFire")
+	C_D9 E 1 Bright ThrustThingZ(0,24,0,1)
+	C_D9 E 1 Bright A_Gravity
+	C_D9 EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE 2 Bright
+	goto Death
+    Death:
+	TNT1 A 0 A_PlaySound("Jon/CobraDeath")
+	TNT1 A 5 A_SpawnItemEx("Ringfireballexplosion",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+	stop
+    }
+}
+
+Actor RingofRaFireball_2 : RingofRaFireball { Species "Player" +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES }
+
+Actor Ringfireballexplosion
+{
+  RenderStyle Add
+  Alpha 0.90
+  +NOINTERACTION
+  +CLIENTSIDEONLY
+  Scale 0.5
+  states
+  {
+  Spawn:
+    C_D9 FFGGHHIIJJKKLLMM 1 Bright
+    C_D9 NN 1 Bright A_FadeOut(1.0/0.50)
+    Stop
+  }
+}

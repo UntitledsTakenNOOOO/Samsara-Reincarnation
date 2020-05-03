@@ -1,0 +1,57 @@
+actor " Super Shotgun " : SuperShotgun
+{
+    Weapon.AmmoType "Shell"
+    Decal BulletChip
+    Weapon.SlotNumber 3
+    +THRUGHOST
+    +INVENTORY.UNDROPPABLE
+    AttackSound ""
+    Obituary "%k \cpdismembered\c- %o\cp with the SSG.\c-"
+    Inventory.RestrictedTo "Doom64GuyPlayer"		
+    States
+    {
+      Ready:
+        64DB A 1 A_WeaponReady
+        Loop
+
+      Deselect:
+        64DB A 1 A_Lower
+        Loop
+
+      Select:
+        64DB A 1 A_Raise
+        Loop
+
+      Fire:
+        TNT1 A 0 A_PlayWeaponSound("doom64guy/sshotf")
+        TNT1 A 0 A_GunFlash
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopMid")
+        TNT1 A 0 A_FireBullets (11.2, 7.1, 20, 5, "Doom64BulletPuff")
+        goto Animation
+
+      CoopMid:
+        TNT1 AAAAAAAAAAAAAAAAAAA 0 A_FireCustomMissile("Doom64Bullet", random(-1120, 1120)/100.00, 0, 0, 1, 0, random(-710, 710)/100.00)
+        TNT1 A                   0 A_FireCustomMissile("Doom64Bullet", random(-1120, 1120)/100.00, 1, 0, 1, 0, random(-710, 710)/100.00)
+        goto Animation
+
+      Animation:
+        64DB A 0 A_Recoil(2)
+        64DB A 0 ACS_ExecuteAlways(312, 0, 5, 4, 15)
+        64DB A 5
+        64DB C 10
+        64DB C 23 A_CheckReload
+        64DB B 6 A_PlayWeaponSound("doom64guy/sshoto")
+        64DB A 6 A_PlayWeaponSound("doom64guy/sshotc")
+        64DB A 5 A_ReFire
+        Goto Ready
+
+      Flash:
+        64DM A 2 Bright
+        64DM A 2 Bright
+        Goto LightDone
+
+      Spawn:
+        64DB Z -1
+        Stop
+    }
+}

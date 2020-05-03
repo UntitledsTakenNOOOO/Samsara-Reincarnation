@@ -1,0 +1,140 @@
+ACTOR DrunkMissiles : Weapon
+{
+	 Weapon.SlotNumber 6
+	 Weapon.SelectionOrder 900
+	 Inventory.PickupSound "gen/pickup"
+	 Weapon.UpSound "gen/wepswitch"
+	 Inventory.Pickupmessage "You recovered a drunk missile!"
+	 Weapon.AmmoGive 10
+	 Weapon.AmmoUse 1
+	 Weapon.AmmoType "DMissiles"
+     +NOAUTOAIM
+	 +IGNORESKILL
+     AttackSound "rott/drunkfire"    
+	 Inventory.RestrictedTo "IPFreeley"	 
+	 Tag "Drunk Missiles"	 
+     States 
+     { 
+     Spawn: 
+        PDNK A -1 
+        Stop 
+     Ready: 
+		TNT1 A 0 A_TakeInventory("UsingFirearm", 1)
+        DRNK A 1 A_WeaponReady 
+        Goto Ready+1
+     Deselect: 
+        DRNK A 1 A_Lower 
+        Loop
+     Select:
+        DRNK A 1 A_Raise
+        Loop
+     Fire:
+        DRNK A 1 Offset(0,36) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        DRNK A 1 Offset(0,38) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        DRNK A 1 Offset(0,42) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        DRNK A 0 A_PlaySound("drunk/shoot")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
+        DRNK C 0 A_FireCustomMissile("CompDrunkM",0,1,1,-8,0)
+        DRNK C 0 A_FireCustomMissile("CompDrunkM",0,0,1,-8,0)
+        DRNK C 0 A_FireCustomMissile("CompDrunkM",0,0,1,-8,0)
+        DRNK C 0 A_FireCustomMissile("CompDrunkM",0,0,1,-8,0)
+        DRNK C 0 A_FireCustomMissile("CompDrunkM",0,0,1,-8,0) 
+	 Continue:
+		DRNK B 1 Bright Offset(0,40) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        DRNK C 2 Bright Offset(0,38) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        DRNK D 2 Bright Offset(0,36) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        DRNK D 1 Offset(0,36) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)		
+        DRNK A 2 Offset(0,34) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        DRNK A 3 Offset(0,32) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        DRNK A 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        DRNK A 0 a_refire
+		Goto Ready+1
+	 CoopFire:
+        DRNK C 0 A_FireCustomMissile("DrunkM",0,1,1,-8,0)
+        DRNK C 0 A_FireCustomMissile("DrunkM",0,0,1,-8,0)
+        DRNK C 0 A_FireCustomMissile("DrunkM",0,0,1,-8,0)
+        DRNK C 0 A_FireCustomMissile("DrunkM",0,0,1,-8,0)
+        DRNK C 0 A_FireCustomMissile("DrunkM",0,0,1,-8,0) 		
+		Goto Continue
+     } 
+}  
+
+actor DrunkM
+{ 
+    Radius 11
+    Height 6
+    Speed 28
+    Damage (36) //(25)
+    SCALE 0.50
+    PROJECTILE
+	Decal Scorch
+	+NOBLOOD
+	+BLOODLESSIMPACT
+    +SEEKERMISSILE
+    +EXTREMEDEATH
+	+THRUGHOST
+	+THRUSPECIES
+	+WINDTHRUST
+	Species "Player"
+    DamageType "RottExplosive"
+    DeathSound "god/bang"
+    Obituary "%o \cbsobered up once\c- %k \cbdrunk missiled %h\c-"
+//	ActiveSound "missile/fly"
+    States
+    {
+    Spawn:
+		TNT1 A 0
+        TNT1 A 0 A_PlaySound("missile/fly",5,1.0,1,ATTN_NORM)
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        FMIS A 1 Bright A_ChangeVelocity (1.0, random(-2.1,2.1), random(0.0,1.75),1) 
+        FMIS A 0 a_seekermissile(5,20)
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        FMIS A 0 a_seekermissile(5,20)
+        FMIS A 1 Bright A_ChangeVelocity (1.0, random(-2.0,2.0), random(-0.75,1.25),1) 
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        FMIS A 0 a_seekermissile(5,20)
+        FMIS A 1 Bright A_ChangeVelocity (1.0, random(-1.75,1.75), random(-1.25,1.25),1) 
+        Goto Flight
+      Flight:
+        FMIS A 0 a_seekermissile(5,20)
+        FMIS A 1 Bright A_ChangeVelocity (1.0, random(-1.5,1.5), random(-1.25,1.25),1) 
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        FMIS A 0 a_seekermissile(10,20)
+        FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+		FMIS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0)
+        Loop
+    Death:
+	XDeath:
+		TNT1 A 0 A_StopSound(5)
+		TNT1 A 0 A_PlaySound("gen/expl2",6,1.0,0,ATTN_NORM)	
+    	EXPL A 0 A_Explode(16,40)
+        EXPL ABCDEFGHIJKLMNOPQRST 2 Bright
+        Stop
+	Crash:
+		TNT1 A 0 A_StopSound(5)	
+		TNT1 A 0 A_PlaySound("gen/expl2",6,1.0,0,ATTN_NORM)
+		TNT1 A 0 A_Jump(200,3)
+		TNT1 A 0 A_Jump(250,2)
+		TNT1 A 0 A_PlaySound("rmissile/cook",5,1.0,0,ATTN_NORM)	
+		TNT1 A 0		
+    	EXPL A 0 A_Explode(16,40)
+        EXPL ABCDEFGHIJKLMNOPQRST 2 Bright
+        Stop	
+    }
+} 
+
+Actor CompDrunkM : DrunkM
+{
+	Damage (16)
+	Speed 28
+	-THRUSPECIES
+	Species "None"
+	Decal Scorch
+}

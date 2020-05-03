@@ -1,0 +1,915 @@
+actor QuakePlayer: PlayerPawn
+{
+    Radius 16
+    Height 56
+    Mass 100
+    Scale 0.27
+    Speed 1
+    Gravity 0.75
+    Player.JumpZ 6.9282
+    Health 100
+    PainChance 255
+    Species "Player"
+    -THRUSPECIES
+    -DONTBLAST
+    Player.SoundClass "ranger"
+    Player.Face "RNG"
+    Player.DisplayName "Ranger"
+    Player.StartItem "QuakeClass"
+    Player.StartItem "Single Shotgun"
+    Player.StartItem "IsSamsaraClass", 1
+    Player.StartItem "Shell", 25
+    Player.StartItem "Axe"
+	Player.StartItem "TauntButton", 1
+    Player.ColorRange 112, 127
+	BloodType "SamsaraBloodyHellBlood"	
+    BounceFactor 0.35
+    WallBounceFactor 0.5
+	DamageFactor "DynamiteCoop", 0.0	
+	DamageFactor "SWFlameCoop", 0.0	
+    DamageFactor "PoisonCloud", 1.75
+    DamageFactor "WMCBeam", 0.75
+    DamageFactor "WMCNade", 0.75
+    DamageFactor "MightyBoot", 1.5
+    DamageFactor "CorvusCrossbow", 1.1
+    DamageFactor "DragonClaw", 1.1
+	DamageFactor "EnemyInfightDamage", 0.0
+	DamageFactor "SWStickyCoop", 0.0
+	DamageFactor "ElectricBolt", 1.0	
+	DamageFactor "CMDMGSHIT", 0.0	
+	DamageFactor "PhosFireCoop", 0.0
+    DamageFactor "C7MineBoom", 0.0	
+    DamageFactor "EradCoopGreenFire", 0.0
+	DamageFactor "EradCoopExplosive2", 0.0	
+	DamageFactor "BCannonProj", 0.75
+    DamageFactor "RMR-BigPlasma", 0.85		
+ 	DamageFactor "SWNukeCoop", 0.0		
+	DamageFactor "SWRailgunCoop", 0.0
+	DamageFactor "SWFlame2Coop", 0.0
+    States
+    {
+      Spawn:
+		"----" A 0 A_JumpIfInventory("Ranger_AxeSelected", 1, 10)
+        PLY1 ABCDE 4
+		"----" A 0 A_JumpIfInventory("Ranger_GunSelected", 1, "Spawn")
+		"----" A 0 A_JumpIfInventory("Ranger_PlasmaSelected", 1, "Spawn")
+		"----" A 0 A_JumpIfInventory("Ranger_NailSelected", 1, "Spawn")
+		"----" A 0 A_JumpIfInventory("Ranger_ExplosiveSelected", 1, "Spawn")
+		PL1B ABCDEFGHIJKL 3
+		Loop
+      See:
+        "----" A 0 A_JumpIfInventory("Ranger_AxeSelected", 1, 11)
+		PLY2 ABCDEF 4
+		"----" A 0 A_JumpIfInventory("Ranger_GunSelected", 1, "See")
+		"----" A 0 A_JumpIfInventory("Ranger_PlasmaSelected", 1, "See")
+		"----" A 0 A_JumpIfInventory("Ranger_NailSelected", 1, "See")
+		"----" A 0 A_JumpIfInventory("Ranger_ExplosiveSelected", 1, "See")
+		PL2B ABCDEF 4
+		Loop       
+      Missile:
+		"----" A 0 A_JumpIfinventory("Ranger_AxeSelected", 1, "AxeMelee")
+		"----" A 0 A_JumpIfinventory("QuadDamagePower", 1, "QuadSound1")
+		"----" A 0 A_JumpIfInventory("Ranger_NailSelected", 1, "NailFire")
+		"----" A 0 A_JumpIfInventory("Ranger_ExplosiveSelected", 1, "RocketFire")
+		"----" A 0 A_JumpIfInventory("Ranger_PlasmaSelected", 1, "PlasmaFire")
+		PLY3 A 4 
+		PLY3 B 4 BRIGHT
+		PLY3 CDEF 4 
+		Goto Spawn
+	  NailFire:
+		PL3B A 4 BRIGHT
+		PL3B B 4
+		Goto Spawn
+	  RocketFire:
+		PL3C A 3 BRIGHT
+		PL3C BCDEF 4
+		Goto Spawn
+	  PlasmaFire:
+		PL3D A 4 BRIGHT
+		PL3D B 4 BRIGHT
+		Goto Spawn
+	  AxeMelee:
+		"----" A 1 
+		"----" A 0 A_JumpIfinventory("QuadDamagePower", 1, "QuadSound2")
+	  AxePrimary:
+			PLY3 A 0 A_Jump(256,"Axe1","Axe2","Axe3","Axe4")
+		  Axe1:
+			PAXE ABCDEF 4
+			Goto Spawn
+		  Axe2:
+			PAXE GHIJKL 4
+			Goto Spawn
+		  Axe3:
+			PAXE MNOPQR 4
+			Goto Spawn
+		  Axe4:
+			PAXE STUVWX 4
+			Goto Spawn
+	  QuadSound1:
+        "----" A 0 A_PlaySound("quakeweps/quadfire", 7)
+        goto Missile+2
+	  QuadSound2:
+        "----" A 0 A_PlaySound("quakeweps/quadfire", 7)
+        goto AxePrimary
+      Pain:
+		"----" A 0 A_JumpIfinventory("Ranger_AxeSelected", 1, "AxePain")
+		PLY4 A 3 A_Pain
+		PLY4 BCDEF 3
+		Goto Spawn
+	  AxePain:
+		PL4B A 3 A_Pain
+		PL4B BCDEF 3
+		Goto Spawn
+	  Pain.Falling:
+		"----" A 0 A_JumpIfinventory("Ranger_AxeSelected", 1, "AxePain.Falling")
+		PLY4 A 3 A_PlaySound("ranger/fallpain")
+		PLY4 BCDEF 3
+		Goto Spawn
+	  AxePain.Falling:
+		PL4B A 3 A_PlaySound("ranger/fallpain")
+		PL4B BCDEF 3
+		Goto Spawn
+      Pain.WolfenFlamethrower:
+      Pain.MarathonPlasma:
+      Pain.Slime:
+      Pain.HexGreenFire:
+      Pain.QuakeFire:
+	  Pain.FireExplosive:
+	  Pain.PhosFireCoop:	  
+	  Pain.EradGreenFire:
+	  Pain.CalebFire:	  
+      Pain.Fire:
+		"----" A 0 A_JumpIfinventory("Ranger_AxeSelected", 1, "AxePain.Fire")
+		PLY4 A 3 A_PlaySound("ranger/firepain")
+		PLY4 BCDEF 3
+		Goto Spawn
+	  AxePain.Fire:
+		PL4B A 3 A_PlaySound("ranger/firepain")
+		PL4B BCDEF 3
+		Goto Spawn
+	  Pain.Drowning:
+		"----" A 0 A_JumpIfinventory("Ranger_AxeSelected", 1, "AxePain.Drowning")
+		PLY4 A 3 A_PlaySound("ranger/drowning", CHAN_VOICE)
+		PLY4 BCDEF 3
+		Goto Spawn
+	  AxePain.Drowning:
+		PL4B A 3 A_PlaySound("ranger/drowning", CHAN_VOICE)
+		PL4B BCDEF 3
+		Goto Spawn
+	  Pain.Pushed:
+		"----" A 0 A_JumpIfInventory("AxeChecker", 99, "AxePain.Pushed")
+		PLY4 A 1 A_FaceTarget
+		"----" A 0 ThrustThingZ(0,100,0,0)
+		"----" A 0 ThrustThing(angle*256/360+128,100,0,0)
+		PLY4 A 3 A_Pain
+		PLY4 BCDEF 3
+		Goto Spawn
+	  AxePain.Pushed:
+		PL4B A 1 A_FaceTarget
+		"----" A 0 ThrustThingZ(0,100,0,0)
+		"----" A 0 ThrustThing(angle*256/360+128, 100, 0, 0)
+		PL4B A 3 A_Pain
+		PL4B BCDEF 3
+		Goto Spawn   
+      Death:
+		"----" A 1 A_SpawnItem("UniversalBloodyHellGoreDeathEffect")
+		"----" A 0 A_Jump(256,"death1","death2","death3","death4","death5")
+	  Death1:
+		PLY5 A 3
+		PLY5 B 3 A_PlayerScream
+		PLY5 C 3 A_NoBlocking
+		PLY5 DEFGHIJ 3
+		PLY5 K -1 A_CheckPlayerDone
+		Wait
+	  Death2:
+		PLY6 A 3
+		PLY6 B 3 A_PlayerScream
+		PLY6 C 3 A_NoBlocking
+		PLY6 DEFGH 3
+		PLY6 I -1 A_CheckPlayerDone
+		Wait
+	  Death3:
+		PLY7 A 3
+		PLY7 B 3 A_PlayerScream
+		PLY7 C 3 A_NoBlocking
+		PLY7 DEFGHIJKLMN 3
+		PLY7 O -1 A_CheckPlayerDone
+		Wait
+	  Death4:
+		PLY8 A 3
+		PLY8 B 3 A_PlayerScream
+		PLY8 C 3 A_NoBlocking
+		PLY8 DEFGH 3
+		PLY8 I -1 A_CheckPlayerDone
+		Wait
+	  Death5:
+		PLY9 A 3
+		PLY9 B 3 A_PlayerScream
+		PLY9 C 3 A_NoBlocking
+		PLY9 DEFGH 3
+		PLY9 I -1 A_CheckPlayerDone
+		Wait
+	  Death.Drowning:
+		"----" A 1
+		"----" A 0 A_Jump(256,"ddrown1","ddrown2","ddrown3","ddrown4","ddrown5")
+	  ddrown1:
+		PLY5 A 3
+		PLY5 B 3 A_PlaySound("ranger/drown", CHAN_VOICE)
+		PLY5 C 3 A_NoBlocking
+		PLY5 DEFGHIJ 3
+		PLY5 K -1 A_CheckPlayerDone
+		Wait
+	  ddrown2:
+		PLY6 A 3
+		PLY6 B 3 A_PlaySound("ranger/drown", CHAN_VOICE)
+		PLY6 C 3 A_NoBlocking
+		PLY6 DEFGH 3
+		PLY6 I -1 A_CheckPlayerDone
+		Wait
+	  ddrown3:
+		PLY7 A 3
+		PLY7 B 3 A_PlaySound("ranger/drown", CHAN_VOICE)
+		PLY7 C 3 A_NoBlocking
+		PLY7 DEFGHIJKLMN 3
+		PLY7 O -1 A_CheckPlayerDone
+		Wait
+	  ddrown4:
+		PLY8 A 3
+		PLY8 B 3 A_PlaySound("ranger/drown", CHAN_VOICE)
+		PLY8 C 3 A_NoBlocking
+		PLY8 DEFGH 3
+		PLY8 I -1 A_CheckPlayerDone
+		Wait
+	  ddrown5:
+		PLY9 A 3
+		PLY9 B 3 A_PlaySound("ranger/drown", CHAN_VOICE)
+		PLY9 C 3 A_NoBlocking
+		PLY9 DEFGH 3
+		PLY9 I -1 A_CheckPlayerDone
+		Wait
+      Death.Telefrag:
+        goto XDeath.Telefrag
+      XDeath:
+        TNT1 A 0 A_PlaySound("ranger/gib", CHAN_VOICE)
+        goto Explod
+      XDeath.Telefrag:
+        TNT1 A 0 A_PlaySound("ranger/telefragged", CHAN_VOICE)
+        goto Explod
+      Death.CorvusGrimBallista:
+        TNT1 A 0 A_PlaySoundEx("*falling",CHAN_VOICE,0,0)
+        goto Explod
+      Explod:
+	    TNT1 A 0 A_SpawnItem("UniversalBloodyHellGoreXDeathEffect")				
+		TNT1 A 0 A_SpawnDebris("Quake_GIB1")
+		TNT1 A 0 A_SpawnDebris("Quake_GIB2")
+		TNT1 A 0 A_SpawnDebris("Quake_GIB3")
+		TNT1 A 0 A_SpawnDebris("Quake_RangerHead")
+        TNT1 A 1 ThrustThing(random(0, 255), random(0, 4), 1, 0)
+        TNT1 A 0 A_ChangeFlag("HEXENBOUNCE", 1)
+		TNT1 A 5 ThrustThingZ(0, random(36, 60), 0, 1)
+		TNT1 A 0 A_NoBlocking
+		TNT1 A -1
+        Stop
+      Death.ZorchPistol:
+      Death.Zorch:
+      Death.ZorchKamikaze:
+      Death.PhasingZorch:
+      Death.ZorchSpectral:
+        "####" "#" 0 A_Stop
+        "####" "#" 0 A_PlaySoundEx("chex/zorch","soundslot5",0,0)
+        "####" "#" 3 A_SpawnItem("ZorchEffectSmall")
+        "####" "#" 3 A_SetTranslucent(0.9,0)
+        "####" "#" 0 A_PlayerScream
+        "####" "#" 3 A_SetTranslucent(0.8,0)
+        "####" "#" 0 A_NoBlocking
+        "####" "#" 3 A_SetTranslucent(0.7,0)
+        "####" "#" 3 A_SetTranslucent(0.6,0)
+        "####" "#" 3 A_SetTranslucent(0.5,0)
+        "####" "#" 3 A_SetTranslucent(0.4,0)
+        "####" "#" 3 A_SetTranslucent(0.3,0)
+        "####" "#" 3 A_SetTranslucent(0.2,0)
+        "####" "#" 3 A_SetTranslucent(0.1,0)
+        ACLO E 1 A_SetTranslucent(1,0)
+        ACLO E -1
+        stop
+      Death.DukeDamage:
+      Death.DukePistol:
+        TNT1 A 0 A_Jump(218,"Death")
+        TNT1 A 0 A_GiveToTarget("DukeDMTaunt1",1)
+        goto Death
+      Death.DukeExplosive:
+      Death.DukeSpectral:
+        TNT1 A 0 A_JumpIfHealthLower(-5,"DukeGibStart")
+        goto Death.DukeDamage
+      DukeGibStart:
+        PLY4 A 1
+        TNT1 A 0 A_UnsetSolid
+        TNT1 A 0 A_PlaySound("duke/enemygib")
+        TNT1 A 0 A_SpawnDebris("DukeGibs1")
+        TNT1 A 0 A_SpawnDebris("DukeGibs2")
+        TNT1 A 0 A_SpawnDebris("DukeGibs3")
+        TNT1 A 0 A_SpawnDebris("DukeGibs4")
+        TNT1 A 0 A_SpawnDebris("DukeGibs5")
+        TNT1 A 0 A_SpawnDebris("DukeGibs6")
+        TNT1 A 0 A_Jump(96,"XDeath")
+        TNT1 A 0 A_GiveToTarget("DukeDMTaunt1",1)
+        goto XDeath
+      Death.DukeIce:
+        "####" "#" 0 A_Jump(218,"Ice")
+        "####" "#" 0 A_GiveToTarget("DukeDMTaunt1",1)
+        goto Ice
+      Ice:
+      Death.HexenIce:
+      Death.Ice:
+        "####" "#" 0 A_PlayWeaponSound("misc/freeze")
+        "####" "#" 70 A_NoBlocking//A_GenericFreezeDeath
+        "####" "#" 0 A_SetTranslucent(0,0)
+        "####" "###################################" 0 A_SpawnItemEx("IceChunk2",random(-1,1),random(-1,1),random(8,48),random(-2,2),random(-2,2),random(1,6))
+        "####" "#" 1 A_PlayWeaponSound("misc/icebreak")//A_FreezeDeathChunks
+        "####" "#" -1
+        stop
+      CoopModeOn:
+        TNT1 A 0
+        TNT1 A 0 A_ChangeFlag("THRUSPECIES",1)
+        TNT1 A 0 A_ChangeFlag("DONTBLAST",1)
+        PLY1 A 1
+        goto Spawn
+      Pain.MightyBoot:
+        PLY4 A 1 ACS_ExecuteAlways(312, 0, 25, 5, 24)
+        PLY4 A 1 A_PlaySoundEx("duke/kickhit","body",0,0)
+        TNT1 A 0 A_Recoil(12)
+        PLY4 A 6 A_Pain
+        Goto See
+	  Death.PhosFireCoop:        
+      Death.HexGreenFire:
+      Death.QuakeFire:
+	  Death.FireExplosive:
+      Burn:
+        RBRN I 1 A_SpawnItemEx("QuakeBurn",random(-10,10),random(-10,10),random(12,42),random(-2,2),random(-2,2),random(0,3),random(-180,180),32)
+        RBRN I 1 A_PlaySound("*burndeath")
+        RBRN IIII 1 A_SpawnItemEx("QuakeBurn",random(-10,10),random(-10,10),random(11,37),random(-2,2),random(-2,2),random(0,3),random(-180,180),32)
+        RBRN J 1 A_NoBlocking
+        RBRN JJJJ 1 A_SpawnItemEx("QuakeBurn",random(-10,10),random(-10,10),random(10,32),random(-2,2),random(-2,2),random(0,3),random(-180,180),32)
+        RBRN KKKKLLLLMMMM 1 A_SpawnItemEx("QuakeBurn",random(-10,10),random(-10,10),random(8,22),random(-1,1),random(-1,1),random(0,2),random(-180,180),32)
+        RBRN NNNNNNNNNNNN 2 A_SpawnItemEx("QuakeBurn",random(-10,10),random(-10,10),random(5,12),random(-1,1),random(-1,1),random(0,2),random(-180,180),32)
+        RBRN NNNNNNNNNNNN 3 A_SpawnItemEx("QuakeBurn",random(-10,10),random(-10,10),random(5,12),random(-1,1),random(-1,1),random(0,2),random(-180,180),32)
+        RBRN NNNNNNNNNNNN 4 A_SpawnItemEx("QuakeBurn",random(-10,10),random(-10,10),random(5,12),random(-1,1),random(-1,1),random(0,2),random(-180,180),32)
+        RBRN NNNNNNNNNNNN 5 A_SpawnItemEx("QuakeBurn",random(-10,10),random(-10,10),random(5,12),random(-1,1),random(-1,1),random(0,2),random(-180,180),32)
+        RBRN NNNNNNNNNNNN 6 A_SpawnItemEx("QuakeBurn",random(-10,10),random(-10,10),random(5,12),random(-1,1),random(-1,1),random(0,2),random(-180,180),32)
+        RBRN N -1
+        Stop
+      Pain.MarathonStun:
+        TNT1 A 0 A_Stop
+        PLY4 A 1 ACS_ExecuteAlways(312, 0, 25, 5, 100)
+        TNT1 A 0 A_GiveInventory("NothingSpeed")
+        TNT1 A 0 A_SetBlend("White",0.9,105)
+        PLY4 A 1 A_PlaySoundEx("marathon/tech50/stun","body",0,0)
+        PLY4 A 6 A_Pain
+        Goto See
+	  Death.Dynamite:
+	  Death.LifeLeech:
+	  Death.CalebBullet:
+	  Death.CalebNapalm:
+	  Death.Tesla:
+	  Death.Vodoo:
+		TNT1 A 0 A_Jump(218, "Death")
+		TNT1 A 0 A_GiveToTarget("CalebDMTaunt1", 1)
+		Goto Death
+	  Death.CalebFire:
+		TNT1 A 0 A_Jump(218, "Burn")
+		TNT1 A 0 A_GiveToTarget("CalebDMTaunt1", 1)
+		Goto Burn
+      Death.EradDisc:
+	  Death.EradShock:
+	  Death.EradPiercingDart:
+	  Death.EradExplosive2:	  
+		TNT1 A 0 A_Jump(218, "Death")
+		TNT1 A 0 A_GiveToTarget("EleenaDMTaunt1", 1)
+		Goto Death
+	  Death.EradGreenFire:
+	  Death.EradCoopGreenFire:	  
+		TNT1 A 0 A_Jump(218, "Burn")
+		TNT1 A 0 A_GiveToTarget("EleenaDMTaunt1", 1)
+		Goto Burn
+	  Death.EradExplosive:
+	  Death.EradNova:
+		TNT1 A 0 A_Jump(218, "XDeath")
+		TNT1 A 0 A_GiveToTarget("EleenaGibTaunt", 1)
+		Goto XDeath		
+	  Death.RottExplosive:
+		TNT1 A 0 A_SpawnItemEx("RottGibbedMan",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERSCALE)
+		BLAN A 1
+		TNT1 A 0 A_Jump(128,2)
+		TNT1 A 0 A_GiveToTarget("LudicrousGibsItem", 1)
+		TNT1 AA 0
+		BLAN A 5 A_NoBlocking
+		Stop
+	  Death.RottDisintegrate:
+		TNT1 A 0 A_Scream
+		TNT1 A 0 A_UnsetSolid
+		BLAN A 5 A_SpawnItem("RGodModeDeath")
+		BLAN A -1 A_Fall
+		stop
+	  Death.RottFire:
+	    TNT1 A 0 A_Scream
+		TNT1 A 0 A_playsound("gen/burned") 
+		TNT1 A 0 A_SpawnItem("RangerBurned")
+		TNT1 A 0 A_Fall
+		ACLO E 5
+		ACLO E -1		
+	    Stop
+      Disintegrate:
+        TNT1 A 0 A_GiveInventory("EnemyZorched",1)
+        TNT1 A 0 A_NoBlocking
+        TNT1 A 0 A_ChangeFlag("DONTGIB",1)
+        TNT1 A 0 A_SpawnItemEx("RangerDisintegrate",0,0,5,0,0,0,0,32)
+        ACLO E 5 A_PlayerScream
+        ACLO E -1
+        stop
+	  Death.Nuke:
+		ACLO E 0 A_UnsetSolid
+		ACLO E 0 A_PlayerScream
+		ACLO E 0 A_NoBlocking
+		ACLO E 5 A_SpawnItemEx("RangerNuke")
+		ACLO E -1
+		stop
+	}
+}
+
+Actor RangerNuke
+{
+	-SOLID
+	+NOBLOCKMAP
+	+CLIENTSIDEONLY
+	Scale 0.21
+	states
+	{
+	Spawn:
+		NK23 ABCDEFG 5 bright
+		stop
+	}
+}
+
+Actor RangerDisintegrate : ZombiemanDisintegrate 
+{
+   Scale 0.21
+   States
+   {
+      Spawn:
+       TNT1 A 0
+       RANG G 3 A_SpawnItem("DisintEffectSmall",0,10)
+       RANG G 3 A_SetTranslucent(0.9,0)
+       RANG G 3 A_SetTranslucent(0.8,0)
+       RANG G 3 A_SetTranslucent(0.7,0)
+       RANG I 3 A_SetTranslucent(0.6,0)
+       RANG I 3 A_SetTranslucent(0.5,0)
+       RANG I 2 A_SetTranslucent(0.4,0)
+       RANG I 2 A_SetTranslucent(0.3,0)
+       RANG N 2 A_SetTranslucent(0.2,0)
+       RANG N 2 A_SetTranslucent(0.1,0)
+        Stop
+   }
+}
+
+ACTOR Quake_RangerHead : PlayerChunk
+{
+	Radius 4
+	Height 4
+	Scale 0.6
+	+NOBLOCKMAP
+	+DROPOFF
+	+CANNOTPUSH
+	+SKYEXPLODE
+	+NOBLOCKMONST
+	+NOSKIN
+	Gravity 0.5
+	Health 1
+	States
+	{
+	Spawn:
+		QD11 A 0
+		QD11 A 5 A_CheckFloor("Hit")
+		Goto Spawn+1
+	Hit:
+		QD11 B 16 A_CheckPlayerDone
+		Wait
+	}
+}
+
+ACTOR Quake_NewParticles : blood
+{
+  +CLIENTSIDEONLY
+  +NOGRAVITY
+  States
+  {
+  Spawn:
+    TNT1 A 0 A_SpawnItemEx ("Quake_BloodParticle", random(-2,2)*5, random(-2,2)*5, random(-2,2)*5,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    TNT1 A 0 A_SpawnItemEx ("Quake_BloodParticle", random(-2,2)*5, random(-2,2)*5, random(-2,2)*5,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    TNT1 A 0 A_SpawnItemEx ("Quake_BloodParticle", random(-2,2)*5, random(-2,2)*5, random(-2,2)*5,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    TNT1 A 0 A_SpawnItemEx ("Quake_BloodParticle", random(-2,2)*5, random(-2,2)*5, random(-2,2)*5,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    TNT1 A 1 A_SpawnItemEx ("Quake_BloodParticle", random(-2,2)*5, random(-2,2)*5, random(-2,2)*5,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    Stop
+  }
+}
+
+ACTOR Quake_GibBlood : Quake_NewParticles
+{
+  States
+  {
+  Spawn:
+    TNT1 A 0 A_SpawnItemEx ("Quake_BloodParticle", random(-1,1)*2, random(-1,1)*2, random(-1,1)*2,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    TNT1 A 0 A_SpawnItemEx ("Quake_BloodParticle", random(-1,1)*2, random(-1,1)*2, random(-1,1)*2,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    TNT1 A 1 A_SpawnItemEx ("Quake_BloodParticle", random(-1,1)*2, random(-1,1)*2, random(-1,1)*2,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    Stop
+  }
+}
+
+actor Quake_GIB0
+{
+  Radius 4
+  Height 4
+  Speed 0
+  +NOTELEPORT
+  +NOBLOCKMAP
+  +MOVEWITHSECTOR
+  +THRUACTORS
+  +CLIENTSIDEONLY
+  -SOLID
+  States
+  {
+  Spawn:
+    QD11 B 1
+    Loop
+  Death:
+	QD11 B 100 A_FadeOut
+	Stop
+  }
+}
+
+actor Quake_GIB1
+{
+  Radius 4
+  Height 4
+  Speed 0
+  Projectile
+  Gravity 0.5
+  BounceType Doom
+  BounceFactor 0.5
+  -NOGRAVITY
+  +NOTELEPORT
+  +MOVEWITHSECTOR
+  +THRUACTORS
+  +CLIENTSIDEONLY
+  -SOLID  
+  health 2
+  States
+  {
+  Spawn:
+    QD11 A 2 A_SpawnItemEx("Quake_GibBlood",0,0,0,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    loop
+  Death:
+    QD11 B 0 A_Jump(192, 2, 3, 4)
+    QD11 B 300 A_Gravity
+    stop
+    QD11 B 250 A_Gravity
+    stop
+    QD11 B 200 A_Gravity
+    stop
+    QD11 B 150 A_Gravity
+    stop
+  }
+}
+
+actor Quake_GIB2
+{
+  Radius 4
+  Height 4
+  Speed 0
+  Projectile
+  Gravity 0.5
+  BounceType Doom
+  BounceFactor 0.5
+  -NOGRAVITY
+  +NOTELEPORT
+  +MOVEWITHSECTOR
+  +THRUACTORS
+  +CLIENTSIDEONLY
+  -SOLID
+  health 3
+  States
+  {
+  Spawn:
+    QD11 AABBCCDDEEFFGGHH 2 A_SpawnItemEx("Quake_GibBlood",0,0,0,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    loop
+  Death:
+    QD11 I 0 A_Jump(192, 2, 3, 4)
+    QD11 I 300 A_Gravity
+    stop
+    QD11 I 250 A_Gravity
+    stop
+    QD11 I 200 A_Gravity
+    stop
+    QD11 I 150 A_Gravity
+    stop
+  }
+}
+
+actor Quake_GIB3
+{
+  Radius 4
+  Height 4
+  Speed 0
+  Projectile
+  Gravity 0.5
+  BounceType Doom
+  BounceFactor 0.5
+  -NOGRAVITY
+  +NOTELEPORT
+  +MOVEWITHSECTOR
+  +THRUACTORS
+  +CLIENTSIDEONLY
+  -SOLID
+  health 4
+  States
+  {
+  Spawn:
+    QD11 AABBCCDDEEFFGGHH 2 A_SpawnItemEx("Quake_GibBlood",0,0,0,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    loop
+  Death:
+    QD11 I 0 A_Jump(192, 2, 3, 4)
+    QD11 I 300 A_Gravity
+    stop
+    QD11 I 250 A_Gravity
+    stop
+    QD11 I 200 A_Gravity
+    stop
+    QD11 I 150 A_Gravity
+    stop
+  }
+}
+
+actor Quake_GIB12
+{
+  Radius 4
+  Height 4
+  Speed 0
+  Projectile
+  Gravity 0.5
+  BounceType Doom
+  BounceFactor 0.5
+  -NOGRAVITY
+  +NOTELEPORT
+  +MOVEWITHSECTOR
+  +THRUACTORS
+  +CLIENTSIDEONLY
+  -SOLID
+  health 2
+  States
+  {
+  Spawn:
+    QD11 AABBCCDDEEFFGGHH 2 A_SpawnItemEx("Quake_GibBlood",0,0,0,0,0,0,0,SXF_TRANSFERTRANSLATION)
+    loop
+  Death:
+    QD11 I 0 A_Jump(192, 2, 3, 4)
+    QD11 I 300 A_Gravity
+    stop
+    QD11 I 250 A_Gravity
+    stop
+    QD11 I 200 A_Gravity
+    stop
+    QD11 I 150 A_Gravity
+    stop
+  }
+}
+
+Actor QuakeGibSpawner
+{
+	+CLIENTSIDEONLY
+	+NOINTERACTION
+	+NOCLIP
+	-TELESTOMP
+	-SOLID
+	+NOGRAVITY
+	States
+	{
+	Spawn:
+		TNT1 A 0
+		TNT1 A 0 A_SpawnDebris("Quake_GIB1",true)
+		TNT1 A 0 A_SpawnDebris("Quake_GIB2",true)
+		TNT1 A 0 A_SpawnDebris("Quake_GIB3",true)
+		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION)
+		TNT1 A 5 A_PlaySound("ranger/gib2")
+		stop
+	}
+}
+
+Actor QuakeMediumGibSpawner
+{
+	+CLIENTSIDEONLY
+	+NOINTERACTION
+	+NOCLIP
+	-TELESTOMP
+	-SOLID
+	+NOGRAVITY
+	States
+	{
+	Spawn:
+		TNT1 A 0
+		TNT1 AA 0 A_SpawnDebris("Quake_GIB1",true)
+		TNT1 AA 0 A_SpawnDebris("Quake_GIB2",true)
+		TNT1 AA 0 A_SpawnDebris("Quake_GIB3",true)
+		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION)
+		TNT1 A 5 A_PlaySound("ranger/gib2")
+		stop
+	}
+}
+
+Actor QuakeLargeGibSpawner
+{
+	+CLIENTSIDEONLY
+	+NOINTERACTION
+	+NOCLIP
+	-TELESTOMP
+	-SOLID
+	+NOGRAVITY
+	States
+	{
+	Spawn:
+		TNT1 A 0
+		TNT1 AAA 0 A_SpawnDebris("Quake_GIB1",true)
+		TNT1 AAA 0 A_SpawnDebris("Quake_GIB2",true)
+		TNT1 AAA 0 A_SpawnDebris("Quake_GIB3",true)
+		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION)
+		TNT1 A 5 A_PlaySound("ranger/gib2")
+		stop
+	}
+}
+
+Actor QuakeHugeGibSpawner
+{
+	+CLIENTSIDEONLY
+	+NOINTERACTION
+	+NOCLIP
+	-TELESTOMP
+	-SOLID
+	+NOGRAVITY
+	States
+	{
+	Spawn:
+		TNT1 A 0
+		TNT1 AAAA 0 A_SpawnDebris("Quake_GIB1",true)
+		TNT1 AAAA 0 A_SpawnDebris("Quake_GIB2",true)
+		TNT1 AAAA 0 A_SpawnDebris("Quake_GIB3",true)
+		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION)
+		TNT1 A 5 A_PlaySound("ranger/gib2")
+		stop
+	}
+}
+
+actor QuakeClass: Boolean {}
+
+actor QuakeBullet: FastProjectile
+{
+    Damage (4)
+    Radius 1
+    Height 1
+    Speed 320
+    Projectile
+    Renderstyle "Normal"
+    Species "Player"
+    +BLOODSPLATTER
+    +THRUGHOST
+    +THRUSPECIES
+    +NOTIMEFREEZE
+    Alpha 1.0
+    //Decal Bulletchip
+    States
+    {
+      Spawn:
+        TNT1 A 1
+        loop
+      Death:
+        TNT1 A 1
+        TNT1 A 1 A_SpawnItem("QuakeBulletPuff")
+        stop
+      Crash:
+      XDeath:
+        TNT1 A 1
+        stop
+    }
+}
+
+actor QuakeBulletSpectral: QuakeBullet
+{
+    -THRUGHOST
+    DamageType "Spectral"
+}
+
+actor QuakeBullet2: QuakeBullet
+{
+    -THRUGHOST
+    DamageType "QuakePistol"
+}
+
+actor TelefragTester: Rocket
+{
+    DamageType "Telefrag"
+}
+
+actor QuakeInvisibility: CustomInventory
+{
+    +AUTOACTIVATE
+    +ALWAYSPICKUP
+    Inventory.MaxAmount 0
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_SetTranslucent(0.15, 0)
+        TNT1 A 0 A_ChangeFlag("SHADOW", 1)
+        stop
+    }
+}
+
+actor QuakeInvisibilityOff: CustomInventory
+{
+    +AUTOACTIVATE
+    +ALWAYSPICKUP
+    Inventory.MaxAmount 0
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_SetTranslucent(1.0, 0)
+        TNT1 A 0 A_ChangeFlag("SHADOW", 0)
+        stop
+    }
+}
+
+actor QuakeBurn
+{
+    Alpha 0.5
+    Scale 0.25
+    RenderStyle Add
+    +CLIENTSIDEONLY
+    +NOINTERACTION
+    States
+    {
+      Spawn:
+        CFFX CDEFGHIJ 2 bright A_FadeOut(0.025)
+        loop
+    }
+}
+
+Actor RangerGibbed : RottGibbedMan { Scale 0.6 }
+
+Actor RangerBurned
+{
+    +CLIENTSIDEONLY
+    -SOLID
+    +FLOORCLIP
+	Scale 0.65
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			ske7 ABCDEFGHIJKLMNOPQRSTUVWXYZ 2 bright
+			skex ABCDEFGHIJKL 2 bright
+			skex M 0 A_playsound("gen/skel") 
+			skex MNOPQRSTUV 3 bright
+			skex V -1
+			Stop
+	}
+}
+
+Actor QuakeSmallGibDropper : QuakeGibSpawner {}
+
+ACTOR Quake_BloodParticle
+{
+  Mass 5
+  +NoClip
+  +NoTeleport
+  +ClientSideOnly
+  Gravity 0.01
+  States
+  {
+  Spawn:
+    BPAR C 0
+    BPAR C 0 A_Jump (256, "shade1", "shade3", "shade5")
+    Shade1:
+    BPAR C 5
+	A:
+	BPAR C 1 A_FadeOut
+    Loop
+    Shade3:
+    BPAR D 5
+	B:
+	BPAR D 1 A_FadeOut
+    Loop
+    Shade5:
+    BPAR E 5
+	C:
+	BPAR E 1 A_FadeOut
+    Loop
+  }
+}
+
+Actor AxeChecker : CustomInventory { Inventory.MaxAmount 99 }

@@ -1,0 +1,105 @@
+ACTOR HeatSeeker : Weapon 
+{
+     Weapon.SelectionOrder 1400
+     Inventory.PickupSound "gen/pickup"
+     Weapon.SlotNumber 1
+	 Weapon.UpSound "gen/wepswitch"
+     Inventory.Pickupmessage "You have a Heat-Seeker!"
+     Obituary "%o couldn't evade %k's heatseeker"
+     Weapon.AmmoType "HSMissiles"
+     Weapon.AmmoUse 1	 
+	 Weapon.AmmoGive 10
+	 Tag "Heat Seeker"
+     +NOAUTOAIM	 
+	 +IGNORESKILL
+	 Inventory.RestrictedTo "IPFreeley"	 
+     States
+     { 
+     Spawn: 
+        PHSE A -1 
+        Stop
+     Ready: 
+		TNT1 A 0 A_TakeInventory("UsingFirearm", 1)	 
+        HSEE A 1 A_WeaponReady 
+        Goto Ready+1
+     Deselect: 
+        HSEE A 1 A_Lower 
+        Loop 
+     Select:
+        HSEE A 1 A_Raise
+        Loop
+     Fire: 
+		TNT1 A 0 A_PlaySound("hseek/shoot")
+        HSEE A 1 Offset(0,36) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+	 	TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")		
+		TNT1 A 0 A_FireCustomMissile("CompHSMissile",0,8,0,-8)
+	Continue:
+        HSEE B 2 Offset(0,38) bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        HSEE C 1 Offset(0,42) bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        HSEE C 1 Offset(0,40) bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        HSEE D 1 Offset(0,38) bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        HSEE D 1 Offset(0,36) bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        HSEE A 1 Offset(0,34) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        HSEE A 1 Offset(0,32) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		HSEE A 9 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)		
+	    Goto Ready
+	CoopFire:	
+		TNT1 A 0 A_FireCustomMissile("HSMissile",0,8,0,-8)
+		Goto Continue
+     }
+}  
+
+actor HSMissile
+{
+    Radius 11
+    Height 6
+    Speed 40 
+    Damage (40)
+    Scale 0.50
+	Species "Player"	
+    +SEEKERMISSILE
+	+WINDTHRUST	
+    +SCREENSEEKER	
+	+EXTREMEDEATH
+	+LOOKALLAROUND
+	+NOBLOOD
+	+BLOODLESSIMPACT
+	+THRUSPECIES
+    Projectile
+    DamageType "RottExplosive"	
+	Obituary "%o met %p missile."
+    DeathSound "god/bang"
+	Decal Scorch
+    States
+    {  
+     Spawn:
+		TNT1 A 0
+		TNT1 A 0 A_PlaySound("missile/fly",5,1.0,1,ATTN_NORM)
+	 SpawnLoop:  
+		MISS A 0 A_SeekerMissile(3,5)
+		MISS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0) 
+		MISS A 0 A_SeekerMissile(3,5,SMF_LOOK,256)	   
+		MISS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0) 
+		MISS A 0 A_SeekerMissile(3,5)	   
+		MISS A 1 Bright A_CustomMissile("MissileTrail",0,0,0,0) 	   
+		Loop
+     Death:  
+	 XDeath:
+		TNT1 A 0 A_StopSound(5)
+		TNT1 A 0 A_PlaySound("gen/expl2",6,1.0,0,ATTN_NORM)	 
+    	EXPL A 2 Bright A_Explode(64,48)
+        EXPL BCDEFGHIJKLMNOPQRST 2 Bright
+        Stop
+	Crash:
+		TNT1 A 0 A_StopSound(5)	
+		TNT1 A 0 A_PlaySound("gen/expl2",6,1.0,0,ATTN_NORM)
+		TNT1 A 0 A_Jump(250,2)
+		TNT1 A 0 A_PlaySound("rmissile/cook",5,1.0,0,ATTN_NORM)	
+		TNT1 A 0	
+    	EXPL A 2 Bright A_Explode(64,48)
+        EXPL BCDEFGHIJKLMNOPQRST 2 Bright
+        Stop
+    }
+}
+
+Actor CompHSMissile : HSMissile { Damage(35) Speed 38 -THRUSPECIES Species "" }
