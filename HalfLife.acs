@@ -903,11 +903,6 @@ Script "Freeman_HoldAlt" (void)
 	}
 }
 
-Script "HalfLifeOpposingForceTranslation" (void)
-{
-	
-}
-
 Script "HalfLifeRecoil" (int weapon)
 {
 	int a;
@@ -937,7 +932,7 @@ Script "HalfLifeRecoil" (int weapon)
 			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*56); Delay(1); }
 			for(a = 3; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*56); Delay(1); }
 			break;
-		case 3:
+		case 7:
 			for(a = 0; a < 8; a++) { SetActorPitch(0, GetActorPitch(0) - a*56); Delay(1); }
 			for(a = 7; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*56); Delay(1); }
 			break;
@@ -954,9 +949,11 @@ Script "HalfLifeLaserSight" (int mode)
 			
 		if(CheckInventory("HLDeagleLaserActivated"))
 			LineAttack(0, GetActorAngle(0), GetActorPitch(0), 0, "HLDeagleLaserdot", "none", 8192.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL, 0);
+		else
+			terminate;
 		break;
 		case 2:
-		if(!CheckWeapon(" RPG ")||!CheckInventory("laserdeactive"))
+		if(!CheckWeapon(" RPG "))
 			terminate;
 		
 		if(!CheckInventory("HalfLifeOpposingForce")&&!CheckInventory("HLRPGReload")&&!CheckInventory("laserdeactive"))
@@ -1390,12 +1387,6 @@ Script 2690 (void) NET // eww
 	GiveInventory("Hevacquired", 1);
 }
 
-Script "Freeman_Squeak_Remove" (void)
-{
-	TakeInventory("HL Squeaks", 1);
-	TakeInventory("freeman_uniqueselected", 1);
-}
-
 Script "BonusItemCount" Open
 {
 	HealthBonusScriptCount = 0;
@@ -1406,24 +1397,29 @@ Script "BonusItemCount" Open
 
 Script "HalfLifeDisplacerTeleportDecide" (void)
 {
-	SetActivator(0, AAPTR_Tracer);
-	If(GetActorProperty(0,APROP_Health) < 1 && (ClassifyActor(0) & ACTOR_MONSTER || ClassifyActor(0) & ACTOR_PLAYER))
+	Delay(5);
+	If(CheckInventory("HalfLifeClass"))
 	{
-		SetResultValue(1);
-	}
-	else
-	{
-		SetResultValue(0);
+		SetActivator(0, AAPTR_Tracer);
+		If(GetActorProperty(0,APROP_Health) < 1 && ClassifyActor(0) & ACTOR_MONSTER)
+		{
+			SetResultValue(1);
+		}
+		else
+		{
+			SetResultValue(0);
+		}
 	}
 }
 
 Script "HalfLifeStartCoordinate" enter
 {
-	GiveInventory("HLDisplacerTeleporterXStart", (GetActorX(0)>>16)+65536);
-	GiveInventory("HLDisplacerTeleporterYStart", (GetActorY(0)>>16)+65536);
-	GiveInventory("HLDisplacerTeleporterZStart", (GetActorZ(0)>>16)+65536);
-	//PrintBold(d:CheckInventory("HLDisplacerTeleporterXStart"), s:" ", d:CheckInventory("HLDisplacerTeleporterYStart"), s:" ", d:CheckInventory("HLDisplacerTeleporterZStart"));
-	//PrintBold(d:GetActorX(0), s:" ", d:GetActorY(0), s:" ", d:GetActorZ(0));
+	if(CheckInventory("HalfLifeClass"))
+	{
+		GiveInventory("HLDisplacerTeleporterXStart", (GetActorX(0)>>16)+65536);
+		GiveInventory("HLDisplacerTeleporterYStart", (GetActorY(0)>>16)+65536);
+		GiveInventory("HLDisplacerTeleporterZStart", (GetActorZ(0)>>16)+65536);
+	}
 }
 
 Script "HalfLifeDisplacerTeleport" (int type)
@@ -1449,6 +1445,7 @@ Script "HalfLifeDisplacerTeleport" (int type)
 			SpawnForced("HLDisplacerRing",GetActorX(0),GetActorY(0),GetActorZ(0)+(32<<16),0,0);
 			SpawnForced("HLPlayerTeleportPost",GetActorX(0),GetActorY(0),GetActorZ(0)+(32<<16),0,0);	
 			Warp(0, x, y, z, 0, WARPF_ABSOLUTEPOSITION|WARPF_NOCHECKPOSITION);
+			SpawnForced("HLPlayerTeleportPost",x,y,z+(32<<16),0,0);
 			TakeInventory("HLDisplacerTeleporterX", 131072);
 			TakeInventory("HLDisplacerTeleporterY", 131072);
 			TakeInventory("HLDisplacerTeleporterZ", 131072);
@@ -1465,7 +1462,30 @@ Script "HalfLifeDisplacerTeleport" (int type)
 			SpawnForced("HLDisplacerRing",GetActorX(0),GetActorY(0),GetActorZ(0)+(32<<16),0,0);
 			SpawnForced("HLPlayerTeleportPost",GetActorX(0),GetActorY(0),GetActorZ(0)+(32<<16),0,0);
 			Warp(0, x, y, z, 0, WARPF_ABSOLUTEPOSITION|WARPF_NOCHECKPOSITION);
+			SpawnForced("HLPlayerTeleportPost",x,y,z+(32<<16),0,0);
 		}		
 		SetActorVelocity(0,0,0,0,0,0);	
 	}
+}
+
+Script "HalfLifeGrenadeFuse" (void)
+{
+	int oldTID, target;
+	oldTID = ActivatorTID();
+	target = UniqueTID();
+	Thing_ChangeTID(0, target);
+	SetActivator(0, AAPTR_Target);
+	int grenadefuse = CheckInventory("HLGrenadeFuse");
+	SetActivator(target);
+	Thing_ChangeTID(target, oldTID);
+	GiveInventory("HLGrenadeFuse", grenadefuse);
+	
+	while(CheckInventory("HLGrenadeFuse") > 0)
+	{
+		TakeInventory("HLGrenadeFuse", 1);
+		Delay(1);
+	}
+	
+	SetActorState(0, "Death", true);
+	terminate;
 }
