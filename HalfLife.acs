@@ -1397,13 +1397,15 @@ Script "BonusItemCount" Open
 
 Script "HalfLifeDisplacerTeleportDecide" (void)
 {
-	Delay(5);
+	SetActorProperty(0, APROP_Damage, 0);
+	Delay(1);
 	If(CheckInventory("HalfLifeClass"))
 	{
 		SetActivator(0, AAPTR_Tracer);
-		If(GetActorProperty(0,APROP_Health) < 1 && ClassifyActor(0) & ACTOR_MONSTER)
+		If(GetActorProperty(0,APROP_Health) <= 0 || GetActorProperty(0,APROP_SpawnHealth) < 2000 || ((ClassifyActor(0) & ACTOR_MONSTER) || (ClassifyActor(0) & ACTOR_PLAYER)))
 		{
-			SetResultValue(1);
+			If((ClassifyActor(0) & ACTOR_MONSTER) || (ClassifyActor(0) & ACTOR_PLAYER))
+				SetResultValue(1);
 		}
 		else
 		{
@@ -1425,12 +1427,24 @@ Script "HalfLifeStartCoordinate" enter
 Script "HalfLifeDisplacerTeleport" (int type)
 {
 	int x, y, z;
+
 	if(type == 1)
 	{
 		x = GetActorX(0);
 		y = GetActorY(0);
 		z = GetActorZ(0);
+		int oldTID, target;
+		oldTID = ActivatorTID();
+		target = UniqueTID();
+		Thing_ChangeTID(0, target);
 		SetActivator(0, AAPTR_Tracer);
+		If(GetActorProperty(0,APROP_Health) > 0 || GetActorProperty(0,APROP_SpawnHealth) >= 2500 || (!(ClassifyActor(0) & ACTOR_MONSTER) || (!ClassifyActor(0) & ACTOR_PLAYER)))
+		{	
+			SetActivator(target);
+			Thing_ChangeTID(target, oldTID);
+			Thing_Remove(0);
+			terminate;
+		}
 		Warp(0, x, y, z, 0, WARPF_ABSOLUTEPOSITION|WARPF_NOCHECKPOSITION);
 		SetActorVelocity(0,0,0,0,0,0);
 	}
@@ -1487,5 +1501,20 @@ Script "HalfLifeGrenadeFuse" (void)
 	}
 	
 	SetActorState(0, "Death", true);
+	terminate;
+}
+
+Script "HalfLifeSniperScope" (void)
+{
+	While(CheckInventory("HalfLifeOpposingForce") && CheckInventory("HLXBowIsZoomed"))
+	{
+		SetHudSize(800,480,0);
+		SetFont("HLM40A1Z");
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,17460,0,400.0,240.0,0.2,1.0);
+		Delay(1);
+	}
+	SetHudSize(0,0,0);
+	SetFont("none");
+	HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,17460,0,160.0,100.0,0.2,1.0);
 	terminate;
 }

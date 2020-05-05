@@ -635,11 +635,8 @@ Actor HLDisplacerProjectile : FastProjectile
 		TNT1 A 0 A_JumpIfInventory("HLDisplacerTeleported", 1, "TeleportFinish")
 		TNT1 A 0 A_PlaySound("HLDisplacer/Teleport", CHAN_7, 1.0)
 		TNT1 A 0 A_SpawnItemEx("HLDisplacerRing",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERPOINTERS)
-		TNT1 A 0 A_JumpIf(CallACS("HalfLifeDisplacerTeleportDecide") == 1, "Teleporter")
-		stop
-	NoTeleport:
-		TNT1 A 0
-		stop
+		TNT1 A 0 A_JumpIf(CallACS("HalfLifeDisplacerTeleportDecide") == 0, "NoTeleporter")
+		Goto Teleporter
 	Teleporter:
 		TNT1 A 0 A_GiveInventory("HLDisplacerTeleported", 1)
 		TNT1 A 0 A_ChangeFlag("SKYEXPLODE", false)
@@ -647,11 +644,14 @@ Actor HLDisplacerProjectile : FastProjectile
 		TNT1 A 0 A_ChangeVelocity(cos(frandom(0,360))*256,0,sin(frandom(0,180))*256,CVF_RELATIVE|CVF_REPLACE)
 		TNT1 A 4
 		Goto TeleportFinish
-		//Loop
 	TeleportFinish:
+		TNT1 A 0 A_JumpIf(CallACS("HalfLifeDisplacerTeleportDecide") == 0, "NoTeleporter")
 		TNT1 A 0 A_ChangeVelocity(0,0,0,CVF_REPLACE)
 		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeDisplacerTeleport",0,1)
 		GWDB ABCEFGHIJKLMNOPQRSTUVWXY 2 bright
+		stop
+	NoTeleporter:
+		TNT1 A 0
 		stop
 	}
 }
