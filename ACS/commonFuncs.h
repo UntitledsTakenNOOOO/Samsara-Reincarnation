@@ -61,10 +61,10 @@ function int max (int x, int y)
     return y;
 }
 
-function int floor(int fixedNumber)
+/*function int floor(int fixedNumber)
 {
 	return fixedNumber & 0xFFFF0000;
-}
+}*/
 
 function int middle(int x, int y, int z)
 {
@@ -821,7 +821,7 @@ function int roundAway(int toround)
     return ftoi(toround + (1.0 - i));
 }
 
-function int round(int toround)
+/*function int round(int toround)
 {
     return ftoi(toround + 0.5);
 }
@@ -829,7 +829,7 @@ function int round(int toround)
 function int ceil(int toround)
 {
     return ftoi(toround + (1.0-1));
-}
+}*/
 
 function int intFloat(int toround)
 {

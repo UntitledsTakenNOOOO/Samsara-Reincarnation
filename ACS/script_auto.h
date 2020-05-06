@@ -524,6 +524,9 @@ script SAMSARA_SPAWN (int respawning)
 		if (GetUserCvar(pln,"samsara_cl_shephardmode") && CheckInventory("HalfLifeClass")) { GiveInventory("HalfLifeOpposingForce", 1); }
         else { TakeInventory("HalfLifeOpposingForce", 0x7FFFFFFF); }
 		
+		if (GetUserCvar(pln,"samsara_cl_lostmode") && CheckInventory("WolfenClass")) { GiveInventory("WolfenLostMode", 1); }
+        else { TakeInventory("WolfenLostMode", 0x7FFFFFFF); }
+		
         if (GetCVar("samsara_runninginzdoom") == 1) 
 		{
 			if (GetCVar("sv_nobfgaim") == 1) { GiveInventory("DoomNoBFGAim", 1); }
