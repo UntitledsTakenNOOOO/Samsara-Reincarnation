@@ -722,10 +722,18 @@ Actor "HL Crossbow" : HLWeapon
 		TNT1 A 0 A_AlertMonsters
 		TNT1 A 0 A_TakeInventory("HLXBowAmmoCounter", 1)
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"FireCoopOpp")
+		TNT1 A 0 A_JumpIfInventory("HLXBowIsZoomed",1,"FireZoomedOpp")
 		TNT1 A 0 A_FireCustomMissile("HLM40A1Bullet", 0, 0, 4)
 		Goto FireFinishOpp
+	FireZoomedOpp:
+		TNT1 A 0 A_FireCustomMissile("HLM40A1BulletZoomed", 0, 0, 0)
+		Goto FireFinishOpp
 	FireCoopOpp:
+		TNT1 A 0 A_JumpIfInventory("HLXBowIsZoomed",1,"FireZoomedCoopOpp")
 		TNT1 A 0 A_FireCustomMissile("HLM40A1BulletCoop", 0, 0, 4)
+		Goto FireFinishOpp
+	FireZoomedCoopOpp:
+		TNT1 A 0 A_FireCustomMissile("HLM40A1BulletZoomedCoop", 0, 0, 0)
 		Goto FireFinishOpp
 	FireFinishOpp:
 		OP06 BCDEFGHIJKLMNOPQRSTUVWXYZ 1
@@ -743,7 +751,13 @@ Actor "HL Crossbow" : HLWeapon
 		TNT1 A 0 A_AlertMonsters
 		TNT1 A 0 A_TakeInventory("HLXBowAmmoCounter", 1)
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"FireCoopLastOpp")
+		TNT1 A 0 A_JumpIfInventory("HLXBowIsZoomed",1,"FireZoomedLastOpp")
 		TNT1 A 0 A_FireCustomMissile("HLM40A1Bullet", 0, 0, 4)
+		Goto FireFinishLastOpp
+	FireZoomedLastOpp:
+		TNT1 A 0 A_FireCustomMissile("HLM40A1BulletZoomed", 0, 0, 0)
+		Goto FireFinishLastOpp
+	FireFinishLastOpp:
 		OP09 BCDEFGHIJKLMNOPQRSTUVWXYZ 1
 		OP10 ABCD 1
 		OP10 E 0 A_PlaySound("HLM40a1/Bolt2", CHAN_5)
@@ -753,12 +767,10 @@ Actor "HL Crossbow" : HLWeapon
 		Goto FireLastReloadOpp
 	FireCoopLastOpp:
 		TNT1 A 0 A_FireCustomMissile("HLM40A1BulletCoop", 0, 0, 4)
-		OP09 BCDEFGHIJKLMNOPQRSTUVWXYZ 1
-		OP10 ABCD 1
-		OP10 E 0 A_PlaySound("HLM40a1/Bolt2", CHAN_5)
-		OP10 EFGHIJKLMNOPQRSTUVWXYZ 1
-		OP11 ABCDEFGHIJKLMNO 1
-		Goto FireLastReloadOpp
+		Goto FireFinishLastOpp
+	FireCoopLastZoomedOpp:
+		TNT1 A 0 A_FireCustomMissile("HLM40A1BulletZoomedCoop", 0, 0, 0)
+		Goto FireFinishOpp
 	FireLastReloadOpp:
 		TNT1 A 0 A_JumpIfInventory("HLXBowAmmoCounter",5,"WIdleOpp")
 		TNT1 A 0 A_JumpIfInventory("Shell",2,"ReloadOpp")
@@ -987,6 +999,39 @@ Actor HLM40A1BulletCoop : HLBulletCoop
 { 
 	DamageType "HLBullet"
 	Damage (150)
+	+THRUGHOST  
+	+NOEXTREMEDEATH
+	+NODAMAGETHRUST
+	Scale 0.5 
+	Speed 512
+	States
+	{
+		SpawnLoop:
+			TNT1 A 1
+			loop
+	}
+}
+
+Actor HLM40A1BulletZoomed : HLBullet 
+{ 
+	DamageType "HLBullet"
+	Damage (200)
+	+THRUGHOST  
+	+NOEXTREMEDEATH
+	+NODAMAGETHRUST
+	Scale 0.5 
+	Speed 512
+	States
+	{
+		SpawnLoop:
+			TNT1 A 1
+			loop
+	}
+}
+Actor HLM40A1BulletZoomedCoop : HLBulletCoop 
+{ 
+	DamageType "HLBullet"
+	Damage (200)
 	+THRUGHOST  
 	+NOEXTREMEDEATH
 	+NODAMAGETHRUST
