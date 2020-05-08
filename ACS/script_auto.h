@@ -511,21 +511,24 @@ script SAMSARA_SPAWN (int respawning)
 			TakeInventory("JonBallgag", 0x7FFFFFFF);
 			TakeInventory("LeonardBallgag", 0x7FFFFFFF);
 		}
-		
+				
 		if (GetUserCvar(pln,"samsara_cl_vanilladoom")) { GiveInventory("VanillaDoom", 1); }
         else { TakeInventory("VanillaDoom", 0x7FFFFFFF); }
         
         if (GetUserCvar(pln,"samsara_cl_weaponhud")) { GiveInventory("ExpandedHud", 1); }
         else { TakeInventory("ExpandedHud", 0x7FFFFFFF); }
 		
-		if (GetUserCvar(pln,"samsara_cl_dkclab") && CheckInventory("DukeClass")) { GiveInventory("DukeLabToken", 1); }
+		if (GetUserCvar(pln,"samsara_cl_dkclab") && CheckInventory("DukeClass")) { GiveInventory("DukeLabToken", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1); }
         else { TakeInventory("DukeLabToken", 0x7FFFFFFF); }
 		
-		if (GetUserCvar(pln,"samsara_cl_shephardmode") && CheckInventory("HalfLifeClass")) { GiveInventory("HalfLifeOpposingForce", 1); }
+		if (GetUserCvar(pln,"samsara_cl_shephardmode") && CheckInventory("HalfLifeClass")) { GiveInventory("HalfLifeOpposingForce", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1); }
         else { TakeInventory("HalfLifeOpposingForce", 0x7FFFFFFF); }
 		
-		if (GetUserCvar(pln,"samsara_cl_lostmode") && CheckInventory("WolfenClass")) { GiveInventory("WolfenLostMode", 1); }
+		if (GetUserCvar(pln,"samsara_cl_lostmode") && CheckInventory("WolfenClass")) { GiveInventory("WolfenLostMode", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1); }
         else { TakeInventory("WolfenLostMode", 0x7FFFFFFF); }
+		
+		if(!GetUserCvar(pln,"samsara_cl_lostmode") && !GetUserCvar(pln,"samsara_cl_shephardmode") && !GetUserCvar(pln,"samsara_cl_dkclab"));
+			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0);
 		
         if (GetCVar("samsara_runninginzdoom") == 1) 
 		{
@@ -1054,7 +1057,7 @@ script SAMSARA_ENTER_CLIENT (void) clientside
 
         // Also this line
         if (cpln != pln) { Delay(1); continue; }
-        
+		
         SamsaraClientClass = class+1;
         
         if (oClass != class) { SamsaraItemFlash = Timer(); }
@@ -1095,6 +1098,11 @@ script SAMSARA_ENTER_CLIENT (void) clientside
         Delay(1);
     }
     //Log(s:"Client ", n:pln+1, s:"\c- (", d:pln, s:") has left spawn (", d:startTime, s:" vs. ", d:ClientEnterTimes[pln], s:")");
+}
+
+script "SAMSARA_CLIENT_ALTERNATIVECLASS" (int set) clientside
+{
+	SamsaraAlternativeClass = set;
 }
 
 script SAMSARA_DISCONNECT_CLIENT (int pln) disconnect clientside

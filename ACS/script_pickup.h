@@ -6,6 +6,7 @@ int msgColors[22] =
 
 script SAMSARA_CLIENT_CLASS (int slot) clientside
 {
+	int alternativeclass;
     int toClass = SamsaraClientClass-1;
     int displaymode;
     if (GetCVar("samsara_runninginzdoom") == 1)
@@ -60,12 +61,24 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
             
           case 1:
             if (pdUniques) { success = SetActorState(0, PickupStates[toClass][7]); }
-            if (!pdUniques || !success) { SetActorState(0, PickupStates[toClass][3]); }
+            if (!pdUniques || !success) 
+			{ 
+				if(SamsaraAlternativeClass)
+					SetActorState(0, PickupStates[toClass][11]);
+				else
+					SetActorState(0, PickupStates[toClass][3]);
+			}
             break;
             
           case 2:
             if (pdUniques) { success = SetActorState(0, PickupStates[toClass][4]); }
-            if (!pdUniques || !success) { SetActorState(0, PickupStates[toClass][0]); }
+            if (!pdUniques || !success) 
+			{ 
+				if(SamsaraAlternativeClass)
+					SetActorState(0, PickupStates[toClass][8]);
+				else
+					SetActorState(0, PickupStates[toClass][0]);
+			}
             break;
         }
     }
@@ -95,8 +108,20 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
 
         if (!success)
         {
-            if (hasSlot) { SetActorState(0, PickupStates[toClass][1]); }
-            else         { SetActorState(0, PickupStates[toClass][2]); }
+            if (hasSlot) 
+			{ 
+				if(SamsaraAlternativeClass)
+					SetActorState(0, PickupStates[toClass][9]);
+				else
+					SetActorState(0, PickupStates[toClass][1]);
+			}
+            else         
+			{ 
+				if(SamsaraAlternativeClass)
+					SetActorState(0, PickupStates[toClass][10]);
+				else
+					SetActorState(0, PickupStates[toClass][2]);
+			}
         }
         break;
         
@@ -106,11 +131,23 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
           case SLOT_CHAINSAW:
           case SLOT_PUNCHDRUNKSAW:
             if (pdSaws) { success = SetActorState(0, PickupStates[toClass][4]); }
-            else { success = SetActorState(0, PickupStates[toClass][0]); }
+            else 
+			{ 
+				if(SamsaraAlternativeClass)
+					success = SetActorState(0, PickupStates[toClass][8]);
+				else
+					success = SetActorState(0, PickupStates[toClass][0]);
+			}
             break;
         }
           
-        if (!success) { SetActorState(0, PickupStates[toClass][0]); }
+        if (!success) 
+		{ 
+			if(SamsaraAlternativeClass)
+				SetActorState(0, PickupStates[toClass][8]);
+			else
+				SetActorState(0, PickupStates[toClass][0]);
+		}
         break;
     }
 }

@@ -197,34 +197,34 @@ int ClassItems[CLASSCOUNT] =
 	"BittermanClass", //+Added
 };
 
-int PickupStates[CLASSCOUNT][8] = 
+int PickupStates[CLASSCOUNT][12] = 
 {
-    {"Doomguy", "DoomFull",     "DoomEmpty",        "DoomSpecial",      "DoomPunchdrunk",      "DoomPDFull",       "DoomPDEmpty",      "DoomPDSpecial"},
-    {"Chexguy", "ChexFull",     "ChexEmpty",        "ChexSpecial",      "ChexPunchdrunk",      "ChexPDFull",       "ChexPDEmpty",      "ChexPDSpecial"},
-    {"Heretic", "HereticFull",  "HereticEmpty",     "HereticSpecial",   "HereticPunchdrunk",   "HereticPDFull",    "HereticPDEmpty",   "HereticPDSpecial"},
-    {"Wolfguy", "WolfFull",     "WolfEmpty",        "WolfSpecial",      "WolfPunchdrunk",      "WolfPDFull",       "WolfPDEmpty",      "WolfPDSpecial"},
-    {"Hexen",   "HexenFull",    "HexenEmpty",       "HexenSpecial",     "HexenPunchdrunk",     "HexenPDFull",      "HexenPDEmpty",     "HexenPDSpecial"},
-    {"Dukeguy", "DukeFull",     "DukeEmpty",        "DukeSpecial",      "DukePunchdrunk",      "DukePDFull",       "DukePDEmpty",      "DukePDSpecial"},
-    {"Marathon","MarathonFull", "MarathonEmpty",    "MarathonSpecial",  "MarathonPunchdrunk",  "MarathonPDFull",   "MarathonPDEmpty",  "MarathonPDSpecial"},
-    {"Quake",   "QuakeFull",    "QuakeEmpty",       "QuakeSpecial",     "QuakePunchdrunk",     "QuakePDFull",      "QuakePDEmpty",     "QuakePDSpecial"},   
-	{"Rott",    "RottFull",     "RottEmpty",        "RottSpecial",      "","","", "RottSpecial2"},   // Added this
-	{"Blake",   "BlakeFull",	"BlakeEmpty",		"BlakeSpecial",		"","","", "BlakeSpecial2"}, // Added this
-	{"Caleb",   "CalebFull",    "CalebEmpty",       "CalebSpecial",     "","","", "CalebSpecial2"}, // Added this
-	{"Strifeguy",  "StrifeFull",   "StrifeEmpty",      "StrifeSpecial",    "StrifePunchdrunk",    "StrifePDFull",     "StrifePDEmpty",    "StrifePDSpecial"},
-    {"Doom64",  "Doom64Full",   "Doom64Empty",      "Doom64Special",    "Doom64Punchdrunk",    "Doom64PDFull",     "Doom64PDEmpty",    "Doom64PDSpecial"},
-    {"Erad",  "EradFull",   "EradEmpty",      "EradSpecial",    "",    "",     "",    ""},	
-    {"C7",      "C7Full",       "C7Empty",          "C7Special",        "C7Punchdrunk",        "C7PDFull",         "C7PDEmpty",        "C7PDSpecial"},
+    {"Doomguy", "DoomFull",     "DoomEmpty",        "DoomSpecial",      "DoomPunchdrunk",      "DoomPDFull",       "DoomPDEmpty",      "DoomPDSpecial",		"",		"",		"",		""},
+    {"Chexguy", "ChexFull",     "ChexEmpty",        "ChexSpecial",      "ChexPunchdrunk",      "ChexPDFull",       "ChexPDEmpty",      "ChexPDSpecial",		"",		"",		"",		""},
+    {"Heretic", "HereticFull",  "HereticEmpty",     "HereticSpecial",   "HereticPunchdrunk",   "HereticPDFull",    "HereticPDEmpty",   "HereticPDSpecial",		"",		"",		"",		""},
+    {"Wolfguy", "WolfFull",     "WolfEmpty",        "WolfSpecial",      "WolfPunchdrunk",      "WolfPDFull",       "WolfPDEmpty",      "WolfPDSpecial",		"LostWolfGuy",		"LostWolfFull",		"LostWolfEmpty",		"LostWolfSpecial"},
+    {"Hexen",   "HexenFull",    "HexenEmpty",       "HexenSpecial",     "HexenPunchdrunk",     "HexenPDFull",      "HexenPDEmpty",     "HexenPDSpecial",		"",		"",		"",		""},
+    {"Dukeguy", "DukeFull",     "DukeEmpty",        "DukeSpecial",      "DukePunchdrunk",      "DukePDFull",       "DukePDEmpty",      "DukePDSpecial",		"BeachDukeGuy",		"BeachDukeFull",		"BeachDukeEmpty",		"BeachDukeSpecial"},
+    {"Marathon","MarathonFull", "MarathonEmpty",    "MarathonSpecial",  "MarathonPunchdrunk",  "MarathonPDFull",   "MarathonPDEmpty",  "MarathonPDSpecial",		"",		"",		"",		""},
+    {"Quake",   "QuakeFull",    "QuakeEmpty",       "QuakeSpecial",     "QuakePunchdrunk",     "QuakePDFull",      "QuakePDEmpty",     "QuakePDSpecial",		"",		"",		"",		""},   
+	{"Rott",    "RottFull",     "RottEmpty",        "RottSpecial",      "","","", "RottSpecial2",		"",		"",		"",		""},   // Added this
+	{"Blake",   "BlakeFull",	"BlakeEmpty",		"BlakeSpecial",		"","","", "BlakeSpecial2",		"",		"",		"",		""}, // Added this
+	{"Caleb",   "CalebFull",    "CalebEmpty",       "CalebSpecial",     "","","", "CalebSpecial2",		"",		"",		"",		""}, // Added this
+	{"Strifeguy",  "StrifeFull",   "StrifeEmpty",      "StrifeSpecial",    "StrifePunchdrunk",    "StrifePDFull",     "StrifePDEmpty",    "StrifePDSpecial",		"",		"",		"",		""},
+    {"Doom64",  "Doom64Full",   "Doom64Empty",      "Doom64Special",    "Doom64Punchdrunk",    "Doom64PDFull",     "Doom64PDEmpty",    "Doom64PDSpecial",		"",		"",		"",		""},
+    {"Erad",  "EradFull",   "EradEmpty",      "EradSpecial",    "",    "",     "",    "",		"",		"",		"",		""},	
+    {"C7",      "C7Full",       "C7Empty",          "C7Special",        "C7Punchdrunk",        "C7PDFull",         "C7PDEmpty",        "C7PDSpecial",		"",		"",		"",		""},
     {"RMR",      "RMRFull",       "RMREmpty",          "RMRSpecial",        "",        "",         "",        ""},	
-    {"Katarn",  "KatarnFull",   "KatarnEmpty",      "KatarnSpecial",    "KatarnPunchdrunk",    "KatarnPDFull",     "KatarnPDEmpty",    "KatarnPDSpecial"},	
-	{"POGreed",		"POGreedFull",	"POGreedEmpty",		"POGreedSpecial",	"POGreedPunchdrunk",	"POGreedPDFull",	"POGreedPDEmpty",	"POGreedPDSpecial"},
-    {"Disruptor",      "DisruptorFull",       "DisruptorEmpty",          "DisruptorSpecial",        "",        "",         "",        ""},	
-	{"Witchaven",	"WitchavenFull","WitchavenEmpty",	"WitchavenSpecial",	"WitchavenPunchdrunk",	"WitchavenPDFull",	"WitchavenPDEmpty",	"WitchavenPDSpecial"},
-	{"HalfLife",	"HalfLifeFull",	"HalfLifeEmpty",	"HalfLifeSpecial",	"HalfLifePunchDrunk",	"HalfLifePDFull",	"HalfLifePDEmpty",	"HalfLifePDSpecial"},
-	{"SW",	"SWFull",	"SWEmpty",	"SWSpecial",	"",	"",	"",	""},	
-	{"CM",	"CMFull",	"CMEmpty",	"CMSpecial",	"",	"",	"",	""},	
-	{"Jon",	"JonFull",	"JonEmpty",	"JonSpecial",	"",	"",	"",	""},	
-	{"RR",	"RRFull",	"RREmpty",	"RRSpecial",	"",	"",	"",	""},	
-	{"Bitterman",    "BittermanFull",     "BittermanEmpty",        "BittermanSpecial",      "BittermanPunchdrunk",      "BittermanPDFull",       "BittermanPDEmpty",      "BittermanPDSpecial"},  
+    {"Katarn",  "KatarnFull",   "KatarnEmpty",      "KatarnSpecial",    "KatarnPunchdrunk",    "KatarnPDFull",     "KatarnPDEmpty",    "KatarnPDSpecial",		"",		"",		"",		""},	
+	{"POGreed",		"POGreedFull",	"POGreedEmpty",		"POGreedSpecial",	"POGreedPunchdrunk",	"POGreedPDFull",	"POGreedPDEmpty",	"POGreedPDSpecial",		"",		"",		"",		""},
+    {"Disruptor",      "DisruptorFull",       "DisruptorEmpty",          "DisruptorSpecial",        "",        "",         "",        "",		"",		"",		"",		""},	
+	{"Witchaven",	"WitchavenFull","WitchavenEmpty",	"WitchavenSpecial",	"WitchavenPunchdrunk",	"WitchavenPDFull",	"WitchavenPDEmpty",	"WitchavenPDSpecial",		"",		"",		"",		""},
+	{"HalfLife",	"HalfLifeFull",	"HalfLifeEmpty",	"HalfLifeSpecial",	"HalfLifePunchDrunk",	"HalfLifePDFull",	"HalfLifePDEmpty",	"HalfLifePDSpecial",		"Shephard",		"ShephardFull",		"ShephardEmpty",		"ShephardSpecial"},
+	{"SW",	"SWFull",	"SWEmpty",	"SWSpecial",	"",	"",	"",	"",		"",		"",		"",		""},	
+	{"CM",	"CMFull",	"CMEmpty",	"CMSpecial",	"",	"",	"",	"",		"",		"",		"",		""},	
+	{"Jon",	"JonFull",	"JonEmpty",	"JonSpecial",	"",	"",	"",	"",		"",		"",		"",		""},	
+	{"RR",	"RRFull",	"RREmpty",	"RRSpecial",	"",	"",	"",	"",		"",		"",		"",		""},	
+	{"Bitterman",    "BittermanFull",     "BittermanEmpty",        "BittermanSpecial",      "BittermanPunchdrunk",      "BittermanPDFull",       "BittermanPDEmpty",      "BittermanPDSpecial",		"",		"",		"",		""},  
 };
 
 int ItoSArray[7] = {1, 3, 4, 5, 6, 7, 8};

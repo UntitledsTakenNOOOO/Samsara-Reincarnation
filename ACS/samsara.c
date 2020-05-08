@@ -28,7 +28,7 @@ int ClientTipboxes[PLAYERMAX];
 int ResonantTimes[PLAYERMAX][RESCOUNT];
 int ScheduledTimes[PLAYERMAX][3];
 
-int SamsaraWepType, SamsaraClientClass, SamsaraItemFlash;
+int SamsaraWepType, SamsaraClientClass, SamsaraItemFlash, SamsaraAlternativeClass;
 int SamsaraClientWeps[SLOTCOUNT] = {0};
 int SamsaraClientWepFlashes[SLOTCOUNT] = {0};
 int IsServer = 0;
