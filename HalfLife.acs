@@ -691,19 +691,19 @@ str HL_HUD_AmmoStrings[10][10] =
 	{ "HL Crossbow", "HLXBowAmmoCounter", "HLXBowAmmoCounter", "Shell", "Shell", "HPKUP5", "OPFAMM07", "HPKUP5", "OPFAMM07", "" }, 
 	{ "HL Squeaks", "HLSqueakAmmo", "RocketAmmo", "HLSqueakAmmo", "RocketAmmo", "HPKUP11", "OPFAMM10", "HPKUP11", "OPFAMM10", "" }, 
 };
-// maxammotype1, maxammotype2, hllowamount, oplowamount, hllowamounttotal, oplowamounttotal, secondarysingleammotype
-str HL_HUD_AmmoInts[10][7] = 
+// maxammotype1, maxammotype2, hllowamount, oplowamount, hllowamounttotal, oplowamounttotal, secondarysingleammotype, removecounterwhenempty, removesecondarycounterwhenempty
+str HL_HUD_AmmoInts[10][9] = 
 {
-	{ 17, 17, 6, 6, 30, 30, 0 },
-	{ 8, 10, 3, 4, 3, 4, 0 },
-	{ 6, 7, 3, 3, 10, 10, 0 },
-	{ 8, 8, 3, 3, 10, 10, 0 },
-	{ 50, 50, 16, 16, 30, 30, 5 },
-	{ 1, 5, 1, 2, 5, 5, 0 },
-	{ 0, 50, 40, 21, 40, 40, 0 },
-	{ 0, 0, 40, 40, 40, 40, 0 },
-	{ 5, 5, 2, 2, 10, 10, 0 },
-	{ 5, 0, 2, 5, 2, 5, 0 }
+	{ 17, 17, 6, 6, 30, 30, 0, 0 },
+	{ 8, 10, 3, 4, 3, 4, 0, 0, 0 },
+	{ 6, 7, 3, 3, 10, 10, 0, 0, 0 },
+	{ 8, 8, 3, 3, 10, 10, 0, 0, 0 },
+	{ 50, 50, 16, 16, 30, 30, 5, 0, 1 },
+	{ 1, 5, 1, 2, 5, 5, 0, 0, 0 },
+	{ 0, 50, 40, 21, 40, 40, 0, 0, 0 },
+	{ 0, 0, 40, 40, 40, 40, 0, 0, 0 },
+	{ 5, 5, 2, 2, 10, 10, 0, 0, 0 },
+	{ 5, 0, 2, 5, 2, 5, 0, 1, 1 }
 };
 
 str HL_HUD_WeaponBarGraphics[10][5] = 
@@ -731,38 +731,8 @@ script "Freeman_HEV_Enter" ENTER clientside//hev suit
 	{
 		While(true)
 		{
-			If(GetCvar("samsara_cl_hevtalk") == true)
+			If(GetCvar("samsara_cl_hevtalk") == true && !CheckInventory("HalfLifeOpposingForce"))
 			{
-				// must figure out what suit priorities are!
-				CurrentHealth = GetActorProperty(0,APROP_Health);
-				CurrentArmor = CheckInventory("BasicArmor");
-				Delay(1); //delay to get a smooth check of values
-				// start health chunk
-				If(CheckInventory("Hevacquired") == false)
-				{
-					if(CheckInventory("HLHEVIsTalking") == false)
-					{			
-					LocalAmbientSound("HEV/LoginSequence",127);
-					GiveInventory("HLHEVIsTalking", 1);
-					If (GetCVar("samsara_runninginzdoom") == 1)
-						GiveInventory("Hevacquired", 1);
-					
-					Else
-						RequestScriptPuke(2690,0,0,0);
-					
-					ACS_ExecuteAlways(2686,0,1,0,0);
-					}
-				}
-				/*If(introduced == 0 && CheckInventory("Hevacquired") == true) shaddup
-				{
-					if(istalking == false)
-					{
-					LocalAmbientSound("HEV/Login",127);
-					istalking = 1;
-					introduced = 1;
-					ACS_ExecuteAlways(2686,0,2,0,0);
-					}
-				}*/
 				If(GetActorProperty(0,APROP_Health) - CurrentHealth < 0)
 				{
 					if(CheckInventory("HLHEVIsTalking") == false)
@@ -805,20 +775,6 @@ script "Freeman_HEV_Enter" ENTER clientside//hev suit
 					armorrange = armormod;
 				}
 			
-					
-				/*if(CheckInventory("BasicArmor") > 100)
-				{
-					if(armorrange != 21)
-					{
-						if(istalking == false)
-						{
-							istalking = 1;
-							ACS_ExecuteAlways(2686,0,0,0,0);
-							LocalAmbientSound(armorstrings[20],127);
-						}
-						armorrange = 21;
-					}
-				}*/
 				//done with armor, and of lower priority if pickups :D
 				if(CheckInventory("HLHEVPickupID") != 0)
 				{
@@ -831,6 +787,9 @@ script "Freeman_HEV_Enter" ENTER clientside//hev suit
 					TakeInventory("HLHEVPickupID", 255);
 				}	
 			}
+			
+			CurrentHealth = GetActorProperty(0,APROP_Health);
+			CurrentArmor = CheckInventory("BasicArmor");
 			
 			if(GetActorProperty(0, APROP_Health) > 0)
 			{
@@ -978,52 +937,55 @@ script "Freeman_HEV_Enter" ENTER clientside//hev suit
 				{
 					if(CheckWeapon(HL_HUD_AmmoStrings[d][0]))	
 					{
-						//Magazine
-						if(strcmp(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")], HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) != 0)
+						if(CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]) > 0 || HL_HUD_AmmoInts[d][7] == 0)
 						{
-							if(CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]) < HL_HUD_AmmoInts[d][2+CheckInventory("HalfLifeOpposingForce")])
-							{	
-								SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 620.2, 460.2, 0.033, 0.5+0.2);
+							//Magazine
+							if(strcmp(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")], HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) != 0)
+							{
+								if(CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]) < HL_HUD_AmmoInts[d][2+CheckInventory("HalfLifeOpposingForce")])
+								{	
+									SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 620.2, 460.2, 0.033, 0.5+0.2);
+								}
+								else
+								{
+									SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 620.2, 460.2, 0.033, 0.5+0.2);
+								}
+							}
+							
+							//Ammo divider
+							if(strcmp(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")], HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) != 0)
+							{
+								SetFont(HL_HUD_Bars[CheckInventory("HalfLifeOpposingForce")]); HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 630.0, 460.2, 0.033, 0.5+0.2);
+							}
+							
+							//Ammo Total
+							if(CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) < HL_HUD_AmmoInts[d][4+CheckInventory("HalfLifeOpposingForce")])
+							{				
+								SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 700.2, 460.2, 0.033, 0.5+0.2);
 							}
 							else
 							{
-								SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 620.2, 460.2, 0.033, 0.5+0.2);
+								SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 700.2, 460.2, 0.033, 0.5+0.2);
 							}
-						}
-						
-						//Ammo divider
-						if(strcmp(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")], HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) != 0)
-						{
-							SetFont(HL_HUD_Bars[CheckInventory("HalfLifeOpposingForce")]); HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 630.0, 460.2, 0.033, 0.5+0.2);
-						}
-						
-						//Ammo Total
-						if(CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) < HL_HUD_AmmoInts[d][4+CheckInventory("HalfLifeOpposingForce")])
-						{				
-							SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 700.2, 460.2, 0.033, 0.5+0.2);
-						}
-						else
-						{
-							SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 700.2, 460.2, 0.033, 0.5+0.2);
-						}
-						//Ammo Graphic
-						SetFont(HL_HUD_AmmoStrings[d][5+CheckInventory("HalfLifeOpposingForce")]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 720.2, 450.2, 0.033, 0.5+0.2);
-						
-						if(strcmp(HL_HUD_AmmoStrings[d][9], "") != 0)
-						{
-							SetFont(HL_HUD_AmmoStrings[d][7+CheckInventory("HalfLifeOpposingForce")]);
-							HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 720.2, 430.2, 0.033,0.5+0.2); 
-							SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]);
-							if(CheckInventory(HL_HUD_AmmoStrings[d][9]) < HL_HUD_AmmoInts[d][6])
+							//Ammo Graphic
+							SetFont(HL_HUD_AmmoStrings[d][5+CheckInventory("HalfLifeOpposingForce")]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 720.2, 450.2, 0.033, 0.5+0.2);
+							
+							if(strcmp(HL_HUD_AmmoStrings[d][9], "") > 0 && HL_HUD_AmmoInts[d][8] != 0 && CheckInventory(HL_HUD_AmmoStrings[d][9]) > 0)
 							{
-								HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][9]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 700.2, 430.2, 0.033, 0.5+0.2); 
+								SetFont(HL_HUD_AmmoStrings[d][7+CheckInventory("HalfLifeOpposingForce")]);
+								HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 720.2, 430.2, 0.033,0.5+0.2); 
+								SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]);
+								if(CheckInventory(HL_HUD_AmmoStrings[d][9]) < HL_HUD_AmmoInts[d][6])
+								{
+									HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][9]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 700.2, 430.2, 0.033, 0.5+0.2); 
+								}
+								else
+								{
+									HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][9]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 700.2, 430.2, 0.033, 0.5+0.2); 
+								}
 							}
-							else
-							{
-								HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][9]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 700.2, 430.2, 0.033, 0.5+0.2); 
-							}
+							break;
 						}
-						break;
 					}
 				}
 				SetHUDSize(640, 480, 1);
@@ -1343,31 +1305,31 @@ script 2686 (int talktimer) clientside
 	Switch(talktimer)
 	{
 		case 0:
-		if(CheckInventory("Hevacquired") == true)
+		if(CheckInventory("HLHEVIsTalking") == 1)
 		{
-		delay(80);
-		TakeInventory("Hevacquired", 1);
+			delay(80);
+			TakeInventory("HLHevIsTalking", 1);
 		}
 		break;
 		case 1:
-		if(CheckInventory("Hevacquired") == true)
+		if(CheckInventory("HLHEVIsTalking") == 1)
 		{
-		delay(360);
-		TakeInventory("Hevacquired", 1);
+			delay(360);
+			TakeInventory("HLHevIsTalking", 1);
 		}
 		break;
 		case 2:
-		if(CheckInventory("Hevacquired") == true)
+		if(CheckInventory("HLHEVIsTalking") == 1)
 		{
-		delay(160);
-		TakeInventory("Hevacquired", 1);
+			delay(160);
+			TakeInventory("HLHevIsTalking", 1);
 		}
 		break;
 		case 3: 
-		if(CheckInventory("Hevacquired") == true)
+		if(CheckInventory("HLHEVIsTalking") == 1)
 		{
-		delay(105);
-		TakeInventory("Hevacquired", 1);
+			delay(105);
+			TakeInventory("HLHevIsTalking", 1);
 		}
 		break;
 	}
@@ -1530,11 +1492,6 @@ Script 2689 (int mode)
 		}
 		
 	}
-}
-
-Script 2690 (void) NET // eww
-{
-	GiveInventory("Hevacquired", 1);
 }
 
 Script "BonusItemCount" Open
