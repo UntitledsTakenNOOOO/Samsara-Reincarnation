@@ -464,7 +464,7 @@ script SAMSARA_SPAWN (int respawning)
         GiveInventory("CoopModeOn", 1);
         SetActorState(0, "CoOpModeOn");
     }
-
+	
     pcount = PlayerCount();
     
     while (!endloop && ServerEnterTimes[pln] == startTime)
@@ -747,12 +747,6 @@ script SAMSARA_SPAWN (int respawning)
         opcount = pcount;
         pcount  = PlayerCount();
     }
-	
-	if(GetCvar("Samsara_CrashDebugger") == true)
-	{
-		Log(s:"Debugger: Pass");
-	}
-
 }
 
 script 677 ENTER

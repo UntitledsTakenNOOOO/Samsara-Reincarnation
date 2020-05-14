@@ -797,6 +797,9 @@ script 902 (int a) { // Picked up a key, broadcast that shit to the whole world!
         HudMessageBold(n:0,s:"\c* has picked up the ",s:keys[2][a],s:"\c*.";HUDMSG_FADEOUT, 900, CR_GOLD, 0.5, 0.1, 3.0, 0.5);
     }
     keys[0][a] = 1;
+	
+	if(CheckInventory("HalfLifeClass") && GetCvar("samsara_cl_heromusic"))
+		ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 1, 0, 0);
 }
 
 ///////////////
@@ -2032,4 +2035,13 @@ Script "Samsara_GZDoomChecker" (void)
 	
 	else
 		SetResultValue(0);
+}
+
+Script "Samsara_AllyHealthRegen" (void)
+{
+	While(GetActorProperty(0, APROP_Health) > 0)
+	{
+		HealThing(1);
+		Delay(35);
+	}
 }

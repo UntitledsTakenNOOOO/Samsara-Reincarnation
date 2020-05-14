@@ -650,16 +650,21 @@ script 2682 (int tx, int ty, int tz) clientside
 	}
 }
 
-str damagestrings[13] = { "", "HEV/BulletDamage", "HEV/EnergyDamage", "HEV/FireDamage", "HEV/ShockDamage" , "" , "HEV/Hazard",
-"HEV/MinorFracture", "HEV/MajorFracture", "HEV/MinorLacerations", "HEV/MajorLacerations", "", "HEV/Detection3" };
+str damagestrings[26] = { "", "HEV/BulletDamage", "HEV/EnergyDamage", "HEV/FireDamage", "HEV/ShockDamage" , "", "HEV/Hazard",
+"HEV/MinorFracture", "HEV/MajorFracture", "HEV/MinorLacerations", "HEV/MajorLacerations", "", "HEV/Detection3", "", "PCV/Boop",
+"PCV/Boop", "PCV/Boop", "PCV/Boop", "", "PCV/Det", "PCV/Boop", "PCV/Boop", "PCV/Boop", "PCV/Boop", "", "PCV/Det"};
 
-str armorstrings[20] = {"HEV/Armor5","HEV/Armor10","HEV/Armor15","HEV/Armor20","HEV/Armor25",
+str armorstrings[40] = {"HEV/Armor5","HEV/Armor10","HEV/Armor15","HEV/Armor20","HEV/Armor25",
 "HEV/Armor30", "HEV/Armor35", "HEV/Armor40","HEV/Armor45", "HEV/Armor50", "HEV/Armor55", "HEV/Armor60",
 "HEV/Armor65","HEV/Armor70", "HEV/Armor75", "HEV/Armor80", "HEV/Armor85", "HEV/Armor90", "HEV/Armor95",
-"HEV/Armor100"};
+"HEV/Armor100", "PCV/Fuzz","PCV/Fuzz","PCV/Fuzz","PCV/Fuzz","PCV/Fuzz",
+"PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz","PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz",
+"PCV/Fuzz","PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz",
+"PCV/Fuzz"};
 
-str pickupstrings[12] = {"","HEV/Hornet","HEV/Magnum","HEV/Shotgun","HEV/SMG","HEV/RPG",
-"HEV/Gauss","HEV/Egon","HEV/Crossbow"};
+str pickupstrings[24] = {"","HEV/Hornet","HEV/Magnum","HEV/Shotgun","HEV/SMG","HEV/RPG",
+"HEV/Gauss","HEV/Egon","HEV/Crossbow","","PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip",
+"PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip"};
 
 str HL_HUD_Colors[6] = { "HEVBlue", "HEVBlue", "HEVYellow", "PCVGreen", "HEVRed", "HEVRed"  }; //HLUpper, OPUpper, HLNormal, OPNormal, HLLower, OPLower
 str HL_HUD_HealthArmorGraphics[6] = { "HLHEALTB", "OPFHLTHB", "HLHEALTH", "OPFHLTH0", "HHEALTHR", "OPFHLTHR"  }; //HLHigh, OPHigh, HLMed, OPMEd, HLLow, OPLow
@@ -731,7 +736,7 @@ script "Freeman_HEV_Enter" ENTER clientside//hev suit
 	{
 		While(true)
 		{
-			If(GetCvar("samsara_cl_hevtalk") == true && !CheckInventory("HalfLifeOpposingForce"))
+			If(GetCvar("samsara_cl_hevtalk") == true)
 			{
 				If(GetActorProperty(0,APROP_Health) - CurrentHealth < 0)
 				{
@@ -743,7 +748,7 @@ script "Freeman_HEV_Enter" ENTER clientside//hev suit
 						{
 							if(GetActorProperty(0,APROP_Health) - CurrentHealth <= -50){TakeInventory("HLHEVDamageType", 255); GiveInventory("HLHEVDamageType", 8);}
 						}
-						LocalAmbientSound(damagestrings[CheckInventory("HLHEVDamageType")],127);
+						LocalAmbientSound(damagestrings[CheckInventory("HLHEVDamageType")+(13*CheckInventory("HalfLifeOpposingForce"))],127);
 					}
 				}
 				// done with health chunk, now armor
@@ -755,7 +760,10 @@ script "Freeman_HEV_Enter" ENTER clientside//hev suit
 						{
 							GiveInventory("HLHEVIsTalking", 1);
 							ACS_ExecuteAlways(2686,0,0,0,0);
-							LocalAmbientSound("HEV/ArmorGone",127);
+							if(!CheckInventory("HalfLifeOpposingForce"))
+								LocalAmbientSound("HEV/ArmorGone",127);
+							else
+								LocalAmbientSound("PCV/Buzz",127);
 						}
 					}
 				}
@@ -769,7 +777,7 @@ script "Freeman_HEV_Enter" ENTER clientside//hev suit
 						{
 							GiveInventory("HLHEVIsTalking", 1);
 							ACS_ExecuteAlways(2686,0,0,0,0);
-							LocalAmbientSound(armorstrings[armormod],127);
+							LocalAmbientSound(armorstrings[armormod+(20*CheckInventory("HalfLifeOpposingForce"))],127);
 						}
 					}
 					armorrange = armormod;
@@ -782,7 +790,7 @@ script "Freeman_HEV_Enter" ENTER clientside//hev suit
 					{
 						GiveInventory("HLHEVIsTalking", 1);
 						ACS_ExecuteAlways(2686,0,3,0,0);
-						LocalAmbientSound(pickupstrings[CheckInventory("HLHEVPickupID")],127);
+						LocalAmbientSound(pickupstrings[CheckInventory("HLHEVPickupID")+(12*CheckInventory("HalfLifeOpposingForce"))],127);
 					}
 					TakeInventory("HLHEVPickupID", 255);
 				}	
@@ -1290,13 +1298,13 @@ script 2685 (int cause) clientside
 		TakeInventory("HLHEVDamageType", 255);
 		GiveInventory("HLHEVDamageType", cause+1);
 		ACS_NamedExecuteAlways("HL_HUD_DMGTypes", 0, 0, 0, 0);
-		
 	}
 	else
 	{
 		TakeInventory("HLHEVPickupID", 255);
 		GiveInventory("HLHEVPickupID", cause-10);
-		ACS_NamedExecuteAlways("HL_HUD_Pickups", 0, 0, 0, 0);		
+		ACS_NamedExecuteAlways("HL_HUD_Pickups", 0, 0, 0, 0);	
+		ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 2, 0, 0);	
 	}
 }
 

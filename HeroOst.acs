@@ -97,13 +97,11 @@ str DisruptorMusic[37] = {"DISRTR01","DISRTR02","DISRTR03","DISRTR04","DISRTR05"
 "DISRTR26","DISRTR27","DISRTR28","DISRTR29","DISRTR30","DISRTR31","DISRTR32",
 "DISRTR33","DISRTR34","DISRTR35","DISRTR36","DISRTR37"};
 
-str HLMusic[40] = {"HLTRAK01","HLTRAK02","HLTRAK03","HLTRAK04","HLTRAK05",
-"HLTRAK06","HLTRAK07","HLTRAK08","HLTRAK09","HLTRAK10","HLTRAK11","HLTRAK12",
-"HLTRAK13","HLTRAK14","HLTRAK15","HLTRAK16","HLTRAK17","HLTRAK18","HLTRAK19",
-"HLTRAK20","HLTRAK21","HLTRAK22","HLTRAK23","HLTRAK24","HLTRAK25",
-"HLTRAK26","HLTRAK27","HLTRAK28","HLTRAK29","HLTRAK30","HLTRAK31","HLTRAK32",
-"HLTRAK33","HLTRAK34","HLTRAK35","HLTRAK37","HLTRAK38","HLTRAK39",
-"HLTRAK40","HLTRAK41"};
+str HLMusicStart[8] = { "HLTRAK26", "HLTRAK37", "HLTRAK38", "HLTRAK41", "HLTRAK01", "HLTRAK07", "HLTRAK12", "HLTRAK15" };
+str HLMusicWeapon[6] = { "HLTRAK24", "HLTRAK31", "HLTRAK35", "HLTRAK03", "HLTRAK10", "HLTRAK14" };
+str HLMusicKey[6] = { "HLTRAK28", "HLTRAK32", "HLTRAK33", "HLTRAK08", "HLTRAK09", "HLTRAK17" };
+str HLMusicBoss[5] = { "HLTRAK25", "HLTRAK34", "HLTRAK39", "HLTRAK16", "HLTRAK18" };
+str HLMusicRandom[13] = { "HLTRAK20", "HLTRAK21", "HLTRAK22", "HLTRAK23", "HLTRAK27", "HLTRAK29", "HLTRAK30", "HLTRAK40", "HLTRAK02", "HLTRAK04", "HLTRAK06", "HLTRAK11", "HLTRAK13" };
 
 str SWMusic[12] = {"SWTRAK01","SWTRAK02","SWTRAK03","SWTRAK04","SWTRAK05",
 "SWTRAK06","SWTRAK07","SWTRAK08","SWTRAK09","SWTRAK10","SWTRAK11","SWTRAK12"};
@@ -141,6 +139,16 @@ int array_herosoundtrack[PLAYERMAX];
 int array_enterdisable[PLAYERMAX];
 
 Script "SamsaraOST_Enter" ENTER clientside
+{
+	Delay(1);
+	if(CheckInventory("HalfLifeClass") && GetCvar("samsara_cl_heromusic"))
+	{
+		ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 3);
+		TakeInventory("HalfLifeMusicPlayingToken", 1);
+	}
+}
+
+Script "SamsaraOST_Loop" ENTER clientside
 {
 	bool altskin;
 	int settrack;
@@ -261,8 +269,13 @@ Script "SamsaraOST_Enter" ENTER clientside
 			}
 			Else If(CheckInventory("HalfLifeClass") == TRUE)
 			{
-				SetTrack = random(0,39);
-				LocalSetMusic(HLMusic[SetTrack],0);
+				LocalSetMusic("d_empty",0);
+				if(!CheckInventory("HalfLifeMusicPlayingToken"))
+				{	
+					SetTrack = random(0,2048);
+					if(SetTrack == 1)	
+						ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 4);
+				}
 			}
 			Else If(CheckInventory("SWClass") == TRUE)
 			{
@@ -289,11 +302,15 @@ Script "SamsaraOST_Enter" ENTER clientside
 				SetTrack = random(0,19);
 				LocalSetMusic(Quake2Music[SetTrack],0);
 			}
-			GiveInventory("HeroSoundTrack", 1);
-			TakeInventory("HeroSoundTrackXmas", 1);
-			altskin = GetCvar("samsara_cl_dkclab");
-			TakeInventory("HeroSoundTrackLevel", 2048);
-			GiveInventory("HeroSoundTrackLevel", GetLevelInfo(LEVELINFO_LEVELNUM));
+			
+			if(!CheckInventory("HalfLifeClass"))
+			{
+				GiveInventory("HeroSoundTrack", 1);
+				TakeInventory("HeroSoundTrackXmas", 1);
+				altskin = GetCvar("samsara_cl_dkclab");
+				TakeInventory("HeroSoundTrackLevel", 2048);
+				GiveInventory("HeroSoundTrackLevel", GetLevelInfo(LEVELINFO_LEVELNUM));
+			}
 		}
 	}
 	Else if(GetCvar("samsara_cl_xmasmusic") && GetCvar("samsara_merrychristmas"))
@@ -315,188 +332,67 @@ Script "SamsaraOST_Enter" ENTER clientside
 			LocalSetMusic("*",0);
 			TakeInventory("HeroSoundTrack", 1);
 			TakeInventory("HeroSoundTrackXmas", 1);
+			TakeInventory("HalfLifeMusicPlayingToken", 1);
 		}
 	}
 	Delay(1);
 	restart;
 }
 
-/*Script "SamsaraOST_Respawn" Respawn clientside
-{
-	array_enterdisable[PlayerNumber()] = 1;
-	bool altskin;
-	int settrack;
-	If(GetCvar("samsara_cl_heromusic") == true || CheckInventory("HeroSoundTrack") == 0)
-	{
-		If(PlayerClass(PlayerNumber()) != array_herosoundtrack[PlayerNumber()])
-		{
-			if(CheckInventory("HeroSoundTrack") == 0 || CheckInventory("DukeLABToken") != altskin)
-			{
-				array_herosoundtrack[PlayerNumber()] = PlayerClass(PlayerNumber());
-				If(CheckInventory("DoomguyClass") == TRUE)
-				{
-					SetTrack = random(0,37);
-					LocalSetMusic(DoomMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("CorvusClass") == TRUE)
-				{
-					SetTrack = random(0,9);
-					LocalSetMusic(HereticMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("HexenClass") == TRUE)
-				{
-					SetTrack = random(0,31);
-					LocalSetMusic(HexenMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("ChexClass") == TRUE)
-				{
-					SetTrack = random(0,14);
-					LocalSetMusic(ChexMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("WolfenClass") == TRUE)
-				{
-					SetTrack = random(0,30);
-					LocalSetMusic(WolfMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("DukeClass") == TRUE)
-				{
-					If(GetCvar("samsara_cl_dkclab"))
-					{
-						SetTrack = random(40,45);
-						LocalSetMusic(DukeMusic[SetTrack],0);
-					}
-					else
-					{
-						SetTrack = random(0,39);
-						LocalSetMusic(DukeMusic[SetTrack],0);
-					}
-				}
-				Else If(CheckInventory("MarathonClass") == TRUE)
-				{
-					SetTrack = random(0,15);
-					LocalSetMusic(MarathonMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("QuakeClass") == TRUE)
-				{
-					SetTrack = random(0,13);
-					LocalSetMusic(QuakeMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("RottClass") == TRUE)
-				{
-					SetTrack = random(0,20);
-					LocalSetMusic(RottMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("BlakeClass") == TRUE)
-				{
-					SetTrack = random(0,14);
-					LocalSetMusic(BlakeMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("CalebClass") == TRUE)
-				{
-					SetTrack = random(0,11);
-					LocalSetMusic(BloodMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("StrifeClass") == TRUE)
-				{
-					SetTrack = random(0,18);
-					LocalSetMusic(StrifeMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("Doom64GuyClass") == TRUE)
-				{
-					SetTrack = random(0,19);
-					LocalSetMusic(Doom64Music[SetTrack],0);
-				}
-				Else If(CheckInventory("EradClass") == TRUE)
-				{
-					SetTrack = random(0,1);
-					LocalSetMusic(EradMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("C7Class") == TRUE)
-				{
-					SetTrack = random(0,30);
-					LocalSetMusic(Corridor7Music[SetTrack],0);
-				}
-				Else If(CheckInventory("RMRClass") == TRUE)
-				{
-					SetTrack = random(0,11);
-					LocalSetMusic(RMRMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("KatarnClass") == TRUE)
-				{
-					SetTrack = random(0,19);
-					LocalSetMusic(DarkForcesMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("POGreedClass") == TRUE)
-				{
-					SetTrack = random(0,16);
-					LocalSetMusic(POGreedMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("WitchavenClass") == TRUE)
-				{
-					SetTrack = random(0,17);
-					LocalSetMusic(WitchMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("DisruptorClass") == TRUE)
-				{
-					SetTrack = random(0,36);
-					LocalSetMusic(DisruptorMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("HalfLifeClass") == TRUE)
-				{
-					SetTrack = random(0,39);
-					LocalSetMusic(HLMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("SWClass") == TRUE)
-				{
-					SetTrack = random(0,11);
-					LocalSetMusic(SWMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("CMClass") == TRUE)
-				{
-					SetTrack = random(0,37);
-					LocalSetMusic(CybermageMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("JonClass") == TRUE)
-				{
-					SetTrack = random(0,9);
-					LocalSetMusic(PSMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("RRClass") == TRUE)
-				{
-					SetTrack = random(0,15);
-					LocalSetMusic(RRMusic[SetTrack],0);
-				}
-				Else If(CheckInventory("BittermanClass") == TRUE)
-				{
-					SetTrack = random(0,19);
-					LocalSetMusic(Quake2Music[SetTrack],0);
-				}
-				GiveInventory("HeroSoundTrack", 1);
-				altskin = GetCvar("samsara_cl_heromusic");
-			}
-		}
-	}
-	else
-	{
-		if(CheckInventory("HeroSoundTrack") == 1)
-		{
-			LocalSetMusic("*",0);
-			TakeInventory("HeroSoundTrack", 1);
-		}
-	}
-	Delay(1);
-	restart;
-}*/
-
-/*Script "SamsaraOST_Disconnect" (int player) Disconnect
-{
-	array_enterdisable[player] = 0;
-}*/
-
 Script "SamsaraOST_Unloading" Unloading
 {
 	for(int a = 0; a < PlayerCount(); a++)
 	{
 		array_enterdisable[a] = 0;
+	}
+}
+
+Script "SamsaraOST_HalfLifeScriptedMusic" (int cause) clientside
+{
+	int settrack;
+	if(!CheckInventory("HalfLifeMusicPlayingToken"))
+	{
+		switch(cause)
+		{
+			case 1:
+				settrack = random(0,2);
+				PlaySound(0, HLMusicKey[settrack+(CheckInventory("HalfLifeOpposingForce")*3)], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+				break;
+			case 2:
+				settrack = random(0,2);
+				PlaySound(0, HLMusicWeapon[settrack+(CheckInventory("HalfLifeOpposingForce")*3)], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+				break;
+			case 3:
+				settrack = random(0,3);
+				PlaySound(0, HLMusicStart[settrack+(CheckInventory("HalfLifeOpposingForce")*4)], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+				break;
+			case 4:	
+				if(!CheckInventory("HalfLifeOpposingForce"))
+				{
+					settrack = random(0,7);
+					PlaySound(0, HLMusicRandom[settrack], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+				}
+				else
+				{
+					settrack = random(8,12);	
+					PlaySound(0, HLMusicRandom[settrack], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+				}
+				break;
+			case 5:	
+				if(!CheckInventory("HalfLifeOpposingForce"))
+				{
+					settrack = random(0,2);
+					PlaySound(0, HLMusicBoss[settrack], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+				}
+				else
+				{
+					settrack = random(3,4);	
+					PlaySound(0, HLMusicBoss[settrack], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+				}
+				break;
+		}
+		GiveInventory("HalfLifeMusicPlayingToken", 1);
+		Delay(4200);
+		TakeInventory("HalfLifeMusicPlayingToken", 0x7FFFFFFF);
 	}
 }
