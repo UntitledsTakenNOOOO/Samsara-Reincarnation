@@ -44,7 +44,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
     {"Excalibat",  			"BMissiles", 		"Split Missile", "SMissiles","Dark Staff","DSEnergy"}, // Added this
 	{"BlakeShield",			"",					"", "","",""}, // Added this
 	{"VoodooDoll",			"Voodoo",			"Guns Akimbo",    "","Spraycan","SprayCanAmmo"}, // Added this
-    {"StrifeMapScanner",    "",                 "StrifeBeaconItem5", "","",""}, // Added this.
+    {"Upgrades",    "",                 		"", "","",""}, // Added this.
     {"Doom64GuyBerserk",    "",                 "", "","",""},
     {" Eradicator Enhancement Chip ",    "",                 "", "","",""},
     {"C7ProxyMinePickup",   "C7ProxyMineAmmo",     "", "","",""}, // Added this.	
@@ -263,7 +263,7 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
 	},
     {   // Strifeguy
         {"Punch Dagger",                    "",             "",             "", ""}, // Fist
-        {"Upgrades",                        "",             "",             "", ""}, // Chainsaw
+        {"StrifeBeaconItem5",               "",             "",             "", ""}, // Chainsaw
         {"   Pistol   ",                    "",             "",             "", ""}, // Pistol
         {"  Crossbow  ",       				"Shell",        "",             "", ""}, // Shotgun
         {"Mini Missile Launcher",           "RocketAmmo",   "",             "", ""}, // Super Shotgun
