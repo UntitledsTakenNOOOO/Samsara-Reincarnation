@@ -1,12 +1,23 @@
+Actor WhitePhosGrenade : Ammo
+{
+	Inventory.MaxAmount 10
+	Ammo.BackPackAmount 0
+	Ammo.BackPackMaxAmount 20
+	Inventory.Icon "AMSML0"
+}	
+
 actor " Grenade Launcher " : StrifeGrenadeLauncher
 {
   Weapon.Kickback 100
   +INVENTORY.UNDROPPABLE
   Inventory.PickUpSound "strife/weaponget"
   Weapon.SelectionOrder 2400
-  Weapon.AmmoUse 1
-  Weapon.AmmoGive 16
-  Weapon.AmmoType "RocketAmmo"
+  Weapon.AmmoUse1 0
+  Weapon.AmmoUse2 0
+  Weapon.AmmoGive1 16
+  Weapon.AmmoGive2 0
+  Weapon.AmmoType1 "RocketAmmo"
+  Weapon.AmmoType2 "WhitePhosGrenade"
   Weapon.SlotNumber 5
   Weapon.SisterWeapon ""
   +NOALERT
@@ -31,13 +42,18 @@ actor " Grenade Launcher " : StrifeGrenadeLauncher
     GRN1 A 1 A_Raise
     Loop
   Fire:
+    TNT1 A 0 A_JumpIfInventory("RocketAmmo", 1, "FireHE")
+	Goto Ready
+  FireHE:	
     TNT1 A 0 A_AlertMonsters
 	GRN1 A 0 A_JumpIfInventory("GrenadeMode",1,"FirePhos")
     GRN1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
 	//GRN1 A 0 A_JumpIfInventory("RuneSpread", 0, "SpreadFire")
+	GRN1 A 0 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
     GRN1 A 5 A_FireGrenade("StrifeHEGrenade", -90, "Flash")
     GRN1 B 10
 	GRN1 B 0 A_JumpIfNoAmmo(3)
+	GRN1 A 0 A_TakeInventory("RocketAmmo", 1,TIF_NOTAKEINFINITE)
     GRN1 A 5 A_FireGrenade("StrifeHEGrenade", 90, "Flash2")
     GRN1 C 10
     GRN1 A 0 A_ReFire
@@ -72,9 +88,11 @@ actor " Grenade Launcher " : StrifeGrenadeLauncher
   CoopFire:
 	GRN1 A 0 A_JumpIfInventory("GrenadeMode",1,"CoopFirePhos")
     //GRN1 A 0 A_JumpIfInventory("RuneSpread", 0, "CoopSpreadFire")
+	GRN1 A 0 A_TakeInventory("RocketAmmo", 1,TIF_NOTAKEINFINITE)
 	GRN1 A 5 A_FireGrenade("StrifeHEGrenade2", -90, "Flash")
     GRN1 B 10
 	GRN1 B 0 A_JumpIfNoAmmo(3)
+	GRN1 A 0 A_TakeInventory("RocketAmmo", 1,TIF_NOTAKEINFINITE)
     GRN1 A 5 A_FireGrenade("StrifeHEGrenade2", 90, "Flash2")
     GRN1 C 10
     GRN1 A 0 A_ReFire
@@ -111,30 +129,32 @@ actor " Grenade Launcher " : StrifeGrenadeLauncher
     GRN2 A 1 A_Raise
     Loop
   FirePhos:
+	TNT1 A 0 A_JumpIfInventory("WhitePhosGrenade", 1, 2)
+	TNT1 A 0 A_Jump(255, "AltFirePhos")
     TNT1 A 0 A_AlertMonsters
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",9,8)
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",8,"AltFirePhos")	
-    GRN2 A 0 A_JumpIfInventory("RocketAmmo",7,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",6,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",4,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",2,"AltFirePhos")
-	GRN2 A 0 A_TakeInventory("RocketAmmo",7)
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",9,8)
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",8,"AltFirePhos")	
+//  GRN2 A 0 A_JumpIfInventory("RocketAmmo",7,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",6,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",4,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",2,"AltFirePhos")
+	GRN2 A 0 A_TakeInventory("WhitePhosGrenade",1,TIF_NOTAKEINFINITE)
 	GRN2 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFirePhos")
 	//GRN2 A 0 A_JumpIfInventory("RuneSpread", 0, "SpreadFirePhos")
     GRN2 A 5 A_FireGrenade("StrifePhosGrenade", -90, "Flash3")
     GRN2 B 10
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",9,8)
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",8,"AltFirePhos")
-    GRN2 A 0 A_JumpIfInventory("RocketAmmo",7,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",6,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",4,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",2,"AltFirePhos")
-	GRN2 B 0 A_JumpIfNoAmmo(4)
-	GRN2 B 0 A_TakeInventory("RocketAmmo",7)
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",9,8)
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",8,"AltFirePhos")
+//  GRN2 A 0 A_JumpIfInventory("RocketAmmo",7,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",6,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",4,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFirePhos")
+	GRN2 B 0 A_JumpIfInventory("WhitePhosGrenade", 1, 2)
+	GRN2 B 0 A_Jump(255, "AltFirePhos")
+	GRN2 B 0 A_TakeInventory("WhitePhosGrenade",1,TIF_NOTAKEINFINITE)
     GRN2 A 5 A_FireGrenade("StrifePhosGrenade", 90, "Flash4")
     GRN2 C 10
     GRN2 A 0 A_ReFire
@@ -166,17 +186,21 @@ actor " Grenade Launcher " : StrifeGrenadeLauncher
 	Goto Ready
   CoopFirePhos:
     //GRN2 A 0 A_JumpIfInventory("RuneSpread", 0, "CoopSpreadFirePhos")
+	GRN2 B 0 A_JumpIfInventory("WhitePhosGrenade", 1, 2)
+	GRN2 B 0 A_Jump(255, "AltFirePhos")
+	GRN2 A 0 A_TakeInventory("WhitePhosGrenade",1,TIF_NOTAKEINFINITE)
 	GRN2 A 5 A_FireGrenade("StrifePhosGrenade2", -90, "Flash3")
     GRN2 B 10
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",8,7)
-    GRN2 A 0 A_JumpIfInventory("RocketAmmo",7,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",6,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",4,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFirePhos")
-	GRN2 A 0 A_JumpIfInventory("RocketAmmo",2,"AltFirePhos")
-	GRN2 B 0 A_JumpIfNoAmmo(4)
-	GRN2 B 0 A_TakeInventory("RocketAmmo",7)
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",8,7)
+//  GRN2 A 0 A_JumpIfInventory("RocketAmmo",7,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",6,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",4,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFirePhos")
+//	GRN2 A 0 A_JumpIfInventory("RocketAmmo",2,"AltFirePhos")
+	GRN2 B 0 A_JumpIfInventory("WhitePhosGrenade", 1, 2)
+	GRN2 B 0 A_Jump(255, "AltFirePhos")
+	GRN2 B 0 A_TakeInventory("WhitePhosGrenade",1,TIF_NOTAKEINFINITE)
     GRN2 A 5 A_FireGrenade("StrifePhosGrenade2", 90, "Flash4")
     GRN2 C 10
     GRN2 A 0 A_ReFire
@@ -197,7 +221,7 @@ actor " Grenade Launcher " : StrifeGrenadeLauncher
 	GRN2 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFirePhos")
 	GRN2 A 0 A_JumpIfInventory("RocketAmmo",2,"AltFirePhos")
 	GRN2 B 0 A_JumpIfNoAmmo(8)
-	GRN2 B 0 A_TakeInventory("RocketAmmo",7)
+	GRN2 B 0 A_TakeInventory("WhitePhosGrenade",1)
 	GRN2 A 0 A_FireGrenade("StrifePhosGrenade2", 0, "Flash4")
 	GRN2 A 0 A_GiveInventory("RocketAmmo", 1)
 	GRN2 A 0 A_FireGrenade("StrifePhosGrenade2", 180, "Flash4")

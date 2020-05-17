@@ -32,7 +32,7 @@ int BeaconMonsters[CLASSCOUNT] =
 	"FriendlyLowGuard",
     "FriendlySectorPatrol",
     "FriendlyBrownCultist",
-	"FriendlyRebel",		
+	"FriendlyFlameRebel",		
     "FriendlyDoomImp64",
     "FriendlyHSD",
     "FriendlyAnimatedProbe",	

@@ -1,0 +1,136 @@
+Actor StrifeBeaconCooldown : Inventory
+{
+	+Inventory.UNDROPPABLE
+	-INVBAR
+	Inventory.MaxAmount 120
+}	
+Actor StrifeBeaconItem5 : StrifeBeaconItem
+{
+	Inventory.Amount 1
+	Inventory.MaxAmount 1
+	+INVENTORY.UNDROPPABLE
+	+INVENTORY.HUBPOWER
+    Inventory.PickupMessage "Rebel Reinforcements!"
+	Inventory.Icon "I_BEAC"
+	Inventory.RestrictedTo "StrifePlayer"
+	Tag "Ally Beacon"  	
+	States
+	{			
+		Use:
+			TNT1 A 0 A_JumpIfInventory("StrifeBeaconCooldown", 1, "UseFail")	
+			TNT1 A 0 A_FireCustomMissile("StrifeSuperRebelSpawner", 0, 0)
+			TNT1 A 1 ACS_NamedExecuteAlways("SAMSARA_STRIFECOOLDOWN")
+			TNT1 A 0 A_GiveInventory("StrifeBeaconCooldown", 120)
+			fail	
+		UseFail:
+			TNT1 A 1 A_Print("Teleport Beacon hasn't cooled down, yet.")
+			Fail
+	}
+}
+Actor StrifeSuperRebelSpawner : StrifeBeaconSpawner
+{
+	States
+	{
+		Spawn:
+		  BEAC A 0
+		  Goto SpawnLoop
+	}	  
+}
+
+Actor FriendlyFlameRebel
+{  
+	Health 100
+	MaxStepHeight 24
+	MaxDropoffHeight 24
+	PainChance 250
+	Speed 8
+	Radius 16
+	Height 50
+	Monster
+	+MISSILEMORE
+	+FLOORCLIP
+	+FRIENDLY
+	-SOLID
+	MinMissileChance 150
+	SeeSound "strife/rebel/sight"
+	PainSound "strife/rebel/pain"
+	DeathSound "strife/rebel/death"
+	ActiveSound "strife/rebel/active"
+	Obituary "%o was gunned down by the Rebel army."
+	Species "Player"
+	Tag "Flamethrower Rebel"
+	DamageFactor "Fire", 0.5
+	DamageFactor "StrifeExplosive", 0.1
+	States
+	{
+	Spawn:
+		FLRB A 1 A_Look
+		loop
+	See:
+		FLRB AABBCCDD 3 A_Chase
+		loop
+	Melee:
+	Missile:
+		FLRB E 0 A_Jump(96, "MiniMissile")
+		FLRB E 0 A_JumpIfCloser(128, "Flamer")
+		FLRB E 6 A_FaceTarget
+		FLRB F 0 A_PlayWeaponSound("strife/riflefire")
+		FLRB F 6 A_CustomMissile("RebelBullet_5",0,1,0,8,0)
+		Goto See
+	MiniMissile:
+		FLRB E 0 A_JumpIfCloser(128, "Flamer")	
+		FLRB E 10 A_FaceTarget
+		FLRB F 5 Bright A_CustomMissile("RebelMiniMissile_2",32.0, 0, random(-100.0,120.0)/100)
+		Goto See	
+	Flamer:
+		FLRB E 2 A_FaceTarget
+	FlamerLoop:
+		FLRB F 2 Bright A_CustomMissile("RebelFlameMissile_2")
+		FLRB F 3 Bright A_FaceTarget
+		FLRB E 0 A_MonsterRefire(28,"See")
+		Goto See
+	Pain:
+		FLRB G 3
+		FLRB G 3 A_Pain
+		Goto See
+	Death:
+		FLRB H 5 A_ScreamandUnblock
+		FLRB I 5 
+		FLRB JK 4
+		FLRB L -1
+		Stop
+	Death.HexGreenFire:
+	Death.QuakeFire:
+	Death.FireExplosive:
+	Death.PhosFireCoop:
+	Burn:
+		SBRN A 3 Bright A_PlaySoundEx("strife/burndeath", CHAN_VOICE)
+		SBRN B 3 Bright A_DropFire
+		SBRN C 3 Bright A_Wander
+		SBRN D 3 Bright A_NoBlocking
+		SBRN E 5 Bright A_DropFire
+		SBRN FGH 5 Bright A_Wander
+		SBRN I 5 Bright A_DropFire
+		SBRN JKL 5 Bright A_Wander
+		SBRN M 5 Bright A_DropFire
+		SBRN NOPQPQ 5 Bright
+		SBRN RSTU 7 Bright
+		SBRN V -1
+		Stop	
+	Disintegrate:
+		SDIS A 5 A_PlaySoundEx("strife/disruptdeath", CHAN_VOICE)
+		SDIS BC 5
+		SDIS D 5 A_NoBlocking
+		SDIS EF 5
+		SDIS GHIJ 4
+		TNT1 A -1
+		stop	
+		
+	XDeath:
+		FLRB M 3 A_NoBlocking
+		FLRB N 3 A_XScream
+		FLRB OPQRS 3 A_TossGib
+		FLRB T -1
+		Stop
+	}
+}	
