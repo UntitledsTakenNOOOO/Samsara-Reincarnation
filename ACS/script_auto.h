@@ -378,11 +378,7 @@ script SAMSARA_SPAWN (int respawning)
     int armor, oarmor, type, otype;
     int i;
 	
-	if(GetCvar("Samsara_CrashDebugger") == true)
-	{
-		Log(s:"Debugger: SAMSARA_SPAWN");
-	}
-	
+	TakeInventory("HalfLifeOpposingForceSet", 0x7FFFFFFF);
 	//ACS_NamedExecuteAlways("SAMSARA_RESETPLAYER_COOP",0,0,0,0);
     ServerEnterTimes[pln] = startTime;
     ACS_ExecuteWithResult(SAMSARA_SYNTHFIRE, startTime);
@@ -521,8 +517,13 @@ script SAMSARA_SPAWN (int respawning)
 		if (GetUserCvar(pln,"samsara_cl_dkclab") && CheckInventory("DukeClass")) { GiveInventory("DukeLabToken", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1); }
         else { TakeInventory("DukeLabToken", 0x7FFFFFFF); }
 		
-		if (GetUserCvar(pln,"samsara_cl_shephardmode") && CheckInventory("HalfLifeClass")) { GiveInventory("HalfLifeOpposingForce", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1); }
-        else { TakeInventory("HalfLifeOpposingForce", 0x7FFFFFFF); }
+		if (GetUserCvar(pln,"samsara_cl_shephardmode") && CheckInventory("HalfLifeClass")) 
+		{ 
+			GiveInventory("HalfLifeOpposingForce", 1); 
+			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1); 
+			if(!CheckInventory("HalfLifeOpposingForceSet")) SetActorState(0, "AdrianModeOn", true); 
+		}
+        else { TakeInventory("HalfLifeOpposingForce", 0x7FFFFFFF); TakeInventory("HalfLifeOpposingForceSet", 0x7FFFFFFF); }
 		
 		if (GetUserCvar(pln,"samsara_cl_lostmode") && CheckInventory("WolfenClass")) { GiveInventory("WolfenLostMode", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1); }
         else { TakeInventory("WolfenLostMode", 0x7FFFFFFF); }

@@ -1191,27 +1191,27 @@ script 2684 (int options) // half life ally functions
 	int mypositionx = GetActorX(0);
 	int mypositiony = GetActorY(0);
 	int mypositionz = GetActorZ(0);
+	int result;
+	int seetoken = CheckInventory("seetoken");
 	Switch(options)
 	{
 	case 1:
-	SetActivatorToTarget(0);	
-	if((ClassifyActor(0) & ACTOR_PLAYER))
+		SetActivatorToTarget(0);	
+		if((ClassifyActor(0) & ACTOR_PLAYER))
 		{
-			SetResultValue(1);
+			result = 1;
 		}
-	else if((ClassifyActor(0) & ACTOR_MONSTER) && CheckInventory("AllyToken") == false)
+		else 
+		if((ClassifyActor(0) & ACTOR_MONSTER) && CheckInventory("AllyToken") == false && seetoken == 1)
 		{
-			SetResultValue(2);
+			result = 2;
 		}
-	else if(CheckInventory("AllyToken"))
-	{
-		SetResultValue(0);
-	}
-	else
-	{
-		SetResultValue(0);
-	}
-	break;
+		else
+		{
+			result = 0;
+		}
+		SetResultValue(result);
+		break;
 	case 2:
 		SetActivatorToTarget(0);		
 		if(ACS_ExecuteWithResult(2723,(GetActorVelX(0) / 1.0), (GetActorVelY(0) / 1.0), (GetActorVelZ(0) / 1.0)) 
@@ -1639,4 +1639,13 @@ Script "HalfLifeSniperScope" (void)
 	SetFont("none");
 	HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,17460,0,160.0,100.0,0.2,1.0);
 	terminate;
+}
+
+Script "HalfLifeAllyWalkRunSpeed" (int set)
+{
+	int speed = CheckInventory("HLSpeedTokens");
+	if(set == 1) // run
+		SetActorProperty(0, APROP_Speed, speed<<16);
+	else
+		SetActorProperty(0, APROP_Speed, (speed<<16)/2);
 }
