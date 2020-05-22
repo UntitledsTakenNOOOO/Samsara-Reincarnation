@@ -81,6 +81,15 @@ script SAMSARA_STRIFESIGIL (int class, int slot, int dropped)
     }
 }
 
+Script "SAMSARA_STRIFECOOLDOWN" (void)
+{
+	While(CheckInventory("StrifeBeaconCooldown") > 0)
+	{
+		Delay(35);
+		Takeinventory("StrifeBeaconCooldown", 1);
+	}
+}
+
 Script "Samsara_StrifeUpgradesMapSpot" (int set)
 {
 	Switch(set)

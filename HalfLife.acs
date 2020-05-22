@@ -1643,8 +1643,97 @@ Script "HalfLifeSniperScope" (void)
 Script "HalfLifeAllyWalkRunSpeed" (int set)
 {
 	int speed = CheckInventory("HLSpeedTokens");
-	if(set == 1) // run
-		SetActorProperty(0, APROP_Speed, speed<<16);
-	else
-		SetActorProperty(0, APROP_Speed, (speed<<16)/2);
+	switch(set)
+	{
+		case 0:
+			SetActorProperty(0, APROP_Speed, (speed<<16)/2);
+			break;
+		case 1:
+			SetActorProperty(0, APROP_Speed, speed<<16);
+			break;
+		case 2:
+			SetActorProperty(0, APROP_Speed, (speed<<16)/4);
+			break;
+		case 3:
+			SetActorProperty(0, APROP_Speed, (speed<<16)/5);
+			break;
+		case 4:
+			SetActorProperty(0, APROP_Speed, (FixedMul(1.5,speed)<<16));
+			break;
+		case 5:
+			SetActorProperty(0, APROP_Speed, (speed<<16)*2);
+			break;
+	}
+}
+
+Script "HalfLifeFootStepGenerator" enter
+{
+	if((ClassifyActor(0) & ACTOR_WORLD))
+		terminate;
+		
+	if(CheckInventory("HalfLifeClass"))
+	{
+		int speedx, speedy, lasttimer, velocity, movement;
+		
+		while((ClassifyActor(0) & ACTOR_ALIVE))
+		{
+			speedx = GetActorVelX(0);
+			speedy = GetActorVelY(0);
+			
+			velocity = magnitudeTwo_f(speedx, speedy);
+			if(velocity>>8 != 0)
+				movement = 750/((velocity>>8)*7);
+			else
+				movement = 0;
+													
+			if((Timer()-lasttimer) > movement && movement != 0)
+			{
+				//PlaySound(0, "HLPlayer/Step", CHAN_BODY, 1.0, false, ATTN_NORM);
+				SpawnSpotForced("HLStep",0,0,0);
+				lasttimer = Timer();
+			}
+			
+			Delay(1);
+		}
+	}
+}
+
+//should be harmless to have mixer references here
+str HalfLifeFootStepSoundObjects[3] = { "HLStep", "HLRobotStep", "HLVoltigoreStep" };
+
+Script "HalfLifeFootStepGeneratorEnemy" (int steptype)
+{
+	if((ClassifyActor(0) & ACTOR_WORLD))
+		terminate;
+		
+	if((ClassifyActor(0) & ACTOR_MONSTER))
+	{
+		int speedx, speedy, currentx, currenty, lastx, lasty, lasttimer, velocity, movement;
+		
+		while((ClassifyActor(0) & ACTOR_ALIVE))
+		{
+			lastx = GetActorX(0);
+			lasty = GetActorX(0);
+			Delay(1);
+			currentx = GetActorX(0);
+			currenty = GetActorX(0);
+			
+			speedx = abs(currentx - lastx)>>16;
+			speedy = abs(currenty - lasty)>>16;
+			
+			velocity = magnitudeTwo(speedx, speedy);
+			
+			if(velocity != 0)
+				movement = 500/(velocity*7);
+			else
+				movement = 0;
+			
+			if((Timer()-lasttimer) > movement && movement != 0)
+			{
+				SpawnSpotForced(HalfLifeFootStepSoundObjects[steptype],0,0,0);
+				lasttimer = Timer();
+			}
+		}
+		terminate;
+	}
 }
