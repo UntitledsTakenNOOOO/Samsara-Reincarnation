@@ -1041,11 +1041,6 @@ script SAMSARA_ENTER_CLIENT (void) clientside
     
     while (ClientEnterTimes[pln] == startTime)
     {
-        if(GetCvar("Samsara_CrashDebugger") == true)
-		{
-			Log(s:"Debugger: SAMSARA_ENTER_CLIENT");
-		}
-		
 		oClass = class;
         class  = samsaraClassNum();
         DukeQuoteCooldown[pln] = max(0, DukeQuoteCooldown[pln]-1); 
@@ -1084,11 +1079,6 @@ script SAMSARA_ENTER_CLIENT (void) clientside
                 //ConsoleCommand(execStr);
             }
         }
-
-		if(GetCvar("Samsara_CrashDebugger") == true)
-		{
-			Log(s:"Debugger: Pass");
-		}
 
         Delay(1);
     }
