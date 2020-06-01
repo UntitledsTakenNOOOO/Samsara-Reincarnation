@@ -48,7 +48,7 @@ script SAMSARA_MEGAHEALTH (int hpcount, int hpPerSec, int delayTics)
 script SAMSARA_RECOIL (int degrees, int ticsup, int ticsdown) clientside
 {
     if (degrees == 0) { terminate; }
-    if (defaultCVar("samsara_cl_norecoil", 0) == 1 && ticsup >= 0) { terminate; }
+    if (defaultCVar("sams_cl_norecoil", 0) == 1 && ticsup >= 0) { terminate; }
     if (GetCVar("sv_nofreelook")) { terminate; }
 
     degrees = itof(degrees);
@@ -90,7 +90,7 @@ script SAMSARA_RECOIL (int degrees, int ticsup, int ticsdown) clientside
     {
         if (ticsdown > 0)
         {
-            if (defaultCVar("samsara_cl_sinerecoil", 0) == 0)
+            if (defaultCVar("sams_cl_sinerecoil", 0) == 0)
             {
                 qCurve = -degrees / pow(ticsdown, 2); // this is also a
                 newPitch = qCurve * pow(ticsdown, 2);
@@ -331,7 +331,7 @@ script SAMSARA_QPOWERS (int startTime)
 
             if (regenTimer % 35 == 18 && !isDead(0))
             {
-                healthMax = cond(GetCVar("samsara_nohealthcap"), 0x7FFFFFFF, 150+getMaxHealth());
+                healthMax = cond(GetCVar("sams_nohealthcap"), 0x7FFFFFFF, 150+getMaxHealth());
 
                 if (health >= getMaxHealth()) { giveHealthMax(5, healthMax); }
                 else if (health + 10 >= getMaxHealth())
@@ -348,7 +348,7 @@ script SAMSARA_QPOWERS (int startTime)
                     regenPulse = 12;
                 }
 
-                if (!GetCVar("samsara_nohealthcap")) { healthGiven += max(GetActorProperty(0, APROP_Health) - health, 0); }
+                if (!GetCVar("sams_nohealthcap")) { healthGiven += max(GetActorProperty(0, APROP_Health) - health, 0); }
                 health = GetActorProperty(0, APROP_Health);
             }
 
@@ -445,11 +445,11 @@ script SAMSARA_QUAKE (int class, int slot, int dropped)
     int givingQuad, givingLG;
 
     int stay = GetCVar("sv_weaponstay") && !dropped;
-    int ultStay = GetCVar("samsara_permault") && !dropped;
+    int ultStay = GetCVar("sams_permault") && !dropped;
 
     int doquad = 1;
 
-    if (GetCVar("samsara_permault") && CheckInventory("QuakeQuadTimer") > 0)//CheckQuad() > 0)
+    if (GetCVar("sams_permault") && CheckInventory("QuakeQuadTimer") > 0)//CheckQuad() > 0)
     {
         doquad = 0;
     }
@@ -461,14 +461,14 @@ script SAMSARA_QUAKE (int class, int slot, int dropped)
         {
             if (isLMS())
             {
-                if (GetCvar("samsara_permaquad") == 1)
+                if (GetCvar("sams_permaquad") == 1)
                 { GiveInventory("QuadDamageItem", 1); }
             }
             else
             {
                 GiveQuad(1050);
     
-                if (GetCvar("samsara_permaquad") == 1)//if (isCoop() || isSinglePlayer())
+                if (GetCvar("sams_permaquad") == 1)//if (isCoop() || isSinglePlayer())
                 { GiveInventory("QuadDamageItem", 1); }
 			
             }

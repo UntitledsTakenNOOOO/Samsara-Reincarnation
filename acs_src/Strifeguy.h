@@ -4,8 +4,8 @@ Script STRIFEGUY_UPG ENTER
 {
             if (PlayerClass(PlayerNumber())!=11) terminate; //Check if the class is strifeguy, otherwise terminate the script
             //Assign cvar values to variables
-            int aup=GetCvar("samsara_accuracyupgrades"); //Accuracy Upgrade
-            int sup=GetCvar("samsara_staminaupgrades");  //Stamina Upgrade
+            int aup=GetCvar("sams_accuracyupgrades"); //Accuracy Upgrade
+            int sup=GetCvar("sams_staminaupgrades");  //Stamina Upgrade
             //Cap out the values
             if (aup>10) aup=10;
             if (aup<0) aup=0;
@@ -49,7 +49,7 @@ script SAMSARA_STRIFESIGIL (int class, int slot, int dropped)
     int givingMauler, givingSigil;
 
     int stay = GetCVar("sv_weaponstay") && !dropped;
-    int ultStay = GetCVar("samsara_permault") && !dropped;
+    int ultStay = GetCVar("sams_permault") && !dropped;
 
     switch (slot)
     {

@@ -31,7 +31,7 @@ script SAMSARA_CLIENT_ACCURACY (int soundmode) clientside
     
     if (cpln == pln)
     {
-        if (GetCVar("samsara_cl_moremessages"))
+        if (GetCVar("sams_cl_moremessages"))
         {
             for (i = 0; i < MSGCOUNT; i++)
             {
@@ -51,7 +51,7 @@ script SAMSARA_CLIENT_ACCURACY (int soundmode) clientside
             if (!StrLen(logMsg)) { logMsg = "Oh bugger there's no message for this unique."; } 
         }
 
-        if (GetCVar("samsara_cl_printpickup")) { Print(s:logMsg); }
+        if (GetCVar("sams_cl_printpickup")) { Print(s:logMsg); }
         else { Log(s:logMsg); }
     }
     

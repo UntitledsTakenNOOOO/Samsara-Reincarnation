@@ -131,7 +131,7 @@ function void GiveClassUnique(int class, int which)
 function void ApplyLMS(void)
 {
     int classNum = samsaraClassNum();
-    int lmsLevel = middle(0, GetCVar("samsara_lmslife"), LMSMODES-1);
+    int lmsLevel = middle(0, GetCVar("sams_lmslife"), LMSMODES-1);
     int i;
 
     if (classNum == -1) { return; }
@@ -143,9 +143,9 @@ function void ApplyLMS(void)
 
 
     if (StrLen(LMSItems[classNum])) { GiveInventory(LMSItems[classNum], 1); }
-    if (GetCVar("samsara_lmsult")) { GiveClassWeapon(classNum, SLOT_BFG9000, 1); }
+    if (GetCVar("sams_lmsult")) { GiveClassWeapon(classNum, SLOT_BFG9000, 1); }
 
-    i = (GetCVar("samsara_lmslife") + 1) * PlayerCount();
+    i = (GetCVar("sams_lmslife") + 1) * PlayerCount();
 
     GiveInventory("Clip",       GetAmmoCapacity("Clip")         - CheckInventory("Clip"));
     GiveInventory("Shell",      GetAmmoCapacity("Shell")        - CheckInventory("Shell"));
@@ -195,10 +195,10 @@ function int itemToSlot(int i)
 function int SamsaraClientVars(void)
 {
     int switchOnPickup  = !!GetCVar("switchonpickup");
-    int weaponBar       = !!GetCVar("samsara_cl_weaponhud");
-    int ballgag         = !!GetCVar("samsara_cl_ballgag");
-    int classicAnims    = !!GetCVar("samsara_cl_vanilladoom");
-    int wolfmove        = !!GetCVar("samsara_cl_wolfmove");
+    int weaponBar       = !!GetCVar("sams_cl_weaponhud");
+    int ballgag         = !!GetCVar("sams_cl_ballgag");
+    int classicAnims    = !!GetCVar("sams_cl_vanilladoom");
+    int wolfmove        = !!GetCVar("sams_cl_wolfmove");
 
     return (switchOnPickup << 4) + (weaponBar << 3) + (ballgag << 2) + (classicAnims << 1) + wolfmove;
 }
@@ -383,7 +383,7 @@ function int GiveQuad(int toAdd)
     GiveInventory("QuakeQuadTimer", quadcount);
     GiveInventory("QuakeQuadTimer", toAdd);
 
-    if (GetCVar("samsara_permault"))
+    if (GetCVar("sams_permault"))
     {
         GiveInventory("DoNotQuad", 1);   // nasty hack
     }
@@ -395,7 +395,7 @@ function int GiveQuad(int toAdd)
 
 function int HandleUniqueSpawn(int respawning)
 {
-    int cs = GetCVar("samsara_uniquestart");
+    int cs = GetCVar("sams_uniquestart");
     int classnum = samsaraClassNum();
     int i;
 
@@ -423,7 +423,7 @@ function int HandleUniqueSpawn(int respawning)
 
 function int HandleChainsawSpawn(int respawning)
 {
-    int cs = GetCVar("samsara_chainsawstart");
+    int cs = GetCVar("sams_chainsawstart");
     int classnum = samsaraClassNum();
     int ammomode = 3;
 
@@ -437,7 +437,7 @@ function int HandleChainsawSpawn(int respawning)
 
 function int HandlePunchDrunk(int respawning)
 {
-    int cs = GetCVar("samsara_punchdrunk");
+    int cs = GetCVar("sams_punchdrunk");
     int classnum = samsaraClassNum();
     int i;
 
@@ -482,7 +482,7 @@ function void SetArmorMode(void)
 {
     if (ArmorMode < 0)
     {
-        ArmorMode = middle(0, GetCVar("samsara_armormode"), ARMORMODES-1);
+        ArmorMode = middle(0, GetCVar("sams_armormode"), ARMORMODES-1);
     }
 }
 

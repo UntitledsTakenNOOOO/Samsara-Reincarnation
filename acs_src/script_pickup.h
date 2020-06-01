@@ -9,11 +9,11 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
 	int alternativeclass;
     int toClass = SamsaraClientClass-1;
     int displaymode;
-    if (GetCVar("samsara_runninginzdoom") == 1)
+    if (GetCVar("sams_runninginzdoom") == 1)
     {
-        displaymode = GetCVar("samsara_zd_pickupmode");
+        displaymode = GetCVar("sams_zd_pickupmode");
     } else {
-        displaymode = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_pickupmode");
+        displaymode = GetUserCVar(ConsolePlayerNumber(), "sams_cl_pickupmode");
     }
     int oldslot = slot;
     int success = 0;
@@ -191,7 +191,7 @@ script SAMSARA_GIVEWEAPON (int slot, int dropped, int silent)
     int pclass = samsaraClassNum();
     int hasWep = HasClassWeapon(pclass, slot);
     
-    if (slot == SLOT_BFG9000) { weaponStay = !!GetCVar("samsara_permault"); }
+    if (slot == SLOT_BFG9000) { weaponStay = !!GetCVar("sams_permault"); }
     
     int a1cnt  = 0, a2cnt = 0;
     int a1max  = 0, a2max = 0;
@@ -255,7 +255,7 @@ script SAMSARA_GIVEWEAPON (int slot, int dropped, int silent)
                 Spawn("WeaponGetYaaaay2", GetActorX(0), GetActorY(0), GetActorZ(0));
 				
 				// work around for auto-switch seemingly being fucking broked in zdoom
-				If (GetCVar("samsara_runninginzdoom") == 1)
+				If (GetCVar("sams_runninginzdoom") == 1)
 				{
 					If (GetCVar("neverswitchonpickup") == 0)
 					{
@@ -292,7 +292,7 @@ script SAMSARA_GIVEUNIQUE (int alt)
     
     int uniqueGet = 0;
     int pclass = samsaraClassNum();
-    int pd = GetCVar("samsara_punchdrunk") || GetCVar("samsara_punchdrunkuniques");
+    int pd = GetCVar("sams_punchdrunk") || GetCVar("sams_punchdrunkuniques");
 
     while (!uniqueGet && alt >= 0)
     {
@@ -322,7 +322,7 @@ script SAMSARA_CLIENT_WEAPONPICKUP (int slot, int soundmode, int dropped) client
     
     if (cpln == pln && GetCVar("msg") == 0)
     {
-        if (GetCVar("samsara_cl_moremessages"))
+        if (GetCVar("sams_cl_moremessages"))
         {
             for (i = 0; i < MSGCOUNT; i++)
             {
@@ -342,7 +342,7 @@ script SAMSARA_CLIENT_WEAPONPICKUP (int slot, int soundmode, int dropped) client
             if (!StrLen(logMsg)) { logMsg = "Oh bugger there's no message for this weapon."; } 
         }
 
-        if (GetCVar("samsara_cl_printpickup")) { Print(s:logMsg); }
+        if (GetCVar("sams_cl_printpickup")) { Print(s:logMsg); }
         else { Log(s:msgColors[GetCVar("msg0color")], s:logMsg); }
     }
     
@@ -352,7 +352,7 @@ script SAMSARA_CLIENT_WEAPONPICKUP (int slot, int soundmode, int dropped) client
     FadeRange(ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], ClassFades[pclass][3],
     ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], 0.0, itof(ClassFades[pclass][4]) / 35);
     
-    if (pclass == CLASS_DUKE && !GetCVar("samsara_cl_ballgag") && !dropped)
+    if (pclass == CLASS_DUKE && !GetCVar("sams_cl_ballgag") && !dropped)
     {
         Delay(8);
 
@@ -365,7 +365,7 @@ script SAMSARA_CLIENT_WEAPONPICKUP (int slot, int soundmode, int dropped) client
             DukeQuoteCooldown[pln] = 140;
         }
     }
-	if (pclass == CLASS_RR && !GetCVar("samsara_cl_ballgag") && !dropped)
+	if (pclass == CLASS_RR && !GetCVar("sams_cl_ballgag") && !dropped)
     {
         Delay(8);
 
@@ -394,7 +394,7 @@ script SAMSARA_CLIENT_UNIQUEPICKUP (int soundmode, int punchdrunk) clientside
     
     if (cpln == pln && GetCVar("msg") == 0)
     {
-        if (GetCVar("samsara_cl_moremessages"))
+        if (GetCVar("sams_cl_moremessages"))
         {
             for (i = 0; i < MSGCOUNT; i++)
             {
@@ -415,7 +415,7 @@ script SAMSARA_CLIENT_UNIQUEPICKUP (int soundmode, int punchdrunk) clientside
             if (!StrLen(logMsg)) { logMsg = "Oh bugger there's no message for this unique."; } 
         }
 
-        if (GetCVar("samsara_cl_printpickup")) { Print(s:logMsg); }
+        if (GetCVar("sams_cl_printpickup")) { Print(s:logMsg); }
         else { Log(s:msgColors[GetCVar("msg0color")], s:logMsg); }
     }
     

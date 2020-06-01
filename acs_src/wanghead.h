@@ -3,7 +3,7 @@ script SAMSARA_WANGHEAD (int class, int slot, int dropped)
     int givingSWGuardianHead, givingSWNuke;
 
     int stay = GetCVar("sv_weaponstay") && !dropped;
-    int ultStay = GetCVar("samsara_permault") && !dropped;
+    int ultStay = GetCVar("sams_permault") && !dropped;
 
     switch (slot)
     {

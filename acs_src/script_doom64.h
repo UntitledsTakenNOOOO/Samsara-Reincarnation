@@ -5,7 +5,7 @@ script SAMSARA_DOOM64 (int class, int slot, int dropped)
     int giveartifacts = isInvasion() || !(isCoop() || isSinglePlayer());
 
     int stay = GetCVar("sv_weaponstay") && !dropped;
-    int ultStay = GetCVar("samsara_permault") && !dropped;
+    int ultStay = GetCVar("sams_permault") && !dropped;
 
     switch (slot)
     {

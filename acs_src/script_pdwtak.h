@@ -1,7 +1,7 @@
 script SAMSARA_PDWTAK death
 {
     int bombtimer, yourTID;
-    int pdwtak = GetCVar("samsara_peoplediewhentheyarekilled");
+    int pdwtak = GetCVar("sams_peoplediewhentheyarekilled");
     int myTID = defaultTID(-1);
     int classNum = samsaraClassNum();
     int x,y,z,z2;
