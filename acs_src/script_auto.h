@@ -379,7 +379,7 @@ script SAMSARA_SPAWN (int respawning)
     int i;
 	
 	TakeInventory("HalfLifeOpposingForceSet", 0x7FFFFFFF);
-	//ACS_NamedExecuteAlways("sams_RESETPLAYER_COOP",0,0,0,0);
+	//ACS_NamedExecuteAlways("SAMSARA_RESETPLAYER_COOP",0,0,0,0);
     ServerEnterTimes[pln] = startTime;
     ACS_ExecuteWithResult(SAMSARA_SYNTHFIRE, startTime);
 
@@ -514,22 +514,28 @@ script SAMSARA_SPAWN (int respawning)
         if (GetUserCvar(pln,"sams_cl_weaponhud")) { GiveInventory("ExpandedHud", 1); }
         else { TakeInventory("ExpandedHud", 0x7FFFFFFF); }
 		
-		if (GetUserCvar(pln,"sams_cl_dkclab") && CheckInventory("DukeClass")) { GiveInventory("DukeLabToken", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1); }
+		if (GetUserCvar(pln,"sams_cl_dkclab") && CheckInventory("DukeClass")) { GiveInventory("DukeLabToken", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); }
         else { TakeInventory("DukeLabToken", 0x7FFFFFFF); }
 		
 		if (GetUserCvar(pln,"sams_cl_shephardmode") && CheckInventory("HalfLifeClass")) 
 		{ 
 			GiveInventory("HalfLifeOpposingForce", 1); 
-			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1); 
-			if(!CheckInventory("HalfLifeOpposingForceSet")) SetActorState(0, "AdrianModeOn", true); 
+			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
+			if(!CheckInventory("HalfLifeOpposingForceSet")) 
+			{
+				int targettid = UniqueTid();
+				SpawnForced("HalfLifeAdrianModeMapDummy",0,0,0,targettid);//SetActorState(0, "AdrianModeOn", true); 
+				SetPointer(AAPTR_TARGET, targettid);
+				Thing_ChangeTID(targettid, 0);
+			}
 		}
         else { TakeInventory("HalfLifeOpposingForce", 0x7FFFFFFF); TakeInventory("HalfLifeOpposingForceSet", 0x7FFFFFFF); }
 		
-		if (GetUserCvar(pln,"sams_cl_lostmode") && CheckInventory("WolfenClass")) { GiveInventory("WolfenLostMode", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1); }
+		if (GetUserCvar(pln,"sams_cl_lostmode") && CheckInventory("WolfenClass")) { GiveInventory("WolfenLostMode", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); }
         else { TakeInventory("WolfenLostMode", 0x7FFFFFFF); }
 		
 		if(!GetUserCvar(pln,"sams_cl_lostmode") && !GetUserCvar(pln,"sams_cl_shephardmode") && !GetUserCvar(pln,"sams_cl_dkclab"));
-			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0);
+			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln);
 		
         if (GetCVar("sams_runninginzdoom") == 1) 
 		{
@@ -1085,8 +1091,11 @@ script SAMSARA_ENTER_CLIENT (void) clientside
     //Log(s:"Client ", n:pln+1, s:"\c- (", d:pln, s:") has left spawn (", d:startTime, s:" vs. ", d:ClientEnterTimes[pln], s:")");
 }
 
-script "SAMSARA_CLIENT_ALTERNATIVECLASS" (int set) clientside
+script "SAMSARA_CLIENT_ALTERNATIVECLASS" (int set, int pln) clientside
 {
+	int cpln = ConsolePlayerNumber();
+    if (cpln != pln) { terminate; }
+
 	SamsaraAlternativeClass = set;
 }
 
@@ -1096,6 +1105,7 @@ script SAMSARA_DISCONNECT_CLIENT (int pln) disconnect clientside
     int cpln = ConsolePlayerNumber();
     if (cpln != pln) { terminate; }
     
+	SamsaraAlternativeClass = 0;
     SamsaraClientClass  = 0;
     SamsaraItemFlash    = Timer();
 }
