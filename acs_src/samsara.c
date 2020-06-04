@@ -877,12 +877,6 @@ script 202 (void)
             TakeInventory("TomeOfPowerCooldown",1);
             TakeInventory("RainTracker",1);
         }
-
-        if (CheckInventory("TomeOfPowerCooldown") == 160)  // To end the spectral effect when the tome ends
-        {
-            TakeInventory("SpectralFiring", 0x7FFFFFFF);
-//          ActivatorSound("weapons/sigil", 127);
-        }
     }
 }
 

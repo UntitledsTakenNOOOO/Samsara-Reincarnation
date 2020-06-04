@@ -598,12 +598,6 @@ script SAMSARA_SPAWN (int respawning)
         TakeInventory("MacePowered", 1);
         if (GetCvar("sams_lmsrules") == 0) { ConvertClassWeapons(-1); }
 
-        if (CheckInventory("SpectralFiring"))
-        {
-            TakeInventory("SpectralFiring", 1);
-            GiveInventory("SpectralFiring", 1);
-        }
-
         if (GetCVar("sams_banjetpack") && CheckInventory("DukePortJetpack"))
         {
             GiveInventory("DukeBootserk", 1);
@@ -634,6 +628,8 @@ script SAMSARA_SPAWN (int respawning)
                 if (!SamsaraGlobal[GLOBAL_SIGILBASE+i+2]) { GiveInventory(SpectralTogglers[i], 1); }
                 else { TakeInventory(SpectralTogglers[i], 0x7FFFFFFF); }
                 GiveInventory(SigilSplinters[i], 1);
+				if(samsaraClassNum() == CLASS_STRIFE)
+					GiveInventory("StrifeSigilPiece", 1);
            }
             else
             {

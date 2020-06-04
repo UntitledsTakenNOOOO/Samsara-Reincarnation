@@ -12,11 +12,11 @@ int SigilSplinters[SIGILCOUNT] =
 
 int SpectralTogglers[SIGILCOUNT] = 
 {
-    "SpectralToggler1",
-    "SpectralToggler2",
-    "SpectralToggler3",
-    "SpectralToggler4",
-    "SpectralToggler5",
+    "SigilInventoryWeapon1",
+    "SigilInventoryWeapon2",
+    "SigilInventoryWeapon3",
+    "SigilInventoryWeapon4",
+    "SigilInventoryWeapon5",
 };
 
 int BeaconMonsters[CLASSCOUNT] = 

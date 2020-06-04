@@ -204,37 +204,6 @@ script SAMSARA_SPECTRES (int mode, int arg1, int arg2)
 
         SamsaraGlobal[GLOBAL_SIGILBASE + arg1] = !!arg2;
         break;
-      
-      case 7:
-        result = 1;
-        i = samsaraClassNum();
-
-        switch (i)
-        {
-          case CLASS_QUAKE:
-            if (!CheckInventory("QuadDamagePower"))
-            {
-                Print(s:"You must be quadded to go spectral.");
-                result = 0;
-            }
-            break;
-
-          case CLASS_HERETIC:
-            if (!CheckInventory("PowerHereticTome"))
-            {
-                Print(s:"You must be tomed to go spectral.");
-                result = 0;
-            }
-            break;
-          
-          default:
-            if (!HasClassWeapon(i, 8))
-            {
-                result = 0;
-                Print(s:"You need the \ck", s:ClassWeapons[i][8][S_WEP], s:"\c- to go spectral.");
-            }
-        }
-        break;
 
       case -1:
         SetActivatorToTarget(0);
@@ -264,20 +233,31 @@ script SAMSARA_SPECTRES (int mode, int arg1, int arg2)
     SetResultValue(result);
 }
 
-script SAMSARA_SIGIL (int baseHP)
+script SAMSARA_SIGIL (int sequence)
 {
-    int i, splinterCount = 0;
-    baseHP = itof(baseHP) / SIGILCOUNT;
-
-    if (!CheckInventory("SpectralFiring")) { terminate; }
-
-    for (i = 0; i < SIGILCOUNT; i++)
-    {
-        if (CheckInventory(SigilSplinters[i])) { splinterCount++; }
-    }
-
-    baseHP *= min((SIGILCOUNT - splinterCount) + 1, SIGILCOUNT);
-    baseHP = round(baseHP);
-
-    if (baseHP) DamageThing(baseHP, 0);
+	int i, splinterCount = 0;
+	switch(sequence)
+	{
+		case 1:
+			Delay(21);
+			GiveInventory("SigilInventorySequence1",1);
+			for (i = 0; i < SIGILCOUNT; i++)
+			{
+				if (CheckInventory(SigilSplinters[i])) { splinterCount++; }
+			}
+			DamageThing(2 * (6-splinterCount), 0);
+			break;
+		case 2:
+			Delay(4);
+			GiveInventory("SigilInventorySequence2",1);
+			break;
+		case 3:
+			Delay(6);
+			GiveInventory("SigilInventorySequence3",1);
+			break;
+		case 4:
+			Delay(4);
+			GiveInventory("SigilInventorySequence4",1);
+			break;
+	}
 }

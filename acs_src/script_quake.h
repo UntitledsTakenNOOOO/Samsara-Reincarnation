@@ -217,12 +217,6 @@ script SAMSARA_QPOWERS (int startTime)
             {
                 HudMessage(s:""; HUDMSG_PLAIN, 58101, CR_UNTRANSLATED, 0, 0, 1);
                 HudMessage(s:""; HUDMSG_PLAIN, 58102, CR_UNTRANSLATED, 0, 0, 1);
-
-                if (CheckInventory("SpectralFiring"))
-                {
-                    TakeInventory("SpectralFiring", 1);   // So ranger can't break the spectral weapons
-                    LocalAmbientSound("weapons/sigil", 127);
-                }
             }
             TakeInventory("QuadDamagePower", 1);
         }
