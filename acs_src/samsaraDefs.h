@@ -117,45 +117,53 @@
 
 int HELPSTR = 
 "Welcome to the Wheel of Samsara! There are a few optional RCon commands you may want to consider.\n\
-samsara_banjetpack 0/1: Toggles whether Duke or Moon Commando is allowed to pick up their jetpack or not.\n\
-samsara_banwolfmove 0/1: Toggles whether Wolfenstein movement is allowed or not.\n\
-samsara_nocustomgravity 0/1: Toggles whether the heroes have custom gravity or use only Doom gravity.\n\
-samsara_jumpmod: Gives the indicated multiplier to jump height. 9 for HeXen, -8 for Strife.\n\
-samsara_permault 0/1: Toggles whether the Weapon VII is persistent or vanishes on pickup.\n\
-samsara_lmslife [0-5]: Affects how much health/armor people have on LMS spawn/respawn.\n\
-samsara_lmsult 0/1: Toggles whether players get their VII in LMS.\n\
-samsara_uniquestart [0-4]: Toggles whether players get their unique on enter or spawn.\n\
-samsara_chainsawstart [0-2]: Toggles whether players get their I on enter or spawn.\n\
-samsara_peoplediewhentheyarekilled [0-3]: Players explode on death.\n\
-samsara_punchdrunk 0/1: Toggles melee-only mode. Only works in deathmatch or coop.\n\
-samsara_punchdrunkuniques 0/1: Toggles whether Punchdrunk uniques are present in normal play.\n\
-samsara_punchdrunksaws 0/1: Toggles whether Punchdrunk Chainsaws are present in normal play.\n\
-samsara_armormode [0-4]: Toggles the type of armor that spawns in-game.\n\
-samsara_nohealthcap 0/1: Toggles whether 100/200 is the health cap for players, or infinity.\n\
-samsara_noult 0/1: Toggles whether the VII comes into play or never spawns.\n\
-samsara_nomonologues 0/1: Toggles whether the bosses speak on spawn or not.\n\
-samsara_backpackstart 0/1: Toggles whether players spawn normally or with backpacks.\n\
-samsara_classiclaz 0/1: Toggles whether the LAZ Device has Samsara behavior or original behavior.\n\
-samsara_allcanrj 0/1: Every character with non-self-damaging rockets will be able to RJ with them.\n\
-samsara_nounique 0/1: Toggles whether Unique Item spawns.\n\
-samsara_noinvuln 0/1: Toggles whether Invulnerability spawns.\n\
-samsara_ban[class] 0/1: Forbids players from playing certain classes. bandoomguy for Doomguy, banchex for Chex Warrior, etc.\n\
-samsara_lmsrules 0/1: For players who want Rocket Arena-style showdowns or just to spawn with all weapons.\n\
-samsara_[class]damage -10-30: Adjusts the character's damage multiplier.\n\
-samsara_[class]defense -10-20: Adjusts the character's defense multiplier.\n\
-samsara_permaquad: Determines whether Ranger gets a Quake II or Quake I Quad Damage on picking up the VII.\n\
-samsara_accuracyupgrades 0-10: Adjusts the amount of accuracy upgrades Strifeguy starts the game with.\n\
-samsara_staminaupgrades 0-10: Adjusts the amount of stamina upgrades Strifeguy starts the game with. (Note: Maximum health isn't increased during Cooperative gamemodes.)";
+sams_banjetpack 0/1: Toggles whether Duke or Moon Commando is allowed to pick up their jetpack or not.\n\
+sams_banwolfmove 0/1: Toggles whether Wolfenstein movement is allowed or not.\n\
+sams_nocustomgravity 0/1: Toggles whether the heroes have custom gravity or use only Doom gravity.\n\
+sams_jumpmod: Gives the indicated multiplier to jump height. 9 for HeXen, -8 for Strife.\n\
+sams_permault 0/1: Toggles whether the Weapon VII is persistent or vanishes on pickup.\n\
+sams_lmslife [0-5]: Affects how much health/armor people have on LMS spawn/respawn.\n\
+sams_lmsult 0/1: Toggles whether players get their VII in LMS.\n\
+sams_uniquestart [0-4]: Toggles whether players get their unique on enter or spawn.\n\
+sams_chainsawstart [0-2]: Toggles whether players get their I on enter or spawn.\n\
+sams_peoplediewhentheyarekilled [0-3]: Players explode on death.\n\
+sams_punchdrunk 0/1: Toggles melee-only mode. Only works in deathmatch or coop.\n\
+sams_punchdrunkuniques 0/1: Toggles whether Punchdrunk uniques are present in normal play.\n\
+sams_merryxmas 0/1: Toggles XMas mode, changing the appearance of several textures and props. \n\
+sams_misccharacters 0-100: Adjusts the percentage chance of Misc characters and allies to spawn in place of health/armor bonuses. \n\
+sams_microwavepop 0/1: Changes the explosion behavior of Duke's Expander weapon. \n\
+sams_punchdrunksaws 0/1: Toggles whether Punchdrunk Chainsaws are present in normal play.\n\
+sams_armormode [0-4]: Toggles the type of armor that spawns in-game.\n\
+sams_nohealthcap 0/1: Toggles whether 100/200 is the health cap for players, or infinity.\n\
+sams_noult 0/1: Toggles whether the VII comes into play or never spawns.\n\
+sams_nomonologues 0/1: Toggles whether the bosses speak on spawn or not.\n\
+sams_backpackstart 0/1: Toggles whether players spawn normally or with backpacks.\n\
+sams_classiclaz 0/1: Toggles whether the LAZ Device has Samsara behavior or original behavior.\n\
+sams_allcanrj 0/1: Every character with non-self-damaging rockets will be able to RJ with them.\n\
+sams_nounique 0/1: Toggles whether Unique Item spawns.\n\
+sams_noinvuln 0/1: Toggles whether Invulnerability spawns.\n\
+sams_ban[class] 0/1: Forbids players from playing certain classes. bandoomguy for Doomguy, banchex for Chex Warrior, etc.\n\
+sams_lmsrules 0/1: For players who want Rocket Arena-style showdowns or just to spawn with all weapons.\n\
+sams_[class]damage -10-30: Adjusts the character's damage multiplier.\n\
+sams_[class]defense -10-20: Adjusts the character's defense multiplier.\n\
+sams_permaquad: Determines whether Ranger gets a Quake II or Quake I Quad Damage on picking up the VII.\n\
+sams_accuracyupgrades 0-10: Adjusts the amount of accuracy upgrades Strifeguy starts the game with.\n\
+sams_staminaupgrades 0-10: Adjusts the amount of stamina upgrades Strifeguy starts the game with. (Note: Maximum health isn't increased during Cooperative gamemodes.)";
 
 int HELPSTR_CL = 
 "Likewise, there are several clientside console variables, including:\n\
-samsara_cl_printpickup 0/1: 1 = Print, 0 = Log.\n\
-samsara_cl_expparticles [1-100000]: How many particles does Ranger's explosions emit? 0 is default, -1 to disable.\n\
-samsara_cl_norecoil 0/1: Controls whether Ranger's weapons recoil.\n\
-samsara_cl_sinerecoil 0/1: Toggles whether Ranger's recoil movement uses a sine wave.\n\
-samsara_cl_weaponhud 0/1: Controls whether the weapon bar at the top of your screen appears.\n\
-samsara_cl_vanilladoom 0/1: Toggles the vanilla weapon animations for Doomguy.\n\
-samsara_cl_wolfmove 0/1: Toggles classic Wolfenstein movement on B.J. Blazkowicz.";
+sams_cl_printpickup 0/1: 1 = Print, 0 = Log.\n\
+sams_cl_expparticles [1-100000]: How many particles does Ranger's explosions emit? 0 is default, -1 to disable.\n\
+sams_cl_norecoil 0/1: Controls whether Ranger's weapons recoil.\n\
+sams_cl_sinerecoil 0/1: Toggles whether Ranger's recoil movement uses a sine wave.\n\
+sams_cl_weaponhud 0/1: Controls whether the weapon bar at the top of your screen appears.\n\
+sams_cl_vanilladoom 0/1: Toggles the vanilla weapon animations for Doomguy.\n\
+sams_cl_wolfmove 0/1: Toggles classic Wolfenstein movement on B.J. Blazkowicz, Blake Stone, and SpaceSeal.\n\
+sams_cl_heromusic 0/1: Toggles the selected Hero's soundtrack to play during gameplay (requires samsaraost file)\n\
+sams_cl_hevtalk 0/1: Toggles HEV suit speech for Freeman/Shephard.\n\
+sams_cl_dkclab 0/1: Toggles Life's A Beach weapon skins for Duke Nukem.\n\
+sams_cl_lostmode 0/1: Toggles SOD Lost Missions weapon skins for BJ Blaskowicz \n\
+sams_cl_adrianmode 0/1: Allows you to play as Adrian Shephard from HL Opposing Force when selecting Freeman, with the matching weapons!";
 
 int LMSArmors[LMSMODES] = 
 {
