@@ -522,7 +522,7 @@ script SAMSARA_SPAWN (int respawning)
 			GiveInventory("HalfLifeOpposingForce", 1); 
 			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
 			if(!CheckInventory("HalfLifeOpposingForceSet")) 
-			{
+			{	
 				int targettid = UniqueTid();
 				SpawnForced("HalfLifeAdrianModeMapDummy",0,0,0,targettid);//SetActorState(0, "AdrianModeOn", true); 
 				SetPointer(AAPTR_TARGET, targettid);
@@ -534,7 +534,7 @@ script SAMSARA_SPAWN (int respawning)
 		if (GetUserCvar(pln,"sams_cl_lostmode") && CheckInventory("WolfenClass")) { GiveInventory("WolfenLostMode", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); }
         else { TakeInventory("WolfenLostMode", 0x7FFFFFFF); }
 		
-		if(!GetUserCvar(pln,"sams_cl_lostmode") && !GetUserCvar(pln,"sams_cl_shephardmode") && !GetUserCvar(pln,"sams_cl_dkclab"));
+		if((!GetUserCvar(pln,"sams_cl_lostmode") && CheckInventory("WolfenClass")) || (!GetUserCvar(pln,"sams_cl_shephardmode") && CheckInventory("HalfLifeClass")) || (!GetUserCvar(pln,"sams_cl_dkclab") && CheckInventory("DukeClass")))
 			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln);
 		
         if (GetCVar("sams_runninginzdoom") == 1) 
@@ -1091,7 +1091,7 @@ script "SAMSARA_CLIENT_ALTERNATIVECLASS" (int set, int pln) clientside
 {
 	int cpln = ConsolePlayerNumber();
     if (cpln != pln) { terminate; }
-
+	
 	SamsaraAlternativeClass = set;
 }
 
