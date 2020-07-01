@@ -306,6 +306,18 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "Q2Misc/W_Pkup",
         "Q2Misc/W_Pkup",
     },
+	{
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+    },
 };
 
 int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] = 
@@ -617,6 +629,18 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "Q2Misc/W_Pkup",
         "Q2Misc/W_Pkup",
     },
+	{
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+        "Hexen2/ItemPickup",
+    },
 };
 
 int ClassUniqueSounds[CLASSCOUNT] = 
@@ -647,6 +671,7 @@ int ClassUniqueSounds[CLASSCOUNT] =
     "PS/Ipickup2",
     "RR/Wpickup",
 	"Q2Misc/W_Pkup",
+	"Hexen2/ArtifactPickup",
 };
 
 int PunchDrunkUniqueSounds[CLASSCOUNT] = 

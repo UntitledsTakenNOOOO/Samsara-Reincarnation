@@ -77,6 +77,7 @@ int AccuracyUniques[CLASSCOUNT][ACCURACYCOUNT] =
 	{"Ring of RA","","","","","","","","",""},	
 	{" Hunting Rifle With Scope ",""," Dyn 'O' Mites ","","","","","","",""},	
 	{"Q2GrenadeLauncher","RocketAmmo","Q2ETFRifle","Q2Flechettes","Q2IonRipper","Cell","Q2IonRipper","Cell","",""},	
+	{"Hexen2TomeOfPower","","Hexen2ForceCube","","","","","","",""},	
 };
 
 int DoomAccuracyZerks[ACCURACYCOUNT] = 

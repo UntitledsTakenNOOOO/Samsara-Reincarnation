@@ -59,6 +59,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
     {"Ring of RA", "", "", "","",""},	
     {" Hunting Rifle With Scope ", "", " Dyn 'O' Mites ", "","",""},	
 	{"Q2GrenadeLauncher", "RocketAmmo", "Q2ETFRifle", "Q2Flechettes","Q2IonRipper","Cell"},	
+	{"Hexen2TomeOfPower","","Hexen2ForceCube","","",""},	
 };
 
 int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] = 
@@ -89,6 +90,7 @@ int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] =
     {0,     0,      0,  0,		0,	0},
     {0,     0,      0,  0,		0,	0},
 	{0,     0,      0,  0,		0,	0},
+	{20,    0,     20,  0,		0,	0},
 };
 
 int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
@@ -118,6 +120,7 @@ int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
     {-1,    -1,     -1, -1,     -1, -1},
     {-1,    -1,     -1, -1,     -1, -1},
     {-1,    -1,     -1, -1,     -1, -1},	
+	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},
 };
 
@@ -432,6 +435,17 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Q2HyperBlaster",        		    "Cell",         "",             "", ""},
         {"Q2BFG10K",                  		"Cell",         "",             "", ""},
     },
+	{   // Demoness
+		{"Hexen2Sickle",                   	"",             "",             "", ""},
+        {"Hexen2IceMace",                  	"Clip",         "",             "", ""},
+        {"Hexen2BloodFire",           		"",             "",             "", ""},
+        {"Hexen2SpellBookMagicMissile",     "Clip",         "",             "", ""},
+        {"Hexen2AcidRune",             	    "Clip",         "",             "", ""},
+        {"Hexen2SpellBookBoneShard",        "Cell",         "",             "", ""},
+        {"Hexen2FireRune",           		"Cell",   		"",             "", ""},
+        {"Hexen2RavenStaff",        		"Clip",   		"Cell",   		"", ""},
+        {"Hexen2TempestStaff",              "Clip",   		"Cell",   		"", ""},
+    },
 };
 
 int ClassScripts[CLASSCOUNT][SLOTCOUNT] = 
@@ -461,7 +475,8 @@ int ClassScripts[CLASSCOUNT][SLOTCOUNT] =
     {0,0,                   0,  0,0,0,0,0,0,0},
     {0,0,                   0,  0,0,0,0,0,0,0},
     {0,0,                   0,  0,0,0,0,0,0,0},
-	{0,0,                   0,  0,0,0,0,0,0,0},		
+	{0,0,                   0,  0,0,0,0,0,0,0},
+	{0,0,                   0,  0,0,0,0,0,0,0},	
 };
 
 //+Added
@@ -561,6 +576,7 @@ str SamsaraRGP[CLASSCOUNT][SAMSARA_RGP_PAGES] =
 	{"",				"",},
 	{"",				"",},
 	{"",				"",},	
+	{"",				"",},	
 };
 
 #define SAMSARA_RGP_PROPERTIES	2
@@ -592,5 +608,6 @@ int SamsaraRGPProperties[CLASSCOUNT][SAMSARA_RGP_PAGES][SAMSARA_RGP_PROPERTIES] 
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
+	{{0,	0}, 		{0,		0},},	
 	{{0,	0}, 		{0,		0},},	
 };

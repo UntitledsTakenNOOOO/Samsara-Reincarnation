@@ -716,6 +716,10 @@ script SAMSARA_SPAWN (int respawning)
             else { SetActorProperty(0, APROP_Gravity, 0.68); }
             break;
 
+		  case CLASS_DEMONESS:
+		    if (GetCVar("sams_nocustomgravity")) { SetActorProperty(0, APROP_Gravity, 1.0); }
+            break;
+		
           default:
             SetActorProperty(0, APROP_Gravity, 1.0);
             break;

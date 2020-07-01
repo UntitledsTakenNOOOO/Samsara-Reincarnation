@@ -1,0 +1,281 @@
+Actor Hexen2TomeOfPower : ArtiTomeOfPower
+{
+	Inventory.MaxAmount 20
+	Inventory.Icon "H2INVT01"
+	-FLOATBOB
+	States
+	{
+		Spawn:
+			HX00 A 350
+			Loop
+	}
+}
+
+Actor Hexen2ForceCube : CustomInventory
+{
+	Inventory.PickupMessage "Cube of Force"
+	Inventory.PickupSound "misc/p_pkup"
+	Inventory.Icon "H2INVT02"
+	Inventory.MaxAmount 20
+	+COUNTITEM
+	+INVENTORY.INVBAR
+	states
+	{
+	Spawn:
+		TNT1 A 0
+		HX00 A 1
+		Loop
+	Use:
+		TNT1 A 0 A_JumpIfInventory("Hexen2ForceCubeInventory",0,"UseFail")
+		TNT1 A 0 A_GiveInventory("Hexen2ForceCubeInventory",1)
+		TNT1 A 0 A_FireCustomMissile("Hexen2ForceCubeFollower")//A_SpawnItemEx("Hexen2ForceCubeFollower",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		stop
+	UseFail:
+		TNT1 A 0 A_Print("You already have 2 active cubes")
+		fail
+	}
+}
+
+//A_Warp is handy but it orbits and I'm afraid is not up to the task of doing what I need for this artifact
+Actor Hexen2ForceCubeFollower
+{
+	+ISMONSTER
+	-COUNTKILL
+	+THRUACTORS
+	+NOGRAVITY
+	+FRIENDLY
+	+LOOKALLAROUND
+	Speed 0
+	Height 8
+	Radius 4
+	var int user_index;
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 0 A_RearrangePointers(AAPTR_NULL,AAPTR_TARGET)
+			TNT1 A 0 A_GiveInventory("Hexen2ForceCubeInventory", CallACS("Hexen2_Decorate",15))
+			HX00 A 0 ACS_NamedExecuteAlways("Hexen2_CubeNewPosition")
+		SpawnLoop:
+			HX00 A 0 A_JumpIf(random(0,10) > 1, 2)
+			HX00 A 0 A_Playsound("Hexen2/ForceCubeHum", CHAN_6)
+			HX00 A 0 A_JumpIf(random(0,100) < 2, "ChangeDirection")
+			HX00 A 0 A_JumpIfInventory("Hexen2ForceCubeLifetime",0,"Death")
+			HX00 A 0 A_JumpIfInTargetLOS(1,0,JLOSF_CHECKMASTER,0,0)
+			Goto SpawnLoop+8
+			HX00 A 0 A_LookEx(LOF_NOJUMP,16,0,0,0)
+			HX00 A 0 A_JumpIfInTargetLOS("Missile",0,JLOSF_DEADNOJUMP,512,0)
+			HX00 A 0 A_ClearTarget
+			HX00 A 2
+			Loop
+		ChangeDirection:
+			HX00 A 0 ACS_NamedExecuteAlways("Hexen2_Forcecube",0,random(0,5),360)
+			Goto SpawnLoop+1
+		Missile:
+			HX00 A 0 A_AlertMonsters(256)
+			HX00 A 0 A_PlaySound("Hexen2/ForceCubeFire", CHAN_7)
+			HX00 A 0 A_Jump(256,"Missile1","Missile2","Missile3","Missile4","Missile5")
+		Missile1:
+			HX00 A 0 A_CustomMissile("Hexen2ForceCubeMissile1",-2)
+			Goto MissileFinish
+		Missile2:
+			HX00 A 0 A_CustomMissile("Hexen2ForceCubeMissile2",-2)
+			Goto MissileFinish
+		Missile3:
+			HX00 A 0 A_CustomMissile("Hexen2ForceCubeMissile3",-2)
+			Goto MissileFinish
+		Missile4:
+			HX00 A 0 A_CustomMissile("Hexen2ForceCubeMissile4",-2)
+			Goto MissileFinish
+		Missile5:
+			HX00 A 0 A_CustomMissile("Hexen2ForceCubeMissile5",-2)
+			Goto MissileFinish
+		MissileFinish:
+			HX00 A 17
+			Goto SpawnLoop
+		Death:
+			TNT1 A 1
+			stop
+	}
+}
+
+ACTOR Hexen2ForceCubeMissile1 : FastProjectile
+{
+	Speed 28
+	Damage (20)
+	+MTHRUSPECIES
+	+THRUSPECIES
+	+RIPPER
+	+BLOODLESSIMPACT
+	Height 5
+	Radius 3
+	DamageType "Hexen2Electric"
+	Renderstyle Translucent
+	States
+	{
+		Spawn:
+			TNT1 A 0 NoDelay A_ChangeFlag(PAINLESS,Random(0,128))
+			TNT1 A 0 A_TransferPointer(AAPTR_Target,AAPTR_Default,AAPTR_Master,AAPTR_Default)
+			TNT1 A 0 A_PlaySound("Hexen2/ForceCubeBeamHum", CHAN_5)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,-MomX,-MomY,-MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("Hexen2ForceCubeMissileSegment1",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX,MomY,MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+		Moving:
+			TNT1 A 0 A_JumpIfInventory("Hexen2LightningArcLength",16,"Remove")
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("Hexen2ForceCubeMissileSegment1",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_GiveInventory("Hexen2LightningArcLength",1)
+			Goto Moving
+		Remove:
+			TNT1 A 7
+			stop
+		XDeath:
+			TNT1 A 0 A_PlaySound("Hexen2/ForceCubeBeamHit", CHAN_6)
+			TNT1 A 7
+			stop
+	}
+}
+
+Actor Hexen2ForceCubeMissile2 : Hexen2ForceCubeMissile1
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0 NoDelay A_ChangeFlag(PAINLESS,Random(0,128))
+			TNT1 A 0 A_PlaySound("Hexen2/ForceCubeBeamHum", CHAN_5)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,-MomX,-MomY,-MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("Hexen2ForceCubeMissileSegment2",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX,MomY,MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+		Moving:
+			TNT1 A 0 A_JumpIfInventory("Hexen2LightningArcLength",16,"Remove")
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("Hexen2ForceCubeMissileSegment2",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_GiveInventory("Hexen2LightningArcLength",1)
+			Goto Moving
+	}
+}
+
+Actor Hexen2ForceCubeMissile3 : Hexen2ForceCubeMissile1
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0 NoDelay A_ChangeFlag(PAINLESS,Random(0,128))
+			TNT1 A 0 A_PlaySound("Hexen2/ForceCubeBeamHum", CHAN_5)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,-MomX,-MomY,-MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("Hexen2ForceCubeMissileSegment3",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX,MomY,MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+		Moving:
+			TNT1 A 0 A_JumpIfInventory("Hexen2LightningArcLength",16,"Remove")
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("Hexen2ForceCubeMissileSegment3",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_GiveInventory("Hexen2LightningArcLength",1)
+			Goto Moving
+	}
+}
+
+Actor Hexen2ForceCubeMissile4 : Hexen2ForceCubeMissile1
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0 NoDelay A_ChangeFlag(PAINLESS,Random(0,128))
+			TNT1 A 0 A_PlaySound("Hexen2/ForceCubeBeamHum", CHAN_5)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,-MomX,-MomY,-MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("Hexen2ForceCubeMissileSegment4",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX,MomY,MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+		Moving:
+			TNT1 A 0 A_JumpIfInventory("Hexen2LightningArcLength",16,"Remove")
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("Hexen2ForceCubeMissileSegment4",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_GiveInventory("Hexen2LightningArcLength",1)
+			Goto Moving
+	}
+}
+
+Actor Hexen2ForceCubeMissile5 : Hexen2ForceCubeMissile1
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0 NoDelay A_ChangeFlag(PAINLESS,Random(0,128))
+			TNT1 A 0 A_PlaySound("Hexen2/ForceCubeBeamHum", CHAN_5)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,-MomX,-MomY,-MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("Hexen2ForceCubeMissileSegment5",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX,MomY,MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+		Moving:
+			TNT1 A 0 A_JumpIfInventory("Hexen2LightningArcLength",16,"Remove")
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("Hexen2ForceCubeMissileSegment5",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_GiveInventory("Hexen2LightningArcLength",1)
+			Goto Moving
+	}
+}
+
+Actor Hexen2ForceCubeMissileSegment1
+{
+	+NOINTERACTION
+	+NOBLOCKMAP
+	+CLIENTSIDEONLY
+	Radius 1
+	Height 1
+	Renderstyle Translucent
+	Alpha 0.5
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			HX00 A 2 Bright
+			stop
+	}
+}
+
+Actor Hexen2ForceCubeMissileSegment2 : Hexen2ForceCubeMissileSegment1 {}
+Actor Hexen2ForceCubeMissileSegment3 : Hexen2ForceCubeMissileSegment1 {}
+Actor Hexen2ForceCubeMissileSegment4 : Hexen2ForceCubeMissileSegment1 {}
+Actor Hexen2ForceCubeMissileSegment5 : Hexen2ForceCubeMissileSegment1 {}

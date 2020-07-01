@@ -559,10 +559,10 @@ script SAMSARA_CLIENT_DECORATE (int which, int a1, int a2) clientside
 			if(xdeathresult==1) { SetActorState(0,"XDeathNightmare1"); }
 			if(xdeathresult==2) { SetActorState(0,"XDeathNightmare2"); } }	
 		} else {
-			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == -1) { SetActorState(0,"XDeathHappyfun"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 1) { SetActorState(0,"XDeathNashgore"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 2) { SetActorState(0,"XDeathBrutal"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 3) { xdeathresult = random(1,2);
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == -1) { SetActorState(0,"XDeathHappyfun"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 1) { SetActorState(0,"XDeathNashgore"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 2) { SetActorState(0,"XDeathBrutal"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 3) { xdeathresult = random(1,2);
 			if(xdeathresult==1) { SetActorState(0,"XDeathNightmare1"); }
 			if(xdeathresult==2) { SetActorState(0,"XDeathNightmare2"); } }
 		}
@@ -583,10 +583,10 @@ script SAMSARA_CLIENT_DECORATE (int which, int a1, int a2) clientside
 			if(deathresult==6) { SetActorState(0,"DeathNightmare6"); } }
 			break;
 		} else {
-			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == -1) { SetActorState(0,"DeathHappyfun"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 1) { SetActorState(0,"DeathNashgore"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 2) { SetActorState(0,"DeathBrutal"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 3) { deathresult = random(1,6);
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == -1) { SetActorState(0,"DeathHappyfun"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 1) { SetActorState(0,"DeathNashgore"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 2) { SetActorState(0,"DeathBrutal"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 3) { deathresult = random(1,6);
 			if(deathresult==1) { SetActorState(0,"DeathNightmare1"); }
 			if(deathresult==2) { SetActorState(0,"DeathNightmare2"); }
 			if(deathresult==3) { SetActorState(0,"DeathNightmare3"); }
@@ -1648,7 +1648,7 @@ Script 2560 (int mode)
 str gameClassesSTR[CLASSCOUNT] = {
 	"DoomguyClass", "ChexClass", "CorvusClass", "WolfenClass", "HexenClass", "DukeClass", "MarathonClass", "QuakeClass", "RottClass", "BlakeClass",
 	"CalebClass", "StrifeClass", "Doom64GuyClass", "EradClass", "C7Class", "RMRClass", "KatarnClass", "POGreedClass", "DisruptorClass", "WitchavenClass", 
-	"HalfLifeClass", "SWClass", "CMClass", "JonClass", "RRClass", "BittermanClass"
+	"HalfLifeClass", "SWClass", "CMClass", "JonClass", "RRClass", "BittermanClass", "DemonessClass"
 };
 
 Script "TauntButton" (void) NET
@@ -2016,10 +2016,25 @@ Script "Samsara_KillCount" (int override)
 	else
 		health = healthtokens;
 	
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int z = GetActorZ(0);
+	
 	SetActivatorToTarget(0);
 	
 	if(override != 1)
 		GiveInventory("KillCount", 1);
+		
+	if(CheckInventory("Hexen2Class"))
+	{
+		int chance = (0.05+((CheckInventory("Hexen2Level")-4)*0.03));
+		if(chance > 0.2)
+			chance = 0.2;
+					
+		GiveInventory("Hexen2Experience", (health*2.5)>>16);
+		if(random(0.0,1.0) <= chance)
+			SpawnForced("Hexen2SoulSphere",x,y,z,0,0);
+	}
 }
 
 Script "Samsara_GZDoomChecker" (void)
