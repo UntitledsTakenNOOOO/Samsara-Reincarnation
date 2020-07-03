@@ -464,8 +464,7 @@ script SAMSARA_SPAWN (int respawning)
     pcount = PlayerCount();
     
     while (!endloop && ServerEnterTimes[pln] == startTime)
-    {
-        
+    {		
         if (GetUserCvar(pln,"sams_cl_wolfmove")) { GiveInventory("WolfenMovement", 1); }
         else { TakeInventory("WolfenMovement", 0x7FFFFFFF); }
         

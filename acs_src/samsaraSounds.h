@@ -318,6 +318,18 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "Hexen2/ItemPickup",
         "Hexen2/ItemPickup",
     },
+	{
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+    },
 };
 
 int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] = 
@@ -641,6 +653,18 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "Hexen2/ItemPickup",
         "Hexen2/ItemPickup",
     },
+	{
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+        "Goldeneye/Weaponup",
+    },
 };
 
 int ClassUniqueSounds[CLASSCOUNT] = 
@@ -672,6 +696,7 @@ int ClassUniqueSounds[CLASSCOUNT] =
     "RR/Wpickup",
 	"Q2Misc/W_Pkup",
 	"Hexen2/ArtifactPickup",
+	"Goldeneye/Weaponup"
 };
 
 int PunchDrunkUniqueSounds[CLASSCOUNT] = 

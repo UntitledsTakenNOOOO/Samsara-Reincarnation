@@ -59,7 +59,8 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
     {"Ring of RA", "", "", "","",""},	
     {" Hunting Rifle With Scope ", "", " Dyn 'O' Mites ", "","",""},	
 	{"Q2GrenadeLauncher", "RocketAmmo", "Q2ETFRifle", "Q2Flechettes","Q2IonRipper","Cell"},	
-	{"Hexen2TomeOfPower","","Hexen2ForceCube","","",""},	
+	{"Hexen2TomeOfPower","","Hexen2ForceCube","","",""},
+	{"Goldeneye_SniperRifle","Goldeneye_SniperMagazine","Goldeneye_SilencedD5K","oldeneye_D5KMagazine","Goldeneye_GadgetGranter",""},
 };
 
 int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] = 
@@ -91,6 +92,7 @@ int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] =
     {0,     0,      0,  0,		0,	0},
 	{0,     0,      0,  0,		0,	0},
 	{20,    0,     20,  0,		0,	0},
+	{0,     0,      0,  0,		0,	0},
 };
 
 int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
@@ -120,6 +122,7 @@ int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
     {-1,    -1,     -1, -1,     -1, -1},
     {-1,    -1,     -1, -1,     -1, -1},
     {-1,    -1,     -1, -1,     -1, -1},	
+	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},
 };
@@ -446,6 +449,17 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Hexen2RavenStaff",        		"Clip",   		"Cell",   		"", ""},
         {"Hexen2TempestStaff",              "Clip",   		"Cell",   		"", ""},
     },
+	{   // Bond
+		{"Goldeneye_Slapper",               "",             "",             "", ""},
+        {"Goldeneye_ThrowingKnives",        "Goldeneye_ThrowingKnivesMagazine",		"Goldeneye_ThrowingKnivesAmmo",             "", ""},
+        {"Goldeneye_PP7Silenced",           "Goldeneye_PP7Magazine",            "Clip",             "", ""},
+        {"Goldeneye_KF7Soviet",     		"Goldeneye_KF7Magazine",         	"Clip",             "", ""},
+        {"Goldeneye_AutoShotgun",           "Goldeneye_AutoShotgunMagazine",	"Shell",             "", ""},
+        {"Goldeneye_AR33",        			"Goldeneye_AR33Magazine",         	"Clip",             "", ""},
+        {"Goldeneye_RocketLauncher",        "Goldeneye_RocketLauncherMagazine", "RocketAmmo",       "", ""},
+        {"Goldeneye_RCP90",        			"Goldeneye_RCP90Magazine",   		"Cell",   		"", ""},
+        {"Goldeneye_Moonraker",             "Cell",   		"",   		"", ""},
+    },
 };
 
 int ClassScripts[CLASSCOUNT][SLOTCOUNT] = 
@@ -476,6 +490,7 @@ int ClassScripts[CLASSCOUNT][SLOTCOUNT] =
     {0,0,                   0,  0,0,0,0,0,0,0},
     {0,0,                   0,  0,0,0,0,0,0,0},
 	{0,0,                   0,  0,0,0,0,0,0,0},
+	{0,0,                   0,  0,0,0,0,0,0,0},	
 	{0,0,                   0,  0,0,0,0,0,0,0},	
 };
 
@@ -577,6 +592,7 @@ str SamsaraRGP[CLASSCOUNT][SAMSARA_RGP_PAGES] =
 	{"",				"",},
 	{"",				"",},	
 	{"",				"",},	
+	{"",				"",},	
 };
 
 #define SAMSARA_RGP_PROPERTIES	2
@@ -608,6 +624,7 @@ int SamsaraRGPProperties[CLASSCOUNT][SAMSARA_RGP_PAGES][SAMSARA_RGP_PROPERTIES] 
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
+	{{0,	0}, 		{0,		0},},	
 	{{0,	0}, 		{0,		0},},	
 	{{0,	0}, 		{0,		0},},	
 };
