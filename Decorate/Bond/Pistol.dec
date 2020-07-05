@@ -3,9 +3,13 @@ ACTOR Goldeneye_PP7Silenced : Weapon
   Weapon.SelectionOrder 16
   Weapon.AmmoUse 1
   Weapon.AmmoGive 7
+  Weapon.BobStyle InverseSmooth
+  Weapon.BobSpeed 1.6
+  Weapon.BobRangeX 0.3
+  Weapon.BobRangeY 0.4
   Weapon.AmmoType "Goldeneye_PP7Magazine"
   Weapon.UpSound "Goldeneye/Weaponup"
-  Weapon.SlotNumber 0
+  Weapon.SlotNumber 1
   Obituary "%o was one of the many victims of the %k's Walther PP7."
   Inventory.Pickupmessage "Picked up a silenced Walther PP7."
   +WEAPON.NOAUTOFIRE
@@ -191,8 +195,11 @@ ACTOR Goldeneye_PP7Silenced : Weapon
     Goto ReadyDual
 	
   ReloadCheck:
+	GE00 A 0 A_JumpIfInventory("PistolModeON", 1, "ReloadCheckAmmo")
+	Goto ReloadStart
+  ReloadCheckAmmo:		
 	GE00 A 0 A_JumpIfInventory("Goldeneye_PP7Magazine",30,2)
-	GE00 A 0 A_JumpIfInventory("Clip",1,"ReloadStart")
+	GE00 A 0 A_JumpIfInventory("Clip",1,"ReloadStartAmmo")
 	GE00 A 0
 	goto Ready//+1
 	
@@ -200,15 +207,25 @@ ACTOR Goldeneye_PP7Silenced : Weapon
 	GE00 A 0 A_PlayWeaponSound("Goldeneye/Reload")
 	GE27 ABCDEFGHI 1 
 	Goto ReloadLoop
+	
+  ReloadStartAmmo:
+	GE00 A 0 A_PlayWeaponSound("Goldeneye/Reload")
+	GE27 ABCDEFGHI 1 
+	Goto ReloadLoopAmmo	
   
   ReloadLoop:
+	GE00 A 0 A_JumpIfInventory("Goldeneye_PP7Magazine",0,"ReloadDone")
+	GE00 A 0 A_GiveInventory("Goldeneye_PP7Magazine", 7)
+	Loop
+	
+  ReloadLoopAmmo:	
 	GE00 A 0 A_JumpIfInventory("Goldeneye_PP7Magazine",0,"ReloadDone")
 	GE00 A 0 A_JumpIfInventory("Clip",1,1)
 	Goto ReloadDone
 	GE00 A 0 A_GiveInventory("Goldeneye_PP7Magazine", 1)
 	GE00 A 0 A_TakeInventory("Clip", 1, TIF_NOTAKEINFINITE)
 	Loop
-	 
+	
   ReloadDone:
 	GE27 IHGFEDCBA 1
 	goto Ready//+1
