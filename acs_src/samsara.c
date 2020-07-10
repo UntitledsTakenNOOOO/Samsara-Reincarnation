@@ -1648,7 +1648,7 @@ Script 2560 (int mode)
 str gameClassesSTR[CLASSCOUNT] = {
 	"DoomguyClass", "ChexClass", "CorvusClass", "WolfenClass", "HexenClass", "DukeClass", "MarathonClass", "QuakeClass", "RottClass", "BlakeClass",
 	"CalebClass", "StrifeClass", "Doom64GuyClass", "EradClass", "C7Class", "RMRClass", "KatarnClass", "POGreedClass", "DisruptorClass", "WitchavenClass", 
-	"HalfLifeClass", "SWClass", "CMClass", "JonClass", "RRClass", "BittermanClass", "DemonessClass"
+	"HalfLifeClass", "SWClass", "CMClass", "JonClass", "RRClass", "BittermanClass"
 };
 
 Script "TauntButton" (void) NET
@@ -2025,16 +2025,6 @@ Script "Samsara_KillCount" (int override)
 	if(override != 1)
 		GiveInventory("KillCount", 1);
 		
-	if(CheckInventory("Hexen2Class"))
-	{
-		int chance = (0.05+((CheckInventory("Hexen2Level")-4)*0.03));
-		if(chance > 0.2)
-			chance = 0.2;
-					
-		GiveInventory("Hexen2Experience", (health*2.5)>>16);
-		if(random(0.0,1.0) <= chance)
-			SpawnForced("Hexen2SoulSphere",x,y,z,0,0);
-	}
 }
 
 Script "Samsara_GZDoomChecker" (void)
