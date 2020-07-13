@@ -1,0 +1,659 @@
+#library "hexen2"
+#include "zcommon.acs"
+#include "commonFuncs.h"
+
+script "Hexen2_Run" (int momx, int momy, int momz)
+{
+    if (momx < 0) momx = -momx;
+    if (momy < 0) momy = -momy;
+    if (momz < 0) momz = -momz;
+    SetResultValue(magnitudeTwo(momx,momy) > 0);
+}
+
+Script "Hexen2_VectorAngle" (int x, int y)
+{
+	SetResultValue(VectorAngle(x,y));
+}
+
+Script "Hexen2_Decorate" (int mode)
+{
+	int oldTID, target;
+	int ActorX, ActorY, ActorZ, OriginalX, OriginalY, OriginalZ, height, radius;
+	switch(mode)
+	{
+		case 1: //Hexen2_ShockHitLifeTime
+			SetResultValue(CheckInventory("Hexen2ShockHitLifeTime")-2);
+			break;
+		case 2: //Hexen2_MultiplierStorage
+			SetResultValue(CheckInventory("Hexen2MultiplierStorage")-2);
+			break;
+		case 3: //Hexen2_ShooterPitch
+			SetActivatorToTarget(0);
+			SetResultValue(GetActorPitch(0));
+			break;
+		case 4: //Hexen2_ShooterAngle
+			SetResultValue(CheckInventory("Hexen2ShooterAngle"));
+			break;
+		case 5: //Angular X
+			SetResultValue(CheckInventory("Hexen2AngularX"));
+			break;
+		case 6: //Angular Y
+			SetResultValue(CheckInventory("Hexen2AngularY"));
+			break;
+		case 7: //Angular Z
+			SetResultValue(CheckInventory("Hexen2AngularZ"));
+			break;
+		case 8: //Hexen2_IceProjectileHit
+			SetActivator(0,AAPTR_TRACER);
+			if(GetActorProperty(0,APROP_Health) <= 10)
+			{
+				SetActorProperty(0,APROP_Renderstyle, STYLE_SHADED);
+				SetActorProperty(0,APROP_StencilColor, 0xACACD4);
+			}
+			break;
+		case 9: //Hexen2_SicklePoweredThrust
+			int thrust;
+			int angle = GetActorAngle(0);
+			
+			SetActivator(0,AAPTR_Tracer);
+			if(ClassifyActor(0) == ACTOR_NONE)
+				terminate;
+			
+			int mass = GetActorProperty(0,APROP_Mass);
+			if(mass != 0)
+				thrust = 500/mass;
+				
+			ThrustThing(angle*256/65536,thrust,1,0);
+			ThrustThingZ(0,fixedmul(thrust,4.0),0,1);
+			break;
+		case 10: //Hexen2_IceMaceBlizzardBeamCount
+			SetResultValue(CheckInventory("Hexen2IceMaceBlizzardBeamCount"));
+			break;
+		case 11: //Hexen2_IceMaceBlizzardBeamCounterInstant
+			SetResultValue(CheckInventory("Hexen2IceMaceBlizzardBeamCounterInstant"));
+			break;
+		case 12: //Hexen2_RavenLifeCycle
+			int lifespan;
+			if((ClassifyActor(0) & ACTOR_WORLD))
+				terminate;
+				
+			while(lifespan < 350)
+			{
+				Delay(1);
+
+				if(!CheckInventory("Hexen2RavenTarget"))
+					lifespan++;
+						
+				else
+					lifespan+=3;
+			}
+			SetActorState(0,"FakeDeath",false);
+			break;
+		case 13: //Hexen2_FlameSwarmRoll
+			SetResultValue(CheckInventory("Hexen2FlameSwarmRoll"));
+			break;
+		case 14: //Hexen2_ChainRadiusChecker
+			SetActivator(0,AAPTR_Tracer);
+			SetResultValue(GetActorProperty(0,APROP_RADIUS)>>16);
+			break;
+		case 15:
+			SetActivator(0,AAPTR_Master);
+			SetResultValue(CheckInventory("Hexen2ForceCubeInventory"));
+			break;
+		case 16:
+			if(GetActorViewHeight(0) <=  GetActorViewHeight(0) / 2 << 16)
+				SetResultValue(1);
+			else
+				SetResultValue(0);
+			break;
+		case 17:
+			int firelifetime = random(10,20);
+		    int firetimer;
+			oldTID = ActivatorTID();
+			target = UniqueTID();
+			Thing_ChangeTID(0, target);
+			SetActivator(0,AAPTR_Tracer);
+			while((ClassifyActor(0) & ACTOR_ALIVE) && (firetimer < firelifetime))
+			{
+				firetimer++;
+				Delay(17);
+				Thing_Damage2(0,random(2,3),"Hexen2Fire");
+			}
+			SetActivator(target);
+			Thing_ChangeTID(target, oldTID);
+			Thing_Remove(0);
+			break;
+		case 18:
+			SetResultValue(GetActorProperty(0,APROP_Score));
+			break;
+		case 19:
+			SetActorProperty(0, APROP_Score, 30);
+			While(GetActorProperty(0,APROP_Score) > 0)
+			{
+				SetActorProperty(0, APROP_Score, GetActorProperty(0,APROP_Score)-1);
+				Delay(17);
+			}
+			Thing_Remove(0);
+			break;
+		case 20:
+			SetResultValue(GetActorProperty(0,APROP_SpawnHealth));
+			break;
+		case 21:
+			SetResultValue(GetAmmoCapacity("Clip"));
+			break;
+		case 22:
+			SetResultValue(GetAmmoCapacity("Cell"));
+			break;
+		case 23:
+			OriginalX = GetActorX(0);
+			OriginalY = GetActorY(0);
+			OriginalZ = GetActorZ(0);
+			SetActivatorToTarget(0);
+			ActorX = GetActorX(0)+(GetActorProperty(0,APROP_Height)/2);
+			ActorY = GetActorY(0);
+			ActorZ = GetActorZ(0);
+			int OriginalVector2 = sqrt(OriginalX*OriginalX + OriginalY*OriginalY);
+			int ActorVector2 = sqrt(ActorX*ActorX + ActorY*ActorY);
+			int resultvalue = VectorAngle(ActorVector2 - OriginalVector2, ActorZ - OriginalZ);
+			//PrintBold(d:ResultValue/182);
+			PrintBold(f:ActorZ - OriginalZ);
+			SetResultValue(ResultValue);
+			break;
+		case 24:
+			SetActivatorToTarget(0);
+			SetResultValue(CheckInventory("Hexen2LightningChainToken"));
+			TakeInventory("Hexen2LightningChainToken",1);
+			break;
+		case 25:
+			oldTID = ActivatorTID();
+			target = UniqueTID();
+			Thing_ChangeTID(0, target);
+			SetActivator(0,AAPTR_Master);
+			height = (GetActorProperty(0,APROP_Height)*4)>>16;
+			radius = GetActorProperty(0,APROP_Radius)>>16;
+			SetActivator(target);
+			Thing_ChangeTID(target, oldTID);
+			int spacecube = height*radius*radius;
+			int count = spacecube/8192;
+			if(spacecube < 5000) { SetActorProperty(0,APROP_ScaleX,0.2); SetActorProperty(0,APROP_ScaleY,0.2); count*=3; }
+			else if(spacecube < 50000) { SetActorProperty(0,APROP_ScaleX,0.45); SetActorProperty(0,APROP_ScaleY,0.45); count*=3; }
+			else if(spacecube < 500000) { SetActorProperty(0,APROP_ScaleX,0.5); SetActorProperty(0,APROP_ScaleY,0.5); }
+			else if(spacecube < 1000000) { SetActorProperty(0,APROP_ScaleX,0.75); SetActorProperty(0,APROP_ScaleY,0.75); }
+			else { SetActorProperty(0,APROP_ScaleX,1.0); SetActorProperty(0,APROP_ScaleY,1.0); }
+			SetResultValue(count);
+			break;
+		case 26:
+			SetResultValue(CheckInventory("Hexen2MagicMissileStarPoweredX"));
+			break;
+		case 27:
+			SetResultValue(CheckInventory("Hexen2MagicMissileStarPoweredY"));
+			break;
+		case 28:
+			SetResultValue(CheckInventory("Hexen2MagicMissileStarPoweredZ"));
+			break;
+	}
+}
+
+Script "Hexen2_Sign" (int value)
+{
+	if(value < 0)
+		SetResultValue(-1);
+	else if(value > 0)
+		SetResultValue(1);
+	else
+		SetResultValue(0);
+}
+
+str ArtiTomeOfPowerGraphics[16] = { "H2ARTI01", "H2ARTI02", "H2ARTI03", "H2ARTI04", "H2ARTI05", "H2ARTI06", "H2ARTI07", "H2ARTI08",
+"H2ARTI09", "H2ARTI10", "H2ARTI11", "H2ARTI12", "H2ARTI13", "H2ARTI14", "H2ARTI15", "H2ARTI16"};
+
+int Hexen2_NextLevelXP[11] = { 871, 2060, 4822, 9319, 19278, 36626, 66804, 110494, 141334, 192700, 385400 };
+
+Script "Hexen2_Hud" enter
+{
+	int artifactrotationcount, animationspeed, randomincrease, clipmax, cellmax;
+	while(CheckInventory("Hexen2Class"))
+	{
+		//HUD
+		int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+		if(CheckInventory("PowerWeaponLevel2"))
+		{
+			if(animationspeed == 1)
+			{
+				if(artifactrotationcount < 15)
+					artifactrotationcount++;
+				else
+					artifactrotationcount = 0;
+
+				SetHUDSize(640, 480, 1);
+				SetFont(ArtiTomeOfPowerGraphics[artifactrotationcount]);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,3,0,590.1,120.1,0.5,1.0);
+				SetHUDSize(0, 0, 0);
+				SetFont("SMALLFONT");
+				animationspeed = 0;
+			}
+			else
+				animationspeed++;
+		}
+		else
+		{
+			SetHUDSize(0, 0, 0);
+			SetFont("null");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,3,0,590.1,120.1,0.5,1.0);
+			SetFont("SMALLFONT");
+		}
+		
+		//SetHUDSize(640, 480, 1);
+		//HudMessage(d:CheckInventory("Hexen2Level");HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,4,0,590.1,140.1,0.5,1.0);
+		//HudMessage(d:CheckInventory("Hexen2Experience");HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,5,0,590.1,160.1,0.5,1.0);
+		SetHUDSize(0, 0, 0);
+		
+		//Levelling system
+		if(CheckInventory("Hexen2Level") == 1)
+		{
+			SetAmmoCapacity("Clip", (250*(CheckInventory("BackPack")+1)));
+			SetAmmoCapacity("Cell", (250*(CheckInventory("BackPack")+1)));
+		}
+		if(CheckInventory("Hexen2Level") < 12)
+		{
+			if(CheckInventory("Hexen2Experience") > Hexen2_NextLevelXP[CheckInventory("Hexen2Level")-1])
+			{
+				SetActorProperty(0,APROP_SpawnHealth,GetActorProperty(0,APROP_SpawnHealth)+random(5,10));
+				randomincrease = random(8,11)*2;
+				SetAmmoCapacity("Clip", GetAmmoCapacity("Clip")+randomincrease);
+				SetAmmoCapacity("Cell", GetAmmoCapacity("Cell")+randomincrease);
+				clipmax = GetAmmoCapacity("Clip")-(250*(CheckInventory("BackPack")+1));
+				cellmax = GetAmmoCapacity("Cell")-(250*(CheckInventory("BackPack")+1));
+				GiveInventory("Hexen2Level", 1);
+			}
+		}
+		else
+		{
+			if(CheckInventory("Hexen2Experience") > Hexen2_NextLevelXP[10]+(192700*(CheckInventory("Hexen2Level")-11)))
+			{
+				SetActorProperty(0,APROP_SpawnHealth,GetActorProperty(0,APROP_SpawnHealth)+3);
+				SetAmmoCapacity("Clip", GetAmmoCapacity("Clip")+6);
+				SetAmmoCapacity("Cell", GetAmmoCapacity("Cell")+8);
+				clipmax = GetAmmoCapacity("Clip")-(250*(CheckInventory("BackPack")+1));
+				cellmax = GetAmmoCapacity("Cell")-(250*(CheckInventory("BackPack")+1));
+				GiveInventory("Hexen2Level", 1);
+			}
+		}
+		if(CheckInventory("BackPack"))
+		{
+			SetAmmoCapacity("Clip", 500+clipmax);
+			SetAmmoCapacity("Cell", 500+clipmax);
+		}
+		
+		//Demon glide
+		if(CheckInventory("Hexen2Level") >= 6)
+		{
+			if(buttons & BT_Jump)
+			{
+				GiveInventory("Hexen2DemonessGlide",1);
+				SetActorProperty(0, APROP_Gravity, 0.5);
+			}
+			else
+			{
+				TakeInventory("Hexen2DemonessGlide",1);
+				SetActorProperty(0, APROP_Gravity, 1.0);
+			}
+		}
+		Delay(1);
+	}
+}
+
+Script "Hexen2_BloodFireDamage" (int lifetime, int powered)
+{
+	if(powered)
+			GiveInventory("Hexen2BloodFireDamageTokens",random(20,30));
+		else
+			GiveInventory("Hexen2BloodFireDamageTokens",random(15,22));
+		
+	GiveInventory("Hexen2BloodFireRandomizer",1);
+	Delay((lifetime*4)-1);
+	while(ClassifyActor(0) != ACTOR_NONE && CheckInventory("Hexen2BloodFireDamageTokens") > 1)
+	{
+		TakeInventory("Hexen2BloodFireDamageTokens",1);
+		Delay(lifetime);
+	}
+}
+
+Script "Hexen2_BloodFireDamageFallOff" (int powered)
+{
+	if(!CheckInventory("Hexen2BloodFireRandomizer"))
+	{
+		if(powered)
+			GiveInventory("Hexen2BloodFireDamageTokens",random(20,30));
+		else
+			GiveInventory("Hexen2BloodFireDamageTokens",random(15,22));
+	}
+		
+	SetResultValue(CheckInventory("Hexen2BloodFireDamageTokens"));
+}
+
+str ammotypes[4] = { "Clip", "Shell", "RocketAmmo", "Cell" };
+
+Script "Hexen2_AmmoLoop" (int ticduration, int ammouse, int ammotype)
+{
+	int counter;
+	int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+	//for some reason while loop just keeps going even if the condition is no longer true, so a restarting if loop is necessary
+	if(buttons & BT_ATTACK)
+	{
+		if(counter == 0)
+		{
+			if(!GetCvar("sv_infiniteammo"))
+				TakeInventory(ammotypes[ammotype-1],ammouse);
+				
+			counter = ticduration;
+		}
+		else
+			counter--;
+			
+		Delay(1);
+		restart;
+	}
+}
+
+Script "Hexen2_AngleInterpolate" (int anglefrom, int angleto, int tic)
+{
+	int a;
+	if(angleto > anglefrom)
+	{
+		for(a = anglefrom; a < angleto; a+=tic)
+		{
+			SetActorAngle(0, a*182);
+			Delay(1);
+		}
+		SetActorAngle(0, angleto*182);
+	}
+	else
+	{
+		for(a = anglefrom; a > angleto; a-=tic)
+		{
+			SetActorAngle(0, a*182);
+			Delay(1);
+		}
+		SetActorAngle(0, angleto*182);
+	}
+}
+
+Script "Hexen2_PrintPointer" (int pointer)
+{
+	switch(pointer)
+	{
+		case 1:
+			SetActivatorToTarget(0);
+			break;
+		case 2:
+			SetActivator(0, AAPTR_Master);
+			break;
+		case 3:
+			SetActivator(0, AAPTR_Tracer);
+			break;
+	}
+	
+	PrintBold(s:GetActorClass(0));
+}
+
+//Direction - angle, pitch
+int Hexen2ForceCubeDirection[6][2] = 
+{  
+	{ 90, -90 },
+	{ 90, 90 },
+	{ 0, 90 },
+	{ 0, -90 },
+	{ 90, 0 },
+	{ -90, 0 }
+};
+
+Script "Hexen2_Forcecube" (int direction, int time)
+{
+	if(CheckInventory("Hexen2ForceCubeRotating"))
+		terminate;
+	
+	GiveInventory("Hexen2ForceCubeRotating",1);
+	while(abs((Hexen2ForceCubeDirection[direction][0]*182) - GetActorAngle(0)) >= time && abs((Hexen2ForceCubeDirection[direction][1]*182) - GetActorPitch(0)) >= time)
+	{
+		if(abs((Hexen2ForceCubeDirection[direction][0]*182) - GetActorAngle(0)) >= time)
+		{
+			SetActorAngle(0, GetActorAngle(0) + sign((Hexen2ForceCubeDirection[direction][0]<<16)-GetActorAngle(0))*time);
+		}
+		
+		if(abs((Hexen2ForceCubeDirection[direction][1]*182) - GetActorPitch(0)) >= time)
+		{
+			SetActorPitch(0, GetActorPitch(0) + sign((Hexen2ForceCubeDirection[direction][1]<<16)-GetActorPitch(0))*time);
+		}
+		
+		Delay(1);
+	}
+	
+	TakeInventory("Hexen2ForceCubeRotating",1);
+}
+
+//this is probably the nastiest hack I have ever done
+
+Script "Hexen2_CubeNewPosition" (void)
+{
+	int notarget, returntoplayer, cubedie;
+	int CubeX, CubeY, CubeZ, PlayerX, PlayerY, PlayerZ, DeltaX, DeltaY, DeltaZ;
+	int rightoffset = 40;
+	int forwardoffset = 60;
+
+	if(CheckInventory("Hexen2ForceCubeInventory") == 1)
+		rightoffset = 40;
+	else if(CheckInventory("Hexen2ForceCubeInventory") == 2)
+		rightoffset = -40;
+
+	int movingx = (random(-12,12)<<16);
+	int movingy = (random(-12,12)<<16);
+	int movingz = (random(-12,12)<<16);
+	int xamplitude = 12;
+	int yamplitude = 12;
+	int zamplitude = 12;
+	int xdirection, ydirection, zdirection;
+	int oldTID, target;
+	while(true)
+	{
+		oldTID = ActivatorTID();
+		target = UniqueTID();
+		Thing_ChangeTID(0, target);
+		SetActivator(0, AAPTR_Target);
+		if(ClassifyActor(0) & ACTOR_WORLD|ACTOR_NONE)
+		{	
+			notarget = true;
+		}
+		else
+		{
+			returntoplayer = false;
+			notarget = false;
+		}
+		
+		if(CheckInventory("Hexen2ForceCubeLifeTime") >= 788 && cubedie == false)
+		{
+			returntoplayer = false;
+			notarget = true;
+			cubedie = true;
+		}
+			
+		SetActivator(target);
+		Thing_ChangeTID(target, oldTID);
+		
+		int randomx = random(40000,60000);
+		int randomy = random(40000,60000);
+		int randomz = random(40000,60000);
+
+		if(xdirection == 1)
+		{
+			if(movingx < (xamplitude<<16))
+				movingx+=randomx;
+			else
+			{
+				xdirection = 0;
+				movingx-=randomx;
+			}
+		}
+		else
+		{
+			if(movingx > (-xamplitude<<16))
+				movingx-=randomx;
+			else
+			{
+				xdirection = 1;
+				movingx+=randomx;
+			}
+		}
+			
+		if(ydirection == 1)
+		{
+			if(movingy < (yamplitude<<16))
+				movingy+=randomy;
+			else
+			{
+				ydirection = 0;
+				movingy-=randomy;
+			}
+		}
+		else
+		{
+			if(movingy > (-yamplitude<<16))
+				movingy-=randomy;
+			else
+			{
+				ydirection = 1;
+				movingy+=randomy;
+			}
+		}
+			
+		if(zdirection == 1)
+		{
+			if(movingz < (zamplitude<<16))
+				movingz+=randomz;
+			else
+			{
+				zdirection = 0;
+				movingz-=randomz;
+			}
+		}
+		else
+		{
+			if(movingz > (-zamplitude<<16))
+				movingz-=randomz;
+			else
+			{
+				zdirection = 1;
+				movingz+=randomz;
+			}
+		}
+		
+		if(notarget)
+		{
+			CubeX = GetActorX(0);
+			CubeY = GetActorY(0);
+			CubeZ = GetActorZ(0);
+			oldTID = ActivatorTID();
+			target = UniqueTID();
+			Thing_ChangeTID(0, target);
+			SetActivator(0, AAPTR_Master);
+			PlayerX = GetActorX(0);
+			PlayerY = GetActorY(0);
+			PlayerZ = GetActorZ(0);
+			int Angle = GetActorAngle(0)-0.25;
+			int Pitch = GetActorPitch(0);
+			
+			int OffsetX = (rightoffset*cos(Angle) - (forwardoffset*sin(Angle))) + movingx;
+			int OffsetY = (rightoffset*sin(Angle) + (forwardoffset*cos(Angle))) + movingy;
+			int OffsetZ = (32<<16) + movingz + sin(-pitch)*forwardoffset;
+			
+			//PrintBold(s:"Offset X: ", f:OffsetX, s:", Offset Y: ", f:OffsetY);
+			
+			SetActivator(target);
+			Thing_ChangeTID(target, oldTID);
+			
+			if(returntoplayer == true)
+			{
+				SetActorPosition(0,PlayerX + OffsetX,PlayerY + OffsetY, PlayerZ + OffsetZ,0);
+				
+				if(CheckInventory("Hexen2ForceCubeLifeTime") >= 788)
+				{
+					oldTID = ActivatorTID();
+					target = UniqueTID();
+					Thing_ChangeTID(0, target);
+					SetActivator(0, AAPTR_Master);
+					TakeInventory("Hexen2ForceCubeInventory",1);
+					SetActivator(target);
+					Thing_ChangeTID(target, oldTID);
+					Thing_Remove(0);
+					terminate;
+				}
+			}
+			else
+			{
+				DeltaX = CubeX-(PlayerX+OffsetX);
+				DeltaY = CubeY-(PlayerY+OffsetY);
+				DeltaZ = CubeZ-(PlayerZ+OffsetZ);
+				if(abs(DeltaX) > (4<<16))
+					SetActorPosition(0, GetActorX(0) - sign(DeltaX)*(4<<16), GetActorY(0), GetActorZ(0), false);
+				if(abs(DeltaY) > (4<<16))
+					SetActorPosition(0, GetActorX(0), GetActorY(0) - sign(DeltaY)*(4<<16), GetActorZ(0), false);
+				if(abs(DeltaZ) > (4<<16))
+					SetActorPosition(0, GetActorX(0), GetActorY(0), GetActorZ(0) - sign(DeltaZ)*(4<<16), false);
+					
+				if(abs(DeltaX) <= (4<<16) && abs(DeltaY) <= (4<<16) && abs(DeltaZ) <= (4<<16))
+					returntoplayer = true;
+					
+			}
+			
+			if(CheckInventory("Hexen2ForceCubeLifeTime") < 788)
+				GiveInventory("Hexen2ForceCubeLifeTime",1);
+			
+		}
+		else
+		{
+			CubeX = GetActorX(0);
+			CubeY = GetActorY(0);
+			CubeZ = GetActorZ(0);
+			
+			oldTID = ActivatorTID();
+			target = UniqueTID();
+			Thing_ChangeTID(0, target);
+			SetActivator(0, AAPTR_Target);
+			int targetradius = GetActorProperty(0, APROP_Radius)>>16;
+			int targetheight = GetActorProperty(0, APROP_Height)>>16;
+
+			PlayerX = GetActorX(0); //these are really the enemy coordinates
+			PlayerY = GetActorY(0);
+			PlayerZ = GetActorZ(0);
+			
+			SetActivator(target);
+			Thing_ChangeTID(target, oldTID);
+			
+			DeltaX = PlayerX - CubeX;
+			DeltaY = PlayerY - CubeY;
+			DeltaZ = PlayerZ - CubeZ;
+			
+			if(abs(DeltaX) > targetradius)
+				SetActorPosition(0, GetActorX(0) + sign(DeltaX)*(4<<16), GetActorY(0), GetActorZ(0), false);
+			if(abs(DeltaY) > targetradius)
+				SetActorPosition(0, GetActorX(0), GetActorY(0) + sign(DeltaY)*(4<<16), GetActorZ(0), false);
+			if(abs(DeltaZ) > (targetheight/2) + 32.0)
+				SetActorPosition(0, GetActorX(0), GetActorY(0), GetActorZ(0) + sign(DeltaZ)*(4<<16), false);
+			
+			SetActorPosition(0, GetActorX(0) + movingx/4, GetActorY(0) + movingy/4, GetActorZ(0) + movingz/4, false);
+		}
+		Delay(2);
+	}
+}
+
+Script 5780 (int health) // if this could be named, believe me, I'd make it so
+{
+	if(CheckInventory("Hexen2Class"))
+	{
+		HealThing(health,2);
+		GiveInventory("Clip",health);
+		GiveInventory("Cell",health);
+	}
+	else
+		Thing_Damage(0,health);
+}

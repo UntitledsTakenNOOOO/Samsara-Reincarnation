@@ -894,3 +894,62 @@ function int AddActorProperty(int tid, int prop, int amount)
     SetActorProperty(tid, prop, newAmount);
     return newAmount;
 }
+
+function int RemoveMessages (int rangemin, int rangemax)
+{
+	for(int a = rangemin; a <= rangemax; a++)
+		HudMessage(s:""; HUDMSG_PLAIN, a, CR_UNTRANSLATED, 0.0, 0.0, 1.0);
+		
+	return 0;
+}
+
+#define ASPECT_4_3 (4.0 / 3)
+#define ASPECT_5_4 1.25
+#define ASPECT_16_9 (16.0 / 9)
+#define ASPECT_16_10 1.6
+#define ASPECT_17_10 1.7
+
+function int getaspectratio(void)
+{
+	int width = GetCVar("vid_defwidth");
+	int height = GetCVar("vid_defheight");
+	int nowidescreen = GetCVar("vid_nowidescreen");
+	int tft = GetCVar("vid_tft");
+	int aspect = GetCVar("vid_aspect");
+	switch(aspect)
+	{
+		case 1:	return ASPECT_16_9;
+		case 2:	return ASPECT_16_10;
+		case 3:	return ASPECT_4_3;
+		case 4:	return ASPECT_5_4;
+		case 5: return ASPECT_17_10;
+	}
+	if(nowidescreen)
+	{
+		if(!tft)
+			return ASPECT_4_3;
+		if(height * ASPECT_5_4 == width<<16)
+			return ASPECT_5_4;
+		else
+			return ASPECT_4_3;
+	}
+	if(abs((abs(height * ASPECT_16_9)>>16) - width) < 10)
+	{
+		return ASPECT_16_9;
+	}
+	if(abs((abs(height * ASPECT_17_10)>>16) - width) < 10)
+	{
+		return ASPECT_17_10;
+	}
+	if(abs((abs(height * ASPECT_16_10)>>16) - width) < 60)
+	{
+		if((width == 320 && height == 200) || (width == 640 && height == 400))
+			return ASPECT_4_3;
+		return ASPECT_16_10;
+	}
+	if((height * ASPECT_5_4)>>16 == width && tft)
+	{
+		return ASPECT_5_4;
+	}
+	return ASPECT_4_3;
+}

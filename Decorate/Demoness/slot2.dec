@@ -1,0 +1,334 @@
+ACTOR Hexen2SpellBookMagicMissile : Weapon
+{
+  Weapon.SelectionOrder 1000
+  Weapon.Kickback 100
+  Weapon.SlotNumber 2
+  Weapon.BobRangeX 0
+  Weapon.BobRangeY 0.5
+  Weapon.BobSpeed 1.1
+  Weapon.BobStyle Alpha   
+  Weapon.AmmoType "Clip"
+  Weapon.AmmoGive 16
+  States
+  {
+	Spawn:
+	  HX00 A 0
+	  HX99 A -1
+	  Stop
+	Ready:
+	  HX00 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"ReadyPowered")
+	  HX00 A 0 A_GunFlash("DemonessReady",GFF_NOEXTCHANGE)
+	  HX06 ABCDEFGHIJKLMNOPQRST 2  
+	  Goto WeaponIdle
+	DemonessReady:
+	  HX16 KJIHGFEDCBA 2
+	  HX11 LMNOPQRST 2
+	  HX11 T 1
+	  stop
+	ReadyPowered:
+	  HX00 A 0 A_GunFlash("DemonessReadyPowered",GFF_NOEXTCHANGE)
+	  HX06 ABCDEFGHIJKLMNOPQRST 2 Bright
+	  Goto WeaponIdle
+	DemonessReadyPowered:
+	  HX16 KJIHGFEDCBA 2 Bright
+	  HX11 LMNOPQRST 2 Bright
+	  HX11 T 1 Bright
+	  stop
+	WeaponIdle:
+	  HX05 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"WeaponIdlePowered")
+	  HX05 A 0 A_GunFlash("DemonessWeaponIdleLoop",GFF_NOEXTCHANGE)
+	WeaponIdleLoop:
+	  HX05 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"WeaponIdleLoopPowered")
+	  HX05 A 0 A_JumpIf(random(0,65536) < 1024, "WeaponIdleJellyFingers")
+	  HX05 A 2 A_WeaponReady
+	  Loop
+	DemonessWeaponIdleLoop:
+	  HX09 A 3
+	  Loop
+	WeaponIdlePowered:
+	  HX05 A 0 A_GunFlash("DemonessWeaponIdleLoopPowered",GFF_NOEXTCHANGE)
+	WeaponIdleLoopPowered:
+	  HX05 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,1)
+	  Goto WeaponIdle
+	  HX05 A 0 A_JumpIf(random(0,65536) < 1024, "WeaponIdleJellyFingers")
+	  HX05 A 2 Bright A_WeaponReady
+	  Loop
+	DemonessWeaponIdleLoopPowered:
+	  HX09 A 3 Bright
+	  Loop
+	WeaponIdleJellyFingers:
+	  HX05 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"WeaponIdleJellyFingersPowered")
+	  HX05 A 0 A_GunFlash("DemonessWeaponIdleJellyFingers",GFF_NOEXTCHANGE)
+	  HX05 ABCDEFGHIJKLMNOPQRSTUV 2 A_WeaponReady
+      Goto WeaponIdle
+	DemonessWeaponIdleJellyFingers:
+	  HX09 ABCDEFGHIJKLMNOPQRSTUVWXY 2
+	  HX09 Y 1
+	  Stop
+	WeaponIdleJellyFingersPowered:
+	  HX05 A 0 A_GunFlash("DemonessWeaponIdleJellyFingersPowered",GFF_NOEXTCHANGE)
+	  HX05 ABCDEFGHIJKLMNOPQRSTUV 2 Bright A_WeaponReady
+      Goto WeaponIdle
+	DemonessWeaponIdleJellyFingersPowered:
+	  HX09 ABCDEFGHIJKLMNOPQRSTUVWXY 2 Bright
+	  HX09 Y 1 Bright
+	  Stop
+	Select:
+	  TNT1 A 0 A_GiveInventory("Hexen2Weapon2",1)
+	  TNT1 A 0 A_TakeInventory("Hexen2Weapon1",1)
+	  TNT1 A 0 A_TakeInventory("Hexen2Weapon3",1)
+	  TNT1 A 0 SetPlayerProperty(0,1,2)
+	  TNT1 A 1 A_Raise
+	  Wait
+	Deselect:
+	  TNT1 A 0 A_TakeInventory("Hexen2Weapon2",1)
+	  HX06 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"DeselectPowered")
+	  HX06 A 0 A_GunFlash("DemonessDeselect",GFF_NOEXTCHANGE)
+	  HX06 TSRQPONMLKJIHGFEDCBA 2
+      TNT1 A 1 A_Lower
+      Wait
+	DemonessDeselect: 
+	  HX11 TSRQPONML 2
+	  HX16 ABCDEFGHIJK 2 
+	  HX16 K 1
+	  stop
+	DeselectPowered:
+	  HX06 A 0 A_GunFlash("DemonessDeselectPowered",GFF_NOEXTCHANGE)
+	  HX06 TSRQPONMLKJIHGFEDCBA 2 Bright
+      TNT1 A 1 Bright A_Lower
+      Wait
+	DemonessDeselectPowered: 
+	  HX11 TSRQPONML 2 Bright
+	  HX16 ABCDEFGHIJK 2 Bright
+	  HX16 K 1 Bright
+	  stop
+	Fire:
+	  HX04 E 0 A_JumpIfInventory("PowerWeaponLevel2",1,"FirePowered")
+	  HX04 A 0 A_JumpIfInventory("Clip",1,1)
+	  Goto FireEmpty
+	  HX04 A 0 A_GunFlash("DemonessFire",GFF_NOEXTCHANGE)
+	  HX04 A 0 ACS_NamedExecuteAlways("Hexen2_AmmoLoop",0,15,1,1)
+	  HX04 ABCDE 2
+	FireHold:
+	  HX04 A 0 A_JumpIfInventory("clip",1,1)
+	  Goto FireStop
+	  HX04 E 0 A_JumpIfInventory("PowerWeaponLevel2",1,"FireHoldPowered")
+	  HX04 E 0 A_FireCustomMissile("Hexen2MagicMissileBall",0,1,-10,4)
+	  HX04 E 0 A_FireCustomMissile("Hexen2MagicMissileStar",0,0,-10,4)
+	  HX04 E 0 A_FireCustomMissile("Hexen2MagicMissileHandFX",0,0,-7,7)
+	  HX04 E 0 A_JumpIfInventory("Hexen2HoldFlash",1,5)
+	  HX04 E 0 A_GunFlash("DemonessFireLoop",GFF_NOEXTCHANGE) 
+	  HX04 E 8
+	  HX04 E 0 A_GiveInventory("Hexen2HoldFlash",1)
+	  HX04 E 0 A_Jump(256,4)
+	  HX04 E 0 A_GunFlash("DemonessFireLoopFlash",GFF_NOEXTCHANGE) 
+	  HX04 E 8 Bright
+	  HX04 E 0 A_TakeInventory("Hexen2HoldFlash",1)
+	  HX04 E 0 A_Refire("FireHold")
+	FireStop:
+	  HX04 F 0 A_GunFlash("DemonessFireStop",GFF_NOEXTCHANGE)
+	  HX04 FGH 2
+	  Goto WeaponIdle
+	DemonessFire:
+	  HX14 ABCDE 2
+	DemonessFireLoop:
+	  HX14 F 9
+	  stop
+	DemonessFireLoopFlash:
+	  HX14 F 9 Bright
+	  stop
+	DemonessFireStop:
+	  HX14 HJM 2
+	  HX14 M 1
+	  stop
+	FirePowered:
+	  HX04 A 0 A_JumpIfInventory("Clip",6,1)
+	  Goto FireEmpty
+	  HX04 A 0 A_GunFlash("DemonessFirePowered",GFF_NOEXTCHANGE)
+	  HX04 A 0 ACS_NamedExecuteAlways("Hexen2_AmmoLoop",0,15,3,1)
+	  HX04 ABCDE 2
+	FireHoldPowered:
+	  HX04 A 0 A_JumpIfInventory("Clip",2,1)
+	  Goto FireStop
+	  HX04 EEE 0 A_FireCustomMissile("Hexen2MagicMissileStarPowered",0,0,-10,4)
+	  HX04 E 0 A_FireCustomMissile("Hexen2MagicMissileHandFX",0,0,-7,7)
+	  HX04 E 0 A_GunFlash("DemonessFireLoopFlash",GFF_NOEXTCHANGE) 
+	  HX04 E 8 Bright
+	  HX04 E 0 A_Refire("FireHold")
+	FireStopPowered:
+	  HX04 F 0 A_GunFlash("DemonessFireStopPowered",GFF_NOEXTCHANGE)
+	  HX04 FGH 2 Bright
+	  Goto WeaponIdle
+	DemonessFirePowered:
+	  HX14 ABCDE 2 Bright
+	  Goto DemonessFireLoopFlash
+	DemonessFireStopPowered:
+	  HX14 HJM 2 Bright
+	  HX14 M 1 Bright
+	  stop
+	FireEmpty:
+	  HX05 A 0 A_GunFlash("DemonessEmpty",GFF_NOEXTCHANGE)
+	  HX05 A 2
+	  Goto WeaponIdle
+	DemonessEmpty:
+	  HX09 A 3
+	  stop
+	NoFrames:
+	  HX00 A 0 bright A_Stop HX01 A 0 bright A_Stop HX02 A 0 bright A_Stop HX03 A 0 bright A_Stop HX04 A 0 bright A_Stop HX05 A 0 bright A_Stop 
+	  HX06 A 0 bright A_Stop HX07 A 0 bright A_Stop HX08 A 0 bright A_Stop HX09 A 0 bright A_Stop HX10 A 0 bright A_Stop HX11 A 0 bright A_Stop 
+	  HX12 A 0 bright A_Stop HX13 A 0 bright A_Stop HX14 A 0 bright A_Stop HX15 A 0 bright A_Stop HX16 A 0 bright A_Stop HX17 A 0 bright A_Stop 
+	  stop
+  }
+}
+
+Actor Hexen2MagicMissileHandFX
+{
+	Projectile
+	Height 4
+	Radius 2
+	Renderstyle Translucent
+	Alpha 0.4
+	Speed 8
+	Scale 1
+	Mass 10000
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 0 A_SetPitch(-CallACS("Hexen2_Decorate",3)/182)
+			TNT1 A 1 A_Stop
+			HX00 A 0 A_SetScale(scalex+.125)
+			HX00 A 1 A_Fadeout(0.05)
+			HX00 A 0 A_SetScale(scalex+.125)
+			HX00 A 1 A_Fadeout(0.05)
+			HX00 A 0 A_SetScale(scalex+.125)
+			HX00 A 1 A_Fadeout(0.05)
+			HX00 A 0 A_SetScale(scalex+.125)
+			HX00 A 1 A_Fadeout(0.05)
+			HX00 A 0 A_SetScale(scalex+.125)
+			HX00 A 1 A_Fadeout(0.05)
+			HX00 A 0 A_SetScale(scalex+.125)
+			HX00 A 1 A_Fadeout(0.05)
+			HX00 A 0 A_SetScale(scalex+.125)
+			HX00 A 1 A_Fadeout(0.05)
+			HX00 A 0 A_SetScale(scalex+.125)
+			HX00 A 1 A_Fadeout(0.05)
+			stop
+	}
+}
+
+Actor Hexen2MagicMissileStar
+{
+	Projectile
+	Damage (random(20,25))
+	Speed 16
+	Height 20
+	Radius 10
+	Scale 0.3
+	+BLOODLESSIMPACT
+	DamageType "Hexen2Damage"
+	States
+	{
+		Spawn:
+			TNT1 A 0 
+			TNT1 A 0 A_Playsound("Hexen2/MagicMissile", CHAN_5)
+			TNT1 A 0 A_GiveInventory("Hexen2AngularZ", random(3,6))
+			//TNT1 A 0 A_GiveInventory("Hexen2AngularY", 3)
+			TNT1 A 0 A_SetPitch((-CallACS("Hexen2_Decorate",3)/182))
+		SpawnLoop:
+			TNT1 A 0 A_SpawnItemEx("Hexen2MagicMissilePuffGenerator", frandom(-16,16),frandom(-16,16),frandom(-16,16),0,0,0,0,SXF_NOCHECKPOSITION)
+			TNT1 A 0 A_SetAngle(angle+CallACS("Hexen2_Decorate",7))
+			//TNT1 A 0 A_SetPitch(pitch+CallACS("Hexen2_Decorate",6))
+			HX00 A 1 Bright
+			Loop
+		Death:
+			TNT1 A 0 A_PlaySound("Hexen2/Explode", CHAN_6)
+			TNT1 A 0 A_Explode(random(30,40),random(40,50),!XF_HURTSOURCE,0,random(30,40))
+			TNT1 A 0 A_SetScale(1.0)
+			HX03 ABCDEFGHIJKLMNOPQ 2 Bright
+			stop
+	}
+}
+
+Actor Hexen2MagicMissileBall
+{
+	Projectile
+	Speed 16
+	Height 20
+	Radius 10
+	Scale 0.3
+	States
+	{
+		Spawn:
+			TNT1 A 0 
+			TNT1 A 0 A_GiveInventory("Hexen2AngularZ", random(3,6))
+		SpawnLoop:
+			TNT1 A 0 A_SetAngle(angle+CallACS("Hexen2_Decorate",9))
+			HX00 A 1 Bright
+			Loop
+		Death:
+			TNT1 A 1
+			stop
+	}
+}
+
+//having problems with the good ol' pitch calculations for this projectile, so I am using these, guess it will only work this way
+Actor Hexen2MagicMissileStarPoweredX : Hexen2Counter { Inventory.MaxAmount 20 }
+Actor Hexen2MagicMissileStarPoweredY : Hexen2Counter { Inventory.MaxAmount 20 }
+Actor Hexen2MagicMissileStarPoweredZ : Hexen2Counter { Inventory.MaxAmount 20 }
+
+Actor Hexen2MagicMissileStarPowered
+{
+	Projectile
+	Damage (random(20,25))
+	Speed 16
+	Height 20
+	Radius 10
+	Scale 0.3
+	+BLOODLESSIMPACT
+	+SEEKERMISSILE
+	+SCREENSEEKER
+	+FORCERADIUSDMG
+	DamageType "Hexen2Damage"
+	States
+	{
+		Spawn:
+			TNT1 A 0 
+			TNT1 A 0 A_Playsound("Hexen2/MagicMissile", CHAN_5)
+			TNT1 A 0 A_GiveInventory("Hexen2AngularZ", random(3,6))
+			//TNT1 A 0 A_GiveInventory("Hexen2AngularY", 3)
+			TNT1 A 0 A_SetPitch((-CallACS("Hexen2_Decorate",3)/182))
+			TNT1 A 0 A_GiveInventory("Hexen2ShooterAngle",angle+360)
+			TNT1 A 0 A_GiveInventory("Hexen2MagicMissileStarPoweredX",velx)
+			TNT1 A 0 A_GiveInventory("Hexen2MagicMissileStarPoweredY",vely)
+			TNT1 A 0 A_GiveInventory("Hexen2MagicMissileStarPoweredZ",velz)
+		SpawnLoop:
+			TNT1 A 0 A_SpawnItemEx("Hexen2MagicMissilePuffGenerator", frandom(-16,16),frandom(-16,16),frandom(-16,16),0,0,0,0,SXF_NOCHECKPOSITION)
+			HX00 A 0 A_SeekerMissile(15,30,SMF_LOOK|SMF_PRECISE|SMF_CURSPEED,256,512)
+			HX00 A 0 A_ChangeVelocity(CallACS("Hexen2_Decorate",26)+random(-4,4),CallACS("Hexen2_Decorate",27)+random(-4,4),CallACS("Hexen2_Decorate",28)+random(-4,4),CVF_REPLACE)
+			//TNT1 A 0 A_SetPitch(pitch+CallACS("Hexen2_Decorate",8))
+			HX00 A 1 Bright
+			TNT1 A 0 A_SpawnItemEx("Hexen2MagicMissilePuffGenerator", frandom(-16,16),frandom(-16,16),frandom(-16,16),0,0,0,0,SXF_NOCHECKPOSITION)
+			HX00 A 1 Bright
+			TNT1 A 0 A_SpawnItemEx("Hexen2MagicMissilePuffGenerator", frandom(-16,16),frandom(-16,16),frandom(-16,16),0,0,0,0,SXF_NOCHECKPOSITION)
+			HX00 A 1 Bright
+			TNT1 A 0 A_SpawnItemEx("Hexen2MagicMissilePuffGenerator", frandom(-16,16),frandom(-16,16),frandom(-16,16),0,0,0,0,SXF_NOCHECKPOSITION)
+			HX00 A 1 Bright
+			TNT1 A 0 A_SpawnItemEx("Hexen2MagicMissilePuffGenerator", frandom(-16,16),frandom(-16,16),frandom(-16,16),0,0,0,0,SXF_NOCHECKPOSITION)
+			HX00 A 1 Bright
+			TNT1 A 0 A_SpawnItemEx("Hexen2MagicMissilePuffGenerator", frandom(-16,16),frandom(-16,16),frandom(-16,16),0,0,0,0,SXF_NOCHECKPOSITION)
+			HX00 A 1 Bright
+			TNT1 A 0 A_SpawnItemEx("Hexen2MagicMissilePuffGenerator", frandom(-16,16),frandom(-16,16),frandom(-16,16),0,0,0,0,SXF_NOCHECKPOSITION)
+			HX00 A 1 Bright
+			TNT1 A 0 A_SpawnItemEx("Hexen2MagicMissilePuffGenerator", frandom(-16,16),frandom(-16,16),frandom(-16,16),0,0,0,0,SXF_NOCHECKPOSITION)
+			Loop
+		Death:
+			TNT1 A 0 A_PlaySound("Hexen2/Explode", CHAN_6)
+			TNT1 A 0 A_Explode(random(30,40),random(40,50),!XF_HURTSOURCE,0,random(30,40))
+			TNT1 A 0 A_SetScale(1.0)
+			HX03 ABCDEFGHIJKLMNOPQ 2 Bright
+			stop
+	}
+}
+
+Actor Hexen2MagicMissilePuffGenerator : Hexen2PuffGenerator { Translation "0:255=%[0.0,0.0,0.0]:[0.471, 0.455, 0.643]" }

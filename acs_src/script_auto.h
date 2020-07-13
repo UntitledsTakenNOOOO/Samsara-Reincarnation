@@ -464,8 +464,7 @@ script SAMSARA_SPAWN (int respawning)
     pcount = PlayerCount();
     
     while (!endloop && ServerEnterTimes[pln] == startTime)
-    {
-        
+    {		
         if (GetUserCvar(pln,"sams_cl_wolfmove")) { GiveInventory("WolfenMovement", 1); }
         else { TakeInventory("WolfenMovement", 0x7FFFFFFF); }
         
@@ -716,6 +715,10 @@ script SAMSARA_SPAWN (int respawning)
             else { SetActorProperty(0, APROP_Gravity, 0.68); }
             break;
 
+		  case CLASS_DEMONESS:
+		    if (GetCVar("sams_nocustomgravity")) { SetActorProperty(0, APROP_Gravity, 1.0); }
+            break;
+		
           default:
             SetActorProperty(0, APROP_Gravity, 1.0);
             break;

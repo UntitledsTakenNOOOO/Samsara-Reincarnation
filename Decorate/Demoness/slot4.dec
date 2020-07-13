@@ -1,0 +1,301 @@
+ACTOR Hexen2SpellBookBoneShard : Weapon
+{
+  Weapon.SelectionOrder 800
+  Weapon.Kickback 100
+  Weapon.SlotNumber 4
+  Weapon.BobRangeX 0
+  Weapon.BobRangeY 0.5
+  Weapon.BobSpeed 1.1
+  Weapon.BobStyle Alpha   
+  Weapon.AmmoType "Cell"
+  Weapon.AmmoGive 20
+  States
+  {
+	Spawn:
+	  HX00 A 0
+	  HX99 A -1
+	  Stop
+	Ready:
+	  HX00 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"ReadyPowered")
+	  HX00 A 0 A_GunFlash("DemonessReady",GFF_NOEXTCHANGE)
+	  HX07 GFEDCBA 2
+	  Goto WeaponIdle
+	DemonessReady:
+	  HX16 K 1
+	  HX16 KIGFDBA 2
+	  stop
+	ReadyPowered:
+	  HX00 A 0 A_GunFlash("DemonessReadyPowered",GFF_NOEXTCHANGE)
+	  HX07 GFEDCBA 2 Bright
+	  Goto WeaponIdle
+	DemonessReadyPowered:
+	  HX16 K 1 Bright
+	  HX16 KIGFDBA 2 Bright
+	  stop
+	WeaponIdle:
+	  HX03 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"WeaponIdlePowered")
+	  HX03 A 0 A_GunFlash("DemonessWeaponIdleLoop",GFF_NOEXTCHANGE)
+	WeaponIdleLoop:
+	  HX03 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"WeaponIdleLoopPowered")
+	  HX03 A 0 A_JumpIf(random(0,65536) < 1024, "WeaponIdleJellyFingers")
+	  HX03 A 2 A_WeaponReady
+	  Loop
+	DemonessWeaponIdleLoop:
+	  HX09 A 3
+	  Loop
+	WeaponIdleJellyFingers:
+	  HX03 A 0 A_GunFlash("DemonessWeaponIdleJellyFingers",GFF_NOEXTCHANGE)
+	  HX03 ABCDEFGHIJKLMNOPQRSTUV 2 A_WeaponReady
+      Goto WeaponIdle
+	DemonessWeaponIdleJellyFingers:
+	  HX09 ABCDEFGHIJKLMNOPQRSTUVWXY 2
+	  HX09 Y 1
+	  Stop
+	WeaponIdlePowered:
+	  HX03 A 0 A_GunFlash("DemonessWeaponIdleLoopPowered",GFF_NOEXTCHANGE)
+	WeaponIdleLoopPowered:
+	  HX03 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,1)
+	  Goto WeaponIdle
+	  HX03 A 0 A_JumpIf(random(0,65536) < 1024, "WeaponIdleJellyFingersPowered")
+	  HX03 A 2 Bright A_WeaponReady
+	  Loop
+	DemonessWeaponIdleLoopPowered:
+	  HX09 A 3 Bright
+	  Loop
+	WeaponIdleJellyFingersPowered:
+	  HX03 A 0 A_GunFlash("DemonessWeaponIdleJellyFingersPowered",GFF_NOEXTCHANGE)
+	  HX03 ABCDEFGHIJKLMNOPQRSTUV 2 Bright A_WeaponReady
+      Goto WeaponIdle
+	DemonessWeaponIdleJellyFingersPowered:
+	  HX09 ABCDEFGHIJKLMNOPQRSTUVWXY 2 Bright
+	  HX09 Y 1
+	  Stop
+	Select:
+	  TNT1 A 0 A_TakeInventory("Hexen2Weapon1",1)
+	  TNT1 A 0 A_TakeInventory("Hexen2Weapon3",1)
+	  TNT1 A 0 A_GiveInventory("Hexen2Weapon2",1)
+	  TNT1 A 0 SetPlayerProperty(0,1,2)
+	  TNT1 A 1 A_Raise
+	  Wait
+	Deselect:
+	  TNT1 A 0 A_TakeInventory("Hexen2Weapon2",1)
+	  HX03 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"DeselectPowered")
+	  HX07 A 0 A_GunFlash("DemonessDeselect",GFF_NOEXTCHANGE)
+	  HX07 ABCDEFG 2
+      TNT1 A 1 A_Lower
+      Wait
+	DemonessDeselect:
+	  HX16 ABDFGIK 2
+	  HX16 K 1
+	  stop
+	DeselectPowered:
+	  HX07 A 0 A_GunFlash("DemonessDeselectPowered",GFF_NOEXTCHANGE)
+	  HX07 ABCDEFG 2 Bright
+      TNT1 A 1 A_Lower
+      Wait
+	DemonessDeselectPowered:
+	  HX16 ABDFGIK 2 Bright
+	  HX16 K 1 Bright
+	  stop
+	Fire:
+	  HX00 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"FirePowered")
+	  HX00 A 0 A_JumpIfInventory("Cell",2,1)
+	  Goto FireEmpty
+	  HX00 A 0 A_GunFlash("DemonessFire",GFF_NOEXTCHANGE)
+	  HX00 A 0 ACS_NamedExecuteAlways("Hexen2_AmmoLoop",0,7,2,4)
+	  HX00 AB 2
+	  HX00 C 2
+	  HX00 C 0 A_PlaySound("Hexen2/BonerFire", CHAN_WEAPON, 1,0)
+	  HX00 CCCC 0 A_FireBullets(8,8,1,2,"Hexen2BonerPuffGenerator",FBF_NORANDOM|FBF_NORANDOMPUFFZ)
+	  HX00 C 0 A_FireCustomMissile("Hexen2BoneShotProjectile",random(-5,5),0,-8,8,0,random(-5,5))
+	  HX00 C 0 A_Refire("FireHold")
+	  Goto FireStop
+	FireHold: //maybe causing issues leaving this as hold
+	  HX00 C 0 A_JumpIfInventory("Cell",2,1)
+	  Goto FireStop
+	  HX00 C 2
+	  HX00 C 0 A_PlaySound("Hexen2/BonerFire", CHAN_WEAPON, 1,0)
+	  HX00 CCCC 0 A_FireBullets(8,8,1,4,"Hexen2BonerPuffGenerator",FBF_NORANDOM|FBF_NORANDOMPUFFZ)
+	  HX00 C 0 A_FireCustomMissile("Hexen2BoneShotProjectile",random(-5,5),0,-8,8,0,random(-5,5))
+	  HX00 C 0 A_Refire("FireHold")
+	FireStop:
+	  HX00 D 0 A_GunFlash("DemonessFireStop",GFF_NOEXTCHANGE)
+	  HX00 D 0 A_Jump(52,6)
+	  HX00 DDDD 0 A_FireBullets(8,8,1,4,"Hexen2BonerPuffGenerator",FBF_NORANDOM|FBF_NORANDOMPUFFZ)
+	  HX00 D 2 A_FireCustomMissile("Hexen2BoneShotProjectile",random(-5,5),0,-8,8,0,random(-5,5))
+	  HX00 E 0 A_Jump(52,6)
+	  HX00 EEEE 0 A_FireBullets(8,8,1,4,"Hexen2BonerPuffGenerator",FBF_NORANDOM|FBF_NORANDOMPUFFZ)
+	  HX00 E 2 A_FireCustomMissile("Hexen2BoneShotProjectile",random(-5,5),0,-8,8,0,random(-5,5))
+	  HX00 F 0 A_Jump(52,6)
+	  HX00 FFFF 0 A_FireBullets(8,8,1,4,"Hexen2BonerPuffGenerator",FBF_NORANDOM|FBF_NORANDOMPUFFZ)
+	  HX00 F 2 A_FireCustomMissile("Hexen2BoneShotProjectile",random(-5,5),0,-8,8,0,random(-5,5))
+	  HX00 GHIJKL 2
+      Goto WeaponIdle
+	DemonessFire:
+	  HX10 CD 2
+	DemonessHold:
+	  HX10 E 3
+	  Loop
+	DemonessFireStop:
+	  HX10 FGHIJKLMN 2
+	  HX10 N 2
+	  stop
+	FirePowered:
+	  HX00 A 0 A_JumpIfInventory("Cell",20,1)
+	  Goto FireEmpty
+	  HX00 A 0 A_GunFlash("DemonessFirePowered",GFF_NOEXTCHANGE)
+	  HX00 A 0 A_PlaySound("Hexen2/BonerFirePowered", CHAN_WEAPON)
+	  HX00 ABC 2 Bright
+	  HX00 D 0 A_TakeInventory("Cell",20,TIF_NOTAKEINFINITE)
+	  HX00 D 0 A_FireCustomMissile("Hexen2BoneShotProjectilePowered",0,1,-8,4)
+	  HX00 DEFGHIJKL 2 Bright
+	  HX03 A 21 Bright
+	  Goto WeaponIdle
+	DemonessFirePowered:
+	  HX10 CDEFGHIJKLMN 2 Bright
+	  HX09 A 22 Bright
+	  stop
+	FireEmpty:
+	  HX03 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"FireEmptyPowered")
+	  HX03 A 0 A_GunFlash("DemonessEmpty",GFF_NOEXTCHANGE)
+	  HX03 A 2
+	  Goto WeaponIdle
+	DemonessEmpty:
+	  HX09 A 3
+	  stop
+	FireEmptyPowered:
+	  HX03 A 0 A_GunFlash("DemonessEmptyPowered",GFF_NOEXTCHANGE)
+	  HX03 A 2 Bright
+	  Goto WeaponIdle
+	DemonessEmptyPowered:
+	  HX09 A 3 Bright
+	  stop
+	NoFrames:
+	  HX00 A 0 bright A_Stop HX01 A 0 bright A_Stop HX02 A 0 bright A_Stop HX03 A 0 bright A_Stop HX04 A 0 bright A_Stop HX05 A 0 bright A_Stop 
+	  HX06 A 0 bright A_Stop HX07 A 0 bright A_Stop HX08 A 0 bright A_Stop HX09 A 0 bright A_Stop HX10 A 0 bright A_Stop HX11 A 0 bright A_Stop 
+	  HX12 A 0 bright A_Stop HX13 A 0 bright A_Stop HX14 A 0 bright A_Stop HX15 A 0 bright A_Stop HX16 A 0 bright A_Stop HX17 A 0 bright A_Stop 
+	  stop
+  }
+}
+
+Actor Hexen2BoneShotProjectile
+{
+	Projectile
+	Speed 18
+	Damage 0
+	Radius 3
+	Height 6
+	Scale 1.0
+	var int user_velx;
+	var int user_velz;
+	States
+	{
+		Spawn:
+		  HX00 A 0
+		  HX00 A 0 A_SetUserVar("user_velx", frandom(-1,1)*1.0)
+		  HX00 A 0 A_SetUserVar("user_velz", frandom(-1,1)*1.0)
+		  HX00 A 0 A_GiveInventory("Hexen2MultiplierStorage", 1+(random(0,1)*2))
+		  HX00 A 0 A_ChangeVelocity(0,user_velx,user_velz,CVF_RELATIVE)
+		  HX00 A 0 A_SetPitch(random(0,360))
+		  HX00 A 0 A_SetAngle(CallACS("Hexen2_VectorAngle",x,y)/182)
+		SpawnLoop:
+		  HX00 A 0 A_SetPitch(pitch+(15*CallACS("Hexen2_Decorate",2)))
+		  HX00 A 2
+		  Loop
+		Death:
+		Crash:
+		  TNT1 A 0 A_SpawnItemEx("Hexen2WhiteSmoke",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION)
+		  TNT1 A 0 A_PlaySound("Hexen2/BonerHitWall", CHAN_6)
+		  TNT1 A 1
+		  stop
+		XDeath:
+		  TNT1 A 0 A_SpawnItemEx("Hexen2WhiteSmoke",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION)
+		  TNT1 A 0 A_PlaySound("Hexen2/BonerHitBleeder", CHAN_6)
+		  TNT1 A 1
+		  stop
+	}
+}
+
+Actor Hexen2BonerPuffGenerator : Hexen2PuffGenerator { Translation "0:255=%[0.0,0.0,0.0]:[0.753, 0.518, 0.345]" DamageType "Hexen2Damage" }
+
+Actor Hexen2BoneShotProjectilePowered
+{
+	Projectile
+	Height 12
+	Radius 6
+	Damage (100)
+	Speed 16
+	DamageType "Hexen2Damage"
+	States
+	{
+		Spawn:
+			HX00 A 0
+			HX00 A 0 A_GiveInventory("Hexen2MultiplierStorage", 1+(random(0,1)*2))
+			Goto SpawnLoop
+		SpawnLoop:
+			HX00 A 0 A_SetPitch(pitch+(10*CallACS("Hexen2_Decorate",2)))
+			HX00 A 0 A_SetAngle(angle+(10*CallACS("Hexen2_Decorate",2)))
+			HX00 A 2
+			Loop
+		Death:
+			TNT1 A 0 A_Explode(100,100,!XF_HURTSOURCE,0,75)
+			TNT1 A 0 A_PlaySound("Hexen2/BonerPoweredHit", CHAN_6)
+			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_CustomMissile("Hexen2BoneShardRicochet",0,0,random(0,360),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(0,360))
+			TNT1 A 0 A_SpawnItemEx("Hexen2BoneShotPoweredExplosion",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+			TNT1 A 1
+			stop
+	}
+}
+
+Actor Hexen2BoneShotPoweredExplosion
+{
+	+NOINTERACTION
+	+NOBLOCKMAP
+	+CLIENTSIDEONLY
+	Renderstyle Translucent
+	Radius 1
+	Height 1
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			HX21 ABCDEFGHIJKLMNOPQR 2
+			stop
+	}
+}
+
+Actor Hexen2BoneShardRicochet
+{
+	Projectile
+	Speed 12
+	Damage (15)
+	Radius 3
+	Height 6
+	Scale 1.0
+	DamageType "Hexen2Damage"
+	States
+	{
+		Spawn:
+		  HX00 A 0
+		  HX00 A 0 A_GiveInventory("Hexen2MultiplierStorage", 1+(random(0,1)*2))
+		  HX00 A 0 A_SetPitch(random(0,360))
+		  HX00 A 0 A_SetAngle(random(0,360))
+		SpawnLoop:
+		  HX00 A 0 A_SetPitch(pitch+(10*CallACS("Hexen2_Decorate",2)))
+		  HX00 A 0 A_SetAngle(angle+(10*CallACS("Hexen2_Decorate",2)))
+		  HX00 A 2
+		  Loop
+		Death:
+		Crash:
+		  TNT1 AAAA 0 A_SpawnItemEx("Hexen2BonerPuffGenerator",random(-3,3),random(-3,3),random(-3,3),0,0,0,0,SXF_NOCHECKPOSITION)
+		  TNT1 A 0 A_SpawnItemEx("Hexen2WhiteSmoke",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION)
+		  TNT1 A 0 A_PlaySound("Hexen2/BonerHitWall", CHAN_6)
+		  TNT1 A 1
+		  stop
+		XDeath:
+		  TNT1 A 0 A_SpawnItemEx("Hexen2WhiteSmoke",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION)
+		  TNT1 A 0 A_PlaySound("Hexen2/BonerHitBleeder", CHAN_6)
+		  TNT1 A 1
+		  stop
+	}
+}

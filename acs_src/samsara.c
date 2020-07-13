@@ -52,6 +52,7 @@ global int 0:SamsaraGlobal[];
 #include "script_scheduled.h"
 #include "script_pdwtak.h"
 #include "script_doom64.h"
+#include "script_compendium.h"
 
 script SAMSARA_DECORATE (int choice, int arg1, int arg2)
 {
@@ -602,7 +603,7 @@ script SAMSARA_CLIENT_DECORATE (int which, int a1, int a2) clientside
 		{
 			result = GetCVar("sams_zd_bloodyhell");
 		} else {
-			result = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell");
+			result = GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell");
 		}
         break;
 	
@@ -611,7 +612,7 @@ script SAMSARA_CLIENT_DECORATE (int which, int a1, int a2) clientside
 		{
 			result = GetCVar("sams_zd_bloodypersistent");
 		} else {
-			result = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodypersistent");
+			result = GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodypersistent");
 		}
         break;
 	
@@ -620,7 +621,7 @@ script SAMSARA_CLIENT_DECORATE (int which, int a1, int a2) clientside
 			result = GetCVar("sams_cl_dkclab");
 			
 		else
-			result = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_dkclab");
+			result = GetUserCVar(ConsolePlayerNumber(), "sams_cl_dkclab");
 			
 		break;
     }
@@ -1648,7 +1649,7 @@ Script 2560 (int mode)
 str gameClassesSTR[CLASSCOUNT] = {
 	"DoomguyClass", "ChexClass", "CorvusClass", "WolfenClass", "HexenClass", "DukeClass", "MarathonClass", "QuakeClass", "RottClass", "BlakeClass",
 	"CalebClass", "StrifeClass", "Doom64GuyClass", "EradClass", "C7Class", "RMRClass", "KatarnClass", "POGreedClass", "DisruptorClass", "WitchavenClass", 
-	"HalfLifeClass", "SWClass", "CMClass", "JonClass", "RRClass", "BittermanClass"
+	"HalfLifeClass", "SWClass", "CMClass", "JonClass", "RRClass", "BittermanClass", "DemonessClass", "BondClass"
 };
 
 Script "TauntButton" (void) NET
@@ -2008,6 +2009,7 @@ Script "Samsara_KillCount" (int override)
 	if(!(ClassifyActor(0) & ACTOR_MONSTER))
 		terminate;
 		
+	int noblood = CheckFlag(0,"NOBLOOD");
 	int health;
 	int healthtokens = CheckInventory("ShrunkMasterHealthTokens");
 
@@ -2025,6 +2027,17 @@ Script "Samsara_KillCount" (int override)
 	if(override != 1)
 		GiveInventory("KillCount", 1);
 		
+	if(CheckInventory("Hexen2Class") && !noblood)
+	{
+		int chance = (0.05+((CheckInventory("Hexen2Level")-4)*0.03));
+		if(chance > 0.2)
+			chance = 0.2;
+					
+		GiveInventory("Hexen2Experience", (health*2.5)>>16);
+		if(random(0.0,1.0) <= chance)
+			SpawnForced("Hexen2SoulSphere",x,y,z,0,0);
+	}
+
 }
 
 Script "Samsara_GZDoomChecker" (void)

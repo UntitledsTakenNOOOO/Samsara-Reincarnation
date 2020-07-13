@@ -1,0 +1,1145 @@
+#library "Bond"
+#include "zcommon.acs"
+#include "CommonFuncs.h"
+
+Script "BondAim" Enter Clientside
+{	
+	while(CheckInventory("BondClass"))
+	{
+		int yawrequired;
+		int yaw = GetPlayerInput(0, INPUT_YAW);
+		int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
+
+		if(yaw > 0)
+		{
+			yawrequired = 5 - CheckInventory("BondGunAngle");
+			if(!CheckInventory("BondFiringToken"))
+				if(yaw > (2048 * yawrequired) || buttonPress & BT_Left)
+					if(CheckInventory("BondGunAngle") > 1)
+						TakeInventory("BondGunAngle", 1);
+		}
+		else if(yaw < 0)
+		{
+			yawrequired = CheckInventory("BondGunAngle") - 5;
+			if(!CheckInventory("BondFiringToken"))
+				if(yaw < (-2048 * yawrequired) || buttonPress & BT_Right)
+					GiveInventory("BondGunAngle", 1);
+		}
+		else
+		{
+			if(!CheckInventory("BondFiringToken"))
+			{
+				if(CheckInventory("BondGunAngle") > 5)
+					TakeInventory("BondGunAngle", 1);
+					
+				else if(CheckInventory("BondGunAngle") < 5)
+					GiveInventory("BondGunAngle", 1);
+			}
+		}
+		Delay(1);
+	}
+}
+
+Script "BondWatchLookUpAndDown" (void) Clientside
+{
+	int pp;
+	
+	int playerpitch = GetActorPitch(0);
+	int requiredangle = 5460;
+	int originalangle;
+	
+	if(!CheckInventory("BondWatchToken"))
+	{
+		if(playerpitch >= requiredangle)
+		{
+			pp = playerpitch;
+			GiveInventory("BondPitchTokens", pp + 16384);
+			for(pp = playerpitch; pp > requiredangle; pp-=360)
+			{
+				SetActorPitch(0, pp);
+				Delay(1);
+			}
+			GiveInventory("BondAngleTokens", GetActorAngle(0) + 65536);
+		}
+			
+		else
+		{
+			pp = playerpitch;
+			GiveInventory("BondPitchTokens", pp + 16384);
+			for(pp = playerpitch; pp < requiredangle; pp+=360)
+			{
+				SetActorPitch(0, pp);
+				Delay(1);
+			}
+			GiveInventory("BondAngleTokens", GetActorAngle(0) + 65536);
+		}
+	}
+	else
+	{	
+		SetActorAngle(0, CheckInventory("BondAngleTokens") - 65536);
+		
+		originalangle = CheckInventory("BondPitchTokens") - 16384;
+	
+		if(playerpitch >= originalangle)
+			for(pp = requiredangle; pp > originalangle; pp-=360)
+			{
+				if(GetPlayerInput(0, INPUT_PITCH) != 0)
+					break;
+
+				SetActorPitch(0, pp);
+				Delay(1);
+			}
+			
+		else
+			for(pp = requiredangle; pp < originalangle; pp+=360)
+			{
+				if(GetPlayerInput(0, INPUT_PITCH) != 0)
+					break;
+					
+				SetActorPitch(0, pp);
+				Delay(1);
+			}
+	}
+}
+
+Script "BondActivateWatch" (void) Net Clientside
+{
+	if(!CheckInventory("BondWatchQueue") && !CheckInventory("BondWatchAnimation"))
+		GiveInventory("BondWatchQueue", 1);
+}
+
+Script "BondAltFire" (void) Clientside
+{
+	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
+	int oldpresscounter;
+	if(buttonPress & BT_AltAttack)
+	{
+		if(oldpresscounter >= 15)
+		{
+			GiveInventory("BondAltToggle", 2);
+			oldpresscounter = 0;
+			terminate;
+		}
+		else
+		{
+			oldpresscounter++;
+		}
+	}
+	else
+	{
+		GiveInventory("BondAltToggle", 1);
+		oldpresscounter = 0;
+		terminate;
+	}
+		
+	Delay(1);
+	restart;
+}
+
+Script "BondAltHold" (void) Clientside
+{
+	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
+	if(buttonPress & BT_AltAttack)
+	{
+		SetResultValue(1);
+	}
+	else
+	{
+		SetResultValue(0);
+	}
+}
+
+//Class name, list name, main page name, main ammo type, magazine ammo type, ammo graphic, dual magazine type
+str GoldeneyeWeaponInfo[18][8] = {
+	
+	{ "Goldeneye_Slapper", "Unarmed", "Unarmed", "-1", "-1", "-1", "-1" },
+	{ "Goldeneye_PP7Silenced", "PP7 (Silenced)", "PP7 (Silenced)", "Clip", "Goldeneye_PP7Magazine", "B57B31", "Goldeneye_PP7DualMagazine", "Goldeneye_PP7DualToken" },
+	{ "Goldeneye_ThrowingKnives", "Throwing Knife", "Throwing Knife", "Goldeneye_ThrowingKnivesAmmo", "Goldeneye_ThrowingKnivesMagazine", "B47A9D", "Goldeneye_ThrowingKnivesDualMagazine", "Goldeneye_KnifeDualToken" },
+	{ "Goldeneye_KF7Soviet", "KF7 Soviet", "KF7   Soviet", "Clip", "Goldeneye_KF7Magazine", "B579A6", "Goldeneye_KF7DualMagazine", "Goldeneye_KF7DualToken" },
+	{ "Goldeneye_AutoShotgun", "Automatic Shotgun", "Automatic Shotgun", "Shell", "Goldeneye_AutoshotgunMagazine", "B47C9E", "Goldeneye_AutoShotgunDualMagazine", "Goldeneye_ShotgunDualToken" },
+	{ "Goldeneye_AR33", "AR33 Assault", "US AR33 Assault", "Clip", "Goldeneye_AR33Magazine", "B579A6", "Goldeneye_AR33DualMagazine", "Goldeneye_AR33DualToken" },
+	{ "Goldeneye_RocketLauncher", "Rocket Launcher", "Rocket Launcher", "RocketAmmo", "Goldeneye_RocketLauncherMagazine", "B46EF5", "Goldeneye_RocketLauncherDualMagazine", "Goldeneye_RocketLauncherDualToken" },
+	{ "Goldeneye_RCP90", "RC-P90", "RC-P90", "Cell", "Goldeneye_RCP90Magazine", "B57B31", "Goldeneye_RCP90DualMagazine", "Goldeneye_RCP90DualToken" },
+	{ "Goldeneye_Moonraker", "Laser", "Military Laser", "Cell", "-1", "-1", "-1", "Goldeneye_LaserDualToken" },
+	{ "Goldeneye_Goldengun", "Golden Gun", "Golden Gun", "Cell", "Goldeneye_GoldenGunMagazine", "B57B31", "Goldeneye_GoldenGunDualMagazine", "Goldeneye_GoldenGunDualToken" },
+	{ "Goldeneye_TimedMines", "Mine (Timed)", "Mine (Timed)", "-1", "RocketAmmo", "B58731", "-1", "-1" },
+	{ "Goldeneye_ProximityMines", "Mine (Proximity)", "Mine (Proximity)", "-1", "RocketAmmo", "B57E9F", "-1", "-1" },
+	{ "Goldeneye_RemoteMines", "Mine (Remote)", "Mine (Remote)", "-1", "RocketAmmo", "B57BC0", "-1", "-1" },
+	{ "Goldeneye_SniperRifle", "Sniper Rifle", "Sniper Rifle", "Shell", "Goldeneye_SniperMagazine", "B579A6", "Goldeneye_SniperDualMagazine", "Goldeneye_SniperDualToken" },
+	{ "Goldeneye_SilencedD5K", "D5K (Silenced)", "D5K (Silenced)", "Clip", "Goldeneye_D5KMagazine", "B57B31", "Goldeneye_D5KDualMagazine", "Goldeneye_D5KDualToken" },
+	{ "Goldeneye_WatchMagnet", "Watch Magnet Attract", "Magnet Attract", "-1", "-1", "-1", "" },
+	{ "Goldeneye_WatchLaser", "Watch Laser", "Watch Laser", "-1", "-1", "-1", "-1", "" },
+	{ "Goldeneye_WatchDetonator", "Detonator", "Detonator", "-1", "-1", "-1", "-1", "" }
+};
+
+str GoldeneyeWeaponWatchGraphics[18][24] = {
+	{ "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1", "-1" },
+	{ "GEWPP701", "GEWPP702", "GEWPP703", "GEWPP704", "GEWPP705", "GEWPP706", "GEWPP707", "GEWPP708", "GEWPP709", "GEWPP710", "GEWPP711", "GEWPP712", "GEWPP713", "GEWPP714", "GEWPP715", "GEWPP716", "GEWPP717", "GEWPP718", "GEWPP719", "GEWPP720", "GEWPP721", "GEWPP722", "GEWPP723", "GEWPP724" },
+	{ "GEWKNI01", "GEWKNI02", "GEWKNI03", "GEWKNI04", "GEWKNI05", "GEWKNI06", "GEWKNI07", "GEWKNI08", "GEWKNI09", "GEWKNI10", "GEWKNI11", "GEWKNI12", "GEWKNI13", "GEWKNI14", "GEWKNI15", "GEWKNI16", "GEWKNI17", "GEWKNI18", "GEWKNI19", "GEWKNI20", "GEWKNI21", "GEWKNI22", "GEWKNI23", "GEWKNI24" },
+	{ "GEWKF701", "GEWKF702", "GEWKF703", "GEWKF704", "GEWKF705", "GEWKF706", "GEWKF707", "GEWKF708", "GEWKF709", "GEWKF710", "GEWKF711", "GEWKF712", "GEWKF713", "GEWKF714", "GEWKF715", "GEWKF716", "GEWKF717", "GEWKF718", "GEWKF719", "GEWKF720", "GEWKF721", "GEWKF722", "GEWKF723", "GEWKF724" },
+	{ "GEWASG01", "GEWASG02", "GEWASG03", "GEWASG04", "GEWASG05", "GEWASG06", "GEWASG07", "GEWASG08", "GEWASG09", "GEWASG10", "GEWASG11", "GEWASG12", "GEWASG13", "GEWASG14", "GEWASG15", "GEWASG16", "GEWASG17", "GEWASG18", "GEWASG19", "GEWASG20", "GEWASG21", "GEWASG22", "GEWASG23", "GEWASG24" },
+	{ "GEWAR301", "GEWAR302", "GEWAR303", "GEWAR304", "GEWAR305", "GEWAR306", "GEWAR307", "GEWAR308", "GEWAR309", "GEWAR310", "GEWAR311", "GEWAR312", "GEWAR313", "GEWAR314", "GEWAR315", "GEWAR316", "GEWAR317", "GEWAR318", "GEWAR319", "GEWAR320", "GEWAR321", "GEWAR322", "GEWAR323", "GEWAR324" },
+	{ "GEWRCK01", "GEWRCK02", "GEWRCK03", "GEWRCK04", "GEWRCK05", "GEWRCK06", "GEWRCK07", "GEWRCK08", "GEWRCK09", "GEWRCK10", "GEWRCK11", "GEWRCK12", "GEWRCK13", "GEWRCK14", "GEWRCK15", "GEWRCK16", "GEWRCK17", "GEWRCK18", "GEWRCK19", "GEWRCK20", "GEWRCK21", "GEWRCK22", "GEWRCK23", "GEWRCK24" },
+	{ "GEWRCP01", "GEWRCP02", "GEWRCP03", "GEWRCP04", "GEWRCP05", "GEWRCP06", "GEWRCP07", "GEWRCP08", "GEWRCP09", "GEWRCP10", "GEWRCP11", "GEWRCP12", "GEWRCP13", "GEWRCP14", "GEWRCP15", "GEWRCP16", "GEWRCP17", "GEWRCP18", "GEWRCP19", "GEWRCP20", "GEWRCP21", "GEWRCP22", "GEWRCP23", "GEWRCP24" },
+	{ "GEWRKR01", "GEWRKR02", "GEWRKR03", "GEWRKR04", "GEWRKR05", "GEWRKR06", "GEWRKR07", "GEWRKR08", "GEWRKR09", "GEWRKR10", "GEWRKR11", "GEWRKR12", "GEWRKR13", "GEWRKR14", "GEWRKR15", "GEWRKR16", "GEWRKR17", "GEWRKR18", "GEWRKR19", "GEWRKR20", "GEWRKR21", "GEWRKR22", "GEWRKR23", "GEWRKR24" },
+	{ "GEWGLD01", "GEWGLD02", "GEWGLD03", "GEWGLD04", "GEWGLD05", "GEWGLD06", "GEWGLD07", "GEWGLD08", "GEWGLD09", "GEWGLD10", "GEWGLD11", "GEWGLD12", "GEWGLD13", "GEWGLD14", "GEWGLD15", "GEWGLD16", "GEWGLD17", "GEWGLD18", "GEWGLD19", "GEWGLD20", "GEWGLD21", "GEWGLD22", "GEWGLD23", "GEWGLD24" },
+	{ "GEWTIM01", "GEWTIM02", "GEWTIM03", "GEWTIM04", "GEWTIM05", "GEWTIM06", "GEWTIM07", "GEWTIM08", "GEWTIM09", "GEWTIM10", "GEWTIM11", "GEWTIM12", "GEWTIM13", "GEWTIM14", "GEWTIM15", "GEWTIM16", "GEWTIM17", "GEWTIM18", "GEWTIM19", "GEWTIM20", "GEWTIM21", "GEWTIM22", "GEWTIM23", "GEWTIM24" },
+	{ "GEWPIM01", "GEWPIM02", "GEWPIM03", "GEWPIM04", "GEWPIM05", "GEWPIM06", "GEWPIM07", "GEWPIM08", "GEWPIM09", "GEWPIM10", "GEWPIM11", "GEWPIM12", "GEWPIM13", "GEWPIM14", "GEWPIM15", "GEWPIM16", "GEWPIM17", "GEWPIM18", "GEWPIM19", "GEWPIM20", "GEWPIM21", "GEWPIM22", "GEWPIM23", "GEWPIM24" },
+	{ "GEWRIM01", "GEWRIM02", "GEWRIM03", "GEWRIM04", "GEWRIM05", "GEWRIM06", "GEWRIM07", "GEWRIM08", "GEWRIM09", "GEWRIM10", "GEWRIM11", "GEWRIM12", "GEWRIM13", "GEWRIM14", "GEWRIM15", "GEWRIM16", "GEWRIM17", "GEWRIM18", "GEWRIM19", "GEWRIM20", "GEWRIM21", "GEWRIM22", "GEWRIM23", "GEWRIM24" },
+	{ "GEWSNI01", "GEWSNI02", "GEWSNI03", "GEWSNI04", "GEWSNI05", "GEWSNI06", "GEWSNI07", "GEWSNI08", "GEWSNI09", "GEWSNI10", "GEWSNI11", "GEWSNI12", "GEWSNI13", "GEWSNI14", "GEWSNI15", "GEWSNI16", "GEWSNI17", "GEWSNI18", "GEWSNI19", "GEWSNI20", "GEWSNI21", "GEWSNI22", "GEWSNI23", "GEWSNI24" },
+	{ "GEWD5K01", "GEWD5K02", "GEWD5K03", "GEWD5K04", "GEWD5K05", "GEWD5K06", "GEWD5K07", "GEWD5K08", "GEWD5K09", "GEWD5K10", "GEWD5K11", "GEWD5K12", "GEWD5K13", "GEWD5K14", "GEWD5K15", "GEWD5K16", "GEWD5K17", "GEWD5K18", "GEWD5K19", "GEWD5K20", "GEWD5K21", "GEWD5K22", "GEWD5K23", "GEWD5K24" },
+	{ "GEWWTC01", "GEWWTC02", "GEWWTC03", "GEWWTC04", "GEWWTC05", "GEWWTC06", "GEWWTC07", "GEWWTC08", "GEWWTC09", "GEWWTC10", "GEWWTC11", "GEWWTC12", "GEWWTC13", "GEWWTC14", "GEWWTC15", "GEWWTC16", "GEWWTC17", "GEWWTC18", "GEWWTC19", "GEWWTC20", "GEWWTC21", "GEWWTC22", "GEWWTC23", "GEWWTC24" },
+	{ "GEWWTC01", "GEWWTC02", "GEWWTC03", "GEWWTC04", "GEWWTC05", "GEWWTC06", "GEWWTC07", "GEWWTC08", "GEWWTC09", "GEWWTC10", "GEWWTC11", "GEWWTC12", "GEWWTC13", "GEWWTC14", "GEWWTC15", "GEWWTC16", "GEWWTC17", "GEWWTC18", "GEWWTC19", "GEWWTC20", "GEWWTC21", "GEWWTC22", "GEWWTC23", "GEWWTC24" },
+	{ "GEWWTC01", "GEWWTC02", "GEWWTC03", "GEWWTC04", "GEWWTC05", "GEWWTC06", "GEWWTC07", "GEWWTC08", "GEWWTC09", "GEWWTC10", "GEWWTC11", "GEWWTC12", "GEWWTC13", "GEWWTC14", "GEWWTC15", "GEWWTC16", "GEWWTC17", "GEWWTC18", "GEWWTC19", "GEWWTC20", "GEWWTC21", "GEWWTC22", "GEWWTC23", "GEWWTC24" },
+};
+
+str GoldeneyeMusic[26] = {"BONDTR01","BONDTR02","BONDTR03","BONDTR04","BONDTR05",
+"BONDTR06","BONDTR07","BONDTR08","BONDTR09","BONDTR10","BONDTR11","BONDTR12",
+"BONDTR13","BONDTR14","BONDTR15","BONDTR16","BONDTR17","BONDTR18",
+"BONDTR19","BONDTR20","BONDTR21","BONDTR22","BONDTR23","BONDTR24","BONDTR25","BONDTR26"};
+
+str GoldeneyeHealthBars[9] = {
+	"007WTCH0",
+	"007WTCH1",
+	"007WTCH2",
+	"007WTCH3",
+	"007WTCH4",
+	"007WTCH5",
+	"007WTCH6",
+	"007WTCH7",
+	"007WTCH8"
+};
+
+str GoldeneyeArmorBars[9] = {
+	"007WTCA0",
+	"007WTCA1",
+	"007WTCA2",
+	"007WTCA3",
+	"007WTCA4",
+	"007WTCA5",
+	"007WTCA6",
+	"007WTCA7",
+	"007WTCA8"
+};
+
+int watchmenuamount = 3;
+
+Script "BondWatchInterface" (void) Clientside
+{
+	bool initiated;
+	int a, b, c, d, e, f, g, menuindex, weaponindex, carriedweapons, weaponlistamount, realweaponindex;
+	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
+	str levelname = strParam(n:PRINTNAME_LEVELNAME);
+	int flashtic;
+	
+	if(CheckInventory("BondWatchUIInit"))
+	{		
+		SpawnSpotForced("Goldeneye_WatchOpen", 0, 0, 0);
+		
+		menuindex = 1;
+		GiveInventory("BondWatchAnimation", 1);
+		TakeInventory("BondWatchUIInit", 1);
+			
+		for(d = 10; d > 0; d--)
+		{
+			SetHudSize(360+(176*d), 220+(108*d), false);
+			
+			if(GetActorProperty(0, APROP_Health) < 100)
+				SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/11]); // add 12 to numerator if zero bars doesn't cut it
+		
+			else
+				SetFont(GoldeneyeHealthBars[8]);
+				
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11951, CR_UNTRANSLATED, (78 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0);
+			
+			if(CheckInventory("BasicArmor") < 100)
+				SetFont(GoldeneyeArmorBars[(CheckInventory("BasicArmor")+12)/13]);
+		
+			else
+				SetFont(GoldeneyeArmorBars[8]);
+				
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11950, CR_UNTRANSLATED, (248 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0);
+			
+			SetFont("GEWTCHGR");
+			SetHudSize(416+(200*d), 260+(793*d), false);
+			HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, (416+(200*d))/2 * 1.0, (260+(793*d))/2 * 1.0, 1.0);
+			Delay(1);
+		}
+
+		TakeInventory("BondWatchAnimation", 1);
+		LocalSetMusic("GEWATCH");
+	}
+	
+	if(CheckInventory("BondWatchUIDeinit"))
+	{	
+		
+		g = 0;
+		
+		SpawnSpotForced("Goldeneye_WatchClose", 0, 0, 0);
+	
+		if(CheckInventory("BondWeaponSwitchToken") > 0);
+			GiveInventory("BondInstantSwitch", 1);
+	
+		menuindex = 1;
+		GiveInventory("BondWatchAnimation", 1);
+		TakeInventory("BondWatchUIDeinit", 1);
+			
+		LocalSetMusic(GoldeneyeMusic[CheckInventory("BondMusicToken")-1]);
+			
+		SetHudSize(0, 0, false);
+		SetFont("");
+		
+		RemoveMessages(11960, 12050);
+		
+		for(d = 0; d < 10; d++)
+		{
+			SetHudSize(360+(176*d), 220+(108*d), false);
+			
+			if(GetActorProperty(0, APROP_Health) < 100)
+				SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/11]); // add 12 to numerator if zero bars doesn't cut it
+		
+			else
+				SetFont(GoldeneyeHealthBars[8]);
+				
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11951, CR_UNTRANSLATED, (78 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0);
+			
+			if(CheckInventory("BasicArmor") < 100)
+				SetFont(GoldeneyeArmorBars[(CheckInventory("BasicArmor")+12)/13]);
+		
+			else
+				SetFont(GoldeneyeArmorBars[8]);
+				
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11950, CR_UNTRANSLATED, (248 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0);
+			
+			SetFont("GEWTCHGR");
+			SetHudSize(416+(200*d), 260+(793*d), false);
+			HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, (416+(200*d))/2 * 1.0, (260+(793*d))/2 * 1.0, 1.0);
+			Delay(1);
+		}
+		
+		SetHudSize(0, 0, false);
+		SetFont("");
+		
+		RemoveMessages(11900, 12050);
+		TakeInventory("BondWatchAnimation", 1);
+		terminate;
+	}
+
+	if(CheckInventory("BondWatchToken"))
+	{
+		if(menuindex == 1)
+		{
+			g = 0;
+			
+			SetFont("007TABON");
+			SetHudSize(800, 540, false);
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11996, CR_UNTRANSLATED, 320.4, 430.0, 1.0);
+			SetFont("007TABOF");
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11998, CR_UNTRANSLATED, 400.4, 430.0, 1.0);
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11997, CR_UNTRANSLATED, 480.4, 430.0, 1.0);
+			
+			SetFont("GEFONTS");
+			SetHudSize(320, 280, false);
+			HudMessage(s:"Q WATCH v2.01 BETA"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12001, CR_GREEN, 160.0, 48.0, 1.0);
+			SetFont("GEWTCHGR");
+			SetHudSize(416, 260, false);
+			HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, 124.0, 1.0);
+			
+			for(a = 0; a < 18; a++)
+			{
+				SetFont("GEFONTS");
+				SetHudSize(360, 240, false);		
+				SetHudWrapWidth(64);
+				
+				if(CheckInventory("BondWeaponSwitchToken") == 0)
+				{
+					if(CheckWeapon(GoldeneyeWeaponInfo[a][0]))
+					{
+						if(strcmp(GoldeneyeWeaponInfo[a][3], "-1"))
+							HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][3]); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11969, CR_GREEN, 226.5, 182.0, 1.0);
+						
+						if(strcmp(GoldeneyeWeaponInfo[a][2], "-1"))
+							HudMessage(s:GoldeneyeWeaponInfo[a][2]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11999, CR_GREEN, 128.4, 176.0, 1.0);
+						
+						if(strcmp(GoldeneyeWeaponInfo[a][4], "-1"))
+							HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][4]); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11968, CR_GREEN, 216.6, 182.0, 1.0);
+						
+						SetFont(GoldeneyeWeaponInfo[a][5]);
+						if(strcmp(GoldeneyeWeaponInfo[a][5], "-1"))
+							HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11967, CR_UNTRANSLATED, 218.1, 184.2, 1.0);
+						
+						SetHudWrapWidth(0);
+						SetHudSize(800, 600, false);
+						SetFont(GoldeneyeWeaponWatchGraphics[a][0]);
+						if(strcmp(GoldeneyeWeaponWatchGraphics[a][0], "-1"))
+							HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12000, CR_UNTRANSLATED, 400.0, 300.0, 1.0);
+						else
+							HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12000, CR_UNTRANSLATED, 400.0, 300.0, 1.0);
+							
+					}
+				}
+				else
+				{
+					if(strcmp(GoldeneyeWeaponInfo[CheckInventory("BondWeaponSwitchToken")-1][2], "-1"))
+						HudMessage(s:GoldeneyeWeaponInfo[CheckInventory("BondWeaponSwitchToken")-1][2]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11999, CR_GREEN, 128.4, 176.0, 1.0);
+					
+					if(strcmp(GoldeneyeWeaponInfo[CheckInventory("BondWeaponSwitchToken")-1][3], "-1"))
+						HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[CheckInventory("BondWeaponSwitchToken")-1][3]); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11969, CR_GREEN, 226.5, 182.0, 1.0);
+					
+					if(strcmp(GoldeneyeWeaponInfo[CheckInventory("BondWeaponSwitchToken")-1][4], "-1"))
+						HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[CheckInventory("BondWeaponSwitchToken")-1][4]); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11968, CR_GREEN, 216.6, 182.0, 1.0);
+					
+					SetFont(GoldeneyeWeaponInfo[CheckInventory("BondWeaponSwitchToken")-1][5]);
+					if(strcmp(GoldeneyeWeaponInfo[CheckInventory("BondWeaponSwitchToken")-1][4], "-1"))	
+						HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11967, CR_UNTRANSLATED, 218.1, 184.2, 1.0);
+					
+					SetHudWrapWidth(0);
+					SetHudSize(800, 600, false);
+					SetFont(GoldeneyeWeaponWatchGraphics[CheckInventory("BondWeaponSwitchToken")-1][0]);
+					if(strcmp(GoldeneyeWeaponWatchGraphics[CheckInventory("BondWeaponSwitchToken")-1][0], "-1"))
+						HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12000, CR_UNTRANSLATED, 400.0, 300.0, 1.0);
+					else
+						HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12000
+						
+						
+						, CR_UNTRANSLATED, 400.0, 300.0, 1.0);
+								
+				}
+			}
+			SetFont("GEFONTS");
+			SetHudWrapWidth(0);
+			SetHudSize(360, 220, false);
+			
+			if(GetActorProperty(0, APROP_Health) < 100)
+				SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/11]); // add 12 to numerator if zero bars doesn't cut it
+			
+			else
+				SetFont(GoldeneyeHealthBars[8]);
+			
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11951, CR_UNTRANSLATED, 78.4, 104.0, 1.0);
+			
+			if(CheckInventory("BasicArmor") < 100)
+				SetFont(GoldeneyeArmorBars[(CheckInventory("BasicArmor")+12)/13]);
+			
+			else
+				SetFont(GoldeneyeArmorBars[8]);
+				
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11950, CR_UNTRANSLATED, 282.4, 104.0, 1.0);
+			SetFont("");
+			SetHudSize(0, 0, false);
+			
+			if(GetPlayerInput(0, INPUT_SIDEMOVE) > 0 || buttonPress & BT_Right || GetPlayerInput(0, INPUT_YAW) < -512)
+			{
+				SpawnSpotForced("Goldeneye_WatchTabSwitch", 0, 0, 0);
+				GiveInventory("BondWatchAnimation", 1);
+				RemoveMessages(11960, 12050);
+				for(b = 0; b < 10; b++)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				menuindex++;
+				for(b = 10; b > 0; b--)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				TakeInventory("BondWatchAnimation", 1);
+			}
+			else if(GetPlayerInput(0, INPUT_SIDEMOVE) < 0 || buttonPress & BT_Left || GetPlayerInput(0, INPUT_YAW) > 512)
+			{
+				SpawnSpotForced("Goldeneye_WatchTabSwitch", 0, 0, 0);
+				GiveInventory("BondWatchAnimation", 1);
+				RemoveMessages(11960, 12050);
+				for(b = 0; b < 10; b++)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				menuindex = 3;
+				for(b = 10; b > 0; b--)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				TakeInventory("BondWatchAnimation", 1);
+			}
+		}
+		else if(menuindex == 2)
+		{
+			SetFont("007TABON");
+			SetHudSize(800, 540, false);
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11998, CR_UNTRANSLATED, 400.4, 430.0, 1.0);
+			SetFont("007TABOF");
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11996, CR_UNTRANSLATED, 320.4, 430.0, 1.0);
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11997, CR_UNTRANSLATED, 480.4, 430.0, 1.0);
+			
+			SetFont("GEWTCHGR");
+			SetHudSize(416, 260, false);
+			HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, 124.0, 1.0);
+			
+			SetHudSize(360, 220, false);
+			
+			if(GetActorProperty(0, APROP_Health) < 100)
+				SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/11]); // add 12 to numerator if zero bars doesn't cut it
+			
+			else
+				SetFont(GoldeneyeHealthBars[8]);
+			
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11951, CR_UNTRANSLATED, 78.4, 104.0, 1.0);
+			
+			if(CheckInventory("BasicArmor") < 100)
+				SetFont(GoldeneyeArmorBars[(CheckInventory("BasicArmor")+12)/13]);
+			
+			else
+				SetFont(GoldeneyeArmorBars[8]);
+				
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11950, CR_UNTRANSLATED, 282.4, 104.0, 1.0);
+			SetFont("");
+			SetHudSize(0, 0, false);
+			
+			carriedweapons = 0;
+			SetHudSize(400, 300, false);
+			SetFont("GEFONTS");
+			SetHudClipRect(90, 150, 180, 80, 0, false);
+			weaponlistamount = 0;
+			for(c = 0; c < 18; c++)
+			{
+				if(CheckInventory(GoldeneyeWeaponInfo[c][0]))
+				{
+					weaponlistamount++;
+					if(initiated == false)
+					{
+						if(CheckInventory("BondWeaponSwitchToken") == 0)
+						{
+							if(CheckWeapon(GoldeneyeWeaponInfo[c][0]))
+							{
+								realweaponindex = weaponlistamount - 1;
+								weaponindex = c;
+								initiated = true;
+							}
+						}
+						else
+						{
+							if(c == CheckInventory("BondWeaponSwitchToken")-1)
+							{
+								realweaponindex = weaponlistamount - 1;
+								weaponindex = c;
+								initiated = true;
+							}
+						}
+					}
+						
+					if((c) == weaponindex)
+					{
+						TakeInventory("BondWeaponToken", 18);
+						HudMessage(s:GoldeneyeWeaponInfo[c][1]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11996 - weaponlistamount, CR_GREEN, 125.1, 180.0 + ((weaponlistamount*10) * 1.0) - ((realweaponindex*10) * 1.0), 1.0);
+						GiveInventory("BondWeaponToken", c+1);
+					}
+						
+					else
+						HudMessage(s:GoldeneyeWeaponInfo[c][1]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11996 - weaponlistamount, CR_DARKGREEN, 125.1, 180.0 + ((weaponlistamount*10) * 1.0) - ((realweaponindex*10) * 1.0), 1.0);		
+				}
+			}
+			SetHudClipRect(0, 0, 0, 0, 0, false);
+
+			SetHudSize(800, 600, false);
+			SetFont(GoldeneyeWeaponWatchGraphics[weaponindex][g/3]);
+			if(strcmp(GoldeneyeWeaponWatchGraphics[weaponindex][g/3], "-1"))
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12003, CR_UNTRANSLATED, 400.0, 300.0, 1.0);
+			else
+				HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12003, CR_UNTRANSLATED, 400.0, 300.0, 1.0);
+			
+			if(g < 71)
+				g++;	
+			else
+				g = 0;
+				
+			SetHudSize(0, 0, false);
+			
+			if(GetPlayerInput(0, INPUT_FORWARDMOVE) > 0 || GetPlayerInput(0, INPUT_PITCH) > 128)
+			{
+				if(realweaponindex > 0)
+					realweaponindex--;
+					
+				else
+					realweaponindex = weaponlistamount-1;
+				
+				weaponindex--;
+				for(d = weaponindex; d > -2; d--)
+				{
+					if(d == -1)
+						d = 18;
+						
+					if(CheckInventory(GoldeneyeWeaponInfo[d][0]))
+					{
+						weaponindex = d;
+						break;
+					}
+				}
+					
+				Delay(7);
+					
+			}
+			else if(GetPlayerInput(0, INPUT_FORWARDMOVE) < 0 || GetPlayerInput(0, INPUT_PITCH) < -128)
+			{	
+				if(realweaponindex < weaponlistamount-1)
+					realweaponindex++;
+				else
+					realweaponindex = 0;
+								
+				for(d = weaponindex + 1; d < 19; d++)
+				{
+					if(d == 18)
+						d = 0;
+						
+					if(CheckInventory(GoldeneyeWeaponInfo[d][0]))
+					{
+						weaponindex = d;
+						break;
+					}
+				}
+				Delay(7);
+			}
+			else if(buttonPress & BT_Use)
+			{
+				SpawnSpotForced("Goldeneye_WatchTabSwitch", 0, 0, 0);
+				for(e = 0; e < 18; e++)
+				{
+					if((e+1) == CheckInventory("BondWeaponToken"))
+					{
+						TakeInventory("BondWeaponSwitchToken", 18);
+						GiveInventory("BondWeaponSwitchToken", CheckInventory("BondWeaponToken"));	
+					}		
+				}
+				Delay(7);
+			}
+			if(GetPlayerInput(0, INPUT_SIDEMOVE) > 0 || buttonPress & BT_Right || GetPlayerInput(0, INPUT_YAW) < -512)
+			{
+				initiated = false;
+				SpawnSpotForced("Goldeneye_WatchTabSwitch", 0, 0, 0);
+				GiveInventory("BondWatchAnimation", 1);
+				RemoveMessages(11960, 12050);
+				for(b = 0; b < 10; b++)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				menuindex++;
+				for(b = 10; b > 0; b--)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				TakeInventory("BondWatchAnimation", 1);
+			}
+			else if(GetPlayerInput(0, INPUT_SIDEMOVE) < 0 || buttonPress & BT_Left || GetPlayerInput(0, INPUT_YAW) > 512)
+			{
+				initiated = false;
+				SpawnSpotForced("Goldeneye_WatchTabSwitch", 0, 0, 0);
+				GiveInventory("BondWatchAnimation", 1);
+				RemoveMessages(11960, 12050);
+				for(b = 0; b < 10; b++)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				menuindex--;
+				for(b = 10; b > 0; b--)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				TakeInventory("BondWatchAnimation", 1);
+			}
+		}
+		else if(menuindex == 3)
+		{
+			g = 0;
+			SetFont("007TABON");
+			SetHudSize(800, 540, false);
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11997, CR_UNTRANSLATED, 480.4, 430.0, 1.0);
+			SetFont("007TABOF");
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11996, CR_UNTRANSLATED, 320.4, 430.0, 1.0);
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11998, CR_UNTRANSLATED, 400.4, 430.0, 1.0);
+			
+			SetFont("GEWTCHGR");
+			SetHudSize(416, 260, false);
+			HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, 124.0, 1.0);
+			
+			SetHudSize(360, 220, false);
+			
+			if(GetActorProperty(0, APROP_Health) < 100)
+				SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/11]); // add 12 to numerator if zero bars doesn't cut it
+			
+			else
+				SetFont(GoldeneyeHealthBars[8]);
+			
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11951, CR_UNTRANSLATED, 78.4, 104.0, 1.0);
+			
+			if(CheckInventory("BasicArmor") < 100)
+				SetFont(GoldeneyeArmorBars[(CheckInventory("BasicArmor")+12)/13]);
+			
+			else
+				SetFont(GoldeneyeArmorBars[8]);
+				
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11950, CR_UNTRANSLATED, 282.4, 104.0, 1.0);
+			SetFont("");
+			SetHudSize(0, 0, false);
+			
+			SetFont("GEFONTS");
+			SetHudSize(320, 200, false);
+			SetHudClipRect(100, 0, 120, 60, 0, 0);
+			HudMessage(s:levelname; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11990, CR_GREEN, 160.4, 36.0, 1.0);
+			SetHudClipRect(0, 0, 0, 0, 0, 0);
+			SetHudSize(320, 280, false);
+			HudMessage(s:"1. Primary Objectives"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11989, CR_GREEN, 88.1, 64.0, 1.0);
+			HudMessage(s:"a. Find the exit"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11988, CR_DARKGREEN, 88.1, 76.0, 1.0);
+			HudMessage(s:"2. Secondary Objectives"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11986, CR_GREEN, 88.1, 96.0, 1.0);
+			HudMessage(s:"a. Eliminate all resistance"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11985, CR_DARKGREEN, 88.1, 116.0, 1.0);
+			HudMessage(s:"b. Locate enemy stashes"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11984, CR_DARKGREEN, 88.1, 136.0, 1.0);
+			HudMessage(s:"c. Loot enemy supplies"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11983, CR_DARKGREEN, 88.1, 156.0, 1.0);
+			
+			if(flashtic % 35 == 0)
+			{
+				HudMessage(s:"Incomplete"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11987, CR_DARKGREEN, 240.2, 86.0, 1.0);
+			}
+				
+			else
+			{
+				HudMessage(s:"Incomplete"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11987, CR_GREEN, 240.2, 86.0, 1.0);
+			}
+			
+			if(GetLevelInfo(LEVELINFO_KILLED_MONSTERS) < GetLevelInfo(LEVELINFO_TOTAL_MONSTERS))
+			{
+				if(flashtic % 35 == 0)
+				{
+					HudMessage(d:GetLevelInfo(LEVELINFO_KILLED_MONSTERS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_MONSTERS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11982, CR_DARKGREEN, 240.2, 126.0, 1.0);
+				}
+					
+				else
+				{
+					HudMessage(d:GetLevelInfo(LEVELINFO_KILLED_MONSTERS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_MONSTERS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11982, CR_GREEN, 240.2, 126.0, 1.0);
+				}
+			}
+			else
+			{
+				HudMessage(s:"Complete"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11982, CR_GREEN, 240.2, 126.0, 1.0);
+			}
+			
+			if(GetLevelInfo(LEVELINFO_FOUND_SECRETS) < GetLevelInfo(LEVELINFO_TOTAL_SECRETS))
+			{
+				if(flashtic % 35 == 0)
+				{
+					HudMessage(d:GetLevelInfo(LEVELINFO_FOUND_SECRETS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_SECRETS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11981, CR_DARKGREEN, 240.2, 146.0, 1.0);
+				}
+					
+				else
+				{
+					HudMessage(d:GetLevelInfo(LEVELINFO_FOUND_SECRETS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_SECRETS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11981, CR_GREEN, 240.2, 146.0, 1.0);
+				}
+			}
+			else
+			{
+				HudMessage(s:"Complete"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11981, CR_GREEN, 240.2, 146.0, 1.0);
+			}
+			
+			if(GetLevelInfo(LEVELINFO_FOUND_ITEMS) < GetLevelInfo(LEVELINFO_TOTAL_ITEMS))
+			{
+				if(flashtic % 35 == 0)
+				{
+					HudMessage(d:GetLevelInfo(LEVELINFO_FOUND_ITEMS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_ITEMS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11980, CR_DARKGREEN, 240.2, 166.0, 1.0);
+				}
+					
+				else
+				{
+					HudMessage(d:GetLevelInfo(LEVELINFO_FOUND_ITEMS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_ITEMS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11980, CR_GREEN, 240.2, 166.0, 1.0);
+				}
+			}
+			else
+			{
+				HudMessage(s:"Complete"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11980, CR_GREEN, 240.2, 166.0, 1.0);
+			}
+			
+			if(flashtic == 70)
+				flashtic = 0;
+			
+			else
+				flashtic++;
+			
+			if(GetPlayerInput(0, INPUT_SIDEMOVE) > 0 || buttonPress & BT_Right || GetPlayerInput(0, INPUT_YAW) < -512)
+			{
+				SpawnSpotForced("Goldeneye_WatchTabSwitch", 0, 0, 0);
+				GiveInventory("BondWatchAnimation", 1);
+				RemoveMessages(11960, 12050);
+				for(b = 0; b < 10; b++)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				menuindex = 1;
+				for(b = 10; b > 0; b--)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				TakeInventory("BondWatchAnimation", 1);
+			}
+			else if(GetPlayerInput(0, INPUT_SIDEMOVE) < 0 || buttonPress & BT_Left || GetPlayerInput(0, INPUT_YAW) > 512)
+			{
+				SpawnSpotForced("Goldeneye_WatchTabSwitch", 0, 0, 0);
+				GiveInventory("BondWatchAnimation", 1);
+				RemoveMessages(11960, 12050);
+				for(b = 0; b < 10; b++)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				menuindex--;
+				for(b = 10; b > 0; b--)
+				{
+					SetFont("GEWTCHGR");
+					SetHudSize(416, 260+(793*b), false);
+					HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, (260+(793*b))/2 * 1.0, 1.0);
+					Delay(1);
+				}
+				TakeInventory("BondWatchAnimation", 1);
+			}
+		}
+	}
+	else
+	{
+			SetFont("");
+			RemoveMessages(11900, 12050);
+			
+			terminate;
+	}
+	
+	Delay(1);
+	restart;
+}
+
+Script "BondWeaponSwitch" (void)
+{
+	SetWeapon(GoldeneyeWeaponInfo[CheckInventory("BondWeaponSwitchToken")-1][0]);
+	//PrintBold(s:GoldeneyeWeapons[CheckInventory("BondWeaponSwitchToken")-1]);
+	TakeInventory("BondWeaponToken", 18);
+	TakeInventory("BondWeaponSwitchToken", 18);
+}
+
+Script "BondFireCoolDown" (void)
+{
+	Delay(random(16,64));
+	TakeInventory("BondDualFireTrigger", 1);
+}
+
+Script "BondFireHold" (void) Clientside
+{
+	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
+	if(buttonPress & BT_Attack)
+	{
+		SetResultValue(1);
+	}
+	else
+	{
+		SetResultValue(0);
+	}
+}
+
+Script "BondDryFireSpamBlocker_Primary" (void)
+{
+	Delay(12);
+	TakeInventory("BondDryFireSpamProtector1", 1);
+}
+
+Script "BondDryFireSpamBlocker_Secondary" (void)
+{
+	Delay(12);
+	TakeInventory("BondDryFireSpamProtector2", 1);
+}
+
+Script "BondHudDisplay" Enter Clientside
+{
+	if(!CheckInventory("BondWatchToken"))
+	{
+		for(int a = 0; a < 18; a++)
+		{
+			if(!CheckInventory("BondWeaponToken"))
+			{
+				if(CheckWeapon(GoldeneyeWeaponInfo[a][0]))
+				{
+					RemoveMessages(12010, 12015);
+					SetFont("GEFONTS");
+					SetHudSize(360, 240, false);
+					if(strcmp(GoldeneyeWeaponInfo[a][3], "-1"))
+						HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][3]); HUDMSG_PLAIN, 12010, CR_UNTRANSLATED, 326.5, 228.0, 1.0);
+					
+					if(strcmp(GoldeneyeWeaponInfo[a][4], "-1"))
+						HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][4]); HUDMSG_PLAIN, 12011, CR_UNTRANSLATED, 316.6, 228.0, 1.0);
+						
+					SetFont(GoldeneyeWeaponInfo[a][5]);
+					
+					if(strcmp(GoldeneyeWeaponInfo[a][5], "-1"))
+						HudMessage(s:"A"; HUDMSG_PLAIN, 12012, CR_UNTRANSLATED, 318.1, 230.2, 1.0);
+						
+					SetFont("GEFONTS");
+						
+					if(CheckInventory("BondDualWieldToken"))
+					{
+						if(strcmp(GoldeneyeWeaponInfo[a][3], "-1"))
+							HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][3]); HUDMSG_PLAIN, 12013, CR_UNTRANSLATED, 44.5, 228.0, 1.0);
+						
+						if(strcmp(GoldeneyeWeaponInfo[a][6], "-1"))
+							HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][6]); HUDMSG_PLAIN, 12014, CR_UNTRANSLATED, 34.6, 228.0, 1.0);
+							
+						SetFont(GoldeneyeWeaponInfo[a][5]);
+						
+						if(strcmp(GoldeneyeWeaponInfo[a][5], "-1"))
+							HudMessage(s:"A"; HUDMSG_PLAIN, 12015, CR_UNTRANSLATED, 36.1, 230.2, 1.0);
+					}	
+					else
+					{
+						RemoveMessages(12013, 12015);
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		RemoveMessages(12010, 12015);
+	}
+	Delay(1);
+	restart;
+}
+
+Script "BondSpriteEffects" (int type)
+{
+	switch(type)
+	{
+		// Bullet Impact Smoke
+		case 1:
+			SetActorVelocity(0, 0.05, 0, 0, true, false);
+			while(GetActorProperty(0, APROP_ALPHA) < 0.35)
+			{
+				Delay(3);
+				SetActorProperty(0, APROP_ScaleX, GetActorProperty(0, APROP_ScaleX)+0.001);
+				SetActorProperty(0, APROP_ScaleY, GetActorProperty(0, APROP_ScaleY)+0.001);
+				SetActorProperty(0, APROP_Alpha, GetActorProperty(0, APROP_Alpha)+0.01);
+			}
+			SetActorVelocity(0, -0.1, 0, 0, true, false);
+			while(GetActorProperty(0, APROP_ALPHA) > 0.0)
+			{
+				Delay(3);
+				SetActorProperty(0, APROP_ScaleX, GetActorProperty(0, APROP_ScaleX)+0.001);
+				SetActorProperty(0, APROP_ScaleY, GetActorProperty(0, APROP_ScaleY)+0.001);
+				SetActorProperty(0, APROP_Alpha, GetActorProperty(0, APROP_Alpha)-0.01);
+			}
+			Thing_Remove(0);
+			break;
+		// Rocket rolling smoke
+		case 2:
+			int chance = random(210, 350);
+			Delay(chance);
+			SetActorState(0, "Dissipate", true);
+			break;
+	}
+}
+
+Script "BondWatchMagnet" (int angle)
+{
+	int currentx = GetActorX(0);
+	int currenty = GetActorY(0);
+	int currentz = GetActorZ(0);
+	int oldtid = PickActor(0, GetActorPitch(0), 0, 384.0, 0, MF_SPECIAL, ML_BLOCKING, PICKAF_RETURNTID);
+	int newtid = UniqueTid();
+	if(PickActor(0, GetActorAngle(0) + angle, GetActorPitch(0), 384.0, newtid, MF_SPECIAL, ML_BLOCKING, PICKAF_FORCETID))
+	{
+		int targetx = GetActorX(newtid);
+		int targety = GetActorY(newtid);
+		int targetz = GetActorZ(newtid);
+		
+		int vang = VectorAngle(targetx - currentx, targety - currenty);
+		ThrustThing((vang >> 8) + 128, 16, 0, newtid);
+		
+		if(sin(GetActorPitch(0)) > 0)
+			ThrustThingZ(newtid, abs(sin(GetActorPitch(0) >> 8)) / 2, 0, 1);
+		else
+			ThrustThingZ(newtid, abs(sin(GetActorPitch(0) >> 8)) / 2, 1, 1);
+	}
+	
+	Thing_ChangeTid(newtid, oldtid);
+}
+
+str RedDeathImages[42] = { "GEDETH00", "GEDETH01", "GEDETH02", "GEDETH03", "GEDETH04", "GEDETH05", "GEDETH06", "GEDETH07", "GEDETH08", "GEDETH09", "GEDETH10",
+"GEDETH11", "GEDETH12", "GEDETH13", "GEDETH14", "GEDETH15", "GEDETH16", "GEDETH17", "GEDETH18", "GEDETH19", "GEDETH20", "GEDETH21", "GEDETH22", "GEDETH23",
+"GEDETH24", "GEDETH25", "GEDETH26", "GEDETH27", "GEDETH28", "GEDETH29", "GEDETH30", "GEDETH31", "GEDETH32", "GEDETH33", "GEDETH34", "GEDETH35", "GEDETH36",
+"GEDETH37", "GEDETH38", "GEDETH39", "GEDETH40", "GEDETH41" };
+
+Script "BondDeathFunctions" Death
+{
+	if(!CheckInventory("BondClass"))
+		terminate;
+		
+	LocalSetMusic("");
+	LocalAmbientSound("Goldeneye/MissionDeath", 1.0);
+	FadeTo(0,0,0,0.0,0.01);
+	SetHudSize(96-(GetScreenWidth()/120), 80, true);
+	ACS_NamedExecuteAlways("BondDeathCameraWiggle", 0, 0, 0, 0);
+	for(int a = 0; a < 42; a++)
+	{
+		SetFont(RedDeathImages[a]);
+		HudMessage(s:"a"; HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 10048, CR_UNTRANSLATED, 36.0, 40.0, 1.0, 0.75);
+		Delay(4);
+	}
+	While(ClassifyActor(0) & ACTOR_DEAD)
+	{
+		HudMessage(s:"a"; HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 10048, CR_UNTRANSLATED, 36.0, 40.0, 1.0, 0.75);
+		Delay(1);
+		
+	}
+	LocalSetMusic(GoldeneyeMusic[CheckInventory("BondMusicToken")-1]);
+}
+
+Script "BondDeathCameraWiggle" (void)
+{
+	int a;
+	if(GetActorPitch(0) > 0)
+	{
+		for(a = GetActorPitch(0); a > 0; a-=128)
+		{
+			SetActorPitch(0, a);
+			Delay(1);
+		}
+	}
+	else
+	{
+		for(a = GetActorPitch(0); a < 0; a+=128)
+		{
+			SetActorPitch(0, a);
+			Delay(1);
+		}
+	}
+	
+	for(a = GetActorPitch(0); a < 8096; a+=256)
+	{
+		SetActorPitch(0, a);
+		Delay(1);
+	}
+	for(a = GetActorPitch(0); a > -8096; a-=256)
+	{
+		SetActorPitch(0, a);
+		Delay(1);
+	}
+	for(a = GetActorPitch(0); a < -4096; a+=256)
+	{
+		SetActorPitch(0, a);
+		Delay(1);
+	}
+	for(a = GetActorPitch(0); a > -32767; a-=256)
+	{
+		SetActorPitch(0, a);
+		Delay(1);
+	}
+	SetActorPitch(0, -32767);
+}
+
+Script "BondGiveDualToken" (int index)
+{
+	GiveInventory(GoldeneyeWeaponInfo[index][7], 1);
+}
+
+Script "BondDamageIndicators" (void)
+{
+	SetHudSize(360, 220, false);
+			
+	if(GetActorProperty(0, APROP_Health) < 100)
+		SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/11]); // add 12 to numerator if zero bars doesn't cut it
+			
+	else
+		SetFont(GoldeneyeHealthBars[8]);
+			
+	HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11951, CR_UNTRANSLATED, 78.4, 104.0, 0.5, 0.67);
+			
+	if(CheckInventory("BasicArmor") < 100)
+		SetFont(GoldeneyeArmorBars[(CheckInventory("BasicArmor")+12)/13]);
+			
+	else
+		SetFont(GoldeneyeArmorBars[8]);
+				
+	HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11950, CR_UNTRANSLATED, 282.4, 104.0, 0.5, 0.67);
+	SetFont("");
+	SetHudSize(0, 0, false);
+}
+
+Script "BondWeaponChecker" (void)
+{
+	for(int a = 0; a < 18; a++)
+	{
+		if(CheckWeapon(GoldeneyeWeaponInfo[a][0]))
+		{
+			if(a == 0 || a == 10 || a == 11 || a == 12 || a == 15 || a == 16 || a == 17)
+				SetResultValue(0);
+			
+			else
+				SetResultValue(a);
+		}
+	}
+}
+
+Script "BondThrownKnifePitch" (void)
+{
+	SetActivator(0, AAPTR_Target);
+	int angle = GetActorPitch(0);
+	SetResultValue(angle);
+}
+
+Script "BondZoomAmountModify" (void)
+{
+	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
+
+	if(CheckInventory("BondZoomAmountModifyTerminate"))
+	{
+		TakeInventory("BondZoomAmountModifyTerminate", 1);
+		terminate;
+	}
+
+	if(buttonPress & BT_Attack) {}
+	else
+	{
+		if(buttonPress & BT_Forward)
+			GiveInventory("BondZoomAmount", 1);
+		else if(buttonPress & BT_Back)
+			TakeInventory("BondZoomAmount", 1);
+	}
+		
+	Delay(1);
+	restart;
+}
+
+Script "BondZoomAmountCheck" (void)
+{
+	SetResultValue(CheckInventory("BondZoomAmount"));
+}
