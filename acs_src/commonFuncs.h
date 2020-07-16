@@ -953,3 +953,32 @@ function int getaspectratio(void)
 	}
 	return ASPECT_4_3;
 }
+
+function int GetHudRight(int w)
+{
+  int ar = getaspectratio();
+ 
+  if (ar == ASPECT_5_4)
+  {
+    return w + (FixedDiv(w<<16,20.0)>>16);
+  }
+  if (ar == ASPECT_16_10)
+  {
+    return w + (FixedDiv(w<<16,10.0)>>16);
+  }
+  if (ar == ASPECT_17_10)
+  {
+    return w + (FixedDiv(w<<16,7.95)>>16);
+  }
+  if (ar == ASPECT_16_9)
+  {
+    return w + (FixedDiv(w<<16,5.9)>>16);
+  }
+
+  return w;
+}
+
+function int GetHudLeft(int w)
+{
+  return w - GetHudRight(w);
+}

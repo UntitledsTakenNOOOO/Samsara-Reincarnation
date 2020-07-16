@@ -2037,7 +2037,6 @@ Script "Samsara_KillCount" (int override)
 		if(random(0.0,1.0) <= chance)
 			SpawnForced("Hexen2SoulSphere",x,y,z,0,0);
 	}
-
 }
 
 Script "Samsara_GZDoomChecker" (void)
