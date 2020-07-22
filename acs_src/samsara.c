@@ -2006,6 +2006,7 @@ Script "Duke3DEnemyMinionSpawner" (void)
 
 Script "Samsara_KillCount" (int override)
 {
+	PrintBold(s:"running");
 	if(!(ClassifyActor(0) & ACTOR_MONSTER))
 		terminate;
 		
@@ -2027,14 +2028,14 @@ Script "Samsara_KillCount" (int override)
 	if(override != 1)
 		GiveInventory("KillCount", 1);
 		
-	if(CheckInventory("Hexen2Class") && !noblood)
+	if(CheckInventory("Hexen2Class"))
 	{
 		int chance = (0.05+((CheckInventory("Hexen2Level")-4)*0.03));
 		if(chance > 0.2)
 			chance = 0.2;
 					
-		GiveInventory("Hexen2Experience", (health*2.5)>>16);
-		if(random(0.0,1.0) <= chance)
+		GiveInventory("Hexen2Experience", FixedMul((health*2.5)>>16,(1.0+(0.05*CheckInventory("Hexen2Wisdom")))));
+		if(random(0.0,1.0) <= chance && !noblood)
 			SpawnForced("Hexen2SoulSphere",x,y,z,0,0);
 	}
 }
@@ -2055,4 +2056,174 @@ Script "Samsara_AllyHealthRegen" (void)
 		HealThing(1);
 		Delay(35);
 	}
+}
+
+int misccharacterclasses = 7;
+int checkclassindices[7] = {20,24,5,11,25,10,26}; // for some reason I can't place my defined integer to define the array size, just place the value here too.
+int activetokenselectors[7]; // for some reason I can't place my defined integer to define the array size, just place the value here too.
+
+script "HeroOnMap" Open
+{
+	int clients = PlayerCount();
+	int playervalue;
+	for(int a = 0; a < misccharacterclasses; a++)
+	{
+		activetokenselectors[a] = 0;
+	}
+	
+	for(int p = 0; p < clients; p++)
+	{	
+		if(PlayerInGame(p) == true)
+		{
+			for(int b = 0; b < misccharacterclasses; b++)
+			{
+				if(PlayerClass(p) == checkclassindices[b])
+				{
+					activetokenselectors[b] = 1;
+				}
+			}
+		}
+		else
+		{
+			clients += 1;
+		}
+	}
+}
+
+int HealthBonusMapCount = 0;
+int ArmorBonusMapCount = 0;
+int HealthBonusScriptCount = 0;
+int ArmorBonusScriptCount = 0;
+
+Script 2689 (int mode)
+{
+	int any;
+	int spawnchance = random(0,100);
+	SetResultValue(0);
+	
+	Switch(mode)
+	{	
+		Case 1:
+			HealthBonusScriptCount++;
+			if(HealthBonusScriptCount > HealthBonusMapCount) { SetResultValue(0); terminate; }
+					
+			break;
+		Case 2:
+			ArmorBonusScriptCount++;
+			if(ArmorBonusScriptCount > ArmorBonusMapCount) { SetResultValue(0); terminate; }
+				
+			break;
+	}
+	
+	if(spawnchance > GetCvar("sams_misccharacters") || GetCvar("sams_misccharacters") == 0)
+	{
+		terminate;
+	}
+	
+	for(int pre = 0; pre < misccharacterclasses; pre++)
+	{
+		if(activetokenselectors[pre] == 1)
+		{
+			any = true;
+			break;
+		}
+	}
+	
+	if(any == false)
+	{
+		terminate;
+	}
+	
+	
+	for(int a = random(0,misccharacterclasses-1); a < misccharacterclasses; a++)
+	{
+		int b;
+		if(activetokenselectors[a] == true)
+		{
+			if(a == 0)
+			{			
+				Switch(mode)
+				{	
+					Case 1:
+						SpawnSpotFacing("HLScientist", 0, 0);
+						break;
+					Case 2:
+						SpawnSpotFacing("HLSecurityGuard", 0, 0);
+						break;
+				}
+				terminate;
+			}
+			if(a == 1)
+			{
+				SetResultValue(0);
+				b = random(0, 10);
+				if(b < 5)
+				{
+					SpawnSpotFacing("RedneckRampage_Chicken", 0, 0);
+					break;
+				}
+				else if(b < 8)
+				{
+					SpawnSpotFacing("RedneckRampage_Pig", 0, 0);
+					break;
+				}
+				else if(b <= 10)
+				{
+					SpawnSpotFacing("RedneckRampage_Cow", 0, 0);
+					break;
+				}	
+				terminate;
+			}
+			if(a == 2)
+			{
+				SetResultValue(0);
+				SpawnSpotFacing("Duke3DBabe", 0, 0);
+				terminate;
+			}
+			if(a == 3)
+			{
+				SetResultValue(0);
+				SpawnSpotFacing("StrifePeasant", 0, 0);		
+				terminate;
+			}
+			if(a == 4)
+			{
+				SetResultValue(0);
+				SpawnSpotFacing("Q2Insane", 0, 0);
+				terminate;
+			}
+			if(a == 5)
+			{
+				b = random(0, 10);
+				SetResultValue(0);
+				
+				if(b < 2)
+					SpawnSpotFacing("BloodInnocentMime", 0, 0);
+					
+				else
+					SpawnSpotFacing("BloodInnocentMoron", 0, 0);
+				
+				terminate;
+			}
+			if(a == 6)
+			{
+				SetResultValue(0);
+				SpawnSpotFacing("Hexen2_Sheep", 0, 0);
+				terminate;
+			}
+		}
+		else
+		{
+			a = random(-1,6);
+		}
+		
+	}
+}
+
+Script "BonusItemCount" Open
+{
+	HealthBonusScriptCount = 0;
+	ArmorBonusScriptCount = 0;
+	HealthBonusMapCount = ThingCountName("HealPack0_x1", 0);
+	ArmorBonusMapCount = ThingCountName("ArmorScrap200", 0);
 }

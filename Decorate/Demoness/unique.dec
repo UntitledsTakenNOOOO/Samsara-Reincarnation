@@ -8,8 +8,20 @@ Actor Hexen2TomeOfPower : ArtiTomeOfPower
 		Spawn:
 			HX00 A 350
 			Loop
+		Use:
+			TNT1 A 0 A_JumpIfInventory("Hexen2TomeOfPowerCooldown",1,"UseFail")
+			TNT1 A 1
+			TNT1 A 0 A_GiveInventory("PowerWeaponLevel2",1)
+			TNT1 A 0 A_GiveInventory("Hexen2TomeOfPowerCooldown",600)
+			fail
+		 UseFail:
+			TNT1 A 1
+			TNT1 A 0 A_Print("$TOMECOOLDOWN")
+			fail
 	}
 }
+
+actor Hexen2TomeOfPowerCooldown : inventory { -INVBAR +INVENTORY.UNDROPPABLE inventory.maxamount 600 Inventory.InterHubAmount 0 }
 
 Actor Hexen2ForceCube : CustomInventory
 {
@@ -54,6 +66,7 @@ Actor Hexen2ForceCubeFollower
 		Spawn:
 			TNT1 A 0
 			TNT1 A 0 A_RearrangePointers(AAPTR_NULL,AAPTR_TARGET)
+			TNT1 A 0 A_CopyFriendliness
 			TNT1 A 0 A_GiveInventory("Hexen2ForceCubeInventory", CallACS("Hexen2_Decorate",15))
 			HX00 A 0 ACS_NamedExecuteAlways("Hexen2_CubeNewPosition")
 		SpawnLoop:
@@ -102,7 +115,7 @@ Actor Hexen2ForceCubeFollower
 ACTOR Hexen2ForceCubeMissile1 : FastProjectile
 {
 	Speed 28
-	Damage (20)
+	Damage (CallACS("Hexen2_IntelligenceMultiplier",20,1))
 	+MTHRUSPECIES
 	+THRUSPECIES
 	+RIPPER

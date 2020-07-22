@@ -821,15 +821,15 @@ function int roundAway(int toround)
     return ftoi(toround + (1.0 - i));
 }
 
-/*function int round(int toround)
+function int roundZandronum(int toround)
 {
     return ftoi(toround + 0.5);
 }
 
-function int ceil(int toround)
+function int ceilZandronum(int toround)
 {
     return ftoi(toround + (1.0-1));
-}*/
+}
 
 function int intFloat(int toround)
 {

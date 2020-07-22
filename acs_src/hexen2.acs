@@ -18,7 +18,7 @@ Script "Hexen2_VectorAngle" (int x, int y)
 Script "Hexen2_Decorate" (int mode)
 {
 	int oldTID, target;
-	int ActorX, ActorY, ActorZ, OriginalX, OriginalY, OriginalZ, height, radius;
+	int ActorX, ActorY, ActorZ, OriginalX, OriginalY, OriginalZ, height, radius, chance, result;
 	switch(mode)
 	{
 		case 1: //Hexen2_ShockHitLifeTime
@@ -180,7 +180,10 @@ Script "Hexen2_Decorate" (int mode)
 			else if(spacecube < 500000) { SetActorProperty(0,APROP_ScaleX,0.5); SetActorProperty(0,APROP_ScaleY,0.5); }
 			else if(spacecube < 1000000) { SetActorProperty(0,APROP_ScaleX,0.75); SetActorProperty(0,APROP_ScaleY,0.75); }
 			else { SetActorProperty(0,APROP_ScaleX,1.0); SetActorProperty(0,APROP_ScaleY,1.0); }
-			SetResultValue(count);
+			if(count < 1)
+				SetResultValue(1);
+			else
+				SetResultValue(count);
 			break;
 		case 26:
 			SetResultValue(CheckInventory("Hexen2MagicMissileStarPoweredX"));
@@ -191,7 +194,48 @@ Script "Hexen2_Decorate" (int mode)
 		case 28:
 			SetResultValue(CheckInventory("Hexen2MagicMissileStarPoweredZ"));
 			break;
+		case 29:
+			SetActivatorToTarget(0);
+			chance = (CheckInventory("Hexen2Level")-8)*4;
+			if(chance>20)
+				chance = 20;
+			if(random(0,100) < chance)
+				SetResultValue(chance);
+			else
+				SetResultValue(0);
+			break;
+		case 30:
+			SetActivatorToTarget(0);
+			chance = (CheckInventory("Hexen2Level")-8)*4;
+			SetResultValue(chance);
+			break;
+		case 31:
+			SetActivatorToTarget(0);
+			SetResultValue(CheckInventory("Hexen2Dexterity"));
+			break;
+		case 32:
+			if(GetActorProperty(0,APROP_Alpha) == 0.0)
+				SetResultValue(1);
+			else
+				SetResultValue(0);
+			break;
 	}
+}
+
+Script "Hexen2_IntelligenceMultiplier" (int damage, int master)
+{
+	if(!master)
+		SetActivatorToTarget(0);
+	else	{ SetActivatorToTarget(0); SetActivator(0,AAPTR_Master); }
+	int result = damage*(1.0+(0.02*(CheckInventory("Hexen2Intelligence")-10)));
+	SetResultValue(result>>16);
+}
+
+Script "Hexen2_StrengthMultiplier" (int damage)
+{
+	SetActivatorToTarget(0);
+	int result = damage*(1.0+(0.02*(CheckInventory("Hexen2Strength")-10)));
+	SetResultValue(result>>16);
 }
 
 Script "Hexen2_Sign" (int value)
@@ -211,10 +255,19 @@ int Hexen2_NextLevelXP[11] = { 871, 2060, 4822, 9319, 19278, 36626, 66804, 11049
 
 Script "Hexen2_Hud" enter
 {
-	int artifactrotationcount, animationspeed, randomincrease, clipmax, cellmax;
+	int artifactrotationcount, animationspeed, randomincrease, clipmax, cellmax, currenthealth, oldhealth, second;
+	if(!CheckInventory("Hexen2Started"))
+	{
+		GiveInventory("Hexen2Intelligence", random(9,13));
+		GiveInventory("Hexen2Wisdom", random(11,14));
+		GiveInventory("Hexen2Dexterity", random(9,13));
+		GiveInventory("Hexen2Strength", random(11,14));
+		GiveInventory("Hexen2Started",1);
+	}
 	while(CheckInventory("Hexen2Class"))
 	{
 		//HUD
+		oldhealth = GetActorProperty(0,APROP_Health);
 		int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
 		if(CheckInventory("PowerWeaponLevel2"))
 		{
@@ -264,7 +317,17 @@ Script "Hexen2_Hud" enter
 				SetAmmoCapacity("Cell", GetAmmoCapacity("Cell")+randomincrease);
 				clipmax = GetAmmoCapacity("Clip")-(250*(CheckInventory("BackPack")+1));
 				cellmax = GetAmmoCapacity("Cell")-(250*(CheckInventory("BackPack")+1));
+				TakeInventory("Hexen2BlueManaAdd", 2048);
+				TakeInventory("Hexen2GreenManaAdd", 2048);
+				TakeInventory("Hexen2HealthAdd", 2048);
+				GiveInventory("Hexen2BlueManaAdd", clipmax);
+				GiveInventory("Hexen2GreenManaAdd", cellmax);
+				GiveInventory("Hexen2HealthAdd", GetActorProperty(0,APROP_SpawnHealth));
 				GiveInventory("Hexen2Level", 1);
+				GiveInventory("Hexen2Intelligence", 1);
+				GiveInventory("Hexen2Wisdom", 1);
+				GiveInventory("Hexen2Dexterity", 1);
+				GiveInventory("Hexen2Strength", 1);
 			}
 		}
 		else
@@ -276,13 +339,23 @@ Script "Hexen2_Hud" enter
 				SetAmmoCapacity("Cell", GetAmmoCapacity("Cell")+8);
 				clipmax = GetAmmoCapacity("Clip")-(250*(CheckInventory("BackPack")+1));
 				cellmax = GetAmmoCapacity("Cell")-(250*(CheckInventory("BackPack")+1));
+				TakeInventory("Hexen2BlueManaAdd", 2048);
+				TakeInventory("Hexen2GreenManaAdd", 2048);
+				TakeInventory("Hexen2HealthAdd", 2048);
+				GiveInventory("Hexen2BlueManaAdd", clipmax);
+				GiveInventory("Hexen2GreenManaAdd", cellmax);
+				GiveInventory("Hexen2HealthAdd", GetActorProperty(0,APROP_SpawnHealth));
 				GiveInventory("Hexen2Level", 1);
+				GiveInventory("Hexen2Intelligence", 1);
+				GiveInventory("Hexen2Wisdom", 1);
+				GiveInventory("Hexen2Dexterity", 1);
+				GiveInventory("Hexen2Strength", 1);
 			}
 		}
 		if(CheckInventory("BackPack"))
 		{
-			SetAmmoCapacity("Clip", 500+clipmax);
-			SetAmmoCapacity("Cell", 500+clipmax);
+			SetAmmoCapacity("Clip", 500+CheckInventory("Hexen2BlueManaAdd"));
+			SetAmmoCapacity("Cell", 500+CheckInventory("Hexen2GreenManaAdd"));
 		}
 		
 		//Demon glide
@@ -299,7 +372,32 @@ Script "Hexen2_Hud" enter
 				SetActorProperty(0, APROP_Gravity, 1.0);
 			}
 		}
+		if(CheckInventory("Hexen2TomeOfPowerCooldown")-(CheckInventory("Hexen2Intelligence")*4) > 0 && second == 0)
+			TakeInventory("Hexen2TomeOfPowerCooldown",1);
+		
+		if(second > 35)
+			second = 0;
+		else
+			second++;
+			
 		Delay(1);
+		currenthealth = GetActorProperty(0,APROP_Health);
+		if(currenthealth != oldhealth && currenthealth < oldhealth)
+		{
+			if(GetActorProperty(0,APROP_Health) < GetActorProperty(0,APROP_SpawnHealth)/2)
+			{
+				if(CheckInventory("Hexen2Level") < 10)
+				{
+					GiveInventory("Clip",FixedMul(oldhealth-currenthealth,FixedDiv(CheckInventory("Hexen2Level")-11,5)));
+					GiveInventory("Cell",FixedMul(oldhealth-currenthealth,FixedDiv(CheckInventory("Hexen2Level")-12,4)));
+				}
+				else
+				{
+					GiveInventory("Clip",oldhealth-currenthealth);
+					GiveInventory("Cell",oldhealth-currenthealth);
+				}
+			}
+		}
 	}
 }
 
@@ -337,9 +435,9 @@ str ammotypes[4] = { "Clip", "Shell", "RocketAmmo", "Cell" };
 Script "Hexen2_AmmoLoop" (int ticduration, int ammouse, int ammotype)
 {
 	int counter;
-	int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+	//int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
 	//for some reason while loop just keeps going even if the condition is no longer true, so a restarting if loop is necessary
-	if(buttons & BT_ATTACK)
+	if(CheckInventory("Hexen2WeaponHold"))
 	{
 		if(counter == 0)
 		{
