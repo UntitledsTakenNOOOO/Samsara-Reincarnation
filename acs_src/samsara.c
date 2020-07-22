@@ -2006,7 +2006,6 @@ Script "Duke3DEnemyMinionSpawner" (void)
 
 Script "Samsara_KillCount" (int override)
 {
-	PrintBold(s:"running");
 	if(!(ClassifyActor(0) & ACTOR_MONSTER))
 		terminate;
 		
