@@ -334,7 +334,7 @@ str ClassWeaponInfo[CLASSCOUNT][20][5] =
 		{ "Mauler", "(Press the Alt Fire key to toggle between firing modes.)\n\nThe mauler has two firing modes, scatter and torpedo. Torpedo is much more lethal, and may well damage you.\nShoots rounds of energy in normal mode, and a huge ball of destruction in powerup mode.\n\n[Picking up this weapon for the first time will grant you: 1 piece of the Sigil]", "SMAUA0", " Mauler ", "7" },
 		{ "Sigil", "It is considered a sentient weapon which is worshipped by The Order, thought to have been created by the Entity and the Spectres as a means to corrupt the people into evil desires.", "SIGPE0", " Sigil ", "7" },
 		{ "Stamina & Accuracy Upgrades", "Stamina Upgrades: Increased stamina means you can have more than 100 health points. Very handy. This also increases your melee damage and restores your current HP to 100%.\n\nAccuracy Upgrades: Increased accuracy means your weapon will fire more accurately.\n\nWhen you pick this item, you get both these upgrades at the same time.\nThe maximum upgrades you can get to is 10 upgrades.", "UPGRK0", "Upgrades", "u" }
-	}
+	},
 	{
 		{ "Fist", "Your iron-clad knuckles are a little better than nothing.\n\n[Remains unchanged to Doomguy's Fist.]", "", "  Fist  ", "f" },
 		{ "Pistol", "The Pistol is the only weapon you start out with. But you'll use anything in a pinch, no matter how pathetic it may feel.\n\n[Remains unchanged to Doomguy's Pistol.]", "", "  Pistol  ", "p" },
