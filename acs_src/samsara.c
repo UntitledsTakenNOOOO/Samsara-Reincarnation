@@ -343,10 +343,13 @@ script SAMSARA_DECORATE (int choice, int arg1, int arg2)
 		&& k >= WitchavenSpellCost[arg1][2]
 		&& x >= WitchavenSpellCost[arg1][3])
 		{	result = 1;
-			TakeInventory("Clip",WitchavenSpellCost[arg1][0]);
-			TakeInventory("Shell",WitchavenSpellCost[arg1][1]);
-			TakeInventory("RocketAmmo",WitchavenSpellCost[arg1][2]);
-			TakeInventory("Cell",WitchavenSpellCost[arg1][3]);}
+			if(!GetCvar("sv_infiniteammo"))
+			{
+				TakeInventory("Clip",WitchavenSpellCost[arg1][0]);
+				TakeInventory("Shell",WitchavenSpellCost[arg1][1]);
+				TakeInventory("RocketAmmo",WitchavenSpellCost[arg1][2]);
+				TakeInventory("Cell",WitchavenSpellCost[arg1][3]);}
+			}
 		else
 		{	result = 0;}
 		break;
