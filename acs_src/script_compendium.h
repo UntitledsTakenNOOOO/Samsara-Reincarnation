@@ -1,5 +1,5 @@
 // Label, index, damage, defense, range, attack speed, difficulty
-str ClassInfo[CLASSCOUNT][2][23] = 
+str ClassInfo[CLASSCOUNT][2][25] = 
 { 
 	{{"Doomguy", 1, "*****", "***", "***", "**", "*", "Damage", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01" }},
 	{{"Chex Warrior", 2, "***", "*****", "***", "***", "*", "Defense", "TIPSYM02", "TIPHIL02", "TIPCHEX", "TPLGCHEX", "TPCHCHEX", "SMALLFONT", "Green", "SMALLFONT", "Green", "CMPBGCH1", "CMPBGCH2", "CMPBGCH3", "", "TIPSYM02" }},
@@ -9,18 +9,18 @@ str ClassInfo[CLASSCOUNT][2][23] =
 	{{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5" },{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5" }},
 	{{"Security Officer", 7, "***", "***", "**", "*****", "*****", "Supression", "TIPSYM07", "TIPHIL07", "TIPSECOF", "TPLGMARA", "TPCHMARA", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGMA1", "CMPBGMA2", "CMPBGMA3", "CMPBGMA4", "CMPBGMA5" }},
 	{{"Ranger", 8, "***", "**", "****", "****", "***", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08" }},
-	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "SMALLFONT", "Olive", "SMALLFONT", "Olive", "CMPBGRT1", "CMPBGRT2", "CMPBGRT3", "CMPBGRT4", "CMPBGRT5" }},
+	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGRT1", "CMPBGRT2", "CMPBGRT3", "CMPBGRT4", "CMPBGRT5" }},
 	{{"Blake Stone", 10, "***", "***", "***", "*****", "**", "Skirmisher", "TIPSYM10", "TIPHIL10", "TIPBSTON", "TPLGBSTN", "TPCHBSTN", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGBS1", "CMPBGBS2", "CMPBGBS3", "CMPBGRT4", "CMPBGBS5" }},
 	{{"Caleb", 11, "***", "***", "***", "*****", "**", "Sadist", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5" }},
 	{{"Strifeguy", 12, "****", "*", "***", "****", "**", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "SMALLFONT", "Olive", "SMALLFONT", "Olive", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6" }},
 	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66" }},
 	{{"Eleena", 14, "****", "*", "**", "****", "***", "Acrobat", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5" }},
-	{{"Space Seal", 15, "*****", "*", "***", "****", "**", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "TIPSYM15" }},
-	{{"LDF Commando", 16, "***", "**", "****", "***", "***", "Support Fire", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL16" }},
-	{{"Kyle Katarn", 17, "**", "*****", "****", "****", "***", "Tank", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL17" }},
-	{{"Mooman", 18, "*", "***", "****", "****", "***", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL18" }},
-	{{"Jack Curtis", 19, "***", "***", "***", "****", "***", "Counter Assault", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL19" }},
-	{{"Grondoval", 20, "****", "***", "**", "****", "****", "Pugilist", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL20" }},
+	{{"Space Seal", 15, "*****", "*", "***", "****", "**", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "SMALLFONT", "Orange", "SMALLFONT", "Blue", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75" }},
+	{{"LDF Commando", 16, "***", "**", "****", "***", "***", "Support Fire", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6" }},
+	{{"Kyle Katarn", 17, "**", "*****", "****", "****", "***", "Tank", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5" }},
+	{{"Mooman", 18, "*", "***", "****", "****", "***", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8" }},
+	{{"Jack Curtis", 19, "***", "***", "***", "****", "***", "Counter Assault", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5" }},
+	{{"Grondoval", 20, "****", "***", "**", "****", "****", "Pugilist", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5" }},
 	{{"Gordon Freeman", 21, "*****", "**", "***", "**", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL21" },{"Adrian Shephard", 21, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL21" }},
 	{{"Lo Wang", 22, "***", "**", "****", "****", "***", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "SMALLFONT", "Red", "SWCOOKIE", "Gray50", "", "", "", "", "TIPHIL22" }},
 	{{"Cybermage", 23, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL23" }},
@@ -1473,7 +1473,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16195, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.975)<<16)+0.2, (FixedMul(hudboundsy,0.175)<<16)+0.1, 0);
 					SetHudClipRect(0,0,0,0,0);
 				}
-				else
+				else if(strlen(ClassInfo[(menuindex-1)][altskin][19]) != 0)
 				{
 					SetFont(ClassInfo[(menuindex-1)][altskin][19]);
 					SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.95), FixedMul(hudboundsx,1.1));
@@ -1495,6 +1495,22 @@ Script "Samsara_Compendium" (void) Net Clientside
 					SetFont(ClassInfo[(menuindex-1)][altskin][21]);
 					SetHudClipRect(0,0,0,0,0);
 					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16193, CR_UNTRANSLATED, FixedMul(hudboundsx/14,0.5)*1.0, FixedMul(hudboundsy/14,0.575)*1.0, 0, 0.5);
+				}
+				if(strlen(ClassInfo[(menuindex-1)][altskin][23]) != 0)
+				{
+					SetHudSize(hudboundsx,hudboundsy,true);
+					SetFont(ClassInfo[(menuindex-1)][altskin][23]);
+					SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.1525));
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16192, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.025)<<16)+0.1, (FixedMul(hudcentery,0.05)<<16)+0.1, 0);
+					SetHudClipRect(0,0,0,0,0);
+				}
+				if(strlen(ClassInfo[(menuindex-1)][altskin][24]) != 0)
+				{
+					SetHudSize(hudboundsx,hudboundsy,true);
+					SetFont(ClassInfo[(menuindex-1)][altskin][24]);
+					SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.1525));
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16191, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.975)<<16)+0.2, (FixedMul(hudcentery,0.05)<<16)+0.1, 0);
+					SetHudClipRect(0,0,0,0,0);
 				}
 				//SetHudSize(hudboundsx,hudboundsy,true);
 			}	
