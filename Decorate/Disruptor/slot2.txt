@@ -6,25 +6,36 @@ Actor " Phase Rifle " : Weapon
   weapon.BobRangeX 1.2
   weapon.BobRangeY 0.5
   weapon.BobSpeed 2.0  
-  Weapon.AmmoUse 1
-  Weapon.AmmoGive 10
-  Weapon.AmmoType "Shell"
+  Weapon.AmmoUse1 1
+  Weapon.AmmoGive1 20
+  Weapon.AmmoType1 "Cell"
+  Weapon.AmmoUse2 0
+  Weapon.AmmoGive2 0  
+  Weapon.AmmoType2 "DisruptorHiFreq"
+  +WEAPON.AMMO_OPTIONAL
+  +WEAPON.ALT_AMMO_OPTIONAL
   Inventory.PickupMessage "You got a Phase Rifle!"
   Inventory.RestrictedTo "DisruptorPlayer"  
   States
   {
   Ready:
+	TNT1 A 0 A_JumpIfInventory("DisruptorMode", 1, "ReadyRed")
     SQ69 AAABBBCCCDDDEEE 1 A_WeaponReady
     Loop
   Deselect:
+	TNT1 A 0 A_JumpIfInventory("DisruptorMode", 1, "DeselectRed")  
 	TNT1 A 0 A_Lower
     SQ69 A 1 A_Lower
 	Loop
   Select:
+	TNT1 A 0 A_JumpIfInventory("DisruptorMode", 1, "SelectRed")
 	TNT1 A 0 A_Raise
     SQ69 A 1 A_Raise
     Loop
   Fire:
+	TNT1 A 0 A_JumpIfInventory("DisruptorMode", 1, "FireRed")
+ 	TNT1 A 0 A_JumpIfInventory("Cell", 1, 1)
+	Goto Altfire 
     TNT1 A 0 A_PlaySound("Disruptor/GreenLaser",CHAN_WEAPON)
     TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 	TNT1 A 0 A_FireCustomMissile("DisruptorGP_1",0,1,0,0)
@@ -36,8 +47,46 @@ Actor " Phase Rifle " : Weapon
 	SQ69 HH 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
     Goto DummyReady
   DummyReady:
-   SQ69 AABBCCDDEE 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+    SQ69 AABBCCDDEE 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 	Goto Ready
+  Altfire:
+	TNT1 A 0 A_JumpIfInventory("DisruptorMode", 1, "AltfireRed")
+	SQ73 KK 5 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH|WRF_NOSECONDARY)
+	SQ73 K 0 A_GiveInventory("DisruptorMode", 1)
+	Goto ReadyRed
+  SelectRed:
+	TNT1 A 0 A_Raise
+    SQ73 K 1 A_Raise
+    Loop
+  DeselectRed:
+	TNT1 A 0 A_Lower
+    SQ69 A 1 A_Lower
+	Loop	
+  ReadyRed:
+	SQ73 KKKLLLMMMNNNOOO 1 A_WeaponReady
+	Loop
+  FireRed:
+	TNT1 A 0 A_JumpIFInventory("DisruptorHiFreq", 1, 1)
+	Goto AltfireRed
+    TNT1 A 0 A_PlaySound("Disruptor/GreenLaser",CHAN_WEAPON)
+    TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,3)
+	TNT1 A 0 A_TakeInventory("DisruptorHiFreq", 1, TIF_NOTAKEINFINITE)
+	TNT1 A 0 A_FireCustomMissile("DisruptorGP_12",0,0,0,0)
+	Goto B
+	TNT1 A 0 A_TakeInventory("DisruptorHiFreq", 1, TIF_NOTAKEINFINITE)
+	TNT1 A 0 A_FireCustomMissile("DisruptorGP_22",0,0,0,0)
+  B:	
+	SQ73 P 1 bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+	SQ73 QQ 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+	SQ73 RR 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+    Goto DummyReadyRed	
+  DummyReadyRed:
+    SQ73 KLMNO 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+	Goto Ready	
+  AltfireRed:	
+  	SQ69 AA 5 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH|WRF_NOSECONDARY)
+	SQ69 A 0 A_TakeInventory("DisruptorMode")
+	Goto Ready	
   Spawn:
     SQ72 R -1
     Stop	
@@ -48,7 +97,7 @@ Actor DisruptorGP_1
 {
    Radius 2
    Height 1
-   Damage (Random(40,55))
+   Damage (Random(15,45))
    Speed 63
    -EXTREMEDEATH
    +NOEXTREMEDEATH
@@ -81,3 +130,15 @@ Actor DisruptorGP_1
 }   
 
 Actor DisruptorGP_2 : DisruptorGP_1 { Species "Player" +THRUSPECIES }
+
+Actor DisruptorMode : Boolean {}
+
+Actor DisruptorHiFreq : Ammo
+{
+	Inventory.MaxAmount 150
+	Ammo.BackpackMaxAmount 300
+	
+	Ammo.BackpackAmount 10
+	Inventory.Amount 10
+	Inventory.Icon "SQ75K0"
+}	
