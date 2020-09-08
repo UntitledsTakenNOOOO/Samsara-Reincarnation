@@ -2060,9 +2060,9 @@ Script "Samsara_AllyHealthRegen" (void)
 	}
 }
 
-int misccharacterclasses = 7;
-int checkclassindices[7] = {20,24,5,11,25,10,26}; // for some reason I can't place my defined integer to define the array size, just place the value here too.
-int activetokenselectors[7]; // for some reason I can't place my defined integer to define the array size, just place the value here too.
+int misccharacterclasses = 8;
+int checkclassindices[8] = {20,24,5,11,25,10,26,15};
+int activetokenselectors[8];
 
 script "HeroOnMap" Open
 {
@@ -2102,7 +2102,6 @@ Script 2689 (int mode)
 	int any;
 	int spawnchance = random(0,100);
 	SetResultValue(0);
-	
 	Switch(mode)
 	{	
 		Case 1:
@@ -2116,7 +2115,7 @@ Script 2689 (int mode)
 				
 			break;
 	}
-	
+
 	if(spawnchance > GetCvar("sams_misccharacters") || GetCvar("sams_misccharacters") == 0)
 	{
 		terminate;
@@ -2135,15 +2134,15 @@ Script 2689 (int mode)
 	{
 		terminate;
 	}
-	
-	
-	for(int a = random(0,misccharacterclasses-1); a < misccharacterclasses; a++)
+
+	while(true)
 	{
-		int b;
+		int a, b;
+		
 		if(activetokenselectors[a] == true)
 		{
 			if(a == 0)
-			{			
+			{	
 				Switch(mode)
 				{	
 					Case 1:
@@ -2155,7 +2154,7 @@ Script 2689 (int mode)
 				}
 				terminate;
 			}
-			if(a == 1)
+			else if(a == 1)
 			{
 				SetResultValue(0);
 				b = random(0, 10);
@@ -2176,25 +2175,25 @@ Script 2689 (int mode)
 				}	
 				terminate;
 			}
-			if(a == 2)
+			else if(a == 2)
 			{
 				SetResultValue(0);
 				SpawnSpotFacing("Duke3DBabe", 0, 0);
 				terminate;
 			}
-			if(a == 3)
+			else if(a == 3)
 			{
 				SetResultValue(0);
 				SpawnSpotFacing("StrifePeasant", 0, 0);		
 				terminate;
 			}
-			if(a == 4)
+			else if(a == 4)
 			{
 				SetResultValue(0);
 				SpawnSpotFacing("Q2Insane", 0, 0);
 				terminate;
 			}
-			if(a == 5)
+			else if(a == 5)
 			{
 				b = random(0, 10);
 				SetResultValue(0);
@@ -2207,18 +2206,26 @@ Script 2689 (int mode)
 				
 				terminate;
 			}
-			if(a == 6)
+			else if(a == 6)
 			{
 				SetResultValue(0);
 				SpawnSpotFacing("Hexen2_Sheep", 0, 0);
 				terminate;
 			}
-		}
-		else
-		{
-			a = random(-1,6);
+			else if(a == 7)
+			{
+				if(mode == 1)
+					SpawnSpotFacing("RMRLDFGuard", 0, 0);
+				else if(mode == 2)
+					SpawnSpotFacing("RMRLDFMilitia", 0, 0);
+				terminate;
+			}
 		}
 		
+		if(a >= misccharacterclasses-1)
+			a = random(-1,misccharacterclasses-1);
+		else
+			a++;
 	}
 }
 
@@ -2226,6 +2233,6 @@ Script "BonusItemCount" Open
 {
 	HealthBonusScriptCount = 0;
 	ArmorBonusScriptCount = 0;
-	HealthBonusMapCount = ThingCountName("HealPack0_x1", 0);
+	HealthBonusMapCount = ThingCountName("HealPack0", 0);
 	ArmorBonusMapCount = ThingCountName("ArmorScrap200", 0);
 }

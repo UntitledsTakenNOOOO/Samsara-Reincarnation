@@ -9,7 +9,7 @@ str ClassInfo[CLASSCOUNT][2][25] =
 	{{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5" },{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5" }},
 	{{"Security Officer", 7, "***", "***", "**", "*****", "*****", "Supression", "TIPSYM07", "TIPHIL07", "TIPSECOF", "TPLGMARA", "TPCHMARA", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGMA1", "CMPBGMA2", "CMPBGMA3", "CMPBGMA4", "CMPBGMA5" }},
 	{{"Ranger", 8, "***", "**", "****", "****", "***", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08" }},
-	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGRT1", "CMPBGRT2", "CMPBGRT3", "CMPBGRT4", "CMPBGRT5" }},
+	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5" }},
 	{{"Blake Stone", 10, "***", "***", "***", "*****", "**", "Skirmisher", "TIPSYM10", "TIPHIL10", "TIPBSTON", "TPLGBSTN", "TPCHBSTN", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGBS1", "CMPBGBS2", "CMPBGBS3", "CMPBGRT4", "CMPBGBS5" }},
 	{{"Caleb", 11, "***", "***", "***", "*****", "**", "Sadist", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5" }},
 	{{"Strifeguy", 12, "****", "*", "***", "****", "**", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "SMALLFONT", "Olive", "SMALLFONT", "Olive", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6" }},
@@ -21,15 +21,17 @@ str ClassInfo[CLASSCOUNT][2][25] =
 	{{"Mooman", 18, "*", "***", "****", "****", "***", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8" }},
 	{{"Jack Curtis", 19, "***", "***", "***", "****", "***", "Counter Assault", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5" }},
 	{{"Grondoval", 20, "****", "***", "**", "****", "****", "Pugilist", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5" }},
-	{{"Gordon Freeman", 21, "*****", "**", "***", "**", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL21" },{"Adrian Shephard", 21, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL21" }},
-	{{"Lo Wang", 22, "***", "**", "****", "****", "***", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "SMALLFONT", "Red", "SWCOOKIE", "Gray50", "", "", "", "", "TIPHIL22" }},
-	{{"Cybermage", 23, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL23" }},
-	{{"Jon", 24, "**", "***", "***", "**", "****", "Adventurer", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL24" }},
-	{{"Leonard", 25, "***", "*", "****", "***", "***", "Sharpshooter", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL25" }},
-	{{"Bitterman", 26, "***", "***", "****", "**", "***", "Battery", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "SMALLFONT", "Red", "Q2SMFONT", "Red", "", "", "", "", "TIPHIL26" }},
-	{{"Demoness", 27, "***", "**", "**", "***", "***", "Steamroller", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL27" }},
-	{{"James Bond", 28, "***", "*", "***", "****", "****", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "SMALLFONT", "Red", "SMALLFONT", "Red", "", "", "", "", "TIPHIL28" }},
+	{{"Gordon Freeman", 21, "*****", "**", "***", "**", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5" },{"Adrian Shephard", 21, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6" }},
+	{{"Lo Wang", 22, "***", "**", "****", "****", "***", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "SMALLFONT", "Red", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5" }},
+	{{"Cybermage", 23, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Green", "SMALLFONT", "Yellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5" }},
+	{{"Jon", 24, "**", "***", "***", "**", "****", "Adventurer", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8" }},
+	{{"Leonard", 25, "***", "*", "****", "***", "***", "Sharpshooter", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGRR1", "CMPBGRR2", "CMPBGRR3", "CMPBGRR4", "CMPBGRR5" }},
+	{{"Bitterman", 26, "***", "***", "****", "**", "***", "Battery", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "SMALLFONT", "Brick", "Q2SMFONT", "Brick", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26" }},
+	{{"Demoness", 27, "***", "**", "**", "***", "***", "Steamroller", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25" }},
+	{{"James Bond", 28, "***", "*", "***", "****", "****", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "GEFONTS", "Gold", "GEFONTS", "White", "CMPBGGE1", "CMPBGGE2", "", "CMPBGGE4", "CMPBGGE5" }},
 };
+
+str CompendiumWheelRot[12] = { "CMPWHL01", "CMPWHL02", "CMPWHL03", "CMPWHL04", "CMPWHL05", "CMPWHL06", "CMPWHL07", "CMPWHL08", "CMPWHL09", "CMPWHL10", "CMPWHL11", "CMPWHL12"};
 
 str StatPages[3] = { "Summary", "Traits", "Changes" };
 
@@ -317,11 +319,11 @@ str ClassWeaponInfo[CLASSCOUNT][2][20][5] =
 	}},
 	{{
 		{ "Staff", "Nothing magical about this weapon. It's a stick, unless it's powered-up, then it's as strong as an oak!", "", " Staff ", "f" },
-		{ "Elven Wand", "Your base weapon. If you are using this, it's time to run unless it's powered-up, in which case your enemy should take the ‘run' option.", "", "Elven Wand", "p" },
+		{ "Elven Wand", "Your base weapon. If you are using this, it's time to run unless it's powered-up, in which case your enemy should take the 'run' option.", "", "Elven Wand", "p" },
 		{ "Gauntlets of the Necromancer", "The gauntlets replace your normal beatin' stick and deliver a devastating electrical attack.\nPowered-up, it sucks enemies in from a further distance and drains their life to increase yours!", "WGNTA0", "Gauntlets of the Necromancer", "1" },
 		{ "Firemace", "The Firemace is a rapid firing weapon that shoots bouncing, explosive balls!\nPowered-up, Watch Out... this fires extremely large and powerful Balls 'o Death!", "WMCEA0", " Firemace ", "2" },
 		{ "Ethereal Crossbow", "The crossbow shoots 3 magical arrows at once, deliver heavy damage at short range or hitting multiple targets at a distance.\nPowered-up, this baby blasts 5 slammin' magic arrows for a good, strong head-pounding punishment!", "WCBWA0", "Ethereal Crossbow", "3" },
-		{ "Dragon Claw", "Firing a barrage of explosive magic, this weapon is perfect for clearing monster-infested hallways.\nPowered-up, the ‘Ripper' delivers a four-way lethal blast, rippin' your enemy apart. ", "WBLSA0", "Dragon Claw", "4" },
+		{ "Dragon Claw", "Firing a barrage of explosive magic, this weapon is perfect for clearing monster-infested hallways.\nPowered-up, the 'Ripper' delivers a four-way lethal blast, rippin' your enemy apart. ", "WBLSA0", "Dragon Claw", "4" },
 		{ "Phoenix Rod", "The Phoenix Rod delivers and explosive charge that will decimate the normal baddie into bits.\nPowered-up, it's time to deliver some deep-fried damage as the rod pours out a steady, hot stream of raw inferno!  Watch 'em scream and burn - it's great!", "WPHXA0", "Phoenix Rod", "5" },
 		{ "Hellstaff", "Now you're one bad elf. The Hellstaff fires at a high rate of speed and does heavy damage.\nPowered-up, this baby slams out a bone-crunching Rain From Hell that will leave your enemies wet - in their own steaming blood!", "WSKLA0", "Hellstaff", "6" },
 		{ "Staff of D'sparil", "The primary weapon of D'Sparil; the first and youngest of the trio of Serpent Riders. A formidable weapon in the hands of anyone, especially yourself.\nPowered-up, your enemies will learn to think again to cross you...", "DSTFA0", "DSparilStaff", "7" },
@@ -639,14 +641,14 @@ str ClassWeaponInfo[CLASSCOUNT][2][20][5] =
 		{ "Crowbar", "There's just something so satisfying about the bone-jarrin' feeling of a cold piece of steel laid across a warm skull.", "", " RR Crowbar ", "f" },
 		{ ".454 Casull Pistol", "This ain't no pea-shooter, boy. She packs quite a punch and is real accurate from a distance. \n\nWill automatically reload after 6 shots.", "", " .454 Casull Pistol ", "p" },
 		{ "Rip Saw", "This here is your dual-purpose killin' machine - one mode gives ya that close-up chainsaw action, while the other is perfect fer some long-distance mutilation. Best watch out for that nasty rebound now.\n\nAlt Fire: Use the saw as a melee attack. Consumes no ammo.", "R_RSU0", " RR Rip Saw ", "1" },
-		{ "Hunting Crossbow", "When yer throwin' arm gets a little tired, try duct-tapin' a stick ‘a dynamite to an arrow. She'll fly mightly far with a cross-bow, turn any idiot into a pile of guts, and the twang of the bow-string is sorta like a banjo.\nActually, leave the dyna ‘O' mites for throwing.", "R9_HI0", " RR Hunting Crossbow ", "2" },
+		{ "Hunting Crossbow", "When yer throwin' arm gets a little tired, try duct-tapin' a stick 'a dynamite to an arrow. She'll fly mightly far with a cross-bow, turn any idiot into a pile of guts, and the twang of the bow-string is sorta like a banjo.\nActually, leave the dyna 'O' mites for throwing.", "R9_HI0", " RR Hunting Crossbow ", "2" },
 		{ "Scattered Gun", "The primary weapon for some up-close and personal killin'. Tap her gently to let off a single load, or lean on her to empty both barrels.", "RR_SA0", " Scattered Gun ", "3" },
 		{ "Ranch Rifle", "Pssst...Don't tell Sheriff Hobbes now, but we done modified this baby to be fully automatic. Remember, fire in controlled bursts if ya don't wanna be shootin' at the sky...", "R_SRJ0", " Ranch Rifle ", "4" },
 		{ "Chicken Crossbow", "This chicken really wants to help you hit the target. Lately somebody's been leaving chickens with dynamite up their tookus all over Spittle County. I don't know who would do such a thing, but finders keepers!", "CH_7M0", " Chicken Crossbow ", "5" },
 		{ "Alien Bra Gun", "Well now, I'm just ashamed to talk about this here gun. I just know I'm gonna get thrown outta the lodge if anyone sees me wearin' it. But Damnit... it just feels so nice against m' skin.", "R_T9D0", " Alien Bra Gun ", "6" },
 		{ "Alien Arm Cannon", "Well now, them tendons is a little slimy, and the fireworks it lets out'll burn the hair on your arms clean off, but I'll be damned if this thing won't crispify just about anything.", "R_HAK0", " Alien Arm Cannon ", "7" },
 		{ "Hunting Rifle with Scope", "This sniper-like gun is pretty strong, might be slow, but when you learn how to use it, it will be definitely deadly.\n\nAlt Fire: Use the Scope.", "R_HCJ0", " Hunting Rifle With Scope ", "u" },
-		{ "Dyn 'O' Mites", "This ain't eggsackly what you'd call Safe N' Sane. Light ‘em, throw ‘em, then get the hell outta the way.\n\nYou will instantly die if you light the dynamite for too long!", "DYN5G0", " Dyn 'O' Mites ", "u" },
+		{ "Dyn 'O' Mites", "This ain't eggsackly what you'd call Safe N' Sane. Light 'em, throw 'em, then get the hell outta the way.\n\nYou will instantly die if you light the dynamite for too long!", "DYN5G0", " Dyn 'O' Mites ", "u" },
 		{ "Motorcycle", "Mount the hog with the Use key. Motorcycle ammo is heavy, you'd best pick it up while you're mounted and leave the ammo on the bike too. If you're good, you can jump chasms, ramps, cliffs...practice at the track for a while if you need the help. And remember, the sheriff hasn't given out a ticket in this county for hit-and-run for about 30 years.\n\nRequires the Samsara EX Mixer add-on.\n\nThe motorcycle will randomly spawn after killing \"Frank Doyle on Bike\" when playing with Redneck Rampage enemies.\n\nThe bike comes with a built-in gun turret that holds about 600 bullets. When you are on the bike, you can still take damage from enemy fire. When you are off the bike, the motorcycle can be damaged and permanently destroyed.\n\nPress [Use] on the motorcycle to get in.\nHold [Use] while on the motorcycle to get off.\n[Strafe Left] and [Strafe Right] will turn the vehicle.\n[Move Forward] will accelerate.\n[Move Backward] will brake/reverse.\n[Fire] will fire the motorcycle's gun turrets.", "R_MCZ2Z8", "RedneckMotorcycle", "" }
 	}},
 	{{
@@ -1145,7 +1147,7 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 	},
 	{
 		{ "Headcrab", "COMP_THREAT_2", "The Headcrab can appear harmless at a glance: it is small and slow-moving with its tiptoe-like gait. Although it can quickly leap long distances using its hind legs, tilting its body upwards to turn its mouth towards its target, such an assault can only inflict minor injuries with the claws, legs and teeth. However, the Headcrab's main goal is not to kill, but to attach itself onto an appropriate host's head. Using its leaping ability, it can reach a host's head and attempt to burrow its beak through the skull. Once successful, the Headcrab takes control of the host's nervous system and causes physical alterations to the host's body, such as causing its hands to deteriorate into bony 'claws', via an unknown biological process. The host then rips open its own torso, revealing the stomach and other organs, for feeding purposes. Such a Headcrab-controlled host is commonly called a Zombie.", "Headcrab", "CMPMHL01" },
-		{ "Headcrab Zombies", "COMP_THREAT_2", "Once a Headcrab successfully attaches to a host, the Headcrab will assume control of all their motor functions, able to walk and attack with the host's arms and legs. Through some unknown biological process, the host's hands turn into long, skeletal claws and a massive hole appears in their chest lined with the host‘s ribs, becoming a makeshift \"mouth,\" with their ribs serving as teeth (Zombies have been observed to feed by ripping chunks of flesh off of corpses and stuffing them into this maw) Removal of the Headcrab reveals that the host's head is bent abnormally upwards, their hair is matted with blood, and their face is pale, with their eyes shut and mouth open in a frozen scream. \n\nThe zombie scientists are the weakest. The security guard zombies have a bit more health. The soldier zombies have the most health out of these types.", "Headcrab_Scientist", "CMPMHL02", "Headcrab_Barney", "CMPMHL03", "Headcrab_Soldier", "CMPMHL04" },
+		{ "Headcrab Zombies", "COMP_THREAT_2", "Once a Headcrab successfully attaches to a host, the Headcrab will assume control of all their motor functions, able to walk and attack with the host's arms and legs. Through some unknown biological process, the host's hands turn into long, skeletal claws and a massive hole appears in their chest lined with the host's ribs, becoming a makeshift \"mouth,\" with their ribs serving as teeth (Zombies have been observed to feed by ripping chunks of flesh off of corpses and stuffing them into this maw) Removal of the Headcrab reveals that the host's head is bent abnormally upwards, their hair is matted with blood, and their face is pale, with their eyes shut and mouth open in a frozen scream. \n\nThe zombie scientists are the weakest. The security guard zombies have a bit more health. The soldier zombies have the most health out of these types.", "Headcrab_Scientist", "CMPMHL02", "Headcrab_Barney", "CMPMHL03", "Headcrab_Soldier", "CMPMHL04" },
 		{ "Hazardous Environmental Combat Units", "COMP_THREAT_2", "[Not available in Opposing Force mode] \n\nYour government has sent in a dangerous and very efficient clean-up crew. Unfortunately, these military personnel don't only want to obliterate aliens, they're trying to permanently silence you and your co-workers, too. \n\nThey are either equipped with an MP5 or a SPAS-12 or even worse: an M249 Squad Automatic Weapon (SAW). \n\nOne of the soldiers equipped with an MP5 may have an M203 grenade launcher attached to his sub machine gun so be careful when you meet him. \n\nNOTE: The HECU is an enemy if you have Opposing Force mode disabled. If you have it enabled, the HECU generally serve as Adrian Shephard's allies.", "HECU_Grunt1", "CMPMHL05", "HECU_Shotgun1", "CMPMHL06", "HECU_M203", "CMPMHL07", "HECU_Commander1", "CMPMHL08", "HECU_Grunt1_Opp_MP5", "CMPMHL09", "HECU_Commander1_Opp_Shotgun", "CMPMHL10", "HECU_Major_Opp_Saw", "CMPMHL11" },
 		{ "HECU Sarge", "COMP_THREAT_3", "[Not available in Opposing Force mode] \"What is your major malfunction, numbnuts? Didn't Mommy and Daddy show you enough attention when you were a child?\" Definitely a threat as he can take a lot of hits and is equipped with a minigun. \n\nNOTE: The HECU is an enemy if you have Opposing Force mode disabled. If you have it enabled, the HECU generally serve as Adrian Shephard's allies.", "HECU_Sarge", "CMPMHL12" },
 		{ "Vortigaunt", "COMP_THREAT_2", "Long before the Black Mesa Incident, the Vortigaunts' homeworld was invaded by the Combine, forcing the survivors of the invasion to flee to Xen. When the Black Mesa Incident occurred, their master, a being known as the Nihilanth, viewed the rift that opened as a chance to escape, and directed the Vortigaunts to invade Earth.", "Vortigaunt", "CMPMHL13" },
@@ -1259,7 +1261,7 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Frank Doyle on Bike", "", "Oh well looky here, Doyle brought along his stupid bike. He's tougher when mounted on that piece of crap that even has some guns mounted on it. \n\nIf I play mah cards right, I can kill Doyle without harming the bike. Everybody around here knows that only a redneck such as me can ride a bike like that, heh heh heh...", "DoyleBike", "DLK_A1", "DoyleBike_Green", "_DX5E1" },
 		{ "Frank Doyle & Daisy Mae on Bike", "", "Well ain't love grand? Frank not only spruced up his favorite bike (and made a red bike that's more tougher), but he brought along two very hot ladies: Daisy Mae and an endless supply of goddamn molotovs!", "DoyleDaisyBike", "_DX2M1", "DoyleDaisyBike_Red", "_DX4C1" },
 		{ "Alien Vixen", "", "It just pains my heart to have to fight such a luscuous example of femanine beauty. I guess when it comes right down to it though, I just can't stomach gettin' my ass whupped by some leather wearin' girlie. I must admit though, them twin machine guns look purty appealin'. 'Course, you wouldn't never catch me tryin' to use a contraception like that...not in public anyhow.", "GreenVixen", "VIX5E1", "BrownVixen", "VIX_E1", "BlueVixen", "VIXXE1", "RedVixen", "VIX3E1" },
-		{ "Momma Jack 'O' Lope", "", "Well, I guess the Jack ‘O' Lopes had to come from somewhere. Hi, mama. It's basically just a bigger jackelope but tougher and can fart some deadly gas and... did she just crap out jackelopes from her butt?! I'm gonna tear yer head off and make lov-I mean- shit down your neck!", "BigJackelope", "J2_MO1" },
+		{ "Momma Jack 'O' Lope", "", "Well, I guess the Jack 'O' Lopes had to come from somewhere. Hi, mama. It's basically just a bigger jackelope but tougher and can fart some deadly gas and... did she just crap out jackelopes from her butt?! I'm gonna tear yer head off and make lov-I mean- shit down your neck!", "BigJackelope", "J2_MO1" },
 		{ "King Hulk", "", "I only believe in one king, the King of Rock N' Roll! This bastard can fire one hell of a laser cannon and will plant those spikey dinosaur turf shit mines all around. And he smells like dog piss!", "KingHulk", "_ULKA1" },
 		{ "Ass Face", "", "Well sweet Jesus on a flying unicorn humping its sweet cornbread doll! I suppose the locals around here call him Ass Face for a reason. What more can I say? He shits out turd minions from his butt and craps out poo from his mouth. And all that's poo making me hungry but for the wrong reasons. Boy oh boy, this son of a gun is toast!", "AssFace", "CMPMRR43" },
 		{ "Queen Vixen", "", "Well cover me in gravy and set mah ass on fire! And I thought the regular Alien Vixens were so purty and kick ass. She ain't no quick rodeo so I better take care of her without getting mah ass killed!", "QueenVixen", "VIX7E1" },
@@ -1312,10 +1314,12 @@ Script "Samsara_Compendium_Initiate" (void) Net
 	{
 		GiveInventory("CompendiumOpened",1);
 		int execute = ACS_NamedExecuteWithResult("Samsara_Compendium");
+		SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
 	}
 	else
 	{
 		TakeInventory("CompendiumOpened",1);
+		SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
 	}
 }
 
@@ -1332,7 +1336,8 @@ Script "Samsara_Compendium" (void) Net Clientside
 	int scrollstep = 4;
 	cursorx = hudcenterx;
 	cursory = hudcentery;
-	SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+	//SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+	int rottimer = 162;
 	while(CheckInventory("CompendiumOpened"))
 	{
 		int mousesensitivity = GetCvar("mouse_sensitivity");
@@ -1375,6 +1380,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 			if(lastmenuindex != menuindex) { removemessages(15990,16185); removemessages(16190,16199); lastmenuindex = menuindex; scrollcounter = 0; scrolltimer = 368; }
 			int locationx, locationy;
 			int wheelangle = -0.25;
+			int rot;
 			for(a = 0; a < CLASSCOUNT; a++)
 			{		
 				//SetHudClipRect(hudcenterx-64,16,128,rectboundariesy+16);
@@ -1390,7 +1396,22 @@ Script "Samsara_Compendium" (void) Net Clientside
 				}
 				else { SetFont(ClassInfo[a][0][8]); HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING|HUDMSG_ALPHA, 16000+a, "black", locationx*1.0, locationy*1.0, 1.0, 0.9); }			
 				//SetHudClipRect(0,0,0,0);
-			}		
+			}
+			if(rot >= 11) { rot = 0; LocalAmbientSound("Compendium/Wheel/Spin",127); }
+			
+			SetFont(CompendiumWheelRot[rot]);
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16191, CR_UNTRANSLATED, hudcenterx*1.0, hudcentery*1.0, 0);
+			SetFont("CMPCNTSK");
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16190, CR_UNTRANSLATED, hudcenterx*1.0, hudcentery*1.0, 0);
+			rot += PowFloat(1.0075,rottimer)>>16;
+			
+			if(FixedMul(0.02,rottimer) < 1)
+				rot = 0;
+				
+			if(rottimer > 0)
+				rottimer--;
+			else 
+				rottimer = 0;		
 		}
 		else
 		{
@@ -1687,8 +1708,6 @@ Script "Samsara_Compendium" (void) Net Clientside
 					Thing_remove(newtid);
 					SetFont(ClassWeaponInfo[menuindex-1][altskin][menuitem-1][2]);
 					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16016, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.855)<<16)+0.1, (FixedMul(hudcentery,0.31)<<16)+0.1, 0);
-				
-					
 				}
 				
 				SetHudClipRect(FixedMul(hudcenterx,0.775),FixedMul(hudcentery,0.5),FixedMul(hudcenterx,0.175),FixedMul(hudcentery,0.45),FixedMul(hudcenterx,0.15));

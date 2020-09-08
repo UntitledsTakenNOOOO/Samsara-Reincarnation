@@ -308,6 +308,7 @@ Actor Hexen2IceMaceBlizzard
 	MaxStepHeight 16
 	MaxDropOffHeight 16
 	BounceType "Hexen"
+	var int user_beamcount;
 	States
 	{
 		Spawn:
@@ -403,26 +404,28 @@ ACTOR Hexen2IceMaceBlizzardSegmentProjectile : FastProjectile
 	Renderstyle Translucent
 	States
 	{
-	Spawn:
-		TNT1 A 0 NoDelay A_ChangeFlag(PAINLESS,Random(0,128))
-	MovingStart:
-		TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
-		TNT1 A 0 A_Warp(AAPTR_DEFAULT,-MomX,-MomY,-MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
-		TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
-		TNT1 A 0 A_SpawnItemEx("Hexen2IceMaceBlizzardSegment",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
-		TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
-		TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX,MomY,MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
-	Moving:
-		TNT1 A 0 A_JumpIfInventory("Hexen2LightningArcLength",3,"Remove")
-		TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
-		TNT1 A 0 A_SpawnItemEx("Hexen2IceMaceBlizzardSegment",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
-		TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
-		TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX,MomY,MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
-		TNT1 A 0 A_GiveInventory("Hexen2LightningArcLength",1)
-		Loop
-	Remove:
-		TNT1 A 1
-		stop
+		Spawn:
+			TNT1 A 0 NoDelay A_ChangeFlag(PAINLESS,Random(0,128))
+		MovingStart:
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,-MomX,-MomY,-MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION,1)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("Hexen2IceMaceBlizzardSegment",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX,MomY,MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION,1)
+			Goto Remove
+		Moving:
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_JumpIfInventory("Hexen2LightningArcLength",3,"Remove")
+			TNT1 A 0 A_SpawnItemEx("Hexen2IceMaceBlizzardSegment",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX,MomY,MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION,1)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_GiveInventory("Hexen2LightningArcLength",1)
+			Loop
+		Remove:
+			TNT1 A 1
+			stop
 	}
 }
 
@@ -430,7 +433,6 @@ Actor Hexen2IceMaceBlizzardSegment
 {
 	+NOINTERACTION
 	+NOBLOCKMAP
-	+CLIENTSIDEONLY
 	Radius 1
 	Height 1
 	Renderstyle Translucent
@@ -438,6 +440,7 @@ Actor Hexen2IceMaceBlizzardSegment
 	{
 		Spawn:
 			TNT1 A 0
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
 			HX00 AAAA 0 A_SpawnItemEx("Hexen2IceShotPuffGenerator",random(-8,8),random(-8,8),random(-8,8),random(-4,4),random(-4,4),random(-4,4),0,SXF_NOCHECKPOSITION|SXF_ABSOLUTEVELOCITY)
 			HX00 ABCDE 1 Bright
 			stop
