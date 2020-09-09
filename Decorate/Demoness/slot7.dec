@@ -270,6 +270,17 @@ ACTOR Hexen2TempestStaff : Weapon
 	  Goto WeaponIdle
 	  HX04 O 0 A_Refire(1)
 	  Goto WeaponIdle
+	  HX04 O 0 A_TakeInventory("Hexen2TempestStaffChainTotal",4)
+	  HX04 O 2 Bright
+	  HX04 P 0 A_FireCustomMissile("Hexen2TempestStaffPoweredLightning",0,1,0)
+	  HX04 P 0 A_JumpIfInventory("Clip",1,1)
+	  Goto WeaponIdle
+	  HX04 P 0 A_JumpIfInventory("Cell",1,1)
+	  Goto WeaponIdle
+	  HX04 P 0 A_JumpIfInventory("PowerWeaponLevel2",1,1)
+	  Goto WeaponIdle
+	  HX04 P 0 A_Refire(1)
+	  Goto WeaponIdle
 	  HX04 P 0 A_TakeInventory("Hexen2TempestStaffChainTotal",4)
 	  HX04 P 2 Bright
 	  HX04 A 0 A_FireCustomMissile("Hexen2TempestStaffPoweredLightning",0,1,0)
@@ -422,7 +433,7 @@ Actor Hexen2TempestStaffLightningSegment
 ACTOR Hexen2TempestStaffPoweredLightning : FastProjectile
 {
 	Speed 28
-	Damage (10)
+	Damage (0)
 	+MTHRUSPECIES
 	+THRUSPECIES
 	+BLOODLESSIMPACT
@@ -597,24 +608,57 @@ ACTOR Hexen2TempestStaffPoweredLightning2 : Hexen2TempestStaffPoweredLightning
 {
 	States
 	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_Jump(32,2)
-		TNT1 A 0 A_SetDamageType("Hexen2ElectricExtreme")
-		TNT1 A 0 A_ChangeFlag(PAINLESS,Random(0,128))
-		TNT1 A 0 A_TransferPointer(AAPTR_TARGET,AAPTR_DEFAULT,AAPTR_MASTER,AAPTR_MASTER)
-		TNT1 A 0 A_RearrangePointers(AAPTR_MASTER,AAPTR_TARGET,AAPTR_DEFAULT)
-		Goto Moving
-	Remove:
-	XDeath:
-		TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
-		TNT1 A 0 A_TransferPointer(AAPTR_TARGET,AAPTR_DEFAULT,AAPTR_MASTER,AAPTR_MASTER)
-		TNT1 A 0 A_RearrangePointers(AAPTR_MASTER,AAPTR_TARGET,AAPTR_DEFAULT)
-		TNT1 A 0 A_Jump(32,2)
-		TNT1 A 0 A_SetDamageType("Hexen2ElectricExtreme")
-		TNT1 A 0 A_Explode(CallACS("Hexen2_IntelligenceMultiplier",10),16,!XF_HURTSOURCE,0,16)
-		TNT1 A 0 A_SpawnItemEx("Hexen2TempestStaffShockHit",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERPOINTERS)//A_CustomMissile("Hexen2TempestStaffShockHit",0,0,0,CMF_AIMDIRECTION)
-		TNT1 A 1
-		stop
+		Spawn:
+			TNT1 A 0
+			TNT1 A 0 A_Jump(32,2)
+			TNT1 A 0 A_SetDamageType("Hexen2ElectricExtreme")
+			TNT1 A 0 A_ChangeFlag(PAINLESS,Random(0,128))
+			TNT1 A 0 A_TransferPointer(AAPTR_TARGET,AAPTR_DEFAULT,AAPTR_MASTER,AAPTR_MASTER)
+			TNT1 A 0 A_RearrangePointers(AAPTR_MASTER,AAPTR_TARGET,AAPTR_DEFAULT)
+			Goto Moving
+		//pasting this rest of this as I suspect the inheritance bug at play
+		Moving:
+			TNT1 A 0 A_JumpIfInventory("Hexen2LightningArcLength",32,"Remove")
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+		MovingBoltChoose:
+			TNT1 A 0 A_Jump(256,"MovingBolt1","MovingBolt2","MovingBolt3","MovingBolt4","MovingBolt5","MovingBolt6")
+		MovingBolt1:
+			TNT1 A 0 A_SpawnItemEx("Hexen2TempestStaffPoweredLightningSegment1",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			Goto MovingBoltContinue
+		MovingBolt2:
+			TNT1 A 0 A_SpawnItemEx("Hexen2TempestStaffPoweredLightningSegment2",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			Goto MovingBoltContinue
+		MovingBolt3:
+			TNT1 A 0 A_SpawnItemEx("Hexen2TempestStaffPoweredLightningSegment3",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			Goto MovingBoltContinue
+		MovingBolt4:
+			TNT1 A 0 A_SpawnItemEx("Hexen2TempestStaffPoweredLightningSegment4",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			Goto MovingBoltContinue
+		MovingBolt5:
+			TNT1 A 0 A_SpawnItemEx("Hexen2TempestStaffPoweredLightningSegment5",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			Goto MovingBoltContinue
+		MovingBolt6:
+			TNT1 A 0 A_SpawnItemEx("Hexen2TempestStaffPoweredLightningSegment6",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			Goto MovingBoltContinue
+		MovingBoltContinue:
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) Goto Remove
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) Goto Remove
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) Goto Remove
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) Goto Remove
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) Goto Remove
+			TNT1 A 0 A_GiveInventory("Hexen2LightningArcLength",1)
+			Goto Moving
+		Remove:
+		XDeath:
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			//TNT1 A 0 A_TransferPointer(AAPTR_TARGET,AAPTR_DEFAULT,AAPTR_MASTER,AAPTR_MASTER)
+			//TNT1 A 0 A_RearrangePointers(AAPTR_MASTER,AAPTR_TARGET,AAPTR_DEFAULT)
+			TNT1 A 0 A_Jump(32,2)
+			TNT1 A 0 A_SetDamageType("Hexen2ElectricExtreme")
+			TNT1 A 0 A_Explode(CallACS("Hexen2_IntelligenceMultiplier",10),16,!XF_HURTSOURCE,0,16)
+			TNT1 A 0 A_SpawnItemEx("Hexen2TempestStaffShockHit",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERPOINTERS)//A_CustomMissile("Hexen2TempestStaffShockHit",0,0,0,CMF_AIMDIRECTION)
+			TNT1 A 1
+			stop
 	}
 }
