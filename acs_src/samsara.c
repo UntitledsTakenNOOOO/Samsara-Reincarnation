@@ -2257,6 +2257,24 @@ Script "Samsara_Laser" (int type, int space, int height)
 		case 5:
 			segment = "Hexen2ForceCubeMissileSegment5";
 			break;
+		case 6:
+			segment = "Hexen2TempestStaffPoweredLightningSegment1";
+			break;	
+		case 7:
+			segment = "Hexen2TempestStaffPoweredLightningSegment2";
+			break;
+		case 8:
+			segment = "Hexen2TempestStaffPoweredLightningSegment3";
+			break;
+		case 9:
+			segment = "Hexen2TempestStaffPoweredLightningSegment4";
+			break;
+		case 10:
+			segment = "Hexen2TempestStaffPoweredLightningSegment5";
+			break;
+		case 11:
+			segment = "Hexen2TempestStaffPoweredLightningSegment6";
+			break;			
 	}
 	int t, i, k = 0, l, angle, pitch;
     int x, y, z, tx, ty, tz;
