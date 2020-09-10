@@ -2239,6 +2239,9 @@ Script "BonusItemCount" Open
 
 Script "Samsara_Laser" (int type, int space, int height)
 {
+	int t, i, k = 0, l, angle, pitch;
+    int x, y, z, tx, ty, tz;
+    int vx, vy, vz, mag, magI;	
 	str segment;
 	switch(type)
 	{
@@ -2258,33 +2261,18 @@ Script "Samsara_Laser" (int type, int space, int height)
 			segment = "Hexen2ForceCubeMissileSegment5";
 			break;
 		case 6:
-			segment = "Hexen2TempestStaffPoweredLightningSegment1";
-			break;	
-		case 7:
-			segment = "Hexen2TempestStaffPoweredLightningSegment2";
+			i = space;
+			segment = "Hexen2TempestStaffPoweredLightningSegment";	
 			break;
-		case 8:
-			segment = "Hexen2TempestStaffPoweredLightningSegment3";
-			break;
-		case 9:
-			segment = "Hexen2TempestStaffPoweredLightningSegment4";
-			break;
-		case 10:
-			segment = "Hexen2TempestStaffPoweredLightningSegment5";
-			break;
-		case 11:
-			segment = "Hexen2TempestStaffPoweredLightningSegment6";
-			break;			
 	}
-	int t, i, k = 0, l, angle, pitch;
-    int x, y, z, tx, ty, tz;
-    int vx, vy, vz, mag, magI;	
+	
 
 	int newtid = UniqueTid();
 
 	tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0);
-	SetActivatorToTarget(0);
-
+	
+	SetActivatorToTarget(0);	
+		
     x = GetActorX(0);
 	y = GetActorY(0);
 	z = GetActorZ(0) + height*1.0;
@@ -2300,7 +2288,7 @@ Script "Samsara_Laser" (int type, int space, int height)
     vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
     vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
     magI = ftoi(mag);
-    for (i = 0; i < magI; i += space)
+    for (i = i; i < magI; i += space)
     {
         SpawnForced(segment, x+(vx*i), y+(vy*i), z+(vz*i), newtid);
 		SetActorPitch(newtid, pitch);
