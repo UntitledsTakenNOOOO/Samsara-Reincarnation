@@ -2237,7 +2237,7 @@ Script "BonusItemCount" Open
 	ArmorBonusMapCount = ThingCountName("ArmorScrap200", 0);
 }
 
-Script "Samsara_Laser" (int type, int space, int height)
+Script "Samsara_Laser" (int type, int space, int height) clientside
 {
 	int t, i, k = 0, l, angle, pitch;
     int x, y, z, tx, ty, tz;
