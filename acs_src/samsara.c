@@ -2239,9 +2239,7 @@ Script "BonusItemCount" Open
 
 Script "Samsara_Laser" (int type, int space, int height) clientside
 {
-	int t, i, k = 0, l, angle, pitch;
-    int x, y, z, tx, ty, tz;
-    int vx, vy, vz, mag, magI;	
+	int t, i, k = 0, l, angle, pitch, x, y, z, tx, ty, tz, vx, vy, vz, mag, magI, horz;
 	str segment;
 	switch(type)
 	{
@@ -2267,6 +2265,33 @@ Script "Samsara_Laser" (int type, int space, int height) clientside
 		case 7:
 			segment = "Hexen2FamineBeamSegment";
 			break;
+		case 8:
+			segment = "TentacleProjectileSegment";
+			break;
+		case 9:
+			horz = -11;
+			i = 28;
+			segment = "LaserProjectileSegment";
+			break;
+		case 10:
+			horz = -2;
+			i = 16;
+			segment = "LaserProjectileSegment";
+			break;
+		case 11:
+			horz = 2;
+			i = 16;
+			segment = "LaserProjectileSegment";
+			break;
+		case 12:
+			i = 16;
+			segment = "TentacleProjectileSegment";
+			break;
+		case 13:
+			horz = 24;
+			i = 64;
+			segment = "WidowBeamProjectileSegment";
+			break;
 	}
 	
 
@@ -2275,9 +2300,12 @@ Script "Samsara_Laser" (int type, int space, int height) clientside
 	tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0);
 	
 	SetActivatorToTarget(0);	
+	
+	int xoff = sin(GetActorAngle(0)) * horz;
+	int yoff = cos(GetActorAngle(0)) * horz;
 		
-    x = GetActorX(0);
-	y = GetActorY(0);
+    x = GetActorX(0) + xoff;
+	y = GetActorY(0) + yoff;
 	z = GetActorZ(0) + height*1.0;
 	
 	int vectorx = tx - x;
