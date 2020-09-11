@@ -2264,6 +2264,9 @@ Script "Samsara_Laser" (int type, int space, int height) clientside
 			i = space;
 			segment = "Hexen2TempestStaffPoweredLightningSegment";	
 			break;
+		case 7:
+			segment = "Hexen2FamineBeamSegment";
+			break;
 	}
 	
 
