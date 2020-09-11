@@ -332,7 +332,7 @@ actor UsingLG: Boolean {}
 
 ACTOR LGBeamProjectile : FastProjectile
 {
-	Speed 32
+	Speed 512
 	Damage (10)
 	+MTHRUSPECIES
 	+THRUSPECIES
@@ -343,7 +343,18 @@ ACTOR LGBeamProjectile : FastProjectile
 	Renderstyle Translucent
 	States
 	{
-	Spawn:
+		Spawn:
+			TNT1 AAA 1
+			Goto Death	
+		Death:
+			TNT1 A 0 A_JumpIf(CallACS("Samsara_Laser",14,28,32) == 1, 1)
+			TNT1 A 5
+			stop
+			}
+}			
+	
+	
+/*	Spawn:
 		TNT1 A 0 NoDelay A_ChangeFlag(PAINLESS,Random(0,128))
 		TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
 		TNT1 A 0 A_Warp(AAPTR_DEFAULT,-MomX,-MomY,-MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
@@ -367,10 +378,38 @@ ACTOR LGBeamProjectile : FastProjectile
 		TNT1 A 1
 		stop
 	}
-}
+}*/
 
 ACTOR LGBeamProjectileCoop : LGBeamProjectile { +THRUSPECIES +MTHRUSPECIES Species "Player" }
-ACTOR LGBeamProjectile2 : LGBeamProjectile { Damage (30) }
+ACTOR LGBeamProjectile2 : LGBeamProjectile { 
+	Damage (30)
+	States
+	{
+		Spawn:
+			TNT1 A 0 NoDelay A_ChangeFlag(PAINLESS,Random(0,128))
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,-MomX,-MomY,-MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("LGBeam",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX,MomY,MomZ,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION)
+		Moving:
+			TNT1 A 0 A_JumpIfCloser(496,1)
+			Stop
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", false)
+			TNT1 A 0 A_SpawnItemEx("LGBeam",0,0,0,(MomX*0.001), (MomY*0.001), (MomZ*0.001), Angle, SXF_ABSOLUTEPOSITION|SXF_ABSOLUTEMOMENTUM|SXF_ABSOLUTEANGLE)
+			TNT1 A 0 A_ChangeFlag("CLIENTSIDEONLY", true)
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) stop
+			TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,"Moving") 
+			stop
+		Remove:
+			TNT1 A 1
+			stop
+			}
+}	
 
 actor LGBeam
 {
@@ -379,7 +418,7 @@ actor LGBeam
 	+CLIENTSIDEONLY
 	Height 1
 	Radius 1
-	DamageType "QuakeElectric"
+//	DamageType "QuakeElectric"
     States
     {
       Spawn:
