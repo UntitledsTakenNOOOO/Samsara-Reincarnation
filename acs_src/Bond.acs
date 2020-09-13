@@ -2,7 +2,7 @@
 #include "zcommon.acs"
 #include "CommonFuncs.h"
 
-Script "BondAim" Enter Clientside
+Script "BondAim" Enter// Clientside
 {	
 	while(CheckInventory("BondClass"))
 	{
@@ -36,6 +36,17 @@ Script "BondAim" Enter Clientside
 					GiveInventory("BondGunAngle", 1);
 			}
 		}
+		
+		if(buttonPress & BT_Attack)
+			GiveInventory("BondPrimaryToken",1);
+		else
+			TakeInventory("BondPrimaryToken",1);
+			
+		if(buttonPress & BT_AltAttack)
+			GiveInventory("BondSecondaryToken",1);
+		else
+			TakeInventory("BondSecondaryToken",1); 
+		
 		Delay(1);
 	}
 }
@@ -108,32 +119,36 @@ Script "BondActivateWatch" (void) Net// Clientside
 		GiveInventory("BondWatchQueue", 1);
 }
 
-Script "BondAltFire" (void) Clientside
+Script "BondAltFire" (void)// Clientside
 {
-	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
-	int oldpresscounter;
-	if(buttonPress & BT_AltAttack)
+	while(true)
 	{
-		if(oldpresscounter >= 15)
+		int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
+		int oldpresscounter;
+		if(buttonPress & BT_AltAttack)
 		{
-			GiveInventory("BondAltToggle", 2);
-			oldpresscounter = 0;
-			terminate;
+			if(oldpresscounter >= 15)
+			{
+				GiveInventory("BondAltToggle", 2);
+				oldpresscounter = 0;
+				break;
+			}
+			else
+			{
+				oldpresscounter++;
+			}
 		}
 		else
 		{
-			oldpresscounter++;
-		}
+			GiveInventory("BondAltToggle", 1);
+			oldpresscounter = 0;
+			break;
+		}	
+		Delay(1);
 	}
-	else
-	{
-		GiveInventory("BondAltToggle", 1);
-		oldpresscounter = 0;
-		terminate;
-	}
-		
-	Delay(1);
-	restart;
+	Delay(3);
+	TakeInventory("BondAltActivationToken",1);
+	terminate;
 }
 
 Script "BondAltHold" (void) Clientside
@@ -841,7 +856,7 @@ Script "BondWatchInterface" (void) Clientside
 	restart;
 }
 
-Script "BondWeaponSwitch" (void)
+Script "BondWeaponSwitch" (void) clientside
 {
 	SetWeapon(GoldeneyeWeaponInfo[CheckInventory("BondWeaponSwitchToken")-1][0]);
 	//PrintBold(s:GoldeneyeWeapons[CheckInventory("BondWeaponSwitchToken")-1]);
@@ -849,7 +864,7 @@ Script "BondWeaponSwitch" (void)
 	TakeInventory("BondWeaponSwitchToken", 18);
 }
 
-Script "BondFireCoolDown" (void)
+Script "BondFireCoolDown" (void) clientside
 {
 	Delay(random(16,64));
 	TakeInventory("BondDualFireTrigger", 1);
@@ -998,7 +1013,7 @@ str RedDeathImages[42] = { "GEDETH00", "GEDETH01", "GEDETH02", "GEDETH03", "GEDE
 "GEDETH24", "GEDETH25", "GEDETH26", "GEDETH27", "GEDETH28", "GEDETH29", "GEDETH30", "GEDETH31", "GEDETH32", "GEDETH33", "GEDETH34", "GEDETH35", "GEDETH36",
 "GEDETH37", "GEDETH38", "GEDETH39", "GEDETH40", "GEDETH41" };
 
-Script "BondDeathFunctions" Death
+Script "BondDeathFunctions" Death clientside
 {
 	if(!CheckInventory("BondClass"))
 		terminate;
@@ -1027,7 +1042,7 @@ Script "BondDeathFunctions" Death
 	LocalSetMusic(GoldeneyeMusic[CheckInventory("BondMusicToken")-1]);
 }
 
-Script "BondDeathCameraWiggle" (void)
+Script "BondDeathCameraWiggle" (void) clientside
 {
 	int a;
 	if(GetActorPitch(0) > 0)
@@ -1070,7 +1085,7 @@ Script "BondDeathCameraWiggle" (void)
 	//SetActorPitch(0, -32767);
 }
 
-Script "BondGiveDualToken" (int index)
+Script "BondGiveDualToken" (int index) clientside
 {
 	GiveInventory(GoldeneyeWeaponInfo[index][7], 1);
 }
@@ -1120,7 +1135,7 @@ Script "BondThrownKnifePitch" (void)
 	SetResultValue(angle);
 }
 
-Script "BondZoomAmountModify" (void)
+Script "BondZoomAmountModify" (void) clientside
 {
 	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
 
