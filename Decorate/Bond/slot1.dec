@@ -1043,12 +1043,7 @@ Actor Goldeneye_KnifeProjectile
 	Height 8
 	Radius 6
 	Speed 20
-	-NOGRAVITY
-	+BOUNCEONACTORS
-	+ALLOWBOUNCEONACTORS
-	+USEBOUNCESTATE
-	+MOVEWITHSECTOR
-	+ISMONSTER
+	ExplosionDamage 0
 	Gravity 0.33
 	Scale 0.5
 	BounceType "Doom"	
@@ -1056,10 +1051,21 @@ Actor Goldeneye_KnifeProjectile
 	SeeSound "Goldeneye/KnifeThrow"
 	BounceFactor 0.1
 	var int user_pitch;
+	var int user_damage;
+	-NOGRAVITY
+	+BOUNCEONACTORS
+	+ALLOWBOUNCEONACTORS
+	+USEBOUNCESTATE
+	+MOVEWITHSECTOR
+	+ISMONSTER
+	+NODAMAGETHRUST
+	+HITTRACER
+	+NOEXTREMEDEATH
 	States
 	{
 		Spawn:
 			TNT1 A 0
+			TNT1 A 0 A_SetUserVar("user_damage",50)
 			TNT1 A 0 A_Playsound("Goldeneye/KnifeThrow", CHAN_5, 1.0, true)
 			TNT1 A 0 A_SetUserVar("user_pitch", CallACS("BondThrownKnifePitch"))
 			TNT1 A 0 A_SetPitch(user_pitch - 90)
@@ -1073,6 +1079,7 @@ Actor Goldeneye_KnifeProjectile
 			GE00 A 0 A_Playsound("Goldeneye/KnifeCollide", CHAN_BODY)
 			Goto SpawnLoop
 		Bounce.Actor:
+			GE00 A 0 A_Explode(CallACS("BondHitBox",user_damage),8,!XF_HURTSOURCE,0,8)
 			GE00 A 0 A_Playsound("Goldeneye/HitBody", CHAN_BODY)
 			Goto SpawnLoop
 		Death:
