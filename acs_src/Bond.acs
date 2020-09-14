@@ -4,6 +4,7 @@
 
 Script "BondAim" Enter// Clientside
 {	
+	TakeInventory("BondDualWieldToken",1);
 	while(CheckInventory("BondClass"))
 	{
 		int yawrequired;
@@ -897,57 +898,59 @@ Script "BondDryFireSpamBlocker_Secondary" (void)
 
 Script "BondHudDisplay" Enter Clientside
 {
-	if(!CheckInventory("BondWatchToken"))
+	while(true)
 	{
-		for(int a = 0; a < 18; a++)
+		if(!CheckInventory("BondWatchToken"))
 		{
-			if(!CheckInventory("BondWeaponToken"))
+			for(int a = 0; a < 18; a++)
 			{
-				if(CheckWeapon(GoldeneyeWeaponInfo[a][0]))
+				if(!CheckInventory("BondWeaponToken"))
 				{
-					RemoveMessages(12010, 12015);
-					SetFont("GEFONTS");
-					SetHudSize(360, 240, false);
-					if(strcmp(GoldeneyeWeaponInfo[a][3], "-1"))
-						HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][3]); HUDMSG_PLAIN, 12010, CR_UNTRANSLATED, 326.5, 228.0, 1.0);
-					
-					if(strcmp(GoldeneyeWeaponInfo[a][4], "-1"))
-						HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][4]); HUDMSG_PLAIN, 12011, CR_UNTRANSLATED, 316.6, 228.0, 1.0);
-						
-					SetFont(GoldeneyeWeaponInfo[a][5]);
-					
-					if(strcmp(GoldeneyeWeaponInfo[a][5], "-1"))
-						HudMessage(s:"A"; HUDMSG_PLAIN, 12012, CR_UNTRANSLATED, 318.1, 230.2, 1.0);
-						
-					SetFont("GEFONTS");
-						
-					if(CheckInventory("BondDualWieldToken"))
+					if(CheckWeapon(GoldeneyeWeaponInfo[a][0]))
 					{
+						RemoveMessages(12010, 12015);
+						SetFont("GEFONTS");
+						SetHudSize(360, 240, false);
 						if(strcmp(GoldeneyeWeaponInfo[a][3], "-1"))
-							HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][3]); HUDMSG_PLAIN, 12013, CR_UNTRANSLATED, 44.5, 228.0, 1.0);
+							HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][3]); HUDMSG_PLAIN, 12010, CR_UNTRANSLATED, 326.5, 228.0, 1.0);
 						
-						if(strcmp(GoldeneyeWeaponInfo[a][6], "-1"))
-							HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][6]); HUDMSG_PLAIN, 12014, CR_UNTRANSLATED, 34.6, 228.0, 1.0);
+						if(strcmp(GoldeneyeWeaponInfo[a][4], "-1"))
+							HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][4]); HUDMSG_PLAIN, 12011, CR_UNTRANSLATED, 316.6, 228.0, 1.0);
 							
 						SetFont(GoldeneyeWeaponInfo[a][5]);
 						
 						if(strcmp(GoldeneyeWeaponInfo[a][5], "-1"))
-							HudMessage(s:"A"; HUDMSG_PLAIN, 12015, CR_UNTRANSLATED, 36.1, 230.2, 1.0);
-					}	
-					else
-					{
-						RemoveMessages(12013, 12015);
+							HudMessage(s:"A"; HUDMSG_PLAIN, 12012, CR_UNTRANSLATED, 318.1, 230.2, 1.0);
+							
+						SetFont("GEFONTS");
+							
+						if(CheckInventory("BondDualWieldToken"))
+						{
+							if(strcmp(GoldeneyeWeaponInfo[a][3], "-1"))
+								HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][3]); HUDMSG_PLAIN, 12013, CR_UNTRANSLATED, 44.5, 228.0, 1.0);
+							
+							if(strcmp(GoldeneyeWeaponInfo[a][6], "-1"))
+								HudMessage(d:CheckInventory(GoldeneyeWeaponInfo[a][6]); HUDMSG_PLAIN, 12014, CR_UNTRANSLATED, 34.6, 228.0, 1.0);
+								
+							SetFont(GoldeneyeWeaponInfo[a][5]);
+							
+							if(strcmp(GoldeneyeWeaponInfo[a][5], "-1"))
+								HudMessage(s:"A"; HUDMSG_PLAIN, 12015, CR_UNTRANSLATED, 36.1, 230.2, 1.0);
+						}	
+						else
+						{
+							RemoveMessages(12013, 12015);
+						}
 					}
 				}
 			}
 		}
+		else
+		{
+			RemoveMessages(12010, 12015);
+		}
+		Delay(1);
 	}
-	else
-	{
-		RemoveMessages(12010, 12015);
-	}
-	Delay(1);
-	restart;
 }
 
 Script "BondSpriteEffects" (int type)
@@ -1182,6 +1185,7 @@ Script "BondHitBox" (int damage)
 		if((z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.45)) && (z <= tz+FixedMul(GetActorProperty(0,APROP_Height),0.55)))
 		{
 			SetResultValue(damage*3);
+			SetActorProperty(0,APROP_DamageType,"GoldeneyeHead");
 		}
 		else
 		{
@@ -1190,12 +1194,14 @@ Script "BondHitBox" (int damage)
 	}
 	else
 	{
-		if((z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.85)) && (z <= tz+GetActorProperty(0,APROP_Height)))
+		if((z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.85))/* && (z <= tz+GetActorProperty(0,APROP_Height))*/)
 		{
+			SetActorProperty(0,APROP_DamageType,"GoldeneyeHead");
 			SetResultValue(damage*3);
 		}
 		else if((z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.45)) && (z <= tz+FixedMul(GetActorProperty(0,APROP_Height),0.85)))
 		{
+			SetActorProperty(0,APROP_DamageType,"GoldeneyeTorso");
 			SetResultValue(damage);
 		}
 		else
