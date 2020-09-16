@@ -548,7 +548,7 @@ function int HandleInstagib(int respawning)
 	if (CheckInventory("RRClass") == 1) { GiveInventory("Yer-Scattered-Ass",1); } //+Added	
 	if (CheckInventory("BittermanClass") == 1) { GiveInventory("Q2SuperShotgun",1); }
 	if (CheckInventory("Hexen2Class") == 1) { GiveInventory("Hexen2AcidRune",1); }
-	if (CheckInventory("BondClass") == 1) { GiveInventory("Hexen2AcidRune",1); }
+	if (CheckInventory("BondClass") == 1) { GiveInventory("Goldeneye_AutoShotgun",1); }
 	return 1;
 }
 
