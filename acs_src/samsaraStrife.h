@@ -75,8 +75,8 @@ int AccuracyUniques[CLASSCOUNT][ACCURACYCOUNT] =
 	{"SWRipperHeart","HeartAmmo","HeatSeekingCard","","","","","","",""},		
 	{"RandomMagicItem","","","","","","","","",""},
 	{"Ring of RA","","","","","","","","",""},	
-	{" Hunting Rifle With Scope ",""," Dyn 'O' Mites ","","","","","","",""},	
-	{"Q2GrenadeLauncher","RocketAmmo","Q2ETFRifle","Q2Flechettes","Q2IonRipper","Cell","Q2IonRipper","Cell","",""},	
+	{" Hunting Rifle With Scope ","Clip"," Dyn 'O' Mites ","RocketAmmo","","","","","",""},	
+	{"Q2GrenadeLauncher","RocketAmmo","Q2ETFRifle","Q2Flechettes","Q2IonRipper","Cell","",""},	
 	{"Hexen2TomeOfPower","","Hexen2ForceCube","","","","","","",""},	
 	{"Goldeneye_SniperRifle","Goldeneye_SniperDualToken","Goldeneye_SilencedD5K","Goldeneye_D5KDualToken","Goldeneye_GadgetGranter","","",""},
 };
