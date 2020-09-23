@@ -164,6 +164,7 @@ ACTOR Hexen2AcidRune : Weapon
 	  HX02 ABCDEFG 2
 	FireHold:
 	  HX02 H 0 A_AlertMonsters
+	  HX02 H 0 A_JumpIfInventory("CoopModeOn", 1, "FireHoldCoop")
 	  HX02 H 0 A_FireCustomMissile("Hexen2AcidRuneMissile",0,1,-8,2)
 	  HX02 H 2 Bright
 	  HX02 IJ 2
@@ -174,10 +175,20 @@ ACTOR Hexen2AcidRune : Weapon
 	FireStop:
 	  HX02 KLMN 2
 	  Goto WeaponIdle
+	FireHoldCoop:
+	  HX02 H 0 A_FireCustomMissile("Hexen2AcidRuneMissileCoop",0,1,-8,2)
+	  HX02 H 2 Bright
+	  HX02 IJ 2
+	  HX02 H 2
+	  HX02 IJ 2
+	  HX02 H 2
+	  HX02 I 0 A_Refire("FireHoldCoop")
+	  Goto FireStop
 	FirePowered:
 	  HX06 A 0 A_JumpIfInventory("Clip",4,1)
 	  Goto FireEmptyPowered
 	  HX06 A 0 A_AlertMonsters
+	  HX06 A 0 A_JumpIfInventory("CoopModeOn", 1, "FirePoweredCoop")
 	  HX06 ABCDEFG 2 Bright
 	  HX06 H 0 A_Playsound("Hexen2/AcidRuneFirePowered", CHAN_WEAPON)
 	  HX06 H 0 A_FireCustomMissile("Hexen2AcidRuneMissilePowered",0,0,-8,2)
@@ -185,13 +196,21 @@ ACTOR Hexen2AcidRune : Weapon
 	  HX06 HIJ 2 Bright
 	  HX06 KLMN 2 Bright
 	  Goto WeaponIdlePowered
+	FirePoweredCoop:
+	  HX06 ABCDEFG 2 Bright
+	  HX06 H 0 A_Playsound("Hexen2/AcidRuneFirePowered", CHAN_WEAPON)
+	  HX06 H 0 A_FireCustomMissile("Hexen2AcidRuneMissilePoweredCoop",0,0,-8,2)
+	  HX06 H 0 A_TakeInventory("Shell",4,TIF_NOTAKEINFINITE)
+	  HX06 HIJ 2 Bright
+	  HX06 KLMN 2 Bright
+	  Goto WeaponIdlePowered	
 	FireEmpty:
 	  HX02 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"FireEmptyPowered")
 	  HX02 H 2 A_WeaponReady(WRF_NOFIRE)
 	  Goto WeaponIdle
 	FireEmptyPowered:
 	  HX06 H 2 Bright A_WeaponReady(WRF_NOFIRE)
-	  Goto WeaponIdlePowered
+	  Goto WeaponIdlePowered  
 	NoFrames:
 	  HX00 A 0 bright A_Stop HX01 A 0 bright A_Stop HX02 A 0 bright A_Stop HX03 A 0 bright A_Stop HX04 A 0 bright A_Stop HX05 A 0 bright A_Stop 
 	  HX06 A 0 bright A_Stop HX07 A 0 bright A_Stop HX08 A 0 bright A_Stop HX09 A 0 bright A_Stop HX10 A 0 bright A_Stop HX11 A 0 bright A_Stop 
@@ -237,6 +256,8 @@ Actor Hexen2AcidRuneMissile
 		  stop
 	}
 }
+
+Actor Hexen2AcidRuneMissileCoop : Hexen2AcidRuneMissile { +THRUSPECIES Species "Player" }
 
 Actor Hexen2AcidRuneMissilePuffGenerator : Hexen2PuffGenerator
 { 
@@ -304,6 +325,8 @@ Actor Hexen2AcidRuneMissilePowered
 		  stop
 	}
 }
+
+Actor Hexen2AcidRuneMissilePoweredCoop : Hexen2AcidRuneMissilePowered { +THRUSPECIES Species "Player" }
 
 Actor Hexen2AcidRunePoweredFizzle
 {

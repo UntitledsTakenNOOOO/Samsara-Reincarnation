@@ -61,6 +61,7 @@ ACTOR Hexen2RavenStaff : Weapon
 	  HX01 AA 0 A_FireCustomMissile("Hexen2RavenStaffSmoke1",0,0,0,4)
 	  HX01 AA 0 A_FireCustomMissile("Hexen2RavenStaffSmoke2",0,0,0,4)
 	  HX01 A 0 A_PlaySound("Hexen2/RavenStaffFire", CHAN_WEAPON)
+	  HX01 A 0 A_JumpIfInventory("CoopModeOn", 1, "FireCoop")
       HX01 AA 1 A_SetPitch(pitch-1)
 	  HX01 BB 1 A_SetPitch(pitch+1)
 	  HX01 C 2
@@ -70,6 +71,16 @@ ACTOR Hexen2RavenStaff : Weapon
 	  HX01 D 2
 	  HX00 A 17
       Goto WeaponIdle
+	FireCoop:
+      HX01 AA 1 A_SetPitch(pitch-1)
+	  HX01 BB 1 A_SetPitch(pitch+1)
+	  HX01 C 2
+	  HX01 D 0 A_FireCustomMissile("Hexen2RavenShot1",0,0,0,2)
+	  HX01 D 0 A_TakeInventory("Clip",5,TIF_NOTAKEINFINITE)
+	  HX01 D 0 A_TakeInventory("Cell",5,TIF_NOTAKEINFINITE)
+	  HX01 D 2
+	  HX00 A 17
+      Goto WeaponIdle	
 	FirePowered:
 	  HX01 A 0 A_JumpIfInventory("Clip",25,1)
 	  Goto NoAmmo
@@ -77,6 +88,7 @@ ACTOR Hexen2RavenStaff : Weapon
 	  Goto NoAmmo
 	  HX01 A 0 A_AlertMonsters
 	  HX01 A 0 A_PlaySound("Hexen2/RavenStaffFirePowered", CHAN_WEAPON)
+	  HX01 A 0 A_JumpIfInventory("CoopModeOn", 1, "FirePoweredCoop")
       HX01 AA 1 Bright A_SetPitch(pitch-2)
 	  HX01 BB 1 Bright A_SetPitch(pitch+2)
 	  HX01 CD 2 Bright
@@ -86,6 +98,16 @@ ACTOR Hexen2RavenStaff : Weapon
 	  HX00 A 0 A_TakeInventory("Cell",25,TIF_NOTAKEINFINITE)
 	  HX00 A 35 Bright
       Goto WeaponIdle
+	FirePoweredCoop:
+      HX01 AA 1 Bright A_SetPitch(pitch-2)
+	  HX01 BB 1 Bright A_SetPitch(pitch+2)
+	  HX01 CD 2 Bright
+	  HX01 D 2 Bright
+	  HX00 A 0 A_FireCustomMissile("Hexen2RavenShotPoweredCoop",0,0,0,2)
+	  HX00 A 0 A_TakeInventory("Clip",25,TIF_NOTAKEINFINITE)
+	  HX00 A 0 A_TakeInventory("Cell",25,TIF_NOTAKEINFINITE)
+	  HX00 A 35 Bright
+      Goto WeaponIdle	
 	NoAmmo:
 	  HX00 A 1
 	  Goto WeaponIdle
@@ -149,6 +171,25 @@ Actor Hexen2RavenShot1
 	}
 }
 
+Actor Hexen2RavenShot1Coop : Hexen2RavenShot1 
+{
+	+THRUSPECIES
+	Species "Player"
+	States
+	{
+		Spawn:
+		  HX00 A 0
+		  TNT1 A 0 A_SetPitch(-CallACS("Hexen2_Decorate",3)/182)
+		  HX00 A 2
+		  HX00 A 0 A_SpawnItemEx("Hexen2LittleBlueFlash",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		  HX00 A 0 A_PlaySound("Hexen2/RavenSplit", CHAN_5)
+		  HX00 A 0 A_CustomMissile("Hexen2RavenShot2LeftCoop",0,0,4,CMF_TRACKOWNER|CMF_AIMDIRECTION|CMF_SAVEPITCH,pitch)
+		  HX00 A 0 A_CustomMissile("Hexen2RavenShot3Coop",0,0,0,CMF_TRACKOWNER|CMF_AIMDIRECTION|CMF_SAVEPITCH,pitch)
+		  HX00 A 0 A_CustomMissile("Hexen2RavenShot2RightCoop",0,0,-4,CMF_TRACKOWNER|CMF_AIMDIRECTION|CMF_SAVEPITCH,pitch)
+		  stop	
+	}
+}		
+
 Actor Hexen2RavenShot2Left
 {
 	Projectile
@@ -170,6 +211,22 @@ Actor Hexen2RavenShot2Left
 		  TNT1 A 0 A_PlaySound("Hexen2/Explode", CHAN_6)
 		  HX05 ABCDEFGHIJKL 2 Bright
 		  stop
+	}
+}
+
+Actor Hexen2RavenShot2LeftCoop : Hexen2RavenShot2Left 
+{
+	+THRUSPECIES
+	Species "Player"
+	States
+	{
+		Spawn:
+		  HX00 A 17
+		  HX00 A 0 A_SpawnItemEx("Hexen2LittleBlueFlash",0,-2,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		  HX00 A 0 A_PlaySound("Hexen2/RavenSplit", CHAN_5)
+		  HX00 A 0 A_CustomMissile("Hexen2RavenShot3LeftCoop",0,0,0,CMF_TRACKOWNER|CMF_AIMDIRECTION|CMF_SAVEPITCH,pitch)
+		  HX00 A 0 A_CustomMissile("Hexen2RavenShot3Left2Coop",0,0,10,CMF_TRACKOWNER|CMF_AIMDIRECTION|CMF_SAVEPITCH,pitch)
+		  stop	
 	}
 }
 
@@ -197,6 +254,22 @@ Actor Hexen2RavenShot2Right
 	}
 }
 
+Actor Hexen2RavenShot2RightCoop : Hexen2RavenShot2Right
+{
+	+THRUSPECIES
+	Species "Player"
+	States
+	{
+		Spawn:
+		  HX00 A 17
+		  HX00 A 0 A_SpawnItemEx("Hexen2LittleBlueFlash",0,2,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		  HX00 A 0 A_PlaySound("Hexen2/RavenSplit", CHAN_5)
+		  HX00 A 0 A_CustomMissile("Hexen2RavenShot3Right2Coop",0,0,-10,CMF_TRACKOWNER|CMF_AIMDIRECTION|CMF_SAVEPITCH,pitch)
+		  HX00 A 0 A_CustomMissile("Hexen2RavenShot3RightCoop",0,0,0,CMF_TRACKOWNER|CMF_AIMDIRECTION|CMF_SAVEPITCH,pitch)
+		  stop	
+	}
+}	
+
 Actor Hexen2RavenShot3
 {
 	Projectile
@@ -218,6 +291,8 @@ Actor Hexen2RavenShot3
 		  stop
 	}
 }
+
+Actor Hexen2RavenShot3Coop : Hexen2RavenShot3 { +THRUSPECIES Species "Player" }
 
 Actor Hexen2RavenShot3Left : Hexen2RavenShot3
 {
@@ -271,6 +346,11 @@ Actor Hexen2RavenShot3Right2 : Hexen2RavenShot3
 		  Goto SpawnLoop
 	}
 }
+
+Actor Hexen2RavenShot3LeftCoop : Hexen2RavenShot3Left { +THRUSPECIES Species "Player" }
+Actor Hexen2RavenShot3Left2Coop : Hexen2RavenShot3Left2 { +THRUSPECIES Species "Player" }
+Actor Hexen2RavenShot3RightCoop : Hexen2RavenShot3Right { +THRUSPECIES Species "Player" }
+Actor Hexen2RavenShot3Right2Coop : Hexen2RavenShot3Right2 { +THRUSPECIES Species "Player" }
 
 Actor Hexen2RavenStaffSmoke1 : Hexen2TeleportSmoke1
 {
@@ -333,6 +413,30 @@ Actor Hexen2RavenShotPowered
 		  stop
 	}
 }
+
+Actor Hexen2RavenShotPoweredCoop : Hexen2RavenShotPowered 
+{ 
+	+THRUSPECIES 
+	Species "Player" 
+	States
+	{
+		Death:
+		  TNT1 AAA 0 A_SpawnItemEx("Hexen2RavenShotSeekerCoop",random(-8,8),random(-8,8),0,random(-8,8),random(-8,8),8,0,SXF_NOCHECKPOSITION|SXF_TRANSFERPOINTERS)
+		  TNT1 A 0 A_SpawnItemEx("Hexen2WhiteSmoke",0,0,0,0,0,4,0,SXF_NOCHECKPOSITION)
+		  TNT1 A 0 A_SpawnItemEx("Hexen2WhiteSmoke",0,0,5,0,0,4,0,SXF_NOCHECKPOSITION)
+		  TNT1 A 0 A_SpawnItemEx("Hexen2WhiteSmoke",0,0,10,0,0,4,0,SXF_NOCHECKPOSITION)
+		  TNT1 A 0 A_PlaySound("Hexen2/Explode", CHAN_6)
+		  HX05 ABCDEFGHIJKL 2 Bright
+		  stop
+		Explode:
+		  TNT1 AAA 0 A_SpawnItemEx("Hexen2RavenShotSeekerCoop",random(-8,8),random(-8,8),0,random(-8,8),random(-8,8),8,0,SXF_NOCHECKPOSITION|SXF_TRANSFERPOINTERS)
+		  TNT1 A 0 A_SpawnItemEx("Hexen2WhiteSmoke",0,0,0,0,0,4,0,SXF_NOCHECKPOSITION)
+		  TNT1 A 0 A_SpawnItemEx("Hexen2WhiteSmoke",0,0,5,0,0,4,0,SXF_NOCHECKPOSITION)
+		  TNT1 A 0 A_SpawnItemEx("Hexen2WhiteSmoke",0,0,10,0,0,4,0,SXF_NOCHECKPOSITION)
+		  TNT1 A 1
+		  stop	
+	}
+}	
 
 Actor Hexen2RavenShotSeeker 
 {
@@ -408,6 +512,17 @@ Actor Hexen2RavenShotSeeker
 	}
 }
 
+Actor Hexen2RavenShotSeekerCoop : Hexen2RavenShotSeeker
+{
+	States
+	{
+		Melee:
+			HX00 A 2
+			HX00 A 0 A_CustomMissile("Hexen2RavenBiteProjectileCoop")//A_CustomMeleeAttack(8,"Hexen2/GauntletHit1","","Hexen2RavenDamage")
+			Goto SeeLoop
+	}
+}	
+
 Actor Hexen2RavenBiteProjectile : FastProjectile
 {
 	PROJECTILE
@@ -430,3 +545,5 @@ Actor Hexen2RavenBiteProjectile : FastProjectile
 		stop
 	}
 }
+
+Actor Hexen2RavenBiteProjectileCoop : Hexen2RavenBiteProjectile { +THRUSPECIES Species "Player" }
