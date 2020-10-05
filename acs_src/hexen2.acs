@@ -265,7 +265,7 @@ int Hexen2_NextLevelXP[11] = { 871, 2060, 4822, 9319, 19278, 36626, 66804, 11049
 
 Script "Hexen2_Hud" enter
 {
-	int artifactrotationcount, animationspeed, randomincrease, clipmax, cellmax, currenthealth, oldhealth, second;
+	int artifactrotationcount, animationspeed, randomincrease, clipmax, cellmax, currenthealth, oldhealth, second, requiredexperience, experiencegaugeoffset;
 	if(!CheckInventory("Hexen2Started"))
 	{
 		GiveInventory("Hexen2Intelligence", random(9,13));
@@ -389,9 +389,18 @@ Script "Hexen2_Hud" enter
 			second = 0;
 		else
 			second++;
-			
-		int requiredexperience = Hexen2_NextLevelXP[CheckInventory("Hexen2Level")-1] - CheckInventory("Hexen2Experience");
-		int experiencegaugeoffset = FixedDiv(requiredexperience,(Hexen2_NextLevelXP[CheckInventory("Hexen2Level")-1]-Hexen2_NextLevelXP[CheckInventory("Hexen2Level")-2]));
+		
+		
+		if(CheckInventory("Hexen2Level") < 12)
+		{
+			requiredexperience = Hexen2_NextLevelXP[CheckInventory("Hexen2Level")-1] - CheckInventory("Hexen2Experience");
+			experiencegaugeoffset = FixedDiv(requiredexperience,(Hexen2_NextLevelXP[CheckInventory("Hexen2Level")-1]-Hexen2_NextLevelXP[CheckInventory("Hexen2Level")-2]));
+		}
+		else
+		{
+			requiredexperience = Hexen2_NextLevelXP[10]+(192700*(CheckInventory("Hexen2Level")-11)) - CheckInventory("Hexen2Experience");
+			experiencegaugeoffset = FixedDiv(requiredexperience,(Hexen2_NextLevelXP[10]+(192700*(CheckInventory("Hexen2Level")-11)))-(Hexen2_NextLevelXP[10]+(192700*(CheckInventory("Hexen2Level")-12))));
+		}
 		
 		SetFont("HX2XPBAK");
 		SetHudSize(208,200,0);
