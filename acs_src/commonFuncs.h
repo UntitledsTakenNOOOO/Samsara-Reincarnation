@@ -61,6 +61,11 @@ function int max (int x, int y)
     return y;
 }
 
+function int floorwhole(int fixedNumber)
+{
+	return fixedNumber & 0xFFFF0000;
+}
+
 /*function int floor(int fixedNumber)
 {
 	return fixedNumber & 0xFFFF0000;

@@ -25,10 +25,19 @@ str ClassInfo[CLASSCOUNT][2][25] =
 	{{"Lo Wang", 22, "***", "**", "****", "****", "***", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "SMALLFONT", "Red", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5" }},
 	{{"Cybermage", 23, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Green", "SMALLFONT", "Yellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5" }},
 	{{"Jon", 24, "**", "***", "***", "**", "****", "Adventurer", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8" }},
-	{{"Leonard", 25, "***", "*", "****", "***", "***", "Sharpshooter", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGRR1", "CMPBGRR2", "CMPBGRR3", "CMPBGRR4", "CMPBGRR5" }},
+	{{"Leonard", 25, "***", "*", "****", "***", "***", "Sharpshooter", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "CMPBLEON", "untranslated", "CMPSLEON", "untranslated", "CMPBGRR1", "CMPBGRR2", "CMPBGRR3", "CMPBGRR4", "CMPBGRR5" }},
 	{{"Bitterman", 26, "***", "***", "****", "**", "***", "Battery", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "SMALLFONT", "Brick", "Q2SMFONT", "Brick", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26" }},
 	{{"Demoness", 27, "***", "**", "**", "***", "***", "Steamroller", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25" }},
 	{{"James Bond", 28, "***", "*", "***", "****", "****", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "GEFONTS", "Gold", "GEFONTS", "White", "CMPBGGE1", "CMPBGGE2", "", "CMPBGGE4", "CMPBGGE5" }},
+};
+
+int ClassFontScales[CLASSCOUNT][2] = 
+{  
+	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
+	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
+	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
+	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
+	{ 2.125, 1.25 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 }
 };
 
 str CompendiumWheelRot[12] = { "CMPWHL01", "CMPWHL02", "CMPWHL03", "CMPWHL04", "CMPWHL05", "CMPWHL06", "CMPWHL07", "CMPWHL08", "CMPWHL09", "CMPWHL10", "CMPWHL11", "CMPWHL12"};
@@ -61,7 +70,7 @@ str HeroSummaries[CLASSCOUNT] =
 	"",
 	"",
 	"",
-	"",
+	"Leonard was an unassuming redneck living in Hickston alongside his brother Bubba, living peacefully without expectations. Sure, his neighbors were exceptionally annoying and sure, the land was filled with hostile dogs and wasps, but ultimately cheap ass whiskey and pork rinds were in abundance, and best of all, the two brothers owned their prized pig Bessie, their real pride. All that changed when Hickston was invaded by alien forces, who not only decided to eliminate all humans, bụt also clone their neighbors and let them do the dirty job, With Bessie stolen and endless clones of their now even more aggravating neighbors shooting everything in sight, Leonard decided he had enough. After shooting his way through Hickston and nearby locations and finally crash-landing the main alien UFO, Leonard returned home, only to find his brother Bubba had consumed all the whiskey and pork rinds, And so, he decided to fight in the wheel of Samsara, in hope of once again finding the peace that invasion had forever eliminated in his hometown.",
 	"",
 	"The Demoness is a unique creature, the only one of her kind. She was created by Eidolon and could be considered to be his daughter. She was meant to be the progenitor of a new race of elite minions who would serve as the Serpent Rider's personal agents. \n\nEidolon taught his creation many harsh lessons and gave her considerable powers, yet he was never able to finish his work, as he was slain by mortal heroes. The Demoness was too weak at the time to intervene in any way. However, when she learned that the soul of her master had been stolen by Praevus, she went into an unholy rage and decided to deal with the blasphemer and his minions in person.",
 	"James Bond, British literary and film character, a peerless spy, notorious womanizer, and masculine icon. He is an internationally known spy that has one mission: to serve and protect his Royal Majesty by working for MI6, part of the British Secret Service. Bond was first conceived as a Cold War-era operative. Trained in intelligence and special forces, the superspy always used the latest gadgets, thwarted Soviet agents, brought international gangsters to justice, and inevitably bedded a beautiful woman. An enthusiastic gambler, he was nearly as loyal to his signature vodka martini as he was to the British crown and his Scottish roots. Although Bond radiated charisma and style, he was also intensely solitary and virtually friendless, despite his many trysts.",
@@ -128,7 +137,8 @@ str HeroTraits[CLASSCOUNT] =
 	
 	"",
 	
-	"",
+	"You screw with the bull, you get the horns: Growing in the deep south, Leonard has been experienced in firearms since infancy, thanks to his passion for hunting. The hunting crossbow and scoped rifle will be able pick off enemies from a distance, but if all else fails, a shower of AK-47 bullets will take care of the rest.
+	\n\nSwamp gas my ass: Leonard doesn't have the intelligence to use medical equipment and thus relies on food to heal. Eating too much will make you gassy, and drinking too much will make you drunk.",
 	
 	"",
 	
@@ -1244,7 +1254,7 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 	{
 		{ "Old Skinny Coot", "", "Most of the town folk are a bit scared of that skinny old coot. No one can say for sure how old he is, but he's been livin' round here since long before anyone else can remember. Folks say he's been touched by some bad mojo, and now he cain't be killed. A few people have even claimed that they've actually seen the old man die. Somehow though, he always manages to come back. To make things worse, the old fart hates tresspassers, and thinks he owns the whole county. Hell, he's so damn old that maybe that's not so impossible to believe.", "OldSkinnyCoot", "S_O2A1" },
 		{ "Groovy Old Coot", "", "We figured that after winning a free trip to Vegas at the Hickston Bingo Parlor, the skinny old coot might loosen up a might. Fat chance. All he did was come back from Vegas with a heap o' new shirts and pants, and he picked up some of that Vegas hipsters talk to boot. Seems that he's even more pissed off than before 'cause he lost all his entitlement money, and rumor has it that he even lost his land in a poker game. Our advice? Avoid this ornery old sumbitch at all costs, and if you seem, put on a pair of sunglasses... Jeez them shirts is loud!", "BlueGroovyOldCoot", "SCOOA1", "RedGroovyOldCoot", "SCO_A1", "GreenGroovyOldCoot", "_SCOA1", "BrownGroovyOldCoot", "SC_OA1", "RedPantsGroovyOldCoot", "S_COA1", "WhiteGroovyOldCoot", "SCO2A1" },
-		{ "Billy Jay Jeeter", "", "Billy Ray has always been a bit of a loner, and doesn't care much for comp'ny (even though he does consider most folks to be his cousin, an' in his case, he's likely right). Like many folk round these parts, Billy Ray swims in the shallow end of the gene pool, if'n you catch my drift. Because of several generations of...errrr...selective breedin', he is one mammoth of a man. That boy's skull is so thick I swear you could crack a bowlin' ball on it. \n\nI heard a rumor about Billy Ray recently. Word has it he was out frog giggin' in the swamp late one night, and one of them alien space ships sucked his big ass up. They say they done cloned that boy, but was so disappointed with the results, they dumped the whole lot back into the swamp. Now I guess there's supposed to be hundreds of them Billy Ray clones traipsin' about, and no one knows which is the original. Hell, I don't see what's so hard to figger out...just look for the one with the corn mash on his breath. ", "BillyRayJeeter", "BRJTA1" },
+		{ "Billy Ray Jeeter", "", "Billy Ray has always been a bit of a loner, and doesn't care much for comp'ny (even though he does consider most folks to be his cousin, an' in his case, he's likely right). Like many folk round these parts, Billy Ray swims in the shallow end of the gene pool, if'n you catch my drift. Because of several generations of...errrr...selective breedin', he is one mammoth of a man. That boy's skull is so thick I swear you could crack a bowlin' ball on it. \n\nI heard a rumor about Billy Ray recently. Word has it he was out frog giggin' in the swamp late one night, and one of them alien space ships sucked his big ass up. They say they done cloned that boy, but was so disappointed with the results, they dumped the whole lot back into the swamp. Now I guess there's supposed to be hundreds of them Billy Ray clones traipsin' about, and no one knows which is the original. Hell, I don't see what's so hard to figger out...just look for the one with the corn mash on his breath. ", "BillyRayJeeter", "BRJTA1" },
 		{ "Turd Minion", "", "Rumor has it that them Turd Minions is actually made from alien fecal matter. Ayup, you heard right, alien shit! Seems them buggers have found some kind'a way to recycle their own crap. They bring it to life and use them little buggers to do all their work for them. Damn, I'm startin' to think I'm on the wrong side here. I mean, can ya imagine it? You could take a dump and have the little turd go plow the back 40! Ah, just as well, those little freaks probally would never get a lick o' work done, the way they always be hoppin' around like that. Nope, more likely they wouldn't be worth...Well, worth a shit I imagine.", "TurdMinion", "_URDA1" },
 		{ "Swamp Minion", "", "Lately a new type of turd minion has been found in the swamps. Instead of throwing crap around, it pulls a frog out of somewhere and hucks it at you. Frogs are fun to hit at the baseball plate, but a rock-hard frog hitting your face at 90 miles per hour hurts. Terminate with extreme prejudice.", "TurdSwampMinion", "_UR2A1" },
 		{ "Lava Minion", "", "What in the hell! Guess them lil' turd minions weren't satisfied jus' mutatin' once. Sems that a new breed's been spotted around the Dev Oil lava fields. Locals are callin' 'em \"Lava Minions\" and why not? They's completely resistant to heat damage from the lava, and have been reported to now hurl flamin' turds. Yikes!", "TurdLavaMinion", "_UR4A1" },
@@ -1339,6 +1349,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 	cursory = hudcentery;
 	//SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
 	int rottimer = 162;
+	int fontscaledx, fontscaledy;
 	while(CheckInventory("CompendiumOpened"))
 	{
 		int mousesensitivity = GetCvar("mouse_sensitivity");
@@ -1445,26 +1456,30 @@ Script "Samsara_Compendium" (void) Net Clientside
 				lastmenutab = menutab;
 				lastmenuitem = menuitem;
 				
-				SetHudSize(hudcenterx,hudcentery,true);
+				fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][0]);
+				fontscaledy = FixedMul(hudcentery,ClassFontScales[menuindex-1][0]);
+				
+				SetHudSize(fontscaledx,fontscaledy,true);
 				SetFont(ClassInfo[(menuindex-1)][altskin][13]);
-				HudMessage(s:"Role: ",s:ClassInfo[menuindex-1][altskin][7]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16002, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(hudcenterx,0.75)<<16)+0.1, FixedMul(hudcentery,0.05)*1.0, 0);
+				HudMessage(s:"Role: ",s:ClassInfo[menuindex-1][altskin][7]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16002, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.75)<<16)+0.1, FixedMul(fontscaledy,0.05)*1.0, 0);
 						
 				// need consistent spacing so I must separate these into two
-				HudMessage(s:"Damage:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16003, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(hudcenterx,0.75)<<16)+0.1, FixedMul(hudcentery,0.07)*1.0, 0);
-				HudMessage(s:ClassInfo[menuindex-1][altskin][2]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16004, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(hudcenterx,0.9)<<16)+0.1, FixedMul(hudcentery,0.07)*1.0, 0);
+				HudMessage(s:"Damage:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16003, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.75)<<16)+0.1, FixedMul(fontscaledy,0.07)*1.0, 0);
+				HudMessage(s:ClassInfo[menuindex-1][altskin][2]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16004, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.9)<<16)+0.1, FixedMul(fontscaledy,0.07)*1.0, 0);
 
-				HudMessage(s:"Defense:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16005, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(hudcenterx,0.75)<<16)+0.1, FixedMul(hudcentery,0.09)*1.0, 0);
-				HudMessage(s:ClassInfo[menuindex-1][altskin][3]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16006, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(hudcenterx,0.9)<<16)+0.1, FixedMul(hudcentery,0.09)*1.0, 0);
+				HudMessage(s:"Defense:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16005, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.75)<<16)+0.1, FixedMul(fontscaledy,0.09)*1.0, 0);
+				HudMessage(s:ClassInfo[menuindex-1][altskin][3]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16006, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.9)<<16)+0.1, FixedMul(fontscaledy,0.09)*1.0, 0);
 						
-				HudMessage(s:"Range:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16007, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(hudcenterx,0.75)<<16)+0.1, FixedMul(hudcentery,0.11)*1.0, 0);
-				HudMessage(s:ClassInfo[menuindex-1][altskin][4]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16008, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(hudcenterx,0.9)<<16)+0.1, FixedMul(hudcentery,0.11)*1.0, 0);
+				HudMessage(s:"Range:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16007, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.75)<<16)+0.1, FixedMul(fontscaledy,0.11)*1.0, 0);
+				HudMessage(s:ClassInfo[menuindex-1][altskin][4]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16008, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.9)<<16)+0.1, FixedMul(fontscaledy,0.11)*1.0, 0);
 						
-				HudMessage(s:"Attack Speed:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16009, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(hudcenterx,0.75)<<16)+0.1, FixedMul(hudcentery,0.13)*1.0, 0);
-				HudMessage(s:ClassInfo[menuindex-1][altskin][5]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16010, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(hudcenterx,0.9)<<16)+0.1, FixedMul(hudcentery,0.13)*1.0, 0);
+				HudMessage(s:"Attack Speed:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16009, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.75)<<16)+0.1, FixedMul(fontscaledy,0.13)*1.0, 0);
+				HudMessage(s:ClassInfo[menuindex-1][altskin][5]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16010, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.9)<<16)+0.1, FixedMul(fontscaledy,0.13)*1.0, 0);
 						
-				HudMessage(s:"Difficulty:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16011, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(hudcenterx,0.75)<<16)+0.1, FixedMul(hudcentery,0.15)*1.0, 0);
-				HudMessage(s:ClassInfo[menuindex-1][altskin][6]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16012, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(hudcenterx,0.9)<<16)+0.1, FixedMul(hudcentery,0.15)*1.0, 0);
-						
+				HudMessage(s:"Difficulty:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16011, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.75)<<16)+0.1, FixedMul(fontscaledy,0.15)*1.0, 0);
+				HudMessage(s:ClassInfo[menuindex-1][altskin][6]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16012, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.9)<<16)+0.1, FixedMul(fontscaledy,0.15)*1.0, 0);
+					
+				SetHudSize(hudcenterx,hudcentery,true);
 				SetFont(ClassInfo[menuindex-1][altskin][10]);
 				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16180, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.725)<<16), FixedMul(hudcentery,0.1)*1.0, 0);
 				SetFont(ClassInfo[menuindex-1][altskin][11]);
@@ -1550,8 +1565,10 @@ Script "Samsara_Compendium" (void) Net Clientside
 				SetHudSize(hudcenterx,hudcentery,true);
 				for(a = 0; a < 3; a++)
 				{
-					SetHudSize(hudcenterx,hudcentery,true);
-					HudMessage(s:StatPages[a]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+a, SelectionColors[(menuitem==a+1)], (FixedMul(hudboundsx,0.0685)<<16), FixedMul(hudboundsy,0.105+(0.025*a))<<16, 0);
+					fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][0]);
+					fontscaledy = FixedMul(hudcentery,ClassFontScales[menuindex-1][0]);
+					SetHudSize(fontscaledx,fontscaledy,true);
+					HudMessage(s:StatPages[a]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+a, SelectionColors[(menuitem==a+1)], (FixedMul(fontscaledx*2,0.0685)<<16), FixedMul(fontscaledy*2,0.105+(0.025*a))<<16, 0);
 					//SetHudSize(hudboundsx,hudboundsy,true);
 					if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
 					{
@@ -1577,15 +1594,16 @@ Script "Samsara_Compendium" (void) Net Clientside
 				SetHudClipRect(0,0,0,0,0);
 				index = -1;
 				SetFont(ClassInfo[(menuindex-1)][altskin][13]);
-				SetHudSize(hudcenterx,hudcentery,true);
-				SetHudClipRect(FixedMul(hudcenterx,0.05),FixedMul(hudcentery,0.175),FixedMul(hudcenterx,0.1755),FixedMul(hudcentery,0.775),FixedMul(hudcenterx,0.2));
+				fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][0]);
+				fontscaledy = FixedMul(hudcentery,ClassFontScales[menuindex-1][0]);
+				SetHudSize(fontscaledx,fontscaledy,true);
+				SetHudClipRect(FixedMul(fontscaledx,0.05),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.1755),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.2));
 				for(a = 1; a < 21; a++)
 				{
 					if(StrLen(ClassWeaponInfo[menuindex-1][altskin][a-1][0]) != 0)
 					{
 						index++;
-						SetHudSize(hudcenterx,hudcentery,true);
-						HudMessage(s:ClassWeaponInfo[menuindex-1][altskin][a-1][0]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+index, SelectionColors[(menuitem==index+1)], (FixedMul(hudboundsx,0.0685)<<16)+0.4, FixedMul(hudboundsy,0.105+(0.025*index))<<16, 0);
+						HudMessage(s:ClassWeaponInfo[menuindex-1][altskin][a-1][0]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+index, SelectionColors[(menuitem==index+1)], (FixedMul(fontscaledx*2,0.0685)<<16)+0.4, FixedMul(fontscaledy*2,0.105+(0.025*index))<<16, 0);
 						//SetHudSize(hudboundsx,hudboundsy,true);
 						if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
 						{
@@ -1630,15 +1648,16 @@ Script "Samsara_Compendium" (void) Net Clientside
 				SetHudClipRect(0,0,0,0,0);
 				index = -1;
 				SetFont(ClassInfo[(menuindex-1)][altskin][13]);
-				SetHudSize(hudcenterx,hudcentery,true);
-				SetHudClipRect(FixedMul(hudcenterx,0.05),FixedMul(hudcentery,0.175),FixedMul(hudcenterx,0.1755),FixedMul(hudcentery,0.775),FixedMul(hudcenterx,0.2));
+				fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][0]);
+				fontscaledy = FixedMul(hudcentery,ClassFontScales[menuindex-1][0]);
+				SetHudSize(fontscaledx,fontscaledy,true);
+				SetHudClipRect(FixedMul(fontscaledx,0.05),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.1755),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.2));
 				for(a = 1; a < 65; a++)
 				{
 					if(StrLen(MonsterInfo[menuindex-1][a-1][0]) != 0)
 					{
 						index++;
-						SetHudSize(hudcenterx,hudcentery,true);
-						HudMessage(s:MonsterInfo[menuindex-1][a-1][0]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+index, SelectionColors[(menuitem==index+1)], (FixedMul(hudboundsx,0.0685)<<16)+0.4, FixedMul(hudboundsy,0.105+(0.025*(index-listyposition)))<<16, 0);
+						HudMessage(s:MonsterInfo[menuindex-1][a-1][0]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+index, SelectionColors[(menuitem==index+1)], (FixedMul(fontscaledx*2,0.0685)<<16)+0.4, FixedMul(fontscaledy*2,0.105+(0.025*(index-listyposition)))<<16, 0);
 						//SetHudSize(hudboundsx,hudboundsy,true);
 						if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
 						{
@@ -1676,28 +1695,31 @@ Script "Samsara_Compendium" (void) Net Clientside
 			if(scrolltimer%scrollstep==0) { scrollcounter--; }
 			if(scrolltimer == scrollstep) scrolltimer = 1;
 			if(scrollcounter < -scrollmaxcounter)
-				scrollcounter = scrollmax;
-				
+				scrollcounter = FixedDiv(scrollmax,ClassFontScales[menuindex-1][1]);
+								
 			//Tab Specific Info
 			if(menutab == 1)
 			{
 				SetFont(ClassInfo[(menuindex-1)][altskin][15]);
-				SetHudSize(hudcenterx,hudcentery,true);
-				SetHudClipRect(FixedMul(hudcenterx,0.25),FixedMul(hudcentery,0.175),FixedMul(hudcenterx,0.7),FixedMul(hudcentery,0.775),FixedMul(hudcenterx,0.675));
+				//SetHudSize(hudcenterx,hudcentery,true);
+				fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][1]);
+				fontscaledy = FixedMul(hudcentery,ClassFontScales[menuindex-1][1]);
+				SetHudSize(fontscaledx,fontscaledy,true);
+				SetHudClipRect(FixedMul(fontscaledx,0.25),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.7),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.675));
 				if(menuitem == 1)
 				{
 					description = HeroSummaries[(menuindex-1)*(1+altskin)];
-					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);
+					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.26)<<16)+0.1, floorwhole(scrollcounter*ClassFontScales[menuindex-1][1])+(88*ClassFontScales[menuindex-1][1])+0.1, 0);
 				}
 				if(menuitem == 2)
 				{
 					description = HeroTraits[(menuindex-1)*(1+altskin)];
-					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);
+					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.26)<<16)+0.1, floorwhole(scrollcounter*ClassFontScales[menuindex-1][1])+(88*ClassFontScales[menuindex-1][1])+0.1, 0);
 				}
 				if(menuitem == 3)
 				{
 					description = HeroChanges[(menuindex-1)*(1+altskin)];
-					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);
+					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.26)<<16)+0.1, floorwhole(scrollcounter*ClassFontScales[menuindex-1][1])+(88*ClassFontScales[menuindex-1][1])+0.1, 0);
 				}
 				SetHudClipRect(0,0,0,0,0);							
 				SetHudSize(hudcenterx,hudcentery,true);
@@ -1705,10 +1727,14 @@ Script "Samsara_Compendium" (void) Net Clientside
 			else if(menutab == 2)
 			{
 				SetFont(ClassInfo[(menuindex-1)][altskin][15]);
-				SetHudSize(hudcenterx,hudcentery,true);
-				SetHudClipRect(FixedMul(hudcenterx,0.25),FixedMul(hudcentery,0.175),FixedMul(hudcenterx,0.5),FixedMul(hudcentery,0.775),FixedMul(hudcenterx,0.475));
+				//SetHudSize(hudcenterx,hudcentery,true);
+				fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][1]);
+				fontscaledy = FixedMul(hudcentery,ClassFontScales[menuindex-1][1]);
+				SetHudSize(fontscaledx,fontscaledy,true);
+				SetHudClipRect(FixedMul(fontscaledx,0.25),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.5),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.475));
 				description = ClassWeaponInfo[menuindex-1][altskin][menuitem-1][1];
-				HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);	
+				HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.26)<<16)+0.1, floorwhole(scrollcounter*ClassFontScales[menuindex-1][1])+(88*ClassFontScales[menuindex-1][1])+0.1, 0);	
+				SetHudSize(hudcenterx,hudcentery,true);
 				SetHudClipRect(0,0,0,0,0);		
 				if(StrLen(ClassWeaponInfo[menuindex-1][altskin][menuitem-1][2]) != 0)
 				{
@@ -1756,10 +1782,13 @@ Script "Samsara_Compendium" (void) Net Clientside
 			else if(menutab == 3)
 			{
 				SetFont(ClassInfo[(menuindex-1)][altskin][15]);
-				SetHudSize(hudcenterx,hudcentery,true);
-				SetHudClipRect(FixedMul(hudcenterx,0.25),FixedMul(hudcentery,0.175),FixedMul(hudcenterx,0.5),FixedMul(hudcentery,0.775),FixedMul(hudcenterx,0.475));
+				//SetHudSize(hudcenterx,hudcentery,true);
+				fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][1]);
+				fontscaledy = FixedMul(hudcentery,ClassFontScales[menuindex-1][1]);
+				SetHudSize(fontscaledx,fontscaledy,true);
+				SetHudClipRect(FixedMul(fontscaledx,0.25),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.5),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.475));
 				description = MonsterInfo[menuindex-1][menuitem-1][2];
-				HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);	
+				HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.26)<<16)+0.1, floorwhole(scrollcounter*ClassFontScales[menuindex-1][1])+(88*ClassFontScales[menuindex-1][1])+0.1, 0);	
 				SetHudClipRect(0,0,0,0,0);		
 				if(StrLen(MonsterInfo[menuindex-1][menuitem-1][0]) != 0)
 				{			
@@ -1770,11 +1799,12 @@ Script "Samsara_Compendium" (void) Net Clientside
 					scaley = GetActorProperty(newtid,APROP_SCALEY);
 					hitpoints = GetActorProperty(newtid,APROP_SPAWNHEALTH);
 					
-					SetHudClipRect(FixedMul(hudcenterx,0.775),FixedMul(hudcentery,0.5),FixedMul(hudcenterx,0.175),FixedMul(hudcentery,0.45),FixedMul(hudcenterx,0.15));
-					HudMessage(s:"Health: ", d:hitpoints; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16160, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.7825)<<16)+0.1, (FixedMul(hudcentery,0.51)<<16)+0.1, 0);	
-					HudMessage(l:MonsterInfo[menuindex-1][menuitem-1][1]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16161, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.7825)<<16)+0.1, (FixedMul(hudcentery,0.54)<<16)+0.1, 0);	
-					HudMessage(s:"Spawn Class: ", s:MonsterInfo[menuindex-1][menuitem-1][3+(2*monsterskin)]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16162, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.7825)<<16)+0.1, (FixedMul(hudcentery,0.59)<<16)+0.1, 0);	
+					SetHudClipRect(FixedMul(fontscaledx,0.775),FixedMul(fontscaledy,0.5),FixedMul(fontscaledx,0.175),FixedMul(fontscaledy,0.45),FixedMul(fontscaledx,0.15));
+					HudMessage(s:"Health: ", d:hitpoints; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16160, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.7825)<<16)+0.1, (FixedMul(fontscaledy,0.51)<<16)+0.1, 0);	
+					HudMessage(l:MonsterInfo[menuindex-1][menuitem-1][1]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16161, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.7825)<<16)+0.1, (FixedMul(fontscaledy,0.54)<<16)+0.1, 0);	
+					HudMessage(s:"Spawn Class: ", s:MonsterInfo[menuindex-1][menuitem-1][3+(2*monsterskin)]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16162, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.7825)<<16)+0.1, (FixedMul(fontscaledy,0.59)<<16)+0.1, 0);	
 					SetHudClipRect(0,0,0,0,0);
+					SetHudSize(hudcenterx,hudcentery,true);
 					
 					if(!CheckActorProperty(newtid,APROP_SeeSound,""))
 					{
