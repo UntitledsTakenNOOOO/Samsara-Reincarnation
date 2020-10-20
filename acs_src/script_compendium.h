@@ -135,7 +135,7 @@ str HeroTraits[CLASSCOUNT] =
 	"",
 	
 	"Bond. James Bond: Being a spy, wearing body armor would potentially compromise his mission. As a result, Bond won't be able to withstand too much damage.
-	\n\nShaken, but stirred: James Bond was only able to dual wield weapons when he picked up an enemy's dropped weapons in Goldeneye. Here, he can dual wield almost any weapon that he can find two of."
+	\n\nShaken, not stirred: James Bond usually tries not to go into a situation guns blazing, and instead prefers a more discreet approach. Any spy knows aiming for the vitals can deliver an easy blow."
 };
 
 str HeroChanges[CLASSCOUNT] =
@@ -1326,13 +1326,14 @@ Script "Samsara_Compendium_Initiate" (void) Net
 Script "Samsara_Compendium" (void) Net Clientside
 {
 	int cursorx, cursory, offsety, offsetx, menuindex, lastmenuindex, a, menutab, lastmenutab, menuitem, lastmenuitem, scrollcounter, scrolltimer, index, scalex, scaley, hitpoints, newtid, listyposition, listindex, condition, listclick, monsterskin, altskin, prevskin;
-	str seesound, activesound, painsound, deathsound;
+	str seesound, activesound, painsound, deathsound, description;
 	int hudboundsx = 1440;
 	int hudboundsy = 972;
 	int hudcenterx = hudboundsx/2;
 	int hudcentery = hudboundsy/2;
 	int squarecenter = (hudboundsx+hudboundsy)/2;
 	int scrollmax = 480;
+	int scrollmaxcounter;
 	int scrollstep = 4;
 	cursorx = hudcenterx;
 	cursory = hudcentery;
@@ -1550,11 +1551,11 @@ Script "Samsara_Compendium" (void) Net Clientside
 				for(a = 0; a < 3; a++)
 				{
 					SetHudSize(hudcenterx,hudcentery,true);
-					HudMessage(s:StatPages[a]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+a, SelectionColors[(menuitem==a+1)], (FixedMul(hudboundsx,0.0685)<<16), FixedMul(hudboundsy,0.1+(0.025*a))<<16, 0);
-					SetHudSize(hudboundsx,hudboundsy,true);
+					HudMessage(s:StatPages[a]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+a, SelectionColors[(menuitem==a+1)], (FixedMul(hudboundsx,0.0685)<<16), FixedMul(hudboundsy,0.105+(0.025*a))<<16, 0);
+					//SetHudSize(hudboundsx,hudboundsy,true);
 					if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
 					{
-						if((cursorx < FixedMul(hudboundsx,0.22) && cursorx > FixedMul(hudboundsx,0.05)) && (cursory < FixedMul(hudboundsy,0.19+(0.05*a))+8 && cursory > FixedMul(hudboundsy,0.19+(0.05*a))-8))
+						if((cursorx < FixedMul(hudboundsx,0.22) && cursorx > FixedMul(hudboundsx,0.05)) && (cursory < FixedMul(hudboundsy,0.215+(0.05*a))+24 && cursory > FixedMul(hudboundsy,0.215+(0.05*a))-24))
 							menuitem = a+1;
 					}
 				}
@@ -1584,11 +1585,11 @@ Script "Samsara_Compendium" (void) Net Clientside
 					{
 						index++;
 						SetHudSize(hudcenterx,hudcentery,true);
-						HudMessage(s:ClassWeaponInfo[menuindex-1][altskin][a-1][0]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+index, SelectionColors[(menuitem==index+1)], (FixedMul(hudboundsx,0.0685)<<16)+0.4, FixedMul(hudboundsy,0.1+(0.025*index))<<16, 0);
-						SetHudSize(hudboundsx,hudboundsy,true);
+						HudMessage(s:ClassWeaponInfo[menuindex-1][altskin][a-1][0]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+index, SelectionColors[(menuitem==index+1)], (FixedMul(hudboundsx,0.0685)<<16)+0.4, FixedMul(hudboundsy,0.105+(0.025*index))<<16, 0);
+						//SetHudSize(hudboundsx,hudboundsy,true);
 						if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
 						{
-							if((cursorx < FixedMul(hudboundsx,0.22) && cursorx > FixedMul(hudboundsx,0.05)) && (cursory < FixedMul(hudboundsy,0.19+(0.05*(index-listyposition)))+8 && cursory > FixedMul(hudboundsy,0.19+(0.05*(index-listyposition)))-8) && (cursory > FixedMul(hudboundsy,0.19) && cursory < FixedMul(hudboundsy,0.95)) && listclick < 1)
+							if((cursorx < FixedMul(hudboundsx,0.22) && cursorx > FixedMul(hudboundsx,0.05)) && (cursory < FixedMul(hudboundsy,0.215+(0.05*(index-listyposition)))+24 && cursory > FixedMul(hudboundsy,0.215+(0.05*(index-listyposition)))-24) && (cursory > FixedMul(hudboundsy,0.215) && cursory < FixedMul(hudboundsy,0.95)) && listclick < 1)
 							{
 								menuitem = a;
 								listindex = menuitem;
@@ -1637,11 +1638,11 @@ Script "Samsara_Compendium" (void) Net Clientside
 					{
 						index++;
 						SetHudSize(hudcenterx,hudcentery,true);
-						HudMessage(s:MonsterInfo[menuindex-1][a-1][0]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+index, SelectionColors[(menuitem==index+1)], (FixedMul(hudboundsx,0.0685)<<16)+0.4, FixedMul(hudboundsy,0.1+(0.025*(index-listyposition)))<<16, 0);
-						SetHudSize(hudboundsx,hudboundsy,true);
+						HudMessage(s:MonsterInfo[menuindex-1][a-1][0]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+index, SelectionColors[(menuitem==index+1)], (FixedMul(hudboundsx,0.0685)<<16)+0.4, FixedMul(hudboundsy,0.105+(0.025*(index-listyposition)))<<16, 0);
+						//SetHudSize(hudboundsx,hudboundsy,true);
 						if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
 						{
-							if((cursorx < FixedMul(hudboundsx,0.22) && cursorx > FixedMul(hudboundsx,0.05)) && (cursory < FixedMul(hudboundsy,0.19+(0.05*(index-listyposition)))+8 && cursory > FixedMul(hudboundsy,0.19+(0.05*(index-listyposition)))-8) && (cursory > FixedMul(hudboundsy,0.19) && cursory < FixedMul(hudboundsy,0.95)) && listclick < 1)
+							if((cursorx < FixedMul(hudboundsx,0.22) && cursorx > FixedMul(hudboundsx,0.05)) && (cursory < FixedMul(hudboundsy,0.215+(0.05*(index-listyposition)))+24 && cursory > FixedMul(hudboundsy,0.215+(0.05*(index-listyposition)))-24) && (cursory > FixedMul(hudboundsy,0.215) && cursory < FixedMul(hudboundsy,0.95)) && listclick < 1)
 							{
 								menuitem = a;
 								listindex = menuitem;
@@ -1670,10 +1671,11 @@ Script "Samsara_Compendium" (void) Net Clientside
 			
 			//======================================================================================================== Tab Shit
 			
+			scrollmaxcounter = (2+StrLen(description)/4);
 			scrolltimer++;
 			if(scrolltimer%scrollstep==0) { scrollcounter--; }
 			if(scrolltimer == scrollstep) scrolltimer = 1;
-			if(scrollcounter < -scrollmax)
+			if(scrollcounter < -scrollmaxcounter)
 				scrollcounter = scrollmax;
 				
 			//Tab Specific Info
@@ -1683,12 +1685,20 @@ Script "Samsara_Compendium" (void) Net Clientside
 				SetHudSize(hudcenterx,hudcentery,true);
 				SetHudClipRect(FixedMul(hudcenterx,0.25),FixedMul(hudcentery,0.175),FixedMul(hudcenterx,0.7),FixedMul(hudcentery,0.775),FixedMul(hudcenterx,0.675));
 				if(menuitem == 1)
-					HudMessage(s:HeroSummaries[(menuindex-1)*(1+altskin)]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);
+				{
+					description = HeroSummaries[(menuindex-1)*(1+altskin)];
+					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);
+				}
 				if(menuitem == 2)
-					HudMessage(s:HeroTraits[(menuindex-1)*(1+altskin)]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);
+				{
+					description = HeroTraits[(menuindex-1)*(1+altskin)];
+					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);
+				}
 				if(menuitem == 3)
-					HudMessage(s:HeroChanges[(menuindex-1)*(1+altskin)]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);
-				
+				{
+					description = HeroChanges[(menuindex-1)*(1+altskin)];
+					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);
+				}
 				SetHudClipRect(0,0,0,0,0);							
 				SetHudSize(hudcenterx,hudcentery,true);
 			}
@@ -1697,7 +1707,8 @@ Script "Samsara_Compendium" (void) Net Clientside
 				SetFont(ClassInfo[(menuindex-1)][altskin][15]);
 				SetHudSize(hudcenterx,hudcentery,true);
 				SetHudClipRect(FixedMul(hudcenterx,0.25),FixedMul(hudcentery,0.175),FixedMul(hudcenterx,0.5),FixedMul(hudcentery,0.775),FixedMul(hudcenterx,0.475));
-				HudMessage(s:ClassWeaponInfo[menuindex-1][altskin][menuitem-1][1]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);	
+				description = ClassWeaponInfo[menuindex-1][altskin][menuitem-1][1];
+				HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);	
 				SetHudClipRect(0,0,0,0,0);		
 				if(StrLen(ClassWeaponInfo[menuindex-1][altskin][menuitem-1][2]) != 0)
 				{
@@ -1747,7 +1758,8 @@ Script "Samsara_Compendium" (void) Net Clientside
 				SetFont(ClassInfo[(menuindex-1)][altskin][15]);
 				SetHudSize(hudcenterx,hudcentery,true);
 				SetHudClipRect(FixedMul(hudcenterx,0.25),FixedMul(hudcentery,0.175),FixedMul(hudcenterx,0.5),FixedMul(hudcentery,0.775),FixedMul(hudcenterx,0.475));
-				HudMessage(s:MonsterInfo[menuindex-1][menuitem-1][2]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);	
+				description = MonsterInfo[menuindex-1][menuitem-1][2];
+				HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(hudcenterx,0.26)<<16)+0.1, scrollcounter*1.0+88.1, 0);	
 				SetHudClipRect(0,0,0,0,0);		
 				if(StrLen(MonsterInfo[menuindex-1][menuitem-1][0]) != 0)
 				{			
