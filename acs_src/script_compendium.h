@@ -57,8 +57,8 @@ str HeroSummaries[CLASSCOUNT] =
 	"Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Ian Paul Freely is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. I.P. Freely has a wide range of explosives, fit for many situations. That's why many call him the \"demolition specialist\", he simply loves them, and you can be sure that he will not hesitate on using them, not by one bit.",
 	"Blake Stone has always been an extroadinary agent who spent his childhood serving Great Britain. Just after he was promoted to General Status, Dr Pyrus GoldFire was there to be his next challenge. Blake Stone fought relentlessly against the mutants he created and eventually put an end to Goldfire's plans. Still, everything is far from over for him. He still has one final destination: he is there to end the corruption in the wheel of Samsara and he won't stop until every bit of photon has been disintegrated.",
 	"Vengeance is all that is left in him now... His love was taken away from him. He was betrayed by his master and forced to see his friends executed before his very eyes. Even eternal banishment was not enough to stop Caleb. Vengeance had already driven him into an unstoppable blood lust. He wouldn't stop until he fully avenged his comrades, and his one true love. Caleb is exceptional at dealing with singular foes, but becomes rather lackluster at dealing with many, although he is still able to seal the deal. Caleb's sole purpose of living is to prove thathe is truly the \"One That Binds\".",
-	"",
-	"",
+	"In a world where everyone nearly died from a virus, the remaining people were oppressed by the Order, until one man joined the rebels to stop the entire order, even killed their deity, The Entity. In Samsara, Strifeguy plays very tactically, requiring well thought out plans to make sure he destroys enemies and survives while doing so. However, he does lack range.",
+	"The man. The myth. The icon. The legend. The hero. Doomguy has stood against untold legions throughout all 20 years of his one-man war on Hell, and here he stands ready to go against more. He is a man that needs no introduction, as his abilities have been proven and honed and harnessed time and time again--the rest of the heroes will have to work double to even match the bar Doomguy is constantly raising.",
 	"",
 	"",
 	"",
@@ -111,9 +111,12 @@ str HeroTraits[CLASSCOUNT] =
 	"Boo Hoo... When does the hurting stop?: Caleb loves to inflict pain so much on his foes that he can kill them in more ways than any other hero. He is rather prone to hurting himself in the process, however.
 	\n\nGood. Bad. I'm the guy with the gun: Caleb is such an expert with his weapons, that he can fire them in alternative ways, and can even some times dual wield them.",
 	
-	"",
+	"Revolutionary: Lots of Strifeguy's weapons are very tricky to use. His slot 3 is weaker but isn't lobbed like his slot 5 which bounces off enemies and self harms. Even the alt fire which sets a massive fire can kill you if you are not careful. His slot 6 is also lobbed but powerful.
+	\n\nLast Stand: He may be tough, but even in critical condition he will have a speed reduction, which is why all health and soulspheres are medikits to heal him, and for providing ammo for his second and much deadlier ultimate, the Sigil!
+	\n\nEver evolving force: Strifeguy can barely aim and has terrible melee, but his berserk is an item that upgrades his max health by 10, and increasing his accuracy, allowing his shorter distance weapons to aim better and improving his longevity!",
 	
-	"",
+	"...And I Feel Mighty: Doomguy holds the Super Shotgun, the most devastating weapon in the game and cementing him as the most damaging hero. No other weapon can match its reliability and sheer power.
+	\n\nTo Hell With Respect!: Doomguy is the most unchanged in his function and his abilities. Playing with him is just like playing Doom 64, so show these newcomers who they better call granddaddy.",
 	
 	"",
 	
