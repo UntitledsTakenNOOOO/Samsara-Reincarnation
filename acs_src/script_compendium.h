@@ -1,39 +1,39 @@
-// Label, index, damage, defense, range, attack speed, difficulty
-str ClassInfo[CLASSCOUNT][2][25] = 
+// Label, index, damage, defense, range, attack speed, difficulty, character symbol, small character, game logo, large character, big font, big font color, small font, small font color, background top wall, background bottom wall, background side banner right, background logo, background character symbol, background right banner, selected font color
+str ClassInfo[CLASSCOUNT][2][27] = 
 { 
-	{{"Doomguy", 1, "*****", "***", "***", "**", "*", "Damage", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01" }},
-	{{"Chex Warrior", 2, "***", "*****", "***", "***", "*", "Defense", "TIPSYM02", "TIPHIL02", "TIPCHEX", "TPLGCHEX", "TPCHCHEX", "SMALLFONT", "Green", "SMALLFONT", "Green", "CMPBGCH1", "CMPBGCH2", "CMPBGCH3", "", "TIPSYM02" }},
-	{{"Corvus", 3, "***", "****", "**", "****", "****", "Utility", "TIPSYM03", "TIPHIL03", "TIPCORV", "TPLGCORV", "TPCHCORV", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHE1", "CMPBGHE2", "CMPBGHE3", "CMPBGHE4", "TIPSYM03" }},
-	{{"Blazkowicz", 4, "***", "***", "*****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGWF1", "CMPBGWF2", "CMPBGWF3", "CMPBGWF4", "TIPSYM04" },{"Blazkowicz", 4, "***", "***", "*****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGWS1", "CMPBGWS2", "CMPBGWS3", "CMPBGWF4", "TIPSYM04" }},
-	{{"Parias", 5, "*****", "****", "*", "****", "***", "Brawler", "TIPSYM05", "TIPHIL05", "TIPPARIA", "TPLGHEXN", "TPCHHEXN", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15" }},
-	{{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5" },{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5" }},
-	{{"Security Officer", 7, "***", "***", "**", "*****", "*****", "Supression", "TIPSYM07", "TIPHIL07", "TIPSECOF", "TPLGMARA", "TPCHMARA", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGMA1", "CMPBGMA2", "CMPBGMA3", "CMPBGMA4", "CMPBGMA5" }},
-	{{"Ranger", 8, "***", "**", "****", "****", "***", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08" }},
-	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5" }},
-	{{"Blake Stone", 10, "***", "***", "***", "*****", "**", "Skirmisher", "TIPSYM10", "TIPHIL10", "TIPBSTON", "TPLGBSTN", "TPCHBSTN", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGBS1", "CMPBGBS2", "CMPBGBS3", "CMPBGRT4", "CMPBGBS5" }},
-	{{"Caleb", 11, "***", "***", "***", "*****", "**", "Sadist", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5" }},
-	{{"Strifeguy", 12, "****", "*", "***", "****", "**", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "SMALLFONT", "Olive", "SMALLFONT", "Olive", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6" }},
-	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66" }},
-	{{"Eleena", 14, "****", "*", "**", "****", "***", "Acrobat", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5" }},
-	{{"Space Seal", 15, "*****", "*", "***", "****", "**", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "SMALLFONT", "Orange", "SMALLFONT", "Blue", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75" }},
-	{{"LDF Commando", 16, "***", "**", "****", "***", "***", "Support Fire", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6" }},
-	{{"Kyle Katarn", 17, "**", "*****", "****", "****", "***", "Tank", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5" }},
-	{{"Mooman", 18, "*", "***", "****", "****", "***", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8" }},
-	{{"Jack Curtis", 19, "***", "***", "***", "****", "***", "Counter Assault", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5" }},
-	{{"Grondoval", 20, "****", "***", "**", "****", "****", "Pugilist", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5" }},
-	{{"Gordon Freeman", 21, "*****", "**", "***", "**", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5" },{"Adrian Shephard", 21, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6" }},
-	{{"Lo Wang", 22, "***", "**", "****", "****", "***", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "SMALLFONT", "Red", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5" }},
-	{{"Cybermage", 23, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Green", "SMALLFONT", "Yellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5" }},
-	{{"Jon", 24, "**", "***", "***", "**", "****", "Adventurer", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8" }},
-	{{"Leonard", 25, "***", "*", "****", "***", "***", "Sharpshooter", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "CMPBLEON", "untranslated", "CMPSLEON", "untranslated", "CMPBGRR1", "CMPBGRR2", "CMPBGRR3", "CMPBGRR4", "CMPBGRR5" }},
-	{{"Bitterman", 26, "***", "***", "****", "**", "***", "Battery", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "SMALLFONT", "Brick", "Q2SMFONT", "Brick", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26" }},
-	{{"Demoness", 27, "***", "**", "**", "***", "***", "Steamroller", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25" }},
-	{{"James Bond", 28, "***", "*", "***", "****", "****", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "GEFONTS", "Gold", "GEFONTS", "White", "CMPBGGE1", "CMPBGGE2", "", "CMPBGGE4", "CMPBGGE5" }},
+	{{"Doomguy", 1, "*****", "***", "***", "**", "*", "Damage", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01", "", "", "", "DarkGray", "White" }},
+	{{"Chex Warrior", 2, "***", "*****", "***", "***", "*", "Defense", "TIPSYM02", "TIPHIL02", "TIPCHEX", "TPLGCHEX", "TPCHCHEX", "SMALLFONT", "Green", "SMALLFONT", "Green", "CMPBGCH1", "CMPBGCH2", "CMPBGCH3", "", "TIPSYM02", "", "", "", "DarkGray", "White" }},
+	{{"Corvus", 3, "***", "****", "**", "****", "****", "Utility", "TIPSYM03", "TIPHIL03", "TIPCORV", "TPLGCORV", "TPCHCORV", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHE1", "CMPBGHE2", "CMPBGHE3", "CMPBGHE4", "TIPSYM03", "", "", "", "DarkGray", "White" }},
+	{{"Blazkowicz", 4, "***", "***", "*****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWF1", "CMPBGWF2", "CMPBGWF3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" },{"Blazkowicz", 4, "***", "***", "*****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWS1", "CMPBGWS2", "CMPBGWS3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
+	{{"Parias", 5, "*****", "****", "*", "****", "***", "Brawler", "TIPSYM05", "TIPHIL05", "TIPPARIA", "TPLGHEXN", "TPCHHEXN", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }},
+	{{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5", "", "", "", "DarkGray", "White" },{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5", "", "", "DarkGray", "White" }},
+	{{"Security Officer", 7, "***", "***", "**", "*****", "*****", "Supression", "TIPSYM07", "TIPHIL07", "TIPSECOF", "TPLGMARA", "TPCHMARA", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGMA1", "CMPBGMA2", "CMPBGMA3", "CMPBGMA4", "CMPBGMA5", "", "", "", "DarkGray", "White" }},
+	{{"Ranger", 8, "***", "**", "****", "****", "***", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08", "", "", "DarkGray", "White" }},
+	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "DarkGray", "White" }},
+	{{"Blake Stone", 10, "***", "***", "***", "*****", "**", "Skirmisher", "TIPSYM10", "TIPHIL10", "TIPBSTON", "TPLGBSTN", "TPCHBSTN", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGBS1", "CMPBGBS2", "CMPBGBS3", "CMPBGRT4", "CMPBGBS5", "", "", "", "DarkGray", "White" }},
+	{{"Caleb", 11, "***", "***", "***", "*****", "**", "Sadist", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5", "", "", "", "DarkGray", "White" }},
+	{{"Strifeguy", 12, "****", "*", "***", "****", "**", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "SMALLFONT", "Olive", "SMALLFONT", "Olive", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6", "", "", "DarkGray", "White" }},
+	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White" }},
+	{{"Eleena", 14, "****", "*", "**", "****", "***", "Acrobat", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5", "", "", "", "DarkGray", "White" }},
+	{{"Space Seal", 15, "*****", "*", "***", "****", "**", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "SMALLFONT", "Orange", "SMALLFONT", "Blue", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "DarkGray", "White" }},
+	{{"LDF Commando", 16, "***", "**", "****", "***", "***", "Support Fire", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
+	{{"Kyle Katarn", 17, "**", "*****", "****", "****", "***", "Tank", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5", "", "", "", "DarkGray", "White" }},
+	{{"Mooman", 18, "*", "***", "****", "****", "***", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8", "DarkGray", "White" }},
+	{{"Jack Curtis", 19, "***", "***", "***", "****", "***", "Counter Assault", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5", "", "", "", "DarkGray", "White" }},
+	{{"Grondoval", 20, "****", "***", "**", "****", "****", "Pugilist", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5", "", "", "", "DarkGray", "White" }},
+	{{"Gordon Freeman", 21, "*****", "**", "***", "**", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "DarkGray", "White" },{"Adrian Shephard", 21, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
+	{{"Lo Wang", 22, "***", "**", "****", "****", "***", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "SMALLFONT", "Red", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5", "", "", "", "DarkGray", "White" }},
+	{{"Cybermage", 23, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Green", "SMALLFONT", "Yellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5", "", "", "", "DarkGray", "White" }},
+	{{"Jon", 24, "**", "***", "***", "**", "****", "Adventurer", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8", "DarkGray", "White" }},
+	{{"Leonard", 25, "***", "*", "****", "***", "***", "Sharpshooter", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "CMPBLEON", "untranslated", "CMPSLEON", "untranslated", "CMPBGRR1", "CMPBGRR2", "CMPBGRR3", "CMPBGRR4", "CMPBGRR5", "", "", "", "DarkGray", "White" }},
+	{{"Bitterman", 26, "***", "***", "****", "**", "***", "Battery", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "SMALLFONT", "Brick", "Q2SMFONT", "Brick", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26", "", "", "DarkGray", "White" }},
+	{{"Demoness", 27, "***", "**", "**", "***", "***", "Steamroller", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25", "", "", "", "DarkGray", "White" }},
+	{{"James Bond", 28, "***", "*", "***", "****", "****", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "GEFONTS", "Gold", "GEFONTS", "White", "CMPBGGE1", "CMPBGGE2", "", "CMPBGGE4", "CMPBGGE5", "", "", "", "DarkGray", "White" }},
 };
 
 int ClassFontScales[CLASSCOUNT][2] = 
 {  
-	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
+	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
@@ -43,133 +43,153 @@ int ClassFontScales[CLASSCOUNT][2] =
 str CompendiumWheelRot[12] = { "CMPWHL01", "CMPWHL02", "CMPWHL03", "CMPWHL04", "CMPWHL05", "CMPWHL06", "CMPWHL07", "CMPWHL08", "CMPWHL09", "CMPWHL10", "CMPWHL11", "CMPWHL12"};
 
 str StatPages[3] = { "Summary", "Traits", "Changes" };
+str SelectionColors[2] = { "DarkGray", "white" };
 
-str HeroSummaries[CLASSCOUNT] =
+str HeroSummaries[CLASSCOUNT][2] =
 {
-	"The man. The myth. The icon. The legend. The hero. Doomguy has stood against untold legions throughout all 20 years of his one-man war on Hell, and here he stands ready to go against more. He is a man that needs no introduction, as his abilities have been proven and honed and harnessed time and time again--the rest of the heroes will have to work double to even match the bar Doomguy is constantly raising.",
-	"Fred Chexter sets himself apart from his compatriots by being a genuinely nice (if not shy) guy among the gritty badasses that populate the Wheel of Samsara. He doesn't even kill his enemies, he just sends them back to their home dimension! That being said, he is still a trained warrior and the IFOC's absolute best warrior; whether it's being on the wrong end of a coachgun or face to face with the nastiest nightmares Hell can offer, he never flinches. Just because he's friendly doesn't mean you're suddenly safe.",
-	"The Heretic himself, Corvus is a noble elven warrior and mage driven by fury and a near-psychotic thirst to avenge his people. His quest has sent him from fighting legions of the damned and undead in mystical fantasy lands to fighting legions of the damned and undead in alternate lands. No matter where he is, though, his bloodlust will not be quenched until he has personally slaughtered every enemy he can get his hand on.",
-	"William \"B.J.\" Blazkowicz was the one that started it all, a secret agent that personally fought his way out of the horrifying Nazi prisons and personally slew Adolf Hitler, armed with nothing more than a pistol, a knife, and undying devotion to his country. Having gone up against an endless sea of Nazis, mystic beasts, undead monstrosities, and towering madmen, B.J. has seen it all and fought it all. If it's a threat to the world, he will put it down. Without questions, without hesitation, and without compromises.",
-	"A high cleric of the Church, second only to Traductus, Parias is both a man of faith and a man of action. His righteousness is rivalled only by his terrifying power, and he can swap at a moment's notice from praying for his enemies' souls to hacking their spine in twain. Being a student of both the arcane and the martial arts has made him a robust fighter that can swap from a physical to a mystical fighting capability whenever a situation calls for it, and makes him perhaps the most terrifying Hero in the Wheel of Samsara.",
-	"He's rude. He's crude. He's a bad dude with a hell of a bad attitude. He's the number one bastard on several alien races' personal shitlists, and he made it to the top not with any special training, armor, or powers, but just by being the most hardcore son of a bitch imaginable. He's just a joe with a shotgun, a mean boot, and a mouth that can't stay shut--and that's all he needs. These assholes are going to have to go through him to get to the multiverse...and he just ran out of bubblegum.",
-	"Freedom. That's all he wants, now. In one bitter day, the Security Officer went from lazily sleeping in to being in an eternal fight for his life at the behest of arrogant and psychotic AIs. Day in and day out, he fought endless battles without any reprieve, rest, or hope for peace, and even alternate timelines and dimensions held no solace for him. The only comfort he could take was in survival...and now even that is in constant peril--in this damned Wheel, the fighting will never cease. Instead, now it runs eternally. Will he ever find rest?",
-	"Originally a special forces marine, ever since joining the Slipgate program Ranger has seen a thousand deaths and escaped from a million more on a billion worlds. He has gone from military bases to medieval castles to arcane dimensions to hellish abysses to planes of eldritch madness best not spoken of. Through them all, Ranger has proven resilience and power that give even the most terrifying elder ones pause--with strange aeons, even death itself may die under fire of a well-aimed 9.9lb 750mm RHA rocket.",
-	"Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Ian Paul Freely is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. I.P. Freely has a wide range of explosives, fit for many situations. That's why many call him the \"demolition specialist\", he simply loves them, and you can be sure that he will not hesitate on using them, not by one bit.",
-	"Blake Stone has always been an extroadinary agent who spent his childhood serving Great Britain. Just after he was promoted to General Status, Dr Pyrus GoldFire was there to be his next challenge. Blake Stone fought relentlessly against the mutants he created and eventually put an end to Goldfire's plans. Still, everything is far from over for him. He still has one final destination: he is there to end the corruption in the wheel of Samsara and he won't stop until every bit of photon has been disintegrated.",
-	"Vengeance is all that is left in him now... His love was taken away from him. He was betrayed by his master and forced to see his friends executed before his very eyes. Even eternal banishment was not enough to stop Caleb. Vengeance had already driven him into an unstoppable blood lust. He wouldn't stop until he fully avenged his comrades, and his one true love. Caleb is exceptional at dealing with singular foes, but becomes rather lackluster at dealing with many, although he is still able to seal the deal. Caleb's sole purpose of living is to prove thathe is truly the \"One That Binds\".",
-	"In a world where everyone nearly died from a virus, the remaining people were oppressed by the Order, until one man joined the rebels to stop the entire order, even killed their deity, The Entity. In Samsara, Strifeguy plays very tactically, requiring well thought out plans to make sure he destroys enemies and survives while doing so. However, he does lack range.",
-	"The man. The myth. The icon. The legend. The hero. Doomguy has stood against untold legions throughout all 20 years of his one-man war on Hell, and here he stands ready to go against more. He is a man that needs no introduction, as his abilities have been proven and honed and harnessed time and time again--the rest of the heroes will have to work double to even match the bar Doomguy is constantly raising.",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"Leonard was an unassuming redneck living in Hickston alongside his brother Bubba, living peacefully without expectations. Sure, his neighbors were exceptionally annoying and sure, the land was filled with hostile dogs and wasps, but ultimately cheap ass whiskey and pork rinds were in abundance, and best of all, the two brothers owned their prized pig Bessie, their real pride. All that changed when Hickston was invaded by alien forces, who not only decided to eliminate all humans, bụt also clone their neighbors and let them do the dirty job, With Bessie stolen and endless clones of their now even more aggravating neighbors shooting everything in sight, Leonard decided he had enough. After shooting his way through Hickston and nearby locations and finally crash-landing the main alien UFO, Leonard returned home, only to find his brother Bubba had consumed all the whiskey and pork rinds, And so, he decided to fight in the wheel of Samsara, in hope of once again finding the peace that invasion had forever eliminated in his hometown.",
-	"",
-	"The Demoness is a unique creature, the only one of her kind. She was created by Eidolon and could be considered to be his daughter. She was meant to be the progenitor of a new race of elite minions who would serve as the Serpent Rider's personal agents. \n\nEidolon taught his creation many harsh lessons and gave her considerable powers, yet he was never able to finish his work, as he was slain by mortal heroes. The Demoness was too weak at the time to intervene in any way. However, when she learned that the soul of her master had been stolen by Praevus, she went into an unholy rage and decided to deal with the blasphemer and his minions in person.",
-	"James Bond, British literary and film character, a peerless spy, notorious womanizer, and masculine icon. He is an internationally known spy that has one mission: to serve and protect his Royal Majesty by working for MI6, part of the British Secret Service. Bond was first conceived as a Cold War-era operative. Trained in intelligence and special forces, the superspy always used the latest gadgets, thwarted Soviet agents, brought international gangsters to justice, and inevitably bedded a beautiful woman. An enthusiastic gambler, he was nearly as loyal to his signature vodka martini as he was to the British crown and his Scottish roots. Although Bond radiated charisma and style, he was also intensely solitary and virtually friendless, despite his many trysts.",
+	{	"The man. The myth. The icon. The legend. The hero. Doomguy has stood against untold legions throughout all 20 years of his one-man war on Hell, and here he stands ready to go against more. He is a man that needs no introduction, as his abilities have been proven and honed and harnessed time and time again--the rest of the heroes will have to work double to even match the bar Doomguy is constantly raising.", "" },
+	{	"Fred Chexter sets himself apart from his compatriots by being a genuinely nice (if not shy) guy among the gritty badasses that populate the Wheel of Samsara. He doesn't even kill his enemies, he just sends them back to their home dimension! That being said, he is still a trained warrior and the IFOC's absolute best warrior; whether it's being on the wrong end of a coachgun or face to face with the nastiest nightmares Hell can offer, he never flinches. Just because he's friendly doesn't mean you're suddenly safe.", "" },
+	{	"The Heretic himself, Corvus is a noble elven warrior and mage driven by fury and a near-psychotic thirst to avenge his people. His quest has sent him from fighting legions of the damned and undead in mystical fantasy lands to fighting legions of the damned and undead in alternate lands. No matter where he is, though, his bloodlust will not be quenched until he has personally slaughtered every enemy he can get his hand on.", "" },
+	{	"William \"B.J.\" Blazkowicz was the one that started it all, a secret agent that personally fought his way out of the horrifying Nazi prisons and personally slew Adolf Hitler, armed with nothing more than a pistol, a knife, and undying devotion to his country. Having gone up against an endless sea of Nazis, mystic beasts, undead monstrosities, and towering madmen, B.J. has seen it all and fought it all. If it's a threat to the world, he will put it down. Without questions, without hesitation, and without compromises.", "William \"B.J.\" Blazkowicz was the one that started it all, a secret agent that personally fought his way out of the horrifying Nazi prisons and personally slew Adolf Hitler, armed with nothing more than a pistol, a knife, and undying devotion to his country. Having gone up against an endless sea of Nazis, mystic beasts, undead monstrosities, and towering madmen, B.J. has seen it all and fought it all. If it's a threat to the world, he will put it down. Without questions, without hesitation, and without compromises." },
+	{	"A high cleric of the Church, second only to Traductus, Parias is both a man of faith and a man of action. His righteousness is rivalled only by his terrifying power, and he can swap at a moment's notice from praying for his enemies' souls to hacking their spine in twain. Being a student of both the arcane and the martial arts has made him a robust fighter that can swap from a physical to a mystical fighting capability whenever a situation calls for it, and makes him perhaps the most terrifying Hero in the Wheel of Samsara.", "" },
+	{	"He's rude. He's crude. He's a bad dude with a hell of a bad attitude. He's the number one bastard on several alien races' personal shitlists, and he made it to the top not with any special training, armor, or powers, but just by being the most hardcore son of a bitch imaginable. He's just a joe with a shotgun, a mean boot, and a mouth that can't stay shut--and that's all he needs. These assholes are going to have to go through him to get to the multiverse...and he just ran out of bubblegum.", "He's rude. He's crude. He's a bad dude with a hell of a bad attitude. He's the number one bastard on several alien races' personal shitlists, and he made it to the top not with any special training, armor, or powers, but just by being the most hardcore son of a bitch imaginable. He's just a joe with a shotgun, a mean boot, and a mouth that can't stay shut--and that's all he needs. These assholes are going to have to go through him to get to the multiverse...and he just ran out of bubblegum." },
+	{	"Freedom. That's all he wants, now. In one bitter day, the Security Officer went from lazily sleeping in to being in an eternal fight for his life at the behest of arrogant and psychotic AIs. Day in and day out, he fought endless battles without any reprieve, rest, or hope for peace, and even alternate timelines and dimensions held no solace for him. The only comfort he could take was in survival...and now even that is in constant peril--in this damned Wheel, the fighting will never cease. Instead, now it runs eternally. Will he ever find rest?", "" },
+	{	"Originally a special forces marine, ever since joining the Slipgate program Ranger has seen a thousand deaths and escaped from a million more on a billion worlds. He has gone from military bases to medieval castles to arcane dimensions to hellish abysses to planes of eldritch madness best not spoken of. Through them all, Ranger has proven resilience and power that give even the most terrifying elder ones pause--with strange aeons, even death itself may die under fire of a well-aimed 9.9lb 750mm RHA rocket.", "" },
+	{	"Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Ian Paul Freely is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. I.P. Freely has a wide range of explosives, fit for many situations. That's why many call him the \"demolition specialist\", he simply loves them, and you can be sure that he will not hesitate on using them, not by one bit.", "" },
+	{	"Blake Stone has always been an extroadinary agent who spent his childhood serving Great Britain. Just after he was promoted to General Status, Dr Pyrus GoldFire was there to be his next challenge. Blake Stone fought relentlessly against the mutants he created and eventually put an end to Goldfire's plans. Still, everything is far from over for him. He still has one final destination: he is there to end the corruption in the wheel of Samsara and he won't stop until every bit of photon has been disintegrated.", "" },
+	{	"Vengeance is all that is left in him now... His love was taken away from him. He was betrayed by his master and forced to see his friends executed before his very eyes. Even eternal banishment was not enough to stop Caleb. Vengeance had already driven him into an unstoppable blood lust. He wouldn't stop until he fully avenged his comrades, and his one true love. Caleb is exceptional at dealing with singular foes, but becomes rather lackluster at dealing with many, although he is still able to seal the deal. Caleb's sole purpose of living is to prove thathe is truly the \"One That Binds\".", "" },
+	{	"In a world where everyone nearly died from a virus, the remaining people were oppressed by the Order, until one man joined the rebels to stop the entire order, even killed their deity, The Entity. In Samsara, Strifeguy plays very tactically, requiring well thought out plans to make sure he destroys enemies and survives while doing so. However, he does lack range.", "" },
+	{	"The man. The myth. The icon. The legend. The hero. Doomguy has stood against untold legions throughout all 20 years of his one-man war on Hell, and here he stands ready to go against more. He is a man that needs no introduction, as his abilities have been proven and honed and harnessed time and time again--the rest of the heroes will have to work double to even match the bar Doomguy is constantly raising.", "" },
+	{	"", "" },
+	{	"", "" },
+	{	"", "" },
+	{	"", "" },
+	{	"", "" },
+	{	"", "" },
+	{	"", "" },
+	{	"", "" },
+	{	"", "" },
+	{	"", "" },
+	{	"", "" },
+	{	"Leonard was an unassuming redneck living in Hickston alongside his brother Bubba, living peacefully without expectations. Sure, his neighbors were exceptionally annoying and sure, the land was filled with hostile dogs and wasps, but ultimately cheap ass whiskey and pork rinds were in abundance, and best of all, the two brothers owned their prized pig Bessie, their real pride. All that changed when Hickston was invaded by alien forces, who not only decided to eliminate all humans, bụt also clone their neighbors and let them do the dirty job, With Bessie stolen and endless clones of their now even more aggravating neighbors shooting everything in sight, Leonard decided he had enough. After shooting his way through Hickston and nearby locations and finally crash-landing the main alien UFO, Leonard returned home, only to find his brother Bubba had consumed all the whiskey and pork rinds, And so, he decided to fight in the wheel of Samsara, in hope of once again finding the peace that invasion had forever eliminated in his hometown.", "" },
+	{	"", "" },
+	{	"The Demoness is a unique creature, the only one of her kind. She was created by Eidolon and could be considered to be his daughter. She was meant to be the progenitor of a new race of elite minions who would serve as the Serpent Rider's personal agents. \n\nEidolon taught his creation many harsh lessons and gave her considerable powers, yet he was never able to finish his work, as he was slain by mortal heroes. The Demoness was too weak at the time to intervene in any way. However, when she learned that the soul of her master had been stolen by Praevus, she went into an unholy rage and decided to deal with the blasphemer and his minions in person.", "" },
+	{	"James Bond, British literary and film character, a peerless spy, notorious womanizer, and masculine icon. He is an internationally known spy that has one mission: to serve and protect his Royal Majesty by working for MI6, part of the British Secret Service. Bond was first conceived as a Cold War-era operative. Trained in intelligence and special forces, the superspy always used the latest gadgets, thwarted Soviet agents, brought international gangsters to justice, and inevitably bedded a beautiful woman. An enthusiastic gambler, he was nearly as loyal to his signature vodka martini as he was to the British crown and his Scottish roots. Although Bond radiated charisma and style, he was also intensely solitary and virtually friendless, despite his many trysts.", "" },
 };
 
-str HeroTraits[CLASSCOUNT] =
+str HeroTraits[CLASSCOUNT][2] =
 {
-	"...And I Feel Mighty: Doomguy holds the Super Shotgun, the most devastating weapon in the game and cementing him as the most damaging hero. No other weapon can match its reliability and sheer power.
+	{	"...And I Feel Mighty: Doomguy holds the Super Shotgun, the most devastating weapon in the game and cementing him as the most damaging hero. No other weapon can match its reliability and sheer power.
 	\n\nTo Hell With Respect!: Doomguy is the most unchanged in his function and his abilities. Playing with him is just like playing Doom II, so show these newcomers who they better call granddaddy.",
 	
-	"The Mission Continues...: Chexter ain't got time to bleed...or the rating to. Hailing from an easy game where all the enemies did negligible damage without threat of death means that he's just as safe here. Let the kids play--Chex Warrior takes 20% less damage from everything.
+	"" },
+	
+	{	"The Mission Continues...: Chexter ain't got time to bleed...or the rating to. Hailing from an easy game where all the enemies did negligible damage without threat of death means that he's just as safe here. Let the kids play--Chex Warrior takes 20% less damage from everything.
 	\n\nHold the Party Mix: The Zorch Propulsor seems like a typical rocket launcher, but sometime in between Chex Quest 1 and 3 Chexter got tired of accidentally zorching his own leg to another place. In 3, the Zorch Propulsor was modified to do no self-damage--and kept in here.",
 	
-	"Roll d20 for Damage: Heretic's damage scale worked on a much higher probability curve than Doom's, and so Corvus' weapons do much more random damage. You're just as likely to down someone with the Dragon Claw in seven shots as you are in fifteen.
+	"" },
+	
+	{	"Roll d20 for Damage: Heretic's damage scale worked on a much higher probability curve than Doom's, and so Corvus' weapons do much more random damage. You're just as likely to down someone with the Dragon Claw in seven shots as you are in fifteen.
 	\n\nBag of Holding: Corvus can carry the most inventory items out of all the Heroes, with every major item being carryable. Corvus even starts with the Bomb of the Ancients and Mine of the Ancients, which provide powerful explosives on demand. Even his Ultimate is a carryable item--which gives him a heavy advantage in resourcefulness over the other Heroes.",
 	
-	"Call Apogee, Say 'Bullshit!': Poor B.J. was from an era where weapon design was much simpler. He has no Shotgun weapons, no Slot III weapon, and no weapons that use Ammo 2. Any Ammo 2 picked up is instead converted to Ammo 1.
+	"" },
+	
+	{	"Call Apogee, Say 'Bullshit!': Poor B.J. was from an era where weapon design was much simpler. He has no Shotgun weapons, no Slot III weapon, and no weapons that use Ammo 2. Any Ammo 2 picked up is instead converted to Ammo 1.
 	\n\nHeroes Don't Quit: Being a POW in Nazi camps taught B.J. some survival techniques the hard way. When low on health, B.J. can drink up certain piles of gibs and blood for a boost. Restricted only to decorations, unfortunately--can't slaughter imps and drink off them.",
 	
-	"Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
+	"" },
+	
+	{	"Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
 	\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Parias has Baratus' runspeed and HeXen's jump height.",
 	
-	"Step Right Up and Get Some!: Bosses in Duke Nukem 3D were not immune to splash damage from explosives. Because of this, all explosive weapons Duke wields force radius and splash damage, even on those enemies normally immune to it. Go wild on the bosses!
+	"" },
+	
+	{	"Step Right Up and Get Some!: Bosses in Duke Nukem 3D were not immune to splash damage from explosives. Because of this, all explosive weapons Duke wields force radius and splash damage, even on those enemies normally immune to it. Go wild on the bosses!
 	\n\nIt's My Way or...Hell, It's My Way!: Being from the Build engine, Duke moves different, fights different, and plays different. His movement is slower, the Soulsphere gives him less health, and he can't take damage as well. He could die very easily in Duke Nukem 3D--so make sure you don't die here.",
 	
-	"To Never Shoot Where I Could Use Grenades: Several of the Security Officer's weapons boast an alt-fire--the magnums (when a second is picked up), shotguns (also when a second is picked up), assault rifle, alien weapon, and wave motion cannon. These different options allow him different methods to approach situations, or simply to shoot harder and faster.
+	"" },
+	
+	{	"To Never Shoot Where I Could Use Grenades: Several of the Security Officer's weapons boast an alt-fire--the magnums (when a second is picked up), shotguns (also when a second is picked up), assault rifle, alien weapon, and wave motion cannon. These different options allow him different methods to approach situations, or simply to shoot harder and faster.
 	\n\nNever Stop Running, Never Stop Firing: Long range does not exist to the Security Officer. His bullets are not instant hitscan, like the other heroes--they move at a much slower pace. Likewise, his projectiles have a slower travelling speed and are likely to easily be dodged.",
 	
-	"Go Forth and Kick Ass: Quake's air physics were much looser, and practically invented strafejumping and rocketjumping. Ranger thus hangs in the air slightly longer than normal, and can rocketjump much easier.
+	"" },
+	
+	{	"Go Forth and Kick Ass: Quake's air physics were much looser, and practically invented strafejumping and rocketjumping. Ranger thus hangs in the air slightly longer than normal, and can rocketjump much easier.
 	\n\nDissolution of Eternity: While Ranger takes just as much damage as normal, he still has one fatal defensive flaw. When picking up a Soulsphere or Megasphere, the amount of health received slowly degenerates. This does not affect health bonus pickups.",
+	
+	"" },
 
-	"Where's my ammo?: Most of the weapons you have are rockets, and they are very hard to carry. You have very limited ammunition.
+	{	"Where's my ammo?: Most of the weapons you have are rockets, and they are very hard to carry. You have very limited ammunition.
 	\n\nBoom, Boom, Boom: You have the widest access to a wide range of explosives, you like making things go boom! Blow people up in many ways!",
 	
-	"Tough Training: Blake had a really tough army training, he has no weakness to anything. He's also unnecessarily disciplined.
+	"" },
+	
+	{	"Tough Training: Blake had a really tough army training, he has no weakness to anything. He's also unnecessarily disciplined.
 	\n\nTough Odds: Blake's weapons are not very ammo efficient, however having used them for ages makes him very expert at them and he uses all his weapons with super speed.",
 	
-	"Boo Hoo... When does the hurting stop?: Caleb loves to inflict pain so much on his foes that he can kill them in more ways than any other hero. He is rather prone to hurting himself in the process, however.
+	"" },
+	
+	{	"Boo Hoo... When does the hurting stop?: Caleb loves to inflict pain so much on his foes that he can kill them in more ways than any other hero. He is rather prone to hurting himself in the process, however.
 	\n\nGood. Bad. I'm the guy with the gun: Caleb is such an expert with his weapons, that he can fire them in alternative ways, and can even some times dual wield them.",
 	
-	"Revolutionary: Lots of Strifeguy's weapons are very tricky to use. His slot 3 is weaker but isn't lobbed like his slot 5 which bounces off enemies and self harms. Even the alt fire which sets a massive fire can kill you if you are not careful. His slot 6 is also lobbed but powerful.
+	"" },
+	
+	{	"Revolutionary: Lots of Strifeguy's weapons are very tricky to use. His slot 3 is weaker but isn't lobbed like his slot 5 which bounces off enemies and self harms. Even the alt fire which sets a massive fire can kill you if you are not careful. His slot 6 is also lobbed but powerful.
 	\n\nLast Stand: He may be tough, but even in critical condition he will have a speed reduction, which is why all health and soulspheres are medikits to heal him, and for providing ammo for his second and much deadlier ultimate, the Sigil!
 	\n\nEver evolving force: Strifeguy can barely aim and has terrible melee, but his berserk is an item that upgrades his max health by 10, and increasing his accuracy, allowing his shorter distance weapons to aim better and improving his longevity!",
 	
-	"...And I Feel Mighty: Doomguy holds the Super Shotgun, the most devastating weapon in the game and cementing him as the most damaging hero. No other weapon can match its reliability and sheer power.
-	\n\nTo Hell With Respect!: Doomguy is the most unchanged in his function and his abilities. Playing with him is just like playing Doom 64, so show these newcomers who they better call granddaddy.",
+	"" },
 	
-	"",
+	{	"...And I Feel Mighty: Doomguy holds the Super Shotgun, the most devastating weapon in the game and cementing him as the most damaging hero. No other weapon can match its reliability and sheer power.
+	\n\nTo Hell With Respect!: Doomguy is the most unchanged in his function and his abilities. Playing with him is just like playing Doom 64, so show these newcomers who they better call granddaddy.", 
 	
-	"",
+	"" },
 	
-	"",
-	
-	"",
-	
-	"",
-	
-	"",
-	
-	"",
-	
-	"",
-	
-	"",
-	
-	"",
-	
-	"",
-	
-	"You screw with the bull, you get the horns: Growing in the deep south, Leonard has been experienced in firearms since infancy, thanks to his passion for hunting. The hunting crossbow and scoped rifle will be able pick off enemies from a distance, but if all else fails, a shower of AK-47 bullets will take care of the rest.
+	{	"",	"" },
+	{	"",	"" },
+	{	"",	"" },
+	{	"",	"" },
+	{	"",	"" },
+	{	"",	"" },
+	{	"",	"" },
+	{	"",	"" },
+	{	"",	"" },
+	{	"",	"" },
+	{	"",	"" },
+	{	"You screw with the bull, you get the horns: Growing in the deep south, Leonard has been experienced in firearms since infancy, thanks to his passion for hunting. The hunting crossbow and scoped rifle will be able pick off enemies from a distance, but if all else fails, a shower of AK-47 bullets will take care of the rest.
 	\n\nSwamp gas my ass: Leonard doesn't have the intelligence to use medical equipment and thus relies on food to heal. Eating too much will make you gassy, and drinking too much will make you drunk.",
 	
-	"",
+	"" },
 	
-	"",
+	{	"",	"" },
 	
-	"Bond. James Bond: Being a spy, wearing body armor would potentially compromise his mission. As a result, Bond won't be able to withstand too much damage.
-	\n\nShaken, not stirred: James Bond usually tries not to go into a situation guns blazing, and instead prefers a more discreet approach. Any spy knows aiming for the vitals can deliver an easy blow."
+	{	"",	"" },
+	
+	{	"Bond. James Bond: Being a spy, wearing body armor would potentially compromise his mission. As a result, Bond won't be able to withstand too much damage.
+	\n\nShaken, not stirred: James Bond usually tries not to go into a situation guns blazing, and instead prefers a more discreet approach. Any spy knows aiming for the vitals can deliver an easy blow.",
+	
+	"" },
 };
 
-str HeroChanges[CLASSCOUNT] =
+str HeroChanges[CLASSCOUNT][2] =
 {
-	"- The Berserk operates off the Chainsaw as well as the Fist, allowing Doomguy to have a DPS alternative rather than focusing on only Burst.
+	{	"- The Berserk operates off the Chainsaw as well as the Fist, allowing Doomguy to have a DPS alternative rather than focusing on only Burst.
 	\n	^- : When in Berserk, the Chainsaw deals 7-70 damage every 3 tics.
 	\n\n- The Berserk fist does more damage (from 20-200 to 120-240) and has different sounds. This allows the Berserk fist to be a viable weapon in comparison to the Rocket Launcher and Super Shotguns, especially against larger enemies.
 	\n\n- The Fist no longer alerts monsters, because that was stupid.
 	\n\n- Doomguy never had to deal with ghosts. In Heretic and HeXen, the Shotgun, Super Shotgun, and Chaingun pass harmlessly through ghosts.
-	\n\n- There are not many other changes. In Samsara, the games meld to Doom II's gameplay, rather than vice-versa.",
+	\n\n- There are not many other changes. In Samsara, the games meld to Doom II's gameplay, rather than vice-versa.", },
 	
-	"- Before, the Mini-Zorcher's animation was pressing the button after it fires. Now it's pressing as it fires.
+	{	"- Before, the Mini-Zorcher's animation was pressing the button after it fires. Now it's pressing as it fires.
 	\n\n- The Bootspoon no longer alerts monsters, and has a sound for impacting walls.
 	\n\n- All of Chexter's weapons leave small zorch puffs when hitting things now, for easier identifying of impact.
 	\n\n- The GLDefs for Chex Quest were yellow-ish, since they inherited from Doom. Now they're red, to match the zorch colors.
 	\n\n- The Large Zorcher reloads a slight bit quicker now (from a firing time of 37/44 tics to 32/37 tics) to differentiate it from Doomguy's Shotgun.
 	\n\n- All of Chexter's weapons are slightly more accurate (from bullet spread of 5.6 to 4) to differentiate them from Doomguy's, and to make up for the lack of an SSG.
 	\n\n- The Phasing Zorcher didn't leave marks on the wall in vanilla Chex Quest, but now does because pretty.
-	\n\n- The Super Large Zorcher was planned for Chex Quest 3, but didn't make it through. If it did, it likely would have been an SSG clone.",
+	\n\n- The Super Large Zorcher was planned for Chex Quest 3, but didn't make it through. If it did, it likely would have been an SSG clone.", },
 	
-	"- The Tomed staff has had its damage increased from 18-81 to 60-120, to give Corvus a bit of a burst damage oomph.
+	{	"- The Tomed staff has had its damage increased from 18-81 to 60-120, to give Corvus a bit of a burst damage oomph.
 	\n\n- The Elven Wand did not have any BRIGHT frames in Heretic.
 	\n\n- The Staff no longer alerts monsters.
 	\n\n- The tomed Elven Wand no longer passes through ghosts. All characters' basic weapons should be able to hit ghosts.
@@ -179,15 +199,15 @@ str HeroChanges[CLASSCOUNT] =
 	\n\n- The Staff and Gauntlets of the Necromancer no longer lower and re-raise when the Tome of Power runs out, so as to smooth out gameplay.
 	\n\n- The Gauntlets of the Necromancer and Tomed Staff now have GLDefs, because pretty.
 	\n\n- The tomed Dragon Claw fires a near-hitscan now, rather than a very fast projectile. Giving it slower speeds glitched the rippers and caused them to go all over the map.
-	\n\n- The Tome of Power works more like Heretic II than Heretic, being a permanent inventory item.",
+	\n\n- The Tome of Power works more like Heretic II than Heretic, being a permanent inventory item.", },
 	
-	"- I was unable to get a hand on Wolfenstein for the Mac, so I don't know how accurate/inaccurate the Flamethrower/Rocket Launcher is to their game.
+	{	"- I was unable to get a hand on Wolfenstein for the Mac, so I don't know how accurate/inaccurate the Flamethrower/Rocket Launcher is to their game.
 	\n\n- The Knife's unupgraded damage is more true to Wolf 3D, but its upgraded graphics/sound are the ones in Wolf3D.
 	\n\n- When upgraded, the knife does damage on every tic it's thrust in, reminiscent of other slot I weapons.
 	\n\n- The Spear of Destiny is now an actual weapon. Its behavior is entirely original, though its appearance is based on the Spear of Destiny boxart. A lot of Doom II levelsets practically require an ultimate weapon eventually.
-	\n\n- Drinking up gibs is at minimum 20 HP, rather than 10.",
+	\n\n- Drinking up gibs is at minimum 20 HP, rather than 10.", },
 	
-	"- The most obvious: Parias now has seven weapons instead of four.
+	{	"- The most obvious: Parias now has seven weapons instead of four.
 	\n\n- The Mace of Contrition no longer alerts monsters.
 	\n\n- The Firestorm's surrounding fireballs do more damage, having their A_Explode increased from radius 20/explosive damage 20 to 64/32, so as to match the power of the Plasma Rifle.
 	\n\n- The Hammer of Retribution forces its radius damage on enemies, so as to make up for its much slower speed with Rocket Launcher power.
@@ -201,9 +221,9 @@ str HeroChanges[CLASSCOUNT] =
 	\n\n- The Sapphire Wand's radius/height was reduced from 12/8 to 3/2, so as to help Parias in maps where he needs to shoot through the bars.
 	\n\n- Parias' mana 2 has a limit of 300 due to running off Cells, rather than 200.
 	\n\n- The Mystic Ambit Incant sprays armor shards as well as giving health, so as to additionally assist allies.
-	\n\n- The Wraithverge is now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.",
+	\n\n- The Wraithverge is now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", },
 	
-	"- Duke's former standing sprite has been repurposed as a shooting sprite.
+	{	"- Duke's former standing sprite has been repurposed as a shooting sprite.
 	\n\n- Significantly more taunts all around, since it's an integral part of Duke's character.
 	\n\n- Animation times and sprites locations were tried to make as close as possible as their Duke Nukem 3D/64 counterparts, but there may be subtle differences.
 	\n\n- Damage values for the explosive Duke Nukem weapons are not as documented as well as the idtech1 weapons. Most of them are based off the Doomguy's similar weapons.
@@ -216,9 +236,9 @@ str HeroChanges[CLASSCOUNT] =
 	\n\n- The Freezethrower's shots do 22 damage rather than 20 damage, due to its slightly slower RoF compared to the Plasma Rifle.
 	\n\n- The Pipebomb's first, second, and third bounce are not a fixed height/amount, due to how ZDoom handles bouncing.
 	\n\n- The Pipebomb's three counts of bounce include walls, due to how ZDoom handles bouncing.
-	\n\n- Deployed pipebombs can no longer be shot up or picked up, due to my inability to figure it out.",
+	\n\n- Deployed pipebombs can no longer be shot up or picked up, due to my inability to figure it out.", },
 	
-	"- In Zandronum, weapons bob from side to side instead of up and down. ZDoom has Marathon-style bobbing.
+	{	"- In Zandronum, weapons bob from side to side instead of up and down. ZDoom has Marathon-style bobbing.
 	\n\n- Grenades, fists, and charged fusion shots no longer trigger switches, due to engine limitations. Sorry, Vidmasters.
 	\n\n- The Security Officer now has a pain sound, so as to indicate when shots hit in DM play.
 	\n\n- The Shotgun has had its damage reduced, because 200-240 damage with a single shotgun in 40 tics HAH HAH HAH NOPE.
@@ -231,9 +251,9 @@ str HeroChanges[CLASSCOUNT] =
 	\n\n- The Fusion Pistol's overcharge-to-death is no longer an explosion, due to being able to grief people with the resulting explosion.
 	\n\n- In DM, the SMG's damage has been reduced--its accuracy and rate of fire meant it could shred through people far too easily. Still the same in co-op/singleplayer.
 	\n\n- The Wave Motion Cannon is now a useable weapon. Doom's/HeXen's design practically requires an ultimate weapon for a lot of areas.
-	\n\n- The HUD no longer holds a bar for oxygen, due to Zandronum's lack of an AirTime variable in its SBarInfo. It instead now represents armor.",
+	\n\n- The HUD no longer holds a bar for oxygen, due to Zandronum's lack of an AirTime variable in its SBarInfo. It instead now represents armor.", },
 	
-	"- Quake had such a lower damage scale than Doom it wasn't even funny. The Vore had 400 HP, equivalent to two Centaurs. In co-op, his weapons have been buffed the fuck out.
+	{	"- Quake had such a lower damage scale than Doom it wasn't even funny. The Vore had 400 HP, equivalent to two Centaurs. In co-op, his weapons have been buffed the fuck out.
 	\n\n- The Quad Damage is now a reuseable item, partly to help with the aforementioned damage issues, and partly because there was no appropriate item to replace it with. (Berserks didn't work--too rare, too erratically placed, not to mention should be more utility)
 	\n\n- The Double-Barreled Shotgun uses only one shell now instead of two, for the same reason. (64 damage for one shot hah hah hah hah NOPE)
 	\n\n- In Quake, the projectiles had no hitbox. Here, their hitbox is simply obscenely tiny.
@@ -242,49 +262,49 @@ str HeroChanges[CLASSCOUNT] =
 	\n\n- Lava Nails, Multi-Grenades, and Multi-Rockets were handled a bit differently. There were no alt-fires, much less that swapped between weapons, and the ammo pickups were separate.
 	\n\n- The Double Barreled Shotgun's, Nailgun's, and Laser Cannon's animations are slightly smoother.
 	\n\n- The Shotgun and Double-Barreled Shotgun's damages are random by 1d3, while Quake's damage values were completely static. Turns out people are getting upset for using fake bullets. Whoops.
-	\n\n- The trail behind the Nails and Lava Nails has been made a LOT more obvious, so enemies can see it more easily in DM.",
+	\n\n- The trail behind the Nails and Lava Nails has been made a LOT more obvious, so enemies can see it more easily in DM.", },
 	
-	"- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Freeley can carry all his missile weapons.
+	{	"- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Freeley can carry all his missile weapons.
 	\n\n- Once the few missiles that weapons had in Rise of the Triad were burned up, the weapon was tossed. This is not the case in Samsara.
 	\n    ^- Further, Freeley's weapons now can carry much more ammo, but not as much as other heroes.
 	\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibar does a large amount of melee damage to compensate for Freeley's lack of close quarter combat options
-	\n\n- God mode in Samsara doesn't increase Freeley's view height",
+	\n\n- God mode in Samsara doesn't increase Freeley's view height", },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"",
+	{	"", "" },
 	
-	"- Hexen 2, being a cousin of Quake, also had such a low damaging scale, while enemy hitpoints were reasonably on par with Doom. Given how the Tempest Staff couldn't even kill some of the weakest enemies in one hit, the damage values have been buffed around twice as much.
+	{	"- Hexen 2, being a cousin of Quake, also had such a low damaging scale, while enemy hitpoints were reasonably on par with Doom. Given how the Tempest Staff couldn't even kill some of the weakest enemies in one hit, the damage values have been buffed around twice as much.
 	\n ^- Additionally, additional characteristics have been added to some of the Demoness's weapons.
 	\n\n- The strength, intelligence, wisdom, and dexterity stat were static, but given that the Demoness levels up it made more sense to allow these stats to also grow.
 	\n ^-Intelligence and dexterity had no role in game - intelligence boosts damage of ranged weapons with each point over 10 by 2 percent, while dexerity increases the range of the Demoness's pistol weapon.
@@ -292,14 +312,14 @@ str HeroChanges[CLASSCOUNT] =
 	\n\n- The powered acid rune missile does 50% more damage than in the original. 
 	\n\n- The Tempest staff projectile does enough damage now to compensate for being a slot 7 with it's slow rate of fire.
 	\n\n- The Tempest staff lightning chain is also now capable of chaining to more enemies to be more effective at clearing crowds given it's a powered BFG slot weapon.
-	\n\n- The weapons here use substantially less ammo than in their original games.",
+	\n\n- The weapons here use substantially less ammo than in their original games.", "" },
 	
-	"- Goldeneye damage values use a substantially smaller scale than most of the other games that can be found in Samsara. It seemed to make sense to multiply all damage values by 10.
+	{	"- Goldeneye damage values use a substantially smaller scale than most of the other games that can be found in Samsara. It seemed to make sense to multiply all damage values by 10.
 	\n\n- The moonraker was able to pierce walls. Makes sense for the weapon to pierce enemies too given it's an ultimate. Any enemies it can't rip it will do a high amount of damage to.
 	\n\n- The moonraker is an ultimate, so it needs to do way more than 20 damage per shot, no matter the ammo cost.
 	\n\n- Goldeneye had duel wielding mechanics, but usually it involved enemies that dropped their weapons when they were dual wielding. This was a strange mechanic - instead, any weapon can be dual wielded here that could be dual wielded in Goldeneye.
 	\n\n- Goldeneye mines won't stack on each other when thrown on top of each other. It causes too many issues.
-	\n\n- The weapons will sway left and right, but won't sway up and down when aiming upwards or downwards."
+	\n\n- The weapons will sway left and right, but won't sway up and down when aiming upwards or downwards.", "" },
 	
 };
 
@@ -1317,8 +1337,6 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 	},
 };
 
-str SelectionColors[2] = { "DarkGray", "white" };
-
 // I don't see the need to congest the regular hero arrays with double the length for one hero, so I will bite a bullet and make a separate one
 
 Script "Samsara_Compendium_Initiate" (void) Net
@@ -1450,6 +1468,8 @@ Script "Samsara_Compendium" (void) Net Clientside
 					listindex = 1;
 					removemessages(16180,16185);
 				}
+				SelectionColors[0] = ClassInfo[menuindex-1][altskin][25];
+				SelectionColors[1] = ClassInfo[menuindex-1][altskin][26];
 				prevskin = altskin;
 				monsterskin = 0;
 				removemessages(15990,16180);
@@ -1711,17 +1731,17 @@ Script "Samsara_Compendium" (void) Net Clientside
 				SetHudClipRect(FixedMul(fontscaledx,0.25),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.7),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.675));
 				if(menuitem == 1)
 				{
-					description = HeroSummaries[(menuindex-1)*(1+altskin)];
+					description = HeroSummaries[(menuindex-1)][altskin];
 					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.26)<<16)+0.1, floorwhole(scrollcounter*ClassFontScales[menuindex-1][1])+(88*ClassFontScales[menuindex-1][1])+0.1, 0);
 				}
 				if(menuitem == 2)
 				{
-					description = HeroTraits[(menuindex-1)*(1+altskin)];
+					description = HeroTraits[(menuindex-1)*(1+altskin)][altskin];
 					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.26)<<16)+0.1, floorwhole(scrollcounter*ClassFontScales[menuindex-1][1])+(88*ClassFontScales[menuindex-1][1])+0.1, 0);
 				}
 				if(menuitem == 3)
 				{
-					description = HeroChanges[(menuindex-1)*(1+altskin)];
+					description = HeroChanges[(menuindex-1)*(1+altskin)][altskin];
 					HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.26)<<16)+0.1, floorwhole(scrollcounter*ClassFontScales[menuindex-1][1])+(88*ClassFontScales[menuindex-1][1])+0.1, 0);
 				}
 				SetHudClipRect(0,0,0,0,0);							
