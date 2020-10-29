@@ -433,6 +433,10 @@ script SAMSARA_SPAWN (int respawning)
 	  case CLASS_ERAD:
         if (!respawning) { GiveInventory("EleenaReady", 1); }
         break;
+		
+	  case CLASS_C7:
+        if (!respawning) { GiveInventory("Allmap", 1); }
+        break;
 
 	  case CLASS_SW:
         if (!respawning) { GiveInventory("LoWangReady", 1); }
