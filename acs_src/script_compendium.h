@@ -6,16 +6,16 @@ str ClassInfo[CLASSCOUNT][2][27] =
 	{{"Corvus", 3, "***", "****", "**", "****", "****", "Utility", "TIPSYM03", "TIPHIL03", "TIPCORV", "TPLGCORV", "TPCHCORV", "CMPSHERE", "White", "CMPSHERE", "White", "CMPBGHE1", "CMPBGHE2", "CMPBGHE3", "CMPBGHE4", "TIPSYM03", "", "", "", "DarkGray", "White" }},
 	{{"Blazkowicz", 4, "***", "***", "*****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWF1", "CMPBGWF2", "CMPBGWF3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" },{"Blazkowicz", 4, "***", "***", "*****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWS1", "CMPBGWS2", "CMPBGWS3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
 	{{"Parias", 5, "*****", "****", "*", "****", "***", "Brawler", "TIPSYM05", "TIPHIL05", "TIPPARIA", "TPLGHEXN", "TPCHHEXN", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }},
-	{{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5", "", "", "", "DarkGray", "White" },{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5", "", "", "DarkGray", "White" }},
+	{{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5", "", "", "", "DarkGray", "White" },{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5", "", "", "DarkGray", "White" }},
 	{{"Security Officer", 7, "***", "***", "**", "*****", "*****", "Supression", "TIPSYM07", "TIPHIL07", "TIPSECOF", "TPLGMARA", "TPCHMARA", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGMA1", "CMPBGMA2", "CMPBGMA3", "CMPBGMA4", "CMPBGMA5", "", "", "", "DarkGray", "White" }},
-	{{"Ranger", 8, "***", "**", "****", "****", "***", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "CMPBQUAK", "Orange", "CMPBQUAK", "Orange", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08", "", "", "", "DarkGray", "White" }},
-	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "DarkGray", "White" }},
-	{{"Blake Stone", 10, "***", "***", "***", "*****", "**", "Skirmisher", "TIPSYM10", "TIPHIL10", "TIPBSTON", "TPLGBSTN", "TPCHBSTN", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGBS1", "CMPBGBS2", "CMPBGBS3", "CMPBGRT4", "CMPBGBS5", "", "", "", "DarkGray", "White" }},
-	{{"Caleb", 11, "***", "***", "***", "*****", "**", "Sadist", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5", "", "", "", "DarkGray", "White" }},
-	{{"Strifeguy", 12, "****", "*", "***", "****", "**", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "SMALLFONT", "Olive", "SMALLFONT", "Olive", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6", "", "", "DarkGray", "White" }},
+	{{"Ranger", 8, "***", "**", "****", "****", "***", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08", "", "", "", "QuakeCompendiumDarkGray", "QuakeCompendiumGray" }},
+	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }},
+	{{"Blake Stone", 10, "***", "***", "***", "*****", "**", "Skirmisher", "TIPSYM10", "TIPHIL10", "TIPBSTON", "TPLGBSTN", "TPCHBSTN", "CMPBBLAK", "BSCompendiumYellow", "CMPSBLAK", "BSCompendiumMediumGreen", "CMPBGBS1", "CMPBGBS2", "CMPBGBS3", "CMPBGRT4", "CMPBGBS5", "", "", "", "BSCompendiumYellow", "BSCompendiumLightYellow" }},
+	{{"Caleb", 11, "***", "***", "***", "*****", "**", "Sadist", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "CMPBBLOD", "Red", "CMPSBLOD", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5", "", "", "", "DarkGray", "White" }},
+	{{"Strifeguy", 12, "****", "*", "***", "****", "**", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "CMPSSTRF", "untranslated", "CMPSSTRF", "untranslated", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6", "", "", "DarkGray", "White" }},
 	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White" }},
 	{{"Eleena", 14, "****", "*", "**", "****", "***", "Acrobat", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5", "", "", "", "DarkGray", "White" }},
-	{{"Space Seal", 15, "*****", "*", "***", "****", "**", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "SMALLFONT", "Orange", "SMALLFONT", "Blue", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "", "", "DarkGray", "White" }},
+	{{"Space Seal", 15, "*****", "*", "***", "****", "**", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "CMPBCOR7", "Corridor7CompendiumYellow", "CMPSCOR7", "Corridor7CompendiumGreen", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "", "", "Corridor7CompendiumYellow", "Corridor7CompendiumBrightYellow" }},
 	{{"LDF Commando", 16, "***", "**", "****", "***", "***", "Support Fire", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
 	{{"Kyle Katarn", 17, "**", "*****", "****", "****", "***", "Tank", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5", "", "", "", "DarkGray", "White" }},
 	{{"Mooman", 18, "*", "***", "****", "****", "***", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8", "DarkGray", "White" }},
@@ -23,21 +23,21 @@ str ClassInfo[CLASSCOUNT][2][27] =
 	{{"Grondoval", 20, "****", "***", "**", "****", "****", "Pugilist", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5", "", "", "", "DarkGray", "White" }},
 	{{"Gordon Freeman", 21, "*****", "**", "***", "**", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "", "DarkGray", "White" },{"Adrian Shephard", 21, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
 	{{"Lo Wang", 22, "***", "**", "****", "****", "***", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "SMALLFONT", "Red", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5", "", "", "", "DarkGray", "White" }},
-	{{"Cybermage", 23, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "CMPBCMAGE", "untranslated", "SMALLFONT", "Yellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5", "", "", "", "DarkGray", "White" }},
+	{{"Cybermage", 23, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Green", "SMALLFONT", "Yellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5", "", "", "", "DarkGray", "White" }},
 	{{"Jon", 24, "**", "***", "***", "**", "****", "Adventurer", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8", "DarkGray", "White" }},
 	{{"Leonard", 25, "***", "*", "****", "***", "***", "Sharpshooter", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "CMPBLEON", "untranslated", "CMPSLEON", "untranslated", "CMPBGRR1", "CMPBGRR2", "CMPBGRR3", "CMPBGRR4", "CMPBGRR5", "", "", "", "DarkGray", "White" }},
-	{{"Bitterman", 26, "***", "***", "****", "**", "***", "Battery", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "SMALLFONT", "Brick", "Q2SMFONT", "Brick", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26", "", "", "DarkGray", "White" }},
-	{{"Demoness", 27, "***", "**", "**", "***", "***", "Steamroller", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25", "", "", "", "DarkGray", "White" }},
+	{{"Bitterman", 26, "***", "***", "****", "**", "***", "Battery", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "CMPSQUA2", "Quake2CompendiumWhite", "CMPSQUA2", "Quake2CompendiumGreen", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26", "", "", "Quake2CompendiumGray", "Quake2CompendiumWhite" }},
+	{{"Demoness", 27, "***", "**", "**", "***", "***", "Steamroller", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25", "", "", "DarkGray", "White" }},
 	{{"James Bond", 28, "***", "*", "***", "****", "****", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "GEFONTS", "Gold", "GEFONTS", "White", "CMPBGGE1", "CMPBGGE2", "", "CMPBGGE4", "CMPBGGE5", "", "", "", "DarkGray", "White" }},
 };
 
 int ClassFontScales[CLASSCOUNT][2] = 
 {  
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
-	{ 1.0, 1.0 },	{ 5.0, 6.67 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
+	{ 1.0, 1.0 },	{ 5.0, 5.0 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },
+	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.5, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
-	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
-	{ 2.125, 1.25 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 }
+	{ 2.125, 1.25 },	{ 5.0, 5.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 }
 };
 
 str CompendiumWheelRot[12] = { "CMPWHL01", "CMPWHL02", "CMPWHL03", "CMPWHL04", "CMPWHL05", "CMPWHL06", "CMPWHL07", "CMPWHL08", "CMPWHL09", "CMPWHL10", "CMPWHL11", "CMPWHL12"};
@@ -297,7 +297,7 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 	},
 	{
 		{
-			{ "Summary", "In a world where everyone nearly died from a virus, the remaining people were oppressed by the Order, until one man joined the rebels to stop the entire order, even killed their deity, The Entity. In Samsara, Strifeguy plays very tactically, requiring well thought out plans to make sure he destroys enemies and survives while doing so. However, he does lack range.", ""},
+			{ "Summary", "In a world where everyone nearly died from a virus, the remaining people were oppressed by the Order, until one man joined the rebels to stop the entire order, who even killed their deity, The Entity. In Samsara, Strifeguy plays very tactically, requiring well thought out plans to make sure he destroys enemies and survives while doing so. However, he does lack range.", ""},
 			
 			{ "Traits", "Revolutionary: Lots of Strifeguy's weapons are very tricky to use. His slot 3 is weaker but isn't lobbed like his slot 5 which bounces off enemies and self harms. Even the alt fire which sets a massive fire can kill you if you are not careful. His slot 6 is also lobbed but powerful.
 			\n\nLast Stand: He may be tough, but even in critical condition he will have a speed reduction, which is why all health and soulspheres are medikits to heal him, and for providing ammo for his second and much deadlier ultimate, the Sigil!
@@ -350,21 +350,10 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 	},
 	{
 		{
-			{ "Summary", "", ""},
+			{ "Summary", "Colonization of the Moon can be a difficult task. Especially when that task is caught up in immense political turmoil. Unable to come to terms, the colonies on the moon begin open rebellion against the United Nations. The U.N. quickly responds by mobilizing thier forces to deal with this rebellion, but the Lunar Alliance has an ace up their sleeve. The Alliance's operations hinge on the skill of a single LDF Commando, as well as a handfull LDF malitia. He endures racing against limited oxygen supplies and swarms of U.N. Personnel to ensure the LDF colonies remain standing strong. Only... the situation becomes far more complicated when an alien species is discovered laying dormant within the Moon... \n\nWith an arsenal consisting primarily of highly accurate, fast moving projectile based weaponry. The commando can easily hang back and deal consistent damage or pick off weak enemies with pot shots while his allies are in the fray.", ""},
 			
-			{ "Traits", "", ""},
-			
-			{ "Changes", "", ""},
-		},
-		{
-			{ "", "", ""},
-		}
-	},
-	{
-		{
-			{ "Summary", "", ""},
-			
-			{ "Traits", "", ""},
+			{ "Traits", "Bullets! My only weakness! Wait. what the hell is a \"bullet\"?: Most of Rebel Moon's warfare consisted of projectile attacks. Commando only has one hitscan weapon at his disposal. He is also weak against hitscan and tracer weapons such as shotguns and chainguns...
+			\n\nSpace is a cold, cooold place: Properly suited up for the harsh enviornment of space. The Commando also has some resistance to other hazardous elements, such as fire, ice, and radiation.", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -374,21 +363,10 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 	},
 	{
 		{
-			{ "Summary", "", ""},
+			{ "Summary", "Kyle Katarn worked for the Empire until he learned the truth about his father's death, from the Rebel spy, Jan Ors. Since then, he's been a mercenary for the Rebel Alliance, tallying up quite the record. Whether it's singlehandedly taking Boba fett down a peg or duking it out with Kell Dragons, you can be sure Kyle will come out on top. \n\nBeing no stranger to pain, Kyle's been through numerous battles in his carrer, which has toughened him up considerably. Unfortunately regardless of his expertise, he has to deal with less than reliable empire tech, which isn't exactly known for it's accuracy. In a team, he's best played on the frontlines, taking damage for everyone else.", ""},
 			
-			{ "Traits", "", ""},
-			
-			{ "Changes", "", ""},
-		},
-		{
-			{ "", "", ""},
-		}
-	},
-	{
-		{
-			{ "Summary", "", ""},
-			
-			{ "Traits", "", ""},
+			{ "Traits", "This Cloud be Interesting: After surviving his own form of hell through the Dark Tropper menace, Kyle always keeps his personal shield on hand, allowing him to start all missions with a free 100 armor, as well as recieve 10% less damage from anything, as long as it's not a physical, fire or explosive blow. 
+			\n\nA good Supply of Power Cells: Much of Kyle's weaponry had their own ammo types, but with the limited ammo types in the Doom universe, most of his arsenal needed to be modified to convert traditional ammunition to a form it can use. As such, each slot uses Clips, Shells, Rockets, and Cells as you would except that slot to use them.", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -398,9 +376,10 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 	},
 	{
 		{
-			{ "Summary", "", ""},
+			{ "Summary", "Aldus Kaden, the leader of the A.V.C., survived the destruction of the homeplanet Eltho III through sheer luck. His high accuracy, fast reflexes, and extreme luck were the reasons why the imperial guards never caught him. Because his sound and appearance are very similiar to those of a cow, his companions call him by the name \"Mooman\". Many foes underestimate him, but Aldus is the most dangerous and strongest member of the A.V.C. \n\nPlaying as Mooman is like dicing: it's pure chance what will happen next. Prepare to rage if you don't get anything by pickups and be glad if you get tons of ammo by one single clip. His high jumping power and speed make evading projectiles an easy task. Aldus can both easily kill enemies in a duel and rip huge hordes apart, but you will need a lot of luck, or else you can prepare to be served medium-rare. Good luck - you'll need it.", ""},
 			
-			{ "Traits", "", ""},
+			{ "Traits", "Slaughterhouse: There are many hungry demons out there who lust for your delicious meat. Thus poor Mooman takes 10% more damage from all melee attacks in the game.
+			\n\nWeak Conspecifics: Other bull-like enemies do way less damage against Aldus and receive more damage from him. Now is your time to go wild on bosses like the Cyberdemon and Minotaur.", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -410,25 +389,53 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 	},
 	{
 		{
-			{ "Summary", "", ""},
+			{ "Summary", "Having quickly advanced through the ranks of Earth's United Nations military branch, the \"Lightstormer Corps\", Jack Curtis has fought against many foes and supposed friends in his quest to defend the solar system. His skills with weapons are excellent on their own, but it is his psionic implants that truly elevate him to the next level. \n\nHaving lost his brother to the mad plans of his former commander-turned-traitor, he knows very well that the line that separates good and evil can become very thin. Thus, he has made it his duty in samsara to prevent any more threats to solar system, regarless of where these threats come from.", ""},
 			
-			{ "Traits", "", ""},
+			{ "Traits", "FEEL THE POWER!: Jack's psionic implants are the next step in warfare. If you are out of ammo, or you simply want to tackle the situation differently, you should unleash his powers on the unsuspecting enemies and witness the devastating results yourself!", ""},
 			
 			{ "Changes", "", ""},
 		},
 		{
-			{ "Summary", "", ""},
+			{ "", "", ""},
+		}
+	},
+	{
+		{
+			{ "Summary", "One warrior, one sword, one arch enemy. Grondoval is the mightiest and bravest of all warriors from the land of Stazhia. He has been to chosen to travel to the Island of Char and slay the evil witch Illwhyrin. Not even Illwhyrin's sister, Cirae-Argoth, could kill Grondoval. With his weaponry and magic scrolls he is able to kill anyone, no matter how big, scary or brutal they are. \n\nGrondoval's weaponry is a unique and balanced mix of Witchaven I and II. The melee attacks are so strong and crushing, that even big enemies like the Archvile or Baron of Hell feel atrocious pain and are stunned for a moment. Thus he excels in melee and easily defeats any big enemy in a duel. But be careful: Large groups and hordes of enemies constitute a big threat to him and can easily surround him.", ""},
 			
-			{ "Traits", "", ""},
+			{ "Traits", "Thou art veteran: In Witchaven you could level up and gain more strength, health and armor. Instead, you start immediately as a veteran (250 HP, maximum armor of 300).
+			\n\nCunning impostor: Using the weapons' enchantments now draw from ammo instead of temporary powerups, and the halberd has been modified to support enchantments.", ""},
+			
+			{ "Changes", "", ""},
+		},
+		{
+			{ "", "", ""},
+		}
+	},
+	{
+		{
+			{ "Summary", "Gordon Freeman, once a scientist, employee of the month, quiet man, and an Idol to all of his coworkers, reached the bottom of disgrace when an experiment with interdimensional portals went wrong and opened a gate to a merciless alien race; Gordon was forced to raise his crowbar and make his way through an infested Black Mesa while being forced to kill his own co-workers and being hunted by the military. He travelled to the Xen dimensions to kill an alien overlord called the \"Nihilanth\" in the hopes of ending the invasion. After getting the Job done, the mysterious G-Man offered him a job, and transported him in the depths of he11 alongside fellow heroes from both earth, space, past, future, and mythical lands with one goal... survival.", ""},
+			
+			{ "Traits", "Hazardous Materials: Dr. Gordon Freeman is in charge of the manipulation and maintenance of various Toxic and Harmful materials either from our planet or from outer space. Freeman is experienced in the field and equipped with his H.E.V suit; he knows how to properly avoid getting harm so easily from Hazardous surfaces like acid, lava, or any other environment harmful source.
+			\n\nCombat Stress Reaction: Being just a scientist with minimal knowledge about guns and far less about combat, Dr. Freeman tends to act slowly and sometimes ineffectively with his arsenal when in a battles. although thanks to his weaponry training at Black Mesa he knows the mere basics of how to handle a weapon. Due to his scientific knowledge, he also knows how to use and do maintenance on alien or high tech guns like the gauss cannon.", ""},
+			
+			{ "Changes", "", ""},
+		},
+		{
+			{ "Summary", "A 22 year old marine assigned to the Hazardous Environment Combat Unit, Adrian Shephard was sent on an operation only knowing that his orders were at the Black Mesa Research Facilty. Little did he know, however, that his orders were to cover up any evidence of an alien invasion at the research facility. Adrian was only forced to do more than his call of duty when he was purposefully prevented from leaving the facility by the mysterious G-Man. Soon, he was almost in the same position as the rest of the faculty at the facility when the Black Operations and a mysterious race known as Race X joined the fray. Upon the defeat of the Geneworm, Adrian knew too much about Black Mesa, but the G-Man could not simply get rid of him - he was too skilled. While originally detained, G-Man decided to send Adrian to the same place he sent Freeman in the hopes of fulfilling duties he knew Freeman could not.", ""},
+			
+			{ "Traits", "Never forget that your weapon was made by the lowest bidder: While Freeman's arsenal consists of bleeding edge technology, most of Adrian's arsenal is standard issue. That said, Adrian's equipment is designed for killing as many enemies as he can while being produced in bulk, instead of being more powerful.
+			Leave no soldier left behind: Adrian was trained to fight with a squad. Fortunately, it's possible for Adrian to encounter fellow marines on the field under the right circumstances. Additionally, there's no chance of fighting other HECU units if you are deployed on your mission as Adrian first.", ""},
 			
 			{ "Changes", "", ""},
 		}
 	},
 	{
 		{
-			{ "Summary", "", ""},
+			{ "Summary", "Lo wang was a bodyguard for Zilla Enterprises, which has control over every major industry in Japan. However, this has led to corruption. Master Zilla, the president of the Zilla Enterprise, was planning to conquer Japan using creatures from the \"dark side\". When he discovered this, Lo wang quit his job as a bodyguard. After Zilla sent his thugs after Lo Wang, and killed his old master, Lo Wang sought vengeance. After defeating Master Zilla in a volcanic fortress, he had to fight him again above the strees of Tokyo. His fight was not yet over, as his evil twin, Hung Lo, sent forces to attack him in the hopes of taking over the world. After firing a nuke in close proximity to his brother, the Wheel of Samsara rescued him from disintegration.", ""},
 			
-			{ "Traits", "", ""},
+			{ "Traits", "Who wants some Lo wang?: Much like Shadow Warrior's brothers, Duke Nukem and Blood, Lo Wang also lack good defense.
+			Look like Duke Nukem! HAHAHA!: He can mow the crowds, and beat the ever living shit out of things while making remarks just like Duke. But he has even more trick, from brutal melee to slice open foes and a monsterous !!!NUKE!!!", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -440,7 +447,8 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 		{
 			{ "Summary", "Before adopting his current name, the legendary Cybermage was nothing more than a regular citizen living like hundreds of others in a bleak future where oppressive corporations had long since replaced local governments. Yet, on one seemingly regular day, he did the unthinkable: he spotted hitmen who were about to kill somebody, and he shielded the target with his won body, dying in his place. His world never expected such acts of kindness. But the Cybermage also certainly didn't expect that the one who he saved was an important scientist at SARCorp, who after recovering his body, performed unspeakable experiments on him. Bringing him back to life, he implanted the Darklight, as source of unimaginable power, into his skull. Waking up and emerging from the stasis tube he had been confined in for so long, he soon discovered that a new war erupted between the corporations as well as a new evil known as Necrom, Master of the Darklight. However, this time he would not sit back and watch as he did for so many years. This time the would take matters into his own hands. After mastering his powers and teaming up with several underground rebel organizations, the Cybermage became a legend of his own by single-handedly defeating his nemesis, Necrom, and his Legion of minions. With his revenge enacted and his debts repaid to those who aided him on his quest, the Cybermage had seemingly retired in peace. However, with great power comes great responsibility, and after all he had experienced, the Cybermage decides to help keep the Wheel of Samsara clear of any potential world-endangering threats.", ""},
 			
-			{ "Traits", "Tools of Destruction: While it's true that the corporations oppressed their citizens, it's also true that they possibly developed the most effective weapons for quelling upheavals. From the ever-reliable Blast Rifle and SMG to the devastating Plasma Obliterator, the Cybermage has no shortage of tools to deal with most situations with the utmost efficiency. The Gem Glows Bright: With the Darklight implanted in Cybermage's forehead comes a wide variety of magical abilities that he can use to bring even the mightiest of foes down. Finding special icons of Mann-Ra and absorbing the life force of fallen enemies allows the Darklight to evolve to fearsome tool of mass destruction.", ""},
+			{ "Traits", "Tools of Destruction: While it's true that the corporations oppressed their citizens, it's also true that they possibly developed the most effective weapons for quelling upheavals. From the ever-reliable Blast Rifle and SMG to the devastating Plasma Obliterator, the Cybermage has no shortage of tools to deal with most situations with the utmost efficiency. 
+			\n\nThe Gem Glows Bright: With the Darklight implanted in Cybermage's forehead comes a wide variety of magical abilities that he can use to bring even the mightiest of foes down. Finding special icons of Mann-Ra and absorbing the life force of fallen enemies allows the Darklight to evolve to fearsome tool of mass destruction.", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -450,9 +458,10 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 	},
 	{
 		{
-			{ "Summary", "", ""},
+			{ "Summary", "Originally part of a special forces team heading to the ancient city of Karnak, which had been taken over by unknown forces, Jon P. ended up with more than he bargained for when he discovered the city was in fact attacked by the Kilmaats, an alien race who were attempting to resurrect the soul of King Ramses and use its powers to take over the world. Facing off against horrifying ancient mummies brought back to life and cunning allens determined to stop at nothing hardened Jon who was able not only to rescue Ramses' body, but also to prevent the detonation of a nuclear device left behind by the aliens to annihilate the Earth. After his victory and the Kilmaat's subsequent retreat, nobody knew what became of Jon. Some say he remained stranded on the aliens spaceship in an effort to defuse the nuke. Others said he was buried in the ruins of Karnak alongside the dead, only to be excavated centuries later. Yet others said he acquired god-like powers and became a pharaoh looking over the world's prosperity thanks to King Ramses' powers. But now that Jon has resurfaced, fighting in the wheel of Samsara, all that is known is that he will never allow such an invasion to happen again.", ""},
 			
-			{ "Traits", "", ""},
+			{ "Traits", "TRAINING IS EVERYTHING!: As a hardened special forces soldier, Jon knows very well how to use the best military equipment around. Most of his human made weapons will require reload after all shots are depleted, so make sure not to get caught off guard!
+			\n\nOLD MEETS NEW!: And alongside the \"new\" man-made weapons, comes the \"old\" artifacts of ages gone by - whether it's the fearsome Cobra Staff the hectic Ring of Ra or the powerful Mummy Staff, Jon will definitely have a good reason to taunt his enemies.", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -475,9 +484,10 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 	},
 	{
 		{
-			{ "Summary", "", ""},
+			{ "Summary", "With all the pods sent down to the surface at the same time, Bitterman's pod was clipped by \"cowbow\" and narrowly missed being hit by another eager marine. However thanks to having no control over his \"flying brick\", Bitterman over-shot his designated landing zone and crash-landed in the outskirts of Cerberon. The chaos caused by the by the Air Force's dogfights and indiscriminate bombing of Cerberon allowed Bitterman to find a decent weapon and fight back. Shortly afterward, Bitterman learned over the radio that only five percent of the ground forces were operational. By destroying his main objective, the \"Big Gun\", the air force and bombers were able to target important objectives. Bitterman's next core objective was to locate and assassinate the Makron. While many speculate that he was captured by the Strogg. In reality, he was abducted into the ranks of Samsara, where his new commanders believe he is just what they need to neutralize other realms.", ""},
 			
-			{ "Traits", "", ""},
+			{ "Traits", "Big Gun: Bitterman loves guns, but not just any guns, big guns. As such Bitterman was never too fond of melee weapons, so it's essential to keep some distance from foes. On the other hand, he does utilize more weapons than most heroes.
+			\n\nUck... this is bitter, man: While most of the other heroes are fine with charging towards enemies, Bitterman happens to be more a gun and cover type of guy. It is best to attack and take cover to the side during a fire fight.", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -1611,7 +1621,6 @@ Script "Samsara_Compendium" (void) Net Clientside
 			cursory = hudboundsy;
 		
 		//PrintBold(s:"cursorx: ", d:cursorx, s:" cursory: ", d:cursory);
-		
 		SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.95), FixedMul(hudboundsx,0.425));
 		SetFont("SAMCMPB3");
 		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16200, CR_UNTRANSLATED, hudcenterx*1.0, hudcentery*1.0, 0);
@@ -1623,6 +1632,11 @@ Script "Samsara_Compendium" (void) Net Clientside
 
 		if(menuindex == 0)
 		{
+			SetFont("SMALLFONT");
+			SetHudClipRect(0,0,0,0,0);
+			SetHudSize(hudcenterx,hudcentery,true);
+			HudMessage(s:"Close: ",k:"samsara_tipbox"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15988, CR_BLACK, (FixedMul(hudcenterx,0.033)<<16)+0.1, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
+			SetHudSize(hudboundsx,hudboundsy,true);
 			if(lastmenuindex != menuindex) { removemessages(15990,16185); removemessages(16190,16199); lastmenuindex = menuindex; scrollcounter = 0; scrolltimer = 368; }
 			int locationx, locationy;
 			int wheelangle = -0.25;
@@ -1697,6 +1711,8 @@ Script "Samsara_Compendium" (void) Net Clientside
 				
 				SetHudSize(fontscaledx,fontscaledy,true);
 				SetFont(ClassInfo[(menuindex-1)][altskin][13]);
+				HudMessage(s:"Back: ",k:"+altattack"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 15988, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.033)<<16)+0.1, (FixedMul(fontscaledy,0.955)<<16)+0.1, 0);
+				
 				HudMessage(s:"Role: ",s:ClassInfo[menuindex-1][altskin][7]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16002, ClassInfo[(menuindex-1)][altskin][14], (FixedMul(fontscaledx,0.75)<<16)+0.1, FixedMul(fontscaledy,0.05)*1.0, 0);
 						
 				// need consistent spacing so I must separate these into two
