@@ -549,6 +549,7 @@ function int HandleInstagib(int respawning)
 	if (CheckInventory("BittermanClass") == 1) { GiveInventory("Q2SuperShotgun",1); }
 	if (CheckInventory("Hexen2Class") == 1) { GiveInventory("Hexen2AcidRune",1); }
 	if (CheckInventory("BondClass") == 1) { GiveInventory("Goldeneye_AutoShotgun",1); }
+	if (CheckInventory("TotenkopfClass") == 1) { GiveInventory("Totenkopf_STG44",1); }	
 	return 1;
 }
 

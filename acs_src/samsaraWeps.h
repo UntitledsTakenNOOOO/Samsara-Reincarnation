@@ -61,6 +61,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
 	{"Q2GrenadeLauncher", "RocketAmmo", "Q2ETFRifle", "Q2Flechettes","Q2IonRipper","Cell"},	
 	{"Hexen2TomeOfPower","","Hexen2ForceCube","","",""},
 	{"Goldeneye_SniperRifle","Goldeneye_SniperMagazine","Goldeneye_SilencedD5K","oldeneye_D5KMagazine","Goldeneye_GadgetGranter",""},
+	{"Totenkopf_Mauser","Clip","Totenkopf_MG42","Cell","Totenkopf_SniperPickup","Shell"},	
 };
 
 int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] = 
@@ -93,6 +94,7 @@ int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] =
 	{0,     0,      0,  0,		0,	0},
 	{20,    0,     20,  0,		0,	0},
 	{0,     0,      0,  0,		0,	0},
+	{0,     0,      0,  0,		0,	0},	
 };
 
 int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
@@ -125,6 +127,7 @@ int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
 	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},
+	{-1,    -1,     -1, -1,     -1, -1},	
 };
 
 int UniqueScripts[CLASSCOUNT] = {0, 0, 0, 0, 0, 0, SAMSARA_MARATHON, 0, 0, 0};
@@ -247,13 +250,13 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
     },
 	{	// Blake Stone
         {"",                                "",             "",             "", ""},
-        {"BlakeRefill",                     "",             "",             "", ""},
+        {"BlakeSuperAutoCharge",            "",             "",             "", ""},
         {"Auto Charge Pistol",              "",             "",             "", ""},
         {"Slow Fire Protector",             "Shell",    	"",             "", ""},
-        {"Heavy Assault Rifle",             "Shell",    	"",             "", ""},
         {"Rapid Assault Rifle",             "Clip",    		"",             "", ""},
+        {"Dual Neutron Disruptor",          "Clip",    		"",             "", ""},
         {"Plasma Discharge Unit",           "RocketAmmo",   "",             "", ""},
-        {"Dual Neutron Disruptor",          "Cell",    		"",             "", ""},
+        {"Gatling Fusion Devastator",       "Cell",    		"",             "", ""},
         {"Anti-Plasma Cannon",              "Cell",   		"",             "", ""},
 	},
 	{	// Caleb
@@ -460,6 +463,17 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Goldeneye_RCP90",        			"Goldeneye_RCP90Magazine",   		"Cell",   		"", ""},
         {"Goldeneye_Moonraker",             "Cell",   		"",   		"", ""},
     },
+	{   // Totenkopf
+		{"Totenkopf_Knife",               	"",             "",         "", ""},
+        {"Totenkopf_Kar98K",        		"Shell",		"",         "", ""},
+        {"Totenkopf_Pistol",           		"Clip",         "",         "", ""},
+        {"Totenkopf_MP40",     				"Clip",         "",         "", ""},
+        {"Totenkopf_STG44",           		"Shell",		"",         "", ""},
+        {"Totenkopf_Flamethrower",        	"Cell",         "",         "", ""},
+        {"Totenkopf_Panzerschreck",        	"RocketAmmo", 	"",       	"", ""},
+        {"Totenkopf_Chaingun",        		"Cell",   		"",   		"", ""},
+        {"Totenkopf_Flakgun",             	"Cell",   		"",   		"", ""},
+    },	
 };
 
 int ClassScripts[CLASSCOUNT][SLOTCOUNT] = 
@@ -492,6 +506,7 @@ int ClassScripts[CLASSCOUNT][SLOTCOUNT] =
 	{0,0,                   0,  0,0,0,0,0,0,0},
 	{0,0,                   0,  0,0,0,0,0,0,0},	
 	{0,0,                   0,  0,0,0,0,0,0,0},	
+	{0,0,                   0,  0,0,0,0,0,0,0},		
 };
 
 //+Added
