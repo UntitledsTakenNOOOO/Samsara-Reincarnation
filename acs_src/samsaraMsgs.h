@@ -2631,6 +2631,30 @@ int ClassUniqueMessages[CLASSCOUNT][MSGCOUNT] =
 		"",
 		"",
     },
+	{
+		"Sniper Rifle, D5k, or Watch Gadgets.",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+    },
+	{
+		"M712 Rapid-Fire Pistol, Portable MG42, or Scoped Kar98k Rifle.",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+    },
 };
 
 int PunchDrunkUniqueMessages[CLASSCOUNT][MSGCOUNT] =
