@@ -29,6 +29,7 @@ str ClassInfo[CLASSCOUNT][2][27] =
 	{{"Bitterman", 26, "***", "***", "****", "**", "***", "Battery", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "CMPSQUA2", "Quake2CompendiumWhite", "CMPSQUA2", "Quake2CompendiumGreen", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26", "", "", "Quake2CompendiumGray", "Quake2CompendiumWhite" }},
 	{{"Demoness", 27, "***", "**", "**", "***", "***", "Steamroller", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "SMALLFONT", "Gold", "SMALLFONT", "Gold", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25", "", "", "DarkGray", "White" }},
 	{{"James Bond", 28, "***", "*", "***", "****", "****", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "GEFONTS", "Gold", "GEFONTS", "White", "CMPBGGE1", "CMPBGGE2", "", "CMPBGGE4", "CMPBGGE5", "", "", "", "DarkGray", "White" }},
+	{{"Blazkowicz", 29, "***", "***", "*****", "****", "*", "Pillager", "TIPSYM29", "TIPHIL29", "TIPTKOPF", "TPLGTKPF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM29", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
 };
 
 int ClassFontScales[CLASSCOUNT][2] = 
@@ -37,7 +38,7 @@ int ClassFontScales[CLASSCOUNT][2] =
 	{ 1.0, 1.0 },	{ 5.0, 5.0 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.5, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
-	{ 2.125, 1.25 },	{ 5.0, 5.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 }
+	{ 2.125, 1.25 },	{ 5.0, 5.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 }
 };
 
 str CompendiumWheelRot[12] = { "CMPWHL01", "CMPWHL02", "CMPWHL03", "CMPWHL04", "CMPWHL05", "CMPWHL06", "CMPWHL07", "CMPWHL08", "CMPWHL09", "CMPWHL10", "CMPWHL11", "CMPWHL12"};
@@ -543,6 +544,16 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 		{
 			{ "", "", ""},
 		}
+	},
+	{
+		{
+			{ "Summary", "William \"B.J.\" Blazkowicz was the one that started it all, a secret agent that personally fought his way out of the horrifying Nazi prisons and personally slew Adolf Hitler, armed with nothing more than a pistol, a knife, and undying devotion to his country. Having gone up against an endless sea of Nazis, mystic beasts, undead monstrosities, and towering madmen, B.J. has seen it all and fought it all. If it's a threat to the world, he will put it down. Without questions, without hesitation, and without compromises.", ""},
+			
+			{ "Traits", "Call Apogee, Say 'Bullshit!': Poor B.J. was from an era where weapon design was much simpler. He has no Shotgun weapons, no Slot III weapon, and no weapons that use Ammo 2. Any Ammo 2 picked up is instead converted to Ammo 1.
+			\n\nHeroes Don't Quit: Being a POW in Nazi camps taught B.J. some survival techniques the hard way. When low on health, B.J. can drink up certain piles of gibs and blood for a boost. Restricted only to decorations, unfortunately--can't slaughter imps and drink off them.", ""},
+			
+			{ "Changes", "- Castle Totenkopf SDL uses a splash damage formula that falls quadratically instead of linearly like Doom does. As a result, explosive damage functions differently here than in the source.", ""},
+		},
 	},
 };
 
@@ -1585,7 +1596,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 	int hudboundsy = 972;
 	int hudcenterx = hudboundsx/2;
 	int hudcentery = hudboundsy/2;
-	int squarecenter = (hudboundsx+hudboundsy)/2;
+	int squarecenter = FixedDiv(hudboundsx+hudboundsy,2.0);
 	int scrollmax = 480;
 	int scrollmaxcounter;
 	int scrollstep = 4;

@@ -118,6 +118,8 @@
 #define GLOBAL_DONEBITCHING     0
 #define GLOBAL_SIGILBASE        1
 
+#define SAMSARA_CHANGELIST         189
+
 int HELPSTR = 
 "Welcome to the Wheel of Samsara! There are a few optional RCon commands you may want to consider.\n\
 sams_banjetpack 0/1: Toggles whether Duke or Moon Commando is allowed to pick up their jetpack or not.\n\

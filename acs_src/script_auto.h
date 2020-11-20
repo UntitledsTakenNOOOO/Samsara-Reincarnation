@@ -14,6 +14,7 @@ script SAMSARA_OPEN open
 	
     if (SamsaraGlobal[GLOBAL_DONEBITCHING] == 0)
     {
+		HudMessage(s:"Extra Heroes Changelist ",d:SAMSARA_CHANGELIST; HUDMSG_FADEOUT|HUDMSG_LOG, 93002, CR_GOLD, 1.5, 0.265, 2.0, 0.5);
         if (GameType() == GAME_TITLE_MAP)
         {
         }
@@ -21,6 +22,8 @@ script SAMSARA_OPEN open
         {
             if(GetCvar("sams_cvarinfo") == 0)
             {
+			HudMessage(s:"Extra Heroes Changelist ",d:SAMSARA_CHANGELIST;
+            HUDMSG_FADEOUT, 93002, CR_WHITE, 1.5, 0.2, 2.0, 0.5);
             HudMessage(s:HELPSTR;
             HUDMSG_PLAIN|HUDMSG_LOG, 92712, CR_WHITE, 1.5, 0.2, 2.5);
             HudMessage(s:HELPSTR_CL;
