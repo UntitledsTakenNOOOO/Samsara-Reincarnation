@@ -1,3 +1,5 @@
+#define SAMSARA_CHANGELIST         193
+
 #define SAMSARA_ENTER               611
 #define SAMSARA_RETURN              613
 #define SAMSARA_RESPAWN             618
@@ -117,8 +119,6 @@
 
 #define GLOBAL_DONEBITCHING     0
 #define GLOBAL_SIGILBASE        1
-
-#define SAMSARA_CHANGELIST         189
 
 int HELPSTR = 
 "Welcome to the Wheel of Samsara! There are a few optional RCon commands you may want to consider.\n\
