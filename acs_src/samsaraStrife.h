@@ -79,7 +79,7 @@ int AccuracyUniques[CLASSCOUNT][ACCURACYCOUNT] =
 	{"Q2GrenadeLauncher","RocketAmmo","Q2ETFRifle","Q2Flechettes","Q2IonRipper","Cell","",""},	
 	{"Hexen2TomeOfPower","","Hexen2ForceCube","","","","","","",""},	
 	{"Goldeneye_SniperRifle","Goldeneye_SniperDualToken","Goldeneye_SilencedD5K","Goldeneye_D5KDualToken","Goldeneye_GadgetGranter","","",""},
-	{"Totenkopf_Mauser","Totenkopf_MauserDual","Totenkopf_MG42","Cell","Totenkopf_SniperPickup","Shell","",""},		
+	{"Totenkopf_FlameThrower","Totenkopf_FlameThrowerFuel","Totenkopf_MG42","Cell","Totenkopf_SniperPickup","Shell","",""},		
 };
 
 int DoomAccuracyZerks[ACCURACYCOUNT] = 

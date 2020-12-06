@@ -61,7 +61,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
 	{"Q2GrenadeLauncher", "RocketAmmo", "Q2ETFRifle", "Q2Flechettes","Q2IonRipper","Cell"},	
 	{"Hexen2TomeOfPower","","Hexen2ForceCube","","",""},
 	{"Goldeneye_SniperRifle","Goldeneye_SniperMagazine","Goldeneye_SilencedD5K","oldeneye_D5KMagazine","Goldeneye_GadgetGranter",""},
-	{"Totenkopf_Mauser","Clip","Totenkopf_MG42","Cell","Totenkopf_Sniper","Shell"},	
+	{"Totenkopf_FlameThrower","Totenkopf_FlameThrowerFuel","Totenkopf_MG42","Cell","Totenkopf_Sniper","Shell"},	
 };
 
 int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] = 
@@ -465,11 +465,11 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
     },
 	{   // Totenkopf
 		{"Totenkopf_Knife",               	"",             "",         "", ""},
-        {"Totenkopf_Kar98K",        		"Shell",		"",         "", ""},
+        {"Totenkopf_Mauser",        		"Clip",		"",         "", ""},
         {"Totenkopf_Pistol",           		"Clip",         "",         "", ""},
-        {"Totenkopf_MP40",     				"Clip",         "",         "", ""},
+        {"Totenkopf_Kar98K",     				"Shell",         "",         "", ""},
         {"Totenkopf_STG44",           		"Shell",		"",         "", ""},
-        {"Totenkopf_Flamethrower",        	"Cell",         "",         "", ""},
+        {"Totenkopf_MP40",        				"Clip",         "",         "", ""},
         {"Totenkopf_Panzerschreck",        	"RocketAmmo", 	"",       	"", ""},
         {"Totenkopf_Chaingun",        		"Cell",   		"",   		"", ""},
         {"Totenkopf_Flakgun",             	"Cell",   		"",   		"", ""},

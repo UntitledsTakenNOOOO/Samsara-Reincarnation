@@ -2296,6 +2296,9 @@ Script "Samsara_Laser" (int type, int space, int height) clientside
 			i = space;
 			segment = "LGBeam";
 			break;
+		case 15:
+			segment = "Hexen2MedusaGazeSegment1";
+			break;			
 	}
 	
 

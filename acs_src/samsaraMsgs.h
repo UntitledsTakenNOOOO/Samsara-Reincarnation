@@ -2379,11 +2379,11 @@ int ClassPickupMessages[CLASSCOUNT][SLOTCOUNT][MSGCOUNT] =
 	},	
 	{
 		{ "Knife","","","","","","","","","",},
-		{ "Kar98k Rifle","","","","","","","","","",},
+		{ "M712 Rapid-Fire Pistol","","","","","","","","","",},
 		{ "Walther P38 Pistol","","","","","","","","","",},
-		{ "MP40 Submachine Gun","","","","","","","","","",},
+		{ "Kar98k Rifle","","","","","","","","","",},
 		{ "STG44 Assault Rifle","","","","","","","","","",},
-		{ "Flamethrower","","","","","","","","","",},
+		{ "MP40 Submachine Gun","","","","","","","","","",},
 		{ "Panzerschreck","","","","","","","","","",},
 		{ "Chaingun","","","","","","","","","",},
 		{ "Flakgun","","","","","","","","","",},
@@ -2644,7 +2644,7 @@ int ClassUniqueMessages[CLASSCOUNT][MSGCOUNT] =
 		"",
     },
 	{
-		"M712 Rapid-Fire Pistol, Portable MG42, or Scoped Kar98k Rifle.",
+		"FlameThrower, Portable MG42, or Scoped Kar98k Rifle.",
 		"",
 		"",
 		"",
