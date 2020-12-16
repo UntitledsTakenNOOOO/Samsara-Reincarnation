@@ -97,7 +97,7 @@
 #define SPEED_FORWARD       15
 #define SPEED_SIDE          13
 
-#define UNLOADCOUNT 71
+#define UNLOADCOUNT 72
 
 #define P_COUNT 2
 #define P_QUAD  0
@@ -342,7 +342,7 @@ int UnloadRemove[UNLOADCOUNT] =
 	"GibfistSide", "God Hand", "BStoneProtection", "IGotMyUnique", "DBSHOT", "DBSHOT1", "DB1", "DB2", "DB3", "DB4", "DB5", "DB6",
 	"DB7", "DB8", "DB9", "DB10", "DB11", "DB12", "DB13", "DB14", "DB15", "DB16", "DB17",
     "DB18", "DB19", "StopFromPickingShit", "EleenaTauntCooldown", "LeonardTauntCooldown", "CalebTauntCooldown", "LoWangTauntCooldown",
-	"JonTauntCooldown", "StopFromPickingTurrets_", "StrifeBeaconCooldown"
+	"JonTauntCooldown", "StopFromPickingTurrets_", "StrifeBeaconCooldown", "BloodGunsAkimboCooldown"
 };
 
 int PowerOutVols[5] = {96, 104, 112, 120, 127};
