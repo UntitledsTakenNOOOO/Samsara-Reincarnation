@@ -117,6 +117,10 @@ Weapons/Heartbeat			SWHEARTB
 Weapons/HeartSqueeze		SWHEARTS
 wang/twowangs	  			SWHEARTW
 
+// * Nades
+SW/DarkNinja/FlashBomb		Sounds/SW/SWGASPOP.WAV
+GasBomb/Loop				SW_HISS1
+
 SPKILL0		SPKILL0
 SW/Drown1	SPKILL1
 SW/Drown2	SPKILL2

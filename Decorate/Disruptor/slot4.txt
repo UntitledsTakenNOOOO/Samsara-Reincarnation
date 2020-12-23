@@ -14,6 +14,7 @@ Actor "Phase Repeater" : Weapon
   Weapon.AmmoType2 "DisruptorHiFreq"  
   +WEAPON.AMMO_OPTIONAL
   +WEAPON.ALT_AMMO_OPTIONAL 
+  +WEAPON.NOALERT
   Inventory.PickupMessage "You got a Phase Repeater!"
   Inventory.RestrictedTo "DisruptorPlayer"  
   States
@@ -49,6 +50,7 @@ Actor "Phase Repeater" : Weapon
 	Goto Altfire   
     TNT1 A 0 A_JumpIfInventory("DisruptorShit2",1,"Fire2")  	
     TNT1 A 0 A_PlaySound("Disruptor/GreenLaser",CHAN_WEAPON)
+	TNT1 A 0 A_AlertMonsters
     TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 	TNT1 A 0 A_FireCustomMissile("DisruptorGP_1",7,1,0,0)
 	Goto N
@@ -64,6 +66,7 @@ Actor "Phase Repeater" : Weapon
   Fire2:
     TNT1 A 0 A_JumpIfInventory("DisruptorShit2",2,"Fire3")    
     TNT1 A 0 A_PlaySound("Disruptor/GreenLaser",CHAN_WEAPON)
+	TNT1 A 0 A_AlertMonsters
     TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)	
 	TNT1 A 0 A_FireCustomMissile("DisruptorGP_1",0,1,0,0)
 	Goto O
@@ -79,6 +82,7 @@ Actor "Phase Repeater" : Weapon
   Fire3:
     TNT1 A 0 A_JumpIfInventory("DisruptorShit2",3,"Fire4")  	  
     TNT1 A 0 A_PlaySound("Disruptor/GreenLaser",CHAN_WEAPON)
+	TNT1 A 0 A_AlertMonsters
     TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)	
 	TNT1 A 0 A_FireCustomMissile("DisruptorGP_1",-7,1,0,0)
 	Goto P
@@ -93,6 +97,7 @@ Actor "Phase Repeater" : Weapon
     Goto Ready
   Fire4:
     TNT1 A 0 A_PlaySound("Disruptor/GreenLaser",CHAN_WEAPON)
+	TNT1 A 0 A_AlertMonsters
     TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 	TNT1 A 0 A_FireCustomMissile("DisruptorGP_1",0,1,0,0)
 	Goto Q
@@ -111,6 +116,7 @@ Actor "Phase Repeater" : Weapon
     TNT1 A 0 A_JumpIfInventory("DisruptorShit2",1,"FireRed2")  	
     TNT1 A 0 A_PlaySound("Disruptor/GreenLaser",CHAN_WEAPON)
 	TNT1 A 0 A_TakeInventory("DisruptorHiFreq", 1, TIF_NOTAKEINFINITE)	
+	TNT1 A 0 A_AlertMonsters
     TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 	TNT1 A 0 A_FireCustomMissile("DisruptorGP_12",7,0,0,0)
 	Goto R
@@ -129,6 +135,7 @@ Actor "Phase Repeater" : Weapon
     TNT1 A 0 A_JumpIfInventory("DisruptorShit2",2,"FireRed3")    
     TNT1 A 0 A_PlaySound("Disruptor/GreenLaser",CHAN_WEAPON)
 	TNT1 A 0 A_TakeInventory("DisruptorHiFreq", 1, TIF_NOTAKEINFINITE)
+	TNT1 A 0 A_AlertMonsters
     TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)	
 	TNT1 A 0 A_FireCustomMissile("DisruptorGP_12",0,0,0,0)
 	Goto S
@@ -147,6 +154,7 @@ Actor "Phase Repeater" : Weapon
     TNT1 A 0 A_JumpIfInventory("DisruptorShit2",3,"FireRed4")  	  
     TNT1 A 0 A_PlaySound("Disruptor/GreenLaser",CHAN_WEAPON)
 	TNT1 A 0 A_TakeInventory("DisruptorHiFreq", 1, TIF_NOTAKEINFINITE)	
+	TNT1 A 0 A_AlertMonsters
     TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)	
 	TNT1 A 0 A_FireCustomMissile("DisruptorGP_12",-7,0,0,0)
 	Goto T
@@ -164,6 +172,7 @@ Actor "Phase Repeater" : Weapon
 	Goto AltfireRed   
     TNT1 A 0 A_PlaySound("Disruptor/GreenLaser",CHAN_WEAPON)
 	TNT1 A 0 A_TakeInventory("DisruptorHiFreq", 1, TIF_NOTAKEINFINITE)	
+	TNT1 A 0 A_AlertMonsters
     TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 	TNT1 A 0 A_FireCustomMissile("DisruptorGP_12",0,0,0,0)
 	Goto U
@@ -194,15 +203,16 @@ Actor "Phase Repeater" : Weapon
 Actor DisruptorGP_12 : DisruptorGP_1
 {
 	Obituary "%o ate %k's spicy shit"
-	Damage (Random(16,19)*Random(1,2))	
+	Damage (0)	
 //	+SPECIALFIREDAMAGE //WHY NOT? No.
+	+THRUACTORS
 	+RIPPER
 	+FORCERADIUSDMG
 	+FORCEXYBILLBOARD
 	States
 	{
 	Spawn:
-		SQ99 DDEEFFGGHHIIJJKK 1 bright
+		SQ99 DDEEFFGGHHIIJJKK 1 bright A_Explode(Random(20,30), 3, !XF_HURTSOURCE, false, 3)
 		Loop
 	Death:
 		SQ99 LMNOPQRSTUVW 3 Bright
@@ -210,7 +220,7 @@ Actor DisruptorGP_12 : DisruptorGP_1
 		stop
 	XDeath:
     Crash:
-		TNT1 A 0 A_Explode(Random(20,40), 30, !XF_HURTSOURCE)
+//		TNT1 A 0 A_Explode(Random(20,30), 30, !XF_HURTSOURCE, false, 30)
 		SQ98 QRSTUVWXYZ 3 Bright 
 		SQ99 ABC 2 Bright 	  
 		stop			  
