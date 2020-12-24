@@ -2,11 +2,12 @@ Actor HLGaussCharged : HLCounter { inventory.maxamount 999 }
 Actor HLGaussLoop : HLCounter {}
 Actor HLGaussSpinTrigger : HLCounter {}
 Actor HLGaussCounter : HLCounter {}
+Actor HLSawSkipFire : HLCounter { Inventory.MaxAmount 4 }
 Actor HLSawCounter : Ammo
 {
 	+INVENTORY.IGNORESKILL
 	Inventory.Amount 1
-	Inventory.MaxAmount 50
+	Inventory.MaxAmount 100
 }
 Actor "Gauss Cannon" : HLWeapon
 {
@@ -25,7 +26,7 @@ Actor "Gauss Cannon" : HLWeapon
 	-WEAPON.NOALERT
 	Weapon.AmmoType2 "HLSawCounter"
 	Weapon.AmmoUse2 0
-	Weapon.AmmoGive2 50
+	Weapon.AmmoGive2 100
 	Inventory.RestrictedTo "HalfLifePlayer"	
 	states
 	{
@@ -165,7 +166,10 @@ Actor "Gauss Cannon" : HLWeapon
 	FireDone1Opp:
 		//OP21 A 0 A_TakeInventory("HLSawCounter", 1)
 		OP21 A 1 bright A_FireCustomMissile("HLBrassShellCaser",0,0,0,0,0,pitch)
-		OP21 B 0 A_Jump(232, 2)
+		OP21 B 0 A_JumpIfInventory("HLSawSkipFire", 0, 2)
+		OP21 B 0 A_GiveInventory("HLSawSkipFire", 1)
+		Goto FireDone1Opp+5
+		OP21 B 0 A_TakeInventory("HLSawSkipFire", 4)
 		OP21 B 1
 		OP21 CDEF 1 A_Refire
 		goto WIdleOpp	
@@ -183,7 +187,10 @@ Actor "Gauss Cannon" : HLWeapon
 	FireDone2Opp:
 		//OP22 A 0 A_TakeInventory("HLSawCounter", 1)
 		OP22 A 1 bright A_FireCustomMissile("HLBrassShellCaser",0,0,0,0,0,pitch)
-		OP22 B 0 A_Jump(200, 2)
+		OP22 B 0 A_JumpIfInventory("HLSawSkipFire", 0, 2)
+		OP22 B 0 A_GiveInventory("HLSawSkipFire", 1)
+		Goto FireDone2Opp+5
+		OP22 B 0 A_TakeInventory("HLSawSkipFire", 4)
 		OP22 B 1
 		OP22 CDEF 1 A_Refire
 		goto WIdleOpp
@@ -201,7 +208,10 @@ Actor "Gauss Cannon" : HLWeapon
 	FireDone3Opp:
 		//OP23 A 0 A_TakeInventory("HLSawCounter", 1)
 		OP23 A 1 bright A_FireCustomMissile("HLBrassShellCaser",0,0,0,0,0,pitch)
-		OP23 B 0 A_Jump(200, 2)
+		OP23 B 0 A_JumpIfInventory("HLSawSkipFire", 0, 2)
+		OP23 B 0 A_GiveInventory("HLSawSkipFire", 1)
+		Goto FireDone3Opp+5
+		OP23 B 0 A_TakeInventory("HLSawSkipFire", 4)
 		OP23 B 1
 		OP23 CDEF 1 A_Refire
 		goto WIdleOpp
@@ -609,31 +619,31 @@ Actor "Gauss Cannon" : HLWeapon
 	Reload:
 		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
 		Goto ReloadNope
-		TNT1 A 0 A_JumpIfInventory("HLSawCounter",50,"WIdle")
+		TNT1 A 0 A_JumpIfInventory("HLSawCounter",100,"WIdle")
 		TNT1 A 0 A_JumpIfInventory("Cell",1,"ReloadSuccess")
 		goto WIdle
 	ReloadSuccess:
-		OP10 ABCDE 1
+		OP10 ABDE 1
 		OP10 F 0 A_PlaySound("HLSaw/Reload",CHAN_WEAPON)
-		OP10 FGHIJKLMNOPQRSTUVWXYZ 1
-		OP11 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1
-		OP12 ABCDEFGH 1
-		OP13 ABCDE 1
+		OP10 GHJKLMNPQSTVWXYZ 1
+		OP11 ABDEGHJKLMNPQSTVWXYZ 1
+		OP12 ABDEGH 1
+		OP13 ABDE 1
 		OP13 F 0 A_PlaySound("HLSaw/Reload2",CHAN_WEAPON)
-		OP13 FGHIJKLMNOPQRSTUVWXYZ 1
-		OP14 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1
-		OP15 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1
-		OP16 ABCDEFGHIJKLM 1
+		OP13 FGHJKMNPQRSTVWYZ 1
+		OP14 ABDEFGHJKMNPQRSTVWYZ 1
+		OP15 ABDEFGHJKMNPQRSTVWYZ 1
+		OP16 ABDEFGHJKM 1
 		goto ReloadAmmo
 	ReloadAmmo:
-		TNT1 A 0 A_JumpIfInventory("HLSawCounter",50,"ReloadFinish")
+		TNT1 A 0 A_JumpIfInventory("HLSawCounter",100,"ReloadFinish")
 		TNT1 A 0 A_JumpIfInventory("Cell",1,1)
 		goto ReloadFinish
 		TNT1 A 0 A_GiveInventory("HLSawCounter",1)
 		TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
 		loop
 	ReloadFinish:
-		OP16 NOPQRSTUV 1
+		OP16 NPQRSTV 1
 		goto WIdle
 	ReloadNope:
 		HW60 A 4
