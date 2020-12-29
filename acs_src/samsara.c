@@ -2335,3 +2335,15 @@ Script "Samsara_Laser" (int type, int space, int height) clientside
 			Delay(1);
     }
 }
+
+Script "DisruptorPlasmaLanceAngle" (void)
+{
+	SetActivatorToTarget(0);
+	SetResultValue(CheckInventory("PlasmaLanceAngle"));
+}
+
+Script "DisruptorPlasmaLancePitch" (void)
+{
+	SetActivatorToTarget(0);
+	SetResultValue(GetActorPitch(0));
+}
