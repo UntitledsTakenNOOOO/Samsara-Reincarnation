@@ -361,7 +361,7 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
 		{"Phase Repeater",					"Cell",			"",				"",	""},
 		{" Lock-on Cannon ",				"RocketAmmo",	"",				"",	""},
 		{" AM Cyclone ",					"Shell",		"",				"",	""},
-		{" Disruptor Zodyac ",  			"Cell",			"",				"",	""},
+		{" Disruptor Zodiac ",  			"Cell",			"",				"",	""},
 	},
 	//+Added
 	{	// Grondoval

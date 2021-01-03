@@ -2246,7 +2246,7 @@ int ClassPickupMessages[CLASSCOUNT][SLOTCOUNT][MSGCOUNT] =
 			"",
 		},
         { 
-			"Zodyac!",
+			"Zodiac!",
 			"YES, THIS WEAPON CAN KILL THINGS BEHIND WALLS",
 			"",
 			"",
