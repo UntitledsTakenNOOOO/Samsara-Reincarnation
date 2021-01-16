@@ -253,10 +253,10 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"BlakeSuperAutoCharge",            "",             "",             "", ""},
         {"Auto Charge Pistol",              "",             "",             "", ""},
         {"Slow Fire Protector",             "Shell",    	"",             "", ""},
-        {"Rapid Assault Rifle",             "Clip",    		"",             "", ""},
-        {"Dual Neutron Disruptor",          "Clip",    		"",             "", ""},
+        {"Heavy Assault Weapon",             "Shell",    		"",             "", ""},
+        {"Rapid Assault Weapon",          "Clip",    		"",             "", ""},
         {"Plasma Discharge Unit",           "RocketAmmo",   "",             "", ""},
-        {"Gatling Fusion Devastator",       "Cell",    		"",             "", ""},
+        {"Dual Neutron Disruptor",       "Cell",    		"",             "", ""},
         {"Anti-Plasma Cannon",              "Cell",   		"",             "", ""},
 	},
 	{	// Caleb
