@@ -35,10 +35,10 @@ str ClassInfo[CLASSCOUNT][2][27] =
 int ClassFontScales[CLASSCOUNT][2] = 
 {  
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
-	{ 1.0, 1.0 },	{ 5.0, 5.0 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },
+	{ 1.0, 1.0 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.5, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },
-	{ 2.125, 1.25 },	{ 5.0, 5.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 }
+	{ 2.125, 1.25 },	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 }
 };
 
 str CompendiumWheelRot[12] = { "CMPWHL01", "CMPWHL02", "CMPWHL03", "CMPWHL04", "CMPWHL05", "CMPWHL06", "CMPWHL07", "CMPWHL08", "CMPWHL09", "CMPWHL10", "CMPWHL11", "CMPWHL12"};
@@ -1671,7 +1671,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 	int hudcenterx = hudboundsx/2;
 	int hudcentery = hudboundsy/2;
 	int squarecenter = FixedDiv(hudboundsx+hudboundsy,2.0);
-	int scrollmax = 480;
+	int scrollmax = 400;
 	int scrollmaxcounter;
 	int scrollstep = 4;
 	cursorx = hudcenterx;
@@ -1916,11 +1916,13 @@ Script "Samsara_Compendium" (void) Net Clientside
 							{
 								menuitem = a;
 								listindex = menuitem;
-								condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) >= FixedMul(hudboundsy,0.95));
+								//condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) >= FixedMul(hudboundsy,0.95));
+								condition = (cursory >= FixedMul(hudboundsy,0.9));
 								if(condition) { listclick = 4; listyposition+=condition; }
 								else
 								{
-									condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) >= FixedMul(hudboundsy,0.175));
+									//condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) <= FixedMul(hudboundsy,0.175));
+									condition = (cursory >= FixedMul(hudboundsy,0.175));
 									if(condition) 
 									{
 										listclick = 4; 
@@ -1971,11 +1973,13 @@ Script "Samsara_Compendium" (void) Net Clientside
 							{
 								menuitem = a;
 								listindex = menuitem;
-								condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) >= FixedMul(hudboundsy,0.95));
+								//condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) >= FixedMul(hudboundsy,0.95));
+								condition = (cursory >= FixedMul(hudboundsy,0.9));
 								if(condition) { listclick = 4; listyposition+=condition; }
 								else
 								{
-									condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) >= FixedMul(hudboundsy,0.175));
+									//condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) <= FixedMul(hudboundsy,0.175));
+									condition = (cursory >= FixedMul(hudboundsy,0.175));
 									if(condition) 
 									{
 										listclick = 4; 
@@ -2025,11 +2029,13 @@ Script "Samsara_Compendium" (void) Net Clientside
 							{
 								menuitem = a;
 								listindex = menuitem;
-								condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) >= FixedMul(hudboundsy,0.95));
+								//condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) >= FixedMul(hudboundsy,0.95));
+								condition = (cursory >= FixedMul(hudboundsy,0.9));
 								if(condition) { listclick = 4; listyposition+=condition; }
 								else
 								{
-									condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) >= FixedMul(hudboundsy,0.175));
+									//condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) <= FixedMul(hudboundsy,0.175));
+									condition = (cursory >= FixedMul(hudboundsy,0.175));
 									if(condition) 
 									{
 										listclick = 4; 
@@ -2055,8 +2061,8 @@ Script "Samsara_Compendium" (void) Net Clientside
 			if(scrolltimer%scrollstep==0) { scrollcounter--; }
 			if(scrolltimer == scrollstep) scrolltimer = 1;
 			if(scrollcounter < -scrollmaxcounter)
-				scrollcounter = FixedDiv(scrollmax,ClassFontScales[menuindex-1][1]);
-								
+				scrollcounter = scrollmax;
+				
 			//Tab Specific Info
 			if(menutab == 1)
 			{
