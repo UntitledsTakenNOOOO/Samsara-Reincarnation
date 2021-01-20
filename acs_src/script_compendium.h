@@ -1674,6 +1674,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 	int scrollmax = 400;
 	int scrollmaxcounter;
 	int scrollstep = 4;
+	int hoverindex, lasthover;
 	cursorx = hudcenterx;
 	cursory = hudcentery;
 	//SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
@@ -1734,12 +1735,23 @@ Script "Samsara_Compendium" (void) Net Clientside
 				locationy = hudcentery+((squarecenter/4*sin(wheelangle+(FixedDiv(1.0,CLASSCOUNT*1.0)*a)))>>16);
 				if((cursorx < locationx+24 && cursorx > locationx-24) && (cursory < locationy+24 && cursory > locationy-24))
 				{
+					hoverindex = a+1;
+					if(hoverindex != lasthover && hoverindex != 0)	{ lasthover = hoverindex; LocalAmbientSound("Compendium/Hover",104); }	
 					SetFont(ClassInfo[a][0][9]);
 					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16000+a, "white", locationx*1.0, locationy*1.0, 1.0, 0.9);
 					if(buttons & (BT_USE|BT_ATTACK))
 						menuindex = a+1;
 				}
-				else { SetFont(ClassInfo[a][0][8]); HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING|HUDMSG_ALPHA, 16000+a, "black", locationx*1.0, locationy*1.0, 1.0, 0.9); }			
+				else 
+				{
+					hoverindex = 0;
+					SetFont(ClassInfo[a][0][8]); 
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING|HUDMSG_ALPHA, 16000+a, "black", locationx*1.0, locationy*1.0, 1.0, 0.9); 	
+					locationx = hudcenterx+((squarecenter/4*cos(wheelangle+(FixedDiv(1.0,CLASSCOUNT*1.0)*(lasthover-1))))>>16);
+					locationy = hudcentery+((squarecenter/4*sin(wheelangle+(FixedDiv(1.0,CLASSCOUNT*1.0)*(lasthover-1))))>>16);
+					if((cursorx > locationx+24 || cursorx < locationx-24) || (cursory > locationy+24 || cursory < locationy-24))
+						lasthover = 0;
+				}			
 				//SetHudClipRect(0,0,0,0);
 			}
 			if(rot >= 11) { rot = 0; LocalAmbientSound("Compendium/Wheel/Spin",127); }
@@ -1766,6 +1778,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 				//Init
 				if(lastmenuindex != menuindex)
 				{
+					LocalAmbientSound("marathon/shieldhit",88);
 					altskin = 0;
 					listyposition = 0;
 					menutab = 1;
@@ -1775,6 +1788,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 				}
 				if(lastmenutab != menutab)
 				{
+					LocalAmbientSound("marathon/shieldhit",88);
 					listyposition = 0;
 					menuitem = 1;
 					listindex = 1;
@@ -1916,6 +1930,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 							{
 								menuitem = a;
 								listindex = menuitem;
+
 								//condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) >= FixedMul(hudboundsy,0.95));
 								condition = (cursory >= FixedMul(hudboundsy,0.9));
 								if(condition) { listclick = 4; listyposition+=condition; }
@@ -2188,6 +2203,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 						}
 						HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16155, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.775)<<16)+0.1, FixedMul(hudcentery,0.4675)*1.0, 0, 0.9);
 					}
+					else { RemoveMessages(16155,16155); }
 					if(!CheckActorProperty(newtid,APROP_ActiveSound,""))
 					{
 						activesound = GetActorProperty(newtid,APROP_ActiveSound);
@@ -2202,6 +2218,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 						}
 						HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16156, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.8175)<<16)+0.1, FixedMul(hudcentery,0.4675)*1.0, 0, 0.9);
 					}
+					else { RemoveMessages(16156,16156); }
 					if(!CheckActorProperty(newtid,APROP_PainSound,""))
 					{
 						painsound = GetActorProperty(newtid,APROP_PainSound);
@@ -2216,6 +2233,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 						}
 						HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16157, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.86)<<16)+0.1, FixedMul(hudcentery,0.4675)*1.0, 0, 0.95);
 					}
+					else { RemoveMessages(16157,16157); }
 					if(!CheckActorProperty(newtid,APROP_DeathSound,""))
 					{
 						deathsound = GetActorProperty(newtid,APROP_DeathSound);
@@ -2230,6 +2248,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 						}
 						HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16158, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.9025)<<16)+0.1, FixedMul(hudcentery,0.4675)*1.0, 0, 0.9);
 					}
+					else { RemoveMessages(16158,16158); }
 					Thing_remove(newtid);
 					SetHudSize(FixedDiv(hudcenterx,scalex),FixedDiv(hudcentery,scaley),true);
 					SetFont(MonsterInfo[menuindex-1][menuitem-1][4+(2*monsterskin)]);
@@ -2241,6 +2260,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 					{
 						if((cursorx < FixedMul(hudboundsx,0.86)+120 && cursorx > FixedMul(hudboundsx,0.86)-120) && (cursory < FixedMul(hudboundsy,0.295)+120 && cursory > FixedMul(hudboundsy,0.295)-120) && buttons != oldbuttons)
 						{ 
+							LocalAmbientSound("marathon/shieldhit",88);
 							monsterskin++; 
 						}
 					}
@@ -2248,6 +2268,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 					{
 						if((cursorx < FixedMul(hudboundsx,0.86)+120 && cursorx > FixedMul(hudboundsx,0.86)-120) && (cursory < FixedMul(hudboundsy,0.295)+120 && cursory > FixedMul(hudboundsy,0.295)-120) && buttons != oldbuttons)
 						{ 
+							LocalAmbientSound("marathon/shieldhit",88);
 							monsterskin = 0; 
 						}
 					}
@@ -2332,7 +2353,10 @@ Script "Samsara_Compendium" (void) Net Clientside
 				if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
 				{		
 					if(((cursorx < (FixedMul(hudcenterx,0.41)+32) && cursorx > (FixedMul(hudcenterx,0.41)-32)) && (cursory < FixedMul(hudcentery,0.275)+32 && cursory > FixedMul(hudcentery,0.275)-32)) && buttons != oldbuttons)
+					{	
+						LocalAmbientSound("marathon/shieldhit",88);
 						altskin = !altskin;
+					}
 				}
 			}
 			
