@@ -141,7 +141,7 @@ script SAMSARA_QPOWERS (int startTime)
     int healthGiven, healthMax;
     int opowercount, powercount, offset;
     
-    if (samsaraClassNum() != CLASS_QUAKE) { terminate; }
+    if (samsaraClassNum() != CLASS_QUAKE && samsaraClassNum() != CLASS_BITTERMAN ) { terminate; }
 
     quadTimer   = CheckQuad();
     regenTimer  = CheckInventory("QuakeRegenTimer");
