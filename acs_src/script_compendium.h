@@ -1,35 +1,35 @@
 // Label, index, damage, defense, range, attack speed, difficulty, character symbol, small character, game logo, large character, big font, big font color, small font, small font color, background top wall, background bottom wall, background side banner right, background logo, background character symbol, background right banner, selected font color
 str ClassInfo[CLASSCOUNT][2][27] = 
 { 
-	{{"Doomguy", 1, "*****", "***", "***", "**", "*", "Damage", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01", "", "", "", "DarkGray", "White" }},
+	{{"Doomguy", 1, "*****", "***", "***", "**", "*", "Generalist", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01", "", "", "", "DarkGray", "White" }},
 	{{"Chex Warrior", 2, "***", "*****", "***", "***", "*", "Defense", "TIPSYM02", "TIPHIL02", "TIPCHEX", "TPLGCHEX", "TPCHCHEX", "SMALLFONT", "Green", "SMALLFONT", "Green", "CMPBGCH1", "CMPBGCH2", "CMPBGCH3", "", "TIPSYM02", "", "", "", "DarkGray", "White" }},
 	{{"Corvus", 3, "***", "****", "**", "****", "****", "Utility", "TIPSYM03", "TIPHIL03", "TIPCORV", "TPLGCORV", "TPCHCORV", "CMPSHERE", "White", "CMPSHERE", "White", "CMPBGHE1", "CMPBGHE2", "CMPBGHE3", "CMPBGHE4", "TIPSYM03", "", "", "", "DarkGray", "White" }},
-	{{"Blazkowicz", 4, "***", "***", "*****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWF1", "CMPBGWF2", "CMPBGWF3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" },{"Blazkowicz", 4, "***", "***", "*****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWS1", "CMPBGWS2", "CMPBGWS3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
+	{{"Blazkowicz", 4, "***", "***", "****", "****", "*", "Survivalist", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWF1", "CMPBGWF2", "CMPBGWF3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" },{"Blazkowicz", 4, "***", "***", "****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWS1", "CMPBGWS2", "CMPBGWS3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
 	{{"Parias", 5, "*****", "****", "**", "****", "***", "Brawler", "TIPSYM05", "TIPHIL05", "TIPPARIA", "TPLGHEXN", "TPCHHEXN", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }},
-	{{"Duke Nukem", 6, "****", "*", "***", "***", "**", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5", "", "", "", "DarkGray", "White" },{"Duke Nukem", 6, "****", "*", "***", "***", "***", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5", "", "", "DarkGray", "White" }},
+	{{"Duke Nukem", 6, "****", "*", "***", "***", "**", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5", "", "", "", "DarkGray", "White" },{"Duke Nukem", 6, "****", "*", "***", "***", "**", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5", "", "", "DarkGray", "White" }},
 	{{"Security Officer", 7, "***", "***", "**", "*****", "*****", "Supression", "TIPSYM07", "TIPHIL07", "TIPSECOF", "TPLGMARA", "TPCHMARA", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGMA1", "CMPBGMA2", "CMPBGMA3", "CMPBGMA4", "CMPBGMA5", "", "", "", "DarkGray", "White" }},
 	{{"Ranger", 8, "***", "**", "****", "****", "***", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08", "", "", "", "QuakeCompendiumDarkGray", "QuakeCompendiumGray" }},
 	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }},
 	{{"Blake Stone", 10, "***", "***", "***", "*****", "**", "Skirmisher", "TIPSYM10", "TIPHIL10", "TIPBSTON", "TPLGBSTN", "TPCHBSTN", "CMPBBLAK", "BSCompendiumYellow", "CMPSBLAK", "BSCompendiumMediumGreen", "CMPBGBS1", "CMPBGBS2", "CMPBGBS3", "CMPBGRT4", "CMPBGBS5", "", "", "", "BSCompendiumYellow", "BSCompendiumLightYellow" }},
 	{{"Caleb", 11, "*****", "*", "***", "*****", "**", "Sadist", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "CMPBBLOD", "Red", "CMPSBLOD", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5", "", "", "", "DarkGray", "White" }},
 	{{"Strifeguy", 12, "****", "*", "**", "****", "***", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "CMPSSTRF", "untranslated", "CMPSSTRF", "untranslated", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6", "", "", "DarkGray", "White" }},
-	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White" }},
+	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Generalist+", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White" }},
 	{{"Eleena", 14, "****", "*", "**", "****", "***", "Acrobat", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5", "", "", "", "DarkGray", "White" }},
 	{{"Space Seal", 15, "*****", "*", "***", "****", "**", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "CMPBCOR7", "Corridor7CompendiumYellow", "CMPSCOR7", "Corridor7CompendiumGreen", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "", "", "Corridor7CompendiumYellow", "Corridor7CompendiumBrightYellow" }},
-	{{"LDF Commando", 16, "***", "***", "*****", "****", "**", "Support Fire", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
+	{{"LDF Commando", 16, "**", "***", "*****", "****", "**", "Marksmen", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
 	{{"Kyle Katarn", 17, "**", "*****", "****", "****", "***", "Tank", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5", "", "", "", "DarkGray", "White" }},
 	{{"Mooman", 18, "*", "***", "****", "****", "***", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8", "DarkGray", "White" }},
 	{{"Jack Curtis", 19, "***", "***", "***", "****", "***", "Counter Assault", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5", "", "", "", "DarkGray", "White" }},
 	{{"Grondoval", 20, "****", "****", "*", "**", "****", "Knight", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5", "", "", "", "DarkGray", "White" }},
-	{{"Gordon Freeman", 21, "*****", "**", "***", "**", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "", "DarkGray", "White" },{"Adrian Shephard", 21, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
+	{{"Gordon Freeman", 21, "*****", "**", "****", "*", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "", "DarkGray", "White" },{"Adrian Shephard", 21, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
 	{{"Lo Wang", 22, "*****", "*", "****", "****", "**", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "SMALLFONT", "Red", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5", "", "", "", "DarkGray", "White" }},
 	{{"Cybermage", 23, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Green", "SMALLFONT", "Yellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5", "", "", "", "DarkGray", "White" }},
 	{{"Jon", 24, "**", "***", "***", "**", "****", "Adventurer", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8", "DarkGray", "White" }},
-	{{"Leonard", 25, "***", "*", "****", "***", "***", "Sharpshooter", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "CMPBLEON", "untranslated", "CMPSLEON", "untranslated", "CMPBGRR1", "CMPBGRR2", "CMPBGRR3", "CMPBGRR4", "CMPBGRR5", "", "", "", "DarkGray", "White" }},
+	{{"Leonard", 25, "***", "*", "****", "***", "***", "Redneck Drunk", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "CMPBLEON", "untranslated", "CMPSLEON", "untranslated", "CMPBGRR1", "CMPBGRR2", "CMPBGRR3", "CMPBGRR4", "CMPBGRR5", "", "", "", "DarkGray", "White" }},
 	{{"Bitterman", 26, "***", "***", "****", "**", "***", "Battery", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "CMPSQUA2", "Quake2CompendiumWhite", "CMPSQUA2", "Quake2CompendiumGreen", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26", "", "", "Quake2CompendiumGray", "Quake2CompendiumWhite" }},
-	{{"Demoness", 27, "***", "**", "**", "***", "***", "Steamroller", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "CMPSHEX2", "Gold", "CMPSHEX2", "Red", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25", "", "", "", "DarkGray", "White" }},
+	{{"Demoness", 27, "***", "**", "**", "***", "****", "Evolution", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "CMPSHEX2", "Gold", "CMPSHEX2", "Red", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25", "", "", "", "DarkGray", "White" }},
 	{{"James Bond", 28, "***", "*", "***", "****", "****", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "GEFONTS", "Gold", "GEFONTS", "White", "CMPBGGE1", "CMPBGGE2", "", "CMPBGGE4", "CMPBGGE5", "", "", "", "DarkGray", "White" }},
-	{{"Blazkowicz", 29, "***", "***", "*****", "****", "*", "Pillager", "TIPSYM29", "TIPHIL29", "TIPTKOPF", "TPLGTKPF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM29", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
+	{{"Blazkowicz", 29, "****", "***", "***", "*****", "***", "Plunderer", "TIPSYM29", "TIPHIL29", "TIPTKOPF", "TPLGTKPF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM29", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
 };
 
 int ClassFontScales[CLASSCOUNT][2] = 
@@ -51,8 +51,9 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 		{
 			{ "Summary", "The man. The myth. The icon. The legend. The hero. Doomguy has stood against untold legions throughout all 20 years of his one-man war on Hell, and here he stands ready to go against more. He is a man that needs no introduction, as his abilities have been proven and honed and harnessed time and time again--the rest of the heroes will have to work double to even match the bar Doomguy is constantly raising.", ""},
 			
-			{ "Traits", "...And I Feel Mighty: Doomguy holds the Super Shotgun, the most devastating weapon in the game and cementing him as the most damaging hero. No other weapon can match its reliability and sheer power.
-			\n\nTo Hell With Respect!: Doomguy is the most unchanged in his function and his abilities. Playing with him is just like playing Doom II, so show these newcomers who they better call granddaddy.", ""},
+			{ "Traits", "...And I Feel Mighty: Doomguy holds the Super Shotgun, one of the most devastating shotguns in the game as well as the BFG9000, one of the strongest ultimate weapons giving him quite the firepower. It's very hard for most other classes to match or exceed the damage on those 2 in their own weapons tier.
+			\n\nTo Hell With Respect!: Doomguy is the most unchanged in his function and his abilities. Playing with him is just like playing Doom II, so show these newcomers who they better call granddaddy.
+			\n\nA Touch Of Hellish Fantasy: Doom always had inspirations from D&D, from monster designs and even gameplay, Doomguy's damage is factored with a roll, though it's skewd towards the higher end.", ""},
 			
 			{ "Changes", "- The Berserk operates off the Chainsaw as well as the Fist, allowing Doomguy to have a DPS alternative rather than focusing on only Burst.
 			\n	^- : When in Berserk, the Chainsaw deals 7-70 damage every 3 tics.
@@ -90,7 +91,7 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 			{ "Summary", "The Heretic himself, Corvus is a noble elven warrior and mage driven by fury and a near-psychotic thirst to avenge his people. His quest has sent him from fighting legions of the damned and undead in mystical fantasy lands to fighting legions of the damned and undead in alternate lands. No matter where he is, though, his bloodlust will not be quenched until he has personally slaughtered every enemy he can get his hand on.", ""},
 			
 			{ "Traits", "Roll d20 for Damage: Heretic's damage scale worked on a much higher probability curve than Doom's, and so Corvus' weapons do much more random damage. You're just as likely to down someone with the Dragon Claw in seven shots as you are in fifteen.
-			\n\nBag of Holding: Corvus can carry the most inventory items out of all the Heroes, with every major item being carryable. Corvus even starts with the Bomb of the Ancients and Mine of the Ancients, which provide powerful explosives on demand. Even his Ultimate is a carryable item--which gives him a heavy advantage in resourcefulness over the other Heroes.", ""},
+			\n\nBag of Holding: Corvus can carry the most inventory items out of all the Heroes, with every major item being carryable. Corvus even starts with the Bomb of the Ancients and Mine of the Ancients, which provide powerful explosives on demand.", ""},
 			
 			{ "Changes", "- The Tomed staff has had its damage increased from 18-81 to 60-120, to give Corvus a bit of a burst damage oomph.
 			\n\n- The Elven Wand did not have any BRIGHT frames in Heretic.
@@ -102,7 +103,8 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 			\n\n- The Staff and Gauntlets of the Necromancer no longer lower and re-raise when the Tome of Power runs out, so as to smooth out gameplay.
 			\n\n- The Gauntlets of the Necromancer and Tomed Staff now have GLDefs, because pretty.
 			\n\n- The tomed Dragon Claw fires a near-hitscan now, rather than a very fast projectile. Giving it slower speeds glitched the rippers and caused them to go all over the map.
-			\n\n- The Tome of Power works more like Heretic II than Heretic, being a permanent inventory item.", ""},
+			\n\n- The Tome of Power works more like Heretic II than Heretic, being a permanent inventory item.
+			\n\n- A new slot 7 was added, Staff of D'Sparil as tomb of power was moved to unique slot.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -244,10 +246,11 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 			\n\n- In Quake, the projectiles had no hitbox. Here, their hitbox is simply obscenely tiny.
 			\n\n- Gravity has been ever-so-slightly reduced so as to simulate Quake's strange air physics.
 			\n\n- The nails and rockets originally travelled at the same speed. Here, nails have been increased to speed 75.
-			\n\n- Lava Nails, Multi-Grenades, and Multi-Rockets were handled a bit differently. There were no alt-fires, much less that swapped between weapons, and the ammo pickups were separate.
+			\n\n- Lava Nails, Multi-Grenades, Multi-Rockets, and Plasma Cells were handled a bit differently. There were no alt-fires, much less that swapped between weapons, and the ammo pickups were separate.
 			\n\n- The Double Barreled Shotgun's, Nailgun's, and Laser Cannon's animations are slightly smoother.
 			\n\n- The Shotgun and Double-Barreled Shotgun's damages are random by 1d3, while Quake's damage values were completely static. Turns out people are getting upset for using fake bullets. Whoops.
-			\n\n- The trail behind the Nails and Lava Nails has been made a LOT more obvious, so enemies can see it more easily in DM.", ""},
+			\n\n- The trail behind the Nails and Lava Nails has been made a LOT more obvious, so enemies can see it more easily in DM.
+			\n\n- Ranger is fully 3D unlike in earlier samsara builds, giving him a more nostalgic visual feeling to him.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -288,7 +291,7 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 			{ "Summary", "Vengeance is all that is left in him now... His love was taken away from him. He was betrayed by his master and forced to see his friends executed before his very eyes. Even eternal banishment was not enough to stop Caleb. Vengeance had already driven him into an unstoppable blood lust. He wouldn't stop until he fully avenged his comrades, and his one true love. Caleb is exceptional at dealing with singular foes, but becomes rather lackluster at dealing with many, although he is still able to seal the deal. Caleb's sole purpose of living is to prove thathe is truly the \"One That Binds\".", ""},
 			
 			{ "Traits", "Boo Hoo... When does the hurting stop?: Caleb loves to inflict pain so much on his foes that he can kill them in more ways than any other hero. He is rather prone to hurting himself in the process, however.
-			\n\nGood. Bad. I'm the guy with the gun: Caleb is such an expert with his weapons, that he can fire them in alternative ways, and can even some times dual wield them.", ""},
+			\n\nGood. Bad. I'm the guy with the gun: Caleb is such an expert with his weapons, that he can fire them in alternative ways, usually at the expensive of ammo, easily able to drain his reverse in seconds if spammed constantly.", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -300,8 +303,8 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 		{
 			{ "Summary", "In a world where everyone nearly died from a virus, the remaining people were oppressed by the Order, until one man joined the rebels to stop the entire order, who even killed their deity, The Entity. In Samsara, Strifeguy plays very tactically, requiring well thought out plans to make sure he destroys enemies and survives while doing so. However, he does lack range.", ""},
 			
-			{ "Traits", "Revolutionary: Lots of Strifeguy's weapons are very tricky to use. His slot 3 is weaker but isn't lobbed like his slot 5 which bounces off enemies and self harms. Even the alt fire which sets a massive fire can kill you if you are not careful. His slot 6 is also lobbed but powerful.
-			\n\nLast Stand: He may be tough, but even in critical condition he will have a speed reduction, which is why all health and soulspheres are medikits to heal him, and for providing ammo for his second and much deadlier ultimate, the Sigil!
+			{ "Traits", "Revolutionary: Lots of Strifeguy's weapons are very tricky to use. His slot 3 is weaker but isn't lobbed like his slot 5 which bounces off enemies and self harms. Even the slot 5 alt fire which sets a massive fire can kill you if you are not careful. His slot 6 is also a lobbed but powerful flamethrower, so aim and planning is key.
+			\n\nLast Stand: He may be tough, but even in critical condition he will have a speed reduction, which is why all health pickups and soulspheres are portable medikits of various sizes to heal him, and for providing ammo for his second and much deadlier ultimate, the Sigil!
 			\n\nEver evolving force: Strifeguy can barely aim and has terrible melee, but his berserk is an item that upgrades his max health by 10, and increasing his accuracy, allowing his shorter distance weapons to aim better and improving his longevity!", ""},
 			
 			{ "Changes", "", ""},
@@ -312,10 +315,12 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 	},
 	{
 		{
-			{ "Summary", "The man. The myth. The icon. The legend. The hero. Doomguy has stood against untold legions throughout all 20 years of his one-man war on Hell, and here he stands ready to go against more. He is a man that needs no introduction, as his abilities have been proven and honed and harnessed time and time again--the rest of the heroes will have to work double to even match the bar Doomguy is constantly raising.", ""},
+			{ "Summary", "The demon slaying man. The resurrected myth. The reappearing icon. The reawakened legend. The hero returning. Doomguy has stood against untold legions throughout all 20 years of his one-man war on Hell, and here he returns in a new but familar form. He is a man that still needs no introduction, as his abilities have been proven and honed and harnessed time and time again--the rest of the heroes will have to work double to even match the bar Doomguy64 is still constantly raising.", ""},
 			
-			{ "Traits", "...And I Feel Mighty: Doomguy holds the Super Shotgun, the most devastating weapon in the game and cementing him as the most damaging hero. No other weapon can match its reliability and sheer power.
-			\n\nTo Hell With Respect!: Doomguy is the most unchanged in his function and his abilities. Playing with him is just like playing Doom 64, so show these newcomers who they better call granddaddy.", ""},
+			{ "Traits", "...And I Am Still Mighty: Doomguy64 holds the Super Shotgun in the game as well as the BFG9000, one of the strongest ultimate weapons giving him quite the firepower. It's very hard for most other classes to match or exceed the damage on those 2 in their own weapons tier.
+			\n\nTo Hell With Respect!...Again!: Doomguy64 has been recreated with gameplay similar to regular doom and matches 64 to a close extent. Playing with him is just like playing Doom 64, so show these newcomers who they better call granddaddy.
+			\n\nAss Kicking Console Power~!: Doomguy64 came from a console version of doom for the nintendo 64, along with it came some slight varations to the weapons, his chaingun is slightly faster but more inaccurate, his bfg is a tad slower, and his rockets have knockback, giving subtle differences from his original pc counterpart.
+			\n\nHellish Fantasy Redux: Doomguy64 Still uses a damage rolling system like in the origina doom 1 & 2.", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -354,9 +359,13 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 			{ "Summary", "Colonization of the Moon can be a difficult task. Especially when that task is caught up in immense political turmoil. Unable to come to terms, the colonies on the moon begin open rebellion against the United Nations. The U.N. quickly responds by mobilizing thier forces to deal with this rebellion, but the Lunar Alliance has an ace up their sleeve. The Alliance's operations hinge on the skill of a single LDF Commando, as well as a handfull LDF malitia. He endures racing against limited oxygen supplies and swarms of U.N. Personnel to ensure the LDF colonies remain standing strong. Only... the situation becomes far more complicated when an alien species is discovered laying dormant within the Moon... \n\nWith an arsenal consisting primarily of highly accurate, fast moving projectile based weaponry. The commando can easily hang back and deal consistent damage or pick off weak enemies with pot shots while his allies are in the fray.", ""},
 			
 			{ "Traits", "Bullets! My only weakness! Wait. what the hell is a \"bullet\"?: Most of Rebel Moon's warfare consisted of projectile attacks. Commando only has one hitscan weapon at his disposal. He is also weak against hitscan and tracer weapons such as shotguns and chainguns...
-			\n\nSpace is a cold, cooold place: Properly suited up for the harsh enviornment of space. The Commando also has some resistance to other hazardous elements, such as fire, ice, and radiation.", ""},
+			\n\nSpace is a cold, cooold place: Properly suited up for the harsh enviornment of space. The Commando also has some resistance to other hazardous elements, such as lava	, radiation and other floor hazards.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "-Rebel Moon and Rebel Moon rising, actually had a similar weapon system with damage like doom, however it lacked anything that fit the ultimate tier. So Plasma Cannon and Subestron Arm are buffed a lot, and the latter gaining a ripper property.
+			\n\n-No oxygen system in any of the Iwad games, so that is gone here too.
+			\n\nThe particle accelerator and railgun were equals in rebel moon, and very close in rising, here the railgun was chosen and buffed to be the slot 6, while the other was put into a slot 4 spot.
+			\n\nCertain weapons had different speed and damage values depending on if you were playing the first or 2nd rebel moon, here we combined both to get the best of each, if the weapon wasn't already buffed.
+			", ""},
 		},
 		{
 			{ "", "", ""},
@@ -404,10 +413,12 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 		{
 			{ "Summary", "One warrior, one sword, one arch enemy. Grondoval is the mightiest and bravest of all warriors from the land of Stazhia. He has been to chosen to travel to the Island of Char and slay the evil witch Illwhyrin. Not even Illwhyrin's sister, Cirae-Argoth, could kill Grondoval. With his weaponry and magic scrolls he is able to kill anyone, no matter how big, scary or brutal they are. \n\nGrondoval's weaponry is a unique and balanced mix of Witchaven I and II. The melee attacks are so strong and crushing, that even big enemies like the Archvile or Baron of Hell feel atrocious pain and are stunned for a moment. Thus he excels in melee and easily defeats any big enemy in a duel. But be careful: Large groups and hordes of enemies constitute a big threat to him and can easily surround him.", ""},
 			
-			{ "Traits", "Thou art veteran: In Witchaven you could level up and gain more strength, health and armor. Instead, you start immediately as a veteran (250 HP, maximum armor of 300).
-			\n\nCunning impostor: Using the weapons' enchantments now draw from ammo instead of temporary powerups, and the halberd has been modified to support enchantments.", ""},
+			{ "Traits", "Knight's Honor: Grondoval is mainly a melee user, while he has ranged options like his bow and other tools, he is mainly a melee warrior, and majority of his slots have melee only modes to converse ammo while still putting up a decent fight.
+			\n\nThou art a lord!: In Witchaven you could level up and gain more strength, health and armor. Instead, you start immediately as a veteran (250 HP, maximum armor of 300).
+			\n\nCunning Impostor: Using the weapons' enchantments now draw from ammo instead of temporary powerups, and the halberd has been modified to support a ranged enchantment.
+			\n\nEat Steel!: Grondoval's Melee attacks force painstates on enemies that can get them, allowing you to get those extra moments in to shread them.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "-First and foremost, weapons don't break like in witchaven, and you don't need to use an enchanting well to powerup your weapons, instead you can access both versions on command.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -436,7 +447,7 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 			{ "Summary", "Lo wang was a bodyguard for Zilla Enterprises, which has control over every major industry in Japan. However, this has led to corruption. Master Zilla, the president of the Zilla Enterprise, was planning to conquer Japan using creatures from the \"dark side\". When he discovered this, Lo wang quit his job as a bodyguard. After Zilla sent his thugs after Lo Wang, and killed his old master, Lo Wang sought vengeance. After defeating Master Zilla in a volcanic fortress, he had to fight him again above the strees of Tokyo. His fight was not yet over, as his evil twin, Hung Lo, sent forces to attack him in the hopes of taking over the world. After firing a nuke in close proximity to his brother, the Wheel of Samsara rescued him from disintegration.", ""},
 			
 			{ "Traits", "Who wants some Lo wang?: Much like Shadow Warrior's brothers, Duke Nukem and Blood, Lo Wang also lack good defense.
-			Look like Duke Nukem! HAHAHA!: He can mow the crowds, and beat the ever living shit out of things while making remarks just like Duke. But he has even more trick, from brutal melee to slice open foes and a monsterous !!!NUKE!!!", ""},
+			\n\nI am like Duke Nukem! HAHAHA!: He can mow the crowds, and beat the ever living shit out of things while making remarks just like Duke. But he has even more tricks, from brutal melee weapons to slice open foes and a monsterous !!!NUKE!!!", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -500,7 +511,8 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 		{
 			{ "Summary", "The Demoness is a unique creature, the only one of her kind. She was created by Eidolon and could be considered to be his daughter. She was meant to be the progenitor of a new race of elite minions who would serve as the Serpent Rider's personal agents. \n\nEidolon taught his creation many harsh lessons and gave her considerable powers, yet he was never able to finish his work, as he was slain by mortal heroes. The Demoness was too weak at the time to intervene in any way. However, when she learned that the soul of her master had been stolen by Praevus, she went into an unholy rage and decided to deal with the blasphemer and his minions in person.", ""},
 			
-			{ "Traits", "", ""},
+			{ "Traits", "I've dabbled in the Dark Arts: In Hexen 2 she only had 4 weapons, here she also has all 4 of the necromancer's weapons to match other chars and to show off other powerful options to her kit.
+			\n\nSouthpaw Demon: Unlike the rest of the samsara roster, Demoness is left handed, and thus might gave some newer players some struggles or even more ease then before on her attacks.", ""},
 			
 			{ "Changes", "- Hexen 2, being a cousin of Quake, also had such a low damaging scale, while enemy hitpoints were reasonably on par with Doom. Given how the Tempest Staff couldn't even kill some of the weakest enemies in one hit, the damage values have been buffed around twice as much.
 			\n ^- Additionally, additional characteristics have been added to some of the Demoness's weapons.
@@ -531,7 +543,7 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 		{
 			{ "Summary", "James Bond, British literary and film character, a peerless spy, notorious womanizer, and masculine icon. He is an internationally known spy that has one mission: to serve and protect his Royal Majesty by working for MI6, part of the British Secret Service. Bond was first conceived as a Cold War-era operative. Trained in intelligence and special forces, the superspy always used the latest gadgets, thwarted Soviet agents, brought international gangsters to justice, and inevitably bedded a beautiful woman. An enthusiastic gambler, he was nearly as loyal to his signature vodka martini as he was to the British crown and his Scottish roots. Although Bond radiated charisma and style, he was also intensely solitary and virtually friendless, despite his many trysts.", ""},
 			
-			{ "Traits", "Bond. James Bond: Being a spy, wearing body armor would potentially compromise his mission. As a result, Bond won't be able to withstand too much damage.
+			{ "Traits", "Bond. James Bond: Being a spy, wearing body armor would potentially compromise his mission. As a result, Bond won't be able have as good armor as the other classes, his being more fragile and not as durable.
 			\n\nShaken, not stirred: James Bond usually tries not to go into a situation guns blazing, and instead prefers a more discreet approach. Any spy knows aiming for the vitals can deliver an easy blow.", ""},
 			
 			{ "Changes", "- Goldeneye damage values use a substantially smaller scale than most of the other games that can be found in Samsara. It seemed to make sense to multiply all damage values by 10.
@@ -969,15 +981,15 @@ str ClassWeaponInfo[CLASSCOUNT][2][20][5] =
 	{{
 		{ "Knife", "Used for close combat, the knife is best as a last resort. It requires no ammo.", "WKNPA0", "Totenkopf_Knife", "f" },
 		{ "Walter P38 Pistol", "The standard German pistol. You'll need to switch to a better weapon when fighting multiple enemies.", "TK02M0", "Totenkopf_Pistol", "p" },
-		{ "Kar98k Rifle", "The Kar98K is the standard German rifle. Its strength and accuracy make it the choice weapon among snipers.", "TK03M0", "Totenkopf_Kar98K", "1" },
-		{ "MP40 Submachine Gun", "This machinegun comes in handy when fighting groups of enemies. It is often carried by S.S. personnel.", "TK04K0", "Totenkopf_MP40", "2" },
+		{ "M712 Rapid-Fire Pistol", "This machine pistol was developed by Mauser as a selective fire sidearm. It eats up ammo quick but can be a good crowd control weapon to stun multiple targets at once.", "TK10K0", "Totenkopf_Mauser", "1" },
+		{ "Kar98k Rifle", "The Kar98K is the standard German rifle. Its strength and accuracy make it the choice weapon among snipers.", "TK03M0", "Totenkopf_Kar98K", "2" },
 		{ "STG44 Assault Rifle", "Abbreviated for \"Sturmgewehr 44,\" the STG44 is an assault rifle that has the same rate of fire as the MP40, only it is much more powerful.", "TK05F0", "Totenkopf_STG44", "3" },
-		{ "Flamethrower", "Ideal for clearing out trenches and buildings - also ideal for cooking enemies.", "TK06F0", "Totenkopf_Flamethrower", "4" },
+		{ "MP40 Submachine Gun", "This machinegun comes in handy when fighting groups of enemies. It is often carried by S.S. personnel.", "TK04K0", "Totenkopf_MP40", "4" },
 		{ "Panzerschreck", "The Panzerschreck is an anti-tank weapon of the German Army. It fires slowly but deals tremendous damage.", "TK07H0", "Totenkopf_Panzerschreck", "5" },
 		{ "Chaingun", "This ultra-speed Gatling gun can mow down an entire Nazi platoon in seconds! However, it uses up ammo like popcorn.", "TK08F0", "Totenkopf_Chaingun", "6" },
 		{ "Flakgun", "The most famous artillery piece of German forces converted into a one-man portable weapon, with no compromises in efficiency.", "TK09F0", "Totenkopf_Flakgun", "7" },
-		{ "M712 Rapid-Fire Pistol", "This machine pistol was developed by Mauser as a selective fire sidearm. It eats up ammo quick but can be a good crowd control weapon to stun multiple targets at once.", "TK10K0", "Totenkopf_Mauser", "u" },
 		{ "MG42 Portable Machine Gun", "It is most notable for its very high cyclic rate for a gun using full power service cartridges, which made it extremely effective in providing suppressive fire, and its unique sound led to it being nicknamed \"Hitler's buzzsaw\".", "TK11F0", "Totenkopf_MG42", "u" },
+		{ "Flamethrower", "Ideal for clearing out trenches and buildings - also ideal for cooking enemies.", "TK06F0", "Totenkopf_Flamethrower", "u" },
 		{ "Kar98k Sniper Rifle", "For snipers, Karabiner 98k rifles selected for being exceptionally accurate during factory tests were fitted with a telescopic sight as sniper rifles.", "TK12M0", "Totenkopf_Sniper", "u" },
 		{ "Power Armor", "Kept in a lab along with the nazis most powerful mutant projects, not only does this armor absorb half the damage taken from attacks and grant 200 armor, it also grants permanent armor regeneration. \n\nTo obtain this armor, you must find 20 secrets.", "TK55A0", "TotenkopfPowerArmor", "" },
 		{ "Healing Orb", "Kept in a dungeon with the most unstable Nazi experiment ever devised, this healing orb does not just heal you for 200 health points, it will also enable permanent health regeneration. \n\nTo obtain this artifact, you must find 30 secrets.", "TK55B0", "TotenkopfHealingOrb", "" },
