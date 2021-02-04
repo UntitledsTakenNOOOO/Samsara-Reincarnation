@@ -2025,6 +2025,12 @@ Script "Samsara_KillCount" (int override)
 	int y = GetActorY(0);
 	int z = GetActorZ(0);
 	
+	//eww
+	if(ThingCountName("SamsaraMixerCompendiumToken",0) > 0)
+	{
+		ACS_NamedExecuteAlways("Samsara_PinataHandler",0,health,GetActorProperty(0,APROP_Radius)>>16,GetActorProperty(0,APROP_Height)>>16);
+	}
+	
 	SetActivatorToTarget(0);
 	
 	if(override != 1)
