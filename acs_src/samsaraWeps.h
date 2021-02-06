@@ -51,7 +51,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
     {"RMROxygenRecycler",   "", "RMRJetPack", "","",""}, // Added this.		
     {"KatarnSupercharge", 	"", "", "","",""},	
 	{"IPOGRandomItemGenerator",	"",	"", "","",""}, //+Added	
-	{"DisruptorEnergyBall",	"",	"", "","",""}, //+Added	
+	{"DisruptorEnergyBall",	"DisruptorPSIEnergy",	"", "","",""}, //+Added	
 	{"WTShieldTrigger",	"",	"", "","",""}, //+Added
 	{"HL Squeaks", "HLSqueakAmmo", "HL Crossbow", "Shell","",""}, //+Added	
     {"SWRipperHeart", "HeartAmmo", "HeatSeekingCard", "","",""},	
@@ -60,7 +60,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
     {" Hunting Rifle With Scope ", "", " Dyn 'O' Mites ", "","",""},	
 	{"Q2GrenadeLauncher", "RocketAmmo", "Q2ETFRifle", "Q2Flechettes","Q2IonRipper","Cell"},	
 	{"Hexen2TomeOfPower","","Hexen2ForceCube","","",""},
-	{"Goldeneye_SniperRifle","Goldeneye_SniperMagazine","Goldeneye_SilencedD5K","oldeneye_D5KMagazine","Goldeneye_GadgetGranter",""},
+	{"Goldeneye_SniperRifle","Goldeneye_SniperMagazine","Goldeneye_SilencedD5K","Goldeneye_D5KMagazine","Goldeneye_GadgetGranter",""},
 	{"Totenkopf_FlameThrower","Totenkopf_FlameThrowerFuel","Totenkopf_MG42","Cell","Totenkopf_Sniper","Shell"},	
 };
 
