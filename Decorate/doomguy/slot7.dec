@@ -9,18 +9,34 @@ Actor "B.F.G. 9000" : BFG9000
     States
     {
       Ready:
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Ready64")
         DBFG A 1 A_WeaponReady
         loop
+		
+      Ready64:
+        64BF A 1 A_WeaponReady
+        loop		
 
       Deselect:
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Deselect64")
         DBFG A 1 A_Lower
         loop
+		
+      Deselect64:
+        64BF A 1 A_Lower
+        loop		
 
       Select:
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Select64")
         DBFG A 1 A_Raise
         loop
+	
+      Select64:
+        64BF A 1 A_Raise
+        loop	
 
       Fire:
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Fire64")
         DBFG A 0 A_PlayWeaponSound("doomguy/bfgf")
         TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaFire")
         DBFG A 0 A_JumpIfInventory("RuneDoubleFiringSpeed", 1, "RageFire")
@@ -37,6 +53,47 @@ Actor "B.F.G. 9000" : BFG9000
         DBFG A 10 Offset(0, 30)
         DBFG B 10 bright
         goto FireMid
+		
+      Fire64:
+        64BF A 0 A_PlayWeaponSound("doom64guy/bfgf")
+        64BF A 20
+        64BF A 10 A_GunFlash
+        64BF B 5
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopMid64")
+        TNT1 A 0 A_JumpIfInventory("DoomNoBFGAim", 1, "NoAimMid64")
+        TNT1 A 0 A_FireCustomMissile("Doom64BFGBall")
+        goto FireEnd64	
+		
+     NoAimMid64:
+        TNT1 A 0 A_JumpIfInventory("RuneSpread", 1, "NoAimSpread")
+        TNT1 A 0 A_FireCustomMissile("BFGAmmoWaster")
+        TNT1 A 0 A_SpawnItemEx("Doom64BFGBall", 0, 0, 32, 25)
+        goto FireEnd64
+
+      NoAimSpread64:
+        TNT1 A 0 A_FireCustomMissile("BFGAmmoWaster")
+        TNT1 A 0 A_SpawnItemEx("Doom64BFGBall", 0, 0, 32, 25, 0, 0, -15)
+        TNT1 A 0 A_SpawnItemEx("Doom64BFGBall", 0, 0, 32, 25)
+        TNT1 A 0 A_SpawnItemEx("Doom64BFGBall", 0, 0, 32, 25, 0, 0,  15)
+        goto FireEnd64
+
+      CoopMid64:
+        TNT1 A 0 A_JumpIfInventory("DoomNoBFGAim", 1, "NoAimCoop")
+        TNT1 A 0 A_FireCustomMissile("Doom64BFGBall2")
+        goto FireEnd64
+
+      NoAimCoop64:
+        TNT1 A 0 A_JumpIfInventory("RuneSpread", 1, "NoAimCoopSpread")
+        TNT1 A 0 A_FireCustomMissile("BFGAmmoWaster")
+        TNT1 A 0 A_SpawnItemEx("Doom64BFGBall2", 0, 0, 32, 25)
+        goto FireEnd64
+
+      NoAimCoopSpread64:
+        TNT1 A 0 A_FireCustomMissile("BFGAmmoWaster")
+        TNT1 A 0 A_SpawnItemEx("Doom64BFGBall2", 0, 0, 32, 25, 0, 0, -15)
+        TNT1 A 0 A_SpawnItemEx("Doom64BFGBall2", 0, 0, 32, 25)
+        TNT1 A 0 A_SpawnItemEx("Doom64BFGBall2", 0, 0, 32, 25, 0, 0,  15)
+        goto FireEnd64		
 
       RageFire:
         DBFG A 2 Offset(-1, 33)
@@ -106,6 +163,11 @@ Actor "B.F.G. 9000" : BFG9000
         DBFG B 4 bright offset(0, 32)
         DBFG A 10
         goto Ready
+		
+      FireEnd64:
+        64BF B 10
+        64BF B 25 A_Refire
+        goto Ready		
 
       RageEnd:
         DBFG A 0 A_ZoomFactor(0.99, ZOOM_INSTANT)
@@ -129,6 +191,12 @@ Actor "B.F.G. 9000" : BFG9000
         DBFF A 10 bright A_Light1
         DBFF B 6 bright A_Light2
         Goto LightDone
+		
+      Flash64:
+        64BM A 11 bright // Apparently Zandronum has a different method for handling flash timing or something.
+        64BM B 5 bright
+        64BM C 5 bright
+        Goto LightDone		
 
       Spawn:
         WBFG A -1
@@ -183,6 +251,70 @@ actor BFGAmmoWaster
     {
       Spawn:
         TNT1 A 0
+        stop
+    }
+}
+
+actor Doom64BFGColorFlash : CustomInventory
+{
+    +INVENTORY.ALWAYSPICKUP
+    +INVENTORY.AUTOACTIVATE
+    +QUIET
+    -COUNTITEM
+    -INVBAR
+
+    States
+    {
+      Pickup:
+      Use:
+        TNT1 A 0 A_SetBlend("Green",0.45,20)
+        stop
+    }
+}
+
+actor Doom64BFGBall : BFGBall
+{
+    DamageType "BFG"
+    Renderstyle Normal
+    scale 0.75
+    Decal BFGLightning
+    +BRIGHT
+    +DONTREFLECT
+    +BLOODLESSIMPACT
+    DeathSound "doom64guy/bfgx"
+    Obituary "%k \cpvaporized\c- %o \cpwith the B.F.G. 9000.\c-"
+    States
+    {
+      Spawn:
+        64BB AB 2 bright
+        loop
+        
+      Death:
+        64BB C 0 A_GiveToTarget("Doom64BFGColorFlash",1)
+        64BB C 0 A_TakeFromTarget("Doom64BFGColorFlash",1)
+        64BB C 8 bright
+        64BB D 7 bright A_FadeOut(0.142857)
+        64BB E 0 bright A_FadeOut(0.142857)
+        64BB E 3 bright A_BFGSpray("Doom64BFGSplash")
+        64BB F 3 bright A_FadeOut(0.142857)
+        64BB G 3 bright A_FadeOut(0.142857)
+        64BB H 3 bright A_FadeOut(0.142857)
+        stop
+    }
+}
+
+actor Doom64BFGBall2 : Doom64BFGBall { +THRUSPECIES Species "Player" }
+
+actor Doom64BFGSplash
+{
+    +NOBLOCKMAP
+    +CLIENTSIDEONLY
+    +NOGRAVITY
+    RenderStyle Normal
+    States
+    {
+      Spawn:
+        64B2 ABCDEF 3 bright
         stop
     }
 }

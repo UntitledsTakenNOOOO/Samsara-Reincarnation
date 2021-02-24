@@ -449,7 +449,7 @@ script SAMSARA_SPAWN (int respawning)
         if (!respawning) { GiveInventory("LeonardReady", 1); }
         break;
 
-      case CLASS_DOOM64:
+      case CLASS_DOOM:
         if (!respawning) { if (GetCVar("sams_unmakerartifacts") == 1) { GiveInventory("Doom64UnmakerArtifact", 1); } else if (GetCVar("sams_unmakerartifacts") == 2) { GiveInventory("Doom64UnmakerArtifact", 2); } else if (GetCVar("sams_unmakerartifacts") >= 3) { GiveInventory("Doom64UnmakerArtifact", 3); } else {}}
         break;		
 	  
@@ -520,6 +520,12 @@ script SAMSARA_SPAWN (int respawning)
         if (GetUserCvar(pln,"sams_cl_weaponhud")) { GiveInventory("ExpandedHud", 1); }
         else { TakeInventory("ExpandedHud", 0x7FFFFFFF); }
 		
+		if (GetUserCvar(pln, "sams_hlnoreload")) { GiveInventory("HLNoReload", 1); }
+		else { TakeInventory("HLNoReload", 0x7FFFFFFF); }
+		
+		if (GetUserCvar(pln,"sams_cl_doom64") && CheckInventory("DoomGuyClass")) { GiveInventory("Doom64Mode", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); if(CheckInventory("Doom64_IHaveUnmaker") && (!CheckInventory("Unmaker"))) { GiveInventory("Unmaker", 1); } }
+        else { TakeInventory("Doom64Mode", 0x7FFFFFFF); TakeInventory("Unmaker", 0x7FFFFFFF); }	
+		
 		if (GetUserCvar(pln,"sams_cl_dkclab") && CheckInventory("DukeClass")) { GiveInventory("DukeLabToken", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); }
         else { TakeInventory("DukeLabToken", 0x7FFFFFFF); }
 		
@@ -542,6 +548,9 @@ script SAMSARA_SPAWN (int respawning)
 		
 		if((!GetUserCvar(pln,"sams_cl_lostmode") && CheckInventory("WolfenClass")) || (!GetUserCvar(pln,"sams_cl_shephardmode") && CheckInventory("HalfLifeClass")) || (!GetUserCvar(pln,"sams_cl_dkclab") && CheckInventory("DukeClass")))
 			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln);
+		
+		if((!GetUserCvar(pln,"sams_cl_doom64") && CheckInventory("DoomGuyClass")))
+			  { ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln); TakeInventory("Unmaker", 0x7FFFFFFF); }
 		
         if (GetCVar("sams_runninginzdoom") == 1) 
 		{

@@ -10,7 +10,7 @@ script SAMSARA_DOOM64 (int class, int slot, int dropped)
     switch (slot)
     {
       case SLOT_BFG9000:
-	    if (!CheckInventory(" B.F.G. 9000 ")
+	    if (!CheckInventory("B.F.G. 9000")
          || (!ultStay && (GetAmmoCapacity("Cell") > CheckInventory("Cell"))))
         {
             givingBFG = 1;
@@ -18,10 +18,10 @@ script SAMSARA_DOOM64 (int class, int slot, int dropped)
 		
         if (givingBFG)
         {
-            GiveInventory(" B.F.G. 9000 ", 1);
+            GiveInventory("B.F.G. 9000", 1);
         }
 
-        if (!CheckInventory("Unmaker")
+        if (!CheckInventory("Doom64_IHaveUnmaker")
          || (!ultStay && (GetAmmoCapacity("Cell") > CheckInventory("Cell"))))
         {
             givingUnmaker = 1;
@@ -29,12 +29,12 @@ script SAMSARA_DOOM64 (int class, int slot, int dropped)
 
         if (givingUnmaker)
         {
-            GiveInventory("Unmaker", 1);
+            GiveInventory("Doom64_IHaveUnmaker", 1);
         }
 
         if (giveartifacts)
         {
-            GiveInventory("Doom64UnmakerArtifact", 3);
+            GiveInventory("Doom64UnmakerArtifact", 1);
         }
 
         SetResultValue(givingBFG || givingUnmaker || giveartifacts);

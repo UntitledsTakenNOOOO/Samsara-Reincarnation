@@ -142,7 +142,7 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "strife/weaponget", // BFG9000
         "strife/itemget", // Punchdrunk Chainsaw
     },	
-    {
+/*    {
         "doom64guy/weaponget",
         "doom64guy/weaponget",
         "doom64guy/weaponget",
@@ -153,7 +153,7 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "doom64guy/weaponget",
         "doom64guy/weaponget",
         "doom64guy/weaponget",
-    },
+    },*/
     {	//Eleena sounds - Added this.
         "EradAmmo/PUP", // Fist
         "EradAmmo/PUP", // Chainsaw
@@ -487,7 +487,7 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "strife/ammoget", // BFG9000
         "strife/itemget", // Punchdrunk Chainsaw
     },
-    {	//D64
+/*    {
         "doom64guy/itemget",
         "doom64guy/itemget",
         "doom64guy/itemget",
@@ -498,7 +498,7 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "doom64guy/itemget",
         "doom64guy/itemget",
         "doom64guy/itemget",
-    },
+    }, */
     {	//Eleena sounds - Added this.
         "EradAmmo/PUP", // Fist
         "EradAmmo/PUP", // Chainsaw
@@ -705,7 +705,7 @@ int ClassUniqueSounds[CLASSCOUNT] =
 	"Bstone/xylanget", // Added this.
 	"Caleb/Weaponup2", // Added this.
     "strife/itemget", // For your class	
-    "doom64guy/powerupget",
+//    "doom64guy/powerupget",
     "EradAmmo/UPUP",	
     "C7MinePlace",	
 	"RMR/pickup",
@@ -738,7 +738,7 @@ int PunchDrunkUniqueSounds[CLASSCOUNT] =
     "",
     "",
     "strife/itemget",
-    "doom64guy/powerupget",
+//    "doom64guy/powerupget",
 	"",
     "C7/AmmoPickup",
 	"",

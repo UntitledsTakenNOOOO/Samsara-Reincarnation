@@ -56,7 +56,7 @@
 
 #define SAMSARA_CL_VERSION          2601
 
-#define CLASSCOUNT          29
+#define CLASSCOUNT          28
 #define UNIQUECOUNT         3
 #define SLOTCOUNT           10
 #define TIPCOUNT            2
@@ -76,23 +76,23 @@
 #define CLASS_BLAKE		9 // Added this.
 #define CLASS_CALEB     10 // added this.
 #define CLASS_STRIFE    11 // added this.
-#define CLASS_DOOM64    12 // added this.
-#define CLASS_ERAD      13 // added this.
-#define CLASS_C7   		14 // Added this. 
-#define CLASS_RMR   	15 // Added this. 
-#define CLASS_KATARN    16
-#define CLASS_POGREED	17	//+Added
-#define CLASS_DISRUPTOR	18	//+Added
-#define CLASS_WITCHAVEN	19	//+Added
-#define CLASS_HALFLIFE	20	//+Added
-#define CLASS_SW		21
-#define CLASS_CM		22
-#define CLASS_JON		23
-#define CLASS_RR		24
-#define CLASS_BITTERMAN	25
-#define CLASS_DEMONESS	26
-#define CLASS_BOND		27
-#define CLASS_TOTENKOPF	28
+//#define CLASS_DOOM64    12 // bye bye bye!
+#define CLASS_ERAD      12 // added this.
+#define CLASS_C7   		13 // Added this. 
+#define CLASS_RMR   	14 // Added this. 
+#define CLASS_KATARN    15
+#define CLASS_POGREED	16	//+Added
+#define CLASS_DISRUPTOR	17	//+Added
+#define CLASS_WITCHAVEN	18	//+Added
+#define CLASS_HALFLIFE	19	//+Added
+#define CLASS_SW		20
+#define CLASS_CM		21
+#define CLASS_JON		22
+#define CLASS_RR		23
+#define CLASS_BITTERMAN	24
+#define CLASS_DEMONESS	25
+#define CLASS_BOND		26
+#define CLASS_TOTENKOPF	27
 
 #define SPEED_FORWARD       15
 #define SPEED_SIDE          13
@@ -194,7 +194,7 @@ int ClassItems[CLASSCOUNT] =
     "BlakeClass", // Added this
     "CalebClass",// Added this
     "StrifeClass", // Added this.
-    "Doom64GuyClass", // Added this.
+//    "Doom64GuyClass", // goodbye
     "EradClass", // Added this.	
 	"C7Class", // Added this.		
 	"RMRClass", // Added this.			
@@ -215,7 +215,7 @@ int ClassItems[CLASSCOUNT] =
 
 int PickupStates[CLASSCOUNT][12] = 
 {
-    {"Doomguy", "DoomFull",     "DoomEmpty",        "DoomSpecial",      "DoomPunchdrunk",      "DoomPDFull",       "DoomPDEmpty",      "DoomPDSpecial",		"",		"",		"",		""},
+    {"Doomguy", "DoomFull",     "DoomEmpty",        "DoomSpecial",      "DoomPunchdrunk",      "DoomPDFull",       "DoomPDEmpty",      "DoomPDSpecial",		"Doom64",		"Doom64Full",		"Doom64Empty",		"Doom64Special"},
     {"Chexguy", "ChexFull",     "ChexEmpty",        "ChexSpecial",      "ChexPunchdrunk",      "ChexPDFull",       "ChexPDEmpty",      "ChexPDSpecial",		"",		"",		"",		""},
     {"Heretic", "HereticFull",  "HereticEmpty",     "HereticSpecial",   "HereticPunchdrunk",   "HereticPDFull",    "HereticPDEmpty",   "HereticPDSpecial",		"",		"",		"",		""},
     {"Wolfguy", "WolfFull",     "WolfEmpty",        "WolfSpecial",      "WolfPunchdrunk",      "WolfPDFull",       "WolfPDEmpty",      "WolfPDSpecial",		"LostWolfGuy",		"LostWolfFull",		"LostWolfEmpty",		"LostWolfSpecial"},
@@ -226,8 +226,8 @@ int PickupStates[CLASSCOUNT][12] =
 	{"Rott",    "RottFull",     "RottEmpty",        "RottSpecial",      "","","", "RottSpecial2",		"",		"",		"",		""},   // Added this
 	{"Blake",   "BlakeFull",	"BlakeEmpty",		"BlakeSpecial",		"","","", "BlakeSpecial2",		"",		"",		"",		""}, // Added this
 	{"Caleb",   "CalebFull",    "CalebEmpty",       "CalebSpecial",     "","","", "CalebSpecial2",		"",		"",		"",		""}, // Added this
-	{"Strifeguy",  "StrifeFull",   "StrifeEmpty",      "StrifeSpecial",    "StrifePunchdrunk",    "StrifePDFull",     "StrifePDEmpty",    "StrifePDSpecial",		"",		"",		"",		""},
-    {"Doom64",  "Doom64Full",   "Doom64Empty",      "Doom64Special",    "Doom64Punchdrunk",    "Doom64PDFull",     "Doom64PDEmpty",    "Doom64PDSpecial",		"",		"",		"",		""},
+	{"Strifeguy",  "StrifeFull",   "StrifeEmpty",      "StrifeSpecial",    "StrifePunchdrunk",    "StrifePDFull",     "StrifePDEmpty",    "StrifePDSpecial",		"",		"",		"",		""},	
+//    {"Doom64",  "Doom64Full",   "Doom64Empty",      "Doom64Special",    "Doom64Punchdrunk",    "Doom64PDFull",     "Doom64PDEmpty",    "Doom64PDSpecial",		"",		"",		"",		""},
     {"Erad",  "EradFull",   "EradEmpty",      "EradSpecial",    "",    "",     "",    "",		"",		"",		"",		""},	
     {"C7",      "C7Full",       "C7Empty",          "C7Special",        "C7Punchdrunk",        "C7PDFull",         "C7PDEmpty",        "C7PDSpecial",		"",		"",		"",		""},
     {"RMR",      "RMRFull",       "RMREmpty",          "RMRSpecial",        "",        "",         "",        ""},	
@@ -262,7 +262,7 @@ int ClassFades[CLASSCOUNT][5] =
 	{255, 255, 0,   0.1, 5},
     {255, 255, 0,   0.1, 5},
 	{255, 255, 0,   0.1, 5},
-	{255, 255, 0,   0.1, 5},	
+//	{255, 255, 0,   0.1, 5},	
 	{255, 255, 0,   0.1, 5},	
 	{255, 255, 0,   0.1, 5},
     {255, 255, 0,   0.1, 5},	
@@ -309,7 +309,7 @@ int LMSItems[CLASSCOUNT] =
 	"",
 	"",	
 	"",	
-	"",
+//	"",
 	"",	
 	"",
 	"",	
@@ -361,7 +361,7 @@ int Tipboxes[CLASSCOUNT][TIPCOUNT] =
 	{"BSTNTIP1", "BSTNTIP2"}, // Added this
 	{"CLBTIP1",  "CLBTIP2"}, // Added this
 	{"STRFTIP1", "STRFTIP2"},	
-    {"DM64TIP1", "DM64TIP2"},
+//    {"DM64TIP1", "DM64TIP2"},
     {"ERADTIP1", "ERADTIP2"},	
     {"C7TIP1",   "C7TIP2"},	
     {"RMRTIP1",  "RMRTIP2"},		
@@ -392,7 +392,7 @@ int DMTipboxes[CLASSCOUNT][TIPCOUNT] =
 	{"", "BSTNTIP2"}, // Added this.
 	{"", "CLBTIP2"}, // Added this
 	{"", "STRFTIP3"},
-    {"", "DM64TIP2"},	
+//    {"", "DM64TIP2"},	
     {"", "ERADTIP2"},	
     {"", "C7TIP2"},	
     {"", "RMRTIP2"},	
@@ -431,7 +431,7 @@ int PeopleDieParticles[CLASSCOUNT] =
 	"DoomguysDieParticle",
     "DoomguysDieParticle",
     "DoomguysDieParticle",
-    "DoomguysDieParticle",
+//    "DoomguysDieParticle",
     "DoomguysDieParticle",
     "DoomguysDieParticle",
     "DoomguysDieParticle",
@@ -471,7 +471,7 @@ int PeopleDiePulses[CLASSCOUNT] =
 	"DoomguysDiePulse",
     "DoomguysDiePulse",
     "DoomguysDiePulse",
-    "DoomguysDiePulse",	
+//    "DoomguysDiePulse",	
     "DoomguysDiePulse",	
     "DoomguysDiePulse",		
     "DoomguysDiePulse",		
@@ -513,7 +513,7 @@ int PeopleDieBlasts[CLASSCOUNT] =
 	"BlakeDiesWhenHeIsKilled",
 	"CalebDiesWhenHeIsKilled",
 	"StrifeguyDiesWhenHeIsKilled",	
-	"Doom64GuyDiesWhenHeIsKilled",	
+//	"Doom64GuyDiesWhenHeIsKilled",	
 	"EleenaDiesWhenSheIsKilled",		
     "C7ClassDiesWhenHeIsKilled",	
     "RMRClassDiesWhenHeIsKilled",		
@@ -631,7 +631,7 @@ int PunchDrunkItems[CLASSCOUNT][2] =
     {"ManathorPunchDrunk",  "ManathorPunchUnique"},
     {"RangerPunchDrunk",    "RangerPunchUnique"},
 	{"StrifePunchDrunk",    "StrifePunchUnique"},	
-    {"Doom64GuyPunchDrunk", "Doom64GuyPunchUnique"},
+//    {"Doom64GuyPunchDrunk", "Doom64GuyPunchUnique"},
     {"C7ClassPunchDrunk",    "C7ClassPunchUnique"},		
     {"KatarnPunchDrunk",    "KatarnPunchUnique"},	
 	{"MoomanPunchDrunk", "MoomanPunchUnique"}, 	
@@ -653,7 +653,7 @@ int BanCVars[CLASSCOUNT] =
     "sams_banblake",
     "sams_bancaleb",
     "sams_banstrifeguy",
-    "sams_bandoom64guy",
+//    "sams_bandoom64guy",
     "sams_baneleena",
     "sams_banspaceseal",
     "sams_banrebelmooncommando",
@@ -685,7 +685,7 @@ int BanStrings[CLASSCOUNT] =
 	"\c[m7]The admin has banned \cdFreely\c[m7] from play.",
 	"\c[m7]The admin has banned \cvBlake\c[m7] from play.",
 	"\c[m7]The admin has banned \csCaleb\c[m7] from play.",
-	"\c[m7]The admin has banned \cdDoom64 Guy\c[m7] from play.",
+//	"\c[m7]The admin has banned \cdDoom64 Guy\c[m7] from play.",
 	"\c[m7]The admin has banned \cdStrife Guy\c[m7] from play.",
 	"\c[m7]The admin has banned \caEleena\c[m7] from play.",
 	"\c[m7]The admin has banned \cnSpace Seal\c[m7] from play.",	
@@ -726,7 +726,7 @@ int DamageCVars[CLASSCOUNT] =
     "sams_blakedamage",
     "sams_calebdamage",
     "sams_strifeguydamage",
-    "sams_doom64guydamage",	
+//    "sams_doom64guydamage",	
     "sams_eleenadamage",
     "sams_spacesealdamage",	
     "sams_rebelmooncommandodamage",
@@ -759,7 +759,7 @@ int DefenseCVars[CLASSCOUNT] =
     "sams_blakedefense",
     "sams_calebdefense",
     "sams_strifeguydefense",
-    "sams_doom64guydefense",	
+//    "sams_doom64guydefense",	
     "sams_eleenadefense",
     "sams_spacesealdefense",	
     "sams_rebelmooncommandodefense",

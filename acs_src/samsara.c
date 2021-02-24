@@ -1651,8 +1651,8 @@ Script 2560 (int mode)
 
 str gameClassesSTR[CLASSCOUNT] = {
 	"DoomguyClass", "ChexClass", "CorvusClass", "WolfenClass", "HexenClass", "DukeClass", "MarathonClass", "QuakeClass", "RottClass", "BlakeClass",
-	"CalebClass", "StrifeClass", "Doom64GuyClass", "EradClass", "C7Class", "RMRClass", "KatarnClass", "POGreedClass", "DisruptorClass", "WitchavenClass", 
-	"HalfLifeClass", "SWClass", "CMClass", "JonClass", "RRClass", "BittermanClass", "DemonessClass", "BondClass"
+	"CalebClass", "StrifeClass", "EradClass", "C7Class", "RMRClass", "KatarnClass", "POGreedClass", "DisruptorClass", "WitchavenClass", 
+	"HalfLifeClass", "SWClass", "CMClass", "JonClass", "RRClass", "BittermanClass", "DemonessClass", "BondClass", "TotenkopfClass"
 };
 
 Script "TauntButton" (void) NET
@@ -2067,7 +2067,7 @@ Script "Samsara_AllyHealthRegen" (void)
 }
 
 int misccharacterclasses = 8;
-int checkclassindices[8] = {20,24,5,11,25,10,26,15};
+int checkclassindices[8] = {19,23,5,11,24,10,25,14};
 int activetokenselectors[8];
 
 script "HeroOnMap" Open

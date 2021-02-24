@@ -33,7 +33,7 @@ int BeaconMonsters[CLASSCOUNT] =
     "FriendlySectorPatrol",
     "FriendlyBrownCultist",
 	"FriendlySuperRebelSpawner",		
-    "FriendlyDoomImp64",
+//    "FriendlyDoomImp64",
     "FriendlyHSD",
     "FriendlyAnimatedProbe",	
     "FriendlyUNBluesuit",	
@@ -63,7 +63,7 @@ int AccuracyUniques[CLASSCOUNT][ACCURACYCOUNT] =
     {"BlakeShield",      "", "", "", "", "", "", "", "", ""},
     {"VoodooDoll",      "Voodoo", "Guns Akimbo", "", "Spraycan", "SpraycanAmmo", "", "", "", ""},
     {"Upgrades",         "", "", "", "", "", "", "", "", ""},
-    {"Doom64GuyZerkCounter",    "", "", "", "", "", "", "", "", ""},
+//    {"Doom64GuyZerkCounter",    "", "", "", "", "", "", "", "", ""},
     {" Eradicator Enhancement Chip ",      "", "", "", "", "", "", "", "", ""},
     {"C7ProxyMinePickup",      "C7ProxyMineAmmo", "", "", "", "", "", "", "", ""},
     {"RMROxygenRecycler","", "", "", "", "", "", "", "", ""},
@@ -242,7 +242,7 @@ int AccuracyMessages[CLASSCOUNT][MSGCOUNT] =
         "",
         "",
     },		
-    {
+/*    {
         "You grow more berserk.",
         "",
         "",
@@ -253,7 +253,7 @@ int AccuracyMessages[CLASSCOUNT][MSGCOUNT] =
         "",
         "",
         "",
-    },
+    },*/
     {
         "You found a Weapon Enhancement Chip!",
         "",

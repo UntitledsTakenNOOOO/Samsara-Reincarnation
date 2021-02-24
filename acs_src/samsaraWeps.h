@@ -45,7 +45,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
 	{"BlakeShield",			"",					"", "","",""}, // Added this
 	{"VoodooDoll",			"Voodoo",			"Guns Akimbo",    "","Spraycan","SprayCanAmmo"}, // Added this
     {"Upgrades",    "",                 		"", "","",""}, // Added this.
-    {"Doom64GuyBerserk",    "",                 "", "","",""},
+//    {"Doom64GuyBerserk",    "",                 "", "","",""}, sayonara
     {" Eradicator Enhancement Chip ",    "",                 "", "","",""},
     {"C7ProxyMinePickup",   "C7ProxyMineAmmo",     "", "","",""}, // Added this.	
     {"RMROxygenRecycler",   "", "RMRJetPack", "","",""}, // Added this.		
@@ -78,7 +78,7 @@ int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] =
 	{2,     0,      0,  0,		0,	0}, // added this -- blake
 	{1,     100,    0,  0,		0,	0},  // added this -- caleb
     {0,     0,      0,  0,		0,	0}, // Added this -- strife	
-    {0,     0,      0,  0,		0,	0}, // added this -- d64guy
+    //{0,     0,      0,  0,		0,	0}, 
     {2,     0,      0,  0,		0,	0}, // added this -- erad	
     {1,     30,     0,  0,		0,	0}, // added this -- C7		
     {3,     0,      3,  0,		0,	0}, // Added this -- RMR	
@@ -111,7 +111,7 @@ int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
 	{-1,    -1,     -1, -1,     -1, -1}, // added these -- blake
 	{-1,    -1,     -1, -1,     -1, -1}, // added these -- caleb
     {-1,    -1,     -1, -1,     -1, -1}, // Added this -- strife	
-    {-1,    -1,     -1, -1,     -1, -1},
+//    {-1,    -1,     -1, -1,     -1, -1},
     {-1,    -1,     -1, -1,     -1, -1},
     {-1,    -1,     -1, -1,     -1, -1},
     {-1,    -1,     -1, -1,     -1, -1},	
@@ -282,7 +282,7 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {" Mauler ",        				"Cell",         "",             "", ""}, // BFG9000
         {"Upgrades",                        "",             "",             "", ""}, // Punchdrunk Chainsaw
     },
-    {   // Doom 64 Guy
+/*    {   // Doom 64 Guy
         {"  Fist  ",                        "",             "",             "", ""},
         {"  Chainsaw  ",                    "",             "",             "", ""},
         {"  Pistol  ",                      "",             "",             "", ""},
@@ -293,7 +293,7 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {" Plasma Rifle ",                  "Cell",         "",             "", ""},
         {" B.F.G. 9000 ",                   "Cell",         "",             "", ""},
         {"  Chainsaw  ",                    "",             "",             "", ""},
-    },
+    },*/
     {   // Eleena
         {"  Claw  ",                        "",             "",             "", ""},
         {" Arachnicator ",                  "RocketAmmo",   "",             "", ""},
@@ -478,7 +478,7 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
 
 int ClassScripts[CLASSCOUNT][SLOTCOUNT] = 
 {
-    {0,0,                   0,  0,0,0,0,0,0,0},
+    {0,0,                   0,  0,0,0,0,0,SAMSARA_DOOM64,0},
     {0,0,                   0,  0,0,0,0,0,0,0},
     {0,0,                   0,  0,0,0,0,0,0,0},
     {0,0,                   0,  0,0,0,0,0,0,0},
@@ -490,7 +490,7 @@ int ClassScripts[CLASSCOUNT][SLOTCOUNT] =
 	{0,0,					0,	0,0,0,0,0,0,0},
 	{0,0,					0,	0,0,0,0,0,0,0},
     {0,0,                   0,  0,0,0,0,0,SAMSARA_STRIFESIGIL,0},
-    {0,0,                   0,  0,0,0,0,0,SAMSARA_DOOM64,0},
+//    {0,0,                   0,  0,0,0,0,0,0,0},
 	{0,0,					0,	0,0,0,0,0,0,0},
     {0,0,                   0,  0,0,0,0,0,0,0},		
     {0,0,                   0,  0,0,0,0,0,SAMSARA_REBELMOON,0},			
@@ -626,7 +626,7 @@ int SamsaraRGPProperties[CLASSCOUNT][SAMSARA_RGP_PAGES][SAMSARA_RGP_PROPERTIES] 
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
-	{{0,	0}, 		{0,		0},},
+//	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
