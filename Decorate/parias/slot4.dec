@@ -19,23 +19,44 @@ actor "Serpent Staff" : CWeapStaff
         Stop
 
       Select:
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "SelectMage")
         CSSF C 1 A_Raise
         Loop
 
       Deselect:
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "DeselectMage")
         CSSF B 3
         CSSF C 4
         CSSF C 1 A_Lower
-        Wait
+        Wait	
+		
+	 DeselectMage:
+		CSIH A 1 A_Lower
+		Loop		
+		
+	 SelectMage:
+		CSIH A 1 A_Raise
+		Loop		
+		
 
       Ready:
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "ReadyMage")
         CSSF C 4
         CSSF B 3 A_CStaffInitBlink
         CSSF AAAAAAA 1 A_WeaponReady
         CSSF A 1 A_CStaffCheckBlink
         Goto Ready + 2
+		
+	/* ReadyMage:
+		CONF AAAABBBBCCCC 1 A_WeaponReady
+		Goto Ready	*/
+		
+	 ReadyMage:
+	    CSIH A 1 A_WeaponReady
+		Goto Ready			
 
       Fire:
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "FireMage")
         CSSF A 0 A_TakeInventory("DrainCounter")
         goto Hold
 
@@ -49,6 +70,24 @@ actor "Serpent Staff" : CWeapStaff
         CSSF A 2 Offset (0, 40)
         CSSF A 2 Offset (0, 36)
         Goto Ready + 2
+	
+	  // Fire Blast. Has better accuracy and faster fire rate than frost shards, but about equal damage
+	  //Mage has no real automatics. That's right, He's all about burst damage.
+	
+	  FireMage:
+		TNT1 A 0 A_JumpIfInventory("Clip", 3, 1)
+		Goto Ready
+		TNT1 A 0 A_playsound("hexen/cult/fire")
+		CSIH A 1
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "FireMageCoop")
+		TNT1 AAAA 0 A_FireCustomMissile("CultShot1",frandom(-12,12),0,0,0,1,frandom(-4,4))
+		CSIH B 3 Bright A_FireCustomMissile("CultShot1",0,0,0,0)//,frandom(-12,12),1,0,0,1,frandom(-4,4))
+		CSIH B 0 Bright A_TakeInventory("Clip", 3, TIF_NOTAKEINFINITE)
+		CSIH CDE 3 Bright
+		CSIH FGHAA 3 Bright
+		TNT1 A 0 A_Refire("FireMage")
+		Goto Ready		
+	  
 
       Blink:
         CSSF BBBCCCCCBBB 1 A_WeaponReady
@@ -93,6 +132,14 @@ actor "Serpent Staff" : CWeapStaff
         CSSF A 2 Offset (0, 36)
         CSSF K 0 A_Refire
         Goto Ready + 2
+		
+	  FireMageCoop:
+		TNT1 AAAA 0 A_FireCustomMissile("CultShot1Coop",frandom(-12,12),0,0,0,1,frandom(-4,4))
+		CSIH B 4 Bright A_FireCustomMissile("CultShot1Coop")//,frandom(-12,12),1,0,0,1,frandom(-4,4))
+		CSIH CDE 3 Bright
+		CSIH FGHAA 3 Bright
+		TNT1 A 0 A_Refire
+		Goto Ready			
     }
 }
 
@@ -146,3 +193,78 @@ actor StaffDrainPuff: HammerPuff
     AttackSound ""
     ActiveSound ""
 }
+
+ACTOR CultShot1
+{
+	Radius 6
+	Height 16
+	Speed 35
+	Damage (Random(2,12)) // was 1,6
+	Projectile
+	Bouncecount 6
+	Wallbouncefactor 2
+	+RANDOMIZE
+	+RIPPER
+	+THRUACTORS
+	+HEXENBOUNCE
+	+CANBOUNCEWATER
+	+FORCERADIUSDMG
+	RenderStyle Add
+	scale .75
+	SeeSound ""
+	DeathSound "hexen/cult/hit"
+	Decal "Scorch"
+	States
+	{
+		Spawn:
+			SCBL A 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			SCBL A 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			SCBL A 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			SCBL B 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			SCBL B 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			SCBL B 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			SCBL C 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			SCBL C 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			SCBL C 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			SCBL D 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			SCBL D 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			SCBL D 1 BRIGHT A_SpawnItemEX("CultTrail1") TNT1 A 0 A_Explode(Random(2,12), 8, !XF_HURTSOURCE, false, 8)
+			TNT1 AAA 0 A_Cstaffmissileslither
+			Loop
+		Death:
+			SCBL EEEEFFFGGH 2 BRIGHT
+			Stop
+	}
+}
+
+
+ACTOR CultTrail1
+{
+	+NOCLIP
+	+NOINTERACTION
+	+NOGRAVITY
+	renderstyle ADD
+	alpha 0.5
+	scale .5
+	States
+	{
+		Spawn:
+			TNT1 A 0 A_Jump(256,"A")
+		A:
+			CSFT AABBCCDDEE 1 BRIGHT //A_fadeout(0.05)
+			Stop
+	}
+}
+
+Actor CultShot1Coop : CultShot1 { +DONTHURTSPECIES Species "Player" +DONTHARMCLASS }

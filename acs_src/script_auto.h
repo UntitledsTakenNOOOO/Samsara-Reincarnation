@@ -529,6 +529,9 @@ script SAMSARA_SPAWN (int respawning)
 		if (GetUserCvar(pln,"sams_cl_dkclab") && CheckInventory("DukeClass")) { GiveInventory("DukeLabToken", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); }
         else { TakeInventory("DukeLabToken", 0x7FFFFFFF); }
 		
+		if (GetUserCvar(pln,"sams_cl_hexmage") && CheckInventory("HexenClass")) { GiveInventory("DaedolonMode", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); TakeInventory("Mace of Contrition", 0x7FFFFFFF); }
+        else { TakeInventory("DaedolonMode", 0x7FFFFFFF); GiveInventory("Mace of Contrition", 1); }		
+		
 		if (GetUserCvar(pln,"sams_cl_shephardmode") && CheckInventory("HalfLifeClass")) 
 		{ 
 			GiveInventory("HalfLifeOpposingForce", 1); 
@@ -546,7 +549,7 @@ script SAMSARA_SPAWN (int respawning)
 		if (GetUserCvar(pln,"sams_cl_lostmode") && CheckInventory("WolfenClass")) { GiveInventory("WolfenLostMode", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); }
         else { TakeInventory("WolfenLostMode", 0x7FFFFFFF); }
 		
-		if((!GetUserCvar(pln,"sams_cl_lostmode") && CheckInventory("WolfenClass")) || (!GetUserCvar(pln,"sams_cl_shephardmode") && CheckInventory("HalfLifeClass")) || (!GetUserCvar(pln,"sams_cl_dkclab") && CheckInventory("DukeClass")))
+		if((!GetUserCvar(pln,"sams_cl_lostmode") && CheckInventory("WolfenClass")) || (!GetUserCvar(pln,"sams_cl_shephardmode") && CheckInventory("HalfLifeClass")) || (!GetUserCvar(pln,"sams_cl_dkclab") && CheckInventory("DukeClass")) || (!GetUserCvar(pln,"sams_cl_hexmage") && CheckInventory("HexenClass")))
 			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln);
 		
 		if((!GetUserCvar(pln,"sams_cl_doom64") && CheckInventory("DoomGuyClass")))

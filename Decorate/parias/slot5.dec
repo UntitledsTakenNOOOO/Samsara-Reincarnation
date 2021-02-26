@@ -22,18 +22,34 @@ actor "Hammer of Retribution" : FWeapHammer
         Stop
 
       Select:
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "SelectMage")
         FHMR A 1 A_Raise
         Loop
 
+	  SelectMage:
+		BDSP B 1 A_Raise
+		Loop		
+
       Deselect:
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "DeselectMage")
         FHMR A 1 A_Lower
         Loop
+		
+	  DeselectMage:
+		BDSP B 1 A_Lower
+		Loop		
 
       Ready:
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "ReadyMage")
         FHMR A 1 A_WeaponReady
         Loop
+		
+	  ReadyMage:
+		BDSP B 1 A_WeaponReady
+		Loop		
 
       Fire:
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "FireMage")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"CoopFire")
         FHMR B 6 Offset (5, 0)
@@ -52,6 +68,23 @@ actor "Hammer of Retribution" : FWeapHammer
         FHMR A 1 Offset (0, 35)
         FHMR A 1
         Goto Ready
+		
+	  FireMage:
+		BDSP D 4 A_PlaySoundEx("BloodScepter/Charge", "SoundSlot7", 0)
+		BDSP EFG 4 Bright
+		BDSP H 0 Bright A_JumpIfInventory("CoopModeOn", 1, "CoopFireMage")
+		BDSP H 6 Bright A_FireCustomMissile("BloodScepterBall")
+		BDSP G 0 Bright A_PlaySoundEx("BloodScepter/CoolDown", "SoundSlot6", 0)
+		BDSP GF 4 Bright
+		BDSP B 20
+		Goto Ready		
+		
+	  CoopFireMage:
+		BDSP H 6 Bright A_FireCustomMissile("BloodScepterBallCoop")
+		BDSP G 0 Bright A_PlaySoundEx("BloodScepter/CoolDown", "SoundSlot6", 0)
+		BDSP GF 4 Bright
+		BDSP B 20
+		Goto Ready		  
 
       HammerMelee:
         FHMR C 3 Offset (5, 0) A_CustomPunch(random(60,113),1,0,"HammerPuff",96)// A_FHammerAttack - Deals 60-123 damage.
@@ -194,3 +227,52 @@ actor HammerMissileDMRJ : HammerMissileDM
     }
 }
 
+Actor BloodScepterBall
+{
+  Speed 30
+  Radius 8
+  Height 12
+  Damage 10
+  DamageType "BloodScepter"
+  Projectile
+  SeeSound "BloodScepter/PowerFire"
+  DeathSound "BloodScepter/PowerHit"
+  Scale 1.5
+  Decal BigBloodSmear
+  States
+  {
+  Spawn:
+    BSBL AABBCC 1 Bright A_SpawnItemEx("BloodScepterTrail", Random(-5, 5), Random(-6, 6), Random(-6, 6), 0, 0, 0, 0, 128)
+    BSBL DDEEFF 1 Bright A_SpawnItemEx("BloodScepterTrail", Random(-5, 5), Random(-6, 6), Random(-6, 6), 0, 0, 0, 0, 128)
+    Loop
+  XDeath:
+	TNT1 A 0 A_GivetoTarget("FiniteHealth200", random(1,4))
+	TNT1 A 0 A_PlaySound("ClericCStaffHitThing", 5)
+  Crash:	
+  Death:
+    TNT1 A 0 A_Explode(200, 200, 0)
+    TNT1 A 1 A_SpawnItemEx("BloodScepterBallDeath", 0, 0, 0, 0, 0, 0, 0, 128)
+    Stop
+  }
+}
+
+Actor BloodScepterBallCoop : BloodScepterBall { +THRUSPECIES +DONTHARMSPECIES +DONTHARMCLASS +MTHRUSPECIES Species "Player" }
+
+Actor BloodScepterBallDeath
+{
+  Radius 1
+  Height 1
+  +NoGravity
+  +NoClip
+  RenderStyle Translucent
+  Alpha 0.8
+  Scale 0.50
+  States
+  {
+  Spawn:
+    BSBL GHIJKL 3 Bright
+  Fade:
+    BSBL L 2 Bright A_FadeOut(0.05)
+    Loop
+  }
+}

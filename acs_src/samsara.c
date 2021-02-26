@@ -1850,10 +1850,11 @@ Script "Samsara_Expander" (int use)
 
 str rottdropstrings[4] = {"DropTaradino","DropThi","DropLorelli","DropDoug"};
 str hexendropstrings[2] = {"DropFighter","DropMage"};
+str hexenmagedropstrings[2] = {"DropFighter","DropCleric"};
 str eradicatordropstrings[3] = {"DropDan","DropKamechak","DropMarine"};
 str ipogdropstrings[4] = {"DropCyborg","DropLizard","DropSpecimen","DropDominatrix"};
 
-Script 2999 (int class)
+Script 2999 (int class, int mode)
 {
 	int resultcounter = 0;	
 	int maxallies = 2;
@@ -1889,9 +1890,18 @@ Script 2999 (int class)
 					SetActorState(0,"Death",TRUE);
 					terminate;
 				}
-				SetActorState(0,hexendropstrings[resultcounter],TRUE);
-				b=0;
-				resultcounter++;
+				if(mode == 1)
+				{
+					SetActorState(0,hexenmagedropstrings[resultcounter],TRUE);
+					b=0;
+					resultcounter++;
+				}	
+				else
+				{
+					SetActorState(0,hexendropstrings[resultcounter],TRUE);
+					b=0;
+					resultcounter++;
+				}	
 			}
 		}
 		break;

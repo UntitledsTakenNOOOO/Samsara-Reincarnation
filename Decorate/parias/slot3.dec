@@ -1,4 +1,4 @@
-actor "Timon's Axe" : FWeapAxe
+actor "Timon's Axe" : Weapon // FWeapAxe
 {
     Weapon.SelectionOrder 1500
     Weapon.SlotNumber 3
@@ -12,7 +12,6 @@ actor "Timon's Axe" : FWeapAxe
     Inventory.PickupSound "hexen/weaponget"
     Obituary "$SAMSARA_HEXEN_OB_SLOT3"
 	Inventory.RestrictedTo "HexenPlayer"
-    -WEAPON.AXEBLOOD
     +WEAPON.AMMO_OPTIONAL
     +WEAPON.MELEEWEAPON
     +INVENTORY.UNDROPPABLE
@@ -24,34 +23,76 @@ actor "Timon's Axe" : FWeapAxe
         Stop
 
       Select:
-        FAXE A 1 A_FAxeCheckUp
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "SelectMage")
+        FAXE A 1 A_JumpIfInventory("Clip", 3, "SelectGlow")
         Loop
+		
+	 SelectMage:
+		CONF AAAABBBBCCCC 1 A_Raise
+		Loop
+	DeselectMage:
+		CONF AAAABBBBCCCC 1 A_Lower
+		Loop			
 
       Deselect:
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "DeselectMage")
         FAXE A 1 A_Lower
         Loop
+		
 
       Ready:
-        FAXE A 1 A_FAxeCheckReady
-        Loop
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "ReadyMage")
+		FAXE A 0 A_JumpIfInventory ("Clip", 3, "ReadyGlow")
+		FAXE A 1 A_WeaponReady
+		loop
+		
+	 /* ReadyMage:
+		CSIH A 1 A_WeaponReady
+		Goto Ready	*/
+		
+	  ReadyMage:
+		CONF AAAABBBBCCCC 1 A_WeaponReady
+		Goto Ready		
 
       SelectGlow:
-        FAXE L 1 A_FAxeCheckUpG
-        Loop
+		FAXE L 0 A_JumpIfNoAmmo ("Select")
+		FAXE L 1 A_Raise
+		FAXE L 0 A_JumpIfNoAmmo ("Select")
+		FAXE L 1 A_Raise
+		FAXE L 0 A_JumpIfNoAmmo ("Select")
+		FAXE L 1 A_Raise
+		FAXE M 0 A_JumpIfNoAmmo ("Select")
+		FAXE M 1 A_Raise
+		FAXE M 0 A_JumpIfNoAmmo ("Select")
+		FAXE M 1 A_Raise
+		FAXE M 0 A_JumpIfNoAmmo ("Select")
+		FAXE M 1 A_Raise
+		loop
 
       DeselectGlow:
         FAXE L 1 A_Lower
         Loop
 
       ReadyGlow:
-        FAXE LLL 1 BRIGHT A_FAxeCheckReadyG
-        FAXE MMM 1 BRIGHT A_FAxeCheckReadyG
-        Loop
+		FAXE L 1 A_WeaponReady
+		FAXE L 0 A_JumpIfNoAmmo ("Ready")
+		FAXE L 1 A_WeaponReady
+		FAXE L 0 A_JumpIfNoAmmo ("Ready")
+		FAXE L 1 A_WeaponReady
+		FAXE L 0 A_JumpIfNoAmmo ("Ready")
+		FAXE M 1 A_WeaponReady
+		FAXE M 0 A_JumpIfNoAmmo ("Ready")
+		FAXE M 1 A_WeaponReady
+		FAXE M 0 A_JumpIfNoAmmo ("Ready")
+		FAXE M 1 A_WeaponReady
+		FAXE M 0 A_JumpIfNoAmmo ("Ready")
+		loop
 
       Fire:
+		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "FireMage")
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"SPFire")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"SPFire")
-        FAXE B 4 Offset (15, 32) A_JumpIfInventory("Clip",1,"FireGlow")//A_FAxeCheckAtk
+        FAXE B 4 Offset (15, 32) A_JumpIfInventory("Clip",3,"FireGlow")//A_FAxeCheckAtk
         FAXE C 3 Offset (15, 32)
         FAXE D 2 Offset (15, 32)
         FAXE D 1 Offset (-5, 70) A_CustomPunch(random(40,62),1,1,"AxePuff2",144)//A_FAxeAttack - Deals 40-62 damage
@@ -67,6 +108,40 @@ actor "Timon's Axe" : FWeapAxe
         FAXE A 1 Offset (0, 36)
         FAXE A 1
         Goto Ready
+		
+	  FireMage:
+		CONF D 3
+		CONF E 3
+		CONF F 3 A_JumpIfInventory("Clip", 6, 1)
+		Goto FireMage+14
+		CONF G 5
+		CONF H 3 A_PlayWeaponSound("FireDemonAttack")
+		CONF H 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFireMage")
+		CONF H 0 A_FireCustomMissile("MWeapFire_Missile", 0, false ,-4, 8, 0) // This was removed for damage reasons.
+		CONF H 0 A_FireCustomMissile("MWeapFire_Missile", 3, false ,-4, 8,-1) // TODO: make these tighter to compensate(?)
+		CONF H 0 A_FireCustomMissile("MWeapFire_Missile", 0, false ,-4, 8, -3)
+		CONF H 0 A_FireCustomMissile("MWeapFire_Missile",-3, false ,-4, 8, -1)
+		CONF H 0 A_FireCustomMissile("MWeapFire_Missile", 1, false ,-4, 8, 2)
+		CONF H 0 A_FireCustomMissile("MWeapFire_Missile",-1, false,-4, 8, 2)
+		CONF H 0 A_TakeInventory("Clip", 6, TIF_NOTAKEINFINITE)
+		CONF F 3
+		CONF E 3
+		CONF D 3
+		CONF A 2 A_ReFire("FireMage")
+		Goto Ready				
+
+	  CoopFireMage:
+		CONF H 0 A_FireCustomMissile("MWeapFire_MissileCoop", 0, false ,-4, 8, 0)
+		CONF H 0 A_FireCustomMissile("MWeapFire_MissileCoop", 3, false ,-4, 8,-1) // TODO: make these tighter to compensate(?)
+		CONF H 0 A_FireCustomMissile("MWeapFire_MissileCoop", 0, false ,-4, 8, -3)
+		CONF H 0 A_FireCustomMissile("MWeapFire_MissileCoop",-3, false ,-4, 8, -1)
+		CONF H 0 A_FireCustomMissile("MWeapFire_MissileCoop", 1, false ,-4, 8, 2)
+		CONF H 0 A_FireCustomMissile("MWeapFire_MissileCoop",-1, TRUE,-4, 8, 2)
+		CONF F 3
+		CONF E 3
+		CONF D 3
+		CONF A 2 A_ReFire("FireMage")
+		Goto Ready	
 
       FireGlow:
         FAXE N 4 BRIGHT Offset (15, 32)
@@ -86,10 +161,10 @@ actor "Timon's Axe" : FWeapAxe
         Goto ReadyGlow
 
       SPFire:
-        FAXE B 4 Offset (15, 32) A_JumpIfInventory("Clip",1,"SPFireGlow")//A_FAxeCheckAtk
+        FAXE B 4 Offset (15, 32) A_JumpIfInventory("Clip",3,"SPFireGlow")//A_FAxeCheckAtk
         FAXE C 3 Offset (15, 32)
         FAXE D 2 Offset (15, 32)
-        FAXE D 1 Offset (-5, 70) A_FAxeAttack//A_CustomPunch(random(40,62),1,1,"AxePuff2",144)//
+        FAXE D 1 Offset (-5, 70) A_CustomPunch(random(40,62),1,1,"AxePuff2",144)//
         TNT1 A 0 A_CustomPunch(2,0,0,"BlankPuff4",144)
         TNT1 A 0 A_CustomPunch(3,0,0,"BlankPuff4",84)//A_Saw("silence", "silence", 4, "BlankPuff")
         FAXE D 2 Offset (-25, 90)
@@ -109,7 +184,7 @@ actor "Timon's Axe" : FWeapAxe
         FAXE N 4 BRIGHT Offset (15, 32)
         FAXE O 3 BRIGHT Offset (15, 32)
         FAXE P 2 BRIGHT Offset (15, 32)
-        FAXE P 1 BRIGHT Offset (-5, 70) A_FAxeAttack//A_CustomPunch(random(80,124),1,1,"AxePuffGlow2",144)//A_FAxeAttack
+        FAXE P 1 BRIGHT Offset (-5, 70) A_CustomPunch(random(80,124),1,1,"AxePuffGlow2",144)//A_FAxeAttack
         TNT1 A 0 A_CustomPunch(3,0,0,"BlankPuff4",144)
         TNT1 AA 0 A_CustomPunch(5,0,0,"BlankPuff4",84)//A_Saw("silence", "silence", 6, "BlankPuff")
         FAXE P 2 BRIGHT Offset (-25, 90)
@@ -156,3 +231,14 @@ actor BlankPuff4 : BlankPuff
 {
     DamageType "TimonsAxe"
 }
+
+ACTOR MWeapFire_Missile : FireBall {
+	Speed 32
+	DamageType "Fire"
+	Damage 6
+	Projectile
+	DeathSound "ClericFlameCircle"
+	Obituary "%k toasted %o with the Fire Blast!"
+}
+
+Actor MWeapFire_MissileCoop : MWeapFire_Missile { Species "Player" +THRUSPECIES }
