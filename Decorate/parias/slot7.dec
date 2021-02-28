@@ -7,8 +7,10 @@ actor Wraithverge : CWeapWraithverge
 	+WEAPON.AMMO_OPTIONAL
 	+WEAPON.ALT_AMMO_OPTIONAL
     +INVENTORY.UNDROPPABLE
-    Weapon.AmmoUse1 20
-    Weapon.AmmoUse2 20
+    //Weapon.AmmoUse1 20
+    //Weapon.AmmoUse2 20
+	Weapon.AmmoUse1 0
+    Weapon.AmmoUse2 0
     Weapon.AmmoGive1 25
     Weapon.AmmoGive2 25
     Weapon.KickBack 150
@@ -24,36 +26,86 @@ actor Wraithverge : CWeapWraithverge
       Spawn:
         WWRT A -1
         Stop
-        
+
       Ready:
-		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "ReadyMage")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "ReadyFighter")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "ReadyMage")
         CHLY A 1 A_WeaponReady
         Loop
 		
-    ReadyMage:
+	  ReadyMage:
         MSTF AAAAAABBBBBBCCCCCCDDDDDDEEEEEEFFFFF 1 A_WeaponReady
-        Goto Ready		
+        Goto Ready	
+		
+	  ReadyFighter:
+		TNT1 A 0 A_JumpIfInventory("Clip",14,1)
+		Goto ReadyFighterNormal
+		TNT1 A 0 A_JumpIfInventory("Cell",14,1)
+		Goto ReadyFighterNormal
+		H102 AAAABBBBCCCC 1 Bright A_WeaponReady
+		Goto Ready
+		
+	  ReadyFighterNormal:
+		H102 J 1 A_WeaponReady
+		Goto Ready
         
       Select:
-		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "SelectMage")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "SelectFighter")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "SelectMage")
         CHLY A 1 A_Raise
         Loop
+		
+	  SelectMage:
+        MSTF A 1 A_Raise
+        Loop
+	
+	  SelectFighter:
+		TNT1 A 0 A_JumpIfInventory("Clip",14,1)
+		Goto SelectFighterNormal
+		TNT1 A 0 A_JumpIfInventory("Cell",14,1)
+		Goto SelectFighterNormal
+		H102 A 1 Bright A_Raise
+		Loop
+		
+	  SelectFighterNormal:
+		TNT1 A 0 A_JumpIfInventory("Clip",14,1)
+		Goto SelectFighterNormal+2
+		TNT1 A 0 A_JumpIfInventory("Cell",14,"SelectFighter")
+		H102 J 1 Bright A_Raise
+		Loop
         
       Deselect:
-		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "DeselectMage")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "DeselectFighter")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "DeselectMage")
         CHLY A 1 A_Lower
         Loop
 		
-    SelectMage:
-        MSTF A 1 A_Raise
-        Loop
-		
-    DeselectMage:
+      DeselectMage:
         MSTF A 1 A_Lower
-        Loop		
+        Loop	
+		
+	  DeselectFighter:
+	    TNT1 A 0 A_JumpIfInventory("Clip",14,1)
+		Goto DeselectFighterNormal
+		TNT1 A 0 A_JumpIfInventory("Cell",14,1)
+		Goto DeselectFighterNormal
+		H102 A 1 Bright A_Lower
+		Loop
+		
+	  DeselectFighterNormal:
+		TNT1 A 0 A_JumpIfInventory("Clip",14,1)
+		Goto DeselectFighterNormal+2
+		TNT1 A 0 A_JumpIfInventory("Cell",14,"DeselectFighter")
+		H102 J 1 Bright A_Lower
+		Loop
         
       Fire:
-		TNT1 A 0 A_JumpIfInventory("DaedolonMode", 1, "FireMage")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "FireFighter")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "FireMage")
+		TNT1 A 0 A_JumpIfInventory("Clip", 25, 1)
+		Goto SwitchWeapon
+		TNT1 A 0 A_JumpIfInventory("Cell", 25, 1)
+		Goto SwitchWeapon
         CHLY AB 1 bright offset(0, 40)
         CHLY CD 2 bright offset(0, 43)
         CHLY E 2 bright offset(0, 45)
@@ -61,20 +113,22 @@ actor Wraithverge : CWeapWraithverge
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
 		TNT1 A 0 A_SetBlend("4F 4F 4F",0.75,1)
 		TNT1 A 0 A_PlayWeaponSound("HolySymbolFire")
-		TNT1 A 0 A_FireCustomMissile("HolySpiritDM")
+		TNT1 A 0 A_FireCustomMissile("HolySpiritDM",0,0)
 		TNT1 A 0 A_FireCustomMissile("HolySpiritDM2",0,0)
 		TNT1 A 0 A_FireCustomMissile("HolySpiritDM3",0,0)
 		TNT1 A 0 A_FireCustomMissile("HolySpiritDM4",0,0)
+		TNT1 A 0 A_TakeInventory("Clip", 25, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_TakeInventory("Cell", 25, TIF_NOTAKEINFINITE)
         CHLY FFFFFF 1 bright offset(0, 48) A_SetBlend("4F 4F 4F",0.6,1)
         CHLY GG 2 bright offset(0, 40) A_SetBlend("4F 4F 4F",0.55,6) //A_CHolyPalette
         CHLY G 2 offset(0, 36) //A_CHolyPalette
         goto FireEnd
 		
-    FireMage:
+      FireMage:
 		MSTF G 0 A_JumpIfInventory("Clip", 15, 1)
-		Goto Ready
+		Goto SwitchWeapon
 		MSTF G 0 A_JumpIfInventory("Cell", 15, 1)
-		Goto Ready
+		Goto SwitchWeapon
         MSTF G 4 Offset(0, 40)
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFireMage")
         TNT1 A 0 A_FireCustomMissile("MageStaffFX3",-3,0,0,8)
@@ -120,6 +174,79 @@ actor Wraithverge : CWeapWraithverge
         CHLY A 20
         CHLY A 5 A_Refire
         Goto Ready
+		
+	  FireFighter:
+		H102 D 0 A_JumpIfInventory("Clip", 14, 1)
+		Goto FighterSwing
+		H102 D 0 A_JumpIfInventory("Cell", 14, 1)
+		Goto FighterSwing
+		H102 D 0 A_JumpIfCloser(128, "FighterSwingGlow")
+		H102 DE 3 Bright Offset(5, 36)
+		H102 F 2 Bright Offset(5, 36)
+		H102 F 0 A_PlaySound("FighterSwordFire")  
+		H102 F 0 A_FireCustomMissile("FSwordMissile3",11.5,0,0,-10)
+		H102 F 0 A_FireCustomMissile("FSwordMissile3",5.625,0,0,-5)
+		H102 F 0 A_FireCustomMissile("FSwordMissile3",0,0,0,0)
+		H102 F 0 A_FireCustomMissile("FSwordMissile3",-5.625,0,0,5)
+		H102 F 0 A_FireCustomMissile("FSwordMissile3",-11.5,0,0,10)
+		H102 F 0 A_TakeInventory("Clip", 14, TIF_NOTAKEINFINITE)
+		H102 F 0 A_TakeInventory("Cell", 14, TIF_NOTAKEINFINITE)
+		H102 G 3 Bright Offset(5, 36) //A_FSwordAttack
+		H102 H 2 Bright Offset(5, 36)
+		H102 I 2 Bright Offset(5, 36)
+		H102 I 10 Bright Offset(5, 150)
+		H102 A 1 Bright Offset(5, 60)
+		H102 B 1 Bright Offset(5, 55)
+		H102 C 1 Bright Offset(5, 50)
+		H102 A 1 Bright Offset(5, 45)
+		H102 B 1 Bright Offset(5, 40)
+		Goto Ready
+		
+	  FighterSwingGlow:
+		H102 DE 3 Bright Offset(5, 36)
+		H102 F 2 Bright Offset(5, 36)
+		H102 F 0 A_PlaySound("FighterSwordFire")  
+		H102 F 0 A_FireBullets(-10,-10,-1,random(120,200),"FSwordPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H102 F 0 A_FireBullets(-5,-5,-1,random(120,200),"FSwordPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H102 F 0 A_FireBullets(0,0,-1,random(120,200),"FSwordPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H102 F 0 A_FireBullets(5,5,-1,random(120,200),"FSwordPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H102 F 0 A_FireBullets(10,10,-1,random(120,200),"FSwordPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H102 F 0 A_TakeInventory("Clip", 14, TIF_NOTAKEINFINITE)
+		H102 F 0 A_TakeInventory("Cell", 14, TIF_NOTAKEINFINITE)
+		H102 G 3 Bright Offset(5, 36)
+		H102 H 2 Bright Offset(5, 36)
+		H102 I 2 Bright Offset(5, 36)
+		H102 I 10 Bright Offset(5, 150)
+		H102 A 1 Bright Offset(5, 60)
+		H102 B 1 Bright Offset(5, 55)
+		H102 C 1 Bright Offset(5, 50)
+		H102 A 1 Bright Offset(5, 45)
+		H102 B 1 Bright Offset(5, 40)
+		Goto Ready
+		
+	  FighterSwing:
+		H102 KL 3 Offset(5, 36)
+		H102 M 2 Offset(5, 36)
+		H102 N 0 A_FireBullets(-10,-10,-1,random(30,50),"AxePuff2",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H102 N 0 A_FireBullets(-5,-5,-1,random(30,50),"AxePuff2",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H102 N 0 A_FireBullets(0,0,-1,random(30,50),"AxePuff2",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H102 N 0 A_FireBullets(5,5,-1,random(30,50),"AxePuff2",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H102 N 0 A_FireBullets(10,10,-1,random(30,50),"AxePuff2",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H102 N 3 Offset(5, 36) 
+		H102 O 2 Offset(5, 36)
+		TNT1 A 2 Offset(5, 36)
+		TNT1 A 10 Offset(5, 150)
+		H102 J 1 Offset(5, 60)
+		H102 J 1  Offset(5, 55)
+		H102 J 1 Offset(5, 50)
+		H102 J 1 Offset(5, 45)
+		H102 J 1 Offset(5, 40)
+		Goto Ready
+		
+	  SwitchWeapon:
+		TNT1 A 0 A_JumpIf(CallACS("Hexen_SwitchPriority")==1,1)
+		TNT1 A 0
+		Goto Ready
     }
 }
 
@@ -377,7 +504,7 @@ actor MageStaffFX3
 {
     Height 2
     Radius 2
-    Damage 10 // was 4. buffed because BloodScourge is a little underwhelming
+    Damage 16 // was 4. buffed because BloodScourge is a little underwhelming
     Speed 17
 	+SEEKERMISSILE
 	+SCREENSEEKER
@@ -394,7 +521,7 @@ actor MageStaffFX3
         Loop
     Death:
         MSP2 E 4 Bright A_SetTranslucent(1, 1)
-        MSP2 F 5 Bright A_Explode(80, 192, 0)
+        MSP2 F 5 Bright A_Explode(160, 192, 0) // was 80 damage
         MSP2 GH 5 Bright
         MSP2 I 4 Bright
         Stop
@@ -402,3 +529,44 @@ actor MageStaffFX3
 }
 
 actor MageStaffFX3Coop : MageStaffFX3 { Species "Player" +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES }
+
+actor FSwordMissile3 : FSwordMissile
+{
+	Damage 24 // was 8, now 24
+    States
+    {
+      Death:
+        FSFX D 4 Bright
+        FSFX E 3 Bright A_FSwordFlames
+        FSFX F 4 Bright A_Explode(96, 128, 0) // did 64 damage, now does 96
+        FSFX G 3 Bright
+        FSFX H 4 Bright
+        FSFX I 3 Bright
+        FSFX J 4 Bright
+        FSFX KLM 3 Bright
+        Stop
+    }
+}
+
+actor FSwordPuff : AxePuff2
+{
+	AttackSound "FighterSwordExplode"
+	SeeSound "FighterAxeHitThing"
+    States
+    {
+	  Spawn:
+      Melee:
+	  Crash:
+        FSFX D 4 Bright
+		FXFX E 0 A_Jump(256,1,2,3,4)
+		FXFX EEEE 0 A_SpawnItemEx("FSwordFlame",random(-8,8),random(-8,8),random(-4,4))
+        FSFX E 3 Bright
+        FSFX F 4 Bright
+        FSFX G 3 Bright
+        FSFX H 4 Bright
+        FSFX I 3 Bright
+        FSFX J 4 Bright
+        FSFX KLM 3 Bright
+        Stop
+    }
+}

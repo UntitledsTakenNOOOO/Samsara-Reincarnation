@@ -380,6 +380,7 @@ script SAMSARA_SPAWN (int respawning)
     int wsteSide;
     int armor, oarmor, type, otype;
     int i;
+	int hexmode;
 	
 	TakeInventory("HalfLifeOpposingForceSet", 0x7FFFFFFF);
 	//ACS_NamedExecuteAlways("SAMSARA_RESETPLAYER_COOP",0,0,0,0);
@@ -446,7 +447,14 @@ script SAMSARA_SPAWN (int respawning)
         break;
 
 	  case CLASS_RR:
-        if (!respawning) { GiveInventory("LeonardReady", 1); }
+        if (!respawning) { 
+			GiveInventory("LeonardReady", 1); 
+			if(CheckInventory("BubbaGivesYouMotorcycle"))
+			{
+				TakeInventory("BubbaGivesYouMotorcycle",1);
+				SpawnSpotFacingForced("LeonardMotorcycle",0,0);
+			}
+		}
         break;
 
       case CLASS_DOOM:
@@ -529,8 +537,18 @@ script SAMSARA_SPAWN (int respawning)
 		if (GetUserCvar(pln,"sams_cl_dkclab") && CheckInventory("DukeClass")) { GiveInventory("DukeLabToken", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); }
         else { TakeInventory("DukeLabToken", 0x7FFFFFFF); }
 		
-		if (GetUserCvar(pln,"sams_cl_hexmage") && CheckInventory("HexenClass")) { GiveInventory("DaedolonMode", 1); ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); TakeInventory("Mace of Contrition", 0x7FFFFFFF); }
-        else { TakeInventory("DaedolonMode", 0x7FFFFFFF); GiveInventory("Mace of Contrition", 1); }		
+		hexmode = GetUserCvar(pln,"sams_cl_hexclass");
+		if (hexmode > 0 && CheckInventory("HexenClass")) 
+		{ 
+			TakeInventory("HexenClassMode", 2); 
+			GiveInventory("HexenClassMode", hexmode); 
+			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, hexmode, pln); 
+			if(hexmode == 1)
+				TakeInventory("Mace of Contrition", 0x7FFFFFFF); 
+			else
+				GiveInventory("Mace of Contrition", 1);
+		}
+        else { TakeInventory("HexenClassMode", 0x7FFFFFFF); GiveInventory("Mace of Contrition", 1); }		
 		
 		if (GetUserCvar(pln,"sams_cl_shephardmode") && CheckInventory("HalfLifeClass")) 
 		{ 

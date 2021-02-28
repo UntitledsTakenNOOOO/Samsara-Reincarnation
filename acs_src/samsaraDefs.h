@@ -213,13 +213,13 @@ int ClassItems[CLASSCOUNT] =
 	"TotenkopfClass", //+Added	
 };
 
-int PickupStates[CLASSCOUNT][12] = 
+int PickupStates[CLASSCOUNT][16] = 
 {
     {"Doomguy", "DoomFull",     "DoomEmpty",        "DoomSpecial",      "DoomPunchdrunk",      "DoomPDFull",       "DoomPDEmpty",      "DoomPDSpecial",		"Doom64",		"Doom64Full",		"Doom64Empty",		"Doom64Special"},
     {"Chexguy", "ChexFull",     "ChexEmpty",        "ChexSpecial",      "ChexPunchdrunk",      "ChexPDFull",       "ChexPDEmpty",      "ChexPDSpecial",		"",		"",		"",		""},
     {"Heretic", "HereticFull",  "HereticEmpty",     "HereticSpecial",   "HereticPunchdrunk",   "HereticPDFull",    "HereticPDEmpty",   "HereticPDSpecial",		"",		"",		"",		""},
     {"Wolfguy", "WolfFull",     "WolfEmpty",        "WolfSpecial",      "WolfPunchdrunk",      "WolfPDFull",       "WolfPDEmpty",      "WolfPDSpecial",		"LostWolfGuy",		"LostWolfFull",		"LostWolfEmpty",		"LostWolfSpecial"},
-    {"Hexen",   "HexenFull",    "HexenEmpty",       "HexenSpecial",     "HexenPunchdrunk",     "HexenPDFull",      "HexenPDEmpty",     "HexenPDSpecial",		"",		"",		"",		""},
+    {"Hexen",   "HexenFull",    "HexenEmpty",       "HexenSpecial",     "HexenPunchdrunk",     "HexenPDFull",      "HexenPDEmpty",     "HexenPDSpecial",		"HexenMage",		"HexenMageFull",		"HexenMageEmpty",		"HexenMageSpecial", "HexenFighter",	"HexenFighterFull",	"HexenFighterEmpty", "HexenFighterSpecial" },
     {"Dukeguy", "DukeFull",     "DukeEmpty",        "DukeSpecial",      "DukePunchdrunk",      "DukePDFull",       "DukePDEmpty",      "DukePDSpecial",		"BeachDukeGuy",		"BeachDukeFull",		"BeachDukeEmpty",		"BeachDukeSpecial"},
     {"Marathon","MarathonFull", "MarathonEmpty",    "MarathonSpecial",  "MarathonPunchdrunk",  "MarathonPDFull",   "MarathonPDEmpty",  "MarathonPDSpecial",		"",		"",		"",		""},
     {"Quake",   "QuakeFull",    "QuakeEmpty",       "QuakeSpecial",     "QuakePunchdrunk",     "QuakePDFull",      "QuakePDEmpty",     "QuakePDSpecial",		"",		"",		"",		""},   

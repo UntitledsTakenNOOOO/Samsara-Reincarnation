@@ -1851,6 +1851,7 @@ Script "Samsara_Expander" (int use)
 str rottdropstrings[4] = {"DropTaradino","DropThi","DropLorelli","DropDoug"};
 str hexendropstrings[2] = {"DropFighter","DropMage"};
 str hexenmagedropstrings[2] = {"DropFighter","DropCleric"};
+str hexenfighterdropstrings[2] = {"DropCleric","DropMage"};
 str eradicatordropstrings[3] = {"DropDan","DropKamechak","DropMarine"};
 str ipogdropstrings[4] = {"DropCyborg","DropLizard","DropSpecimen","DropDominatrix"};
 
@@ -1889,6 +1890,12 @@ Script 2999 (int class, int mode)
 				{
 					SetActorState(0,"Death",TRUE);
 					terminate;
+				}
+				if(mode == 2)
+				{
+					SetActorState(0,hexenfighterdropstrings[resultcounter],TRUE);
+					b=0;
+					resultcounter++;
 				}
 				if(mode == 1)
 				{
@@ -2372,4 +2379,18 @@ Script "DisruptorPSICooldown" (void)
         TakeInventory("DisruptorPSICooldown",1);
         restart;
     }
+}
+
+str HexenWeapons[8] = { "Hammer of Retribution", "Firestorm", "Timon's Axe", "Serpent Staff", "Frost Shards", "Wraithverge", "Sapphire Wand", "Mace of Contrition" };
+
+Script "Hexen_SwitchPriority" (void)
+{
+	for(int a = 0; a < 8; a++)
+	{
+		if(CheckInventory(HexenWeapons[a]))
+		{
+			SetWeapon(HexenWeapons[a]);
+			break;
+		}
+	}
 }
