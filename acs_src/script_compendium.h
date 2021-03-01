@@ -1,11 +1,11 @@
 // Label, index, damage, defense, range, attack speed, difficulty, character symbol, small character, game logo, large character, big font, big font color, small font, small font color, background top wall, background bottom wall, background side banner right, background logo, background character symbol, background right banner, selected font color
-str ClassInfo[CLASSCOUNT][2][27] = 
+str ClassInfo[CLASSCOUNT][MAXMODES][28] = 
 { 
-	{{"Doomguy", 1, "*****", "***", "***", "**", "*", "Damage", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01", "", "", "", "DarkGray", "White" }},
+	{{"Doomguy", 1, "*****", "***", "***", "**", "*", "Damage", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01", "", "", "", "DarkGray", "White" }, {"Doomguy (N64)", 1, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White", "Jingle bells graf smells" }},
 	{{"Chex Warrior", 2, "***", "*****", "***", "***", "*", "Defense", "TIPSYM02", "TIPHIL02", "TIPCHEX", "TPLGCHEX", "TPCHCHEX", "SMALLFONT", "Green", "SMALLFONT", "Green", "CMPBGCH1", "CMPBGCH2", "CMPBGCH3", "", "TIPSYM02", "", "", "", "DarkGray", "White" }},
 	{{"Corvus", 3, "***", "****", "**", "****", "****", "Utility", "TIPSYM03", "TIPHIL03", "TIPCORV", "TPLGCORV", "TPCHCORV", "CMPSHERE", "White", "CMPSHERE", "White", "CMPBGHE1", "CMPBGHE2", "CMPBGHE3", "CMPBGHE4", "TIPSYM03", "", "", "", "DarkGray", "White" }},
-	{{"Blazkowicz", 4, "***", "***", "****", "****", "*", "Survivalist", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWF1", "CMPBGWF2", "CMPBGWF3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" },{"Blazkowicz", 4, "***", "***", "****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWS1", "CMPBGWS2", "CMPBGWS3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
-	{{"Parias", 5, "*****", "****", "**", "****", "***", "Brawler", "TIPSYM05", "TIPHIL05", "TIPPARIA", "TPLGHEXN", "TPCHHEXN", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }},
+	{{"Blazkowicz", 4, "***", "***", "****", "****", "*", "Survivalist", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWF1", "CMPBGWF2", "CMPBGWF3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" },{"Blazkowicz", 4, "***", "***", "****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWS1", "CMPBGWS2", "CMPBGWS3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }, {"Blazkowicz", 4, "****", "***", "***", "*****", "***", "Plunderer", "TIPSYM29", "TIPHIL29", "TIPTKOPF", "TPLGTKPF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM29", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray", "Randy Pitchford laid an egg" }},
+	{{"Parias", 5, "*****", "****", "**", "****", "***", "Spellsword", "TIPSYM05", "TIPHIL05", "TIPPARIA", "TPLGHEXN", "TPCHHEXN", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }, {"Daedalon", 5, "*****", "****", "**", "****", "***", "Mage", "TIPSYM05", "TIPHIL05", "TIPHMAGE", "TPLGHEXN", "TPCHHEXM", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }, {"Baratus", 5, "*****", "****", "**", "****", "***", "Berserker", "TIPSYM05", "TIPHIL05", "TIPBARAT", "TPLGHEXN", "TPCHHEXF", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }},
 	{{"Duke Nukem", 6, "****", "*", "***", "***", "**", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5", "", "", "", "DarkGray", "White" },{"Duke Nukem", 6, "****", "*", "***", "***", "**", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5", "", "", "DarkGray", "White" }},
 	{{"Security Officer", 7, "***", "***", "**", "*****", "*****", "Supression", "TIPSYM07", "TIPHIL07", "TIPSECOF", "TPLGMARA", "TPCHMARA", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGMA1", "CMPBGMA2", "CMPBGMA3", "CMPBGMA4", "CMPBGMA5", "", "", "", "DarkGray", "White" }},
 	{{"Ranger", 8, "***", "**", "****", "****", "***", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08", "", "", "", "QuakeCompendiumDarkGray", "QuakeCompendiumGray" }},
@@ -21,7 +21,7 @@ str ClassInfo[CLASSCOUNT][2][27] =
 	{{"Mooman", 17, "***", "***", "****", "****", "***", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8", "DarkGray", "White" }},
 	{{"Jack Curtis", 18, "*****", "***", "***", "****", "**", "Psychic", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5", "", "", "", "DarkGray", "White" }},
 	{{"Grondoval", 19, "****", "*****", "*", "**", "****", "Knight", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5", "", "", "", "DarkGray", "White" }},
-	{{"Gordon Freeman", 20, "*****", "**", "****", "*", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "", "DarkGray", "White" },{"Adrian Shephard", 21, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
+	{{"Gordon Freeman", 20, "*****", "**", "****", "*", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "", "DarkGray", "White" },{"Adrian Shephard", 20, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
 	{{"Lo Wang", 21, "*****", "*", "****", "****", "**", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "SMALLFONT", "Red", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5", "", "", "", "DarkGray", "White" }},
 	{{"Cybermage", 22, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Green", "SMALLFONT", "Yellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5", "", "", "", "DarkGray", "White" }},
 	{{"Jon", 23, "****", "***", "***", "**", "***", "Veteran", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8", "DarkGray", "White" }},
@@ -29,7 +29,7 @@ str ClassInfo[CLASSCOUNT][2][27] =
 	{{"Bitterman", 25, "***", "***", "****", "**", "***", "Armory", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "CMPSQUA2", "Quake2CompendiumWhite", "CMPSQUA2", "Quake2CompendiumGreen", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26", "", "", "Quake2CompendiumGray", "Quake2CompendiumWhite" }},
 	{{"Demoness", 26, "***", "**", "**", "***", "****", "Evolution", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "CMPSHEX2", "Gold", "CMPSHEX2", "Red", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25", "", "", "", "DarkGray", "White" }},
 	{{"James Bond", 27, "***", "*", "***", "****", "****", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "GEFONTS", "Gold", "GEFONTS", "White", "CMPBGGE1", "CMPBGGE2", "", "CMPBGGE4", "CMPBGGE5", "", "", "", "DarkGray", "White" }},
-	{{"Blazkowicz", 28, "****", "***", "***", "*****", "***", "Plunderer", "TIPSYM29", "TIPHIL29", "TIPTKOPF", "TPLGTKPF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM29", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
+	//{{"Blazkowicz", 28, "****", "***", "***", "*****", "***", "Plunderer", "TIPSYM29", "TIPHIL29", "TIPTKOPF", "TPLGTKPF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM29", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
 };
 
 int ClassFontScales[CLASSCOUNT][2] = 
@@ -45,7 +45,7 @@ str CompendiumWheelRot[12] = { "CMPWHL01", "CMPWHL02", "CMPWHL03", "CMPWHL04", "
 
 str StatPages[3] = { "Summary", "Traits", "Changes" };
 str SelectionColors[2] = { "DarkGray", "white" };
-str HeroInformation[CLASSCOUNT][2][25][3] =
+str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 {
 	{
 		{
@@ -63,8 +63,15 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 			\n\n- There are not many other changes. In Samsara, the games meld to Doom II's gameplay, rather than vice-versa.", ""},
 		},
 		{
-			{ "", "", ""},
-		}
+			{ "Summary", "The demon slaying man. The resurrected myth. The reappearing icon. The reawakened legend. The hero returning. Doomguy has stood against untold legions throughout all 20 years of his one-man war on Hell, and here he returns in a new but familar form. He is a man that still needs no introduction, as his abilities have been proven and honed and harnessed time and time again--the rest of the heroes will have to work double to even match the bar Doomguy64 is still constantly raising.", ""},
+			
+			{ "Traits", "...And I Am Still Mighty: Doomguy64 holds the Super Shotgun in the game as well as the BFG9000, one of the strongest ultimate weapons giving him quite the firepower. It's very hard for most other classes to match or exceed the damage on those 2 in their own weapons tier.
+			\n\nTo Hell With Respect!...Again!: Doomguy64 has been recreated with gameplay similar to regular doom and matches 64 to a close extent. Playing with him is just like playing Doom 64, so show these newcomers who they better call granddaddy.
+			\n\nAss Kicking Console Power~!: Doomguy64 came from a console version of doom for the nintendo 64, along with it came some slight varations to the weapons, his chaingun is slightly faster but more inaccurate, his bfg is a tad slower, and his rockets have knockback, giving subtle differences from his original pc counterpart.
+			\n\nHellish Fantasy Redux: Doomguy64 Still uses a damage rolling system like in the origina doom 1 & 2.", ""},
+			
+			{ "Changes", "", ""},
+		},
 	},
 	{
 		{
@@ -134,7 +141,15 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 			\n\n- When upgraded, the knife does damage on every tic it's thrust in, reminiscent of other slot I weapons.
 			\n\n- The Spear of Destiny is now an actual weapon. Its behavior is entirely original, though its appearance is based on the Spear of Destiny boxart. A lot of Doom II levelsets practically require an ultimate weapon eventually.
 			\n\n- Drinking up gibs is at minimum 20 HP, rather than 10.", ""},
-		}
+		},
+		{
+			{ "Summary", "William \"B.J.\" Blazkowicz was the one that started it all, a secret agent that personally fought his way out of the horrifying Nazi prisons and personally slew Adolf Hitler, armed with nothing more than a pistol, a knife, and undying devotion to his country. Having gone up against an endless sea of Nazis, mystic beasts, undead monstrosities, and towering madmen, B.J. has seen it all and fought it all. If it's a threat to the world, he will put it down. Without questions, without hesitation, and without compromises.", ""},
+			
+			{ "Traits", "Call Apogee, Say 'Bullshit!': Poor B.J. was from an era where weapon design was much simpler. He has no Shotgun weapons, no Slot III weapon, and no weapons that use Ammo 2. Any Ammo 2 picked up is instead converted to Ammo 1.
+			\n\nHeroes Don't Quit: Being a POW in Nazi camps taught B.J. some survival techniques the hard way. When low on health, B.J. can drink up certain piles of gibs and blood for a boost. Restricted only to decorations, unfortunately--can't slaughter imps and drink off them.", ""},
+			
+			{ "Changes", "- Castle Totenkopf SDL uses a splash damage formula that falls quadratically instead of linearly like Doom does. As a result, explosive damage functions differently here than in the source.", ""},
+		},
 	},
 	{
 		{
@@ -160,7 +175,48 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 			\n\n- The Wraithverge is now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", ""},
 		},
 		{
-			{ "", "", ""},
+			{ "Summary", "A high cleric of the Church, second only to Traductus, Parias is both a man of faith and a man of action. His righteousness is rivalled only by his terrifying power, and he can swap at a moment's notice from praying for his enemies' souls to hacking their spine in twain. Being a student of both the arcane and the martial arts has made him a robust fighter that can swap from a physical to a mystical fighting capability whenever a situation calls for it, and makes him perhaps the most terrifying Hero in the Wheel of Samsara.", ""},
+			
+			{ "Traits", "Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
+			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Parias has Baratus' runspeed and HeXen's jump height.", ""},
+			
+			{ "Changes", "- The most obvious: Parias now has seven weapons instead of four.
+			\n\n- The Mace of Contrition no longer alerts monsters.
+			\n\n- The Firestorm's surrounding fireballs do more damage, having their A_Explode increased from radius 20/explosive damage 20 to 64/32, so as to match the power of the Plasma Rifle.
+			\n\n- The Hammer of Retribution forces its radius damage on enemies, so as to make up for its much slower speed with Rocket Launcher power.
+			\n\n- Timon's Axe and the Frost Shards have been given a little bit of an extra melee oomph, in order to emphasize his role as a close-range brawler.
+			\n\n- The Serpent Staff's poison bolts were reduced in damage from 5-40 to 4-16 per shot, so as to match Chaingun power.
+			\n\n- The heal of the Serpent Staff's melee has been increased and quickened, and can now heal for beyond 100 health, so as to give it an extra use.
+			\n\n- The Wraithverge takes 20 of each ammo now, rather than 17, to match the costliness of other ultimate weapons.
+			\n\n- The Wraithverge's rate of fire has been slightly decreased by adding a 20-tic hang time at the end, to match the slow rate of fire of other ultimate weapons.
+			\n\n- The Frost Shards' rate of fire has been slightly increased by reducing the after-shot frames from 15 tics to 11, to assist it in crowd-control.
+			\n\n- The Flechette no longer hurts allied players or the player, so as to reduce griefing.
+			\n\n- The Sapphire Wand's radius/height was reduced from 12/8 to 3/2, so as to help Parias in maps where he needs to shoot through the bars.
+			\n\n- Parias' mana 2 has a limit of 300 due to running off Cells, rather than 200.
+			\n\n- The Mystic Ambit Incant sprays armor shards as well as giving health, so as to additionally assist allies.
+			\n\n- The Wraithverge is now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", ""},
+		},
+		{
+			{ "Summary", "A high cleric of the Church, second only to Traductus, Parias is both a man of faith and a man of action. His righteousness is rivalled only by his terrifying power, and he can swap at a moment's notice from praying for his enemies' souls to hacking their spine in twain. Being a student of both the arcane and the martial arts has made him a robust fighter that can swap from a physical to a mystical fighting capability whenever a situation calls for it, and makes him perhaps the most terrifying Hero in the Wheel of Samsara.", ""},
+			
+			{ "Traits", "Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
+			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Parias has Baratus' runspeed and HeXen's jump height.", ""},
+			
+			{ "Changes", "- The most obvious: Parias now has seven weapons instead of four.
+			\n\n- The Mace of Contrition no longer alerts monsters.
+			\n\n- The Firestorm's surrounding fireballs do more damage, having their A_Explode increased from radius 20/explosive damage 20 to 64/32, so as to match the power of the Plasma Rifle.
+			\n\n- The Hammer of Retribution forces its radius damage on enemies, so as to make up for its much slower speed with Rocket Launcher power.
+			\n\n- Timon's Axe and the Frost Shards have been given a little bit of an extra melee oomph, in order to emphasize his role as a close-range brawler.
+			\n\n- The Serpent Staff's poison bolts were reduced in damage from 5-40 to 4-16 per shot, so as to match Chaingun power.
+			\n\n- The heal of the Serpent Staff's melee has been increased and quickened, and can now heal for beyond 100 health, so as to give it an extra use.
+			\n\n- The Wraithverge takes 20 of each ammo now, rather than 17, to match the costliness of other ultimate weapons.
+			\n\n- The Wraithverge's rate of fire has been slightly decreased by adding a 20-tic hang time at the end, to match the slow rate of fire of other ultimate weapons.
+			\n\n- The Frost Shards' rate of fire has been slightly increased by reducing the after-shot frames from 15 tics to 11, to assist it in crowd-control.
+			\n\n- The Flechette no longer hurts allied players or the player, so as to reduce griefing.
+			\n\n- The Sapphire Wand's radius/height was reduced from 12/8 to 3/2, so as to help Parias in maps where he needs to shoot through the bars.
+			\n\n- Parias' mana 2 has a limit of 300 due to running off Cells, rather than 200.
+			\n\n- The Mystic Ambit Incant sprays armor shards as well as giving health, so as to additionally assist allies.
+			\n\n- The Wraithverge is now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", ""},
 		}
 	},
 	{
@@ -489,6 +545,9 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 			\n\nSwamp gas my ass: Leonard doesn't have the intelligence to use medical equipment and thus relies on food to heal. Eating too much will make you gassy, and drinking too much will make you drunk.", ""},
 			
 			{ "Changes", "", ""},
+			
+			{ "Medikits", "When you pick up the Medikit, it will either:\n\nA) Give you pork rinds (instant healing)\n\nB) Give you a 6 pack of beer\n\nC) Give you 6 cow pies", "RRCMEDKT"},
+			{ "Soulspheres", "When you pick up the Soulsphere, it will either:\n\nA) Give you a dee-lishus goo goo cluster(instant healing)\n\nB) Give you a bottle of cheap ass whiskey...", "RRCSOULS"},
 		},
 		{
 			{ "", "", ""},
@@ -557,33 +616,38 @@ str HeroInformation[CLASSCOUNT][2][25][3] =
 			{ "", "", ""},
 		}
 	},
-	{
-		{
-			{ "Summary", "William \"B.J.\" Blazkowicz was the one that started it all, a secret agent that personally fought his way out of the horrifying Nazi prisons and personally slew Adolf Hitler, armed with nothing more than a pistol, a knife, and undying devotion to his country. Having gone up against an endless sea of Nazis, mystic beasts, undead monstrosities, and towering madmen, B.J. has seen it all and fought it all. If it's a threat to the world, he will put it down. Without questions, without hesitation, and without compromises.", ""},
-			
-			{ "Traits", "Call Apogee, Say 'Bullshit!': Poor B.J. was from an era where weapon design was much simpler. He has no Shotgun weapons, no Slot III weapon, and no weapons that use Ammo 2. Any Ammo 2 picked up is instead converted to Ammo 1.
-			\n\nHeroes Don't Quit: Being a POW in Nazi camps taught B.J. some survival techniques the hard way. When low on health, B.J. can drink up certain piles of gibs and blood for a boost. Restricted only to decorations, unfortunately--can't slaughter imps and drink off them.", ""},
-			
-			{ "Changes", "- Castle Totenkopf SDL uses a splash damage formula that falls quadratically instead of linearly like Doom does. As a result, explosive damage functions differently here than in the source.", ""},
-		},
-	},
 };
 
-//[CLASSCOUNT] is hero index, [2] is the modes, [20] is max slots, [5] is the amount of separate pieces of information
-str ClassWeaponInfo[CLASSCOUNT][2][20][5] = 
+//[CLASSCOUNT] is hero index, [MAXMODES] is the modes, [20] is max slots, [5] is the amount of separate pieces of information
+str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] = 
 {
-	{{
-		{ "Fist", "Your iron-clad knuckles are a little better than nothing", "", " Fist ", "f" },
-		{ "Pistol", "The Pistol is the only weapon you start out with. But you'll use anything in a pinch, no matter how pathetic it may feel.", "WPSTA0", " Pistol ", "p" },
-		{ "Chainsaw", "The Chainsaw cuts the baddies like standing timber, but you have to get close.", "WSAWA0", " Chainsaw ", "1" },
-		{ "Shotgun", "Shotguns deliver a heavy punch at close range and a generous pelting from a distance.", "WSHTA0", " Shotgun ", "2" },
-		{ "Super Shotgun", "Combat Shotguns are double-barreled, sawed-off killing sticks. These gats are the ultimate in pellet warfare. Beware, two barrels not only deliver more fire power, but take more time to reload.", "WSSGA0", "Super Shotgun", "3" },
-		{ "Chaingun", "Chainguns direct heavy firepower into your opponent, making him do the chaingun cha-cha.", "WCGNA0", " Chaingun ", "4" },
-		{ "Rocket Launcher", "Rocket Launchers deliver an explosive rocket that can turn several baddies inside-out.", "WDRLA0", "Rocket Launcher", "5" },
-		{ "Plasma Rifle", "Plasma Rifles shoot multiple rounds of plasma energy frying some demon butt!", "WPLSA0", "Plasma Rifle", "6" },
-		{ "B.F.G. 9000", "BFG 9000s are the prize of the military's arsenal. Great for clearing the room of those unwelcome guests. Shoot it and see for yourself.", "WBFGA0", "B.F.G. 9000", "7" },
-		{ "Berserk", "Berserk Packs heal you, plus act as a super-adrenaline rush, enormously boosting our muscle power. Since you're already a pretty meaty guy, this enhanced strength lets you tear ordinary dolts limb from limb, and you can even splatter those demons without too much trouble. However, you've got to use your Fist attack to get the benefit of the Berserk attack bonus. When you become Berserk, your screen will briefly turn red.", "DGBZA0", "DoomguyBerserker", "u" },
-	}},
+	{
+		{
+			{ "Fist", "Your iron-clad knuckles are a little better than nothing", "", " Fist ", "f" },
+			{ "Pistol", "The Pistol is the only weapon you start out with. But you'll use anything in a pinch, no matter how pathetic it may feel.", "WPSTA0", " Pistol ", "p" },
+			{ "Chainsaw", "The Chainsaw cuts the baddies like standing timber, but you have to get close.", "WSAWA0", " Chainsaw ", "1" },
+			{ "Shotgun", "Shotguns deliver a heavy punch at close range and a generous pelting from a distance.", "WSHTA0", " Shotgun ", "2" },
+			{ "Super Shotgun", "Combat Shotguns are double-barreled, sawed-off killing sticks. These gats are the ultimate in pellet warfare. Beware, two barrels not only deliver more fire power, but take more time to reload.", "WSSGA0", "Super Shotgun", "3" },
+			{ "Chaingun", "Chainguns direct heavy firepower into your opponent, making him do the chaingun cha-cha.", "WCGNA0", " Chaingun ", "4" },
+			{ "Rocket Launcher", "Rocket Launchers deliver an explosive rocket that can turn several baddies inside-out.", "WDRLA0", "Rocket Launcher", "5" },
+			{ "Plasma Rifle", "Plasma Rifles shoot multiple rounds of plasma energy frying some demon butt!", "WPLSA0", "Plasma Rifle", "6" },
+			{ "B.F.G. 9000", "BFG 9000s are the prize of the military's arsenal. Great for clearing the room of those unwelcome guests. Shoot it and see for yourself.", "WBFGA0", "B.F.G. 9000", "7" },
+			{ "Berserk", "Berserk Packs heal you, plus act as a super-adrenaline rush, enormously boosting our muscle power. Since you're already a pretty meaty guy, this enhanced strength lets you tear ordinary dolts limb from limb, and you can even splatter those demons without too much trouble. However, you've got to use your Fist attack to get the benefit of the Berserk attack bonus. When you become Berserk, your screen will briefly turn red.", "DGBZA0", "DoomguyBerserker", "u" },
+		},
+		{
+			{ "Fist", "Your iron-clad knuckles are a little better than nothing.\n\n[Remains unchanged to Doomguy's Fist.]", "", "  Fist  ", "f" },
+			{ "Pistol", "The Pistol is the only weapon you start out with. But you'll use anything in a pinch, no matter how pathetic it may feel.\n\n[Remains unchanged to Doomguy's Pistol.]", "", "  Pistol  ", "p" },
+			{ "Chainsaw", "The Chainsaw cuts the baddies like standing timber, but you have to get close.\n\n[Does twice more damage than Doomguy's Chainsaw.]", "64SWZ0", "  Chainsaw  ", "1" },
+			{ "Shotgun", "Shotguns deliver a heavy punch at close range and a generous pelting from a distance.\n\n[Unlike Doomguy's Shotgun, the screen jerks up and down for a bit when firing.]", "64SGZ0", "   Shotgun   ", "2" },
+			{ "Super Shotgun", "Combat Shotguns are double-barreled, sawed-off killing sticks. These gats are the ultimate in pellet warfare. Beware, two barrels not only deliver more fire power, but take more time to reload.\n\n[Unlike Doomguy's Super Shotgun, this super shotgun can knock the player back a bit when fired.]", "64DBZ0", " Super Shotgun ", "3" },
+			{ "Chaingun", "Chainguns direct heavy firepower into your opponent, making him do the chaingun cha-cha.\n\n[Unlike Doomguy's Chaingun, the screen will jerk up and down rapidly when fired at a consistent rate.]", "64CGZ0", "   Chaingun   ", "4" },
+			{ "Rocket Launcher", "Rocket Launchers deliver an explosive rocket that can turn one bad dude inside-out. Be careful with this one. Firing in close proximity at an object or enemy is bad for your health.\n\n[Unlike Doomguy's Rocket Launcher, this rocket launcher can knock the player back a bit when fired.]", "64MLZ0", "   Rocket Launcher   ", "5" },
+			{ "Plasma Rifle", "Plasma Rifles shoot multiple rounds of plasma energy.\n\n[Unlike Doomguy's Plasma Rifle, which has a bit of a delay when releasing the fire trigger, Doom 64 Guy's Plasma Rifle does not have that delay when releasing the fire trigger, although this plasma rifle fires at a slightly slower rate.]", "64PRZ0", " Plasma Rifle ", "6" },
+			{ "B.F.G. 9000", "BFG 9000s are the prize of the military's arsenal. Great for clearing the room of those unwelcome guests. There is a downside. It takes a second or two to charge prior to firing, so don't expect to fire right away.\n\n[Remains unchanged to Doomguy's BFG 9000.]", "64BFZ0", " B.F.G. 9000 ", "7" },
+			{ "Unmaker", "(This weapon is obtained along with B.F.G. 9000)\nYou have the B.F.G. 9000 in your hands. Now almost every other weapon means nothing to you... wait...\nWhat the !@#%* is this!\n\nThe Unmaker can be upgraded up to three times. Collecting Berserk Packs will upgrade it. To fully upgrade the Unmaker, you need to collect three Berserk Packs.", "64UNZ0", "Unmaker", "7" },
+			{ "Berserk", "Berserk Packs heal you, plus act as a super-adrenaline rush, enormously boosting our muscle power. Since you're already a pretty meaty guy, this enhanced strength lets you tear ordinary dolts limb from limb, and you can even splatter those demons without too much trouble. However, you've got to use your Fist attack to get the benefit of the Berserk attack bonus. When you become Berserk, your screen will briefly turn red.\n\n[Remains unchanged to Doomguy's Berserk.]\nBerserk Packs are used to upgrade the Unmaker.", "64BZA0", "Doom64GuyBerserk", "u" }
+		}
+	},
 	{{
 		{ "Bootspoon", "Your cereal spoon is a little better than nothing.", "", " Bootspoon ", "f" },
 		{ "Mini-Zorcher", "The Mini-Zorcher is the only zorcher you start out with. But you'll use anything in a pinch, no matter how pathetic it may feel.", "", "Mini-Zorcher", "p" },
@@ -630,20 +694,62 @@ str ClassWeaponInfo[CLASSCOUNT][2][20][5] =
 			{ "Flamethrower", "This pyro-tool is powered by the \"gas cans\" that you'll find along the way. Hang fire on the bad guys with a burst of flame.", "WFLPB0", " Flamethrower ", "6" },
 			{ "Spear of Destiny", "The artifact that Hitler covets most is the Spear of Destiny, the weapon that was used to pierce the side of Christ while he was nailed to the cross. According to legend, no man can be defeated with this spear in his possession.", "WSPRN0", "Spear of Destiny", "7" },
 			{ "Extra Life", "Hidden within secret rooms of the fortresses are items that give you that extra urge to keep fighting!\nIf below 20 HP and takes damage, an extra life will be automatically used to send you back to the beginning of the level with full Health, Armor, and Ammo 1. Does not work against massive burst damage...yet.", "WFLFB0", "WolfExtraLife", "u" }
+		},
+		{
+			{ "Knife", "Used for close combat, the knife is best as a last resort. It requires no ammo.", "WKNPA0", "Totenkopf_Knife", "f" },
+			{ "Walter P38 Pistol", "The standard German pistol. You'll need to switch to a better weapon when fighting multiple enemies.", "TK02M0", "Totenkopf_Pistol", "p" },
+			{ "M712 Rapid-Fire Pistol", "This machine pistol was developed by Mauser as a selective fire sidearm. It eats up ammo quick but can be a good crowd control weapon to stun multiple targets at once.", "TK10K0", "Totenkopf_Mauser", "1" },
+			{ "Kar98k Rifle", "The Kar98K is the standard German rifle. Its strength and accuracy make it the choice weapon among snipers.", "TK03M0", "Totenkopf_Kar98K", "2" },
+			{ "STG44 Assault Rifle", "Abbreviated for \"Sturmgewehr 44,\" the STG44 is an assault rifle that has the same rate of fire as the MP40, only it is much more powerful.", "TK05F0", "Totenkopf_STG44", "3" },
+			{ "MP40 Submachine Gun", "This machinegun comes in handy when fighting groups of enemies. It is often carried by S.S. personnel.", "TK04K0", "Totenkopf_MP40", "4" },
+			{ "Panzerschreck", "The Panzerschreck is an anti-tank weapon of the German Army. It fires slowly but deals tremendous damage.", "TK07H0", "Totenkopf_Panzerschreck", "5" },
+			{ "Chaingun", "This ultra-speed Gatling gun can mow down an entire Nazi platoon in seconds! However, it uses up ammo like popcorn.", "TK08F0", "Totenkopf_Chaingun", "6" },
+			{ "Flakgun", "The most famous artillery piece of German forces converted into a one-man portable weapon, with no compromises in efficiency.", "TK09F0", "Totenkopf_Flakgun", "7" },
+			{ "MG42 Portable Machine Gun", "It is most notable for its very high cyclic rate for a gun using full power service cartridges, which made it extremely effective in providing suppressive fire, and its unique sound led to it being nicknamed \"Hitler's buzzsaw\".", "TK11F0", "Totenkopf_MG42", "u" },
+			{ "Flamethrower", "Ideal for clearing out trenches and buildings - also ideal for cooking enemies.", "TK06F0", "Totenkopf_Flamethrower", "u" },
+			{ "Kar98k Sniper Rifle", "For snipers, Karabiner 98k rifles selected for being exceptionally accurate during factory tests were fitted with a telescopic sight as sniper rifles.", "TK12M0", "Totenkopf_Sniper", "u" },
+			{ "Power Armor", "Kept in a lab along with the nazis most powerful mutant projects, not only does this armor absorb half the damage taken from attacks and grant 200 armor, it also grants permanent armor regeneration. \n\nTo obtain this armor, you must find 20 secrets.", "TK55A0", "TotenkopfPowerArmor", "" },
+			{ "Healing Orb", "Kept in a dungeon with the most unstable Nazi experiment ever devised, this healing orb does not just heal you for 200 health points, it will also enable permanent health regeneration. \n\nTo obtain this artifact, you must find 30 secrets.", "TK55B0", "TotenkopfHealingOrb", "" },
 		}
 	},
-	{{
-		{ "Mace of Contrition", "The Mace will only cause contrition in an enemy after numerous beatings. This weapon should only be used as a last resort because of its short range!", "", "Mace of Contrition", "f" },
-		{ "Sapphire Wand", "Useful for killing enemies, eventually, this wand will fire quick magical blue darts at your target. There is no limit to the amount of charges in this wand and it requires no mana.", "", "Sapphire Wand", "p" },
-		{ "Poison Cloud Flechette", "When a Cleric, such as Parias, uses the flechette, it produces a poison gas cloud, lethal to any who venture near.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
-		{ "Frost Shards", "This spell lets you shoot frozen shards from your hands. These ice bolts are significantly stronger than the Sapphire Wand's small darts, so use Frost Shards whenever possible to freeze your enemies where they stand.", "WFRSA0", "Frost Shards", "2" },
-		{ "Timon's Axe", "The Axe makes you want to really jump in there and hack away at your enemies as it deals out much more damage than the Fighter's Spiked Gauntlets. This is also a close-range-only weapon, so be careful not to get carried away!", "WFAXA0", "Timon's Axe", "3" },
-		{ "Serpent Staff", "The essence of the sacred Kalrath serpent is contained within this staff. Feed it with the blue mana and it will serve you faithfully by spitting twin venom spheres at your enemies. Using this staff up close will drain your enemy's life and give some of it to you!", "WCSSA0", "Serpent Staff", "4" },
-		{ "Hammer of Retribution", "Now you can really start dealing some death! The Hammer can be thrown straight out in a skull-spitting attack or you can get up-close and personal for that special bludgeoning that only you can provide.\nWhen used at long range, a strong projectile exits the Hammer. When used at close quarters, there's no projectile but a direct hit with the Hammer. No mana is used in this case.", "WFHMA0", "Hammer of Retribution", "5" },
-		{ "Firestorm", "The Firestorm spell lets you summon a gout of fire from the earth. The flames appear at your enemy's feet and roar upward to engulf his entire body, roasting him alive. All things considered, Firestorm is the ultimate barbecue.", "WCFMA0", "Firestorm", "6" },
-		{ "Wraithverge", "A very powerful multi-part weapon, this staff will summon the forces of the grave to feed upon your enemy's soul, tearing and knashing away at the lifeforce like hungry dogs!", "WWRTA0", "Wraithverge", "7" },
-		{ "Mystic Ambit Incant", "Restores nearby players' health by 50 to 90 points, gives Parias armor, and also spreads 15 armor shards for teammates to pick up.", "HRADA0", "PortMysticAmbit", "u" },
-	}},
+	{
+		{
+			{ "Mace of Contrition", "The Mace will only cause contrition in an enemy after numerous beatings. This weapon should only be used as a last resort because of its short range!", "", "Mace of Contrition", "f" },
+			{ "Sapphire Wand", "Useful for killing enemies, eventually, this wand will fire quick magical blue darts at your target. There is no limit to the amount of charges in this wand and it requires no mana.", "", "Sapphire Wand", "p" },
+			{ "Poison Cloud Flechette", "When a Cleric, such as Parias, uses the flechette, it produces a poison gas cloud, lethal to any who venture near.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
+			{ "Frost Shards", "This spell lets you shoot frozen shards from your hands. These ice bolts are significantly stronger than the Sapphire Wand's small darts, so use Frost Shards whenever possible to freeze your enemies where they stand.", "WFRSA0", "Frost Shards", "2" },
+			{ "Timon's Axe", "The Axe makes you want to really jump in there and hack away at your enemies as it deals out much more damage than the Fighter's Spiked Gauntlets. This is also a close-range-only weapon, so be careful not to get carried away!", "WFAXA0", "Timon's Axe", "3" },
+			{ "Serpent Staff", "The essence of the sacred Kalrath serpent is contained within this staff. Feed it with the blue mana and it will serve you faithfully by spitting twin venom spheres at your enemies. Using this staff up close will drain your enemy's life and give some of it to you!", "WCSSA0", "Serpent Staff", "4" },
+			{ "Hammer of Retribution", "Now you can really start dealing some death! The Hammer can be thrown straight out in a skull-spitting attack or you can get up-close and personal for that special bludgeoning that only you can provide.\nWhen used at long range, a strong projectile exits the Hammer. When used at close quarters, there's no projectile but a direct hit with the Hammer. No mana is used in this case.", "WFHMA0", "Hammer of Retribution", "5" },
+			{ "Firestorm", "The Firestorm spell lets you summon a gout of fire from the earth. The flames appear at your enemy's feet and roar upward to engulf his entire body, roasting him alive. All things considered, Firestorm is the ultimate barbecue.", "WCFMA0", "Firestorm", "6" },
+			{ "Wraithverge", "A very powerful multi-part weapon, this staff will summon the forces of the grave to feed upon your enemy's soul, tearing and knashing away at the lifeforce like hungry dogs!", "WWRTA0", "Wraithverge", "7" },
+			{ "Mystic Ambit Incant", "Restores nearby players' health by 50 to 90 points, gives Parias armor, and also spreads 15 armor shards for teammates to pick up.", "HRADA0", "PortMysticAmbit", "u" },
+		},
+		{
+			{ "Mace of Contrition", "The Mace will only cause contrition in an enemy after numerous beatings. This weapon should only be used as a last resort because of its short range!", "", "Mace of Contrition", "f" },
+			{ "Sapphire Wand", "Useful for killing enemies, eventually, this wand will fire quick magical blue darts at your target. There is no limit to the amount of charges in this wand and it requires no mana.", "", "Sapphire Wand", "p" },
+			{ "Poison Cloud Flechette", "When a Cleric, such as Parias, uses the flechette, it produces a poison gas cloud, lethal to any who venture near.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
+			{ "Frost Shards", "This spell lets you shoot frozen shards from your hands. These ice bolts are significantly stronger than the Sapphire Wand's small darts, so use Frost Shards whenever possible to freeze your enemies where they stand.", "WFRSA0", "Frost Shards", "2" },
+			{ "Timon's Axe", "The Axe makes you want to really jump in there and hack away at your enemies as it deals out much more damage than the Fighter's Spiked Gauntlets. This is also a close-range-only weapon, so be careful not to get carried away!", "WFAXA0", "Timon's Axe", "3" },
+			{ "Serpent Staff", "The essence of the sacred Kalrath serpent is contained within this staff. Feed it with the blue mana and it will serve you faithfully by spitting twin venom spheres at your enemies. Using this staff up close will drain your enemy's life and give some of it to you!", "WCSSA0", "Serpent Staff", "4" },
+			{ "Hammer of Retribution", "Now you can really start dealing some death! The Hammer can be thrown straight out in a skull-spitting attack or you can get up-close and personal for that special bludgeoning that only you can provide.\nWhen used at long range, a strong projectile exits the Hammer. When used at close quarters, there's no projectile but a direct hit with the Hammer. No mana is used in this case.", "WFHMA0", "Hammer of Retribution", "5" },
+			{ "Firestorm", "The Firestorm spell lets you summon a gout of fire from the earth. The flames appear at your enemy's feet and roar upward to engulf his entire body, roasting him alive. All things considered, Firestorm is the ultimate barbecue.", "WCFMA0", "Firestorm", "6" },
+			{ "Wraithverge", "A very powerful multi-part weapon, this staff will summon the forces of the grave to feed upon your enemy's soul, tearing and knashing away at the lifeforce like hungry dogs!", "WWRTA0", "Wraithverge", "7" },
+			{ "Mystic Ambit Incant", "Restores nearby players' health by 50 to 90 points, gives Parias armor, and also spreads 15 armor shards for teammates to pick up.", "HRADA0", "PortMysticAmbit", "u" },
+		},
+		{
+			{ "Mace of Contrition", "The Mace will only cause contrition in an enemy after numerous beatings. This weapon should only be used as a last resort because of its short range!", "", "Mace of Contrition", "f" },
+			{ "Sapphire Wand", "Useful for killing enemies, eventually, this wand will fire quick magical blue darts at your target. There is no limit to the amount of charges in this wand and it requires no mana.", "", "Sapphire Wand", "p" },
+			{ "Poison Cloud Flechette", "When a Cleric, such as Parias, uses the flechette, it produces a poison gas cloud, lethal to any who venture near.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
+			{ "Frost Shards", "This spell lets you shoot frozen shards from your hands. These ice bolts are significantly stronger than the Sapphire Wand's small darts, so use Frost Shards whenever possible to freeze your enemies where they stand.", "WFRSA0", "Frost Shards", "2" },
+			{ "Timon's Axe", "The Axe makes you want to really jump in there and hack away at your enemies as it deals out much more damage than the Fighter's Spiked Gauntlets. This is also a close-range-only weapon, so be careful not to get carried away!", "WFAXA0", "Timon's Axe", "3" },
+			{ "Serpent Staff", "The essence of the sacred Kalrath serpent is contained within this staff. Feed it with the blue mana and it will serve you faithfully by spitting twin venom spheres at your enemies. Using this staff up close will drain your enemy's life and give some of it to you!", "WCSSA0", "Serpent Staff", "4" },
+			{ "Hammer of Retribution", "Now you can really start dealing some death! The Hammer can be thrown straight out in a skull-spitting attack or you can get up-close and personal for that special bludgeoning that only you can provide.\nWhen used at long range, a strong projectile exits the Hammer. When used at close quarters, there's no projectile but a direct hit with the Hammer. No mana is used in this case.", "WFHMA0", "Hammer of Retribution", "5" },
+			{ "Firestorm", "The Firestorm spell lets you summon a gout of fire from the earth. The flames appear at your enemy's feet and roar upward to engulf his entire body, roasting him alive. All things considered, Firestorm is the ultimate barbecue.", "WCFMA0", "Firestorm", "6" },
+			{ "Wraithverge", "A very powerful multi-part weapon, this staff will summon the forces of the grave to feed upon your enemy's soul, tearing and knashing away at the lifeforce like hungry dogs!", "WWRTA0", "Wraithverge", "7" },
+			{ "Mystic Ambit Incant", "Restores nearby players' health by 50 to 90 points, gives Parias armor, and also spreads 15 armor shards for teammates to pick up.", "HRADA0", "PortMysticAmbit", "u" },
+		}
+	},
 	{
 		{
 			{ "Mighty Boot", "Use this when Duke needs to do a little ass kicking.", "", "Mighty Boot", "f" },
@@ -929,7 +1035,8 @@ str ClassWeaponInfo[CLASSCOUNT][2][20][5] =
 		{ "Alien Arm Cannon", "Well now, them tendons is a little slimy, and the fireworks it lets out'll burn the hair on your arms clean off, but I'll be damned if this thing won't crispify just about anything.", "R_HAK0", " Alien Arm Cannon ", "7" },
 		{ "Hunting Rifle with Scope", "This sniper-like gun is pretty strong, might be slow, but when you learn how to use it, it will be definitely deadly.\n\nAlt Fire: Use the Scope.", "R_HCJ0", " Hunting Rifle With Scope ", "u" },
 		{ "Dyn 'O' Mites", "This ain't eggsackly what you'd call Safe N' Sane. Light 'em, throw 'em, then get the hell outta the way.\n\nYou will instantly die if you light the dynamite for too long!", "DYN5G0", " Dyn 'O' Mites ", "u" },
-		{ "Motorcycle", "Mount the hog with the Use key. Motorcycle ammo is heavy, you'd best pick it up while you're mounted and leave the ammo on the bike too. If you're good, you can jump chasms, ramps, cliffs...practice at the track for a while if you need the help. And remember, the sheriff hasn't given out a ticket in this county for hit-and-run for about 30 years. The motorcycle will always arrive when you give ol' Bubba a holler, and you'll have it ready on the next map if you leave with him.\n\nThe bike comes with a built-in gun turret that holds about 600 bullets. When you are on the bike, you can still take damage from enemy fire. When you are off the bike, the motorcycle can be damaged and permanently destroyed.\n\nPress [Use] on the motorcycle to get in.\nHold [Use] while on the motorcycle to get off.\n[Strafe Left] and [Strafe Right] will turn the vehicle.\n[Move Forward] will accelerate.\n[Move Backward] will brake/reverse.\n[Fire] will fire the motorcycle's gun turrets.", "R_MCZ2Z8", "RedneckMotorcycle", "" }
+		{ "Motorcycle", "Mount the hog with the Use key. Motorcycle ammo is heavy, you'd best pick it up while you're mounted and leave the ammo on the bike too. If you're good, you can jump chasms, ramps, cliffs...practice at the track for a while if you need the help. And remember, the sheriff hasn't given out a ticket in this county for hit-and-run for about 30 years. The motorcycle will always arrive when you give ol' Bubba a holler, and you'll have it ready on the next map if you leave with him.\n\nThe bike comes with a built-in gun turret that holds about 600 bullets. When you are on the bike, you can still take damage from enemy fire. When you are off the bike, the motorcycle can be damaged and permanently destroyed.\n\nPress [Use] on the motorcycle to get in.\nHold [Use] while on the motorcycle to get off.\n[Strafe Left] and [Strafe Right] will turn the vehicle.\n[Move Forward] will accelerate.\n[Move Backward] will brake/reverse.\n[Fire] will fire the motorcycle's gun turrets.", "RRCMOTOR", "RedneckMotorcycle", "" },
+		{ "Bubba", "My brother Bubba is one of Hickston's finest second grade graduates. Maybe he's a little overweight and a little slow, but so was Robert E. Lee, right? \n\nBubba likes to dress up as the King of Rock n' Roll, Elvis. \n\nIf you call for him on that mobile doo-hickey, he will arrive to your aid. By aid, what I really mean is whackin' his ass with muh crowbar. We then ride away from the level on our hog.\n\nAnd by crowbar, I mean my crowbar, not that crowbar from that silent fella Gordon Freeman. \n\nAnd just make sure you just use my crowbar. Any other weapon will just kill him.", "RRBUBBA", "Bubba", "" },
 	}},
 	{{
 		{ "Blaster", "This is the standard issue rechargeable energy side-arm.  It does not require ammunition. Useful for taking down Guards as well as exploding barrels and setting off shootable buttons and secret doors. Keep one on you at all times.", "Q2CMPW01", "Q2Blaster", "p" },
@@ -998,29 +1105,54 @@ str ClassWeaponInfo[CLASSCOUNT][2][20][5] =
 	}}
 };
 
-str MonsterInfo[CLASSCOUNT][64][21] =
+//Sets, modes, monster, info
+str MonsterInfo[CLASSCOUNT][MAXMODES][64][21] =
 {
 	{
-		{ "Zombieman", "COMP_THREAT_2", "Just a few days ago, you were probably swapping war stories with one of these guys. Now it's time to swap some lead upside their head.", "Zombieman2", "POSSA1" },
-		{ "Shotgun Guy", "COMP_THREAT_2", "Same as the Former Humans, but much meaner, and tougher. These walking shotguns provide you with a few extra holes if you're not careful!", "Shotgunguy2","SPOSA1" },
-		{ "Imp", "COMP_THREAT_2", "You thought an imp was a cute little dude in a red suit with a pitchfork? Where did these brown bastards come from? They heave balls o' fire down your throat and take several bullets to die. It's time to find a weapon better than that pistol if you're going to face more than one of these S.O.B.s.", "DoomImp2", "TROOA1" },
-		{ "Chaingun Guy", "COMP_THREAT_2", "Geeze, weren't shotgun zombies bad enough? At least when you face these jerks you get a cool chaingun.", "Chaingunguy2", "CPOSA1" },
-		{ "Demon", "COMP_THREAT_3", "Sorta like a shaved gorilla, except with horns, a big head, lots of teeth, and harder to kill. Don't get too close or they'll rip your fraggin' head off.", "DoomDemon2", "SARGA1" },
-		{ "Spectre", "COMP_THREAT_3", "Great. Just what you needed. An invisible (nearly) monster.", "Spectre3", "SARGA1" },
-		{ "Lost Soul", "COMP_THREAT_2", "Dumb. Tough. Flies. On fire. 'Nuff said.", "LostSoul2", "SKULA1" },
-		{ "Cacodemon", "COMP_THREAT_3", "They float in the air, belch ball-lightning, and boast one Hell of a big mouth. You're toast if you get too close to these monstrosities.", "Cacodemon2", "HEADA1" },
-		{ "Hell Knight", "COMP_THREAT_4", "Tough as a dump truck and nearly as big, these Goliaths are the worst things on two legs since Tyrannosaurus rex.", "HellKnight2", "BOS2A1C1" },
-		{ "Baron of Hell", "COMP_THREAT_4", "The Hell Knight was bad news but this is Big Daddy. These bruisers are a lot like Hell Knights, but look a little different and are twice as tough to kill.", "BaronofHell2", "BOSSA1" },
-		{ "Arachnotron", "COMP_THREAT_4", "Maybe cybernetics wasn't such a great idea after all. Look what the demons have done with it. It seems unfair somehow you're not the only guy in Hell with a plasma gun.", "Arachnotron2", "BSPIA1D1" },
-		{ "Pain Elemental", "COMP_THREAT_4", "What a name. And what a guy. Killing him is almost as bad as letting him live.", "PainElemental2", "PAINA1" },
-		{ "Revenant", "COMP_THREAT_4", "Apparently when a demon dies, they pick him up, dust him off, wire him some combat gear, and send him back into battle. No rest for the wicked, eh? You wish your missiles did what his can do.", "Revenant2", "SKELA1D1" },
-		{ "Mancubus", "COMP_THREAT_4", "The only good thing about fatso is that he's a nice wide target. Good thing, because it takes a lot of hits to puncture him. He pumps out fireballs like there was no tomorrow.", "Fatso2", "FATTA1" },
-		{ "Arch-Vile", "COMP_THREAT_4", "One of the worst of a bad lot. You can't think of enough rotten things to say about him. He's fast, hard to kill, casts spells, and resurrects dead monsters! At least these suckers are rare.", "Archvile2", "VILEA1D1" },
-		{ "Spider Mastermind", "COMP_THREAT_5", "You guess the Arachnotrons had to come from somewhere. Hi, Mom. She doesn't have a plasma gun, so thank heaven for small favors. Instead, she has a super-chaingun. Crap.", "SpiderMastermind2", "CMPMDM16" },
-		{ "Cyberdemon", "COMP_THREAT_5", "A missile-launching skyscraper with goat legs. 'Nuff said.", "Cyberdemon2", "CYBRA1" },
-		{ "Wolfenstein SS", "COMP_THREAT_2", "After killing all the demons at an industrial zone from Earth, you discover a teleporter found at the end of a secret tunnel. You wonder who the inmates of this corner of Hell will be...", "Nazi2", "SSWVA1" },
+		{
+			{ "Zombieman", "COMP_THREAT_2", "Just a few days ago, you were probably swapping war stories with one of these guys. Now it's time to swap some lead upside their head.", "Zombieman2", "POSSA1" },
+			{ "Shotgun Guy", "COMP_THREAT_2", "Same as the Former Humans, but much meaner, and tougher. These walking shotguns provide you with a few extra holes if you're not careful!", "Shotgunguy2","SPOSA1" },
+			{ "Imp", "COMP_THREAT_2", "You thought an imp was a cute little dude in a red suit with a pitchfork? Where did these brown bastards come from? They heave balls o' fire down your throat and take several bullets to die. It's time to find a weapon better than that pistol if you're going to face more than one of these S.O.B.s.", "DoomImp2", "TROOA1" },
+			{ "Chaingun Guy", "COMP_THREAT_2", "Geeze, weren't shotgun zombies bad enough? At least when you face these jerks you get a cool chaingun.", "Chaingunguy2", "CPOSA1" },
+			{ "Demon", "COMP_THREAT_3", "Sorta like a shaved gorilla, except with horns, a big head, lots of teeth, and harder to kill. Don't get too close or they'll rip your fraggin' head off.", "DoomDemon2", "SARGA1" },
+			{ "Spectre", "COMP_THREAT_3", "Great. Just what you needed. An invisible (nearly) monster.", "Spectre3", "SARGA1" },
+			{ "Lost Soul", "COMP_THREAT_2", "Dumb. Tough. Flies. On fire. 'Nuff said.", "LostSoul2", "SKULA1" },
+			{ "Cacodemon", "COMP_THREAT_3", "They float in the air, belch ball-lightning, and boast one Hell of a big mouth. You're toast if you get too close to these monstrosities.", "Cacodemon2", "HEADA1" },
+			{ "Hell Knight", "COMP_THREAT_4", "Tough as a dump truck and nearly as big, these Goliaths are the worst things on two legs since Tyrannosaurus rex.", "HellKnight2", "BOS2A1C1" },
+			{ "Baron of Hell", "COMP_THREAT_4", "The Hell Knight was bad news but this is Big Daddy. These bruisers are a lot like Hell Knights, but look a little different and are twice as tough to kill.", "BaronofHell2", "BOSSA1" },
+			{ "Arachnotron", "COMP_THREAT_4", "Maybe cybernetics wasn't such a great idea after all. Look what the demons have done with it. It seems unfair somehow you're not the only guy in Hell with a plasma gun.", "Arachnotron2", "BSPIA1D1" },
+			{ "Pain Elemental", "COMP_THREAT_4", "What a name. And what a guy. Killing him is almost as bad as letting him live.", "PainElemental2", "PAINA1" },
+			{ "Revenant", "COMP_THREAT_4", "Apparently when a demon dies, they pick him up, dust him off, wire him some combat gear, and send him back into battle. No rest for the wicked, eh? You wish your missiles did what his can do.", "Revenant2", "SKELA1D1" },
+			{ "Mancubus", "COMP_THREAT_4", "The only good thing about fatso is that he's a nice wide target. Good thing, because it takes a lot of hits to puncture him. He pumps out fireballs like there was no tomorrow.", "Fatso2", "FATTA1" },
+			{ "Arch-Vile", "COMP_THREAT_4", "One of the worst of a bad lot. You can't think of enough rotten things to say about him. He's fast, hard to kill, casts spells, and resurrects dead monsters! At least these suckers are rare.", "Archvile2", "VILEA1D1" },
+			{ "Spider Mastermind", "COMP_THREAT_5", "You guess the Arachnotrons had to come from somewhere. Hi, Mom. She doesn't have a plasma gun, so thank heaven for small favors. Instead, she has a super-chaingun. Crap.", "SpiderMastermind2", "CMPMDM16" },
+			{ "Cyberdemon", "COMP_THREAT_5", "A missile-launching skyscraper with goat legs. 'Nuff said.", "Cyberdemon2", "CYBRA1" },
+			{ "Wolfenstein SS", "COMP_THREAT_2", "After killing all the demons at an industrial zone from Earth, you discover a teleporter found at the end of a secret tunnel. You wonder who the inmates of this corner of Hell will be...", "Nazi2", "SSWVA1" },
+		},
+		{
+			{ "Zombieman", "COMP_THREAT_2", "Once a Marine, always a Marine. Except in this case. These guys may look like your old buddies, but now they're nothing more than pistol-toing, bi-pedal maggots. Waste em!", "ZombieMan64", "64POA1" },
+			{ "Sergeant", "COMP_THREAT_2", "Ditto. Except these guys are meaner, and tougher. These walking shotguns will provide you with a few extra holes if you're not careful.", "ShotgunGuy64", "64SPA1" },
+			{ "Chaingunner", "COMP_THREAT_3", "Strange, you could have sworn they did not have these chaingunners before...", "ChaingunGuy64", "64CPA1" },
+			{ "Imp", "COMP_THREAT_2", "You thought an imp was a cute little dude in a red suit with a pitchfork. Think again. This Imp heaves balls of fire down your throat and takes several bullets to die. It's time to find a better weapon than a pistol, if you're going to face more than one of these mutants.", "DoomImp64", "64TRA1" },
+			{ "Nightmare Imp", "COMP_THREAT_3", "An Imp is bad enough, but picture a faster, more aggressive one. Now the bad news... he's harder to see, too.", "NightmareImp64", "64I2A1" },
+			{ "Demon", "COMP_THREAT_3", "Sorta liked shaved gorillas, except with horns, big heads and lots of teeth. They don't kill easily. Get to close and they'll rip your sorry head off.", "Demon64", "64SRB1" },
+			{ "Spectre", "COMP_THREAT_3", "Great! Just what you needed. An (nearly) invisible monster. These beasts will eat your face off. Did you expect a walk in the park?", "Spectre64", "64S2B1" },
+			{ "Lost Soul", "COMP_THREAT_2", "It's Tough. It Flies. It's On Fire.", "LostSoul64", "64LSA1" },
+			{ "Cacodemon", "COMP_THREAT_3", "They float in the air, belch ball-lightning, and have one horrendously big mouth. If you get too close to one of these monstrosities, you're toast.", "Cacodemon64", "64HDA1" },
+			{ "Hell Knight", "COMP_THREAT_4", "Tough as a dump truck and nearly as big. These goliaths are the worst thing on two legs since the Tyrannosaurus Rex.", "HellKnight64", "64HKA1" },
+			{ "Baron of Hell", "COMP_THREAT_4", "You thought the Hell Knights were bad? These guys make them look like choir boys. You better have a good supply of ammo and armor to take on this demon.", "BaronOfHell64", "64BSA1" },
+			{ "Arachnotron", "COMP_THREAT_4", "Think of the pain a Black Widow causes when you disturb her nest. Then think what happens when you stir up one the size of an M60 tank.", "Arachnotron64", "64PIA1" },
+			{ "Pain Elemental", "COMP_THREAT_4", "What a name. And what a pain in the butt. Killing him is almost as bad as letting him live.", "PainElemental64", "64PNA1" },
+			{ "Revenant", "COMP_THREAT_4", "Oh great, the skeleton is back. First the chaingunner and now him. It can't get worse than this, can it?", "Revenant64", "SKE2A1" },
+			{ "Mancubus", "COMP_THREAT_4", "The only good thing about this fat tub of demon is that he's a nice wide target. Good thing, because it takes a lot of hits to puncture him. He pumps out fire balls like nobody's business.", "Fatso64", "64FTA1" },
+			{ "Arch-Vile", "COMP_THREAT_4", "Oh dear God, HE is back!?", "Archvile64", "VIL2A1" },
+			{ "Spider Mastermind", "COMP_THREAT_5", "Looks like the Chaingunner, Revenant, and Arch-Vile aren't the only returning monsters. It's been a while, Spider Mastermind! I certainly did not miss that super-chaingun of yours. Crap.", "SpiderMastermind64", "CMPMD217" },
+			{ "Cyberdemon", "COMP_THREAT_5", "Half machine, half raging horned devil. This walking nightmare has a rocket launcher for an arm and will definitely reach out and touch you. Make sure you're fully loaded before you take on this guy.", "Cyberdemon64", "CMPMD218" },
+			{ "Mother Demon", "COMP_THREAT_6", "The military episodes code named \"DOOM\" were not actually completed: A single entity with vast rejuvenation powers, masked by the extreme radiation. In its crippled state, it systematically altered decaying dead carnage back into corrupted living tissue. \n\nThe mutations are devastating. The Demons have returned even stronger and more vicious than before.", "MotherDemon64", "CMPMD219" },
+			{ "Nazi", "COMP_THREAT_2", "Members of the Schutzstaffel, they wear blue uniforms, bulletproof vests, and sadistic grins. They picked the wrong side of Hell to make their appearance!", "WolfensteinSSJagaur", "64SSA1" },
+		}
 	},
-	{
+	{{
 		{ "Flemoidus Commonus", "COMP_THREAT_2", "This is the weakest and most common Flemoid variety there is. It is very slow, but you should still be cautious. It attacks by throwing slime from its nose, but cannot throw it very far.", "FlemoidusCommonus3", "POSCA1" },
 		{ "Flemoidus Bipedicus", "COMP_THREAT_2", "This one is much faster and stronger than the commonus, and is the one of only two varieties of Flemoids to walk on two legs. It throws slime from its two arms, as well as its nose, resulting in a much more powerful blast than the commonus.", "FlemoidusBipedicus3", "SPOCA1" },
 		{ "Armored Flemoidus Bipedicus", "COMP_THREAT_2", "This is a stronger variation of the Bipedicus. When you see him you know he earned his armor! He's fairly rare, but still not too uncommon. His means of attack is an unusual one. In addition to throwing slime a short distance from his nose and arms, as the regular ones do, it throws a ball of slime that can travel long distances. Use caution.", "NewArmoredFlemoidusBipedicus", "TROCA1" },
@@ -1038,8 +1170,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Lord Snotfolus", "COMP_THREAT_6", "Lord Snotfolus is indeed the lord of all flemoids, commanding from his Flem Meteorship. He was willing to give it up to send slime all over Ralston, but not ready for an eager Chex Warrior to send him back. When you encounter him, he will come in either two flavors: One where he shoots a couple of powerful slime balls at a time. The other is the same thing but not only does he shoot the slime balls faster but he can spawn spores that turns into Flemoids at his service!", "OldSnotfolus", "CMPMCX15" },
 		{ "Yellow Armored Flemoidus Bipedicus", "COMP_THREAT_2", "There have been reports that the Armored Flemoidus Bipedicus are starting to change...", "YellowArmoredFlemoid", "TROCA1" },
 		{ "Dark Armored Flemoidus Bipedicus", "COMP_THREAT_2", "There have been reports that the Armored Flemoidus Bipedicus are starting to change...", "DarkArmoredFlemoid", "TROCA1" },
-	},
-	{
+	}},
+	{{
 		{ "Gargoyle", "COMP_THREAT_1", "Half-demon and half-bat. these wicked red beasts are the Order's guard dogs of the sky.", "HereticImp3", "IMPXA1" },
 		{ "Fire Gargoyle", "COMP_THREAT_2", "As if flying demons wern't enough, Fire Gargoyles toss balls of fire down on their unsuspecting enemy. These demons have twice as much health as the original Gargoyles.", "HereticImpLeader3", "IMPXD1" },
 		{ "Golem", "COMP_THREAT_2", "These big bad walking rocks smack you hard and make you cry.", "Mummy3", "MUMMA1" },
@@ -1052,35 +1184,64 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Iron Lich", "COMP_THREAT_4", "What is the Iron Lich? It is just an ordinary monster... that can shoot powerful balls of fire, can summon a pesky tornado, and can launch a deadly ice attack. Word of advice: kill this ordinary monster IMMEDIATELY.", "IronLich3", "LICHA1" },
 		{ "Maulotaur", "COMP_THREAT_5", "Maulotaurs greatly resemble the mythological Minotaur, except that they wield giant hammers (or mauls), which they use to smash their enemies into a pulp.", "Minotaur3", "MNTRA1" },
 		{ "D'Sparil & His Chaos Serpent", "COMP_THREAT_5", "He is the first and the youngest of the trio of Serpent Riders, using cunning and deception to initially gain dominance of Parthoris, the world of Heretic. He declared the supernatural race of the Sidhe to be forever hunted as heretics to their new Order. When you first encounter him, he will be riding a Green Chaos Serpent. Once his mount has been defeated, D'Sparil fights his enemy using his own powers.", "Sorcerer5", "CMPMHE12", "Sorcerer6", "SOR2M1" },
-	},
+	}},
 	{
-		{ "Nazi Guard", "COMP_THREAT_2", "The bullies in brown (or green) go down easy, but there's a lot of 'em.", "WolfGuard", "WGRDA1", "SODGuard", "SGRDA1" },
-		{ "Nazi Officer", "COMP_THREAT_2", "These quick, smart soldiers wear white and see red.", "WolfOfficer", "WOFFA1", "SODOfficer", "SOFFA1" },
-		{ "Nazi Schutzstaffel", "COMP_THREAT_3", "Members of the Schutzstaffel, they wear blue (or black) uniforms, bulletproof vests, and sadistic grins.", "WolfSS", "WSCHA1", "SODSS", "SSSOA1" },
-		{ "Dog", "COMP_THREAT_2", "These German shepherds (or blue doggies) go right for your throat. ", "WolfDog", "WDOGA1", "SODDog", "SDOGA1" },
-		{ "Spectre", "COMP_THREAT_2", "The Ghosts accompany the Angel of Death in order to test the hero's strength and find out if they're \"worthy\" of wielding the Spear of Destiny. There have been reports of other types of spectres. Ghoulish Ghosts, who are still loyal to Hitler and wear Nazi helmets. Radioactive Mist, clouds of some sort of radioactive material left over from earlier battles, resulting in a greenish-smoke appearance. These types seem to matter only in appearance, thankfully.", "WolfSpectre", "WSPEA0", "SODSpectre", "SSPEA0", "SODSpectre2", "SSPEI0" },
-		{ "Fake Hitler", "COMP_THREAT_4", "Fake Hitlers (Falscher Hitler) are dummies fashioned to look like Adolf Hitler. These robe wearing puppets, along with regular Nazi personnel, protect Hitler himself. ", "FakeHitler", "WFAHA0" },
-		{ "Mutant", "COMP_THREAT_4", "Hideous human experiments of the evil Dr. Schabbs, these three-armed beasties are killing machines.", "WolfMutant", "WMUTA1" },
-		{ "Bat", "COMP_THREAT_4", "Bats are very large, mutant bats that are the brainchild of Dr. Quarkblitz. The bats are very big and smart (suggesting that they are genetically modified or specially bred to be so). Sometimes the Nazis use them to replace the Mutants.", "SODBat", "SBATB1" },
-		{ "Hans Grosse", "COMP_THREAT_4", "He is large, and while not very smart, is still a powerful Nazi enforcer. He is a member of the Grosse family which comprises his brothers Trans, Mans, Pans, Fans, and sister Gretel; they all seem to share an affinity for heavy body armor and dual chain guns.", "HansGrosse", "WHANA0" },
-		{ "Gretel Grosse", "COMP_THREAT_4", "She is the youngest member of the Grosse family, having a brother, Hans Grosse and another relative, Trans Grosse. Her Chain Guns are the most distinct, as the rolling is not exposed. They aren't as deadly as Otto Giftmacher and General Fettgesicht's weaponry, but she can do major damage if you are not careful.", "GretelGrosse", "WGRTA0" },
-		{ "Trans Grosse", "COMP_THREAT_4", "Another brother in the prolific Grosse family, Trans (said TRAHNZ) is so tough he chews up lead bars and spits out bullets.", "TransGrosse", "WTRAA0" },
-		{ "Doctor Schabbs", "COMP_THREAT_5", "He is nuts and prefers killing to all other activities. Watch out for flying syringes or you'll be a mutant too!", "DoctorSchabbs", "WSCBA0" },
-		{ "Otto Giftmacher", "COMP_THREAT_4", "The amoral scientist responsible for designing chemical weapons. Beware his rumored \"Super Otto\" alter-ego, where he can shoot three rockets in a spread shot fashion...", "OttoGiftmacher", "WOTTA0" },
-		{ "General Fettgesicht", "COMP_THREAT_5", "The organizer of the chemical war.", "GeneralFettgesicht", "WFETA0" },
-		{ "Submarine Willy", "COMP_THREAT_4", "The commander of a submarine, Willy is known and feared for his various mental problems and rage outbursts. Even a lobotomy didn't improve his temper. Equipped with a chain gun and a machine gun, Willy is definitely prepared for battle.", "SubmarineWilly", "SUBWA0" },
-		{ "Barnacle Wilhelm", "COMP_THREAT_5", "This salty dog barks a missile launcher / chaingun welcome from his weathered fists! Don't rub his fur the wrong way!", "BarnacleWilhelm", "WBARA0" },
-		{ "Professor Quarkblitz", "COMP_THREAT_5", "Killing him will stop the further usage of specially bred bat units and ensure that his Robot doesn't go past the prototype stage. However, he is armed with a rocket launcher and a Chain Gun, so don't expect him to go down easily.", "ProfessorQuarkblitz", "PROQA0" },
-		{ "UberMutant", "COMP_THREAT_5", "The horrific jewel in maniacal Dr. Schabbs' sadistic crown, the UberMutant is the perfect soldier with four cleaver-tipped arms and a chaingun in its chest!", "Ubermutant", "WUBRA0" },
-		{ "The Axe", "COMP_THREAT_5", "Major Hans \"The Axe\" von Schlieffen (often referred to as simply The Axe) is the one that stole the Spear from America and brought it back to Germany. He is the best of the best of Hitler's elite forces. His extreme speed and dual Chain Guns make him the most dangerous foe that you will encounter. He wears armor similar to that used by the Grosse family and the Death Knight, completed with a skull-like mask.", "TheAxe", "TAXEA0" },
-		{ "Death Knight", "COMP_THREAT_6", "You may be playing on Death Incarnate, but with two chainguns and two missile launchers, this guy is Death Incarnate.", "WDeathKnight", "WDKNA0" },
-		{ "Robot", "COMP_THREAT_6", "It is the guardian of said Spear and is a prototype weapon designed by Dr. Quarkblitz. Armed with two Chain Guns and rocket launchers, the Robot is easily a force to be reckoned.", "Robot", "ROBOA0" },
-		{ "Adolf Hitler", "COMP_THREAT_5", "The essence of evil, he's got a few surprises for you. ", "MechaHitler", "WMAHA0", "Hitler", "WADOA0" },
-		{ "Angel of Death", "COMP_THREAT_5", "After grabbing the Spear, B.J. Blazkowicz is teleported to Hell, where he must defeat the demonic Angel in order to prove that he is worthy enough to wield the Spear. The Angel's only method of attack is firing powerful orbs at a target.", "AngelOfDeath", "WADHA0" },
-		{ "Devil Incarnate", "COMP_THREAT_5", "He is a demonic creature from Hell summoned by Hitler's unholy ritual. Using the Spear of Destiny, Hitler took control over the monster and commanded him to aid the Third Reich. Like the Angel of Death, you'll meet him after grabbing the Spear. His only attack is to fire orbs at you, but the orbs are very powerful.", "DevilIncarnate", "DEINA0" },
-		{ "Mage", "COMP_THREAT_2", "You have already encountered some twisted stuff like ghosts, mutants, Hitler clones, and hellish creatures under the command of Mein Fuhrer. A mage should not sound too outlandish at this point...", "Mage", "C3DMA0" },
+		{
+			{ "Nazi Guard", "COMP_THREAT_2", "The bullies in brown (or green) go down easy, but there's a lot of 'em.", "WolfGuard", "WGRDA1", "SODGuard", "SGRDA1" },
+			{ "Nazi Officer", "COMP_THREAT_2", "These quick, smart soldiers wear white and see red.", "WolfOfficer", "WOFFA1", "SODOfficer", "SOFFA1" },
+			{ "Nazi Schutzstaffel", "COMP_THREAT_3", "Members of the Schutzstaffel, they wear blue (or black) uniforms, bulletproof vests, and sadistic grins.", "WolfSS", "WSCHA1", "SODSS", "SSSOA1" },
+			{ "Dog", "COMP_THREAT_2", "These German shepherds (or blue doggies) go right for your throat. ", "WolfDog", "WDOGA1", "SODDog", "SDOGA1" },
+			{ "Spectre", "COMP_THREAT_2", "The Ghosts accompany the Angel of Death in order to test the hero's strength and find out if they're \"worthy\" of wielding the Spear of Destiny. There have been reports of other types of spectres. Ghoulish Ghosts, who are still loyal to Hitler and wear Nazi helmets. Radioactive Mist, clouds of some sort of radioactive material left over from earlier battles, resulting in a greenish-smoke appearance. These types seem to matter only in appearance, thankfully.", "WolfSpectre", "WSPEA0", "SODSpectre", "SSPEA0", "SODSpectre2", "SSPEI0" },
+			{ "Fake Hitler", "COMP_THREAT_4", "Fake Hitlers (Falscher Hitler) are dummies fashioned to look like Adolf Hitler. These robe wearing puppets, along with regular Nazi personnel, protect Hitler himself. ", "FakeHitler", "WFAHA0" },
+			{ "Mutant", "COMP_THREAT_4", "Hideous human experiments of the evil Dr. Schabbs, these three-armed beasties are killing machines.", "WolfMutant", "WMUTA1" },
+			{ "Bat", "COMP_THREAT_4", "Bats are very large, mutant bats that are the brainchild of Dr. Quarkblitz. The bats are very big and smart (suggesting that they are genetically modified or specially bred to be so). Sometimes the Nazis use them to replace the Mutants.", "SODBat", "SBATB1" },
+			{ "Hans Grosse", "COMP_THREAT_4", "He is large, and while not very smart, is still a powerful Nazi enforcer. He is a member of the Grosse family which comprises his brothers Trans, Mans, Pans, Fans, and sister Gretel; they all seem to share an affinity for heavy body armor and dual chain guns.", "HansGrosse", "WHANA0" },
+			{ "Gretel Grosse", "COMP_THREAT_4", "She is the youngest member of the Grosse family, having a brother, Hans Grosse and another relative, Trans Grosse. Her Chain Guns are the most distinct, as the rolling is not exposed. They aren't as deadly as Otto Giftmacher and General Fettgesicht's weaponry, but she can do major damage if you are not careful.", "GretelGrosse", "WGRTA0" },
+			{ "Trans Grosse", "COMP_THREAT_4", "Another brother in the prolific Grosse family, Trans (said TRAHNZ) is so tough he chews up lead bars and spits out bullets.", "TransGrosse", "WTRAA0" },
+			{ "Doctor Schabbs", "COMP_THREAT_5", "He is nuts and prefers killing to all other activities. Watch out for flying syringes or you'll be a mutant too!", "DoctorSchabbs", "WSCBA0" },
+			{ "Otto Giftmacher", "COMP_THREAT_4", "The amoral scientist responsible for designing chemical weapons. Beware his rumored \"Super Otto\" alter-ego, where he can shoot three rockets in a spread shot fashion...", "OttoGiftmacher", "WOTTA0" },
+			{ "General Fettgesicht", "COMP_THREAT_5", "The organizer of the chemical war.", "GeneralFettgesicht", "WFETA0" },
+			{ "Submarine Willy", "COMP_THREAT_4", "The commander of a submarine, Willy is known and feared for his various mental problems and rage outbursts. Even a lobotomy didn't improve his temper. Equipped with a chain gun and a machine gun, Willy is definitely prepared for battle.", "SubmarineWilly", "SUBWA0" },
+			{ "Barnacle Wilhelm", "COMP_THREAT_5", "This salty dog barks a missile launcher / chaingun welcome from his weathered fists! Don't rub his fur the wrong way!", "BarnacleWilhelm", "WBARA0" },
+			{ "Professor Quarkblitz", "COMP_THREAT_5", "Killing him will stop the further usage of specially bred bat units and ensure that his Robot doesn't go past the prototype stage. However, he is armed with a rocket launcher and a Chain Gun, so don't expect him to go down easily.", "ProfessorQuarkblitz", "PROQA0" },
+			{ "UberMutant", "COMP_THREAT_5", "The horrific jewel in maniacal Dr. Schabbs' sadistic crown, the UberMutant is the perfect soldier with four cleaver-tipped arms and a chaingun in its chest!", "Ubermutant", "WUBRA0" },
+			{ "The Axe", "COMP_THREAT_5", "Major Hans \"The Axe\" von Schlieffen (often referred to as simply The Axe) is the one that stole the Spear from America and brought it back to Germany. He is the best of the best of Hitler's elite forces. His extreme speed and dual Chain Guns make him the most dangerous foe that you will encounter. He wears armor similar to that used by the Grosse family and the Death Knight, completed with a skull-like mask.", "TheAxe", "TAXEA0" },
+			{ "Death Knight", "COMP_THREAT_6", "You may be playing on Death Incarnate, but with two chainguns and two missile launchers, this guy is Death Incarnate.", "WDeathKnight", "WDKNA0" },
+			{ "Robot", "COMP_THREAT_6", "It is the guardian of said Spear and is a prototype weapon designed by Dr. Quarkblitz. Armed with two Chain Guns and rocket launchers, the Robot is easily a force to be reckoned.", "Robot", "ROBOA0" },
+			{ "Adolf Hitler", "COMP_THREAT_5", "The essence of evil, he's got a few surprises for you. ", "MechaHitler", "WMAHA0", "Hitler", "WADOA0" },
+			{ "Angel of Death", "COMP_THREAT_5", "After grabbing the Spear, B.J. Blazkowicz is teleported to Hell, where he must defeat the demonic Angel in order to prove that he is worthy enough to wield the Spear. The Angel's only method of attack is firing powerful orbs at a target.", "AngelOfDeath", "WADHA0" },
+			{ "Devil Incarnate", "COMP_THREAT_5", "He is a demonic creature from Hell summoned by Hitler's unholy ritual. Using the Spear of Destiny, Hitler took control over the monster and commanded him to aid the Third Reich. Like the Angel of Death, you'll meet him after grabbing the Spear. His only attack is to fire orbs at you, but the orbs are very powerful.", "DevilIncarnate", "DEINA0" },
+			{ "Mage", "COMP_THREAT_2", "You have already encountered some twisted stuff like ghosts, mutants, Hitler clones, and hellish creatures under the command of Mein Fuhrer. A mage should not sound too outlandish at this point...", "Mage", "C3DMA0" },
+		},
+		{
+		},
+		{
+			{ "Wehrmacht Guard", "COMP_THREAT_1", "The standard German soldier. They are the most common enemy. \n\nThese guards are simply armed with a Walther P38.", "TotenkopfGuard", "TK14A1", "TotenkopfGuard2", "TK15A1" },
+			{ "Wehrmacht Rifleman", "COMP_THREAT_1", "The standard German soldier. They are the most common enemy. \n\nThese guards are armed with a Kar98k which could be a threat in the long distance.", "TotenkopfRifleman", "TK16A1" },
+			{ "Wehrmacht Infantry", "COMP_THREAT_2", "The standard German soldier. They are the most common enemy. \n\nThese guards are armed with an MP40 which can chew down your health quickly.", "TotenkopfInfantry", "TK17A1", "TotenkopfInfantry2", "TK18A1" },
+			{ "Wehrmacht Officer", "COMP_THREAT_2", "The standard German soldier. They are the most common enemy. \n\nThese officers can carry P38s or MP40s, and can use them to a more deadly effect.", "TotenkopfOfficer", "TK19A1", "TotenkopfOfficer2", "TK20A1" },
+			{ "SS Infantry", "COMP_THREAT_2", "Also known as Himmler's \"Blackshirts\", S.S. guards are brutal.\n\nThese guys will perforate you with their MP40 machineguns.", "TotenkopfSS", "TK21A1", "TotenkopfSSInfantry", "TK23A1" },
+			{ "SS Rifleman", "COMP_THREAT_2", "Also known as Himmler's \"Blackshirts\", S.S. guards are brutal.\n\nThese guys carry a Kar98k which can pinch you from a range.", "TotenkopfSSRifleman", "TK22A1" },
+			{ "SS Officer", "COMP_THREAT_2", "Also known as Himmler's \"Blackshirts\", S.S. guards are brutal. S.S. Officers are even deadlier since they are better trained!", "TotenkopfSSOfficer", "TK24A1", "TotenkopfSSOfficer2", "TK25A1" },
+			{ "Dogs", "COMP_THREAT_1", "These German shepherds are trained to attack intruders. They are weak, but vicious!", "TotenkopfDog", "TK33A1", "TotenkopfDog2", "TK34A1" },
+			{ "Scientist", "COMP_THREAT_1", "The scientists are both responsible for mass producing mutants and keeping them in check.\n\nThey only carry a Walther P38.", "TotenkopfScientist", "TK37A1", "TotenkopfScientist2", "TK38A1" },
+			{ "Mutant", "COMP_THREAT_3", "Prisoners from Castle Totenkopf were often \"volunteered\" to participate in the Nazis experiments. These are the results. They have a third arm in their chest which carries an MP40 and 2 pistols in their hands.", "TotenkopfMutant", "TK35A1", "TotenkopfMutant2", "TK36A1" },
+			{ "Waffen SS", "COMP_THREAT_3", "These elite soldiers are some of the meanest, toughest Nazis around. They wear armor and carry assault rifles!", "TotenkopfWaffenSS", "TK26A1", "TotenkopfWaffenSS2", "TK27A1", "TotenkopfWaffenSS3", "TK28A1", "TotenkopfWaffenSSOfficer", "TK29A1" },
+			{ "Ghost", "COMP_THREAT_2", "They did not really inhabit Castle Totenkopf, but they came from other foiled Nazi projects involving super natural forces. As a result, these ghosts can be killed. They are no threat unless they get close.", "TotenkopfGhost", "TK49A0" },
+			{ "Lightning Monk", "COMP_THREAT_3", "They did not really inhabit Castle Totenkopf, but they came from other foiled Nazi projects involving super natural forces. These monks can shoot spheres of lightning.", "TotenkopfMonk", "TK46A0" },
+			{ "Flame Monk", "COMP_THREAT_3", "They did not really inhabit Castle Totenkopf, but they came from other foiled Nazi projects involving super natural forces. These monks can shoot streams of flames at you.", "TotenkopfMonk2", "TK48A0" },
+			{ "SS Flamethrower Trooper", "COMP_THREAT_4", "These super soldiers can take a beating and carry a flamethrower. 'Nuff said.", "TotenkopfTrooperFlamethrower", "TK30A0" },
+			{ "SS Chaingun Trooper", "COMP_THREAT_4", "These super soldiers can take a beating and carry a chaingun. 'Nuff said.", "TotenkopfTrooperChaingun", "TK31A0" },
+			{ "SS Panzerschreck Trooper", "COMP_THREAT_4", "These super soldiers can take a beating and carry a panzerschreck. 'Nuff said.", "TotenkopfTrooperPanzerschreck", "TK32A0" },
+			{ "Mechanoid Stormtrooper", "COMP_THREAT_4", "The most dangerous mutant the Nazis have managed to mass produce, they carry an MG42 with a lightning quick draw speed. Charging at them will end in slaughter.", "TotenkopfMechanoidStormtrooper", "TK39A1" },
+			{ "Hans Grosse", "COMP_THREAT_4", "A heavily-armored, chaingun-wielding brute who bears an uncanny resemblance to Hans Grosse. Maybe he is Hans Grosse? Regardless, these guys are in good supply and hit hard.", "TotenkopfHansGrosse", "TK45A0" },
+			{ "Dr Schabbs (Mutant)", "COMP_THREAT_5", "No wonder the mutants are still being created! You thought you killed Dr. Schabbs back at Hollehammer, but he cheated death by injecting himself with an enhanced mix of his own mutant formula, turning him into this monstrosity.", "TotenkopfSchabbsMutant", "TK41A0" },
+			{ "SS Captain Narbengesicht", "COMP_THREAT_5", "The chief interrogator at Castle Totenkopf; his methods are sadistic and cruel. The man is so evil that even other Nazis are afraid of him. He never showed any of his victims mercy, so you should give him none in return.", "TotenkopfNarbengesicht", "TK40A0" },
+			{ "Panz Grosse", "COMP_THREAT_5", "Hans's bigger, meaner brother. He is no ordinary Grosse... he has so much armor that they call him a \"Human Panzer\".", "TotenkopfPanzGrosse", "TK43A0" },
+			{ "Totenkopf Mutant", "COMP_THREAT_6", "An abomination spawned from a horrific marriage of occult powers and twisted science. The Nazis had finally succeeded in creating a soldier that could never truly die. But it proved to be so destructive and uncontrollable that they had to lock it away and never let it out. While its hitpoints may be low, his projectiles hit hard and follow targets.", "TotenkopfDeathMutant", "TK44A0", "TotenkopfDeathMutantSpirit", "TK44M0" },
+		}
 	},
-	{
+	{{
 		{ "Ettin", "COMP_THREAT_2", "These horrid creatures are all that remains of the once proud Legionnaires. Less than human, they retain just enough of their memory to hate what they have become, and to hate you even more for what you still are. Fortunately for you, though, they are not particularly skillful foes.", "Ettin3", "ETTNA1" },
 		{ "Afrit", "COMP_THREAT_2", "These larger, nastier cousins of the gargoyles found in Heretic are more than happy to douse you in flames. The only nice thing about them is the satisfying splat they make when you shoot 'em from the sky.", "FireDemon3", "FDMNA1" },
 		{ "Dark Bishop", "COMP_THREAT_2", "Many of the more powerful leaders within the Church have been warped into mindless servants of the Serpent Riders, and their magical powers have been multiplied tenfold. These vile creatures are known as Dark Bishops, and though they are frail of limb, they are extremely powerful. They fire circling projectiles of magical jade that track your position, and the Bishop phases in and out of existence as they travel from place to place. A dangerous opponent by itself, a nightmare when encountered in groups. ", "Bishop3", "BISHA1" },
@@ -1096,8 +1257,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Menelkir", "COMP_THREAT_4", "The greatest Mage to occupy the Crystal Dais in centuries, it seems unlikely that Menelkir can be destroyed by any conventional force. Fighting him will be one of the greatest challenges of your life.", "MageBoss3", "MAGEA1" },
 		{ "Heresiarch", "COMP_THREAT_5", "As far beyond the Bishops as the Bishops are above common men, these blasphemous beings control forces capable of sending mere mortals screaming in terror. The Heresiarch knows several spells, including a strong reflective spell, two types of magical attack, and a summoning spell that gates in Dark Bishops to aid the Heresiarch. Only a superb warrior can defeat a Heresiarch without sustaining serious injury.", "Heresiarch3", "SORCA1" },
 		{ "Korax", "COMP_THREAT_5", "You have seen inhuman shapes before this, but surely even hell would never spawn such a being as Korax; his very presence fills you with horror, and you cannot begin to imagine what powers are contained within his twisted frame.", "Korax3", "CMPMH115" },
-	},
-	{
+	}},
+	{{
 		{ "Assault Trooper", "COMP_THREAT_2", "The green suited Assault Trooper is the basic alien ground assault trooper sent by the ruthless alien leaders to serve as the first offensive wave against Earth's defenses. They attack using a laser pistol, and can attack from the air by using jetpacks. When these characters are killed, they will sometimes drop pistol ammunition that you can take and use.", "AssaultTrooper", "ASTRA1" },
 		{ "Assault Captain", "COMP_THREAT_2", "The red suited Assault Captains have a wristmounted Phase induced Teleporter Device (PITD) capable of physically translocating its user to any destination within the device's range. Used as a tactical assault instrument, the PITD enables the Assault Captain to launch surprise attacks against his intended human targets at will. They will also sometimes drop pistol ammunition that you can take and use.", "AssaultCaptain", "ASCAA1" },
 		{ "Assault General", "COMP_THREAT_2", "If you thought the Trooper and Captain were bad, meet the general.", "AssaultGeneral", "ASGEA1" },
@@ -1121,8 +1282,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Cycloid Emperor", "COMP_THREAT_5", "The Cycloid Emperor is taller than the Battlelord and Overlord and can be recognized by its single-eyed \"face\" and huge tripod claw arms. Unlike the Battlelord, the Cycloid Emperor doesn't have a real physical weapon; it uses its claw arms as a barrel for firing missiles.", "CycloidEmperor", "CMPMDN21" },
 		{ "Alien Queen", "COMP_THREAT_6", "Although not directly stated, it is implied that the Alien Queen is the alien-human hybrid that was born at the beginning of The Birth. Her exact status and role in the overall alien hierarchy is not entirely known, but obviously, she is one of the leaders of the alien invaders and is the main source of Protector Drones.", "AlienQueen", "CMPMDN22" },
 		{ "Cyber Keef", "COMP_THREAT_6", "The CyberKeef is a gigantic, humanoid robot that bears a minor resemblance to Duke. The CyberKeef was created by the aliens to kill Duke and blow up the city along with him.", "CyberKeef", "CMPMDN23" },
-	},
-	{
+	}},
+	{{
 		{ "Simulacrum", "", "A simulacrum is a representation of something or someone. Durandal uses the word to describe the bio-android bombs manufactured by the Pfhor in the image of BOBs. They were designed and created by the Pfhor's Ministry for the Eradication Through Imitation of Hostile Species Unsuitable for Enslavement, or Phan Pfhar Sfaern-Wsawn Tshah in their native Pfhoric.", "MSimulacrum", "MSIMA1", "M2Simulacrum", "M_8HL1" },
 		{ "Pfhor Fighter Minor [Melee]", "", "The Pfhor (pronounced \"FOUR\") are an extraterrestrial space-faring race of slavers that attacked the UESC Marathon in 2794. The Fighter is most common enemy players will encounter in any of the Marathon games. Pfhor Fighters are basic enemies that come in a variety of colors denoting difficulty level. The weakest of the fighters is the minor fighter, it wears green armor and can only use its shock staff as a melee weapon.", "M1FighterMinor", "M_H2M1", "FighterMinor", "FIMIA1" },
 		{ "Pfhor Fighter Minor [Projectile]", "", "Next in rank is the minor projectile fighter. These ones wear orange armor, are tougher to beat, and can shoot ranged projectiles from their staff.", "M1ProjectileFighterMinor", "M_H6M1", "ProjectileFighterMinor", "PFMIA1" },
@@ -1161,8 +1322,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Mk 1 Pfhor Juggernaut", "", "The Pfhor Juggernauts or Utfoo Heavy Assault Crafts are the strongest enemies of the Marathon enemies. Juggernauts are equipped with close-range machine guns and long-range guided grenades.", "M1Juggernaut", "CMPMMA36" },
 		{ "Pfhor Juggernaut Minor", "", "Juggernauts are now given a new look, new weapons, and they no longer prioritize their weapons based on the distance to their target.", "JuggernautMinor", "CMPMMA37" },
 		{ "Pfhor Juggernaut Major", "", "Major Juggernauts have higher health and shoot more often. No doubt one of the deadliest enemies you will encounter.", "JuggernautMajor", "CMPMMA38" },
-	},
-	{
+	}},
+	{{
 		{ "Grunt", "", "Goons with probes inserted into their pleasure centers; wired up so when they kill someone, they get paroxysms of ecstasy. In essence, customized serial killers. Easy to kill, and they tote shotgun shells. It's like a little Christmas each time you blow a Grunt away!", "QGrunt", "CMPMQ101" },
 		{ "Rottweiler", "", "Bad, bad doggie! Play dead! -- blam! -- yipe! Good dog!", "Rottweiler", "CMPMQ102" },
 		{ "Enforcer", "", "Grunt, Mark Two. Recruits who are surlier and beefier than the rest get outfitted in combat armor and built-in blasters.", "QEnforcer", "CMPMQ103" },
@@ -1194,8 +1355,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Overlord", "", "This robed skeletal figure ominously floats with the environment. His attack? A ball of energy which tracks the player and detonates on impact.", "QOverlord", "CMPMQ129" },
 		{ "Dragon", "", "Everyone's been screaming for this enemy. He'll have you screaming too!", "Pterodactylus", "CMPMQ130" },
 		{ "Armagon", "", "Armagon is a half-biological, half-machine creature whom you probably face in the last level. Better get yourself a lot of ammo.", "QArmagon", "CMPMQ131" },
-	},
-	{
+	}},
+	{{
 		{ "Low Guard", "COMP_THREAT_2", "The grunt of the Oscuridos forces: they shoot, and when it's time to \"ask questions later,\" they shoot some more. \n\nSometimes you will find them already dead...they could be faking it!", "LowGuard", "LWGSA1" },
 		{ "Lightning Guard", "COMP_THREAT_3", "Trained for speedy maneuvers, watch out for lighting guards - they'll steal your stuff! Armed with a pistol. Once killed, you get your stuff back. \n\nSometimes they will appear as Heavy Guards, where they have a dang bazooka! \n\nLighting Guards can plead for their lives if they're almost dead. However, it's a ruse; if you let them live, they'll get back up and try and shoot you in the back.", "LightningGuard", "LIGWA1" },
 		{ "High Guard", "COMP_THREAT_2", "Armed with the old MP40 machine gun, these fellows enjoy perforating the enemy.", "HighGuard", "HIGHA1" },
@@ -1214,8 +1375,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "NME", "COMP_THREAT_6", "NME. Nasty Metallic Enforcer. A huge robot guard constructed as the last guard of El Oscuro's lair. Oh so deadly.", "NME", "RNMEA1" },
 		{ "El Oscuro", "COMP_THREAT_5", "The dark ancient force worshiped by the Oscuridos. With many magic attacks and awful surprises, you'll be dead twice before you notice your body is vaporized.", "TomHall", "TOMSA1" },
 		{ "Snake Oscuro", "COMP_THREAT_5", "You know for some guy dressed in a robe and is apparently worshipped by some deluded people; he doesn't seem that tough- \n\nWait, what the hell is he transforming into?", "SnakeTom", "TOM6A1" },
-	},
-	{
+	}},
+	{{
 		{ "Bio-Technicians", "", "Many of these guys are loyal to Dr. Goldfire, which means they'll waste you if they get the chance. But some can actually help you survive. Assuming you can find one at this point instead of a hostile one.", "Informant", "BSE4A1" },
 		{ "Sector Patrol", "", "The Sector Patrols aren't out to help anybody - especially you. This deadly pack packs the lethal slow-Fire Protector. So... knock 'em out quickly.", "SectorPatrol", "BS23A1" },
 		{ "Mutated Guard", "", "It has blue skin, a bloodstained uniform, pointed ears, and glowing red eyes. It appears vaguely human and is perhaps a result of the scientists' experiments to create a new mutant. They are sometimes encountered in an inactive state on gurneys but you'll probably just see them standing up ready to kill something that comes in their sight.", "MutatedGuard", "BS15A0" },
@@ -1246,8 +1407,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Crawler Beast", "", "The Crawler Beast is a boss that Blake once crossed paths with during his adventure. It is a powerfully-built mutant that crawls along the floor and spits acid.", "CrawlerBeast", "BS29A0" },
 		{ "Spector Demon", "", "The Spector Demon is a boss that Blake once crossed paths with during his adventure. It is a ghostly demon-like creature that throws clouds of energy. This alien's appearance hints that it may be a higher mutation of the High Energy Plasma Alien.", "SpectorDemon", "BS27A0" },
 		{ "Dr. Pyrus Goldfire", "", "Doctor Pyrus Goldfire is Blake Stone's greatest enemy. He has found a way to replicate pure gold, which he is using to fund his plan to take over with his deadly, mutant creations. He appears to carry a Slow Fire Protector. \n\nAfter Goldfire is killed, he transforms into an extremely powerful mutant. Morphed Dr. Goldfire shoots massive energy blasts that can kill the player extremely quickly. It remains unknown if Dr. Goldfire mutated himself or if he had alien origins.", "GoldFire", "BSE5A1", "GoldFireBoss", "BS31A0" },
-	},
-	{
+	}},
+	{{
 		{ "Cultist", "", "Tchernobog's human soldiers are accurate and deadly. Wielding shotguns these robed menaces give you a good fight. They may also lob dynamite at you from time to time, so listen for the telltale hiss and be ready to dive for cover.", "Cultist", "YCUFA1" },
 		{ "Acolyte", "", "These cultists-in-training lob dynamite at you. Keep your ears tuned for the deadly hiss of an incoming bundle. Careful, sometimes you will encounter an acolyte who is more aggressive when it comes to tossing bundles of TNT.", "BloodAcolyte", "YCU2A1" },
 		{ "Fanatic", "", "These Tommy Gun packin' keepers of the dark faith want to spill your precious life blood. Keep your ears tuned for the deadly sounds of dynamite as they sometimes offer explosives instead.", "Fanatic", "YCU8A1" },
@@ -1269,8 +1430,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Cerberus", "", "Named for the mythical guardian of the gates of Hell, this two-headed firebreathing demon abides in a dark, sulfurous den, hidden to the world of mortals. Ferocious and nigh invulnerable, Cerberus is the deadliest adversary you will face aside from Tchernobog himself. Remember that you must destroy both heads in order to defeat him.", "Cerberus", "CERBA1" },
 		{ "Beast [Boss]", "", "A more powerful version of the Beast; there is a reason why they were considered to be the next Chosen... before Caleb showed them their true place.", "BloodBeast_Boss", "BESWA1" },
 		{ "Tchernobog", "", "His name is spoken only in whispers, for it is said that his interest is easily roused. Those who peer fully into His smouldering gaze are condemned to madness and death. You must find Him before his powers become complete if you are to stand a chance. Even then, defeating Him will require all your strength and ingenuity.", "Tchernobog", "CMPMBL21" },
-	},
-	{
+	}},
+	{{
 		{ "Acolyte", "COMP_THREAT_2", "The Order uses Acolytes as guards and soldiers. They appear to be human, but no one is quite sure where they come from. They are armed with assault guns, so don't make them mad unless you are ready for a fight. At least they're not too bright. \n\nAcolytes come in eight different ranks, identified by their armor colors. \n\nFrom weakest to strongest:\n\nTan, Red, Rust, Gray, Dark Green, Gold, Light Green, Blue", "StrifeAcolyte", "AGRDA1", "StrifeAcolyte2", "AGR2A1", "StrifeAcolyte3", "AGR3A1", "StrifeAcolyte4", "AGR4A1", "StrifeAcolyte5", "AGR5A1", "StrifeAcolyte6", "AGR6A1", "StrifeAcolyte7", "AGR7A1", "StrifeAcolyte8", "AGR8A1" },
 		{ "Stalker", "COMP_THREAT_2", "They're the best reason yet for arachnophobia. Stalkers like to drop down on unsuspecting visitors and chew them up. Use the assault gun if they get too close. \n\nThey may either spawn on the ground or on the ceiling. Always be cautious.", "StrifeStalker", "STLKK1" },
 		{ "Sentinel", "COMP_THREAT_2", "They fly, they shoot, they seem to be everywhere. Keep your eyes (and ears) open for these guys, and drop them before they drop you.", "StrifeSentinel", "SEWRA1" },
@@ -1285,7 +1446,7 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Lore Master", "COMP_THREAT_4", "He is considered to be a religious leader, and the most powerful of all the Order's generals.", "StrifeLoremaster", "PRSTA1" },
 		{ "Alien Spectre", "COMP_THREAT_4", "They are mysterious creatures which appear as a cloud with one eye. They possess the bodies of various characters and bend their will to evil desires, making the possessed people into dangerous maniacs, only bent on searching for the Sigil in order to release their master, the Entity. Each Spectre takes a different amount of damage, depending on whose body they possess from.", "NewAlienSpectre1", "CMPMSQ13" },
 		{ "Entity", "COMP_THREAT_5", "The Entity, also known as \"The One God\", \"The True God\", and sometimes dubbed \"The Evil\", is a mysterious creature from outer space. It resembles the spectres, but it is larger and green. \n\nThere is one main entity which, when slain, splits into three smaller sub entities.", "StrifeEntity", "CMPMSQ14", "StrifeSubEntity", "CMPMSQ15" },
-	},
+	}},
 /*	{
 		{ "Zombieman", "COMP_THREAT_2", "Once a Marine, always a Marine. Except in this case. These guys may look like your old buddies, but now they're nothing more than pistol-toing, bi-pedal maggots. Waste em!", "ZombieMan64", "64POA1" },
 		{ "Sergeant", "COMP_THREAT_2", "Ditto. Except these guys are meaner, and tougher. These walking shotguns will provide you with a few extra holes if you're not careful.", "ShotgunGuy64", "64SPA1" },
@@ -1308,7 +1469,7 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Mother Demon", "COMP_THREAT_6", "The military episodes code named \"DOOM\" were not actually completed: A single entity with vast rejuvenation powers, masked by the extreme radiation. In its crippled state, it systematically altered decaying dead carnage back into corrupted living tissue. \n\nThe mutations are devastating. The Demons have returned even stronger and more vicious than before.", "MotherDemon64", "CMPMD219" },
 		{ "Nazi", "COMP_THREAT_2", "Members of the Schutzstaffel, they wear blue uniforms, bulletproof vests, and sadistic grins. They picked the wrong side of Hell to make their appearance!", "WolfensteinSSJagaur", "64SSA1" },
 	},*/
-	{
+	{{
 		{ "LSD (Land Security Droid)", "", "These fellows are the standard guards and are in generous supply. They are the basic grunts of the Citadel security force.", "LSD", "LSD1A1" },
 		{ "HSD (Hover Security Droid)", "", "This nasty will attack you relentlessly from the air. Explosives and rapid fire weapons are your only chances against these enemies.", "HSD", "HSD1A1" },
 		{ "Archer", "", "One of the common enemies you will encounter, they will attack by shooting a burst fire of arrows.", "EradArcher", "_SKEA1" },
@@ -1327,8 +1488,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "RSAOI", "", "This big tank is the guardian of the Ion Web Node. When you are in its sight, it will fire missiles at you. If you are lucky, he will fire four missiles at once.", "RSA", "CMPMER21" },
 		{ "Skaal", "", "The biolabs are protected by an ugly guardian known as Skaal. Avoid the green slime balls; they are poisonous, so you take damage overtime for a while if you get hit by one of them.", "Skaal", "CMPMER22" },
 		{ "G'or", "", "Guarding the Core, G'or is a big ugly flying something, and shoots these nasty smoking cinder projectiles. They do a lot of damage but are easy enough to dodge, however you absolutely MUST use strafing if you're a player who normally doesn't. If for some reason you get close to G'or, prepare to have a powerful tail attack in your face.", "GorBoss", "CMPMER23" },
-	},
-	{
+	}},
+	{{
 		{ "Ailoprobe", "", "This is the aliens' standard sentry. Its main purpose is to inform others of an intruder's presence. \n\nSometimes it will be harder to deal knockback on the Ailoprobes.", "Ailoprobe", "AILOB1" },
 		{ "Animated Probe", "", "This is the most efficient guard roaming the levels. It responds quickly to any noise and will fire relentlessly. Some are put on ambush mode and will attack in force from every direction. \n\nSometimes it will be harder to deal knockback on the Animated Probes.", "AnimatedProbe", "6PROA1" },
 		{ "Sector Probe", "", "The aliens feel that two flying eyeballs is not enough for probe patrol, so here is another one. Like with the Ailoprobe and Animated Probe, kill it on sight.", "C7SectorProbe", "7PRPA1" },
@@ -1347,8 +1508,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Solrac", "", "He resembles a demon in his actions and appearance. He fires blasts of energy from his eyes and it usually takes an alien weapon to kill him.", "Solrac", "5PROI0" },
 		{ "Tebazile", "", "This leader has the ability to change into another alien once he seems to be killed. Be very careful and don't assume anything.", "Tebazile", "C710A0" },
 		{ "Alien Teleport", "", "Not much intel was gathered for this... thing. But judging from its name that we managed to acquire, prepare to fight it along with the several aliens that it will summon to take you down!", "C7AlienTeleport", "C758A0" },
-	},
-	{
+	}},
+	{{
 		{ "Unit Bluesuit", "", "Your basic ATFOR (Anti-Terrorism Force) trooper is a lot like you: he's wearing light armor, packing a laser pistol, and he'd really rather go home. The difference is, his home is a quarter-million miles away, and the only way he's going to get back there is by ending this revolution-which means, his job is to kill you. You will generally prefer the outcome if you kill him, first. The distinguishing characteristic here is that all ATFOR uniforms are a bright blue. \n\nGot that? BLUE UNIFORM = BAD GUY.", "UNBluesuit", "RM81A1" },
 		{ "Unit Shock Trooper", "", "ATFOR battlesuits also come in a variety of flavors and their weaponry is comparable to ours, which is not surprising when you consider that most of ours was stolen from them.", "UnShockTrooper", "RM83A1" },
 		//{ "LDF Guard", "", "", "RMRLDFRegular", "RM77A1" },
@@ -1367,8 +1528,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Terran Commando", "", "The UN has pulled out the big guns with this commando. Or maybe not since his armor is decent so it probably won't take a lot of ammo to kill him. And speaking of ammo, the commando's rifle can shoot powerful purple orbs so watch out because he can probably easily kill you fast as well.", "TerranCommando", "RM75A1" },
 		{ "Subestron", "", "Not much into on whatever the heck this thing is. Some of the remaining LDF soldiers that are still on our side are spreading rumors that it flies around, has a lot of health, fires powerful red sparks, and is a total nightmare.", "SubestronBoss", "RM84C1" },
 		{ "ATF Jump Commando", "", "An improved version of the Terran Commando, this guy has a much tougher armor, can shoot more of those purple plasma bolts that pack a punch, and he even has a jetpack!", "RMRJCommando", "RM76A1" },
-	},
-	{
+	}},
+	{{
 		{ "Storm Trooper", "", "You know them, you hate them. The assault soldiers of Imperial power. They're not overly clever, they're armed with only a standard issue laser rifle, but they're fanatically loyal, doggedly persistent, and the Empire seems to have an endless supply of them.", "storm_trooper", "STRMG1" },
 		{ "Hoth Trooper", "", "These stormtroopers are deployed at Hoth, the snowy planet in the remote system. They're a bit tougher than the stormtroopers so take them out at once.", "hoth_trooper", "HOTHN1" },
 		{ "Imperial Officer", "", "The average Imperial Officer prides himself on not stooping to carrying a melee weapon, but, as you well know, their accuracy with the pistol more than compensates for this.", "DF_officer", "OFFCO1" },
@@ -1385,8 +1546,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Phase II Dark Trooper", "", "The Phase II dark trooper was the second and main stage of the Dark Trooper Project. Each droid was equipped with the external elements such as the suit, a jump pack, and an assault cannon capable of firing 400 plasma shells and 20 missiles before reloading. It was also capable of being loaded into hyperspace pods for transportation. The Phase II dark trooper was intended to be used either as an artificially intelligent droid or exoskeleton - either way, it was extremely effective in battle. A small number of these soldiers destroyed a Rebel base on Talay.", "phase2_DF", "PHA2A1" },
 		{ "Phase III Dark Trooper", "", "The Phase III dark trooper was the last and most powerful dark trooper exoskeleton/droid. It dwarfed even the Phase II dark trooper, and was intended to be the armor of the next generation of stormtroopers. It was sometimes even classified as a bipedal tank. Had the project come to full realization, it would have produced the perfect battlefield infantry unit-an amalgam of a clone's creativity, unpredictability, and initiative combined with the resilience and firepower of a heavy battle droid. The exoskeleton provided its wearer with increased firepower, strength, and durability. Only a small number of Phase III dark troopers were ever constructed; one was the armor of General Rom Mohc, who used it as an exosuit in single combat against Kyle Katarn during a battle onboard the colossal factory ship Arc Hammer.", "phase3_DF", "PHA3A1" },
 		{ "Jerec", "", "Jerec was a powerful Miraluka Jedi Master and Jedi archaeologist who turned to the dark side under the Empire, becoming a feared Inquisitor during the Galactic Civil War. Jerec was apprenticed to a Jedi archaeologist, Jocasta Nu, and became a Jedi archaeologist himself, versed in knowledge of the Jedi's past, especially the Sith. A Jedi Master during the Clone Wars, he was on a long-term deployment searching for ancient knowledge in the Unknown Regions when Order 66 was issued. Upon his return, Jerec was found by the Inquisitorius and turned to the dark side. \n\nJerec served the Empire as an Inquisitor for many years. However, Jerec was in truth devoted only to himself. One of the most powerful Dark Jedi in the Empire, Jerec continually sought ways to increase his power and take the Empire for himself. \n\nJerec is the one who murdered Kyle Katarn's father, and he is more than willing to utilize your anger to turn you to the dark side.", "jerec", "CMPMDF16" },
-	},
-	{
+	}},
+	{{
 		{ "Prisoner", "", "Hunter's Log: I thought I was going to use this log for weapon information, but it would be useful to use it for enemy info as well. Some of the enemies I encounter are escaped prisoners. The prisoners will punch me at sight so taking them out from a distance will guarantee me a kill.", "IPOGPrisoner", "IPO0B1" },
 		{ "Trooper", "", "Hunter's Log: I forgot what these troopers are from, but I don't care. I do care that they can shoot me. At least his peashooter doesn't do much damage.", "IPOGTrooper", "IPO1B1" },
 		{ "Galactic Elite Corp", "", "Hunter's Log: Hmm, so the Galactic Elite are after me? Maybe that's where the trooper came from... His weapon is a bit stronger, but he doesn't seem so elite for now.", "IPOGEliteCorp", "IPOAG0" },
@@ -1404,8 +1565,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Robot Sentinel", "", "Hunter's Log: Oh, where to begin with this one? Hmm... It can shoot a couple of missiles that deal a painful amount of damage, it's tall and takes a lot of ammunition to destroy, and it's a total eyesore.", "IPOGSentinal", "CMPMIG15" }, 
 		{ "B'rnourd", "", "Hunter's Log: I was on my way to assassinate the Chancellor and I end up meeting this guy. He does nothing but shoot fireballs at me. Giant fireballs that have the same amount of firepower as an actual meteor. Crap.", "IPOGBrnourd", "CMPMIG16" },
 		{ "Imperial Chancellor", "", "Hunter's Log: Assassinating some guy who does nothing but sit on his butt doing government stuff doesn't sound so hard. Aaaaaand, he can shoot a spread shot of powerful red laser beams that turn into floating red particles.", "IPOGChancellor", "IPOEB1" },
-	},
-	{
+	}},
+	{{
 		{ "Spike Ball", "", "They may look like ordinary flying balls, but once you are in its sight, spikes will pop out and it will charge at you. Take them down before they hit you. Silver ones do small damage. Gold ones do a bit more damage. Psionic ones, the red spike balls, do the most damage than the other two.", "DsrptSilverSpikeBall", "CMPMDS01", "DsrptGoldSpikeBall", "CMPMDS02", "DsrptPsionicSpikeBall", "CMPMDS03" },
 		{ "Mutant Soldier", "", "A colony at Triton, one of Neptune's moons, was overwhelmed with hostile aliens. Reports of mutants were starting to pop up. Some of the soldiers stationed at that colony are now mutated and must be put down at once.", "DisruptorMutantSoldier", "DISBA1" },
 		{ "Cryo-Pirate", "", "Even in outer space, it is a dangerous place. These space pirates definitely make it a bad place. They are armed with blasters that shoot a spread shot so watch out and kill them all.", "DisruptorCryopirate", "DIS9A1" },
@@ -1431,8 +1592,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Nightmare Sphere", "", "Enjoying the nightmare? Good. It is there to help erode your will... \n\nMeet the sphere. When you first encounter it, it will be invisible and pop up in thin air, so don't plan on giving it a surprise attack! Flies around and shoots yellow orbs at you that travel pretty fast.", "DisruptorNightmareSphere", "DS24F0" },
 		{ "Nightmare Demon", "", "Welcome to your true nightmare... \n\nWhen you first encounter it, it will be invisible and pop up in thin air, so don't plan on giving it a surprise attack! Flies around pretty fast and shoots yellow orbs at you that travel pretty slow but will deal a lot of damage.", "Nightmare_Demon", "DISOA1" },
 		{ "President Krieger", "", "President Krieger of Earth's United Nations. \n\nA former LightStormer Corps officer. \n\nYour worst enemy... \n\nHe is equipped with a customized Cyclone that not only deals more damage but comes with some new attacks that allows him to shoot homing spheres and a spread shot of deadly orbs. He is also equipped with a teleporter so be careful when you end it with Krieger.", "DS_PresidentK", "DS21A1" },
-	},
-	{
+	}},
+	{{
 		{ "Skeleton", "", "These undead are the result of death magic rituals deep within the Witchaven. Wandering without purpose, these damned souls claw at the living with contempt.", "WTSkeleton", "WH_FE1" },
 		{ "Forest Goblin", "", "Abandoned by the Witches for their innate weaknesses, the Forest Goblins are quickly being destroyed by the greater strength of the Desert Goblin tribe in a subterranean territorial war. Pushed to the higher levels near the surface, the Forest Goblins dine on rat meat and long for their Woodland home.", "ForestGoblin", "WH_0A1" },
 		{ "Mountain Goblin", "", "Merely average in strength and intelligence, the brown Mountain Goblins are the easiest to control of all the transplanted Goblin tribes. Existing primarily as servants of the Witches, the Mountain Goblins scout the surface of Char for invaders and occasionally carry out death missions on the weaker Forest Goblins.", "MountainGoblin", "WH_2A1" },
@@ -1469,8 +1630,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Dragon", "", "Little is known about these mighty creatures other than that they are native to the Nether Reaches and they are capable of breathing long columns of flame. It is assumed that they were brought through the veil by Illwhyrin, but it is possible that they came of their own free will. Few have attempted to engage these creatures in combat and though many would claim otherwise, there is no confirmed record of a dragon being slain.", "WitchavenDragon", "CMPMWH45" },
 		{ "Illwhyrin", "", "The most powerful of the Nether Reaches Order of Witches, Illwhyrin's abilities and ambitions are myriad. Since her emergence in the Prime Realms, she has led on the energies of her enemies and clouded the minds of the High King's subjects. A master of death magic, she is able to raise the dead, channel the forces of fire, and summon minions at will (mostly Willow Wisps). She toys with would be heroes, often appearing just long enough to render their weaponry useless before teleporting to the deeper levels of her Witchaven. Disconnected from her source of power in the Nether Reaches, Illwhyrin's strength dwindles daily, nevertheless each moment brings her closer to completing a permanent portal through the Veil. A portal that, once open, would replenish her dark energies and loose the forces of Chaos on a complacent world.", "WTIllwhyrin", "WH_WF1" },
 		{ "Cirae-Argoth", "", "One of the most powerful of the Nether-Teaches Order of Witches. A master of death magic, she is able to raise the dead, channel the forces of fire and summon minions at will. Illwhyrin's sister is very volatile and will stop at nothing to destroy her most hated foe, who murdered her sister. She will not be happy until she punishes you for the crimes you committed and bestows the hatred of her world upon you.", "WTCiraeArgoth", "WH_JJ1" },
-	},
-	{
+	}},
+	{{
 		{ "Headcrab", "COMP_THREAT_2", "The Headcrab can appear harmless at a glance: it is small and slow-moving with its tiptoe-like gait. Although it can quickly leap long distances using its hind legs, tilting its body upwards to turn its mouth towards its target, such an assault can only inflict minor injuries with the claws, legs and teeth. However, the Headcrab's main goal is not to kill, but to attach itself onto an appropriate host's head. Using its leaping ability, it can reach a host's head and attempt to burrow its beak through the skull. Once successful, the Headcrab takes control of the host's nervous system and causes physical alterations to the host's body, such as causing its hands to deteriorate into bony 'claws', via an unknown biological process. The host then rips open its own torso, revealing the stomach and other organs, for feeding purposes. Such a Headcrab-controlled host is commonly called a Zombie.", "Headcrab", "CMPMHL01" },
 		{ "Headcrab Zombies", "COMP_THREAT_2", "Once a Headcrab successfully attaches to a host, the Headcrab will assume control of all their motor functions, able to walk and attack with the host's arms and legs. Through some unknown biological process, the host's hands turn into long, skeletal claws and a massive hole appears in their chest lined with the host's ribs, becoming a makeshift \"mouth,\" with their ribs serving as teeth (Zombies have been observed to feed by ripping chunks of flesh off of corpses and stuffing them into this maw) Removal of the Headcrab reveals that the host's head is bent abnormally upwards, their hair is matted with blood, and their face is pale, with their eyes shut and mouth open in a frozen scream. \n\nThe zombie scientists are the weakest. The security guard zombies have a bit more health. The soldier zombies have the most health out of these types.", "Headcrab_Scientist", "CMPMHL02", "Headcrab_Barney", "CMPMHL03", "Headcrab_Soldier", "CMPMHL04" },
 		{ "Hazardous Environmental Combat Units", "COMP_THREAT_2", "[Not available in Opposing Force mode] \n\nYour government has sent in a dangerous and very efficient clean-up crew. Unfortunately, these military personnel don't only want to obliterate aliens, they're trying to permanently silence you and your co-workers, too. \n\nThey are either equipped with an MP5 or a SPAS-12 or even worse: an M249 Squad Automatic Weapon (SAW). \n\nOne of the soldiers equipped with an MP5 may have an M203 grenade launcher attached to his sub machine gun so be careful when you meet him. \n\nNOTE: The HECU is an enemy if you have Opposing Force mode disabled. If you have it enabled, the HECU generally serve as Adrian Shephard's allies.", "HECU_Grunt1", "CMPMHL05", "HECU_Shotgun1", "CMPMHL06", "HECU_M203", "CMPMHL07", "HECU_Commander1", "CMPMHL08", "HECU_Grunt1_Opp_MP5", "CMPMHL09", "HECU_Commander1_Opp_Shotgun", "CMPMHL10", "HECU_Major_Opp_Saw", "CMPMHL11" },
@@ -1500,8 +1661,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Gene Worm", "COMP_THREAT_5", "The Gene Worm is the most mysterious of the Race X aliens. This life form is said to be the equivalent of a \"biological resource management factory.\" It is suspected to be capable of taking any of Earth's natural resources and assimilating it to make them useful to the aliens' needs. If one fully entered Earth and became productive, he would effectively alter the planet enough to become useful as a new homeworld for Race X.", "Geneworm", "CMPMHL36" },
 		{ "Kingpin", "COMP_THREAT_6", "It is a large worm-like creature that appears to have a very large brain on its dorsal side, and has two large, scythe-like claws that are not unlike the Pit Drone's claws and are used in a similar fashion. It can move around by slithering on the ground or via teleportation. When (if) it dies, it will self-destruct in a manner similar to the Gargantua. \n\nIt is extremely hostile and will use its lighting attack to kill unarmored players instantly- unlike alien slaves that charge up their lightning bolts, the Kingpin can (and will) zap players the instant players come into its line of sight. As such, it is important to stay out of sight of this beast at all times and to engage it around corners and above cover. Its psionic attacks and psionic defenses have made it immune to missile weapons, although this is unconfirmed.", "HLKingpin", "CMPMHL37" },
 		{ "Combine Overwatch", "COMP_THREAT_2", "", "Combine_Soldier_MP7", "CMPMHL38", "Combine_Soldier_Shotgun", "CMPMHL39", "Combine_Elite_AR2", "CMPMHL40" },
-	},
-	{
+	}},
+	{{
 		{ "Evil Ninjas", "COMP_THREAT_0", "\"Zilla sends his regards, Lo Wang...\"\n\nBrown Ninja - Can do all player actions (climb, duck, hide behind boxes). Fires an Uzi or throws shurikens. Will suicide from lack of honor. \n\nRed Ninja - Can do everything his brown counterpart does, plus he can shoot small rockets at you. \n\nGray Ninja - Has the ability to launch grenades at you, and is tougher than normal. \n\nOrange Ninja - Has the added ability to shoot heat seeking rockets at you, and is tougher than normal. \n\nShadow Ninja - The most fearsome of the lot, this Ninja uses the ancient skills to stay nearly invisible. He can blast you with two type of magic napalm, or use blinding flash bombs on you.", "SWNinja", "NINJA1", "NinjaRed", "NIRJA1", "NinjaOrange", "NIOJA1", "NinjaGray", "NIGJA1", "NinjaDark", "NINJA1" },
 		{ "Henchmen", "COMP_THREAT_0", "Because evil ninjas were not enough, they had to send in totally annoying mercenaries to take out Lo Wang. \n\nHenchmen behave the same as Evil Ninjas but are generally a little weaker.", "SWHenchman", "HENCA1", "SWHenchmanRed", "HENDA1", "SWHenchmanGreen", "HENEA1", "SWHenchmanPurple", "HENFA1", "SWHenchmanOrange", "HENEA1" },
 		{ "Assassin", "COMP_THREAT_2", "These female warriors carry a lethal crossbow, and you will find yourself dodging bolts from long distances. When they get closer they will loft sticky bombs in your direction, making it hard to stand still. Treat these ladies with some respect.", "SWAssassin", "ASSAA1" },
@@ -1521,8 +1682,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Hung Lo", "COMP_THREAT_5", "Lo Wang's twin brother. And your worst enemy.", "LoWangBrother", "BROHA1" },
 		{ "Master Zilla", "COMP_THREAT_6", "Prepare well, Lo Wang, and heed all that Master Leep has taught you.", "MasterZilla", "CMPMSW28" },
 		{ "Forest Rabbit", "COMP_THREAT_1", "You may encounter some of these cute little creatures along the way. What you do with them is your business.", "SWRabbit", "BUNNA1" },
-	},
-	{
+	}},
+	{{
 		{ "Trooper", "", "The Trooper is the basic soldier of NeCrom's army, they are not particularly tough, but their ranged weapons make them dangerous if they see you first.", "CMTrooper", "C_TRA1" },
 		{ "Metacop", "", "Although they obviously serve the big corporations they are not necessarily corrupt and are committed to policing as fairly as possible. Do not make enemies of them as they can be helpful and are certainly fighting against NeCrom and his cronies.", "Metacop", "C_MTA1" },
 		{ "Stynx", "", "The Stynx are the thugs/thieves of the city, but naturally they are genetically engineered to improve their capacity for violence. The turn up in all kinds of roles including gangster, bouncer and security guard; they are not necessarily your enemy but most are.", "CMStynx", "C_YXA1" },
@@ -1547,8 +1708,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Sri-Feng", "", "These are the alien reptilian creatures that brought the Darklight powers to earth in the first place; so expect them to be good at them. They are also very tough and take a lot of killing, keep pounding them with conventional weapons so they have little time to unleash a power. Just before they do use a power their eyes glow red so run or duck behind something.", "Srifeng", "C_SFA1" },
 		{ "Fire Mother", "", "A creature almost as fabled as the Earthmother. In most of the stories she's depicted as a beautiful woman who rules absolutely over a secret citadel deep in the Unholy Zones. Some of the stories treat her as a villainess, others as a revolutionary leader, and still others as a mischievous trickster.", "Firemother", "C_FMA1" },
 		{ "Ne Crom", "", "A corporate warlord known for his ruthlessness and ambition. He is unofficially known to have extensive dealings with the denizens of the Unholy Zones. Dark rumors hint that he has strange - perhaps supernatural - powers.", "NeCrom", "C_NCA1" },
-	},
-	{
+	}},
+	{{
 		{ "Terrainian", "", "These hard-shelled and fast-moving arachnids try to leap up and latch on to you. Back off quickly and blast them with a ranged weapon. You can also crack their shell by jumping on them repeatedly.", "RedMite", "PSEND1" },
 		{ "BlueScorpion", "", "These creatures are no stranger to Egypt but don't expect to find a docile one around these parts. Kill it before it stings you!", "BlueScorpion", "P_BSA1" },
 		{ "Anubis Zombie", "", "The mighty Anubis, Guardian of the Dead. The bodies of those warriors who went before you have been animated by the Kilmaats in the likeness of Anubis. They hunt you down relentlessly, throwing out magical bolts of blue energy or raking you with sharp claws if you let them get too close.", "AnubisWarrior", "ANUBA1" },
@@ -1565,8 +1726,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Kilmaatikahn", "", "The leader of the Kilmaat forces here on Earth. Be afraid - be VERY afraid. \n\nAnd do not let your guard down when you kill her the first time. She still has one last trick up her sleeve...", "Kilmaatikahn", "CMPMPS14", "kilmaatikahn2", "KBOSW1" },
 		{ "Ancient Wasp", "", "Kilmaatikahn can summon strange creatures at her will. Wasps will pose a threat so take them out before Kilmaatikahn can summon more!", "KilmaatikahnWasp", "KBS2J1" },
 		{ "Mouth Parasite", "", "Kilmaatikahn can summon strange creatures at her will. Parasites will pose a threat so take them out before Kilmaatikahn can summon more!", "KilmaatMouthMinion", "KBS2H1" },
-	},
-	{
+	}},
+	{{
 		{ "Old Skinny Coot", "", "Most of the town folk are a bit scared of that skinny old coot. No one can say for sure how old he is, but he's been livin' round here since long before anyone else can remember. Folks say he's been touched by some bad mojo, and now he cain't be killed. A few people have even claimed that they've actually seen the old man die. Somehow though, he always manages to come back. To make things worse, the old fart hates tresspassers, and thinks he owns the whole county. Hell, he's so damn old that maybe that's not so impossible to believe.", "OldSkinnyCoot", "S_O2A1" },
 		{ "Groovy Old Coot", "", "We figured that after winning a free trip to Vegas at the Hickston Bingo Parlor, the skinny old coot might loosen up a might. Fat chance. All he did was come back from Vegas with a heap o' new shirts and pants, and he picked up some of that Vegas hipsters talk to boot. Seems that he's even more pissed off than before 'cause he lost all his entitlement money, and rumor has it that he even lost his land in a poker game. Our advice? Avoid this ornery old sumbitch at all costs, and if you seem, put on a pair of sunglasses... Jeez them shirts is loud!", "BlueGroovyOldCoot", "SCOOA1", "RedGroovyOldCoot", "SCO_A1", "GreenGroovyOldCoot", "_SCOA1", "BrownGroovyOldCoot", "SC_OA1", "RedPantsGroovyOldCoot", "S_COA1", "WhiteGroovyOldCoot", "SCO2A1" },
 		{ "Billy Ray Jeeter", "", "Billy Ray has always been a bit of a loner, and doesn't care much for comp'ny (even though he does consider most folks to be his cousin, an' in his case, he's likely right). Like many folk round these parts, Billy Ray swims in the shallow end of the gene pool, if'n you catch my drift. Because of several generations of...errrr...selective breedin', he is one mammoth of a man. That boy's skull is so thick I swear you could crack a bowlin' ball on it. \n\nI heard a rumor about Billy Ray recently. Word has it he was out frog giggin' in the swamp late one night, and one of them alien space ships sucked his big ass up. They say they done cloned that boy, but was so disappointed with the results, they dumped the whole lot back into the swamp. Now I guess there's supposed to be hundreds of them Billy Ray clones traipsin' about, and no one knows which is the original. Hell, I don't see what's so hard to figger out...just look for the one with the corn mash on his breath. ", "BillyRayJeeter", "BRJTA1" },
@@ -1590,8 +1751,8 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "King Hulk", "", "I only believe in one king, the King of Rock N' Roll! This bastard can fire one hell of a laser cannon and will plant those spikey dinosaur turf shit mines all around. And he smells like dog piss!", "KingHulk", "_ULKA1" },
 		{ "Ass Face", "", "Well sweet Jesus on a flying unicorn humping its sweet cornbread doll! I suppose the locals around here call him Ass Face for a reason. What more can I say? He shits out turd minions from his butt and craps out poo from his mouth. And all that's poo making me hungry but for the wrong reasons. Boy oh boy, this son of a gun is toast!", "AssFace", "CMPMRR43" },
 		{ "Queen Vixen", "", "Well cover me in gravy and set mah ass on fire! And I thought the regular Alien Vixens were so purty and kick ass. She ain't no quick rodeo so I better take care of her without getting mah ass killed!", "QueenVixen", "VIX7E1" },
-	},
-	{
+	}},
+	{{
 		{ "Light Guard", "COMP_THREAT_2", "Weakest of the three processed humans, armed solely with a simple blaster.", "Q2LightGuard", "CMPMQ201" },
 		{ "Shotgun Guard", "COMP_THREAT_2", "These loyal troops have an automatic scatter gun prosthetic.", "Q2ShotgunGuard", "CMPMQ202" },
 		{ "Machine Gun Guard", "COMP_THREAT_2", "Bigger, meaner, and deadlier than above... with a machine gun for a right arm.", "Q2MachinegunGuard", "CMPMQ203" },
@@ -1626,37 +1787,12 @@ str MonsterInfo[CLASSCOUNT][64][21] =
 		{ "Carrier", "COMP_THREAT_5", "They don't call this guy, the Carrier for nothing. Make sure to concentrate your fire on it first and then take care of those pesky Flyers.", "Q2Carrier", "CMPMQ232" },
 		{ "The Makron", "COMP_THREAT_5", "The Jorg is a Strogg exoskeleton piloted by the Strogg leader, the Makron. The Jorg is one of the most powerful enemies, second only to the Makron himself. After destroying the leader's communication, Bitterman chases the Makron to the rooftop of the Palace and through a teleporter that leads to the Final Showdown. It's here that the Bitterman confronts the Makron one on one. The Makron will always go into battle piloting the Jorg and will use it until it succumbs to damage, at which point the Makron will dismount it and attack the player on his own. \n\nThe Makron is the codename given by Humans to the supreme leader of the Strogg, chosen from the warlords based on strength, power, and endurance. The Makron resides in the northern area of Cerberon in the Palace City, where he commands the planet. The Makron serves as the link for all the Stroggs and his death would be catastrophic for thier forces as they are left confused and in turmoil.", "Q2Makron", "CMPMQ233", "Q2Jorg", "CMPMQ234" },
 		{ "Black Widow Guardian", "COMP_THREAT_6", "The Black Widow is found in the Widow's Lair, protecting the Gravity Well and must be defeated to gain access to the Gravity Well's computer in order to plant the anti-matter bomb. As well as having the ability to spawn in Stalkers, the Widow is one of the few Strogg who have two forms. When her first form is defeated, she will teleport away and return moments later, suited up with stronger armor and more powerful weapons.", "Q2Widow", "CMPMQ235", "Q2Widow2", "CMPMQ236" },
-	},
-	{
-	},
-	{
+	}},
+	{{
+	}},
+	{{
 		{ "Siberian Guard (Arkangelsk)", "COMP_THREAT_1", "", "Goldeneye_GreatGuard2", "TK14A1" },
-	},
-	{
-		{ "Wehrmacht Guard", "COMP_THREAT_1", "The standard German soldier. They are the most common enemy. \n\nThese guards are simply armed with a Walther P38.", "TotenkopfGuard", "TK14A1", "TotenkopfGuard2", "TK15A1" },
-		{ "Wehrmacht Rifleman", "COMP_THREAT_1", "The standard German soldier. They are the most common enemy. \n\nThese guards are armed with a Kar98k which could be a threat in the long distance.", "TotenkopfRifleman", "TK16A1" },
-		{ "Wehrmacht Infantry", "COMP_THREAT_2", "The standard German soldier. They are the most common enemy. \n\nThese guards are armed with an MP40 which can chew down your health quickly.", "TotenkopfInfantry", "TK17A1", "TotenkopfInfantry2", "TK18A1" },
-		{ "Wehrmacht Officer", "COMP_THREAT_2", "The standard German soldier. They are the most common enemy. \n\nThese officers can carry P38s or MP40s, and can use them to a more deadly effect.", "TotenkopfOfficer", "TK19A1", "TotenkopfOfficer2", "TK20A1" },
-		{ "SS Infantry", "COMP_THREAT_2", "Also known as Himmler's \"Blackshirts\", S.S. guards are brutal.\n\nThese guys will perforate you with their MP40 machineguns.", "TotenkopfSS", "TK21A1", "TotenkopfSSInfantry", "TK23A1" },
-		{ "SS Rifleman", "COMP_THREAT_2", "Also known as Himmler's \"Blackshirts\", S.S. guards are brutal.\n\nThese guys carry a Kar98k which can pinch you from a range.", "TotenkopfSSRifleman", "TK22A1" },
-		{ "SS Officer", "COMP_THREAT_2", "Also known as Himmler's \"Blackshirts\", S.S. guards are brutal. S.S. Officers are even deadlier since they are better trained!", "TotenkopfSSOfficer", "TK24A1", "TotenkopfSSOfficer2", "TK25A1" },
-		{ "Dogs", "COMP_THREAT_1", "These German shepherds are trained to attack intruders. They are weak, but vicious!", "TotenkopfDog", "TK33A1", "TotenkopfDog2", "TK34A1" },
-		{ "Scientist", "COMP_THREAT_1", "The scientists are both responsible for mass producing mutants and keeping them in check.\n\nThey only carry a Walther P38.", "TotenkopfScientist", "TK37A1", "TotenkopfScientist2", "TK38A1" },
-		{ "Mutant", "COMP_THREAT_3", "Prisoners from Castle Totenkopf were often \"volunteered\" to participate in the Nazis experiments. These are the results. They have a third arm in their chest which carries an MP40 and 2 pistols in their hands.", "TotenkopfMutant", "TK35A1", "TotenkopfMutant2", "TK36A1" },
-		{ "Waffen SS", "COMP_THREAT_3", "These elite soldiers are some of the meanest, toughest Nazis around. They wear armor and carry assault rifles!", "TotenkopfWaffenSS", "TK26A1", "TotenkopfWaffenSS2", "TK27A1", "TotenkopfWaffenSS3", "TK28A1", "TotenkopfWaffenSSOfficer", "TK29A1" },
-		{ "Ghost", "COMP_THREAT_2", "They did not really inhabit Castle Totenkopf, but they came from other foiled Nazi projects involving super natural forces. As a result, these ghosts can be killed. They are no threat unless they get close.", "TotenkopfGhost", "TK49A0" },
-		{ "Lightning Monk", "COMP_THREAT_3", "They did not really inhabit Castle Totenkopf, but they came from other foiled Nazi projects involving super natural forces. These monks can shoot spheres of lightning.", "TotenkopfMonk", "TK46A0" },
-		{ "Flame Monk", "COMP_THREAT_3", "They did not really inhabit Castle Totenkopf, but they came from other foiled Nazi projects involving super natural forces. These monks can shoot streams of flames at you.", "TotenkopfMonk2", "TK48A0" },
-		{ "SS Flamethrower Trooper", "COMP_THREAT_4", "These super soldiers can take a beating and carry a flamethrower. 'Nuff said.", "TotenkopfTrooperFlamethrower", "TK30A0" },
-		{ "SS Chaingun Trooper", "COMP_THREAT_4", "These super soldiers can take a beating and carry a chaingun. 'Nuff said.", "TotenkopfTrooperChaingun", "TK31A0" },
-		{ "SS Panzerschreck Trooper", "COMP_THREAT_4", "These super soldiers can take a beating and carry a panzerschreck. 'Nuff said.", "TotenkopfTrooperPanzerschreck", "TK32A0" },
-		{ "Mechanoid Stormtrooper", "COMP_THREAT_4", "The most dangerous mutant the Nazis have managed to mass produce, they carry an MG42 with a lightning quick draw speed. Charging at them will end in slaughter.", "TotenkopfMechanoidStormtrooper", "TK39A1" },
-		{ "Hans Grosse", "COMP_THREAT_4", "A heavily-armored, chaingun-wielding brute who bears an uncanny resemblance to Hans Grosse. Maybe he is Hans Grosse? Regardless, these guys are in good supply and hit hard.", "TotenkopfHansGrosse", "TK45A0" },
-		{ "Dr Schabbs (Mutant)", "COMP_THREAT_5", "No wonder the mutants are still being created! You thought you killed Dr. Schabbs back at Hollehammer, but he cheated death by injecting himself with an enhanced mix of his own mutant formula, turning him into this monstrosity.", "TotenkopfSchabbsMutant", "TK41A0" },
-		{ "SS Captain Narbengesicht", "COMP_THREAT_5", "The chief interrogator at Castle Totenkopf; his methods are sadistic and cruel. The man is so evil that even other Nazis are afraid of him. He never showed any of his victims mercy, so you should give him none in return.", "TotenkopfNarbengesicht", "TK40A0" },
-		{ "Panz Grosse", "COMP_THREAT_5", "Hans's bigger, meaner brother. He is no ordinary Grosse... he has so much armor that they call him a \"Human Panzer\".", "TotenkopfPanzGrosse", "TK43A0" },
-		{ "Totenkopf Mutant", "COMP_THREAT_6", "An abomination spawned from a horrific marriage of occult powers and twisted science. The Nazis had finally succeeded in creating a soldier that could never truly die. But it proved to be so destructive and uncontrollable that they had to lock it away and never let it out. While its hitpoints may be low, his projectiles hit hard and follow targets.", "TotenkopfDeathMutant", "TK44A0", "TotenkopfDeathMutantSpirit", "TK44M0" },
-	},
+	}},
 };
 
 // I don't see the need to congest the regular hero arrays with double the length for one hero, so I will bite a bullet and make a separate one
@@ -1678,7 +1814,7 @@ Script "Samsara_Compendium_Initiate" (void) Net
 
 Script "Samsara_Compendium" (void) Net Clientside
 {
-	int cursorx, cursory, offsety, offsetx, menuindex, lastmenuindex, a, menutab, lastmenutab, menuitem, lastmenuitem, scrollcounter, scrolltimer, index, scalex, scaley, hitpoints, newtid, listyposition, listindex, condition, listclick, monsterskin, altskin, prevskin;
+	int cursorx, cursory, offsety, offsetx, menuindex, lastmenuindex, a, menutab, lastmenutab, menuitem, lastmenuitem, scrollcounter, scrolltimer, index, scalex, scaley, hitpoints, newtid, listyposition, listindex, condition, listclick, monsterskin, altskin, prevskin, monsteraccess;
 	str seesound, activesound, painsound, deathsound, description;
 	int hudboundsx = 1440;
 	int hudboundsy = 972;
@@ -1808,6 +1944,13 @@ Script "Samsara_Compendium" (void) Net Clientside
 					listindex = 1;
 					removemessages(16180,16185);
 				}
+				if(altskin != prevskin)
+				{
+					listyposition = 0;
+					menuitem = 1;
+					listindex = 1;
+				}
+					
 				SelectionColors[0] = ClassInfo[menuindex-1][altskin][25];
 				SelectionColors[1] = ClassInfo[menuindex-1][altskin][26];
 				prevskin = altskin;
@@ -1921,10 +2064,26 @@ Script "Samsara_Compendium" (void) Net Clientside
 			{
 				SetHudSize(hudboundsx,hudboundsy,true);
 				SetFont("SAMCMPB4");
-				SetHudClipRect(FixedMul(hudboundsx,0.25),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.7),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.675));
-				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16185, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
-				SetHudClipRect(FixedMul(hudboundsx,0.049),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.1755),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.115));
-				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16184, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				if(StrLen(HeroInformation[menuindex-1][altskin][menuitem-1][2]) != 0)
+				{
+					SetHudClipRect(FixedMul(hudboundsx,0.25),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.5),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.475));
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16185, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					SetHudClipRect(FixedMul(hudboundsx,0.049),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.1755),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.115));
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16184, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					SetHudClipRect(FixedMul(hudboundsx,0.775),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.175),FixedMul(hudboundsy,0.25),FixedMul(hudboundsx,0.15));
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16183, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					SetHudClipRect(FixedMul(hudboundsx,0.775),FixedMul(hudboundsy,0.45),FixedMul(hudboundsx,0.175),FixedMul(hudboundsy,0.5),FixedMul(hudboundsx,0.15));
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16182, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				}
+				else
+				{
+					SetHudClipRect(FixedMul(hudboundsx,0.25),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.7),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.675));
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16185, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					SetHudClipRect(FixedMul(hudboundsx,0.049),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.1755),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.115));
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16184, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16183, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16182, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				}
 				SetHudClipRect(0,0,0,0,0);
 				index = -1;
 				SetFont(ClassInfo[(menuindex-1)][altskin][13]);
@@ -2047,10 +2206,14 @@ Script "Samsara_Compendium" (void) Net Clientside
 				SetHudClipRect(FixedMul(fontscaledx,0.05),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.1755),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.2));
 				for(a = 1; a < 65; a++)
 				{
-					if(StrLen(MonsterInfo[menuindex-1][a-1][0]) != 0)
+					if(StrLen(ClassInfo[menuindex-1][altskin][27]) != 0)
+						monsteraccess = altskin;
+					else
+						monsteraccess = 0;
+					if(StrLen(MonsterInfo[menuindex-1][monsteraccess][a-1][0]) != 0)
 					{
 						index++;
-						HudMessage(s:MonsterInfo[menuindex-1][a-1][0]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+index, SelectionColors[(menuitem==index+1)], (FixedMul(fontscaledx*2,0.0685)<<16)+0.4, FixedMul(fontscaledy*2,0.105+(0.025*(index-listyposition)))<<16, 0);
+						HudMessage(s:MonsterInfo[menuindex-1][monsteraccess][a-1][0]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+index, SelectionColors[(menuitem==index+1)], (FixedMul(fontscaledx*2,0.0685)<<16)+0.4, FixedMul(fontscaledy*2,0.105+(0.025*(index-listyposition)))<<16, 0);
 						//SetHudSize(hudboundsx,hudboundsy,true);
 						if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
 						{
@@ -2095,12 +2258,21 @@ Script "Samsara_Compendium" (void) Net Clientside
 			//Tab Specific Info
 			if(menutab == 1)
 			{
-				SetFont(ClassInfo[(menuindex-1)][altskin][15]);
-				//SetHudSize(hudcenterx,hudcentery,true);
 				fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][1]);
 				fontscaledy = FixedMul(hudcentery,ClassFontScales[menuindex-1][1]);
+				if(StrLen(HeroInformation[menuindex-1][altskin][menuitem-1][2]) != 0)
+				{
+					SetHudSize(hudcenterx,hudcentery,true);
+					SetFont(HeroInformation[menuindex-1][altskin][menuitem-1][2]);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16016, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.855)<<16)+0.1, (FixedMul(hudcentery,0.31)<<16)+0.1, 0);
+					SetHudClipRect(FixedMul(fontscaledx,0.25),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.5),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.475));
+				}
+				else
+					SetHudClipRect(FixedMul(fontscaledx,0.25),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.7),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.675));
+				
+				//SetHudSize(hudcenterx,hudcentery,true);
+				SetFont(ClassInfo[(menuindex-1)][altskin][15]);
 				SetHudSize(fontscaledx,fontscaledy,true);
-				SetHudClipRect(FixedMul(fontscaledx,0.25),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.7),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.675));
 				description = HeroInformation[menuindex-1][altskin][menuitem-1][1];
 				HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.26)<<16)+0.1, floorwhole(scrollcounter*ClassFontScales[menuindex-1][1])+(88*ClassFontScales[menuindex-1][1])+0.1, 0);
 				/*if(menuitem == 1)
@@ -2184,13 +2356,13 @@ Script "Samsara_Compendium" (void) Net Clientside
 				fontscaledy = FixedMul(hudcentery,ClassFontScales[menuindex-1][1]);
 				SetHudSize(fontscaledx,fontscaledy,true);
 				SetHudClipRect(FixedMul(fontscaledx,0.25),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.5),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.475));
-				description = MonsterInfo[menuindex-1][menuitem-1][2];
+				description = MonsterInfo[menuindex-1][monsteraccess][menuitem-1][2];
 				HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16015, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.26)<<16)+0.1, floorwhole(scrollcounter*ClassFontScales[menuindex-1][1])+(88*ClassFontScales[menuindex-1][1])+0.1, 0);	
 				SetHudClipRect(0,0,0,0,0);		
-				if(StrLen(MonsterInfo[menuindex-1][menuitem-1][0]) != 0)
+				if(StrLen(MonsterInfo[menuindex-1][monsteraccess][menuitem-1][0]) != 0)
 				{			
 					newtid = UniqueTid();
-					SpawnForced(MonsterInfo[menuindex-1][menuitem-1][3+(2*monsterskin)],0,0,0,newtid,0);
+					SpawnForced(MonsterInfo[menuindex-1][monsteraccess][menuitem-1][3+(2*monsterskin)],0,0,0,newtid,0);
 					
 					scalex = GetActorProperty(newtid,APROP_SCALEX);
 					scaley = GetActorProperty(newtid,APROP_SCALEY);
@@ -2198,8 +2370,8 @@ Script "Samsara_Compendium" (void) Net Clientside
 					
 					SetHudClipRect(FixedMul(fontscaledx,0.775),FixedMul(fontscaledy,0.5),FixedMul(fontscaledx,0.175),FixedMul(fontscaledy,0.45),FixedMul(fontscaledx,0.15));
 					HudMessage(s:"Health: ", d:hitpoints; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16160, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.7825)<<16)+0.1, (FixedMul(fontscaledy,0.51)<<16)+0.1, 0);	
-					HudMessage(l:MonsterInfo[menuindex-1][menuitem-1][1]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16161, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.7825)<<16)+0.1, (FixedMul(fontscaledy,0.54)<<16)+0.1, 0);	
-					HudMessage(s:"Spawn Class: ", s:MonsterInfo[menuindex-1][menuitem-1][3+(2*monsterskin)]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16162, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.7825)<<16)+0.1, (FixedMul(fontscaledy,0.59)<<16)+0.1, 0);	
+					HudMessage(l:MonsterInfo[menuindex-1][monsteraccess][menuitem-1][1]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16161, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.7825)<<16)+0.1, (FixedMul(fontscaledy,0.54)<<16)+0.1, 0);	
+					HudMessage(s:"Spawn Class: ", s:MonsterInfo[menuindex-1][monsteraccess][menuitem-1][3+(2*monsterskin)]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16162, ClassInfo[(menuindex-1)][altskin][16], (FixedMul(fontscaledx,0.7825)<<16)+0.1, (FixedMul(fontscaledy,0.59)<<16)+0.1, 0);	
 					SetHudClipRect(0,0,0,0,0);
 					SetHudSize(hudcenterx,hudcentery,true);
 					
@@ -2265,12 +2437,12 @@ Script "Samsara_Compendium" (void) Net Clientside
 					else { RemoveMessages(16158,16158); }
 					Thing_remove(newtid);
 					SetHudSize(FixedDiv(hudcenterx,scalex),FixedDiv(hudcentery,scaley),true);
-					SetFont(MonsterInfo[menuindex-1][menuitem-1][4+(2*monsterskin)]);
+					SetFont(MonsterInfo[menuindex-1][monsteraccess][menuitem-1][4+(2*monsterskin)]);
 					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16016, CR_UNTRANSLATED, (FixedMul(FixedDiv(hudcenterx,scalex),0.86)<<16)+0.5, (FixedMul(FixedDiv(hudcentery,scaley),0.4)<<16)+0.1, 0);
 				}
 				if (buttons & (BT_USE|BT_ATTACK))
 				{
-					if(strlen(MonsterInfo[menuindex-1][menuitem-1][5+((monsterskin)*2)]) != 0)
+					if(strlen(MonsterInfo[menuindex-1][monsteraccess][menuitem-1][5+((monsterskin)*2)]) != 0)
 					{
 						if((cursorx < FixedMul(hudboundsx,0.86)+120 && cursorx > FixedMul(hudboundsx,0.86)-120) && (cursory < FixedMul(hudboundsy,0.295)+120 && cursory > FixedMul(hudboundsy,0.295)-120) && buttons != oldbuttons)
 						{ 
@@ -2291,7 +2463,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 				
 				if(abs(forwardmove) > 8 && buttons != oldbuttons)
 				{
-					if(StrLen(MonsterInfo[menuindex-1][(menuitem-1)-sign(forwardmove)][0]) != 0) 
+					if(StrLen(MonsterInfo[menuindex-1][monsteraccess][(menuitem-1)-sign(forwardmove)][0]) != 0) 
 					{ 
 						listindex-=sign(forwardmove); 
 						condition = (FixedMul(hudboundsy*2,0.1+(0.025*(listindex-listyposition))) > FixedMul(hudboundsy,0.95));
@@ -2308,7 +2480,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 							if(condition)
 								listyposition+=condition;
 								
-							if(StrLen(MonsterInfo[menuindex-1][a][0]) == 0) { menuitem = a; listindex = menuitem; break; }
+							if(StrLen(MonsterInfo[menuindex-1][monsteraccess][a][0]) == 0) { menuitem = a; listindex = menuitem; break; }
 						}
 					}
 					else { listindex = 1; listyposition = 0; }		
@@ -2358,20 +2530,27 @@ Script "Samsara_Compendium" (void) Net Clientside
 			
 			if(StrLen(ClassInfo[(menuindex-1)][1][0]) != 0)
 			{			
-				if(altskin!=true)
+				/*if(altskin!=true)
 					SetFont("CMPSKNT2");
 				else
-					SetFont("CMPSKNT1");
-				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16028, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.18)<<16)+0.1, FixedMul(hudcentery,0.143)*1.0, 0, 0.9);
-				
+					SetFont("CMPSKNT1");*/
+					
+				SetFont("CMPSKNT2");
 				if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
 				{		
 					if(((cursorx < (FixedMul(hudcenterx,0.41)+32) && cursorx > (FixedMul(hudcenterx,0.41)-32)) && (cursory < FixedMul(hudcentery,0.275)+32 && cursory > FixedMul(hudcentery,0.275)-32)) && buttons != oldbuttons)
 					{	
+						SetFont("CMPSKNT1");
 						LocalAmbientSound("marathon/shieldhit",88);
-						altskin = !altskin;
+						if(StrLen(ClassInfo[(menuindex-1)][altskin+1][0]) != 0 && (menuindex) == ClassInfo[menuindex-1][altskin+1][1])
+							altskin++;
+						else
+							altskin = 0;
+						
+						//altskin = !altskin;
 					}
 				}
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16028, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.18)<<16)+0.1, FixedMul(hudcentery,0.143)*1.0, 0, 0.9);
 			}
 			
 			//======================================================================================================== Back button

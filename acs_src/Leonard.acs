@@ -55,7 +55,7 @@ Script "BubbaGiver" (int type) // Decorate isn't working, try something else
 
 Script "LeonardLoop" enter
 {
-	int drinkdecay, fooddecay;
+	int drinkdecay, fooddecay, foodreduction, alcoholreduction;
 	If(CheckInventory("RRClass"))
 	{
 		if(!GetCvar("sams_cl_alcoholgut"))
@@ -67,12 +67,16 @@ Script "LeonardLoop" enter
 		}
 		else // no escaping the consequences of your actions, so these will just freeze
 		{
-			if(CheckInventory("RRDrunkAmount") >= 70)
+			if(CheckInventory("RRDrunkAmount") >= 50)
 			{
-				if(!CheckWeapon("RedneckMotorcycle"))
-					SetActorProperty(0, APROP_Speed, -1.0);
-					
-				GiveInventory("RRDrunkToken", 1);
+				if(CheckInventory("RRDrunkAmount") >= 70)
+				{
+					if(!CheckWeapon("RedneckMotorcycle"))
+						SetActorProperty(0, APROP_Speed, -1.0);
+						
+					GiveInventory("RRDrunkToken", 1);
+				}
+				alcoholreduction = 1;
 			}
 			else
 			{
@@ -80,6 +84,7 @@ Script "LeonardLoop" enter
 					SetActorProperty(0, APROP_Speed, 1.0);
 					
 				TakeInventory("RRDrunkToken", 1);
+				alcoholreduction = 0;
 			}
 
 			if(CheckInventory("RRDrunkAmount") == 100)
@@ -92,16 +97,24 @@ Script "LeonardLoop" enter
 			}
 			
 		
-			if(CheckInventory("RRFoodAmount") >= 50)
+			if(CheckInventory("RRFoodAmount") >= 40)
 			{
-				int fartchance = random(0,50000);
-				if(fartchance < CheckInventory("RRFoodAmount"))
+				if(CheckInventory("RRFoodAmount") >= 50)
 				{
-					Playsound(0, "Leonard/Fart", CHAN_VOICE, 1.0, false);
-					ThrustThing(GetActorAngle(0) >> 8, 4, 0, 0);
-					SpawnProjectile(0,"RRFartAlert",0,0,0,0,0);
+					int fartchance = random(0,50000);
+					if(fartchance < CheckInventory("RRFoodAmount"))
+					{
+						Playsound(0, "Leonard/Fart", CHAN_VOICE, 1.0, false);
+						ThrustThing(GetActorAngle(0) >> 8, 4, 0, 0);
+						SpawnProjectile(0,"RRFartAlert",0,0,0,0,0);
+					}
 				}
+				foodreduction = 1;
 			}
+			else
+				foodreduction = 0;
+			
+			SetActorProperty(0,APROP_DamageFactor,1.0-(foodreduction*0.25)-(alcoholreduction*0.25));
 			
 			drinkdecay++;
 			fooddecay++;
