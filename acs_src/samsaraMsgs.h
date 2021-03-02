@@ -2255,7 +2255,7 @@ int ClassPickupMessages[CLASSCOUNT][SLOTCOUNT][MSGCOUNT] =
 		{ "Laser","","","","","","","","","",},
 		{ "","","","","","","","","","",},
 	},	
-	{
+/*	{
 		{ "Knife","","","","","","","","","",},
 		{ "M712 Rapid-Fire Pistol","","","","","","","","","",},
 		{ "Walther P38 Pistol","","","","","","","","","",},
@@ -2266,7 +2266,7 @@ int ClassPickupMessages[CLASSCOUNT][SLOTCOUNT][MSGCOUNT] =
 		{ "Chaingun","","","","","","","","","",},
 		{ "Flakgun","","","","","","","","","",},
 		{ "","","","","","","","","","",},
-	},	
+	},	*/
 };
 
 
@@ -2509,7 +2509,7 @@ int ClassUniqueMessages[CLASSCOUNT][MSGCOUNT] =
 		"",
 		"",
     },
-	{
+/*	{
 		"FlameThrower, Portable MG42, or Scoped Kar98k Rifle.",
 		"",
 		"",
@@ -2520,7 +2520,7 @@ int ClassUniqueMessages[CLASSCOUNT][MSGCOUNT] =
 		"",
 		"",
 		"",
-    },
+    },*/
 };
 
 int PunchDrunkUniqueMessages[CLASSCOUNT][MSGCOUNT] =

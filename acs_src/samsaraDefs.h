@@ -56,8 +56,7 @@
 
 #define SAMSARA_CL_VERSION          2601
 
-#define MAXMODES          	3
-#define CLASSCOUNT          28
+#define CLASSCOUNT          27
 #define UNIQUECOUNT         3
 #define SLOTCOUNT           10
 #define TIPCOUNT            2
@@ -93,7 +92,7 @@
 #define CLASS_BITTERMAN	24
 #define CLASS_DEMONESS	25
 #define CLASS_BOND		26
-#define CLASS_TOTENKOPF	27
+//#define CLASS_TOTENKOPF	27
 
 #define SPEED_FORWARD       15
 #define SPEED_SIDE          13
@@ -211,7 +210,6 @@ int ClassItems[CLASSCOUNT] =
 	"BittermanClass", //+Added
 	"Hexen2Class", //+Added
 	"BondClass", //+Added
-	"TotenkopfClass", //+Added	
 };
 
 int PickupStates[CLASSCOUNT][16] = 
@@ -219,7 +217,7 @@ int PickupStates[CLASSCOUNT][16] =
     {"Doomguy", "DoomFull",     "DoomEmpty",        "DoomSpecial",      "DoomPunchdrunk",      "DoomPDFull",       "DoomPDEmpty",      "DoomPDSpecial",		"Doom64",		"Doom64Full",		"Doom64Empty",		"Doom64Special"},
     {"Chexguy", "ChexFull",     "ChexEmpty",        "ChexSpecial",      "ChexPunchdrunk",      "ChexPDFull",       "ChexPDEmpty",      "ChexPDSpecial",		"",		"",		"",		""},
     {"Heretic", "HereticFull",  "HereticEmpty",     "HereticSpecial",   "HereticPunchdrunk",   "HereticPDFull",    "HereticPDEmpty",   "HereticPDSpecial",		"",		"",		"",		""},
-    {"Wolfguy", "WolfFull",     "WolfEmpty",        "WolfSpecial",      "WolfPunchdrunk",      "WolfPDFull",       "WolfPDEmpty",      "WolfPDSpecial",		"LostWolfGuy",		"LostWolfFull",		"LostWolfEmpty",		"LostWolfSpecial"},
+    {"Wolfguy", "WolfFull",     "WolfEmpty",        "WolfSpecial",      "WolfPunchdrunk",      "WolfPDFull",       "WolfPDEmpty",      "WolfPDSpecial",		"LostWolfGuy",		"LostWolfFull",		"LostWolfEmpty", "LostWolfSpecial", "Totenkopf", "TotenkopfFull", "TotenkopfEmpty",  "TotenkopfSpecial"},
     {"Hexen",   "HexenFull",    "HexenEmpty",       "HexenSpecial",     "HexenPunchdrunk",     "HexenPDFull",      "HexenPDEmpty",     "HexenPDSpecial",		"HexenMage",		"HexenMageFull",		"HexenMageEmpty",		"HexenMageSpecial", "HexenFighter",	"HexenFighterFull",	"HexenFighterEmpty", "HexenFighterSpecial" },
     {"Dukeguy", "DukeFull",     "DukeEmpty",        "DukeSpecial",      "DukePunchdrunk",      "DukePDFull",       "DukePDEmpty",      "DukePDSpecial",		"BeachDukeGuy",		"BeachDukeFull",		"BeachDukeEmpty",		"BeachDukeSpecial"},
     {"Marathon","MarathonFull", "MarathonEmpty",    "MarathonSpecial",  "MarathonPunchdrunk",  "MarathonPDFull",   "MarathonPDEmpty",  "MarathonPDSpecial",		"",		"",		"",		""},
@@ -244,7 +242,7 @@ int PickupStates[CLASSCOUNT][16] =
 	{"Bitterman",    "BittermanFull",     "BittermanEmpty",        "BittermanSpecial",      "BittermanPunchdrunk",      "BittermanPDFull",       "BittermanPDEmpty",      "BittermanPDSpecial",		"",		"",		"",		""}, 
 	{"Demoness",    "DemonessFull",     "DemonessEmpty",        "DemonessSpecial",      "DemonessPunchdrunk",      "DemonessPDFull",       "DemonessPDEmpty",      "DemonessPDSpecial",		"",		"",		"",		""},
 	{"Bond",    	"BondFull",     	"BondEmpty",        	"BondSpecial",      	"BondPunchdrunk",      	   "BondPDFull",       	   "BondPDEmpty",          "BondPDSpecial",		    "",		"",		"",		""},
-	{"Totenkopf",    "TotenkopfFull",     	"TotenkopfEmpty",        	"TotenkopfSpecial",      	"TotenkopfPunchdrunk",      	   "TotenkopfPDFull",       	   "TotenkopfPDEmpty",          "TotenkopfPDSpecial",		    "",		"",		"",		""}
+//	{"Totenkopf",    "TotenkopfFull",     	"TotenkopfEmpty",        	"TotenkopfSpecial",      	"TotenkopfPunchdrunk",      	   "TotenkopfPDFull",       	   "TotenkopfPDEmpty",          "TotenkopfPDSpecial",		    "",		"",		"",		""}
 };
 
 int ItoSArray[7] = {1, 3, 4, 5, 6, 7, 8};
@@ -280,7 +278,6 @@ int ClassFades[CLASSCOUNT][5] =
 	{255, 255, 0,	0.1, 5},	
 	{255, 255, 0,	0.1, 5},	
 	{255, 255, 0,	0.1, 5},
-	{255, 255, 0,	0.1, 5},	
 };
 
 int SlotItems[SLOTCOUNT] = 
@@ -530,7 +527,6 @@ int PeopleDieBlasts[CLASSCOUNT] =
 	"BittermanDiesWhenHeIsKilled", //+Added
 	"DemonessDiesWhenSheIsKilled", //+Added
 	"BondDiesWhenHeIsKilled", //+Added
-	"TotenkopfDiesWhenHeIsKilled",	//+Added
 };
 
 int PDWTAKItems[PDWTAKCOUNT][2] = 
@@ -670,7 +666,6 @@ int BanCVars[CLASSCOUNT] =
 	"sams_banbitterman", //+Added	
 	"sams_bandemoness", //+Added	
 	"sams_banbond", //+Added
-	"sams_bantotenkopf", //+Added	
 };
 
 int BanStrings[CLASSCOUNT] =
@@ -703,7 +698,6 @@ int BanStrings[CLASSCOUNT] =
 	"\c[m7]The admin has banned \cfBitterman\c[m7] from play.",	
 	"\c[m7]The admin has banned \cfDemoness\c[m7] from play.",	
 	"\c[m7]The admin has banned \cfBond\c[m7] from play.",	
-	"\c[m7]The admin has banned \cfB.J. Totenkop\c[m7] from play.",	
 };
 
 
@@ -743,7 +737,6 @@ int DamageCVars[CLASSCOUNT] =
 	"sams_Bittermandamage", //+Added	
 	"sams_demonessdamage", //+Added	
 	"sams_bonddamage", //+Added	
-	"sams_totenkopfdamage", //+Added	
 };
 
 int DefenseCVars[CLASSCOUNT] = 
@@ -776,7 +769,6 @@ int DefenseCVars[CLASSCOUNT] =
 	"sams_Bittermandefense", //+Added	
 	"sams_demonessdefense", //+Added	
 	"sams_bonddefense", //+Added
-	"sams_totenkopfdefense", //+Added		
 };
 
 int CVarDamageItems[DAMAGEMODES] = 

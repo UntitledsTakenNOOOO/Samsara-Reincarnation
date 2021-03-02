@@ -330,7 +330,7 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
     },
-	{
+/*	{
         "Totenkopf/getweapon",
         "Totenkopf/getweapon",
         "Totenkopf/getweapon",
@@ -341,7 +341,7 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "Totenkopf/getweapon",
         "Totenkopf/getweapon",
         "Totenkopf/getweapon",
-    },	
+    },	*/
 };
 
 int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] = 
@@ -677,7 +677,7 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
     },
-	{
+/*	{
         "Totenkopf/getweapon",
         "Totenkopf/getweapon",
         "Totenkopf/getweapon",
@@ -688,7 +688,7 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "Totenkopf/getweapon",
         "Totenkopf/getweapon",
         "Totenkopf/getweapon",
-    },	
+    },	*/
 };
 
 int ClassUniqueSounds[CLASSCOUNT] = 
@@ -721,7 +721,7 @@ int ClassUniqueSounds[CLASSCOUNT] =
 	"Q2Misc/W_Pkup",
 	"Hexen2/ArtifactPickup",
 	"Goldeneye/Weaponup",
-	"Totenkopf/getweapon"	
+//	"Totenkopf/getweapon"	
 };
 
 int PunchDrunkUniqueSounds[CLASSCOUNT] = 
@@ -753,5 +753,5 @@ int PunchDrunkUniqueSounds[CLASSCOUNT] =
 	"",
 	"Q2Misc/W_Pkup",
 	"Goldeneye/Weaponup",
-	"Totenkopf/getweapon"	
+//	"Totenkopf/getweapon"	
 };

@@ -8,6 +8,7 @@ actor "Spear of Destiny": InstantSwitchWeapon
     +DONTBOB
     +INVENTORY.UNDROPPABLE
     +WEAPON.NOAUTOFIRE
+	+WEAPON.AMMO_OPTIONAL
 	Inventory.RestrictedTo "WolfenPlayer"
     Obituary "$SAMSARA_WOLFEN_OB_SLOT7" 
     Inventory.PickupMessage "You got the Spear of Destiny!"
@@ -16,21 +17,26 @@ actor "Spear of Destiny": InstantSwitchWeapon
     {
       Spawn:
 		TNT1 A 0
-        TNT1 A 0 A_JumpIfInventory("WolfenLostMode",1,2)
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,2)
 	    WSPR E 4
         Loop
 		WSPR N 4
         Loop
+	
 
       Ready:
-        TNT1 A 0 A_JumpIfInventory("WolfenLostMode",1,2)
+		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,4)
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,2)
 		WSPR A 1 A_WeaponReady
         loop
 		WSPR J 1 A_WeaponReady
         loop
+        TK09 A 1 A_WeaponReady
+        loop			
 
       Fire:
-        TNT1 A 0 A_JumpIfInventory("WolfenLostMode",1,"FireLost")
+		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireCTK")
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"FireLost")
 		TNT1 A 0 A_JumpIfInventory("SPModeOn", 1, "SPFire")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
         WSPR B 20 A_PlayWeaponSound("wolfen/spearready")
@@ -93,6 +99,28 @@ actor "Spear of Destiny": InstantSwitchWeapon
         WSPR K 15
         WSPR J 5 A_Refire
         goto Ready
+		
+      FireCTK:
+        TK09 B 2 A_JumpIfInventory("Cell", 3, "HoldCTK")
+		Goto Ready
+
+      HoldCTK:
+		TK09 C 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHoldCTK")
+        TK09 C 0 A_PlaySound("Totenkopf/atkflakgun",CHAN_WEAPON)
+		TK09 C 0 Bright A_TakeInventory("Cell", 3, TIF_NOTAKEINFINITE)
+        TK09 C 3 Bright A_FireCustomMissile("Totenkopf_Flakgun_Projectile",random(-6,6),0,0,0)
+		TK09 D 2 Bright
+		TK09 D 0 A_Refire
+        TK09 E 3
+        Goto Ready
+	  CoopHoldCTK:
+        TK09 C 0 A_PlaySound("Totenkopf/atkflakgun",CHAN_WEAPON)
+		TK09 C 0 Bright A_TakeInventory("Cell", 3, TIF_NOTAKEINFINITE)
+        TK09 C 3 Bright A_FireCustomMissile("Totenkopf_Flakgun_ProjectileCoop",random(-6,6),0,0,0)
+		TK09 D 2 Bright
+		TK09 D 0 A_Refire
+        TK09 E 3
+        Goto Ready	  		
     }
 }
 
@@ -283,3 +311,37 @@ actor SpearShotTrail2: SpearShotTrail
     Scale 0.3
     +CLIENTSIDEONLY
 }
+
+Actor Totenkopf_Flakgun_Projectile : Totenkopf_Tracer
+{
+	Damage (100)
+	Projectile
+	DamageType "TotenkopfFlak"
+	+BLOODLESSIMPACT
+	+HITTRACER
+	-NOEXTREMEDEATH
+	+EXTREMEDEATH
+	+NODAMAGETHRUST
+	+FORCERADIUSDMG
+	States
+	{
+		Spawn:
+			TNT1 A 1
+			Loop
+		Crash:
+		Death:
+			TNT1 A 0 A_Explode(100,33)
+			TNT1 A 1
+			TNT1 A 0 A_Playsound("Totenkopf/explosion", CHAN_BODY)
+			TK54 ABC 2 Bright
+			Stop
+		XDeath:
+			TNT1 A 0 A_Explode(100,33)
+			TNT1 A 0 A_JumpIf(CallACS("Totenkopf_BloodGenerator_Offsets")==1,1)
+			TNT1 A 1 Bright
+			TNT1 A 0 A_GiveInventory("Totenkopf_BloodGenerator",1,AAPTR_TRACER)
+			TK54 ABC 2 Bright
+			Stop
+	}
+}
+Actor Totenkopf_Flakgun_ProjectileCoop : Totenkopf_Flakgun_Projectile { Species "Player" +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES }
