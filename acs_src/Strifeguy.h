@@ -4,8 +4,8 @@ Script STRIFEGUY_UPG ENTER
 {
             if (PlayerClass(PlayerNumber())!=11) terminate; //Check if the class is strifeguy, otherwise terminate the script
             //Assign cvar values to variables
-            int aup=GetCvar("sams_accuracyupgrades"); //Accuracy Upgrade
-            int sup=GetCvar("sams_staminaupgrades");  //Stamina Upgrade
+            int aup=GetCvar("sams_strifeaccuracy"); //Accuracy Upgrade
+            int sup=GetCvar("sams_strifestamina");  //Stamina Upgrade
             //Cap out the values
             if (aup>10) aup=10;
             if (aup<0) aup=0;
