@@ -55,8 +55,8 @@ script SAMSARA_CLIENT_ACCURACY (int soundmode) clientside
         else { Log(s:logMsg); }
     }
     
-    if (soundmode == 1) { LocalAmbientSound(ClassUniqueSounds[pclass], 127); }
-    else { ActivatorSound(ClassUniqueSounds[pclass], 127); }
+    if (soundmode == 1) { LocalAmbientSound(ClassUniqueSounds[pclass][SamsaraAlternativeClass], 127); }
+    else { ActivatorSound(ClassUniqueSounds[pclass][SamsaraAlternativeClass], 127); }
     
     FadeRange(ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], ClassFades[pclass][3],
     ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], 0.0, itof(ClassFades[pclass][4]) / 35);

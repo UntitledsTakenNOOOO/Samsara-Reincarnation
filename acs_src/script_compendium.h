@@ -38,7 +38,7 @@ int ClassFontScales[CLASSCOUNT][2] =
 	{ 1.0, 1.0 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },	
 	{ 1.0, 1.0 },	{ 1.5, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.125, 1.25 },	
-	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 }
+	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 }
 };
 
 str CompendiumWheelRot[12] = { "CMPWHL01", "CMPWHL02", "CMPWHL03", "CMPWHL04", "CMPWHL05", "CMPWHL06", "CMPWHL07", "CMPWHL08", "CMPWHL09", "CMPWHL10", "CMPWHL11", "CMPWHL12"};
@@ -1087,7 +1087,7 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		{ "Proximity Mine", "Proximity mines are one of three types of mines found in GoldenEye, the other two being timed mines and remote mines. Proximity mines detonate whenever a moving object is within their range, making them perfect for taking out patrolling guards but wasteful for stationary objects.", "CMPGE013", "Goldeneye_ProximityMines", "u" },
 		{ "Remote Mine", "Remote mines are one of three types of mine found in GoldenEye, the other two being Timed Mines and Proximity Mines. Remote mines are arguably more useful than the other types of mines as they can be detonated at any time.", "CMPGE015", "Goldeneye_RemoteMines", "u" },
 	}},
-	{{
+	/*{{
 		{ "Knife", "Used for close combat, the knife is best as a last resort. It requires no ammo.", "WKNPA0", "Totenkopf_Knife", "f" },
 		{ "Walter P38 Pistol", "The standard German pistol. You'll need to switch to a better weapon when fighting multiple enemies.", "TK02M0", "Totenkopf_Pistol", "p" },
 		{ "M712 Rapid-Fire Pistol", "This machine pistol was developed by Mauser as a selective fire sidearm. It eats up ammo quick but can be a good crowd control weapon to stun multiple targets at once.", "TK10K0", "Totenkopf_Mauser", "1" },
@@ -1102,7 +1102,7 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		{ "Kar98k Sniper Rifle", "For snipers, Karabiner 98k rifles selected for being exceptionally accurate during factory tests were fitted with a telescopic sight as sniper rifles.", "TK12M0", "Totenkopf_Sniper", "u" },
 		{ "Power Armor", "Kept in a lab along with the nazis most powerful mutant projects, not only does this armor absorb half the damage taken from attacks and grant 200 armor, it also grants permanent armor regeneration. \n\nTo obtain this armor, you must find 20 secrets.", "TK55A0", "TotenkopfPowerArmor", "" },
 		{ "Healing Orb", "Kept in a dungeon with the most unstable Nazi experiment ever devised, this healing orb does not just heal you for 200 health points, it will also enable permanent health regeneration. \n\nTo obtain this artifact, you must find 30 secrets.", "TK55B0", "TotenkopfHealingOrb", "" },
-	}}
+	}}*/
 };
 
 //Sets, modes, monster, info

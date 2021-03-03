@@ -56,6 +56,7 @@
 
 #define SAMSARA_CL_VERSION          2601
 
+#define MAXMODES          	3
 #define CLASSCOUNT          27
 #define UNIQUECOUNT         3
 #define SLOTCOUNT           10

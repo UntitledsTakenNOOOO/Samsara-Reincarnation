@@ -1,54 +1,94 @@
-int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] = 
+int ClassPickupSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] = 
 {
     {
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
+		{
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+		},
+		{
+			"doom64guy/weaponget",
+			"doom64guy/weaponget",
+			"doom64guy/weaponget",
+			"doom64guy/weaponget",
+			"doom64guy/weaponget",
+			"doom64guy/weaponget",
+			"doom64guy/weaponget",
+			"doom64guy/weaponget",
+			"doom64guy/weaponget",
+			"doom64guy/weaponget",
+		}
     },
+    {{
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+    }},
+    {{
+        "heretic/weaponget",
+        "heretic/weaponget",
+        "heretic/weaponget",
+        "heretic/weaponget",
+        "heretic/weaponget",
+        "heretic/weaponget",
+        "heretic/weaponget",
+        "heretic/weaponget",
+        "heretic/weaponget",
+        "heretic/weaponget",
+    }},
     {
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
+		{
+			"wolfen/knifeget",
+			"wolfen/knifeget",
+			"wolfen/itemget",
+			"wolfen/mgunget",
+			"wolfen/mgunget",
+			"wolfen/weaponget",
+			"wolfen/rocketget",
+			"wolfen/flameget",
+			"wolfen/spearget",
+			"wolfen/knifeget",
+		},
+		{
+			"wolfen/knifeget",
+			"wolfen/knifeget",
+			"wolfen/itemget",
+			"wolfen/mgunget",
+			"wolfen/mgunget",
+			"wolfen/weaponget",
+			"wolfen/rocketget",
+			"wolfen/flameget",
+			"wolfen/spearget",
+			"wolfen/knifeget",
+		},
+		{
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+		}
     },
-    {
-        "heretic/weaponget",
-        "heretic/weaponget",
-        "heretic/weaponget",
-        "heretic/weaponget",
-        "heretic/weaponget",
-        "heretic/weaponget",
-        "heretic/weaponget",
-        "heretic/weaponget",
-        "heretic/weaponget",
-        "heretic/weaponget",
-    },
-    {
-        "wolfen/knifeget",
-        "wolfen/knifeget",
-        "wolfen/itemget",
-        "wolfen/mgunget",
-        "wolfen/mgunget",
-        "wolfen/weaponget",
-        "wolfen/rocketget",
-        "wolfen/flameget",
-        "wolfen/spearget",
-        "wolfen/knifeget",
-    },
-    {
+    {{
         "hexen/artiget",
         "hexen/weaponget",
         "hexen/weaponget",
@@ -59,20 +99,34 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "hexen/weaponget",
         "hexen/weaponget",
         "hexen/artiget",
-    },
+    }},
     {
-        "duke/weaponget",
-        "duke/itemget",
-        "duke/weaponget",
-        "duke/mosspump2",
-        "duke/xshotgunpump",
-        "duke/weaponget",
-        "duke/weaponget",
-        "duke/weaponget",
-        "duke/weaponget",
-        "duke/itemget",
-    },
-    {
+		{
+			"duke/weaponget",
+			"duke/itemget",
+			"duke/weaponget",
+			"duke/mosspump2",
+			"duke/xshotgunpump",
+			"duke/weaponget",
+			"duke/weaponget",
+			"duke/weaponget",
+			"duke/weaponget",
+			"duke/itemget",
+		},
+		{
+			"duke/weaponget",
+			"duke/itemget",
+			"duke/weaponget",
+			"duke/mosspump2",
+			"duke/xshotgunpump",
+			"duke/weaponget",
+			"duke/weaponget",
+			"duke/weaponget",
+			"duke/weaponget",
+			"duke/itemget",
+		},
+	},
+    {{
         "marathon/itemget",
         "marathon/itemget",
         "marathon/itemget",
@@ -83,8 +137,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "marathon/itemget",
         "marathon/bigitemget",
         "marathon/itemget",
-    },
-    {
+    }},
+    {{
         "quakeweps/weaponget",
         "quakeweps/weaponget",
         "quakeweps/weaponget",
@@ -95,8 +149,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "quakeweps/weaponget",
         "quakeweps/quadget",
         "quakeweps/weaponget",
-    },
-	{	// Rott sounds - Added this.
+    }},
+	{{	// Rott sounds - Added this.
         "gen/pickup",	
         "gen/pickup",
         "gen/pickup",
@@ -107,8 +161,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "gen/pickup",
         "gen/pickup",
         "gen/bpicku",
-    },
-	{	// Blake sounds - Added this.
+    }},
+	{{	// Blake sounds - Added this.
 		"",
 		"Bstone/ammoget",
 		"Bstone/wep1get",
@@ -118,8 +172,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
 		"Bstone/wep4get",
 		"Bstone/wep5get",
 		"Bstone/wep4get",
-	},
-	{	// Caleb sounds - Added this.
+	}},
+	{{	// Caleb sounds - Added this.
 		"Caleb/Weaponup",
 		"Caleb/Weaponup",
 		"Caleb/Weaponup",
@@ -129,8 +183,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
 		"Caleb/Weaponup",
 		"Caleb/Weaponup",
 		"Caleb/Weaponup",
-	},
-    {	//Strifeguy sounds - Added this.
+	}},
+    {{	//Strifeguy sounds - Added this.
         "strife/weaponget", // Fist
         "strife/itemget", // Chainsaw
         "strife/weaponget", // Pistol
@@ -141,20 +195,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "strife/weaponget", // Plasma Rifle
         "strife/weaponget", // BFG9000
         "strife/itemget", // Punchdrunk Chainsaw
-    },	
-/*    {
-        "doom64guy/weaponget",
-        "doom64guy/weaponget",
-        "doom64guy/weaponget",
-        "doom64guy/weaponget",
-        "doom64guy/weaponget",
-        "doom64guy/weaponget",
-        "doom64guy/weaponget",
-        "doom64guy/weaponget",
-        "doom64guy/weaponget",
-        "doom64guy/weaponget",
-    },*/
-    {	//Eleena sounds - Added this.
+    }},	
+    {{	//Eleena sounds - Added this.
         "EradAmmo/PUP", // Fist
         "EradAmmo/PUP", // Chainsaw
         "EradAmmo/PUP", // Pistol
@@ -165,8 +207,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "EradAmmo/PUP", // Plasma Rifle
         "EradAmmo/UPUP", // BFG9000
 		"",
-    },	
-    { // C7 Sounds
+    }},	
+    {{ // C7 Sounds
 		"C7/AmmoPickup",
 		"C7/AmmoPickup",
 		"C7/AmmoPickup",
@@ -177,8 +219,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "C7/AmmoPickup",
         "C7/AmmoPickup",
         "C7/AmmoPickup",
-    },
-    { // RMR Sounds
+    }},
+    {{ // RMR Sounds
 		"RMR/pickup",
 		"RMR/pickup",
 		"RMR/pickup",
@@ -189,8 +231,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "RMR/pickup",
         "RMR/pickup",
         "RMR/pickup",
-    },			
-    {
+    }},			
+    {{
         "katarn/itemup",
         "katarn/itemup",
         "katarn/itemup",
@@ -201,8 +243,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "katarn/itemup",
         "katarn/itemup",
         "katarn/itemup",
-    },	
-	{
+    }},	
+	{{
 		"greed/pickup",
 		"greed/pickup",
 		"greed/pickup",
@@ -213,8 +255,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
 		"greed/pickup",
 		"greed/megapick",
 		"greed/pickup",
-	},	
-    {
+	}},	
+    {{
         "Disruptor/itemup",
         "Disruptor/itemup",
         "Disruptor/itemup",
@@ -225,8 +267,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "Disruptor/itemup",
         "Disruptor/itemup",
         "Disruptor/itemup",
-    },		
-	{
+    }},		
+	{{
 		"gpickup/gen",
 		"gpickup/gen",
 		"gpickup/gen",
@@ -237,20 +279,34 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
 		"gpickup/gen",
 		"gtwo/megapickup",
 		"gpickup/gen",
-	},
+	}},
 	{
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/egon_pickup",
-		"halflife/weaponpickup",
+		{
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/egon_pickup",
+			"halflife/weaponpickup",
+		},
+		{
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/egon_pickup",
+			"halflife/weaponpickup",
+		},
 	},	
-	{ // Lo Wang
+	{{ // Lo Wang
         "Item/SWpickup",
         "Item/SWpickup",
         "Item/SWpickup",
@@ -260,8 +316,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "Item/SWpickup",
         "Item/SWpickup",
         "Item/SWpickupbig",
-    },	
-	{ 
+    }},	
+	{{ 
         "CM/WeaponUp",
         "CM/WeaponUp",
         "CM/WeaponUp",
@@ -271,8 +327,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "CM/WeaponUp",
         "CM/WeaponUp",
         "CM/WeaponUp",
-    },
-	{ // Jon
+    }},
+	{{ // Jon
         "PS/Wpickup",
         "PS/Wpickup",
         "PS/Wpickup",
@@ -282,8 +338,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "PS/Wpickup",
         "PS/Wpickup",
         "PS/Wpickup",
-    },
-	{ // Leonard
+    }},
+	{{ // Leonard
         "RR/Wpickup",
         "RR/Wpickup",
         "RR/Wpickup",
@@ -293,8 +349,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "RR/Wpickup",
         "RR/Wpickup",
         "RR/Wpickup",
-    },	
-	{
+    }},	
+	{{
         "Q2Misc/W_Pkup",
         "Q2Misc/W_Pkup",
         "Q2Misc/W_Pkup",
@@ -305,8 +361,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "Q2Misc/W_Pkup",
         "Q2Misc/W_Pkup",
         "Q2Misc/W_Pkup",
-    },
-	{
+    }},
+	{{
         "Hexen2/WeaponPickup",
         "Hexen2/WeaponPickup",
         "Hexen2/WeaponPickup",
@@ -317,8 +373,8 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "Hexen2/WeaponPickup",
         "Hexen2/WeaponPickup",
         "Hexen2/WeaponPickup",
-    },
-	{
+    }},
+	{{
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
@@ -329,7 +385,7 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
-    },
+    }},
 /*	{
         "Totenkopf/getweapon",
         "Totenkopf/getweapon",
@@ -344,81 +400,135 @@ int ClassPickupSounds[CLASSCOUNT][SLOTCOUNT] =
     },	*/
 };
 
-int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] = 
+int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] = 
 {
     {
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-        "doomguy/weaponget",
-    },
+		{
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+		},
+		{
+			"doom64guy/itemget",
+			"doom64guy/itemget",
+			"doom64guy/itemget",
+			"doom64guy/itemget",
+			"doom64guy/itemget",
+			"doom64guy/itemget",
+			"doom64guy/itemget",
+			"doom64guy/itemget",
+			"doom64guy/itemget",
+			"doom64guy/itemget",
+		},
+	},
+    {{
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+        "chex/weaponget",
+    }},
+    {{
+        "heretic/ammoget",
+        "heretic/ammoget",
+        "heretic/ammoget",
+        "heretic/ammoget",
+        "heretic/ammoget",
+        "heretic/ammoget",
+        "heretic/ammoget",
+        "heretic/ammoget",
+        "heretic/ammoget",
+        "heretic/ammoget",
+    }},
     {
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-        "chex/weaponget",
-    },
+		{
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+		},
+		{
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+			"wolfen/itemget",
+		},
+		{
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+			"Totenkopf/getweapon",
+		}
+	},
+    {{
+        "hexen/itemget",
+        "hexen/itemget",
+        "hexen/itemget",
+        "hexen/itemget",
+        "hexen/itemget",
+        "hexen/itemget",
+        "hexen/itemget",
+        "hexen/itemget",
+        "hexen/itemget",
+        "hexen/itemget",
+    }},
     {
-        "heretic/ammoget",
-        "heretic/ammoget",
-        "heretic/ammoget",
-        "heretic/ammoget",
-        "heretic/ammoget",
-        "heretic/ammoget",
-        "heretic/ammoget",
-        "heretic/ammoget",
-        "heretic/ammoget",
-        "heretic/ammoget",
-    },
-    {
-        "wolfen/itemget",
-        "wolfen/itemget",
-        "wolfen/itemget",
-        "wolfen/itemget",
-        "wolfen/itemget",
-        "wolfen/itemget",
-        "wolfen/itemget",
-        "wolfen/itemget",
-        "wolfen/itemget",
-        "wolfen/itemget",
-    },
-    {
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-    },
-    {
-        "duke/itemget",
-        "duke/itemget",
-        "duke/itemget",
-        "duke/itemget",
-        "duke/itemget",
-        "duke/itemget",
-        "duke/itemget",
-        "duke/itemget",
-        "duke/itemget",
-        "duke/itemget",
-    },
-    {
+		{
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+		},
+		{
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+			"duke/itemget",
+		},
+	},
+    {{
         "marathon/itemget",
         "marathon/itemget",
         "marathon/itemget",
@@ -429,8 +539,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "marathon/itemget",
         "marathon/bigitemget",
         "marathon/itemget",
-    },
-    {
+    }},
+    {{
         "quakeweps/itemget",
         "quakeweps/itemget",
         "quakeweps/itemget",
@@ -441,8 +551,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "quakeweps/itemget",
         "quakeweps/quadget",
         "quakeweps/itemget",
-    },
-	{	// Rott pickup sounds - Added this.
+    }},
+	{{	// Rott pickup sounds - Added this.
         "gen/pickup",
         "gen/pickup",
         "gen/pickup",
@@ -452,8 +562,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "gen/pickup",
         "gen/pickup",
         "gen/bpicku",
-    },
-	{	// Blake pickup sounds - Added this.
+    }},
+	{{	// Blake pickup sounds - Added this.
 		"",
 		"Bstone/ammoget",
 		"Bstone/wep1get",
@@ -463,8 +573,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
 		"Bstone/wep4get",
 		"Bstone/wep5get",
 		"Bstone/wep4get",
-	},
-	{	// Caleb sounds - Added this.
+	}},
+	{{	// Caleb sounds - Added this.
 		"Caleb/Ammo",
 		"Caleb/Ammo",
 		"Caleb/Ammo",
@@ -474,8 +584,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
 		"Caleb/Ammo",
 		"Caleb/Ammo",
 		"Caleb/Ammo",
-	},  
-	{	//Strife
+	}},  
+	{{	//Strife
         "strife/ammoget", // Fist
         "strife/itemget", // Chainsaw
         "strife/ammoget", // Pistol
@@ -486,7 +596,7 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "strife/ammoget", // Plasma Rifle
         "strife/ammoget", // BFG9000
         "strife/itemget", // Punchdrunk Chainsaw
-    },
+    }},
 /*    {
         "doom64guy/itemget",
         "doom64guy/itemget",
@@ -499,7 +609,7 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "doom64guy/itemget",
         "doom64guy/itemget",
     }, */
-    {	//Eleena sounds - Added this.
+    {{	//Eleena sounds - Added this.
         "EradAmmo/PUP", // Fist
         "EradAmmo/PUP", // Chainsaw
         "EradAmmo/PUP", // Pistol
@@ -509,8 +619,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "EradAmmo/PUP", // Rocket Launcher
         "EradAmmo/PUP", // Plasma Rifle
         "EradAmmo/UPUP", // BFG9000
-    },	
-    { // C7 Sounds
+    }},	
+    {{ // C7 Sounds
 		"C7/AmmoPickup",
 		"C7/AmmoPickup",
 		"C7/AmmoPickup",
@@ -521,8 +631,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "C7/AmmoPickup",
         "C7/AmmoPickup",
         "C7/AmmoPickup",
-    },		
-    { // RMR Sounds
+    }},		
+    {{ // RMR Sounds
 		"RMR/pickup",
 		"RMR/pickup",
 		"RMR/pickup",
@@ -533,8 +643,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "RMR/pickup",
         "RMR/pickup",
         "RMR/pickup",
-    },	
-    {
+    }},	
+    {{
         "katarn/itemup",
         "katarn/itemup",
         "katarn/itemup",
@@ -545,8 +655,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "katarn/itemup",
         "katarn/itemup",
         "katarn/itemup",
-    },	
-	{
+    }},	
+	{{
 		"greed/pickup",
 		"greed/pickup",
 		"greed/pickup",
@@ -557,8 +667,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
 		"greed/pickup",
 		"greed/megapick",
 		"greed/pickup",
-	},	
-    {
+	}},	
+    {{
         "Disruptor/itemup",
         "Disruptor/itemup",
         "Disruptor/itemup",
@@ -569,8 +679,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "Disruptor/itemup",
         "Disruptor/itemup",
         "Disruptor/itemup",
-    },			
-	{
+    }},			
+	{{
 		"gpickup/gen",
 		"gpickup/gen",
 		"gpickup/gen",
@@ -581,21 +691,35 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
 		"gpickup/gen",
 		"gtwo/megapickup",
 		"gpickup/gen",
-	},
+	}},
 	{
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/weaponpickup",
-		"halflife/egon_pickup",
-		"halflife/weaponpickup",
+		{
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/egon_pickup",
+			"halflife/weaponpickup",
+		},
+		{
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/weaponpickup",
+			"halflife/egon_pickup",
+			"halflife/weaponpickup",
+		},
 	},	
 	//Lo Wang
-	{
+	{{
         "Item/SWpickup",
         "Item/SWpickup",
         "Item/SWpickup",
@@ -606,8 +730,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "Item/SWpickup",
         "Item/SWpickup",
         "Item/SWpickupbig",
-    },		
-	{ 
+    }},		
+	{{ 
         "CM/WeaponUp",
         "CM/WeaponUp",
         "CM/WeaponUp",
@@ -618,8 +742,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "CM/WeaponUp",
         "CM/WeaponUp",		
         "CM/WeaponUp",
-    },
-	{ // Jon
+    }},
+	{{ // Jon
         "PS/Ipickup",
         "PS/Ipickup",
         "PS/Ipickup",
@@ -629,8 +753,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "PS/Ipickup",
         "PS/Ipickup",
         "PS/Ipickup",
-    },
-	{ // Leonard
+    }},
+	{{ // Leonard
         "RR/Wpickup",
         "RR/Wpickup",
         "RR/Wpickup",
@@ -640,8 +764,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "RR/Wpickup",
         "RR/Wpickup",
         "RR/Wpickup",
-    },	
-	{
+    }},	
+	{{
         "Q2Misc/W_Pkup",
         "Q2Misc/W_Pkup",
         "Q2Misc/W_Pkup",
@@ -652,8 +776,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "Q2Misc/W_Pkup",
         "Q2Misc/W_Pkup",
         "Q2Misc/W_Pkup",
-    },
-	{
+    }},
+	{{
         "Hexen2/WeaponPickup",
         "Hexen2/WeaponPickup",
         "Hexen2/WeaponPickup",
@@ -664,8 +788,8 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "Hexen2/WeaponPickup",
         "Hexen2/WeaponPickup",
         "Hexen2/WeaponPickup",
-    },
-	{
+    }},
+	{{
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
@@ -676,7 +800,7 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
-    },
+    }},
 /*	{
         "Totenkopf/getweapon",
         "Totenkopf/getweapon",
@@ -691,36 +815,35 @@ int ClassDropSounds[CLASSCOUNT][SLOTCOUNT] =
     },	*/
 };
 
-int ClassUniqueSounds[CLASSCOUNT] = 
+int ClassUniqueSounds[CLASSCOUNT][MAXMODES] = 
 {
-    "doomguy/itemget",
-    "chex/weaponget",
-    "heretic/itemget",
-    "wolfen/lifeget",
-    "hexen/artiget",
-    "duke/itemget",
-    "marathon/itemget",
-    "quakeweps/weaponget",
-	"excalibat/pick", // Added this.
-	"Bstone/xylanget", // Added this.
-	"Caleb/Weaponup2", // Added this.
-    "strife/itemget", // For your class	
-//    "doom64guy/powerupget",
-    "EradAmmo/UPUP",	
-    "C7MinePlace",	
-	"RMR/pickup",
-    "katarn/itemup",	
-	"greed/pickup", //+Added	
-	"Disruptor/Special", //+Added	
-	"gpickup/gen", //+Added
-	"halflife/squeak_pickup",	
-	"Item/SWpickup",	
-	"misc/cm_pkup",	
-    "PS/Ipickup2",
-    "RR/Wpickup",
-	"Q2Misc/W_Pkup",
-	"Hexen2/ArtifactPickup",
-	"Goldeneye/Weaponup",
+    { "doomguy/itemget", "doom64guy/powerupget", },
+    { "chex/weaponget", "" },
+    {"heretic/itemget", "" },
+    {"wolfen/lifeget", "wolfen/lifeget", "Totenkopf/getweapon" },
+    {"hexen/artiget", "" },
+    {"duke/itemget", "duke/itemget" },
+    {"marathon/itemget", "" },
+    {"quakeweps/weaponget", "" },
+	{"excalibat/pick", "" }, // Added this.
+	{"Bstone/xylanget", "" }, // Added this.
+	{"Caleb/Weaponup2", "" }, // Added this.
+    {"strife/itemget", "" }, // For your class	
+    {"EradAmmo/UPUP", "" },	
+    {"C7MinePlace", "" },
+	{"RMR/pickup", "" },
+    {"katarn/itemup", "" },	
+	{"greed/pickup", "" }, //+Added	
+	{"Disruptor/Special", "" }, //+Added	
+	{"gpickup/gen", "" }, //+Added
+	{"halflife/squeak_pickup", "halflife/squeak_pickup" },	
+	{"Item/SWpickup", "" },	
+	{"misc/cm_pkup",	 "" },
+    {"PS/Ipickup2", "" },
+    {"RR/Wpickup", "" },
+	{"Q2Misc/W_Pkup", "" },
+	{"Hexen2/ArtifactPickup", "" },
+	{"Goldeneye/Weaponup", "" },
 //	"Totenkopf/getweapon"	
 };
 

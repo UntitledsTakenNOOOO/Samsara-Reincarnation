@@ -364,9 +364,9 @@ script SAMSARA_CLIENT_WEAPONPICKUP (int slot, int soundmode, int dropped) client
     int pclass = samsaraClassNum();
     int i, j, quoteCount = 0;
     int logMsg;
-    int pickupsound = ClassPickupSounds[pclass][slot];
+    int pickupsound = ClassPickupSounds[pclass][SamsaraAlternativeClass][slot];
     
-    if (dropped) { pickupsound = ClassDropSounds[pclass][slot]; }
+    if (dropped) { pickupsound = ClassDropSounds[pclass][SamsaraAlternativeClass][slot]; }
     
     if (cpln == pln && GetCVar("msg") == 0)
     {
@@ -374,7 +374,7 @@ script SAMSARA_CLIENT_WEAPONPICKUP (int slot, int soundmode, int dropped) client
         {
             for (i = 0; i < MSGCOUNT; i++)
             {
-                j = ClassPickupMessages[pclass][slot][i];
+                j = ClassPickupMessages[pclass][SamsaraAlternativeClass][slot][i];
                 if (!StrLen(j)) { continue; }
                 
                 QuoteStorage[quoteCount++] = j;
@@ -385,7 +385,7 @@ script SAMSARA_CLIENT_WEAPONPICKUP (int slot, int soundmode, int dropped) client
         }
         else
         {
-            logMsg = ClassPickupMessages[pclass][slot][0];
+            logMsg = ClassPickupMessages[pclass][SamsaraAlternativeClass][slot][0];
             
             if (!StrLen(logMsg)) { logMsg = "Oh bugger there's no message for this weapon."; } 
         }
@@ -438,7 +438,7 @@ script SAMSARA_CLIENT_UNIQUEPICKUP (int soundmode, int punchdrunk) clientside
     int pickupsound;
 
     if (punchdrunk) { pickupsound = PunchdrunkUniqueSounds[pclass]; }
-    else { pickupsound = ClassUniqueSounds[pclass]; }
+    else { pickupsound = ClassUniqueSounds[pclass][SamsaraAlternativeClass]; }
     
     if (cpln == pln && GetCVar("msg") == 0)
     {
@@ -447,7 +447,7 @@ script SAMSARA_CLIENT_UNIQUEPICKUP (int soundmode, int punchdrunk) clientside
             for (i = 0; i < MSGCOUNT; i++)
             {
                 if (punchdrunk) { j = PunchDrunkUniqueMessages[pclass][i]; }
-                else { j = ClassUniqueMessages[pclass][i]; }
+                else { j = ClassUniqueMessages[pclass][SamsaraAlternativeClass][i]; }
 
                 if (!StrLen(j)) { continue; }
                 QuoteStorage[quoteCount++] = j;
@@ -458,7 +458,7 @@ script SAMSARA_CLIENT_UNIQUEPICKUP (int soundmode, int punchdrunk) clientside
         }
         else
         {
-            logMsg = ClassUniqueMessages[pclass][0];
+            logMsg = ClassUniqueMessages[pclass][SamsaraAlternativeClass][0];
             
             if (!StrLen(logMsg)) { logMsg = "Oh bugger there's no message for this unique."; } 
         }
