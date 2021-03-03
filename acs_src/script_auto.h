@@ -622,7 +622,6 @@ script SAMSARA_SPAWN (int respawning)
 		{ 
 			GiveInventory("Doom64Mode", 1); 
 			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
-			TakeInventory("Unmaker", 0x7FFFFFFF); 
 			if(!CheckInventory("Doom64MonsterSet")) 
 			{	
 				GiveInventory("Doom64MonsterSet", 1); 
