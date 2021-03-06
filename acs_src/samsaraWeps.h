@@ -42,7 +42,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
     {"Alien Weapon",        "UnknownAmmo",      " Alien Weapon ", "UnknownAmmo2","",""},
     {"Laser Cannon",        "Cell",             "", "","",""},
     {"Excalibat",  			"BMissiles", 		"Split Missile", "SMissiles","Dark Staff","DSEnergy"}, // Added this
-	{"BlakeShield",			"",					"", "","",""}, // Added this
+	{"BlakeRefill",			"",					"", "","",""}, // Added this
 	{"VoodooDoll",			"Voodoo",			"Guns Akimbo",    "","Spraycan","SprayCanAmmo"}, // Added this
     {"Upgrades",    "",                 		"", "","",""}, // Added this.
 //    {"Doom64GuyBerserk",    "",                 "", "","",""}, sayonara
@@ -365,11 +365,11 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
 	},
 	//+Added
 	{	// Grondoval
-		{"Shortsword",						"",				"",				"",	""},
-		{"OnyxRing",						"",				"",				"",	""},
+		{"WitchavenFists",						"",				"",				"",	""},
+		{"ShortSword",						"Clip",				"",				"",	""},
 		{"Bow and Arrows",					"",				"",				"",	""},
-		{"Battle Axe",						"Shell",		"",				"",	""},
 		{"Pike Axe",						"Shell",		"",				"",	""},
+		{"Battle Axe",						"Shell",		"",				"",	""},
 		{"Ice Halberd",						"Clip",			"",				"",	""},
 		{"Fire Mace",						"RocketAmmo",	"",				"",	""},
 		{"Frozen two-hand sword",			"Cell",			"",				"",	""},
