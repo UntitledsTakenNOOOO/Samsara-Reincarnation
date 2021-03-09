@@ -56,7 +56,7 @@
 
 #define SAMSARA_CL_VERSION          2601
 
-#define MAXMODES          	3
+#define MAXMODES          	5
 #define CLASSCOUNT          27
 #define UNIQUECOUNT         3
 #define SLOTCOUNT           10
@@ -213,7 +213,7 @@ int ClassItems[CLASSCOUNT] =
 	"BondClass", //+Added
 };
 
-int PickupStates[CLASSCOUNT][16] = 
+int PickupStates[CLASSCOUNT][24] = 
 {
     {"Doomguy", "DoomFull",     "DoomEmpty",        "DoomSpecial",      "DoomPunchdrunk",      "DoomPDFull",       "DoomPDEmpty",      "DoomPDSpecial",		"Doom64",		"Doom64Full",		"Doom64Empty",		"Doom64Special"},
     {"Chexguy", "ChexFull",     "ChexEmpty",        "ChexSpecial",      "ChexPunchdrunk",      "ChexPDFull",       "ChexPDEmpty",      "ChexPDSpecial",		"",		"",		"",		""},
@@ -223,7 +223,7 @@ int PickupStates[CLASSCOUNT][16] =
     {"Dukeguy", "DukeFull",     "DukeEmpty",        "DukeSpecial",      "DukePunchdrunk",      "DukePDFull",       "DukePDEmpty",      "DukePDSpecial",		"BeachDukeGuy",		"BeachDukeFull",		"BeachDukeEmpty",		"BeachDukeSpecial"},
     {"Marathon","MarathonFull", "MarathonEmpty",    "MarathonSpecial",  "MarathonPunchdrunk",  "MarathonPDFull",   "MarathonPDEmpty",  "MarathonPDSpecial",		"",		"",		"",		""},
     {"Quake",   "QuakeFull",    "QuakeEmpty",       "QuakeSpecial",     "QuakePunchdrunk",     "QuakePDFull",      "QuakePDEmpty",     "QuakePDSpecial",		"",		"",		"",		""},   
-	{"Rott",    "RottFull",     "RottEmpty",        "RottSpecial",      "","","", "RottSpecial2",		"",		"",		"",		""},   // Added this
+	{"Rott",    "RottFull",     "RottEmpty",        "RottSpecial",      "",						"",					"", 				"RottSpecial2",			"Rott",		"RottFull",		"RottEmpty",		"RottSpecial",		"Rott",    "RottFull",     "RottEmpty",        "RottSpecial",	"Rott",    "RottFull",     "RottEmpty",        "RottSpecial",	"Rott",    "RottFull",     "RottEmpty",        "RottSpecial" },   // Added this
 	{"Blake",   "BlakeFull",	"BlakeEmpty",		"BlakeSpecial",		"","","", "BlakeSpecial2",		"",		"",		"",		""}, // Added this
 	{"Caleb",   "CalebFull",    "CalebEmpty",       "CalebSpecial",     "","","", "CalebSpecial2",		"",		"",		"",		""}, // Added this
 	{"Strifeguy",  "StrifeFull",   "StrifeEmpty",      "StrifeSpecial",    "StrifePunchdrunk",    "StrifePDFull",     "StrifePDEmpty",    "StrifePDSpecial",		"",		"",		"",		""},	

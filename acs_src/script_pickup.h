@@ -74,6 +74,12 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
 					case 2:
 						SetActorState(0, PickupStates[toClass][15]);
 						break;
+					case 3:
+						SetActorState(0, PickupStates[toClass][19]);
+						break;
+					case 4:
+						SetActorState(0, PickupStates[toClass][23]);
+						break;
 				}
 			}
             break;
@@ -92,6 +98,12 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
 						break;
 					case 2:
 						SetActorState(0, PickupStates[toClass][12]);
+						break;
+					case 3:
+						SetActorState(0, PickupStates[toClass][16]);
+						break;
+					case 4:
+						SetActorState(0, PickupStates[toClass][20]);
 						break;
 				}
 			}
@@ -137,6 +149,12 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
 					case 2:
 						SetActorState(0, PickupStates[toClass][13]);
 						break;
+					case 3:
+						SetActorState(0, PickupStates[toClass][17]);
+						break;
+					case 4:
+						SetActorState(0, PickupStates[toClass][21]);
+						break;
 				}
 			}
             else         
@@ -151,6 +169,12 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
 						break;
 					case 2:
 						SetActorState(0, PickupStates[toClass][14]);
+						break;
+					case 3:
+						SetActorState(0, PickupStates[toClass][18]);
+						break;
+					case 4:
+						SetActorState(0, PickupStates[toClass][22]);
 						break;
 				}
 			}
@@ -176,6 +200,12 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
 					case 2:
 						SetActorState(0, PickupStates[toClass][12]);
 						break;
+					case 3:
+						SetActorState(0, PickupStates[toClass][16]);
+						break;
+					case 4:
+						SetActorState(0, PickupStates[toClass][20]);
+						break;
 				}
 			}
             break;
@@ -193,6 +223,12 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
 					break;
 				case 2:
 					SetActorState(0, PickupStates[toClass][12]);
+					break;
+				case 3:
+					SetActorState(0, PickupStates[toClass][16]);
+					break;
+				case 4:
+					SetActorState(0, PickupStates[toClass][20]);
 					break;
 			}
 		}

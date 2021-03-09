@@ -9,7 +9,7 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 	{{"Duke Nukem", 6, "****", "*", "***", "***", "**", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5", "", "", "", "DarkGray", "White" },{"Duke Nukem", 6, "****", "*", "***", "***", "**", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5", "", "", "DarkGray", "White" }},
 	{{"Security Officer", 7, "***", "***", "**", "*****", "*****", "Supression", "TIPSYM07", "TIPHIL07", "TIPSECOF", "TPLGMARA", "TPCHMARA", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGMA1", "CMPBGMA2", "CMPBGMA3", "CMPBGMA4", "CMPBGMA5", "", "", "", "DarkGray", "White" }},
 	{{"Ranger", 8, "***", "**", "****", "****", "***", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08", "", "", "", "QuakeCompendiumDarkGray", "QuakeCompendiumGray" }},
-	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }},
+	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }, {"Taradino Cassatt", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPTCASS", "TPLGROTT", "TPCHTCAS", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" },{"Thi Barrett", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPTBARR", "TPLGROTT", "TPCHTBAR", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }, {"Lorelei Ni", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPLORNI", "TPLGROTT", "TPCHLLNI", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }, {"Doug Wendt", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPDOUGW", "TPLGROTT", "TPCHDOUG", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }},
 	{{"Blake Stone", 10, "***", "***", "***", "*****", "**", "Skirmisher", "TIPSYM10", "TIPHIL10", "TIPBSTON", "TPLGBSTN", "TPCHBSTN", "CMPBBLAK", "BSCompendiumYellow", "CMPSBLAK", "BSCompendiumMediumGreen", "CMPBGBS1", "CMPBGBS2", "CMPBGBS3", "CMPBGRT4", "CMPBGBS5", "", "", "", "BSCompendiumYellow", "BSCompendiumLightYellow" }},
 	{{"Caleb", 11, "*****", "*", "***", "*****", "**", "Pyromaniac", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "CMPBBLOD", "Red", "CMPSBLOD", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5", "", "", "", "DarkGray", "White" }},
 	{{"Strifeguy", 12, "****", "*", "**", "****", "***", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "CMPSSTRF", "untranslated", "CMPSSTRF", "untranslated", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6", "", "", "DarkGray", "White" }},
@@ -20,8 +20,8 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 	{{"Kyle Katarn", 16, "***", "****", "***", "*****", "***", "Assault", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5", "", "", "", "DarkGray", "White" }},
 	{{"Mooman", 17, "***", "***", "****", "****", "***", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8", "DarkGray", "White" }},
 	{{"Jack Curtis", 18, "*****", "***", "***", "****", "**", "Psychic", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5", "", "", "", "DarkGray", "White" }},
-	{{"Grondoval", 19, "****", "*****", "*", "*", "****", "Tank", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5", "", "", "", "DarkGray", "White" }},
-	{{"Gordon Freeman", 20, "*****", "**", "****", "**", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "", "DarkGray", "White" },{"Adrian Shephard", 20, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
+	{{"Grondoval", 19, "****", "*****", "*", "**", "****", "Tank", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5", "", "", "", "DarkGray", "White" }},
+	{{"Gordon Freeman", 20, "*****", "**", "****", "*", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "", "DarkGray", "White" },{"Adrian Shephard", 20, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
 	{{"Lo Wang", 21, "*****", "*", "****", "****", "**", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "SMALLFONT", "Red", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5", "", "", "", "DarkGray", "White" }},
 	{{"Cybermage", 22, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Green", "SMALLFONT", "Yellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5", "", "", "", "DarkGray", "White" }},
 	{{"Jon", 23, "****", "***", "***", "**", "***", "Veteran", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8", "DarkGray", "White" }},
@@ -326,8 +326,53 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			\n\n- God mode in Samsara doesn't increase Freeley's view height", ""},
 		},
 		{
-			{ "", "", ""},
-		}
+			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Ian Paul Freely is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. I.P. Freely has a wide range of explosives, fit for many situations. That's why many call him the \"demolition specialist\", he simply loves them, and you can be sure that he will not hesitate on using them, not by one bit.", ""},
+			
+			{ "Traits", "Where's my ammo?: Most of the weapons you have are rockets, and they are very hard to carry. You have very limited ammunition.
+			\n\nBoom, Boom, Boom: You have the widest access to a wide range of explosives, you like making things go boom! Blow people up in many ways!", ""},
+			
+			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Freeley can carry all his missile weapons.
+			\n\n- Once the few missiles that weapons had in Rise of the Triad were burned up, the weapon was tossed. This is not the case in Samsara.
+			\n    ^- Further, Freeley's weapons now can carry much more ammo, but not as much as other heroes.
+			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibar does a large amount of melee damage to compensate for Freeley's lack of close quarter combat options
+			\n\n- God mode in Samsara doesn't increase Freeley's view height", ""},
+		},
+		{
+			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Ian Paul Freely is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. I.P. Freely has a wide range of explosives, fit for many situations. That's why many call him the \"demolition specialist\", he simply loves them, and you can be sure that he will not hesitate on using them, not by one bit.", ""},
+			
+			{ "Traits", "Where's my ammo?: Most of the weapons you have are rockets, and they are very hard to carry. You have very limited ammunition.
+			\n\nBoom, Boom, Boom: You have the widest access to a wide range of explosives, you like making things go boom! Blow people up in many ways!", ""},
+			
+			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Freeley can carry all his missile weapons.
+			\n\n- Once the few missiles that weapons had in Rise of the Triad were burned up, the weapon was tossed. This is not the case in Samsara.
+			\n    ^- Further, Freeley's weapons now can carry much more ammo, but not as much as other heroes.
+			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibar does a large amount of melee damage to compensate for Freeley's lack of close quarter combat options
+			\n\n- God mode in Samsara doesn't increase Freeley's view height", ""},
+		},
+		{
+			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Ian Paul Freely is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. I.P. Freely has a wide range of explosives, fit for many situations. That's why many call him the \"demolition specialist\", he simply loves them, and you can be sure that he will not hesitate on using them, not by one bit.", ""},
+			
+			{ "Traits", "Where's my ammo?: Most of the weapons you have are rockets, and they are very hard to carry. You have very limited ammunition.
+			\n\nBoom, Boom, Boom: You have the widest access to a wide range of explosives, you like making things go boom! Blow people up in many ways!", ""},
+			
+			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Freeley can carry all his missile weapons.
+			\n\n- Once the few missiles that weapons had in Rise of the Triad were burned up, the weapon was tossed. This is not the case in Samsara.
+			\n    ^- Further, Freeley's weapons now can carry much more ammo, but not as much as other heroes.
+			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibar does a large amount of melee damage to compensate for Freeley's lack of close quarter combat options
+			\n\n- God mode in Samsara doesn't increase Freeley's view height", ""},
+		},
+		{
+			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Ian Paul Freely is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. I.P. Freely has a wide range of explosives, fit for many situations. That's why many call him the \"demolition specialist\", he simply loves them, and you can be sure that he will not hesitate on using them, not by one bit.", ""},
+			
+			{ "Traits", "Where's my ammo?: Most of the weapons you have are rockets, and they are very hard to carry. You have very limited ammunition.
+			\n\nBoom, Boom, Boom: You have the widest access to a wide range of explosives, you like making things go boom! Blow people up in many ways!", ""},
+			
+			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Freeley can carry all his missile weapons.
+			\n\n- Once the few missiles that weapons had in Rise of the Triad were burned up, the weapon was tossed. This is not the case in Samsara.
+			\n    ^- Further, Freeley's weapons now can carry much more ammo, but not as much as other heroes.
+			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibar does a large amount of melee damage to compensate for Freeley's lack of close quarter combat options
+			\n\n- God mode in Samsara doesn't increase Freeley's view height", ""},
+		},
 	},
 	{
 		{
@@ -807,20 +852,78 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		{ "Quad Damage", "(This item is obtained along with Thunderbolt)\nMagnum upgrade! You now deliver four times the pain!", "QUDDA0", "QuadDamagePickup", "7" },
 		{ "Laser Cannon", "This weapon emits a series of laser blasts that disintegrates anything in its path. The laser canon will have the ability to bounce off an inanimate object at least once; in tight quarters, maybe twice.", "QLSCZ0", "Laser Cannon", "u" }
 	}},
-	{{
-		{ "Knife", "It's a knife. That's it. You can use it to cut nets or something.", "", "RottKnife", "f" },
-		{ "Pistol", "You don't have to collect bullets in this game.", "", "RPistol", "p" },
-		{ "Heat Seeker", "Will lock in on any heat source and head towards it. Handy for surgically picking off baddies.", "PHSEA0", "HeatSeeker", "1" },
-		{ "Double Pistols", "Two guns at once. Double your pleasure, double your fun! This'll \"Woo\" them to your side.", "PPSTA0", "Double Pistols", "2" },
-		{ "Bazooka", "Your basic straight shooting missile-firing weapon. Always a fun way to toast Triad terrorists terminally.", "PBAZA0", "Bazooka", "3" },
-		{ "MP40", "Once you have this, low guards are not a problem", "PM40A0", "MP40", "4" },
-		{ "Firebomb", "This explodes in a big X of fireblasts, shaking the very ground you walk on. Not for close quarters.", "PFBMA0", " Firebomb ", "5" },
-		{ "Drunk Missiles", "Five missiles fly out with no clue of where they are going.", "PDNKA0", "DrunkMissiles", "6" },
-		{ "Flame Wall", "As soon as this missile hits the ground, a wall of flame springs to life and burns enemies to cinders.", "PFWLA0", "FlameWall", "7" },
-		{ "Split Missile", "Hold down the fire button and two heat-seeking missiles fire. Let go, and they split off at 45 degree angle, plus the missiles both heat seek once split.", "PSPLA0", "Split Missile", "u" },
-		{ "Excalibat", "When one of the ancient staff-creating spells called for a length of wood, all the Oscurido minions could find was a baseball bat. Now it's an enchanted baseball bat. You can bat around your enemies, which is pretty cool. But it has a secret power, if you can only unlock it.\n\nPrimary Fire: Hold down the Primary Fire key to fire a spread shot of magical baseballs.\nSecondary Fire: Do a simple melee attack that doesn't use up any ammunition. It can reflect most projectiles.", "PBATA0", "Excalibat", "u" },
-		{ "Dark Staff", "This is an incredibly powerful weapon. Little stops it, except thick walls. It destroys virtually everything in its path. A kinetic energy sphere, bristling with wild blue magic, shrieks toward your enemies.", "PKE_A0", "Dark Staff", "u" }
-	}},
+	{
+		{
+			{ "Knife", "It's a knife. That's it. You can use it to cut nets or something.", "", "RottKnife", "f" },
+			{ "Pistol", "You don't have to collect bullets in this game.", "", "RPistol", "p" },
+			{ "Heat Seeker", "Will lock in on any heat source and head towards it. Handy for surgically picking off baddies.", "PHSEA0", "HeatSeeker", "1" },
+			{ "Double Pistols", "Two guns at once. Double your pleasure, double your fun! This'll \"Woo\" them to your side.", "PPSTA0", "Double Pistols", "2" },
+			{ "Bazooka", "Your basic straight shooting missile-firing weapon. Always a fun way to toast Triad terrorists terminally.", "PBAZA0", "Bazooka", "3" },
+			{ "MP40", "Once you have this, low guards are not a problem", "PM40A0", "MP40", "4" },
+			{ "Firebomb", "This explodes in a big X of fireblasts, shaking the very ground you walk on. Not for close quarters.", "PFBMA0", " Firebomb ", "5" },
+			{ "Drunk Missiles", "Five missiles fly out with no clue of where they are going.", "PDNKA0", "DrunkMissiles", "6" },
+			{ "Flame Wall", "As soon as this missile hits the ground, a wall of flame springs to life and burns enemies to cinders.", "PFWLA0", "FlameWall", "7" },
+			{ "Split Missile", "Hold down the fire button and two heat-seeking missiles fire. Let go, and they split off at 45 degree angle, plus the missiles both heat seek once split.", "PSPLA0", "Split Missile", "u" },
+			{ "Excalibat", "When one of the ancient staff-creating spells called for a length of wood, all the Oscurido minions could find was a baseball bat. Now it's an enchanted baseball bat. You can bat around your enemies, which is pretty cool. But it has a secret power, if you can only unlock it.\n\nPrimary Fire: Hold down the Primary Fire key to fire a spread shot of magical baseballs.\nSecondary Fire: Do a simple melee attack that doesn't use up any ammunition. It can reflect most projectiles.", "PBATA0", "Excalibat", "u" },
+			{ "Dark Staff", "This is an incredibly powerful weapon. Little stops it, except thick walls. It destroys virtually everything in its path. A kinetic energy sphere, bristling with wild blue magic, shrieks toward your enemies.", "PKE_A0", "Dark Staff", "u" }
+		},
+		{
+			{ "Knife", "It's a knife. That's it. You can use it to cut nets or something.", "", "RottKnife", "f" },
+			{ "Pistol", "You don't have to collect bullets in this game.", "", "RPistol", "p" },
+			{ "Heat Seeker", "Will lock in on any heat source and head towards it. Handy for surgically picking off baddies.", "PHSEA0", "HeatSeeker", "1" },
+			{ "Double Pistols", "Two guns at once. Double your pleasure, double your fun! This'll \"Woo\" them to your side.", "PPSTA0", "Double Pistols", "2" },
+			{ "Bazooka", "Your basic straight shooting missile-firing weapon. Always a fun way to toast Triad terrorists terminally.", "PBAZA0", "Bazooka", "3" },
+			{ "MP40", "Once you have this, low guards are not a problem", "PM40A0", "MP40", "4" },
+			{ "Firebomb", "This explodes in a big X of fireblasts, shaking the very ground you walk on. Not for close quarters.", "PFBMA0", " Firebomb ", "5" },
+			{ "Drunk Missiles", "Five missiles fly out with no clue of where they are going.", "PDNKA0", "DrunkMissiles", "6" },
+			{ "Flame Wall", "As soon as this missile hits the ground, a wall of flame springs to life and burns enemies to cinders.", "PFWLA0", "FlameWall", "7" },
+			{ "Split Missile", "Hold down the fire button and two heat-seeking missiles fire. Let go, and they split off at 45 degree angle, plus the missiles both heat seek once split.", "PSPLA0", "Split Missile", "u" },
+			{ "Excalibat", "When one of the ancient staff-creating spells called for a length of wood, all the Oscurido minions could find was a baseball bat. Now it's an enchanted baseball bat. You can bat around your enemies, which is pretty cool. But it has a secret power, if you can only unlock it.\n\nPrimary Fire: Hold down the Primary Fire key to fire a spread shot of magical baseballs.\nSecondary Fire: Do a simple melee attack that doesn't use up any ammunition. It can reflect most projectiles.", "PBATA0", "Excalibat", "u" },
+			{ "Dark Staff", "This is an incredibly powerful weapon. Little stops it, except thick walls. It destroys virtually everything in its path. A kinetic energy sphere, bristling with wild blue magic, shrieks toward your enemies.", "PKE_A0", "Dark Staff", "u" }
+		},
+		{
+			{ "Knife", "It's a knife. That's it. You can use it to cut nets or something.", "", "RottKnife", "f" },
+			{ "Pistol", "You don't have to collect bullets in this game.", "", "RPistol", "p" },
+			{ "Heat Seeker", "Will lock in on any heat source and head towards it. Handy for surgically picking off baddies.", "PHSEA0", "HeatSeeker", "1" },
+			{ "Double Pistols", "Two guns at once. Double your pleasure, double your fun! This'll \"Woo\" them to your side.", "PPSTA0", "Double Pistols", "2" },
+			{ "Bazooka", "Your basic straight shooting missile-firing weapon. Always a fun way to toast Triad terrorists terminally.", "PBAZA0", "Bazooka", "3" },
+			{ "MP40", "Once you have this, low guards are not a problem", "PM40A0", "MP40", "4" },
+			{ "Firebomb", "This explodes in a big X of fireblasts, shaking the very ground you walk on. Not for close quarters.", "PFBMA0", " Firebomb ", "5" },
+			{ "Drunk Missiles", "Five missiles fly out with no clue of where they are going.", "PDNKA0", "DrunkMissiles", "6" },
+			{ "Flame Wall", "As soon as this missile hits the ground, a wall of flame springs to life and burns enemies to cinders.", "PFWLA0", "FlameWall", "7" },
+			{ "Split Missile", "Hold down the fire button and two heat-seeking missiles fire. Let go, and they split off at 45 degree angle, plus the missiles both heat seek once split.", "PSPLA0", "Split Missile", "u" },
+			{ "Excalibat", "When one of the ancient staff-creating spells called for a length of wood, all the Oscurido minions could find was a baseball bat. Now it's an enchanted baseball bat. You can bat around your enemies, which is pretty cool. But it has a secret power, if you can only unlock it.\n\nPrimary Fire: Hold down the Primary Fire key to fire a spread shot of magical baseballs.\nSecondary Fire: Do a simple melee attack that doesn't use up any ammunition. It can reflect most projectiles.", "PBATA0", "Excalibat", "u" },
+			{ "Dark Staff", "This is an incredibly powerful weapon. Little stops it, except thick walls. It destroys virtually everything in its path. A kinetic energy sphere, bristling with wild blue magic, shrieks toward your enemies.", "PKE_A0", "Dark Staff", "u" }
+		},
+		{
+			{ "Knife", "It's a knife. That's it. You can use it to cut nets or something.", "", "RottKnife", "f" },
+			{ "Pistol", "You don't have to collect bullets in this game.", "", "RPistol", "p" },
+			{ "Heat Seeker", "Will lock in on any heat source and head towards it. Handy for surgically picking off baddies.", "PHSEA0", "HeatSeeker", "1" },
+			{ "Double Pistols", "Two guns at once. Double your pleasure, double your fun! This'll \"Woo\" them to your side.", "PPSTA0", "Double Pistols", "2" },
+			{ "Bazooka", "Your basic straight shooting missile-firing weapon. Always a fun way to toast Triad terrorists terminally.", "PBAZA0", "Bazooka", "3" },
+			{ "MP40", "Once you have this, low guards are not a problem", "PM40A0", "MP40", "4" },
+			{ "Firebomb", "This explodes in a big X of fireblasts, shaking the very ground you walk on. Not for close quarters.", "PFBMA0", " Firebomb ", "5" },
+			{ "Drunk Missiles", "Five missiles fly out with no clue of where they are going.", "PDNKA0", "DrunkMissiles", "6" },
+			{ "Flame Wall", "As soon as this missile hits the ground, a wall of flame springs to life and burns enemies to cinders.", "PFWLA0", "FlameWall", "7" },
+			{ "Split Missile", "Hold down the fire button and two heat-seeking missiles fire. Let go, and they split off at 45 degree angle, plus the missiles both heat seek once split.", "PSPLA0", "Split Missile", "u" },
+			{ "Excalibat", "When one of the ancient staff-creating spells called for a length of wood, all the Oscurido minions could find was a baseball bat. Now it's an enchanted baseball bat. You can bat around your enemies, which is pretty cool. But it has a secret power, if you can only unlock it.\n\nPrimary Fire: Hold down the Primary Fire key to fire a spread shot of magical baseballs.\nSecondary Fire: Do a simple melee attack that doesn't use up any ammunition. It can reflect most projectiles.", "PBATA0", "Excalibat", "u" },
+			{ "Dark Staff", "This is an incredibly powerful weapon. Little stops it, except thick walls. It destroys virtually everything in its path. A kinetic energy sphere, bristling with wild blue magic, shrieks toward your enemies.", "PKE_A0", "Dark Staff", "u" }
+		},
+		{
+			{ "Knife", "It's a knife. That's it. You can use it to cut nets or something.", "", "RottKnife", "f" },
+			{ "Pistol", "You don't have to collect bullets in this game.", "", "RPistol", "p" },
+			{ "Heat Seeker", "Will lock in on any heat source and head towards it. Handy for surgically picking off baddies.", "PHSEA0", "HeatSeeker", "1" },
+			{ "Double Pistols", "Two guns at once. Double your pleasure, double your fun! This'll \"Woo\" them to your side.", "PPSTA0", "Double Pistols", "2" },
+			{ "Bazooka", "Your basic straight shooting missile-firing weapon. Always a fun way to toast Triad terrorists terminally.", "PBAZA0", "Bazooka", "3" },
+			{ "MP40", "Once you have this, low guards are not a problem", "PM40A0", "MP40", "4" },
+			{ "Firebomb", "This explodes in a big X of fireblasts, shaking the very ground you walk on. Not for close quarters.", "PFBMA0", " Firebomb ", "5" },
+			{ "Drunk Missiles", "Five missiles fly out with no clue of where they are going.", "PDNKA0", "DrunkMissiles", "6" },
+			{ "Flame Wall", "As soon as this missile hits the ground, a wall of flame springs to life and burns enemies to cinders.", "PFWLA0", "FlameWall", "7" },
+			{ "Split Missile", "Hold down the fire button and two heat-seeking missiles fire. Let go, and they split off at 45 degree angle, plus the missiles both heat seek once split.", "PSPLA0", "Split Missile", "u" },
+			{ "Excalibat", "When one of the ancient staff-creating spells called for a length of wood, all the Oscurido minions could find was a baseball bat. Now it's an enchanted baseball bat. You can bat around your enemies, which is pretty cool. But it has a secret power, if you can only unlock it.\n\nPrimary Fire: Hold down the Primary Fire key to fire a spread shot of magical baseballs.\nSecondary Fire: Do a simple melee attack that doesn't use up any ammunition. It can reflect most projectiles.", "PBATA0", "Excalibat", "u" },
+			{ "Dark Staff", "This is an incredibly powerful weapon. Little stops it, except thick walls. It destroys virtually everything in its path. A kinetic energy sphere, bristling with wild blue magic, shrieks toward your enemies.", "PKE_A0", "Dark Staff", "u" }
+		},
+	},
 	{{
 		{ "Auto Charge Pistol", "The ACP does not require a charge pack; you'll have to wait for the unit to recharge. It's a silent attack weapon, so skulk around awhile - firing it won't announce your presence!", "", "Auto Charge Pistol", "p" },
 		{ "Ammo Recharge Battery", "Replenishes 25% of the ammo capacity of the current weapon. This is an inventory item.", "BAMRA0", "BlakeRefill", "1" },
@@ -946,12 +1049,11 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		{ "Energy Ball", "Shoots a single sphere that will hit enemies around, not only dealing great damage, but also releasing health spheres when hitting enemy. Each sphere restores 5 HP.", "SQ72X0", "DisruptorEnergyBall", "u" }
 	}},
 	{{
-		{ "Ye Fists!", "The favoured weapon of the Goblin tribes, the short sword is a double edged blade of poor quality.", "", "Witchaven_Fists", "f" },
+		{ "Short Sword", "The favoured weapon of the Goblin tribes, the short sword is a double edged blade of poor quality.", "", "Shortsword", "f" },
 		{ "Bow and Arrows", "The epitaph of Lord VerKapheron's archers, the bows and quivers you find give you the advantage of attaching from a distance.\n\nThis is a silent weapon.", "", "Bow and Arrows", "p" },
-		{ "Short Sword", "The favoured weapon of the Goblin tribes, the short sword is a double edged blade of poor quality. With at least 3 ammo 1, you can set the blade on fire for a great damage boost.", "PWHHA0", "ShortSword", "1" },
-//		{ "Battle Axe", "The battle axe is the native weapon of the MinaDrake. This sturdy curved blade inflicts more damage than the broad sword. It is enchanted with magic to deal tons of damage to an enemy at close combat.\n\nPress the Alt Fire to deactivate the weapon, allowing you to use it as a melee weapon that consumes no ammo & is silent. This is almost the same as when it is activated, though the fire rate is slower, and damage is decreased.", "PWHBA0", "Battle Axe", "2" },
-		{ "Pike Axe", "These items were once the symbol of the castle guard, serving as both a melee and a missile weapon. It is enchanted with magic to let you throw multiple at a distance.\n\nPress the Alt Fire to deactivate the weapon, allowing you to use it as a melee weapon that consumes no ammo & is silent.", "PWHEA0", "Pike Axe", "2" },
-		{ "Battle Axe", "The battle axe is the native weapon of the MinaDrake. This sturdy curved blade inflicts more damage than the broad sword. It is enchanted with magic to deal tons of damage to an enemy at close combat.\n\nPress the Alt Fire to deactivate the weapon, allowing you to use it as a melee weapon that consumes no ammo & is silent. This is almost the same as when it is activated, though the fire rate is slower, and damage is decreased.", "PWHBA0", "Battle Axe", "3" },	
+		{ "Onyx Ring", "Grants you a 15 second protection from all ranged attacks!", "PWHAA0", "OnyxRing", "1" },
+		{ "Battle Axe", "The battle axe is the native weapon of the MinaDrake. This sturdy curved blade inflicts more damage than the broad sword. It is enchanted with magic to deal tons of damage to an enemy at close combat.\n\nPress the Alt Fire to deactivate the weapon, allowing you to use it as a melee weapon that consumes no ammo & is silent. This is almost the same as when it is activated, though the fire rate is slower, and damage is decreased.", "PWHBA0", "Battle Axe", "2" },
+		{ "Pike Axe", "These items were once the symbol of the castle guard, serving as both a melee and a missile weapon. It is enchanted with magic to let you throw multiple at a distance.\n\nPress the Alt Fire to deactivate the weapon, allowing you to use it as a melee weapon that consumes no ammo & is silent.", "PWHEA0", "Pike Axe", "3" },
 		{ "Ice Halberd", "This is a large blade mounted on the end of a long wooden pole. It is enchanted with magic to shoot ice magic.\n\nPress the Alt Fire to deactivate the weapon, allowing you to use it as a melee weapon that consumes no ammo & is silent.", "PWHDA0", "Ice Halberd", "4" },
 		{ "Fire Mace", "The Morning Star is a devastating spiked ball and chain. It is enchanted with magic to throw fireballs.\n\nPress the Alt Fire to deactivate the weapon, allowing you to use it as a melee weapon that consumes no ammo & is silent.", "PWHCA0", "Fire Mace", "5" },
 		{ "Frozen Two-Hand Sword", "This gigantic double edged blade does the most damage of all the weapons you will find in the Witchaven. It is enchanted with magic to deal a tremendous amount of damage to an enemy at close combat.\n\nPress the Alt Fire to deactivate the weapon, allowing you to use it as a melee weapon that consumes no ammo & is silent. This is almost the same as when it is activated, though the fire rate is slower, and damage is decreased.", "PWHGA0", "Frozen Two-Hand Sword", "6" },
@@ -1815,6 +1917,7 @@ Script "Samsara_Compendium_Initiate" (void) Net
 
 Script "Samsara_Compendium" (void) Net Clientside
 {
+	int idstart = 100;
 	int cursorx, cursory, offsety, offsetx, menuindex, lastmenuindex, a, menutab, lastmenutab, menuitem, lastmenuitem, scrollcounter, scrolltimer, index, scalex, scaley, hitpoints, newtid, listyposition, listindex, condition, listclick, monsterskin, altskin, prevskin, monsteraccess;
 	str seesound, activesound, painsound, deathsound, description;
 	int hudboundsx = 1440;

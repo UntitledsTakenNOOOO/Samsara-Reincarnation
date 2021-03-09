@@ -380,8 +380,7 @@ script SAMSARA_SPAWN (int respawning)
     int wsteSide;
     int armor, oarmor, type, otype;
     int i;
-	int hexmode;
-	int wolfmode;
+	int doommode, dukemode, hexmode, wolfmode, rottmode, halflifemode, previousvalue, cvalue;
 	int targettid;
 	
 	TakeInventory("Doom64MonsterSet", 0x7FFFFFFF);
@@ -538,130 +537,217 @@ script SAMSARA_SPAWN (int respawning)
 		
 		switch (samsaraClassNum())
 		{
+			case CLASS_DOOM:
+				doommode = GetUserCvar(pln,"sams_cl_doom64");
+				if(doommode != previousvalue)
+				{
+					if((GetUserCvar(pln,"sams_cl_doom64")))
+					{ 
+						if(CheckInventory("Doom64_IHaveUnmaker") && (!CheckInventory("Unmaker"))) 
+							GiveInventory("Unmaker", 1);
+							
+						GiveInventory("Doom64Mode", 1); 
+						if(!CheckInventory("Doom64MonsterSet")) 
+						{	
+							SetActorProperty(0,APROP_SoundClass,"Doom64Guy");
+							GiveInventory("Doom64MonsterSet", 1); 
+							targettid = UniqueTid();
+							SpawnForced("Doom64GuyMapDummy",0,0,0,targettid);
+							SetPointer(AAPTR_TARGET, targettid);
+							Thing_ChangeTID(targettid, 0);
+						}
+					}
+					else 
+					{ 
+						SetActorProperty(0,APROP_SoundClass,"DoomGuy");
+						TakeInventory("Doom64Mode", 0x7FFFFFFF); 
+						TakeInventory("Doom64MonsterSet", 0x7FFFFFFF); 
+						TakeInventory("Unmaker", 0x7FFFFFFF);  
+					}
+					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, doommode, pln); 
+					previousvalue = doommode;
+				}
+				break;
 			case CLASS_WOLFEN:
 				wolfmode = GetUserCvar(pln,"sams_cl_wolfmode");
-				if (wolfmode > 0) 
-				{ 
-					TakeInventory("WolfenClassMode", 2); 
-					GiveInventory("WolfenClassMode", wolfmode); 
-					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, wolfmode, pln); 
-					if(wolfmode == 2)
-					{
-						TakeInventory("WolfExtraLife", 0x7FFFFFFF); if(CheckInventory("Totenkopf_IHaveMauser") && (!CheckInventory("Totenkopf_Mauser"))) { GiveInventory("Totenkopf_Mauser", 1); }
-						if(CheckInventory("Totenkopf_IHaveDualMausers") && (!CheckInventory("Totenkopf_MauserDual"))) { GiveInventory("Totenkopf_MauserDual", 1); }
-						if(CheckInventory("Totenkopf_IHaveDualPistols") && (!CheckInventory("Totenkopf_PistolDual"))) { GiveInventory("Totenkopf_PistolDual", 1); }
-						if(CheckInventory("Totenkopf_IHaveDualMP40s") && (!CheckInventory("Totenkopf_MP40Dual"))) { GiveInventory("Totenkopf_MP40Dual", 1); }
-						if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Totenkopf_STG44"))) { GiveInventory("Totenkopf_STG44", 1); }
-						if(CheckInventory("Totenkopf_IHaveFlameThrower") && (!CheckInventory("Totenkopf_FlameThrower"))) { GiveInventory("Totenkopf_FlameThrower", 1); }
-						if(CheckInventory("Totenkopf_IHaveMG42") && (!CheckInventory("Totenkopf_MG42"))) { GiveInventory("Totenkopf_MG42", 1); }
-						if(CheckInventory("Totenkopf_IHaveScope") && (!CheckInventory("Totenkopf_Sniper"))) { GiveInventory("Totenkopf_Sniper", 1); }
-						if(CheckInventory("Totenkopf_IHavePowerArmor") && (!CheckInventory("TotenkopfHasPowerArmor"))) { GiveInventory("TotenkopfHasPowerArmor", 1); }
-						if(CheckInventory("Totenkopf_IAmWolverine") && (!CheckInventory("TotenkopfHasHealingOrb"))) { GiveInventory("TotenkopfHasHealingOrb", 1); }
-					}	
-					else
-					{
-						if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1); }
-						if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); }
-						TakeInventory("Totenkopf_PistolDual", 0x7FFFFFFF); TakeInventory("Totenkopf_Mauser", 0x7FFFFFFF); TakeInventory("Totenkopf_MauserDual", 0x7FFFFFFF); TakeInventory("Totenkopf_MP40Dual", 0x7FFFFFFF); TakeInventory("Totenkopf_STG44", 0x7FFFFFFF); TakeInventory("Totenkopf_FlameThrower", 0x7FFFFFFF);  TakeInventory("Totenkopf_MG42", 0x7FFFFFFF);  TakeInventory("Totenkopf_Sniper", 0x7FFFFFFF); TakeInventory("TotenkopfHasPowerArmor", 0x7FFFFFFF);  TakeInventory("TotenkopfHasHealingOrb", 0x7FFFFFFF); 
+				if(wolfmode != previousvalue || CheckInventory("Totenkopf_GimmeDat"))
+				{
+					TakeInventory("Totenkopf_GimmeDat",1);
+					if (wolfmode > 0) 
+					{ 
+						TakeInventory("WolfenClassMode", 2); 
+						GiveInventory("WolfenClassMode", wolfmode); 
+						if(wolfmode == 2)
+						{
+							TakeInventory("WolfExtraLife", 0x7FFFFFFF); if(CheckInventory("Totenkopf_IHaveMauser") && (!CheckInventory("Totenkopf_Mauser"))) { GiveInventory("Totenkopf_Mauser", 1); }
+							if(CheckInventory("Totenkopf_IHaveDualMausers") && (!CheckInventory("Totenkopf_MauserDual"))) { GiveInventory("Totenkopf_MauserDual", 1); }
+							if(CheckInventory("Totenkopf_IHaveDualPistols") && (!CheckInventory("Totenkopf_PistolDual"))) { GiveInventory("Totenkopf_PistolDual", 1); }
+							if(CheckInventory("Totenkopf_IHaveDualMP40s") && (!CheckInventory("Totenkopf_MP40Dual"))) { GiveInventory("Totenkopf_MP40Dual", 1); }
+							if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Totenkopf_STG44"))) { GiveInventory("Totenkopf_STG44", 1); }
+							if(CheckInventory("Totenkopf_IHaveFlameThrower") && (!CheckInventory("Totenkopf_FlameThrower"))) { GiveInventory("Totenkopf_FlameThrower", 1); }
+							if(CheckInventory("Totenkopf_IHaveMG42") && (!CheckInventory("Totenkopf_MG42"))) { GiveInventory("Totenkopf_MG42", 1); }
+							if(CheckInventory("Totenkopf_IHaveScope") && (!CheckInventory("Totenkopf_Sniper"))) { GiveInventory("Totenkopf_Sniper", 1); }
+							if(CheckInventory("Totenkopf_IHavePowerArmor") && (!CheckInventory("TotenkopfHasPowerArmor"))) { GiveInventory("TotenkopfHasPowerArmor", 1); }
+							if(CheckInventory("Totenkopf_IAmWolverine") && (!CheckInventory("TotenkopfHasHealingOrb"))) { GiveInventory("TotenkopfHasHealingOrb", 1); }
+						}	
+						else
+						{
+							if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1); }
+							if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); }
+							TakeInventory("Totenkopf_PistolDual", 0x7FFFFFFF); TakeInventory("Totenkopf_Mauser", 0x7FFFFFFF); TakeInventory("Totenkopf_MauserDual", 0x7FFFFFFF); TakeInventory("Totenkopf_MP40Dual", 0x7FFFFFFF); TakeInventory("Totenkopf_STG44", 0x7FFFFFFF); TakeInventory("Totenkopf_FlameThrower", 0x7FFFFFFF);  TakeInventory("Totenkopf_MG42", 0x7FFFFFFF);  TakeInventory("Totenkopf_Sniper", 0x7FFFFFFF); TakeInventory("TotenkopfHasPowerArmor", 0x7FFFFFFF);  TakeInventory("TotenkopfHasHealingOrb", 0x7FFFFFFF); 
+						}
+						
+						if(!CheckInventory("WolfLostMonsterSet") && wolfmode == 1) 
+						{	
+							TakeInventory("TotenkopfMonsterSet", 0x7FFFFFFF);
+							GiveInventory("WolfLostMonsterSet", 1); 
+							targettid = UniqueTid();
+							SpawnForced("WolfLostMapDummy",0,0,0,targettid);
+							SetPointer(AAPTR_TARGET, targettid);
+							Thing_ChangeTID(targettid, 0);
+						}
+						if(!CheckInventory("TotenkopfMonsterSet") && wolfmode == 2) 
+						{	
+							TakeInventory("WolfLostMonsterSet", 0x7FFFFFFF);
+							GiveInventory("TotenkopfMonsterSet", 1); 
+							targettid = UniqueTid();
+							SpawnForced("TotenkopfMapDummy",0,0,0,targettid);
+							SetPointer(AAPTR_TARGET, targettid);
+							Thing_ChangeTID(targettid, 0);
+						}
+					} 
+					else 
+					{ 
+						TakeInventory("WolfLostMonsterSet", 0x7FFFFFFF); 
+						TakeInventory("TotenkopfMonsterSet", 0x7FFFFFFF); 
+						TakeInventory("WolfenClassMode", 0x7FFFFFFF); 
+						TakeInventory("Totenkopf_PistolDual", 0x7FFFFFFF); 
+						TakeInventory("Totenkopf_Mauser", 0x7FFFFFFF); 
+						TakeInventory("Totenkopf_MauserDual", 0x7FFFFFFF); 
+						TakeInventory("Totenkopf_MP40Dual", 0x7FFFFFFF); 
+						TakeInventory("Totenkopf_STG44", 0x7FFFFFFF); 
+						TakeInventory("Totenkopf_FlameThrower", 0x7FFFFFFF);  
+						TakeInventory("Totenkopf_MG42", 0x7FFFFFFF);  
+						TakeInventory("Totenkopf_Sniper", 0x7FFFFFFF); 
+						TakeInventory("TotenkopfHasPowerArmor", 0x7FFFFFFF);  
+						TakeInventory("TotenkopfHasHealingOrb", 0x7FFFFFFF); 
 					}
-					
-					if(!CheckInventory("WolfLostMonsterSet") && wolfmode == 1) 
-					{	
-						TakeInventory("TotenkopfMonsterSet", 0x7FFFFFFF);
-						GiveInventory("WolfLostMonsterSet", 1); 
-						targettid = UniqueTid();
-						SpawnForced("WolfLostMapDummy",0,0,0,targettid);
-						SetPointer(AAPTR_TARGET, targettid);
-						Thing_ChangeTID(targettid, 0);
-					}
-					if(!CheckInventory("TotenkopfMonsterSet") && wolfmode == 2) 
-					{	
-						TakeInventory("WolfLostMonsterSet", 0x7FFFFFFF);
-						GiveInventory("TotenkopfMonsterSet", 1); 
-						targettid = UniqueTid();
-						SpawnForced("TotenkopfMapDummy",0,0,0,targettid);
-						SetPointer(AAPTR_TARGET, targettid);
-						Thing_ChangeTID(targettid, 0);
-					}
+					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, wolfmode, pln);
+					previousvalue = wolfmode;
+					if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1);  }	
+					if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); } 
 				}
-				else { TakeInventory("WolfLostMonsterSet", 0x7FFFFFFF); TakeInventory("TotenkopfMonsterSet", 0x7FFFFFFF); TakeInventory("WolfenClassMode", 0x7FFFFFFF); TakeInventory("Totenkopf_PistolDual", 0x7FFFFFFF); TakeInventory("Totenkopf_Mauser", 0x7FFFFFFF); TakeInventory("Totenkopf_MauserDual", 0x7FFFFFFF); TakeInventory("Totenkopf_MP40Dual", 0x7FFFFFFF); TakeInventory("Totenkopf_STG44", 0x7FFFFFFF); TakeInventory("Totenkopf_FlameThrower", 0x7FFFFFFF);  TakeInventory("Totenkopf_MG42", 0x7FFFFFFF);  TakeInventory("Totenkopf_Sniper", 0x7FFFFFFF); TakeInventory("TotenkopfHasPowerArmor", 0x7FFFFFFF);  TakeInventory("TotenkopfHasHealingOrb", 0x7FFFFFFF); 
-				if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1);  }	
-				if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); } }
 				break;
+				
 			case CLASS_HEXEN:
 				hexmode = GetUserCvar(pln,"sams_cl_hexclass");
-				if (hexmode > 0) 
-				{ 
-					TakeInventory("HexenClassMode", 2); 
-					GiveInventory("HexenClassMode", hexmode); 
-					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, hexmode, pln); 
-					if(hexmode == 1)
-					{
-						SetActorProperty(0,APROP_SoundClass,"HexenDaedalon");
-						TakeInventory("Mace of Contrition", 0x7FFFFFFF); 
+				if(hexmode != previousvalue)
+				{
+					if (hexmode > 0) 
+					{ 
+						TakeInventory("HexenClassMode", 2); 
+						GiveInventory("HexenClassMode", hexmode); 
+						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, hexmode, pln); 
+						if(hexmode == 1)
+						{
+							SetActorProperty(0,APROP_SoundClass,"HexenDaedalon");
+							TakeInventory("Mace of Contrition", 0x7FFFFFFF); 
+						}
+						else
+						{
+							SetActorProperty(0,APROP_SoundClass,"HexenBaratus");
+							GiveInventory("Mace of Contrition", 1);
+						}
 					}
-					else
-					{
-						SetActorProperty(0,APROP_SoundClass,"HexenBaratus");
-						GiveInventory("Mace of Contrition", 1);
-					}
+					else 
+					{ 
+						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, hexmode, pln); 
+						SetActorProperty(0,APROP_SoundClass,"HexenPlayer");
+						TakeInventory("HexenClassMode", 0x7FFFFFFF); 
+						GiveInventory("Mace of Contrition", 1); 
+					}	
+					previousvalue = hexmode;
 				}
-				else 
-				{ 
-					SetActorProperty(0,APROP_SoundClass,"HexenPlayer");
-					TakeInventory("HexenClassMode", 0x7FFFFFFF); 
-					GiveInventory("Mace of Contrition", 1); 
-				}	
-				PrintBold(s:GetActorProperty(0,APROP_SoundClass));
 				break;
 			case CLASS_DUKE:
-				if (GetUserCvar(pln,"sams_cl_dkclab")) 
-				{ 
-					GiveInventory("DukeLabToken", 1); 
-					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
+				dukemode = GetUserCvar(pln,"sams_cl_dkclab");
+				if(dukemode != previousvalue)
+				{
+					if(dukemode) 
+					{ 
+						GiveInventory("DukeLabToken", 1); 
+						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
+					}
+					else 
+					{ 
+						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln); 
+						TakeInventory("DukeLabToken", 0x7FFFFFFF); 
+					}
+					previousvalue = dukemode;
 				}
-				else 
-				{ 
-					TakeInventory("DukeLabToken", 0x7FFFFFFF); 
+				break;
+			case CLASS_ROTT:
+				rottmode = GetUserCvar(pln,"sams_cl_rottmode");
+				//only run these actions if the value changes
+				if(rottmode != previousvalue)
+				{
+					TakeInventory("RottMode", 4);
+					GiveInventory("RottMode",rottmode);
+					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, rottmode, pln); 
+					switch(rottmode)
+					{				
+						default:
+							SetActorProperty(0,APROP_SoundClass,"Freely");
+							break;
+						case 1:	
+							SetActorProperty(0,APROP_SoundClass,"Cassatt");
+							break;
+						case 2:
+							SetActorProperty(0,APROP_SoundClass,"Barrett");
+							break;
+						case 3:
+							SetActorProperty(0,APROP_SoundClass,"Ni");
+							break;
+						case 4:
+							SetActorProperty(0,APROP_SoundClass,"Wendt");
+							break;
+					}
+					previousvalue = rottmode;
+				}
+				break;
+			case CLASS_HALFLIFE:
+				halflifemode = GetUserCvar(pln,"sams_cl_shephardmode");
+				if(halflifemode != previousvalue)
+				{
+					if(halflifemode) 
+					{ 
+						GiveInventory("HalfLifeOpposingForce", 1); 
+						if(!CheckInventory("HalfLifeOpposingForceSet")) 
+						{	
+							targettid = UniqueTid();
+							SpawnForced("HalfLifeAdrianModeMapDummy",0,0,0,targettid);//SetActorState(0, "AdrianModeOn", true); 
+							SetPointer(AAPTR_TARGET, targettid);
+							Thing_ChangeTID(targettid, 0);
+						}
+					}
+					else 
+					{ 
+						TakeInventory("HalfLifeOpposingForce", 0x7FFFFFFF); 
+						TakeInventory("HalfLifeOpposingForceSet", 0x7FFFFFFF); 
+					}
+					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, halflifemode, pln); 
+					previousvalue = halflifemode;
+				}
+				break;
+			default:
+				if(cvalue != 1)
+				{
+					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln);
+					cvalue = 1;
 				}
 				break;
 		}
 	
-		if (GetUserCvar(pln,"sams_cl_shephardmode") && CheckInventory("HalfLifeClass")) 
-		{ 
-			GiveInventory("HalfLifeOpposingForce", 1); 
-			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
-			if(!CheckInventory("HalfLifeOpposingForceSet")) 
-			{	
-				targettid = UniqueTid();
-				SpawnForced("HalfLifeAdrianModeMapDummy",0,0,0,targettid);//SetActorState(0, "AdrianModeOn", true); 
-				SetPointer(AAPTR_TARGET, targettid);
-				Thing_ChangeTID(targettid, 0);
-			}
-		}
-        else { TakeInventory("HalfLifeOpposingForce", 0x7FFFFFFF); TakeInventory("HalfLifeOpposingForceSet", 0x7FFFFFFF); }
-		
-		if((GetUserCvar(pln,"sams_cl_doom64") && CheckInventory("DoomGuyClass")))
-		{ 
-			if(CheckInventory("Doom64_IHaveUnmaker") && (!CheckInventory("Unmaker"))) 
-				GiveInventory("Unmaker", 1);
-				
-			GiveInventory("Doom64Mode", 1); 
-			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
-			if(!CheckInventory("Doom64MonsterSet")) 
-			{	
-				GiveInventory("Doom64MonsterSet", 1); 
-				targettid = UniqueTid();
-				SpawnForced("Doom64GuyMapDummy",0,0,0,targettid);
-				SetPointer(AAPTR_TARGET, targettid);
-				Thing_ChangeTID(targettid, 0);
-			}
-		}
-		else { TakeInventory("Doom64Mode", 0x7FFFFFFF); TakeInventory("Doom64MonsterSet", 0x7FFFFFFF); TakeInventory("Unmaker", 0x7FFFFFFF);  }
-		
-		if((!GetUserCvar(pln,"sams_cl_shephardmode") && CheckInventory("HalfLifeClass")) || (!GetUserCvar(pln,"sams_cl_dkclab") && CheckInventory("DukeClass")) || (!GetUserCvar(pln,"sams_cl_hexclass") && CheckInventory("HexenClass")) || (!GetUserCvar(pln,"sams_cl_doom64") && CheckInventory("DoomGuyClass")) || (!GetUserCvar(pln,"sams_cl_wolfmode") && CheckInventory("WolfenClass")))
-			ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln);
-		
         if (GetCVar("sams_runninginzdoom") == 1) 
 		{
 			if (GetCVar("sv_nobfgaim") == 1) { GiveInventory("DoomNoBFGAim", 1); }

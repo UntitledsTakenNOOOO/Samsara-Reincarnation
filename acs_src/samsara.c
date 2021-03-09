@@ -1847,8 +1847,7 @@ Script "Samsara_Expander" (int use)
 	}
 }
 
-
-str rottdropstrings[4] = {"DropTaradino","DropThi","DropLorelli","DropDoug"};
+str rottdropstrings[5] = {"DropIan","DropTaradino","DropThi","DropLorelei","DropDoug"};
 str hexendropstrings[2] = {"DropFighter","DropMage"};
 str hexenmagedropstrings[2] = {"DropFighter","DropCleric"};
 str hexenfighterdropstrings[2] = {"DropCleric","DropMage"};
@@ -1859,21 +1858,28 @@ Script 2999 (int class, int mode)
 {
 	int resultcounter = 0;	
 	int maxallies = 2;
+	mode = ceilZandronum((mode*1.0)/100); //the shit I have to do to cleanup Zandronum's mistakes
 	Switch(class)
 	{
 		Case 1:	
-		maxallies = 4;
+		maxallies = 5;
 		For(int a = 0; a < 36; a++)
 		{
 			Delay(1);
 			If(a==35)
 			{
-				If(resultcounter == maxallies)
+				if(resultcounter == maxallies)
 				{
 					SetActorState(0,"Death",TRUE);
 					terminate;
 				}
-				SetActorState(0,rottdropstrings[resultcounter],TRUE);
+				
+				if(mode != resultcounter)
+				{
+					//PrintBold(d:resultcounter);
+					SetActorState(0,rottdropstrings[resultcounter],TRUE);
+				}
+					
 				a=0;
 				resultcounter++;
 			}
@@ -1948,6 +1954,16 @@ Script 2999 (int class, int mode)
 			}
 		}
 		break;
+	}
+}
+
+Script "Samsara_AllyBeaconDrops" (void)
+{
+	switch (samsaraClassNum())
+	{
+		case CLASS_ROTT:
+			SetResultValue(CheckInventory("RottMode"));
+			break;
 	}
 }
 
