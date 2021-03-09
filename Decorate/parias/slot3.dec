@@ -110,14 +110,15 @@ actor "Timon's Axe" : Weapon // FWeapAxe
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "FireMage")
 		TNT1 A 0 A_JumpIfInventory("Clip", 4, 1)
 		Goto SwitchWeapon
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"SPFire")
 		H119 C 0 A_PlaySoundEx("Hexen/WandOfEmbers/Open", "SoundSlot6", 0)
 		H119 C 2 
 		H119 D 2
 		H119 E 2 Bright
 	  Hold:
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "FireFighter")
 		H119 E 0 A_JumpIfInventory("Clip", 4, 1)
 		Goto SwitchWeapon
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"SPFire")		
 		H119 E 0 A_PlayWeaponSound("Hexen/WandOfEmbers/Fire")
 		H119 F 0 A_FireCustomMissile("WandOfEmbersBall", Random(-7, -4), 0, 0, Random(-3,8))
 		H119 F 0 A_FireCustomMissile("WandOfEmbersBall", Random(8, 3), 0, 0, Random(-2, 9))
@@ -183,24 +184,18 @@ actor "Timon's Axe" : Weapon // FWeapAxe
         Goto ReadyGlow
 
       SPFire:
-        FAXE B 4 Offset (15, 32) A_JumpIfInventory("Clip",3,"SPFireGlow")//A_FAxeCheckAtk
-        FAXE C 3 Offset (15, 32)
-        FAXE D 2 Offset (15, 32)
-        FAXE D 1 Offset (-5, 70) A_CustomPunch(random(40,62),1,1,"AxePuff2",144)//
-        TNT1 A 0 A_CustomPunch(2,0,0,"BlankPuff4",144)
-        TNT1 A 0 A_CustomPunch(3,0,0,"BlankPuff4",84)//A_Saw("silence", "silence", 4, "BlankPuff")
-        FAXE D 2 Offset (-25, 90)
-
-      SPFire2:
-        FAXE E 1 Offset (15, 32)
-        FAXE E 2 Offset (10, 54)
-        FAXE E 7 Offset (10, 150)
-        FAXE A 1 Offset (0, 60) A_ReFire
-        FAXE A 1 Offset (0, 52)
-        FAXE A 1 Offset (0, 44)
-        FAXE A 1 Offset (0, 36)
-        FAXE A 1
-        Goto Ready
+		H119 E 0 A_PlayWeaponSound("Hexen/WandOfEmbers/Fire")
+		H119 F 0 A_FireCustomMissile("WandOfEmbersBall_2", Random(-7, -4), 0, 0, Random(-3,8))
+		H119 F 0 A_FireCustomMissile("WandOfEmbersBall_2", Random(8, 3), 0, 0, Random(-2, 9))
+		H119 F 0 A_FireCustomMissile("WandOfEmbersBall_2", Random(-10, -2), 0, 0, Random(-1,12))
+		H119 F 0 A_FireCustomMissile("WandOfEmbersBall_2", Random(10, 2), 0, 0, Random(-1, 12))		
+		H119 F 0 A_FireCustomMissile("WandOfEmbersBall_2", 0, 0, 0, 0)
+		H119 F 0 A_TakeInventory("Clip", 4, TIF_NOTAKEINFINITE)
+		H119 FG 6 Bright
+		H119 D 7
+		H119 C 5 A_ReFire
+		H119 B 6
+		Goto Ready
 
       SPFireGlow:
         FAXE N 4 BRIGHT Offset (15, 32)
@@ -295,7 +290,7 @@ actor "Timon's Axe" : Weapon // FWeapAxe
         FAXE A 1 BRIGHT Offset (0, 44)
         FAXE A 1 BRIGHT Offset (0, 36)
         FAXE A 1 BRIGHT
-        Goto ReadyGlow
+        Goto ReadyFighterGlow
 		
 	  SwitchWeapon:
 		TNT1 A 0 A_JumpIf(CallACS("Hexen_SwitchPriority")==1,1)
@@ -421,3 +416,18 @@ Actor HexenEmberGem
 			  Stop
 	   }
 }		
+
+Actor WandOfEmbersBall_2 : WandOfEmbersBall 
+{ 
+	+THRUSPECIES 
+	Species "Player" 
+	States
+	{
+		Death:
+			H121 C 3 Bright A_CustomMissile("HexenEmberGemCoop",0,0,0, CMF_TRACKOWNER)
+			H121 DEFG 3 Bright
+			Stop			
+	}
+}
+
+Actor HexenEmberGemCoop : HexenEmberGem { Species "Player" +DONTHARMCLASS +DONTHARMSPECIES }	
