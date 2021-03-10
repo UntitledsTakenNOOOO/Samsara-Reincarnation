@@ -380,7 +380,7 @@ script SAMSARA_SPAWN (int respawning)
     int wsteSide;
     int armor, oarmor, type, otype;
     int i;
-	int doommode, dukemode, hexmode, wolfmode, rottmode, halflifemode, previousvalue, cvalue;
+	int doommode, dukemode, hexmode, wolfmode, rottmode, blakemode, halflifemode, previousvalue, cvalue;
 	int targettid;
 	
 	TakeInventory("Doom64MonsterSet", 0x7FFFFFFF);
@@ -686,6 +686,23 @@ script SAMSARA_SPAWN (int respawning)
 					previousvalue = dukemode;
 				}
 				break;
+			case CLASS_BLAKE:
+				blakemode = GetUserCvar(pln,"sams_cl_bsaog");
+				if(blakemode != previousvalue)
+				{
+					if(blakemode) 
+					{ 
+						GiveInventory("BlakeAOGToken", 1); 
+						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
+					}
+					else 
+					{ 
+						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln); 
+						TakeInventory("BlakeAOGToken", 0x7FFFFFFF); 
+					}
+					previousvalue = blakemode;
+				}
+				break;				
 			case CLASS_ROTT:
 				rottmode = GetUserCvar(pln,"sams_cl_rottmode");
 				//only run these actions if the value changes

@@ -224,7 +224,7 @@ int PickupStates[CLASSCOUNT][24] =
     {"Marathon","MarathonFull", "MarathonEmpty",    "MarathonSpecial",  "MarathonPunchdrunk",  "MarathonPDFull",   "MarathonPDEmpty",  "MarathonPDSpecial",		"",		"",		"",		""},
     {"Quake",   "QuakeFull",    "QuakeEmpty",       "QuakeSpecial",     "QuakePunchdrunk",     "QuakePDFull",      "QuakePDEmpty",     "QuakePDSpecial",		"",		"",		"",		""},   
 	{"Rott",    "RottFull",     "RottEmpty",        "RottSpecial",      "",						"",					"", 				"RottSpecial2",			"Rott",		"RottFull",		"RottEmpty",		"RottSpecial",		"Rott",    "RottFull",     "RottEmpty",        "RottSpecial",	"Rott",    "RottFull",     "RottEmpty",        "RottSpecial",	"Rott",    "RottFull",     "RottEmpty",        "RottSpecial" },   // Added this
-	{"Blake",   "BlakeFull",	"BlakeEmpty",		"BlakeSpecial",		"","","", "BlakeSpecial2",		"",		"",		"",		""}, // Added this
+	{"Blake",   "BlakeFull",	"BlakeEmpty",		"BlakeSpecial",		"","","", "BlakeSpecial2",		"AOG",		"AOGFull",		"AOGEmpty",		"AOGSpecial"}, // Added this
 	{"Caleb",   "CalebFull",    "CalebEmpty",       "CalebSpecial",     "","","", "CalebSpecial2",		"",		"",		"",		""}, // Added this
 	{"Strifeguy",  "StrifeFull",   "StrifeEmpty",      "StrifeSpecial",    "StrifePunchdrunk",    "StrifePDFull",     "StrifePDEmpty",    "StrifePDSpecial",		"",		"",		"",		""},	
 //    {"Doom64",  "Doom64Full",   "Doom64Empty",      "Doom64Special",    "Doom64Punchdrunk",    "Doom64PDFull",     "Doom64PDEmpty",    "Doom64PDSpecial",		"",		"",		"",		""},
