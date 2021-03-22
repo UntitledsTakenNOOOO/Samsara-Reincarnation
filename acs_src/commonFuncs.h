@@ -987,3 +987,17 @@ function int GetHudLeft(int w)
 {
   return w - GetHudRight(w);
 }
+
+function int SetPointerExt(int assign_slot, int tid, int assign_to_tid) 
+{
+	int a = ActivatorTID(); // Get original activator tid if there is an activator (I have ASSUMED that it returns 0 if there is no activator)
+	Thing_ChangeTID(0, UniqueTID()); // Create temporary, unique activator tid
+	int temp = ActivatorTID(); // Get temporary activator tid (0 if there is no activator)
+
+	if(SetActivator(assign_to_tid)) 
+		SetPointer(assign_slot, temp); // If an activator (assign_to_tid) is set, assign a pointer value to it.
+	if(SetActivator(temp)) 
+		Thing_ChangeTID(0, a); // If an activator (temp) is set, restore its original tid (a).
+		
+	return 0;
+}

@@ -386,6 +386,7 @@ script SAMSARA_SPAWN (int respawning)
 	TakeInventory("Doom64MonsterSet", 0x7FFFFFFF);
 	TakeInventory("WolfLostMonsterSet", 0x7FFFFFFF);
 	TakeInventory("TotenkopfMonsterSet", 0x7FFFFFFF);
+	TakeInventory("DukeLABMonsterSet", 0x7FFFFFFF);
 	TakeInventory("HalfLifeOpposingForceSet", 0x7FFFFFFF);
 	//ACS_NamedExecuteAlways("SAMSARA_RESETPLAYER_COOP",0,0,0,0);
     ServerEnterTimes[pln] = startTime;
@@ -553,7 +554,7 @@ script SAMSARA_SPAWN (int respawning)
 							GiveInventory("Doom64MonsterSet", 1); 
 							targettid = UniqueTid();
 							SpawnForced("Doom64GuyMapDummy",0,0,0,targettid);
-							SetPointer(AAPTR_TARGET, targettid);
+							SetPointerExt(AAPTR_TARGET, 0, targettid);
 							Thing_ChangeTID(targettid, 0);
 						}
 					}
@@ -603,7 +604,7 @@ script SAMSARA_SPAWN (int respawning)
 							GiveInventory("WolfLostMonsterSet", 1); 
 							targettid = UniqueTid();
 							SpawnForced("WolfLostMapDummy",0,0,0,targettid);
-							SetPointer(AAPTR_TARGET, targettid);
+							SetPointerExt(AAPTR_TARGET, 0, targettid);
 							Thing_ChangeTID(targettid, 0);
 						}
 						if(!CheckInventory("TotenkopfMonsterSet") && wolfmode == 2) 
@@ -612,7 +613,7 @@ script SAMSARA_SPAWN (int respawning)
 							GiveInventory("TotenkopfMonsterSet", 1); 
 							targettid = UniqueTid();
 							SpawnForced("TotenkopfMapDummy",0,0,0,targettid);
-							SetPointer(AAPTR_TARGET, targettid);
+							SetPointerExt(AAPTR_TARGET, 0, targettid);
 							Thing_ChangeTID(targettid, 0);
 						}
 					} 
@@ -675,6 +676,14 @@ script SAMSARA_SPAWN (int respawning)
 				{
 					if(dukemode) 
 					{ 
+						if(!CheckInventory("DukeLabMonsterSet")) 
+						{	
+							GiveInventory("DukeLabMonsterSet", 1); 
+							targettid = UniqueTid();
+							SpawnForced("DukeLabMapDummy",0,0,0,targettid);
+							SetPointerExt(AAPTR_TARGET, 0, targettid);
+							Thing_ChangeTID(targettid, 0);
+						}
 						GiveInventory("DukeLabToken", 1); 
 						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
 					}
@@ -682,6 +691,7 @@ script SAMSARA_SPAWN (int respawning)
 					{ 
 						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln); 
 						TakeInventory("DukeLabToken", 0x7FFFFFFF); 
+						TakeInventory("DukeLabMonsterSet", 0x7FFFFFFF); 
 					}
 					previousvalue = dukemode;
 				}
@@ -743,7 +753,7 @@ script SAMSARA_SPAWN (int respawning)
 						{	
 							targettid = UniqueTid();
 							SpawnForced("HalfLifeAdrianModeMapDummy",0,0,0,targettid);//SetActorState(0, "AdrianModeOn", true); 
-							SetPointer(AAPTR_TARGET, targettid);
+							SetPointerExt(AAPTR_TARGET, 0, targettid);
 							Thing_ChangeTID(targettid, 0);
 						}
 					}
