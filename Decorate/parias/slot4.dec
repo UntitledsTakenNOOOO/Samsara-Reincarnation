@@ -19,13 +19,13 @@ actor "Serpent Staff" : CWeapStaff
         Stop
 
       Select:
-//		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "SelectFighter")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "SelectFighter")
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "SelectMage")
         CSSF C 1 A_Raise
         Loop		
 		
       Deselect:
-//		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "DeselectFighter")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "DeselectFighter")
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "DeselectMage")
         CSSF B 3
         CSSF C 4
@@ -40,36 +40,51 @@ actor "Serpent Staff" : CWeapStaff
 		H110 A 1 A_Raise
 		Loop		
 		
-/*	  DeselectFighter:
-		H106 D 1 A_Lower
+	  DeselectFighter:
+		TNT1 A 0 A_JumpIfInventory("Clip",3,"DeselectFighterGlow")
+		H122 A 1 A_Lower
+		Loop
+		
+	  DeselectFighterGlow:
+		H122 H 1 A_Lower
 		Loop
 		
 	  SelectFighter:
-		H106 D 1 A_Raise
-		Loop */ 		
+		TNT1 A 0 A_JumpIfInventory("Clip",3,"SelectFighterGlow")
+		H122 A 1 A_Raise
+		Loop 
+		
+	  SelectFighterGlow:
+		H122 H 1 A_Raise
+		Loop
 		
       Ready:
-//		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "ReadyFighter")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "ReadyFighter")
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "ReadyMage")
 		Goto ReadyCleric+2
 
-	ReadyCleric:
+	  ReadyCleric:
         CSSF C 4
         CSSF B 3 A_CStaffInitBlink	
         CSSF AAAAAAA 1 A_WeaponReady
         CSSF A 1 A_CStaffCheckBlink
         Goto Ready
 		
-/*	  ReadyFighter:
-		H106 D 1 A_WeaponReady
-		Goto Ready*/
+	  ReadyFighter:
+		TNT1 A 0 A_JumpIfInventory("Clip",3,"ReadyFighterGlow")
+		H122 A 1 A_WeaponReady
+		Goto Ready
+		
+	  ReadyFighterGlow:
+		H122 HI 3 A_WeaponReady
+		Goto Ready
 		
 	  ReadyMage:
 	    H110 A 1 A_WeaponReady
 		Goto Ready			
 
       Fire:
-//		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "FireFighter")
+		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "FireFighter")
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "FireMage")
 		TNT1 A 0 A_JumpIfInventory("Clip", 1, 1)
 		Goto SwitchWeapon
@@ -89,16 +104,37 @@ actor "Serpent Staff" : CWeapStaff
         CSSF A 2 Offset (0, 36)
         Goto Ready+4
 		
-/*	  FireFighter:
-		H106 A 0 A_JumpIfInventory("Clip", 1, 1)
-		Goto Ready
-		H106 A 1 A_TakeInventory("Clip", 1)
-		H106 B 1 A_PlaySound("Hexen/BowString")
-		H106 BBB 0 A_FireCustomMissile ("HexenIceBolt", random(-15,15), 0, 0, random(-10,10))
-		H106 B 3 
-		H106 CD 4
-		H106 D 1 A_ReFire
-		goto Ready		*/
+	  FireFighter:
+		TNT1 A 0 A_JumpIfInventory("Clip",3,"FireFighterGlow")
+		H122 B 4
+		H122 C 0 A_Playsound("FighterHammerMiss", CHAN_WEAPON)
+		H122 C 4
+		H122 D 4 A_FireBullets(-10,-5,-1,random(10,20),"FlailPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H122 E 4 A_FireBullets(0,0,-1,random(10,20),"FlailPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H122 F 4 A_FireBullets(10,5,-1,random(10,20),"FlailPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H122 G 4
+		goto Ready	
+		
+	  FireFighterGlow:
+		H122 J 4
+		H122 K 4
+		H122 L 0 A_Playsound("FighterHammerMiss", CHAN_WEAPON)
+		H122 L 0 A_JumpIfCloser(128,"FireFighterGlowMelee")
+		H122 L 4
+		H122 M 0 A_JumpIfCloser(128,"FireFighterGlowMelee")
+		H122 M 0 A_TakeInventory("Clip",3,TIF_NOTAKEINFINITE)
+		H122 M 0 A_FireCustomMissile("FlailIceSpikeBall",0,0)
+		H122 M 4 
+		H122 N 4
+		H122 O 4
+		goto Ready
+		
+	  FireFighterGlowMelee:
+		H122 L 4 A_FireBullets(-10,-5,-1,random(20,40),"FlailPuffGlow",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H122 M 4 A_FireBullets(0,0,-1,random(20,40),"FlailPuffGlow",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H122 N 4 A_FireBullets(10,5,-1,random(20,40),"FlailPuffGlow",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NORANDOMPUFFZ,128)
+		H122 O 4
+		goto Ready
 	
 	  FireMage:
 		TNT1 A 0 A_JumpIfInventory("Clip", 3, 1)
@@ -342,6 +378,58 @@ ACTOR HexenGauntletPlasmaSpark
 			H105 PQR 12 Bright
 			Stop
 	}
+}
+
+Actor FlailPuff : AxePuff2
+{
+	Activesound ""
+}
+
+actor FlailPuffGlow : AxePuffGlow2
+{
+    DamageType "HexenIce"
+	Renderstyle Normal
+    +PUFFGETSOWNER
+    States
+    {
+    Spawn:
+         TNT1 A 0
+         Stop
+    Melee:
+         TNT1 A 1
+         TNT1 A 1 A_TakeFromTarget("Clip",1,TIF_NOTAKEINFINITE)
+         SHEX ABCDE 4 Bright
+         goto Spawn
+    Crash:
+         SHEX ABCDE 4 Bright
+         stop
+    }
+}
+
+Actor FlailIceSpikeBall
+{
+	Projectile
+	Speed 16
+	Height 8
+	Radius 4
+	Damage (random(5,20))
+	DamageType "HexenIce"
+	DeathSound "MageShardsExplode"
+	States
+	{
+		Spawn:
+			H122 PQ 2 A_CustomMissile("FlailIceSpikeMissile",0,0,random(0,360),CMF_AIMDIRECTION|CMF_SAVEPITCH,0)
+			Loop
+		Death:
+			TNT1 A 0 A_Explode(32,16)
+			SHEX ABCDE 4 Bright
+			stop
+	}
+}
+
+actor FlailIceSpikeMissile : FrostMissileDM
+{
+    Damage (random(8,16))
 }
 
 /*actor HexenIceBolt : FastProjectile

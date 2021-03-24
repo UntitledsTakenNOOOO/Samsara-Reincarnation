@@ -124,8 +124,8 @@ int ClassPickupSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"hexen/weaponget",
 			"hexen/weaponget",
 			"hexen/artiget",
-				
-    }},
+		}
+	},
     {
 		{
 			"duke/weaponget",
@@ -567,18 +567,44 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"Totenkopf/getweapon",
 		}
 	},
-    {{
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-        "hexen/itemget",
-    }},
+    {
+		{
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+		},
+		{
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+		},
+		{
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+			"hexen/itemget",
+		}
+	},
     {
 		{
 			"duke/itemget",
