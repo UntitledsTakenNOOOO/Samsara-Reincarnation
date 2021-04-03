@@ -1918,7 +1918,7 @@ Script "Samsara_Compendium_Initiate" (void) Net
 Script "Samsara_Compendium" (void) Net Clientside
 {
 	int idstart = 100;
-	int cursorx, cursory, offsety, offsetx, menuindex, lastmenuindex, a, menutab, lastmenutab, menuitem, lastmenuitem, scrollcounter, scrolltimer, index, scalex, scaley, hitpoints, newtid, listyposition, listindex, condition, listclick, monsterskin, altskin, prevskin, monsteraccess, camtid, montid, cubetid, monrot, camtid2, clamptid;
+	int cursorx, cursory, offsety, offsetx, menuindex, lastmenuindex, a, menutab, lastmenutab, menuitem, lastmenuitem, scrollcounter, scrolltimer, index, scalex, scaley, hitpoints, newtid, listyposition, listindex, condition, listclick, monsterskin, altskin, prevskin, monsteraccess;
 	str seesound, activesound, painsound, deathsound, description;
 	int hudboundsx = 1440;
 	int hudboundsy = 972;
@@ -2070,9 +2070,6 @@ Script "Samsara_Compendium" (void) Net Clientside
 				lastmenuindex = menuindex;
 				lastmenutab = menutab;
 				lastmenuitem = menuitem;
-				Thing_Remove(montid);
-				Thing_Remove(camtid);
-				Thing_Remove(cubetid);
 				previewopened = false;
 				
 				fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][0]);
@@ -2306,63 +2303,11 @@ Script "Samsara_Compendium" (void) Net Clientside
 				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16185, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				SetHudClipRect(FixedMul(hudboundsx,0.049),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.1755),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.115));
 				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16184, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				SetHudClipRect(FixedMul(hudboundsx,0.775),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.175),FixedMul(hudboundsy,0.25),FixedMul(hudboundsx,0.15));
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16183, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				SetHudClipRect(FixedMul(hudboundsx,0.775),FixedMul(hudboundsy,0.5),FixedMul(hudboundsx,0.175),FixedMul(hudboundsy,0.45),FixedMul(hudboundsx,0.15));
 				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16182, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
-				if(previewopened == false)
-				{
-					int boxdistance = (0.00390625*(32-PlayerNumber()))<<16;
-					int ydistance = 0.475<<16;
-					Thing_Remove(montid);
-					camtid = UniqueTid();
-					cubetid = UniqueTid();
-					montid = UniqueTid();
-					monrot = 0;
-					SpawnForced("CompendiumCleaner",boxdistance,ydistance,GetActorFloorZ(montid),cubetid,0);
-					SpawnForced(MonsterInfo[menuindex-1][monsteraccess][menuitem-1][3+(2*monsterskin)],boxdistance,ydistance,0,montid,0);
-					SpawnForced("CompendiumCube",boxdistance,ydistance,GetActorFloorZ(montid),cubetid,0);
-					
-					int camdistance = FixedMul(128.0,FixedDiv(GetActorProperty(montid,APROP_Height),128.0));
-					if(camdistance < 64.0)
-						camdistance = 64.0;
-					
-					SpawnForced("AimingCamera",boxdistance + camdistance,ydistance,GetActorFloorZ(montid)+FixedMul(GetActorProperty(montid,APROP_HEIGHT),0.75),camtid,0);
-					GiveActorInventory(montid,"CompendiumInertMonster",1);
-					GiveActorInventory(camtid,"CompendiumCameraCollision",1);
-					SetActorAngle(camtid,0.5);
-					SetActorPosition(montid,GetActorX(montid),GetActorY(montid),GetActorFloorZ(montid),0);
-
-					SetActorProperty(montid,APROP_Speed,0);
-					SetCameraToTexture(camtid,"tcamtex1",90);
-					SetFont("tcamtex1");
-					SetHudClipRect(0,0,0,0,0);
-					SetHudSize(FixedMul(hudcenterx,1.63),FixedMul(hudcentery,1.63),true);
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16181, CR_UNTRANSLATED, (FixedMul(hudcenterx,1.2625)<<16)+0.5, (FixedMul(hudcentery,0.2875)<<16)+0.1, 0);
-					//SetHudSize(hudboundsx,hudboundsy,true);
-					//SetFont("SAMCMPB4");
-					//SetHudClipRect(FixedMul(hudboundsx,0.775),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.175),FixedMul(hudboundsy,0.25),FixedMul(hudboundsx,0.15));
-					//HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16183, CR_UNTRANSLATED, 1.995, 2.0, 0, 0.75);
-					previewopened = true;
-				}
-				SetActorAngle(montid,monrot);
-				if(random(0,192) == 0)
-				{
-					int monstate = random(0,2);
-					switch(monstate)
-					{
-						case 0:
-							SetActorState(montid,"Missile",true);
-							break;
-						case 1:
-							SetActorState(montid,"Melee",true);
-							break;
-						case 2:
-							SetActorState(montid,"Pain",true);
-							break;
-					}
-					//ACS_NamedExecuteAlways("Compendium_MonsterReset",0,montid,0,0);
-				}
-				if(random(0,128) == 0)
-					SetActorState(montid,"Missile",true);
+				SetHudClipRect(0,0,0,0,0);
 				index = -1;
 				SetFont(ClassInfo[(menuindex-1)][altskin][13]);
 				fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][0]);
@@ -2603,7 +2548,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 					Thing_remove(newtid);
 					SetHudSize(FixedDiv(hudcenterx,scalex),FixedDiv(hudcentery,scaley),true);
 					SetFont(MonsterInfo[menuindex-1][monsteraccess][menuitem-1][4+(2*monsterskin)]);
-					//HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16016, CR_UNTRANSLATED, (FixedMul(FixedDiv(hudcenterx,scalex),0.86)<<16)+0.5, (FixedMul(FixedDiv(hudcentery,scaley),0.4)<<16)+0.1, 0);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16016, CR_UNTRANSLATED, (FixedMul(FixedDiv(hudcenterx,scalex),0.86)<<16)+0.5, (FixedMul(FixedDiv(hudcentery,scaley),0.4)<<16)+0.1, 0);
 				}
 				if (buttons & (BT_USE|BT_ATTACK))
 				{
@@ -2733,12 +2678,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 			SetHudSize(hudboundsx,hudboundsy,true);
 		}
 		Delay(1);
-		monrot+=512;
 	}
-	Thing_Remove(montid);
-	Thing_Remove(camtid);
-	Thing_Remove(clamptid);
-	Thing_Remove(cubetid);
 	removemessages(15800,16200);
 	SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
 }
