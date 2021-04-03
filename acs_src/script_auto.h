@@ -540,8 +540,9 @@ script SAMSARA_SPAWN (int respawning)
 		{
 			case CLASS_DOOM:
 				doommode = GetUserCvar(pln,"sams_cl_doom64");
-				if(doommode != previousvalue)
+				if(doommode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
 				{
+					TakeInventory("Samsara_ModeWeaponChange",1);
 					if((GetUserCvar(pln,"sams_cl_doom64")))
 					{ 
 						if(CheckInventory("Doom64_IHaveUnmaker") && (!CheckInventory("Unmaker"))) 
@@ -571,9 +572,9 @@ script SAMSARA_SPAWN (int respawning)
 				break;
 			case CLASS_WOLFEN:
 				wolfmode = GetUserCvar(pln,"sams_cl_wolfmode");
-				if(wolfmode != previousvalue || CheckInventory("Totenkopf_GimmeDat"))
+				if(wolfmode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
 				{
-					TakeInventory("Totenkopf_GimmeDat",1);
+					TakeInventory("Samsara_ModeWeaponChange",1);
 					if (wolfmode > 0) 
 					{ 
 						TakeInventory("WolfenClassMode", 2); 

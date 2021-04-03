@@ -30,6 +30,7 @@ script SAMSARA_DOOM64 (int class, int slot, int dropped)
         if (givingUnmaker)
         {
             GiveInventory("Doom64_IHaveUnmaker", 1);
+			GiveInventory("Samsara_ModeWeaponChange", 1);
         }
 
         if (giveartifacts)
