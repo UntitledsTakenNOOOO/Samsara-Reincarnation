@@ -4,27 +4,27 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 	{{"Doomguy", 1, "*****", "***", "***", "**", "*", "Damage", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01", "", "", "", "DarkGray", "White" }, {"Doomguy (N64)", 1, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White", "Jingle bells graf smells" }},
 	{{"Chex Warrior", 2, "***", "*****", "***", "***", "*", "Defense", "TIPSYM02", "TIPHIL02", "TIPCHEX", "TPLGCHEX", "TPCHCHEX", "SMALLFONT", "Green", "SMALLFONT", "Green", "CMPBGCH1", "CMPBGCH2", "CMPBGCH3", "", "TIPSYM02", "", "", "", "DarkGray", "White" }},
 	{{"Corvus", 3, "***", "****", "**", "****", "****", "Utility", "TIPSYM03", "TIPHIL03", "TIPCORV", "TPLGCORV", "TPCHCORV", "CMPSHERE", "White", "CMPSHERE", "White", "CMPBGHE1", "CMPBGHE2", "CMPBGHE3", "CMPBGHE4", "TIPSYM03", "", "", "", "DarkGray", "White" }},
-	{{"Blazkowicz", 4, "***", "***", "****", "****", "*", "Survivalist", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWF1", "CMPBGWF2", "CMPBGWF3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" },{"Blazkowicz", 4, "***", "***", "****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWS1", "CMPBGWS2", "CMPBGWS3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }, {"Blazkowicz", 4, "****", "***", "***", "*****", "***", "Plunderer", "TIPSYM29", "TIPHIL29", "TIPTKOPF", "TPLGTKPF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM29", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray", "Randy Pitchford laid an egg" }},
-	{{"Parias", 5, "*****", "****", "**", "****", "***", "Spellsword", "TIPSYM05", "TIPHIL05", "TIPPARIA", "TPLGHEXN", "TPCHHEXN", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }, {"Daedalon", 5, "*****", "****", "**", "****", "***", "Mage", "TIPSYM05", "TIPHIL05", "TIPHMAGE", "TPLGHEXN", "TPCHHEXM", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }, {"Baratus", 5, "*****", "****", "**", "****", "***", "Berserker", "TIPSYM05", "TIPHIL05", "TIPBARAT", "TPLGHEXN", "TPCHHEXF", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }},
+	{{"Blazkowicz", 4, "***", "***", "****", "****", "*", "Survivalist", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWF1", "CMPBGWF2", "CMPBGWF3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" },{"Blazkowicz", 4, "***", "***", "****", "****", "*", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWS1", "CMPBGWS2", "CMPBGWS3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }, {"Blazkowicz", 4, "****", "***", "***", "*****", "***", "Plunderer", "TIPSYM29", "TIPHIL29", "TIPTKOPF", "TPLGTKPF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumYellow", "CMPSWOLF", "TotenkopfCompendiumRed", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM29", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray", "Randy Pitchford laid an egg" }},
+	{{"Parias", 5, "****", "***", "***", "****", "***", "Spellsword", "TIPSYM05", "TIPHIL05", "TIPPARIA", "TPLGHEXN", "TPCHHEXN", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }, {"Daedalon", 5, "***", "**", "****", "***", "***", "Mage", "TIPSYM05", "TIPHIL05", "TIPHMAGE", "TPLGHEXN", "TPCHHEXM", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }, {"Baratus", 5, "****", "****", "**", "**", "***", "Berserker", "TIPSYM05", "TIPHIL05", "TIPBARAT", "TPLGHEXN", "TPCHHEXF", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }},
 	{{"Duke Nukem", 6, "****", "*", "***", "***", "**", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5", "", "", "", "DarkGray", "White" },{"Duke Nukem", 6, "****", "*", "***", "***", "**", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5", "", "", "DarkGray", "White" }},
-	{{"Security Officer", 7, "***", "***", "**", "*****", "*****", "Supression", "TIPSYM07", "TIPHIL07", "TIPSECOF", "TPLGMARA", "TPCHMARA", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGMA1", "CMPBGMA2", "CMPBGMA3", "CMPBGMA4", "CMPBGMA5", "", "", "", "DarkGray", "White" }},
+	{{"Security Officer", 7, "***", "***", "**", "*****", "*****", "Supression", "TIPSYM07", "TIPHIL07", "TIPSECOF", "TPLGMARA", "TPCHMARA", "CMPBMARA", "MarathonCompendiumWhite", "CMPSMARA", "MarathonCompendiumGreen", "CMPBGMA1", "CMPBGMA2", "CMPBGMA3", "CMPBGMA4", "CMPBGMA5", "", "", "", "MarathonCompendiumGray", "MarathonCompendiumWhite" }},
 	{{"Ranger", 8, "***", "**", "****", "****", "***", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08", "", "", "", "QuakeCompendiumDarkGray", "QuakeCompendiumGray" }},
 	{{"Ian Paul Freeley", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }, {"Taradino Cassatt", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPTCASS", "TPLGROTT", "TPCHTCAS", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" },{"Thi Barrett", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPTBARR", "TPLGROTT", "TPCHTBAR", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }, {"Lorelei Ni", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPLORNI", "TPLGROTT", "TPCHLLNI", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }, {"Doug Wendt", 9, "****", "**", "***", "**", "***", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPDOUGW", "TPLGROTT", "TPCHDOUG", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }},
-	{{"Blake Stone", 10, "***", "***", "***", "*****", "**", "Skirmisher", "TIPSYM10", "TIPHIL10", "TIPBSTON", "TPLGBSTN", "TPCHBSTN", "CMPBBLAK", "BSCompendiumYellow", "CMPSBLAK", "BSCompendiumMediumGreen", "CMPBGBS1", "CMPBGBS2", "CMPBGBS3", "CMPBGRT4", "CMPBGBS5", "", "", "", "BSCompendiumYellow", "BSCompendiumLightYellow" }},
+	{{"Blake Stone", 10, "***", "***", "***", "*****", "**", "Skirmisher", "TIPSYM10", "TIPHIL10", "TIPBSTON", "TPLGBSTN", "TPCHBSTN", "CMPBBLAK", "BSCompendiumLightYellow", "CMPSBLAK", "BSCompendiumMediumGreen", "CMPBGBS1", "CMPBGBS2", "CMPBGBS3", "CMPBGRT4", "CMPBGBS5", "", "", "", "BSCompendiumYellow", "BSCompendiumLightYellow" }},
 	{{"Caleb", 11, "*****", "*", "***", "*****", "**", "Pyromaniac", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "CMPBBLOD", "Red", "CMPSBLOD", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5", "", "", "", "DarkGray", "White" }},
 	{{"Strifeguy", 12, "****", "*", "**", "****", "***", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "CMPSSTRF", "untranslated", "CMPSSTRF", "untranslated", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6", "", "", "DarkGray", "White" }},
 //	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White" }},
 	{{"Eleena", 13, "****", "*", "**", "****", "****", "Area Denial", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5", "", "", "", "DarkGray", "White" }},
-	{{"Space Seal", 14, "****", "*", "***", "****", "**", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "CMPBCOR7", "Corridor7CompendiumYellow", "CMPSCOR7", "Corridor7CompendiumGreen", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "", "", "Corridor7CompendiumYellow", "Corridor7CompendiumBrightYellow" }},
+	{{"Space Seal", 14, "****", "*", "***", "****", "**", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "CMPBCOR7", "Corridor7CompendiumBrightYellow", "CMPSCOR7", "Corridor7CompendiumGreen", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "", "", "Corridor7CompendiumYellow", "Corridor7CompendiumBrightYellow" }},
 	{{"LDF Commando", 15, "*", "***", "*****", "****", "**", "Marksman", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
 	{{"Kyle Katarn", 16, "***", "****", "***", "*****", "***", "Assault", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5", "", "", "", "DarkGray", "White" }},
 	{{"Mooman", 17, "***", "***", "****", "****", "***", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8", "DarkGray", "White" }},
 	{{"Jack Curtis", 18, "*****", "***", "***", "****", "**", "Psychic", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5", "", "", "", "DarkGray", "White" }},
 	{{"Grondoval", 19, "****", "*****", "*", "**", "****", "Tank", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5", "", "", "", "DarkGray", "White" }},
 	{{"Gordon Freeman", 20, "*****", "**", "****", "*", "*****", "Hunter", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "", "DarkGray", "White" },{"Adrian Shephard", 20, "****", "**", "***", "***", "****", "Cleaner", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
-	{{"Lo Wang", 21, "*****", "*", "****", "****", "**", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "SMALLFONT", "Red", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5", "", "", "", "DarkGray", "White" }},
+	{{"Lo Wang", 21, "*****", "*", "****", "****", "**", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "CMPSDUKE", "", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5", "", "", "", "DarkGray", "White" }},
 	{{"Cybermage", 22, "***", "***", "***", "****", "***", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Green", "SMALLFONT", "Yellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5", "", "", "", "DarkGray", "White" }},
-	{{"Jon", 23, "****", "***", "***", "**", "***", "Veteran", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8", "DarkGray", "White" }},
+	{{"Jon", 23, "****", "***", "***", "**", "***", "Veteran", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "CMPSPOWR", "PowerSlaveCompendiumRed", "CMPSPOWR", "", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8", "PowerSlaveCompendiumDarkTan", "PowerSlaveCompendiumLightTan" }},
 	{{"Leonard", 24, "***", "*", "****", "***", "***", "Redneck Drunk", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "CMPBLEON", "untranslated", "CMPSLEON", "untranslated", "CMPBGRR1", "CMPBGRR2", "CMPBGRR3", "CMPBGRR4", "CMPBGRR5", "", "", "", "DarkGray", "White" }},
 	{{"Bitterman", 25, "***", "***", "****", "**", "***", "Armory", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "CMPSQUA2", "Quake2CompendiumWhite", "CMPSQUA2", "Quake2CompendiumGreen", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26", "", "", "Quake2CompendiumGray", "Quake2CompendiumWhite" }},
 	{{"Demoness", 26, "***", "**", "**", "***", "****", "Evolution", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "CMPSHEX2", "Gold", "CMPSHEX2", "Red", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25", "", "", "", "DarkGray", "White" }},
@@ -35,7 +35,7 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 int ClassFontScales[CLASSCOUNT][2] = 
 {  
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
-	{ 1.0, 1.0 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },	
+	{ 2.67, 2.0 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },	
 	{ 1.0, 1.0 },	{ 1.5, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.125, 1.25 },	
 	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 }
@@ -175,7 +175,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			\n\n- The Wraithverge is now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", ""},
 		},
 		{
-			{ "Summary", "A high cleric of the Church, second only to Traductus, Parias is both a man of faith and a man of action. His righteousness is rivalled only by his terrifying power, and he can swap at a moment's notice from praying for his enemies' souls to hacking their spine in twain. Being a student of both the arcane and the martial arts has made him a robust fighter that can swap from a physical to a mystical fighting capability whenever a situation calls for it, and makes him perhaps the most terrifying Hero in the Wheel of Samsara.", ""},
+			{ "Summary", "Being a high ranking mage, Daedolon only answers to Menelkir. What he may lack physically, he makes up for with mind and spirit. Being recognized as a prodigy from the Arcanum from a very young age, he quickly gained the ability to weave the fabric of reality with his spells. But spending a lifetime studying ancient tomes and scrolls did not afford him much physical training, and as a result, would rather stay out of brawls. As a result of his wide array of magical knowledge, most of his enemies are wise enough to stay on his good side.", ""},
 			
 			{ "Traits", "Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
 			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Parias has Baratus' runspeed and HeXen's jump height.", ""},
@@ -197,7 +197,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			\n\n- The Wraithverge is now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", ""},
 		},
 		{
-			{ "Summary", "A high cleric of the Church, second only to Traductus, Parias is both a man of faith and a man of action. His righteousness is rivalled only by his terrifying power, and he can swap at a moment's notice from praying for his enemies' souls to hacking their spine in twain. Being a student of both the arcane and the martial arts has made him a robust fighter that can swap from a physical to a mystical fighting capability whenever a situation calls for it, and makes him perhaps the most terrifying Hero in the Wheel of Samsara.", ""},
+			{ "Summary", "A master figher of the legion, second only to Zedek, Baratus is just as aggressive as he is intimidating. Being trained mercilessly in the Legion, he has become a virtually unstoppable war machine who unnerves others by merely being in their presence. As he's a master of the weapons and artifacts of his order, he prefers to fight up close and personal; in this regard, he's unmatched. This isn't to say he doesn't use more complex weapons, given they are simple enough to use.", ""},
 			
 			{ "Traits", "Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
 			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Parias has Baratus' runspeed and HeXen's jump height.", ""},
@@ -322,56 +322,56 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Freeley can carry all his missile weapons.
 			\n\n- Once the few missiles that weapons had in Rise of the Triad were burned up, the weapon was tossed. This is not the case in Samsara.
 			\n    ^- Further, Freeley's weapons now can carry much more ammo, but not as much as other heroes.
-			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibar does a large amount of melee damage to compensate for Freeley's lack of close quarter combat options
+			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibat does a large amount of melee damage to compensate for Freeley's lack of close quarter combat options
 			\n\n- God mode in Samsara doesn't increase Freeley's view height", ""},
 		},
 		{
-			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Ian Paul Freely is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. I.P. Freely has a wide range of explosives, fit for many situations. That's why many call him the \"demolition specialist\", he simply loves them, and you can be sure that he will not hesitate on using them, not by one bit.", ""},
+			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Taradino Cassatt is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. Taradino found his direction in life through the armed forces, and thus earned his way into H.U.N.T through his experience in combat. His serious-minded attitude and experience make him a natural leader for his squad.", ""},
 			
 			{ "Traits", "Where's my ammo?: Most of the weapons you have are rockets, and they are very hard to carry. You have very limited ammunition.
 			\n\nBoom, Boom, Boom: You have the widest access to a wide range of explosives, you like making things go boom! Blow people up in many ways!", ""},
 			
-			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Freeley can carry all his missile weapons.
+			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Cassatt can carry all his missile weapons.
 			\n\n- Once the few missiles that weapons had in Rise of the Triad were burned up, the weapon was tossed. This is not the case in Samsara.
-			\n    ^- Further, Freeley's weapons now can carry much more ammo, but not as much as other heroes.
-			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibar does a large amount of melee damage to compensate for Freeley's lack of close quarter combat options
-			\n\n- God mode in Samsara doesn't increase Freeley's view height", ""},
+			\n    ^- Further, Cassatt's weapons now can carry much more ammo, but not as much as other heroes.
+			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibat does a large amount of melee damage to compensate for Cassatt's lack of close quarter combat options
+			\n\n- God mode in Samsara doesn't increase Cassatt's view height", ""},
 		},
 		{
-			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Ian Paul Freely is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. I.P. Freely has a wide range of explosives, fit for many situations. That's why many call him the \"demolition specialist\", he simply loves them, and you can be sure that he will not hesitate on using them, not by one bit.", ""},
+			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Thi Barrett is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. Thi Barrett is gorgeous and the youngest member of the H.U.N.T. Do not let this fool you however; she's surprisingly robust, and has earned a medal in unarmed combat.", ""},
 			
 			{ "Traits", "Where's my ammo?: Most of the weapons you have are rockets, and they are very hard to carry. You have very limited ammunition.
 			\n\nBoom, Boom, Boom: You have the widest access to a wide range of explosives, you like making things go boom! Blow people up in many ways!", ""},
 			
-			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Freeley can carry all his missile weapons.
+			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Barrett can carry all her missile weapons.
 			\n\n- Once the few missiles that weapons had in Rise of the Triad were burned up, the weapon was tossed. This is not the case in Samsara.
-			\n    ^- Further, Freeley's weapons now can carry much more ammo, but not as much as other heroes.
-			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibar does a large amount of melee damage to compensate for Freeley's lack of close quarter combat options
-			\n\n- God mode in Samsara doesn't increase Freeley's view height", ""},
+			\n    ^- Further, Barrett's weapons now can carry much more ammo, but not as much as other heroes.
+			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibat does a large amount of melee damage to compensate for Barrett's lack of close quarter combat options
+			\n\n- God mode in Samsara doesn't increase Barrett's view height", ""},
 		},
 		{
-			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Ian Paul Freely is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. I.P. Freely has a wide range of explosives, fit for many situations. That's why many call him the \"demolition specialist\", he simply loves them, and you can be sure that he will not hesitate on using them, not by one bit.", ""},
+			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Lorelei Ni is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. Lorelei may be the smallest member of her team, but she more than makes up for it with her fierce competitiveness. Winning a troop boxing tournament despite her size is a testament to her combat prowess.", ""},
 			
 			{ "Traits", "Where's my ammo?: Most of the weapons you have are rockets, and they are very hard to carry. You have very limited ammunition.
 			\n\nBoom, Boom, Boom: You have the widest access to a wide range of explosives, you like making things go boom! Blow people up in many ways!", ""},
 			
-			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Freeley can carry all his missile weapons.
+			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Ni can carry all her missile weapons.
 			\n\n- Once the few missiles that weapons had in Rise of the Triad were burned up, the weapon was tossed. This is not the case in Samsara.
-			\n    ^- Further, Freeley's weapons now can carry much more ammo, but not as much as other heroes.
-			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibar does a large amount of melee damage to compensate for Freeley's lack of close quarter combat options
-			\n\n- God mode in Samsara doesn't increase Freeley's view height", ""},
+			\n    ^- Further, Ni's weapons now can carry much more ammo, but not as much as other heroes.
+			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibat does a large amount of melee damage to compensate for Ni's lack of close quarter combat options
+			\n\n- God mode in Samsara doesn't increase Ni's view height", ""},
 		},
 		{
-			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Ian Paul Freely is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. I.P. Freely has a wide range of explosives, fit for many situations. That's why many call him the \"demolition specialist\", he simply loves them, and you can be sure that he will not hesitate on using them, not by one bit.", ""},
+			{ "Summary", "Determination is a necessary trait, especially when you have to save the world from a lunatic cult leader. Doug Wendt is one such individual who had to overcome billions of traps and soldiers, including robots and undeads to save the world from evil. Still, the H.U.N.T has just begun. Doug Wendt is a mountain of a man who tends to be insubordinate to his book-following superiors. Lost last joint of right ring finger during his career as a professional Linebacker.", ""},
 			
 			{ "Traits", "Where's my ammo?: Most of the weapons you have are rockets, and they are very hard to carry. You have very limited ammunition.
 			\n\nBoom, Boom, Boom: You have the widest access to a wide range of explosives, you like making things go boom! Blow people up in many ways!", ""},
 			
-			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Freeley can carry all his missile weapons.
+			{ "Changes", "- Rise of the Triad only allowed 1 missile/magic weapon to be carried at once. This system does not work so well in Samsara, therefore, Wendt can carry all his missile weapons.
 			\n\n- Once the few missiles that weapons had in Rise of the Triad were burned up, the weapon was tossed. This is not the case in Samsara.
-			\n    ^- Further, Freeley's weapons now can carry much more ammo, but not as much as other heroes.
-			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibar does a large amount of melee damage to compensate for Freeley's lack of close quarter combat options
-			\n\n- God mode in Samsara doesn't increase Freeley's view height", ""},
+			\n    ^- Further, Wendt's weapons now can carry much more ammo, but not as much as other heroes.
+			\n\n- The excalibat tossed enemies into the air when hit, and did very little damage. Here, the excalibat does a large amount of melee damage to compensate for Wendt's lack of close quarter combat options
+			\n\n- God mode in Samsara doesn't increase Wendt's view height", ""},
 		},
 	},
 	{
@@ -760,39 +760,38 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 	{
 		{
 			{ "Mace of Contrition", "The Mace will only cause contrition in an enemy after numerous beatings. This weapon should only be used as a last resort because of its short range!", "", "Mace of Contrition", "f" },
-			{ "Sapphire Wand", "Useful for killing enemies, eventually, this wand will fire quick magical blue darts at your target. There is no limit to the amount of charges in this wand and it requires no mana.", "", "Sapphire Wand", "p" },
+			{ "Jade Wand", "A rather weak wand which will slowly melt away your enemies, emphasis on slowly. It's not too good outside of close range, either.", "", "Sapphire Wand", "p" },
 			{ "Poison Cloud Flechette", "When a Cleric, such as Parias, uses the flechette, it produces a poison gas cloud, lethal to any who venture near.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
-			{ "Frost Shards", "This spell lets you shoot frozen shards from your hands. These ice bolts are significantly stronger than the Sapphire Wand's small darts, so use Frost Shards whenever possible to freeze your enemies where they stand.", "WFRSA0", "Frost Shards", "2" },
-			{ "Timon's Axe", "The Axe makes you want to really jump in there and hack away at your enemies as it deals out much more damage than the Fighter's Spiked Gauntlets. This is also a close-range-only weapon, so be careful not to get carried away!", "WFAXA0", "Timon's Axe", "3" },
+			{ "Crusader's Longbow", "The Crusader's Longbow is a standard longbow of the Church's order. The arrows are infused with yellow energy which will fry and pierce your enemies.", "H114A0", "Frost Shards", "2" },
+			{ "Wand of Embers", "The wand of embers sprays a powerful pillar of flames towards enemies, useful for serving up fodder nice and crispy.", "H119A0", "Timon's Axe", "3" },
 			{ "Serpent Staff", "The essence of the sacred Kalrath serpent is contained within this staff. Feed it with the blue mana and it will serve you faithfully by spitting twin venom spheres at your enemies. Using this staff up close will drain your enemy's life and give some of it to you!", "WCSSA0", "Serpent Staff", "4" },
-			{ "Hammer of Retribution", "Now you can really start dealing some death! The Hammer can be thrown straight out in a skull-spitting attack or you can get up-close and personal for that special bludgeoning that only you can provide.\nWhen used at long range, a strong projectile exits the Hammer. When used at close quarters, there's no projectile but a direct hit with the Hammer. No mana is used in this case.", "WFHMA0", "Hammer of Retribution", "5" },
+			{ "Ice Fang", "This staff is a weapon created by the Church's order. Only a true devotee has the spirit to vanquish the cold touch of the staff, but when in the right hands, it will quickly freeze your enemies.", "H117A0", "Hammer of Retribution", "5" },
 			{ "Firestorm", "The Firestorm spell lets you summon a gout of fire from the earth. The flames appear at your enemy's feet and roar upward to engulf his entire body, roasting him alive. All things considered, Firestorm is the ultimate barbecue.", "WCFMA0", "Firestorm", "6" },
 			{ "Wraithverge", "A very powerful multi-part weapon, this staff will summon the forces of the grave to feed upon your enemy's soul, tearing and knashing away at the lifeforce like hungry dogs!", "WWRTA0", "Wraithverge", "7" },
 			{ "Mystic Ambit Incant", "Restores nearby players' health by 50 to 90 points, gives Parias armor, and also spreads 15 armor shards for teammates to pick up.", "HRADA0", "PortMysticAmbit", "u" },
 		},
 		{
-			{ "Mace of Contrition", "The Mace will only cause contrition in an enemy after numerous beatings. This weapon should only be used as a last resort because of its short range!", "", "Mace of Contrition", "f" },
 			{ "Sapphire Wand", "Useful for killing enemies, eventually, this wand will fire quick magical blue darts at your target. There is no limit to the amount of charges in this wand and it requires no mana.", "", "Sapphire Wand", "p" },
-			{ "Poison Cloud Flechette", "When a Cleric, such as Parias, uses the flechette, it produces a poison gas cloud, lethal to any who venture near.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
+			{ "Time Bomb Flechette", "When a mage like Daedolon drops this, it explodes like a timb bomb.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
 			{ "Frost Shards", "This spell lets you shoot frozen shards from your hands. These ice bolts are significantly stronger than the Sapphire Wand's small darts, so use Frost Shards whenever possible to freeze your enemies where they stand.", "WFRSA0", "Frost Shards", "2" },
-			{ "Timon's Axe", "The Axe makes you want to really jump in there and hack away at your enemies as it deals out much more damage than the Fighter's Spiked Gauntlets. This is also a close-range-only weapon, so be careful not to get carried away!", "WFAXA0", "Timon's Axe", "3" },
-			{ "Serpent Staff", "The essence of the sacred Kalrath serpent is contained within this staff. Feed it with the blue mana and it will serve you faithfully by spitting twin venom spheres at your enemies. Using this staff up close will drain your enemy's life and give some of it to you!", "WCSSA0", "Serpent Staff", "4" },
-			{ "Hammer of Retribution", "Now you can really start dealing some death! The Hammer can be thrown straight out in a skull-spitting attack or you can get up-close and personal for that special bludgeoning that only you can provide.\nWhen used at long range, a strong projectile exits the Hammer. When used at close quarters, there's no projectile but a direct hit with the Hammer. No mana is used in this case.", "WFHMA0", "Hammer of Retribution", "5" },
-			{ "Firestorm", "The Firestorm spell lets you summon a gout of fire from the earth. The flames appear at your enemy's feet and roar upward to engulf his entire body, roasting him alive. All things considered, Firestorm is the ultimate barbecue.", "WCFMA0", "Firestorm", "6" },
-			{ "Wraithverge", "A very powerful multi-part weapon, this staff will summon the forces of the grave to feed upon your enemy's soul, tearing and knashing away at the lifeforce like hungry dogs!", "WWRTA0", "Wraithverge", "7" },
-			{ "Mystic Ambit Incant", "Restores nearby players' health by 50 to 90 points, gives Parias armor, and also spreads 15 armor shards for teammates to pick up.", "HRADA0", "PortMysticAmbit", "u" },
+			{ "Fire Blast", "This spell contrasts with the Frost Shards. It fires a wave of fire which will burn your victims to a crisp.", "H113Y0", "Timon's Axe", "3" },
+			{ "Blight Shock", "This staff is feared by many, even those who use it, for it's unpredictable toxic projectiles that bounce around wherever they hit. Therefore, this weapon is best used against crowds rather than high profile targets.", "TSOGA0", "Serpent Staff", "4" },
+			{ "Viscerelagh", "The Blood Scepter is a horrible tool using magic created by Korax' chief mages before his death. It is capable of dealing substantial amounts of damage very quickly. Creatures killed with this weapon, even if they are inanimate or undead, have a portion of their life force (or animating magic) siphoned to their killer, making it a very useful weapon when near death.", "H107A0", "Hammer of Retribution", "5" },
+			{ "Arcs of Death", "The arc of death spell fires vertical columns of supercharged electrical energy from your hands, blasting your foes with devastating impunity. Once it hits a creature, it will stay near them and continue to damage them finally disappearing.", "WMLGG0", "Firestorm", "6" },
+			{ "BloodScourge", "This mighty multi-part staff fires multiple tracking spheres that will seek and destroy everything in their path. Mages who prefer not to aim will appreciate the bloodscourge, the humans first successful attempt at a fire-and-forget weapon.", "H105A0", "Wraithverge", "7" },
+			{ "Disc of Repulsion", "When you use this artifact, everything within a certain radius of your body is deflected away. This includes monsters, projectiles, and even spells!", "H124A0", "PortMysticAmbit", "u" },
 		},
 		{
-			{ "Mace of Contrition", "The Mace will only cause contrition in an enemy after numerous beatings. This weapon should only be used as a last resort because of its short range!", "", "Mace of Contrition", "f" },
-			{ "Sapphire Wand", "Useful for killing enemies, eventually, this wand will fire quick magical blue darts at your target. There is no limit to the amount of charges in this wand and it requires no mana.", "", "Sapphire Wand", "p" },
-			{ "Poison Cloud Flechette", "When a Cleric, such as Parias, uses the flechette, it produces a poison gas cloud, lethal to any who venture near.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
-			{ "Frost Shards", "This spell lets you shoot frozen shards from your hands. These ice bolts are significantly stronger than the Sapphire Wand's small darts, so use Frost Shards whenever possible to freeze your enemies where they stand.", "WFRSA0", "Frost Shards", "2" },
+			{ "Spiked Gauntlets", "The fighter starts the game with these gauntlets and always has them \"at hand\" as a last resort. Each punch wears down your enemy's defense and every third punch delivers a mighty blow!", "", "Mace of Contrition", "f" },
+			{ "Impaler Crossbow", "A rather dreadful but sturdy crossbow. It does a decent amount of damage against enemies, if you have a lot of patience, that is. \n\nGetting in close range of enemies allows you to jab enemies with it's sharp bolt.", "H100G0", "Sapphire Wand", "p" },
+			{ "Throwing Flechette", "A fighter such as Baratus who throws the Flechette produces an effect like a grenade.", "PSBGA0", "PortFlechette", "1" },
+			{ "Spear of Zeal", "The Spear of Zeal may only be wielded by the mightiest fighter. You only need blue mana if you want to maximize your damage. Otherwise, you can throw it as many times as you want. \n\nGetting in close range allows you to stab enemies with it.", "H102Q0", "Frost Shards", "2" },
 			{ "Timon's Axe", "The Axe makes you want to really jump in there and hack away at your enemies as it deals out much more damage than the Fighter's Spiked Gauntlets. This is also a close-range-only weapon, so be careful not to get carried away!", "WFAXA0", "Timon's Axe", "3" },
-			{ "Serpent Staff", "The essence of the sacred Kalrath serpent is contained within this staff. Feed it with the blue mana and it will serve you faithfully by spitting twin venom spheres at your enemies. Using this staff up close will drain your enemy's life and give some of it to you!", "WCSSA0", "Serpent Staff", "4" },
+			{ "Jotunn's Flail", "This mysterious flail said to have been forged by the gods can throw slow moving ice projectiles that fire icicles in random directions. \n\nThis flail can perform melee attacks when in front of the enemy.", "H122R0", "Serpent Staff", "4" },
 			{ "Hammer of Retribution", "Now you can really start dealing some death! The Hammer can be thrown straight out in a skull-spitting attack or you can get up-close and personal for that special bludgeoning that only you can provide.\nWhen used at long range, a strong projectile exits the Hammer. When used at close quarters, there's no projectile but a direct hit with the Hammer. No mana is used in this case.", "WFHMA0", "Hammer of Retribution", "5" },
-			{ "Firestorm", "The Firestorm spell lets you summon a gout of fire from the earth. The flames appear at your enemy's feet and roar upward to engulf his entire body, roasting him alive. All things considered, Firestorm is the ultimate barbecue.", "WCFMA0", "Firestorm", "6" },
-			{ "Wraithverge", "A very powerful multi-part weapon, this staff will summon the forces of the grave to feed upon your enemy's soul, tearing and knashing away at the lifeforce like hungry dogs!", "WWRTA0", "Wraithverge", "7" },
-			{ "Mystic Ambit Incant", "Restores nearby players' health by 50 to 90 points, gives Parias armor, and also spreads 15 armor shards for teammates to pick up.", "HRADA0", "PortMysticAmbit", "u" },
+			{ "Quickspell Gauntlets", "The quickspell gauntlets were a weapon by the Sidhe called the \"Necromancer Gauntlets\". After D'Sparil was defeated, the blueprints for this device were spread around and it became a joint project between the Legion and Arcanum to improve the design. It requires no knowledge of magic to use these, and therefore allows users to fire energy projectiles through their hands. \n\nBeing in close range of your foes drains their health just like the previous prototype.", "H102R0", "Firestorm", "6" },
+			{ "Quietus", "This multi-part runesword is called Quietus because it's the ultimate way to silence your foes. After one slice from this steel companion, most monsters willingly surrender their soul. /n/nYou'll need a little bit of both blue and green mana to maximize this weapon's damage, but it's not required.", "H102P0", "Wraithverge", "7" },
+			{ "Dark Servant", "The Dark Servant appears as a small maulotaur figurine. When you use it, it will grow to a life-size maulotaur that will defend you for about 30 seconds before disappearing. While the maulotaur has notoriously poor aim that could kill players in Hexen, that feature has thankfully been dropped here.", "H125I0", "PortMysticAmbit", "u" },
 		}
 	},
 	{
@@ -1900,6 +1899,8 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][21] =
 
 // I don't see the need to congest the regular hero arrays with double the length for one hero, so I will bite a bullet and make a separate one
 
+int drawclouds = 0;
+
 Script "Samsara_Compendium_Initiate" (void) Net
 {
 	if(!CheckInventory("CompendiumOpened"))
@@ -1967,7 +1968,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 		
 		//PrintBold(s:"cursorx: ", d:cursorx, s:" cursory: ", d:cursory);
 		SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.95), FixedMul(hudboundsx,0.425));
-		SetFont("SAMCMPB3");
+		SetFont("CMPSKYD");
 		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16200, CR_UNTRANSLATED, hudcenterx*1.0, hudcentery*1.0, 0);
 		SetHudClipRect(0,0,0,0,0);
 		SetFont("SXHCURS");
@@ -1977,12 +1978,14 @@ Script "Samsara_Compendium" (void) Net Clientside
 
 		if(menuindex == 0)
 		{
+			drawclouds = 1;
+			ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,0);
 			SetFont("SMALLFONT");
 			SetHudClipRect(0,0,0,0,0);
 			SetHudSize(hudcenterx,hudcentery,true);
 			HudMessage(s:"Close: ",k:"samsara_tipbox"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15988, CR_BLACK, (FixedMul(hudcenterx,0.033)<<16)+0.1, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
 			SetHudSize(hudboundsx,hudboundsy,true);
-			if(lastmenuindex != menuindex) { removemessages(15990,16185); removemessages(16190,16199); lastmenuindex = menuindex; scrollcounter = 0; scrolltimer = 368; }
+			if(lastmenuindex != menuindex) { removemessages(15990,16185); removemessages(16180,16189); lastmenuindex = menuindex; scrollcounter = 0; scrolltimer = 368; }
 			int locationx, locationy;
 			int wheelangle = -0.25;
 			int rot;
@@ -2016,9 +2019,9 @@ Script "Samsara_Compendium" (void) Net Clientside
 			if(rot >= 11) { rot = 0; LocalAmbientSound("Compendium/Wheel/Spin",127); }
 			
 			SetFont(CompendiumWheelRot[rot]);
-			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16191, CR_UNTRANSLATED, hudcenterx*1.0, hudcentery*1.0, 0);
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16181, CR_UNTRANSLATED, hudcenterx*1.0, hudcentery*1.0, 0);
 			SetFont("CMPCNTSK");
-			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16190, CR_UNTRANSLATED, hudcenterx*1.0, hudcentery*1.0, 0);
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16180, CR_UNTRANSLATED, hudcenterx*1.0, hudcentery*1.0, 0);
 			rot += PowFloat(1.0075,rottimer)>>16;
 			
 			if(FixedMul(0.02,rottimer) < 1)
@@ -2031,6 +2034,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 		}
 		else
 		{
+			drawclouds = 0;
 			//======================================================================================================== Draw
 			if(lastmenuindex != menuindex || lastmenutab != menutab || lastmenuitem != menuitem || altskin != prevskin)
 			{
@@ -2043,7 +2047,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 					menutab = 1;
 					menuitem = 1;
 					listindex = 1;
-					removemessages(16190,16199);
+					removemessages(16180,16189);
 				}
 				if(lastmenutab != menutab)
 				{
@@ -2051,7 +2055,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 					listyposition = 0;
 					menuitem = 1;
 					listindex = 1;
-					removemessages(16180,16185);
+					removemessages(16170,16175);
 				}
 				if(altskin != prevskin)
 				{
@@ -2110,38 +2114,38 @@ Script "Samsara_Compendium" (void) Net Clientside
 				{
 					SetFont(ClassInfo[(menuindex-1)][altskin][17]);
 					SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.1525));
-					HudMessage(s:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16197, CR_UNTRANSLATED, 0.1, (FixedMul(hudcentery,0.05)<<16)+0.1, 0);
+					HudMessage(s:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16187, CR_UNTRANSLATED, 0.1, (FixedMul(hudcentery,0.05)<<16)+0.1, 0);
 					SetHudClipRect(0,0,0,0,0);
 				}
 				if(strlen(ClassInfo[(menuindex-1)][altskin][18]) != 0)
 				{
 					SetFont(ClassInfo[(menuindex-1)][altskin][18]);
 					SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.175), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.8), FixedMul(hudboundsx,1.1));
-					HudMessage(s:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16198, CR_UNTRANSLATED, 0.1, (FixedMul(hudcentery,0.175)<<16)+0.1, 0);
+					HudMessage(s:"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16188, CR_UNTRANSLATED, 0.1, (FixedMul(hudcentery,0.175)<<16)+0.1, 0);
 					SetHudClipRect(0,0,0,0,0);
 				}
 				if(strlen(ClassInfo[(menuindex-1)][altskin][19]) != 0 && strlen(ClassInfo[(menuindex-1)][altskin][22]) == 0)
 				{
 					SetFont(ClassInfo[(menuindex-1)][altskin][19]);
 					SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.95), FixedMul(hudboundsx,1.1));
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16196, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.025)<<16)+0.1, (FixedMul(hudboundsy,0.175)<<16)+0.1, 0);
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16195, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.975)<<16)+0.2, (FixedMul(hudboundsy,0.175)<<16)+0.1, 0);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16186, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.025)<<16)+0.1, (FixedMul(hudboundsy,0.175)<<16)+0.1, 0);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16185, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.975)<<16)+0.2, (FixedMul(hudboundsy,0.175)<<16)+0.1, 0);
 					SetHudClipRect(0,0,0,0,0);
 				}
 				else if(strlen(ClassInfo[(menuindex-1)][altskin][19]) != 0)
 				{
 					SetFont(ClassInfo[(menuindex-1)][altskin][19]);
 					SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.95), FixedMul(hudboundsx,1.1));
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16196, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.025)<<16)+0.1, (FixedMul(hudboundsy,0.175)<<16)+0.1, 0);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16186, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.025)<<16)+0.1, (FixedMul(hudboundsy,0.175)<<16)+0.1, 0);
 					SetFont(ClassInfo[(menuindex-1)][altskin][22]);
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16195, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.975)<<16)+0.2, (FixedMul(hudboundsy,0.175)<<16)+0.1, 0);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16185, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.975)<<16)+0.2, (FixedMul(hudboundsy,0.175)<<16)+0.1, 0);
 					SetHudClipRect(0,0,0,0,0);
 				}
 				if(strlen(ClassInfo[(menuindex-1)][altskin][20]) != 0)
 				{
 					SetFont(ClassInfo[(menuindex-1)][altskin][20]);
 					SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.975), FixedMul(hudboundsx,1.1));
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16194, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.975)<<16)+0.2, (FixedMul(hudboundsy,0.975)<<16)+0.2, 0);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16184, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.975)<<16)+0.2, (FixedMul(hudboundsy,0.975)<<16)+0.2, 0);
 					SetHudClipRect(0,0,0,0,0);
 				}
 				if(strlen(ClassInfo[(menuindex-1)][altskin][21]) != 0)
@@ -2149,14 +2153,14 @@ Script "Samsara_Compendium" (void) Net Clientside
 					SetHudSize(hudboundsx/14,hudboundsy/14,true);
 					SetFont(ClassInfo[(menuindex-1)][altskin][21]);
 					SetHudClipRect(0,0,0,0,0);
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16193, CR_UNTRANSLATED, FixedMul(hudboundsx/14,0.5)*1.0, FixedMul(hudboundsy/14,0.575)*1.0, 0, 0.5);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16183, CR_UNTRANSLATED, FixedMul(hudboundsx/14,0.5)*1.0, FixedMul(hudboundsy/14,0.575)*1.0, 0, 0.5);
 				}
 				if(strlen(ClassInfo[(menuindex-1)][altskin][23]) != 0)
 				{
 					SetHudSize(hudboundsx,hudboundsy,true);
 					SetFont(ClassInfo[(menuindex-1)][altskin][23]);
 					SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.1525));
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16192, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.025)<<16)+0.1, (FixedMul(hudcentery,0.05)<<16)+0.1, 0);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16182, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.025)<<16)+0.1, (FixedMul(hudcentery,0.05)<<16)+0.1, 0);
 					SetHudClipRect(0,0,0,0,0);
 				}
 				if(strlen(ClassInfo[(menuindex-1)][altskin][24]) != 0)
@@ -2164,7 +2168,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 					SetHudSize(hudboundsx,hudboundsy,true);
 					SetFont(ClassInfo[(menuindex-1)][altskin][24]);
 					SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.1525));
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16191, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.975)<<16)+0.2, (FixedMul(hudcentery,0.05)<<16)+0.1, 0);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16181, CR_UNTRANSLATED, (FixedMul(hudboundsx,0.975)<<16)+0.2, (FixedMul(hudcentery,0.05)<<16)+0.1, 0);
 					SetHudClipRect(0,0,0,0,0);
 				}
 				//SetHudSize(hudboundsx,hudboundsy,true);
@@ -2177,22 +2181,22 @@ Script "Samsara_Compendium" (void) Net Clientside
 				if(StrLen(HeroInformation[menuindex-1][altskin][menuitem-1][2]) != 0)
 				{
 					SetHudClipRect(FixedMul(hudboundsx,0.25),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.5),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.475));
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16185, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16175, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 					SetHudClipRect(FixedMul(hudboundsx,0.049),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.1755),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.115));
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16184, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16174, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 					SetHudClipRect(FixedMul(hudboundsx,0.775),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.175),FixedMul(hudboundsy,0.25),FixedMul(hudboundsx,0.15));
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16183, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16173, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 					SetHudClipRect(FixedMul(hudboundsx,0.775),FixedMul(hudboundsy,0.45),FixedMul(hudboundsx,0.175),FixedMul(hudboundsy,0.5),FixedMul(hudboundsx,0.15));
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16182, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16172, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				}
 				else
 				{
 					SetHudClipRect(FixedMul(hudboundsx,0.25),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.7),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.675));
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16185, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16175, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 					SetHudClipRect(FixedMul(hudboundsx,0.049),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.1755),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.115));
-					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16184, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
-					HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16183, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
-					HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16182, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16174, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16173, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+					HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16172, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				}
 				SetHudClipRect(0,0,0,0,0);
 				index = -1;
@@ -2244,13 +2248,13 @@ Script "Samsara_Compendium" (void) Net Clientside
 				SetHudSize(hudboundsx,hudboundsy,true);
 				SetFont("SAMCMPB4");
 				SetHudClipRect(FixedMul(hudboundsx,0.25),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.5),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.475));
-				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16185, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16175, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				SetHudClipRect(FixedMul(hudboundsx,0.049),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.1755),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.115));
-				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16184, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16174, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				SetHudClipRect(FixedMul(hudboundsx,0.775),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.175),FixedMul(hudboundsy,0.25),FixedMul(hudboundsx,0.15));
-				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16183, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16173, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				SetHudClipRect(FixedMul(hudboundsx,0.775),FixedMul(hudboundsy,0.45),FixedMul(hudboundsx,0.175),FixedMul(hudboundsy,0.5),FixedMul(hudboundsx,0.15));
-				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16182, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16172, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				SetHudClipRect(0,0,0,0,0);
 				index = -1;
 				SetFont(ClassInfo[(menuindex-1)][altskin][13]);
@@ -2300,13 +2304,13 @@ Script "Samsara_Compendium" (void) Net Clientside
 				SetHudSize(hudboundsx,hudboundsy,true);
 				SetFont("SAMCMPB4");
 				SetHudClipRect(FixedMul(hudboundsx,0.25),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.5),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.475));
-				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16185, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16175, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				SetHudClipRect(FixedMul(hudboundsx,0.049),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.1755),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.115));
-				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16184, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16174, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				SetHudClipRect(FixedMul(hudboundsx,0.775),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.175),FixedMul(hudboundsy,0.25),FixedMul(hudboundsx,0.15));
-				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16183, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16173, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				SetHudClipRect(FixedMul(hudboundsx,0.775),FixedMul(hudboundsy,0.5),FixedMul(hudboundsx,0.175),FixedMul(hudboundsy,0.45),FixedMul(hudboundsx,0.15));
-				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16182, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16172, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
 				SetHudClipRect(0,0,0,0,0);
 				index = -1;
 				SetFont(ClassInfo[(menuindex-1)][altskin][13]);
@@ -2679,16 +2683,50 @@ Script "Samsara_Compendium" (void) Net Clientside
 		}
 		Delay(1);
 	}
+	drawclouds = 0;
 	removemessages(15800,16200);
 	SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
 }
 
-Script "Compendium_MonsterReset" (int montid)
+str CloudImages[4] = { "CMPCLD01", "CMPCLD02", "CMPCLD03", "CMPCLD04" };
+int CloudMessageIDs[10] = {};
+
+Script "CompendiumCloudGenerator" (int hudboundsx, int hudboundsy)
 {
-	int x = GetActorX(montid);
-	int y = GetActorY(montid);
-	int z = GetActorZ(montid);
-	Delay(15);
-	SetActorState(montid,"Spawn",true);
-	SetActorPosition(montid,x,y,z,0);
+	if(random(0,17) != 0)
+		terminate;
+	
+	int cloudid = random(0,9);
+
+	if(CloudMessageIDs[cloudid] == 16199-cloudid)
+		terminate;
+		
+	int cloudlifetime = 384;
+	int cloudstartx = (hudboundsx/2)+random(-768,768);
+	int cloudstarty = (hudboundsy/2)+random(-768,768);
+	int clouddirectionx = 1 * (2 * random(0,1) - 1);
+	int clouddirectiony = 1 * (2 * random(0,1) - 1);
+	int cloudimage = random(0,3);
+	int cloudalpha = 0.0;
+	int cloudtimer;
+	int cloudstep = 2;
+		
+	CloudMessageIDs[cloudid] = 16199-cloudid;
+		
+	SetHudSize(hudboundsx,hudboundsy,true);
+	SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.95), FixedMul(hudboundsx,0.425));
+	while(cloudtimer < cloudlifetime && drawclouds == 1)
+	{
+		if(cloudtimer < 100)
+			cloudalpha+=0.01;
+		if(cloudtimer > cloudlifetime-100)
+			cloudalpha-=0.01;
+			
+		SetFont(CloudImages[cloudimage]);
+		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, CloudMessageIDs[cloudid], CR_UNTRANSLATED, (cloudstartx + (cloudtimer * clouddirectionx)) << 16, (cloudstarty + (cloudtimer * clouddirectiony)) << 16, 0.0, cloudalpha);
+		Delay(cloudstep);
+		cloudtimer++;
+	}
+	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, CloudMessageIDs[cloudid], CR_UNTRANSLATED, (cloudstartx + (cloudtimer * clouddirectionx)) << 16, (cloudstarty + (cloudtimer * clouddirectiony)) << 16, 0.0, cloudalpha);
+	CloudMessageIDs[cloudid] = 0;
 }

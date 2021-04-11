@@ -383,6 +383,9 @@ script SAMSARA_SPAWN (int respawning)
 	int doommode, dukemode, hexmode, wolfmode, rottmode, blakemode, halflifemode, previousvalue, cvalue;
 	int targettid;
 	
+	if(PlayerIsBot(pln))
+		ACS_NamedExecuteAlways("Samsara_BotAltClassHandler",0,pln,0,0);
+	
 	TakeInventory("Doom64MonsterSet", 0x7FFFFFFF);
 	TakeInventory("WolfLostMonsterSet", 0x7FFFFFFF);
 	TakeInventory("TotenkopfMonsterSet", 0x7FFFFFFF);

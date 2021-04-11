@@ -2410,3 +2410,124 @@ Script "Hexen_SwitchPriority" (void)
 		}
 	}
 }
+
+Script "DarkServantAutoRemoval" (void)
+{
+	int newtid = uniquetid();
+	if(!Spawn("MinotaurFriend2",GetActorX(0),GetActorY(0),GetActorZ(0),newtid) || !SetActivator(0,AAPTR_Tracer))
+	{
+		SetResultValue(0);
+	}
+	else
+	{
+		Thing_remove(newtid);
+		SetResultValue(1);
+	}
+}
+
+Script "FlechetteCooldown" (void)
+{
+	if (CheckInventory("FlechetteCooldown") > 0)
+    {
+        delay(35);
+        TakeInventory("FlechetteCooldown",1);
+        restart;
+    }
+}
+
+Script "Samsara_BotAltClassHandler" (int playernum)
+{
+	str playername;
+	switch(PlayerClass(playernum))
+	{
+		case 0:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Doom 64 Guy") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_doom64",1);
+			}
+			break;
+		case 3:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"B.J. Blazkowicz (Lost)") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_wolfmode",1);
+			}
+			if(StrCmp(playername,"B.J. Blazkowicz (Totenkopf)") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_wolfmode",2);
+			}
+			break;
+		case 4:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Daedolon") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_hexclass",1);
+			}
+			if(StrCmp(playername,"Baratus") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_hexclass",2);
+			}
+			break;
+		case 5:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-5);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Duke Nukem (Beach)") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_dkclab",1);
+			}
+			break;
+		case 8:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-8);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Taradino Cassatt") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_rottmode",1);
+			}
+			if(StrCmp(playername,"Thi Barrett") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_rottmode",2);
+			}
+			if(StrCmp(playername,"Lorelei Ni") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_rottmode",3);
+			}
+			if(StrCmp(playername,"Doug Wendt") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_rottmode",4);
+			}
+			break;
+		case 9:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Blake Stone (Planet Strike)") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_bsaog",1);
+			}
+			break;
+		case 19:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Shephard") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_shephardmode",1);
+			}
+			break;
+	}
+}
+
+Script "Samsara_PlayerFreezeTranslation" (void)
+{
+	CreateTranslation(7680, 0:255=%[0.078,0.062,0.140]:[1.16,1.16,1.348]);
+	Thing_SetTranslation(0,7680);
+}

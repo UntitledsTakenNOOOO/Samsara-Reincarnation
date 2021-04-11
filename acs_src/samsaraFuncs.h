@@ -522,34 +522,33 @@ function int HandleInstagib(int respawning)
     }
 
     GiveInventory("InstagibModeOn",1);
-    if (CheckInventory("DoomguyClass") == 1) { GiveInventory(" Railgun ",1); }
-    if (CheckInventory("ChexClass") == 1) { GiveInventory("Gigazorcher 2100",1); }
-    if (CheckInventory("CorvusClass") == 1) { GiveInventory("Grim Ballista",1); }
-    if (CheckInventory("WolfenClass") == 1) { GiveInventory("Mauser Rifle",1); }
-    if (CheckInventory("HexenClass") == 1) { GiveInventory("Bloodscourge",1); }
-    if (CheckInventory("DukeClass") == 1) { GiveInventory("Golden Desert Eagle",1); }
-    if (CheckInventory("MarathonClass") == 1) { GiveInventory("SPNKR-25 Auto Cannon",1); }
-    if (CheckInventory("QuakeClass") == 1) { GiveInventory("Rocket Powered Impaler",1); }
-    if (CheckInventory("RottClass") == 1) { GiveInventory("HeatSeeker",1); }		
-    if (CheckInventory("BlakeClass") == 1) { GiveInventory("Advanced Auto Charge Pistol",1); }	
-    if (CheckInventory("CalebClass") == 1) { GiveInventory("Flaregun2",1); }	
-    if (CheckInventory("StrifeClass") == 1) { GiveInventory("  Sigil  ",1); }
-    if (CheckInventory("Doom64GuyClass") == 1) { GiveInventory("  Railgun  ",1); }	
-    if (CheckInventory("EradClass") == 1) { GiveInventory(" EvilBuddy ",1); }
-    if (CheckInventory("C7Class") == 1) { GiveInventory("SuperVulcan",1); }
-    if (CheckInventory("RMRClass") == 1) { GiveInventory("Estron Ball",1); }
-    if (CheckInventory("KatarnClass") == 1) { GiveInventory("Czerka Adventurer",1); }	
-	if (CheckInventory("POGreedClass") == 1) { GiveInventory(" Lizard Crossbow ",1); }
-	if (CheckInventory("DisruptorClass") == 1) { GiveInventory("High Phase Rifle",1); }	
-	if (CheckInventory("WitchavenClass") == 1) { GiveInventory("Lightning Grenade",1); } //+Added
-	if (CheckInventory("HalfLifeClass") == 1) { GiveInventory("Shock Ant",1); } //+Added	
-	if (CheckInventory("SWClass") == 1) { GiveInventory("Chop Stick Dart",1); } //+Added
-	if (CheckInventory("JonClass") == 1) { GiveInventory("Shit LipStick",1); } //+Added		
-	if (CheckInventory("RRClass") == 1) { GiveInventory("Yer-Scattered-Ass",1); } //+Added	
-	if (CheckInventory("BittermanClass") == 1) { GiveInventory("Q2SuperShotgun",1); }
-	if (CheckInventory("Hexen2Class") == 1) { GiveInventory("Hexen2AcidRune",1); }
-	if (CheckInventory("BondClass") == 1) { GiveInventory("Goldeneye_AutoShotgun",1); }
-	if (CheckInventory("TotenkopfClass") == 1) { GiveInventory("Totenkopf_STG44",1); }	
+    if (CheckInventory("DoomguyClass") == 1) { GiveInventory("B.F.G. 9000",1); }
+    if (CheckInventory("ChexClass") == 1) { GiveInventory("LAZ Device",1); }
+    if (CheckInventory("CorvusClass") == 1) { GiveInventory("DSparilStaff",1); }
+    if (CheckInventory("WolfenClass") == 1) { GiveInventory("Spear of Destiny",1); }
+    if (CheckInventory("HexenClass") == 1) { GiveInventory("Wraithverge",1); }
+    if (CheckInventory("DukeClass") == 1) { GiveInventory("Devastator",1); }
+    if (CheckInventory("MarathonClass") == 1) { GiveInventory("ONI-71 Wave Motion Cannon",1); }
+    if (CheckInventory("QuakeClass") == 1) { GiveInventory("Thunderbolt",1); }
+    if (CheckInventory("RottClass") == 1) { GiveInventory("Flamewall",1); }		
+    if (CheckInventory("BlakeClass") == 1) { GiveInventory("Anti-Plasma Cannon",1); }	
+    if (CheckInventory("CalebClass") == 1) { GiveInventory("LifeLeech",1); }	
+    if (CheckInventory("StrifeClass") == 1) { GiveInventory(" Mauler ",1); }
+    if (CheckInventory("EradClass") == 1) { GiveInventory(" Plasma Ball ",1); }
+    if (CheckInventory("C7Class") == 1) { GiveInventory("AlienDisintegrator",1); }
+    if (CheckInventory("RMRClass") == 1) { GiveInventory(" RMR Plasma Cannon ",1); }
+    if (CheckInventory("KatarnClass") == 1) { GiveInventory("Assault Cannon",1); }	
+	if (CheckInventory("POGreedClass") == 1) { GiveInventory(" Super Plasma Annihilator ",1); }
+	if (CheckInventory("DisruptorClass") == 1) { GiveInventory(" Disruptor Zodiac ",1); }	
+	if (CheckInventory("WitchavenClass") == 1) { GiveInventory("Spellbook",1); } //+Added
+	if (CheckInventory("HalfLifeClass") == 1) { GiveInventory("E.G.O.N.",1); } //+Added	
+	if (CheckInventory("SWClass") == 1) { GiveInventory("SWGuardianHead",1); } //+Added
+	if (CheckInventory("CMClass") == 1) { GiveInventory("CMPlasmaGun",1); } //+Added
+	if (CheckInventory("JonClass") == 1) { GiveInventory(" Mummy Staff ",1); } //+Added		
+	if (CheckInventory("RRClass") == 1) { GiveInventory(" Alien Arm Cannon ",1); } //+Added	
+	if (CheckInventory("BittermanClass") == 1) { GiveInventory("Q2BFG10K",1); }
+	if (CheckInventory("Hexen2Class") == 1) { GiveInventory("Hexen2TempestStaff",1); }
+	if (CheckInventory("BondClass") == 1) { GiveInventory("Goldeneye_Moonraker",1); }
 	return 1;
 }
 
