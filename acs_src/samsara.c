@@ -2531,3 +2531,58 @@ Script "Samsara_PlayerFreezeTranslation" (void)
 	CreateTranslation(7680, 0:255=%[0.078,0.062,0.140]:[1.16,1.16,1.348]);
 	Thing_SetTranslation(0,7680);
 }
+
+Script "Samsara_ProjectilePredictor" (int type)
+{
+	str typeactor;
+	int speedx = GetActorVelX(0);
+	int speedy = GetActorVelY(0);
+	int speedz = GetActorVelZ(0);
+	int divideamount = FixedDiv(GetActorProperty(0,APROP_Speed),GetActorProperty(0,APROP_Radius))>>16;
+	int modifier = 1.0/divideamount;
+	int currentmultiplier;
+	int newactivator = UniqueTid();
+	Thing_ChangeTid(0,newactivator);
+	SetActivator(0,AAPTR_Target);
+	int player = ActivatorTid();
+	int newplayer = UniqueTid();
+	Thing_ChangeTid(0,newplayer);
+	
+	int newtid1 = UniqueTid();
+	int newtid2 = UniqueTid();
+	int newtid3 = UniqueTid();
+	
+	switch(type)
+	{
+		case 1:
+			typeactor = "DisruptorGP_12_Explosion";
+			break;
+		case 2:
+			typeactor = "Fwalling_Explosion";
+			break;
+		case 3:
+			typeactor = "RMR-RedPlasma_Explosion";
+			break;
+		case 4:
+			typeactor = "Ksphere_Rott_Explosion";
+			break;
+	}
+	SpawnForced(typeactor,GetActorX(newactivator),GetActorY(newactivator),GetActorZ(newactivator),newtid3);
+	SetActivator(newtid3,AAPTR_Default);
+	SetPointer(AAPTR_Target,newplayer);
+	Thing_ChangeTid(newtid3,0);
+	SetActivator(newplayer,AAPTR_Default);
+	for(int a = 1; a < divideamount; a++)
+	{
+		currentmultiplier = a * modifier;
+		SpawnForced(typeactor,GetActorX(newactivator) + FixedMul(speedx,currentmultiplier),GetActorY(newactivator) + FixedMul(speedy,currentmultiplier), GetActorZ(newactivator) + FixedMul(speedz,currentmultiplier),newtid1);
+		SpawnForced(typeactor,GetActorX(newactivator) - FixedMul(speedx,currentmultiplier),GetActorY(newactivator) - FixedMul(speedy,currentmultiplier), GetActorZ(newactivator) - FixedMul(speedz,currentmultiplier),newtid2);
+		SetActivator(newtid1,AAPTR_Default);
+		SetPointer(AAPTR_Target,newplayer);
+		SetActivator(newtid2,AAPTR_Default);
+		SetPointer(AAPTR_Target,newplayer);
+		SetActivator(newplayer,AAPTR_Default);
+		Thing_ChangeTid(newtid1,0);
+		Thing_ChangeTid(newtid2,0);
+	}
+}

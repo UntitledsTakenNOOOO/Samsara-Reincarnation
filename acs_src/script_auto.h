@@ -382,8 +382,9 @@ script SAMSARA_SPAWN (int respawning)
     int i;
 	int doommode, dukemode, hexmode, wolfmode, rottmode, blakemode, halflifemode, previousvalue, cvalue;
 	int targettid;
+	int bot = PlayerIsBot(pln);
 	
-	if(PlayerIsBot(pln))
+	if(bot)
 		ACS_NamedExecuteAlways("Samsara_BotAltClassHandler",0,pln,0,0);
 	
 	TakeInventory("Doom64MonsterSet", 0x7FFFFFFF);
@@ -490,6 +491,9 @@ script SAMSARA_SPAWN (int respawning)
     {		
         if (GetUserCvar(pln,"sams_cl_wolfmove")) { GiveInventory("WolfenMovement", 1); }
         else { TakeInventory("WolfenMovement", 0x7FFFFFFF); }
+		
+		if(bot && random(0,1024) == 0)
+			PlaySound(0,"*taunt",CHAN_VOICE,1.0,0,ATTN_NORM);
         
         if (GetUserCvar(pln,"sams_cl_ballgag")) 
 		{ 

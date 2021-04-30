@@ -14,7 +14,7 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 	{{"Caleb", 11, "*****", "*", "***", "*****", "**", "Pyromaniac", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "CMPBBLOD", "Red", "CMPSBLOD", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5", "", "", "", "DarkGray", "White" }},
 	{{"Strifeguy", 12, "****", "*", "**", "****", "***", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "CMPSSTRF", "untranslated", "CMPSSTRF", "untranslated", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6", "", "", "DarkGray", "White" }},
 //	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White" }},
-	{{"Eleena", 13, "****", "*", "**", "****", "****", "Area Denial", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5", "", "", "", "DarkGray", "White" }},
+	{{"Eleena", 13, "****", "*", "**", "****", "****", "Area Denial", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "CMPBERAD", "", "CMPSERAD", "", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5", "", "", "", "DarkGray", "White" }},
 	{{"Space Seal", 14, "****", "*", "***", "****", "**", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "CMPBCOR7", "Corridor7CompendiumBrightYellow", "CMPSCOR7", "Corridor7CompendiumGreen", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "", "", "Corridor7CompendiumYellow", "Corridor7CompendiumBrightYellow" }},
 	{{"LDF Commando", 15, "*", "***", "*****", "****", "**", "Marksman", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
 	{{"Kyle Katarn", 16, "***", "****", "***", "*****", "***", "Assault", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5", "", "", "", "DarkGray", "White" }},
@@ -36,7 +36,7 @@ int ClassFontScales[CLASSCOUNT][2] =
 {  
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
 	{ 2.67, 2.0 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },	
-	{ 1.0, 1.0 },	{ 1.5, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	
+	{ 2.0, 0.75 },	{ 1.5, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.125, 1.25 },	
 	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 }
 };
@@ -1975,11 +1975,11 @@ Script "Samsara_Compendium" (void) Net Clientside
 		SetHudSize(hudboundsx,hudboundsy,true);
 		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15989, CR_UNTRANSLATED, (cursorx*1.0), (cursory*1.0), 1.0);
 		SetFont("SMALLFONT");
+		drawclouds = 1;
+		ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,0);
 
 		if(menuindex == 0)
 		{
-			drawclouds = 1;
-			ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,0);
 			SetFont("SMALLFONT");
 			SetHudClipRect(0,0,0,0,0);
 			SetHudSize(hudcenterx,hudcentery,true);
@@ -2034,7 +2034,6 @@ Script "Samsara_Compendium" (void) Net Clientside
 		}
 		else
 		{
-			drawclouds = 0;
 			//======================================================================================================== Draw
 			if(lastmenuindex != menuindex || lastmenutab != menutab || lastmenuitem != menuitem || altskin != prevskin)
 			{
