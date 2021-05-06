@@ -61,7 +61,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
 	{"Q2GrenadeLauncher", "RocketAmmo", "Q2ETFRifle", "Q2Flechettes","Q2IonRipper","Cell"},	
 	{"Hexen2TomeOfPower","","Hexen2ForceCube","","",""},
 	{"Goldeneye_SniperRifle","Goldeneye_SniperMagazine","Goldeneye_SilencedD5K","Goldeneye_D5KMagazine","Goldeneye_GadgetGranter",""},
-//	{"Totenkopf_FlameThrower","Totenkopf_FlameThrowerFuel","Totenkopf_MG42","Cell","Totenkopf_Sniper","Shell"},	
+	{"Catacomb_RandomGem","","","","",""},	
 };
 
 int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] = 
@@ -94,7 +94,7 @@ int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] =
 	{0,     0,      0,  0,		0,	0},
 	{20,    0,     20,  0,		0,	0},
 	{0,     0,      0,  0,		0,	0},
-//	{0,     0,      0,  0,		0,	0},	
+	{0,     0,      0,  0,		0,	0},	
 };
 
 int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
@@ -127,7 +127,7 @@ int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
 	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},
-//	{-1,    -1,     -1, -1,     -1, -1},	
+	{-1,    -1,     -1, -1,     -1, -1},	
 };
 
 int UniqueScripts[CLASSCOUNT] = {0, 0, 0, 0, 0, 0, SAMSARA_MARATHON, 0, 0, 0};
@@ -463,17 +463,17 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Goldeneye_RCP90",        			"Goldeneye_RCP90Magazine",   		"Cell",   		"", ""},
         {"Goldeneye_Moonraker",             "Cell",   		"",   		"", ""},
     },
-/*	{   // Totenkopf
-		{"Totenkopf_Knife",               	"",             "",         "", ""},
-        {"Totenkopf_Mauser",        		"Clip",		"",         "", ""},
-        {"Totenkopf_Pistol",           		"Clip",         "",         "", ""},
-        {"Totenkopf_Kar98K",     				"Shell",         "",         "", ""},
-        {"Totenkopf_STG44",           		"Shell",		"",         "", ""},
-        {"Totenkopf_MP40",        				"Clip",         "",         "", ""},
-        {"Totenkopf_Panzerschreck",        	"RocketAmmo", 	"",       	"", ""},
-        {"Totenkopf_Chaingun",        		"Cell",   		"",   		"", ""},
-        {"Totenkopf_Flakgun",             	"Cell",   		"",   		"", ""},
-    },	*/
+	{   // Petton EverHail
+		{"",               	"",             "",         "", ""},
+        {"Catacomb_WavesQuickSpell",        		"Catacomb_Waves",		"",         "", ""},
+        {"Catacomb3D_MagicMissile",           		"",         "",         "", ""},
+        {"Catacomb_XterminatorsQuickSpell",     				"Catacomb_Xterminators",         "",         "", ""},
+        {"Catacomb_BurstsQuickSpell",           		"Catacomb_Bursts",		"",         "", ""},
+        {"Catacomb_ZappersQuickSpell",        				"Catacomb_Zappers",         "",         "", ""},
+        {"Catacomb_NukesQuickSpell",        	"Catacomb_Nukes", 	"",       	"", ""},
+        {"Catacomb_BoltsQuickSpell",        		"Catacomb_Bolts",   		"",   		"", ""},
+        {"Catacomb_Hourglass",             	"",   		"",   		"", ""},
+    },	
 };
 
 int ClassScripts[CLASSCOUNT][SLOTCOUNT] = 
@@ -506,7 +506,7 @@ int ClassScripts[CLASSCOUNT][SLOTCOUNT] =
 	{0,0,                   0,  0,0,0,0,0,0,0},
 	{0,0,                   0,  0,0,0,0,0,0,0},	
 	{0,0,                   0,  0,0,0,0,0,0,0},	
-//	{0,0,                   0,  0,0,0,0,0,0,0},		
+	{0,0,                   0,  0,0,0,0,0,0,0},		
 };
 
 //+Added
@@ -641,5 +641,5 @@ int SamsaraRGPProperties[CLASSCOUNT][SAMSARA_RGP_PAGES][SAMSARA_RGP_PROPERTIES] 
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},	
 	{{0,	0}, 		{0,		0},},	
-//	{{0,	0}, 		{0,		0},},	
+	{{0,	0}, 		{0,		0},},	
 };

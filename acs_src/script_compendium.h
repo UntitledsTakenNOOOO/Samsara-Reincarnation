@@ -29,7 +29,7 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 	{{"Bitterman", 25, "C", "D+", "C-", "B+", "Hard", "Armory", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "CMPSQUA2", "Quake2CompendiumWhite", "CMPSQUA2", "Quake2CompendiumGreen", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26", "", "", "Quake2CompendiumGray", "Quake2CompendiumWhite" }},
 	{{"Demoness", 26, "B+,S", "D+,B-", "D+", "B+", "Hard", "Evolution", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "CMPSHEX2", "Gold", "CMPSHEX2", "Red", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25", "", "", "", "DarkGray", "White" }},
 	{{"James Bond", 27, "B", "D-", "C", "S", "Hard", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "GEFONTS", "Gold", "GEFONTS", "White", "CMPBGGE1", "CMPBGGE2", "", "CMPBGGE4", "CMPBGGE5", "", "", "", "DarkGray", "White" }},
-	//{{"Blazkowicz", 28, "****", "***", "***", "*****", "***", "Plunderer", "TIPSYM29", "TIPHIL29", "TIPTKOPF", "TPLGTKPF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM29", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
+	{{"Petton Everhail", 28, "A+", "B", "D+", "A-", "Expert", "Specialist", "TIPSYM29", "TIPHIL29", "TIPEVERH", "TPLGCT3D", "TPCHEVER", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM29", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
 };
 
 int ClassFontScales[CLASSCOUNT][2] = 
@@ -38,7 +38,7 @@ int ClassFontScales[CLASSCOUNT][2] =
 	{ 2.67, 2.0 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },	
 	{ 1.0, 1.0 },	{ 1.5, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.125, 1.25 },	
-	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 }
+	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.5, 2.0 },
 };
 
 str CompendiumWheelRot[12] = { "CMPWHL01", "CMPWHL02", "CMPWHL03", "CMPWHL04", "CMPWHL05", "CMPWHL06", "CMPWHL07", "CMPWHL08", "CMPWHL09", "CMPWHL10", "CMPWHL11", "CMPWHL12"};
@@ -661,6 +661,21 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "", "", ""},
 		}
 	},
+	{
+		{
+			{ "Summary", "Petton Everhail, A powerful wizard from the kingdom of Thoria, is the protagonist of the Catacomb series of Adventure games by ID Software and Softdisk. Before Doomguy and even BJ Blaskowicz, this guy was doing battle with his ArchRival Nemesis, first to rescue his friend Grelminar from the clutches of the evil lich using his powerful Magic Missile spells and a variety of magical artifacts and potions to vanquish the Orcs, Trolls, and Demons of the Catacomb. After his fight with Nemesis, he finds his foe under a large cemetary in the Towne of Morbidity and follows Nemesis across space and time to thwart his plans of dominating time itself. After finally vanquishing Nemesis for good in the Far Future, Petton joins the Wheel is Samsara in hopes of intervening in the vile machinations of Nemesis (or those like him), to defend the people of Thoria.", ""},
+			
+			{ "Traits", "As old school as it gets: Everhail comes from the extremely archaic infancy of First Person Shooter design, and as such weapon design wasn't quite what it would become later. Everhail has mastered the Magic Missile, and perhaps out of stubborness refuses to use anything else. Instead relying on magical artifacts that give supplementary benefits to the Magic Missile, Petton does not abide by the same weapon design as other heroes. Simply picking up ammo gives these artifacts. You do not need to find Slot pickups to use them.
+			\n\nToo Hot to Handle: The projectiles Petton shoots aren't very fast, and the damage of his artifacts (while high) are very unfocused. However, using Secondary fire, Petton players can charge their magic missile up to 300% and utilize an artifact, releasing often times devastating damage on their enemies.", ""},
+			
+			{ "Changes", "- Catacomb 3D attacks often did only 1 damage, 3 at most. Most enemies had HP in the single digits. It seemed to make sense to multiply all damage values by 10.
+			\n\n- In the Catacomb games, the player had to tap the attack key continously to fire. This could result in repetative stress when more durable enemies showed up, so to take it easy on you we made it so you can hold the attack button to fire continuously at a decent rate of fire.
+			\n\n- In Catacomb 3D, the player could hold down the attack button instead of tapping to charge up a fireball (3X Damage) Spell. Here, however, charging is done with secondary, is much faster, can be chained with artifacts, and can be released early for 2X damage instead.
+			\n\n- In the Catacomb Adventure Trilogy, Petton had a crystal ball radar that could upgraded to detect more enemies by picking up gems. Since we can't add a radar like that for technical reasons, the gems are instead worn as rings the give the player temporary buffs.
+			\n\n- Due to the primitive nature of the Catacomb games, the Petton Everhail class has a far greater number of original weapons made for him than perhaps any other class in Samsara. Only his Pistol, slot 2, slot 4, and slot 7 are actual items in the Catacomb games. The rest were made up for Samsara.
+			\n\n- Petton's hand is always seen in the center of the screen instead of slowly rising from the bottom as the player attacks." }	
+		}
+	},	
 };
 
 //[CLASSCOUNT] is hero index, [MAXMODES] is the modes, [20] is max slots, [5] is the amount of separate pieces of information
@@ -1189,22 +1204,20 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		{ "Proximity Mine", "Proximity mines are one of three types of mines found in GoldenEye, the other two being timed mines and remote mines. Proximity mines detonate whenever a moving object is within their range, making them perfect for taking out patrolling guards but wasteful for stationary objects.", "CMPGE013", "Goldeneye_ProximityMines", "u" },
 		{ "Remote Mine", "Remote mines are one of three types of mine found in GoldenEye, the other two being Timed Mines and Proximity Mines. Remote mines are arguably more useful than the other types of mines as they can be detonated at any time.", "CMPGE015", "Goldeneye_RemoteMines", "u" },
 	}},
-	/*{{
-		{ "Knife", "Used for close combat, the knife is best as a last resort. It requires no ammo.", "WKNPA0", "Totenkopf_Knife", "f" },
-		{ "Walter P38 Pistol", "The standard German pistol. You'll need to switch to a better weapon when fighting multiple enemies.", "TK02M0", "Totenkopf_Pistol", "p" },
-		{ "M712 Rapid-Fire Pistol", "This machine pistol was developed by Mauser as a selective fire sidearm. It eats up ammo quick but can be a good crowd control weapon to stun multiple targets at once.", "TK10K0", "Totenkopf_Mauser", "1" },
-		{ "Kar98k Rifle", "The Kar98K is the standard German rifle. Its strength and accuracy make it the choice weapon among snipers.", "TK03M0", "Totenkopf_Kar98K", "2" },
-		{ "STG44 Assault Rifle", "Abbreviated for \"Sturmgewehr 44,\" the STG44 is an assault rifle that has the same rate of fire as the MP40, only it is much more powerful.", "TK05F0", "Totenkopf_STG44", "3" },
-		{ "MP40 Submachine Gun", "This machinegun comes in handy when fighting groups of enemies. It is often carried by S.S. personnel.", "TK04K0", "Totenkopf_MP40", "4" },
-		{ "Panzerschreck", "The Panzerschreck is an anti-tank weapon of the German Army. It fires slowly but deals tremendous damage.", "TK07H0", "Totenkopf_Panzerschreck", "5" },
-		{ "Chaingun", "This ultra-speed Gatling gun can mow down an entire Nazi platoon in seconds! However, it uses up ammo like popcorn.", "TK08F0", "Totenkopf_Chaingun", "6" },
-		{ "Flakgun", "The most famous artillery piece of German forces converted into a one-man portable weapon, with no compromises in efficiency.", "TK09F0", "Totenkopf_Flakgun", "7" },
-		{ "MG42 Portable Machine Gun", "It is most notable for its very high cyclic rate for a gun using full power service cartridges, which made it extremely effective in providing suppressive fire, and its unique sound led to it being nicknamed \"Hitler's buzzsaw\".", "TK11F0", "Totenkopf_MG42", "u" },
-		{ "Flamethrower", "Ideal for clearing out trenches and buildings - also ideal for cooking enemies.", "TK06F0", "Totenkopf_Flamethrower", "u" },
-		{ "Kar98k Sniper Rifle", "For snipers, Karabiner 98k rifles selected for being exceptionally accurate during factory tests were fitted with a telescopic sight as sniper rifles.", "TK12M0", "Totenkopf_Sniper", "u" },
-		{ "Power Armor", "Kept in a lab along with the nazis most powerful mutant projects, not only does this armor absorb half the damage taken from attacks and grant 200 armor, it also grants permanent armor regeneration. \n\nTo obtain this armor, you must find 20 secrets.", "TK55A0", "TotenkopfPowerArmor", "" },
-		{ "Healing Orb", "Kept in a dungeon with the most unstable Nazi experiment ever devised, this healing orb does not just heal you for 200 health points, it will also enable permanent health regeneration. \n\nTo obtain this artifact, you must find 30 secrets.", "TK55B0", "TotenkopfHealingOrb", "" },
-	}}*/
+	{{
+		{ "Magic Missile", "Petton Everhail's trusty Magic Missile, a staple spell among mages. Shoots fireballs from the palm of your hand at a decent rate of fire, and can be charged up to do 3X damage, which transfers to your artifacts. Although the damage and velocity of the projectiles are rather mediocre, it consumes no ammunition, no matter what. So fire away to your heart's content.", "CT00P0", "Catacomb3D_MagicMissile", "p" },
+		{ "Waves", "The one water magic spell in Everhail's arsenal, the waves can pierce through multiple targets in close range and do outrageous damage. Useful in desperate situations when you are cornered, but it's a borderline melee weapon for how poor its range is.", "CT01Z0", "Catacomb_Waves", "1" },
+		{ "XTerminators", "A powerful artifact for radial magic usage, the XTerminators fire 18 Magic Missile in a circle around the user, damaging anything nearby. Also useful as somewhat of a magic shotgun when getting really close to an enemy.", "CTO1A0", "Catacomb_Xterminators", "2" },
+		{ "Bursts", "An Artifact of splintering magic, the Bursts fire two large Magic Missiles that split into five smaller ones each. Useful for bombing single targets as well as clearing crowds.", "CT01I0", "Catacomb_Bursts", "3" },
+		{ "Zappers", "The ever reliable artifact of rapid-fire magic, Zappers quickly fire a stream of 12 Magic Missiles, each one dealing 10 damage. Great for softening up larger targets as well as clearing groups of weaker ones.", "CT01F0", "Catacomb_Zappers", "4" },
+		{ "Nukes", "The Elusive Nuke Artifact delivers a devastating fireball the explodes on contact with surfaces and enemies, dealing massive damage to the effected zone. The blast isn't particularly large, but the fearsome power and the ability to cast several in quick succession more than makes up for it.", "CT01P0", "Catacomb_Nukes", "5" },
+		{ "Bolts", "Named after the predecessor to the Zapper spell from Catacomb 3D, the Bolt spell now has very different behavior. Acting as shotgun blast of 5 homing fireballs, Bolts are exceedingly deadly against enemies both up close and afar.", "CT01S0", "Catacomb_Bolts", "6" },
+		{ "Crystal Hourglass", "A mysterious yet deadly artifact that Petton Everhail first encounters in the caverns deep beneath the Towne of Morbidity, this hourglass stops time for 30 seconds, allowing the user to sneak by their opponents undetected and cast several fireballs while time is stopped. Use this to unleash a flurry of projectiles within what the enemy perceives as a mere instant.", "CTAAI0", "Catacomb_Hourglass", "7" },
+		{ "Ring of Fire", "A ring that grants the user with the power of fireballs, dealing significantly more damage then normal magic missiles. Although it has no effect on Waves or Bolts, this weapon will greatly increase your damage dealing potential.", "CTAAA0", "Catacomb_RandomGem", "u" },
+		{ "Ring of Earth", "A ring that grants the user with the power of spread shots, firing 3 times the projectiles with any artifact. Useful against large groups of enemies.", "CT01N0", "Catacomb_RandomGem", "u" },
+		{ "Ring of Water", "A ring that harnesses the flowing tides of the sea to increase the use rate of the wearer's magic. While under the effects, the player has double fire and charge rate, and the Magic Missile projectiles have their velocity increased by 10.", "CTAAM0", "Catacomb_RandomGem", "u" },
+		{ "Ring of Lightning", "A ring embued with the unstable fury of storms, the Ring of Lightning makes the wearer's shots bounce on surfaces. Has no effect on Waves.", "CTAAG0", "Catacomb_RandomGem", "u" }
+	}},	
 };
 
 //Sets, modes, monster, info

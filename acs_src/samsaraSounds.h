@@ -463,18 +463,18 @@ int ClassPickupSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
     }},
-/*	{
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-    },	*/
+	{{
+        "Catacomb/ItemGet1",
+        "Catacomb/ItemGet1",
+        "Catacomb/ItemGet2",
+        "Catacomb/ItemGet2",
+        "Catacomb/ItemGet2",
+        "Catacomb/ItemGet1",
+        "Catacomb/SpecialItem",
+        "Catacomb/ItemGet4",
+        "Catacomb/Hourglass",
+        "Catacomb/Score",
+    }},	
 };
 
 int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] = 
@@ -655,17 +655,56 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
         "quakeweps/quadget",
         "quakeweps/itemget",
     }},
-	{{	// Rott pickup sounds - Added this.
-        "gen/pickup",
-        "gen/pickup",
-        "gen/pickup",
-        "gen/pickup",
-        "gen/pickup",
-        "gen/pickup",
-        "gen/pickup",
-        "gen/pickup",
-        "gen/bpicku",
-    }},
+	{
+		{
+			"gen/pickup",	
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/bpicku",
+		},
+		{
+			"gen/pickup",	
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/bpicku",
+		},
+		{
+			"gen/pickup",	
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/bpicku",
+		},
+		{
+			"gen/pickup",	
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/bpicku",
+		},
+	},
 	{
 		{	// Blake pickup sounds - Added this.
 			"",
@@ -917,18 +956,18 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
         "Goldeneye/Weaponup",
         "Goldeneye/Weaponup",
     }},
-/*	{
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-        "Totenkopf/getweapon",
-    },	*/
+	{{
+        "Catacomb/ItemGet1",
+        "Catacomb/ItemGet1",
+        "Catacomb/ItemGet2",
+        "Catacomb/ItemGet2",
+        "Catacomb/ItemGet2",
+        "Catacomb/ItemGet1",
+        "Catacomb/SpecialItem",
+        "Catacomb/ItemGet4",
+        "Catacomb/Hourglass",
+        "Catacomb/Score",
+    }},	
 };
 
 int ClassUniqueSounds[CLASSCOUNT][MAXMODES] = 
@@ -941,7 +980,7 @@ int ClassUniqueSounds[CLASSCOUNT][MAXMODES] =
     {"duke/itemget", "duke/itemget" },
     {"marathon/itemget", "" },
     {"quakeweps/weaponget", "" },
-	{"excalibat/pick", "" }, // Added this.
+	{"excalibat/pick", "excalibat/pick", "excalibat/pick", "excalibat/pick", "excalibat/pick"  }, // Added this.
 	{"Bstone/xylanget", "Bstone/xylanget" }, // Added this.
 	{"Caleb/Weaponup2", "" }, // Added this.
     {"strife/itemget", "" }, // For your class	
@@ -960,7 +999,7 @@ int ClassUniqueSounds[CLASSCOUNT][MAXMODES] =
 	{"Q2Misc/W_Pkup", "" },
 	{"Hexen2/ArtifactPickup", "" },
 	{"Goldeneye/Weaponup", "" },
-//	"Totenkopf/getweapon"	
+	{"Catacomb/GemGet", "" },
 };
 
 int PunchDrunkUniqueSounds[CLASSCOUNT] = 
@@ -992,5 +1031,5 @@ int PunchDrunkUniqueSounds[CLASSCOUNT] =
 	"",
 	"Q2Misc/W_Pkup",
 	"Goldeneye/Weaponup",
-//	"Totenkopf/getweapon"	
+	"Catacomb/GemGet"	
 };

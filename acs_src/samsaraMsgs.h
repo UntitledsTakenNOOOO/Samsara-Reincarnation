@@ -3231,18 +3231,18 @@ int ClassPickupMessages[CLASSCOUNT][MAXMODES][SLOTCOUNT][MSGCOUNT] =
 		{ "Laser","","","","","","","","","",},
 		{ "","","","","","","","","","",},
 	}},	
-/*	{
-		{ "Knife","","","","","","","","","",},
-		{ "M712 Rapid-Fire Pistol","","","","","","","","","",},
-		{ "Walther P38 Pistol","","","","","","","","","",},
-		{ "Kar98k Rifle","","","","","","","","","",},
-		{ "STG44 Assault Rifle","","","","","","","","","",},
-		{ "MP40 Submachine Gun","","","","","","","","","",},
-		{ "Panzerschreck","","","","","","","","","",},
-		{ "Chaingun","","","","","","","","","",},
-		{ "Flakgun","","","","","","","","","",},
+	{{
+		{ "You got your own hand?","","","","","","","","","",},
+		{ "Waves! Find some mages!","","","","","","","","","",},
+		{ "Magic Missile!","","","","","","","","","",},
+		{ "XTerminators!","","","","","","","","","",},
+		{ "Bursts","","","","","","","","","",},
+		{ "Zappers!","","","","","","","","","",},
+		{ "Nukes!","","","","","","","","","",},
+		{ "Bolts!","","","","","","","","","",},
+		{ "Time has Stopped!","","","","","","","","","",},
 		{ "","","","","","","","","","",},
-	},	*/
+	}},	
 };
 
 
@@ -3613,8 +3613,8 @@ int ClassUniqueMessages[CLASSCOUNT][MAXMODES][MSGCOUNT] =
 		"",
 		"",
     }},
-/*	{
-		"FlameThrower, Portable MG42, or Scoped Kar98k Rifle.",
+	{{
+		"You got a Gem!",
 		"",
 		"",
 		"",
@@ -3624,7 +3624,7 @@ int ClassUniqueMessages[CLASSCOUNT][MAXMODES][MSGCOUNT] =
 		"",
 		"",
 		"",
-    },*/
+    }},
 };
 
 int PunchDrunkUniqueMessages[CLASSCOUNT][MSGCOUNT] =
