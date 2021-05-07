@@ -2586,3 +2586,84 @@ Script "Samsara_ProjectilePredictor" (int type)
 		Thing_ChangeTid(newtid2,0);
 	}
 }
+
+Script "Samsara_PlayerShrinker" (int condition)
+{
+	if(!condition)
+	{	
+		if(CheckInventory("ShrunkPlayer"))
+			terminate;
+			
+		int shrinktimer;
+		int activatorstid = ActivatorTid();
+		int usertid = UniqueTid();
+		int dummytid = UniqueTid();
+		int ScaleX = GetActorProperty(0,APROP_ScaleX);
+		int ScaleY = GetActorProperty(0,APROP_ScaleY);
+		int shrunkenscalex = FixedMul(ScaleX,0.2);
+		int shrunkenscaley = FixedMul(ScaleY,0.2);
+		int viewheight = GetActorProperty(0,APROP_ViewHeight);
+		GiveInventory("ShrunkPlayer",1);	
+		SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+		for(int a = 0; a < 10; a++)
+		{
+			SetActorProperty(0,APROP_ViewHeight,FixedMul(viewheight,1.0-(a*0.08)));
+			Delay(2);
+		}
+		Delay(1);
+		SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+		int pln = PlayerNumber();
+		
+		//Translation helper, because the flag isn't valid
+		SpawnSpotForced("TranslationDummy",0,dummytid,0);
+		Thing_SetTranslation(dummytid, -1);
+		Thing_ChangeTid(0, usertid);
+		SetActivator(dummytid, AAPTR_Default);
+		MorphActor(usertid,strparam(s:PlayerActors[PlayerClass(pln)],s:"_Shrink"),"Zombieman3",525,MRF_FULLHEALTH|MRF_UNDOBYTOMEOFPOWER|MRF_LOSEACTUALWEAPON|MRF_NEWTIDBEHAVIOUR,"ShrinkFlash","ShrinkFlash");
+		Thing_SetTranslation(usertid, -1);
+		SetActivator(usertid, AAPTR_Default);
+		Thing_ChangeTid(usertid, activatorstid);
+		Thing_Remove(dummytid);
+		
+		SetActorProperty(0,APROP_ScaleX,shrunkenscalex);
+		SetActorProperty(0,APROP_ScaleY,shrunkenscaley);
+		
+		while(shrinktimer <= 420)
+		{
+			if(GetActorProperty(0,APROP_Health) <= 0)
+				terminate;
+			
+			Delay(1);
+			
+			shrinktimer++;
+		}
+		TakeInventory("ShrunkPlayer",1);
+		int newtid = UniqueTid();
+		if(!Spawn(PlayerActors[PlayerClass(pln)],GetActorX(0),GetActorY(0),GetActorZ(0),newtid))
+		{
+			Thing_Damage2(0,500000000000,"Explosive");
+		}
+		else
+		{
+			Thing_Remove(newtid);
+		}
+			
+		SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+		for(a = 0; a < 10; a++)
+		{
+			SetActorProperty(0,APROP_ScaleX,shrunkenscalex+(FixedMul(ScaleX,0.1)*a));
+			SetActorProperty(0,APROP_ScaleY,shrunkenscaley+(FixedMul(ScaleY,0.1)*a));
+			SetActorProperty(0,APROP_ViewHeight,FixedMul(viewheight,0.28+(a*0.08)));
+			Delay(2);
+		}
+		UnMorphActor(0,1);
+		SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+		SetActorProperty(0,APROP_ViewHeight,viewheight);
+		SetActorProperty(0,APROP_ScaleX,ScaleX);
+		SetActorProperty(0,APROP_ScaleY,ScaleY);
+	}
+	else
+	{
+		SetResultValue(ClassifyActor(0) & ACTOR_PLAYER);
+	}
+}

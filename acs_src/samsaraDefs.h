@@ -859,6 +859,36 @@ int CVarDefenseItems[DEFENSEMODES] =
     "PowerDefenseBuff20",
 };
 
+str PlayerActors[CLASSCOUNT] = 
+{
+	"DoomguyPlayer", 
+	"ChexWarrior", 
+	"CorvusPlayer", 
+	"WolfenPlayer", 
+	"HexenPlayer", 
+	"DukePlayer", 
+	"MarathonPlayer", 
+	"QuakePlayer", 
+	"IPFreeley", 
+	"BlakeStone",
+	"Caleb", 
+	"StrifeGuyPlayer", 
+	"Eleena", 
+	"Corridor7Player", 
+	"RebelMoonCommando", 
+	"KatarnPlayer", 
+	"POGreedPlayer", 
+	"DisruptorPlayer", 
+	"GrondovalPlayer", 
+	"HalfLifePlayer", 
+	"LoWangPlayer", 
+	"CMPlayer", 
+	"PSPlayer", 
+	"Leonard", 
+	"Bitterman", 
+	"Demoness", 
+	"JamesBond"
+};
 
 int ChangelogString =
 "FROM 0.3 TO 0.31\n\

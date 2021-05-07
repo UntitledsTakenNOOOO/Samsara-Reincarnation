@@ -494,6 +494,9 @@ script SAMSARA_SPAWN (int respawning)
 		
 		if(bot && random(0,1024) == 0)
 			PlaySound(0,"*taunt",CHAN_VOICE,1.0,0,ATTN_NORM);
+			
+		if(CheckInventory("ShrunkPlayer"))
+			GiveInventory("StepDeathLogic1",1);
         
         if (GetUserCvar(pln,"sams_cl_ballgag")) 
 		{ 
@@ -552,6 +555,8 @@ script SAMSARA_SPAWN (int respawning)
 					TakeInventory("Samsara_ModeWeaponChange",1);
 					if((GetUserCvar(pln,"sams_cl_doom64")))
 					{ 
+						SetActorProperty(0,APROP_ScaleX,0.75);
+						SetActorProperty(0,APROP_ScaleY,0.75);
 						if(CheckInventory("Doom64_IHaveUnmaker") && (!CheckInventory("Unmaker"))) 
 							GiveInventory("Unmaker", 1);
 							
@@ -568,6 +573,8 @@ script SAMSARA_SPAWN (int respawning)
 					}
 					else 
 					{ 
+						SetActorProperty(0,APROP_ScaleX,1.0);
+						SetActorProperty(0,APROP_ScaleY,1.0);
 						SetActorProperty(0,APROP_SoundClass,"DoomGuy");
 						TakeInventory("Doom64Mode", 0x7FFFFFFF); 
 						TakeInventory("Doom64MonsterSet", 0x7FFFFFFF); 
@@ -981,7 +988,7 @@ script SAMSARA_SPAWN (int respawning)
             { 
                 i = JumpZFromHeight(41 + GetCVar("sams_jumpmod"), GetActorProperty(0, APROP_Gravity)); 
             }
-        else if(CheckWeapon("RedneckMotorcycle"))
+        else if(CheckWeapon("RedneckMotorcycle") || CheckInventory("ShrunkPlayer"))
 			{
 				i = 0;
 			}
@@ -1131,6 +1138,13 @@ script SAMSARA_WOLFMOVE (void)
         }
 
         if (!CheckInventory("CanWolfMovement")) { break; }
+		
+		if(CheckInventory("ShrunkPlayer"))
+		{
+			Delay(1);
+			continue;
+		}
+		
         if (!CheckInventory("WolfenMovement") || GetCVar("sams_banwolfmove"))
         {
             if (GetActorProperty(0, APROP_Speed) == 0)
@@ -1141,7 +1155,6 @@ script SAMSARA_WOLFMOVE (void)
             Delay(1);
             continue;
         }
-
         
         if (GetActorProperty(0, APROP_Health) < 1)
         {
