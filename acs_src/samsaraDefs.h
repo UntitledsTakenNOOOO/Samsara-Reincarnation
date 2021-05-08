@@ -887,7 +887,8 @@ str PlayerActors[CLASSCOUNT] =
 	"Leonard", 
 	"Bitterman", 
 	"Demoness", 
-	"JamesBond"
+	"JamesBond",
+	"PettonEverhail"
 };
 
 int ChangelogString =

@@ -2523,11 +2523,40 @@ Script "Samsara_BotAltClassHandler" (int playernum)
 				SetUserCvar(playernum,"sams_cl_shephardmode",1);
 			}
 			break;
+		case 27:
+			while(GetActorProperty(0,APROP_Health) > 0)
+			{
+				int randomweapon = random(0,5);
+				switch(randomweapon)
+				{
+					case 0:
+						SetWeapon("Catacomb_WavesQuickSpell");
+						break;
+					case 1:
+						SetWeapon("Catacomb_XTerminatorsQuickSpell");
+						break;
+					case 2:
+						SetWeapon("Catacomb_BurstsQuickSpell");
+						break;
+					case 3:
+						SetWeapon("Catacomb_ZappersQuickSpell");
+						break;
+					case 4:
+						SetWeapon("Catacomb_NukesQuickSpell");
+						break;
+					case 5:
+						SetWeapon("Catacomb_BoltsQuickSpell");
+						break;
+				}
+				Delay(17);
+			}
+			break;
 	}
 }
 
 Script "Samsara_PlayerFreezeTranslation" (void)
 {
+	//SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
 	CreateTranslation(7680, 0:255=%[0.078,0.062,0.140]:[1.16,1.16,1.348]);
 	Thing_SetTranslation(0,7680);
 }
@@ -2630,7 +2659,7 @@ Script "Samsara_PlayerShrinker" (int condition)
 		
 		while(shrinktimer <= 420)
 		{
-			if(GetActorProperty(0,APROP_Health) <= 0)
+			if((ClassifyActor(0) & ACTOR_DEAD))
 				terminate;
 			
 			Delay(1);
@@ -2647,6 +2676,8 @@ Script "Samsara_PlayerShrinker" (int condition)
 		{
 			Thing_Remove(newtid);
 		}
+		if((ClassifyActor(0) & ACTOR_DEAD))
+				terminate;
 			
 		SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
 		for(a = 0; a < 10; a++)
@@ -2665,5 +2696,27 @@ Script "Samsara_PlayerShrinker" (int condition)
 	else
 	{
 		SetResultValue(ClassifyActor(0) & ACTOR_PLAYER);
+	}
+}
+
+Script "KillPlayer" (int damagetype)
+{
+	switch(damagetype)
+	{
+		case 1:
+			Thing_Damage2(0,50000,"Ice");
+			break;
+		case 2:
+			Thing_Damage2(0,50000,"Fire");
+			break;
+		case 3:
+			Thing_Damage2(0,50000,"Disintegrate");
+			break;
+		case 4:
+			Thing_Damage2(0,50000,"ExpanderDMG");
+			break;
+		case 5:
+			Thing_Damage2(0,50000,"Zorch");
+			break;
 	}
 }

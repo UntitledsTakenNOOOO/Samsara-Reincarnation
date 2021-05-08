@@ -555,8 +555,7 @@ script SAMSARA_SPAWN (int respawning)
 					TakeInventory("Samsara_ModeWeaponChange",1);
 					if((GetUserCvar(pln,"sams_cl_doom64")))
 					{ 
-						SetActorProperty(0,APROP_ScaleX,0.75);
-						SetActorProperty(0,APROP_ScaleY,0.75);
+						GiveInventory("Doom64GuyScalar",1);
 						if(CheckInventory("Doom64_IHaveUnmaker") && (!CheckInventory("Unmaker"))) 
 							GiveInventory("Unmaker", 1);
 							
@@ -573,8 +572,7 @@ script SAMSARA_SPAWN (int respawning)
 					}
 					else 
 					{ 
-						SetActorProperty(0,APROP_ScaleX,1.0);
-						SetActorProperty(0,APROP_ScaleY,1.0);
+						GiveInventory("DoomGuyScalar",1);
 						SetActorProperty(0,APROP_SoundClass,"DoomGuy");
 						TakeInventory("Doom64Mode", 0x7FFFFFFF); 
 						TakeInventory("Doom64MonsterSet", 0x7FFFFFFF); 
