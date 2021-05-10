@@ -1379,6 +1379,19 @@ script SAMSARA_PUKE (int values, int pln) net
 
 script SAMSARA_DEATH death
 {
+	int pln = PlayerNumber();
+	switch(PlayerClass(pln))
+	{
+		case 6:
+			TakeInventory("FusionChargan",7);
+			TakeInventory("FusionChargeLevel",35);
+			TakeInventory("ChargeLevel2",99);
+			TakeInventory("ChargeLevel",99);
+			TakeInventory("WMCCharge",99);
+			if(CheckInventory("FusionChargeLevel"))
+				GiveInventory("MarathonFusionShotItem",1);
+			break;
+	}
     Delay(1);
     TakeInventory("QuadDamagePower", 1);
 }
