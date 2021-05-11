@@ -1916,16 +1916,19 @@ int drawclouds = 0;
 
 Script "Samsara_Compendium_Initiate" (void) Net
 {
-	if(!CheckInventory("CompendiumOpened"))
+	if(!CheckInventory("BondWatchToken"))
 	{
-		GiveInventory("CompendiumOpened",1);
-		int execute = ACS_NamedExecuteWithResult("Samsara_Compendium");
-		SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
-	}
-	else
-	{
-		TakeInventory("CompendiumOpened",1);
-		SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+		if(!CheckInventory("CompendiumOpened"))
+		{
+			GiveInventory("CompendiumOpened",1);
+			int execute = ACS_NamedExecuteWithResult("Samsara_Compendium");
+			SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+		}
+		else
+		{
+			TakeInventory("CompendiumOpened",1);
+			SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+		}
 	}
 }
 
@@ -1996,7 +1999,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 			SetFont("SMALLFONT");
 			SetHudClipRect(0,0,0,0,0);
 			SetHudSize(hudcenterx,hudcentery,true);
-			HudMessage(s:"Close: ",k:"samsara_tipbox"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15988, CR_BLACK, (FixedMul(hudcenterx,0.033)<<16)+0.1, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
+			HudMessage(s:"Close: ",k:"samsara_compendium"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15988, CR_BLACK, (FixedMul(hudcenterx,0.033)<<16)+0.1, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
 			SetHudSize(hudboundsx,hudboundsy,true);
 			if(lastmenuindex != menuindex) { removemessages(15990,16185); removemessages(16180,16189); lastmenuindex = menuindex; scrollcounter = 0; scrolltimer = 368; }
 			int locationx, locationy;

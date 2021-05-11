@@ -657,6 +657,7 @@ script SAMSARA_SPAWN (int respawning)
 				hexmode = GetUserCvar(pln,"sams_cl_hexclass");
 				if(hexmode != previousvalue)
 				{
+					GiveInventory("SamsaraAllySwitchCaller",1);
 					if (hexmode > 0) 
 					{ 
 						TakeInventory("HexenClassMode", 2); 

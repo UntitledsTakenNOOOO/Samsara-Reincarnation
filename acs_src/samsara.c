@@ -1729,10 +1729,6 @@ Script "Samsara_Keybinds" (int button) net
 			else 
 				ACS_NamedExecuteAlways("SamsaraOST_Enter",0,0,0,0);		
 			break;
-		
-		Case 9:
-			SetUserCvar(PlayerNumber(),"sams_cl_dkclab", !GetUserCvar(PlayerNumber(),"sams_cl_dkclab"));
-			break;
 			
 		Case 10:
 			SetUserCvar(PlayerNumber(),"sams_cl_rottbar", !GetUserCvar(PlayerNumber(),"sams_cl_rottbar"));
@@ -1750,6 +1746,85 @@ Script "Samsara_PickupMode" (void) net clientside
 			
 	else
 		SetUserCvar(PlayerNumber(),"sams_cl_pickupmode", 0);
+}
+
+Str modestringsdefault[2] = { "Off", "On" };
+Str modestringswolf[3] = { "Classic", "Lost Missons", "Totenkopf SDL" };
+Str modestringshexen[3] = { "Parias", "Daedolon", "Baratus" };
+Str modestringsrott[5] = { "Ian Paul Freeley", "Taradino Cassatt", "Thi Barrett", "Lorelei Ni", "Doug Wendt" };
+
+Script "Samsara_ChangeAltClass" (void) net
+{
+	int mode;
+	int pln = PlayerNumber();
+	switch(PlayerClass(pln))
+	{
+		case 0:
+			mode = GetUserCvar(pln,"sams_cl_doom64");
+			SetUserCvar(pln,"sams_cl_doom64",!mode);
+			Log(s:"\cgDoom 64 Mode: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+		case 3:
+			mode = GetUserCvar(pln,"sams_cl_wolfmode");
+			if(mode == 2)
+				mode = 0;
+			else
+				mode++;
+				
+			Log(s:"\cgWolfenstein 3D Mode: ", s:"\ck", s:modestringswolf[mode]);
+			SetUserCvar(pln,"sams_cl_wolfmode",mode);
+			break;
+		case 4:
+			mode = GetUserCvar(pln,"sams_cl_hexclass");
+			if(mode == 2)
+				mode = 0;
+			else
+				mode++;
+				
+			Log(s:"\cgHexen Class: ", s:"\ck", s:modestringshexen[mode]);
+			SetUserCvar(pln,"sams_cl_hexclass",mode);
+			break;
+		case 5:
+			mode = GetUserCvar(pln,"sams_cl_dkclab");
+			SetUserCvar(pln,"sams_cl_dkclab",!mode);
+			Log(s:"\cgDuke Nukem Life's a Beach: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+		case 8:
+			mode = GetUserCvar(pln,"sams_cl_rottmode");
+			if(mode == 4)
+				mode = 0;
+			else
+				mode++;
+				
+			Log(s:"\cgH.U.N.T. Team Member: ", s:"\ck", s:modestringsrott[mode]);
+			SetUserCvar(pln,"sams_cl_rottmode",mode);
+			break;
+		case 9:
+			mode = GetUserCvar(pln,"sams_cl_bsaog");
+			SetUserCvar(pln,"sams_cl_bsaog",!mode);
+			Log(s:"\cgBlake Stone Aliens of Gold: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+		case 19:
+			mode = GetUserCvar(pln,"sams_cl_shephardmode");
+			SetUserCvar(pln,"sams_cl_shephardmode",!mode);
+			Log(s:"\cgHalf Life Opposing Force: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+	}
+}
+
+//For our unique keys to be consolidated
+Script "Samsara_UniqueKeys" (void)
+{
+	int pln = PlayerNumber();
+	switch(PlayerClass(pln))
+	{
+		case 19:
+			ACS_ExecuteWithResult(2677,0,0,0);
+			break;
+		case 26:
+			ACS_NamedExecuteWithResult("BondActivateWatch",0,0,0);
+			break;
+	}
 }
 
 Script "Samsara_Shrinker" (int use, int value)
@@ -1858,7 +1933,9 @@ Script 2999 (int class, int mode)
 {
 	int resultcounter = 0;	
 	int maxallies = 2;
-	mode = ceilZandronum((mode*1.0)/100); //the shit I have to do to cleanup Zandronum's mistakes
+	if(class == 1)
+		mode = ceilZandronum((mode*1.0)/100); //the shit I have to do to cleanup Zandronum's mistakes
+	
 	Switch(class)
 	{
 		Case 1:	
@@ -1897,24 +1974,24 @@ Script 2999 (int class, int mode)
 					SetActorState(0,"Death",TRUE);
 					terminate;
 				}
-				if(mode == 2)
+				switch(mode)
 				{
-					SetActorState(0,hexenfighterdropstrings[resultcounter],TRUE);
-					b=0;
-					resultcounter++;
+					case 1:
+						SetActorState(0,hexenmagedropstrings[resultcounter],TRUE);
+						b=0;
+						resultcounter++;
+						break;
+					case 2:
+						SetActorState(0,hexenfighterdropstrings[resultcounter],TRUE);
+						b=0;
+						resultcounter++;
+						break;
+					default:
+						SetActorState(0,hexendropstrings[resultcounter],TRUE);
+						b=0;
+						resultcounter++;
+						break;
 				}
-				if(mode == 1)
-				{
-					SetActorState(0,hexenmagedropstrings[resultcounter],TRUE);
-					b=0;
-					resultcounter++;
-				}	
-				else
-				{
-					SetActorState(0,hexendropstrings[resultcounter],TRUE);
-					b=0;
-					resultcounter++;
-				}	
 			}
 		}
 		break;
@@ -1965,6 +2042,99 @@ Script "Samsara_AllyBeaconDrops" (void)
 			SetResultValue(CheckInventory("RottMode"));
 			break;
 	}
+}
+
+Script "Samsara_AllySwitch" (void)
+{
+	int activator = ActivatorTid();
+	int playeractivator = ActivatorTid();
+	int newtid = UniqueTid();
+	Thing_ChangeTid(0,newtid);
+	SetActivator(0,AAPTR_Master);
+	int pln = PlayerNumber();
+	int playertid = UniqueTid();
+	int newtid2 = UniqueTid();
+	Thing_ChangeTid(0,playertid);
+	switch(PlayerClass(pln))
+	{
+		case 4:
+			if(GetUserCvar(pln,"sams_cl_hexclass")==0)
+			{
+				if(CheckActorClass(newtid,"ClericAlly"))
+				{
+					SpawnSpotFacingForced("FighterAlly",newtid,newtid2);
+				}
+				else
+					terminate;
+			}
+			else if(GetUserCvar(pln,"sams_cl_hexclass")==1)
+			{
+				if(CheckActorClass(newtid,"MageAlly"))
+				{
+					SpawnSpotFacingForced("ClericAlly",newtid,newtid2);
+				}
+				else
+					terminate;
+			}
+			else if(GetUserCvar(pln,"sams_cl_hexclass")==2)
+			{
+				if(CheckActorClass(newtid,"FighterAlly"))
+				{
+					SpawnSpotFacingForced("MageAlly",newtid,newtid2);
+				}
+				else
+					terminate;
+			}
+			break;
+	}
+	SetActorAngle(newtid2,GetActorAngle(newtid));
+	Thing_SetTranslation(newtid2,-1);
+	SetActivator(newtid2,AAPTR_DEFAULT);
+	SetPointer(AAPTR_MASTER,playertid);
+	Thing_Remove(newtid);
+	Thing_ChangeTid(playertid,playeractivator);
+	Thing_ChangeTid(0,activator);
+}
+
+Script "Samsara_BeaconSpawner" (int mode)
+{
+	int pln = PlayerNumber();
+	int newtid = UniqueTid();
+	int playertid = UniqueTid();
+	int activator = ActivatorTid();
+	Thing_ChangeTid(0,playertid);
+	switch(PlayerClass(pln))
+	{
+		case 4:
+			switch(mode)
+			{
+				case 0:
+					SpawnForced("StrifeBeaconHexen_Allies",GetActorX(0),GetActorY(0),GetActorZ(0),newtid);
+					Thing_SetTranslation(newtid,-1);
+					SetActivator(newtid,AAPTR_DEFAULT);
+					SetPointer(AAPTR_MASTER,playertid);
+					break;
+				case 1:
+					SpawnForced("StrifeBeaconHexenMage_Allies",GetActorX(0),GetActorY(0),GetActorZ(0),newtid);
+					Thing_SetTranslation(newtid,-1);
+					SetActivator(newtid,AAPTR_DEFAULT);
+					SetPointer(AAPTR_MASTER,playertid);
+					break;
+				case 2:
+					SpawnForced("StrifeBeaconHexenFighter_Allies",GetActorX(0),GetActorY(0),GetActorZ(0),newtid);
+					Thing_SetTranslation(newtid,-1);
+					SetActivator(newtid,AAPTR_DEFAULT);
+					SetPointer(AAPTR_MASTER,playertid);
+					break;
+			}
+			break;
+	}
+	Thing_ChangeTid(playertid,activator);
+}
+
+Script "Samsara_AllyCheckMaster" (void)
+{
+	SetResultValue(SetActivator(0,AAPTR_MASTER));
 }
 
 int placementmatrices[8][2] = 
