@@ -1,14 +1,11 @@
-Actor Catacomb_Hourglass : PowerupGiver 
+Actor Catacomb_Hourglass : CustomInventory 
 {
 	+INVENTORY.INVBAR
 	+INVENTORY.UNDROPPABLE
 	+INVENTORY.PERSISTENTPOWER
 	+INVENTORY.HUBPOWER
 	Inventory.Amount 1
-	Inventory.MaxAmount 5
-	Powerup.Type TimeFreezer
-	Powerup.Color "White", 0.0
-	Powerup.Duration -30
+	Inventory.MaxAmount 1
 	Inventory.Icon "CTAAK0"
 	Inventory.PickupSound "Catacomb/Hourglass"
 	Inventory.PickupMessage "Time has frozen!"
@@ -18,5 +15,24 @@ Actor Catacomb_Hourglass : PowerupGiver
 		Spawn:
 			CTAA IJ 14 BRIGHT
 			Loop
+		Use:
+			TNT1 A 0 A_JumpIfInventory("Catacomb_HourglassCooldown",1,"UseFail")
+			TNT1 A 1
+			TNT1 A 0 A_GiveInventory("PowerCatacomb_TimeFreeze",1)
+			TNT1 A 0 ACS_NamedExecuteAlways("Catacomb_HourglassCooldown", 0)
+			TNT1 A 0 A_GiveInventory("Catacomb_HourglassCooldown",360)
+			fail
+
+		UseFail:
+			TNT1 A 1
+			TNT1 A 0 A_Print("The Crystal Hourglass hasn't cooled down yet")
+			fail
 	}
 }
+
+Actor Catacomb_HourglassCooldown : inventory { -INVBAR +INVENTORY.UNDROPPABLE inventory.maxamount 360 }
+
+Actor PowerCatacomb_TimeFreeze : PowerTimeFreezer
+{
+	Powerup.Duration -15
+}	

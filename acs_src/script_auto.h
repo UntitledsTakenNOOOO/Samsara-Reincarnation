@@ -787,6 +787,20 @@ script SAMSARA_SPAWN (int respawning)
 					cvalue = 1;
 				}
 				break;
+				
+				case CLASS_CATACOMB:
+								if(CheckInventory("Catacomb_Waves")) { if(!CheckInventory("Catacomb_WavesQuickSpell")) GiveInventory("Catacomb_WavesQuickSpell",1); }
+								else { TakeInventory("Catacomb_WavesQuickSpell",1); }				
+								if(CheckInventory("Catacomb_XTerminators")) { if(!CheckInventory("Catacomb_XTerminatorsQuickSpell")) GiveInventory("Catacomb_XTerminatorsQuickSpell",1); }
+								else { TakeInventory("Catacomb_XTerminatorsQuickSpell",1); }		
+								if(CheckInventory("Catacomb_Bursts")) { if(!CheckInventory("Catacomb_BurstsQuickSpell")) GiveInventory("Catacomb_BurstsQuickSpell",1); }
+								else { TakeInventory("Catacomb_BurstsQuickSpell",1); }		
+								if(CheckInventory("Catacomb_Zappers")) { if(!CheckInventory("Catacomb_ZappersQuickSpell")) GiveInventory("Catacomb_ZappersQuickSpell",1); }
+								else { TakeInventory("Catacomb_ZappersQuickSpell",1); }		
+								if(CheckInventory("Catacomb_Nukes")) { if(!CheckInventory("Catacomb_NukesQuickSpell")) GiveInventory("Catacomb_NukesQuickSpell",1); }
+								else { TakeInventory("Catacomb_NukesQuickSpell",1); }	
+								if(CheckInventory("Catacomb_Bolts")) { if(!CheckInventory("Catacomb_BoltsQuickSpell")) GiveInventory("Catacomb_BoltsQuickSpell",1); }
+								else { TakeInventory("Catacomb_BoltsQuickSpell",1); }								
 		}
 	
         if (GetCVar("sams_runninginzdoom") == 1) 

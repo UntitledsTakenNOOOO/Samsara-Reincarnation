@@ -2890,3 +2890,13 @@ Script "KillPlayer" (int damagetype)
 			break;
 	}
 }
+
+script "Catacomb_HourglassCooldown" (void)
+{
+    if (CheckInventory("Catacomb_HourglassCooldown") > 0)
+    {
+        delay(35);
+        TakeInventory("Catacomb_HourglassCooldown",1);
+        restart;
+    }
+}
