@@ -14,7 +14,7 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 	{{"Caleb", 11, "A", "E+", "D+", "A+", "Avg", "Pyromaniac", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "CMPBBLOD", "Red", "CMPSBLOD", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5", "", "", "", "DarkGray", "White" }},
 	{{"Strifeguy", 12, "B+", "B, A+", "D-, A+", "B+", "Hard", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "CMPSSTRF", "untranslated", "CMPSSTRF", "untranslated", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6", "", "", "DarkGray", "White" }},
 //	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White" }},
-	{{"Eleena", 13, "B+", "E", "D", "C+", "Hard", "Area Denial", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5", "", "", "", "DarkGray", "White" }},
+	{{"Eleena", 13, "B+", "E", "D", "C+", "Hard", "Area Denial", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "CMPBERAD", "untranslated", "CMPSERAD", "untranslated", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5", "", "", "", "DarkGray", "White" }},
 	{{"Space Seal", 14, "D,A", "D-", "B+", "A-", "Avg", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "CMPBCOR7", "Corridor7CompendiumBrightYellow", "CMPSCOR7", "Corridor7CompendiumGreen", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "", "", "Corridor7CompendiumYellow", "Corridor7CompendiumBrightYellow" }},
 	{{"LDF Commando", 15, "E", "D+", "S", "A+", "Very Easy", "Marksman", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
 	{{"Kyle Katarn", 16, "B", "B", "C", "A-,S", "Easy", "Assault", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5", "", "", "", "DarkGray", "White" }},
@@ -36,7 +36,7 @@ int ClassFontScales[CLASSCOUNT][2] =
 {  
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
 	{ 2.67, 2.0 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },	
-	{ 1.0, 1.0 },	{ 1.5, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	
+	{ 2.5, 1.0 },	{ 1.5, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.125, 1.25 },	
 	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.5, 2.0 },
 };
@@ -778,7 +778,7 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 			{ "Jade Wand", "A rather weak wand which will slowly melt away your enemies, emphasis on slowly. It's not too good outside of close range, either.", "", "Sapphire Wand", "p" },
 			{ "Poison Cloud Flechette", "When a Cleric, such as Parias, uses the flechette, it produces a poison gas cloud, lethal to any who venture near.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
 			{ "Crusader's Longbow", "The Crusader's Longbow is a standard longbow of the Church's order. The arrows are infused with yellow energy which will fry and pierce your enemies.", "H114A0", "Frost Shards", "2" },
-			{ "Wand of Embers", "The wand of embers sprays a powerful pillar of flames towards enemies, useful for serving up fodder nice and crispy.", "H119A0", "Timon's Axe", "3" },
+			{ "Bishop's Shortsword", "The Bishop's Shortsword is a unique sword in the religious order - only a truly holy warrior can wield the power of this sword to vanquish evil with holy fire in a wave.", "H119H0", "Timon's Axe", "3" },
 			{ "Serpent Staff", "The essence of the sacred Kalrath serpent is contained within this staff. Feed it with the blue mana and it will serve you faithfully by spitting twin venom spheres at your enemies. Using this staff up close will drain your enemy's life and give some of it to you!", "WCSSA0", "Serpent Staff", "4" },
 			{ "Ice Fang", "This staff is a weapon created by the Church's order. Only a true devotee has the spirit to vanquish the cold touch of the staff, but when in the right hands, it will quickly freeze your enemies.", "H117A0", "Hammer of Retribution", "5" },
 			{ "Firestorm", "The Firestorm spell lets you summon a gout of fire from the earth. The flames appear at your enemy's feet and roar upward to engulf his entire body, roasting him alive. All things considered, Firestorm is the ultimate barbecue.", "WCFMA0", "Firestorm", "6" },

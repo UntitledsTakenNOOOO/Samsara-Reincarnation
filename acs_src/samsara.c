@@ -2086,6 +2086,51 @@ Script "Samsara_AllySwitch" (void)
 					terminate;
 			}
 			break;
+		case 8:
+			switch(GetUserCvar(pln,"sams_cl_rottmode"))
+			{
+				Case 0:
+					if(CheckActorClass(newtid,"IanPaulFreeley"))
+					{
+						SpawnSpotFacingForced("DougWendt",newtid,newtid2);
+					}
+					else
+						terminate;
+					break;
+				Case 1:
+					if(CheckActorClass(newtid,"TaradinoCassatt"))
+					{
+						SpawnSpotFacingForced("IanPaulFreeley",newtid,newtid2);
+					}
+					else
+						terminate;
+					break;
+				Case 2:
+					if(CheckActorClass(newtid,"ThiBarret"))
+					{
+						SpawnSpotFacingForced("TaradinoCassatt",newtid,newtid2);
+					}
+					else
+						terminate;
+					break;
+				Case 3:
+					if(CheckActorClass(newtid,"LoreleiNi"))
+					{
+						SpawnSpotFacingForced("ThiBarret",newtid,newtid2);
+					}
+					else
+						terminate;
+					break;
+				Case 4:
+					if(CheckActorClass(newtid,"DougWendt"))
+					{
+						SpawnSpotFacingForced("LoreleiNi",newtid,newtid2);
+					}
+					else
+						terminate;
+					break;
+			}
+			break;
 	}
 	SetActorAngle(newtid2,GetActorAngle(newtid));
 	Thing_SetTranslation(newtid2,-1);
@@ -2127,6 +2172,13 @@ Script "Samsara_BeaconSpawner" (int mode)
 					SetPointer(AAPTR_MASTER,playertid);
 					break;
 			}
+			break;
+		case 8:
+			SpawnSpotForced("StrifeBeaconRott_Allies",0,newtid,0);
+			SetActorAngle(newtid,CheckInventory("RottMode")*182);
+			Thing_SetTranslation(newtid,-1);
+			SetActivator(newtid,AAPTR_DEFAULT);
+			SetPointer(AAPTR_MASTER,playertid);
 			break;
 	}
 	Thing_ChangeTid(playertid,activator);
@@ -2869,28 +2921,6 @@ Script "Samsara_PlayerShrinker" (int condition)
 	}
 }
 
-Script "KillPlayer" (int damagetype)
-{
-	switch(damagetype)
-	{
-		case 1:
-			Thing_Damage2(0,50000,"Ice");
-			break;
-		case 2:
-			Thing_Damage2(0,50000,"Fire");
-			break;
-		case 3:
-			Thing_Damage2(0,50000,"Disintegrate");
-			break;
-		case 4:
-			Thing_Damage2(0,50000,"ExpanderDMG");
-			break;
-		case 5:
-			Thing_Damage2(0,50000,"Zorch");
-			break;
-	}
-}
-
 script "Catacomb_HourglassCooldown" (void)
 {
     if (CheckInventory("Catacomb_HourglassCooldown") > 0)
@@ -2899,4 +2929,4 @@ script "Catacomb_HourglassCooldown" (void)
         TakeInventory("Catacomb_HourglassCooldown",1);
         restart;
     }
-}
+} 

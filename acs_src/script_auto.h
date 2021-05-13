@@ -14,7 +14,8 @@ script SAMSARA_OPEN open
 	
     if (SamsaraGlobal[GLOBAL_DONEBITCHING] == 0)
     {
-		HudMessage(s:"Extra Heroes Changelist ",d:SAMSARA_CHANGELIST; HUDMSG_FADEOUT|HUDMSG_LOG, 93002, CR_GOLD, 1.5, 0.265, 2.0, 0.5);
+		HudMessage(s:"Reincarnation Changelist ",d:SAMSARA_CHANGELIST; HUDMSG_FADEOUT|HUDMSG_LOG, 93002, CR_GOLD, 1.5, 0.265, 2.0, 0.5);
+		HudMessage(s:"Press ",k:"samsara_compendium",s:" for extra information"; HUDMSG_FADEOUT|HUDMSG_LOG, 93003, CR_GOLD, 1.5, 0.285, 2.0, 0.5);
         if (GameType() == GAME_TITLE_MAP)
         {
         }
@@ -22,14 +23,16 @@ script SAMSARA_OPEN open
         {
             if(GetCvar("sams_cvarinfo") == 0)
             {
-			HudMessage(s:"Extra Heroes Changelist ",d:SAMSARA_CHANGELIST;
+			HudMessage(s:"Reincarnation Changelist ",d:SAMSARA_CHANGELIST;
             HUDMSG_FADEOUT, 93002, CR_WHITE, 1.5, 0.2, 2.0, 0.5);
             HudMessage(s:HELPSTR;
-            HUDMSG_PLAIN|HUDMSG_LOG, 92712, CR_WHITE, 1.5, 0.2, 2.5);
+            HUDMSG_PLAIN|HUDMSG_LOG, 92712, CR_WHITE, 1.5, 0.225, 2.5);
             HudMessage(s:HELPSTR_CL;
-            HUDMSG_PLAIN|HUDMSG_LOG, 92712, CR_WHITE, 1.5, 0.2, 2.5);
+            HUDMSG_PLAIN|HUDMSG_LOG, 92713, CR_WHITE, 1.5, 0.25, 2.5);
             HudMessage(s:"\cjSee the console for \cacvar information\c-.";
-            HUDMSG_FADEOUT, 92712, CR_WHITE, 1.5, 0.2, 2.0, 0.5);
+            HUDMSG_FADEOUT, 92712, CR_WHITE, 1.5, 0.275, 2.0, 0.5);
+			HudMessage(s:"Press ",k:"samsara_compendium",s:" for extra information";
+            HUDMSG_PLAIN|HUDMSG_LOG, 93003, CR_WHITE, 1.5, 0.375, 3.0, 0.5);
             SetCVar ("sams_cvarinfo", 1);
             //ConsoleCommand("archivecvar samsara_cvarinfo");
             }
@@ -732,6 +735,7 @@ script SAMSARA_SPAWN (int respawning)
 				//only run these actions if the value changes
 				if(rottmode != previousvalue)
 				{
+					GiveInventory("SamsaraAllySwitchCaller",1);
 					TakeInventory("RottMode", 4);
 					GiveInventory("RottMode",rottmode);
 					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, rottmode, pln); 
@@ -780,6 +784,22 @@ script SAMSARA_SPAWN (int respawning)
 					previousvalue = halflifemode;
 				}
 				break;
+				
+			case CLASS_CATACOMB:
+				if(CheckInventory("Catacomb_Waves")) { if(!CheckInventory("Catacomb_WavesQuickSpell")) GiveInventory("Catacomb_WavesQuickSpell",1); }
+				else { TakeInventory("Catacomb_WavesQuickSpell",1); }				
+				if(CheckInventory("Catacomb_XTerminators")) { if(!CheckInventory("Catacomb_XTerminatorsQuickSpell")) GiveInventory("Catacomb_XTerminatorsQuickSpell",1); }
+				else { TakeInventory("Catacomb_XTerminatorsQuickSpell",1); }		
+				if(CheckInventory("Catacomb_Bursts")) { if(!CheckInventory("Catacomb_BurstsQuickSpell")) GiveInventory("Catacomb_BurstsQuickSpell",1); }
+				else { TakeInventory("Catacomb_BurstsQuickSpell",1); }		
+				if(CheckInventory("Catacomb_Zappers")) { if(!CheckInventory("Catacomb_ZappersQuickSpell")) GiveInventory("Catacomb_ZappersQuickSpell",1); }
+				else { TakeInventory("Catacomb_ZappersQuickSpell",1); }		
+				if(CheckInventory("Catacomb_Nukes")) { if(!CheckInventory("Catacomb_NukesQuickSpell")) GiveInventory("Catacomb_NukesQuickSpell",1); }
+				else { TakeInventory("Catacomb_NukesQuickSpell",1); }	
+				if(CheckInventory("Catacomb_Bolts")) { if(!CheckInventory("Catacomb_BoltsQuickSpell")) GiveInventory("Catacomb_BoltsQuickSpell",1); }
+				else { TakeInventory("Catacomb_BoltsQuickSpell",1); }
+				break;
+				
 			default:
 				if(cvalue != 1)
 				{
@@ -787,20 +807,6 @@ script SAMSARA_SPAWN (int respawning)
 					cvalue = 1;
 				}
 				break;
-				
-				case CLASS_CATACOMB:
-								if(CheckInventory("Catacomb_Waves")) { if(!CheckInventory("Catacomb_WavesQuickSpell")) GiveInventory("Catacomb_WavesQuickSpell",1); }
-								else { TakeInventory("Catacomb_WavesQuickSpell",1); }				
-								if(CheckInventory("Catacomb_XTerminators")) { if(!CheckInventory("Catacomb_XTerminatorsQuickSpell")) GiveInventory("Catacomb_XTerminatorsQuickSpell",1); }
-								else { TakeInventory("Catacomb_XTerminatorsQuickSpell",1); }		
-								if(CheckInventory("Catacomb_Bursts")) { if(!CheckInventory("Catacomb_BurstsQuickSpell")) GiveInventory("Catacomb_BurstsQuickSpell",1); }
-								else { TakeInventory("Catacomb_BurstsQuickSpell",1); }		
-								if(CheckInventory("Catacomb_Zappers")) { if(!CheckInventory("Catacomb_ZappersQuickSpell")) GiveInventory("Catacomb_ZappersQuickSpell",1); }
-								else { TakeInventory("Catacomb_ZappersQuickSpell",1); }		
-								if(CheckInventory("Catacomb_Nukes")) { if(!CheckInventory("Catacomb_NukesQuickSpell")) GiveInventory("Catacomb_NukesQuickSpell",1); }
-								else { TakeInventory("Catacomb_NukesQuickSpell",1); }	
-								if(CheckInventory("Catacomb_Bolts")) { if(!CheckInventory("Catacomb_BoltsQuickSpell")) GiveInventory("Catacomb_BoltsQuickSpell",1); }
-								else { TakeInventory("Catacomb_BoltsQuickSpell",1); }								
 		}
 	
         if (GetCVar("sams_runninginzdoom") == 1) 
@@ -962,11 +968,33 @@ script SAMSARA_SPAWN (int respawning)
         }
 
         /*
-         * Jumping shit
+         * Jumping and miscellaneous shit
          */
 
         switch (samsaraClassNum())
         {
+		  case CLASS_HEXEN:
+			int boosted, damagefactor, damagefactormod;
+			if(CheckInventory("HexenClassMode")==2)
+			{
+				damagefactormod = 0.5;
+				if(ACS_NamedExecuteWithResult("SAMSARA_BARATUSRANGECHECK")==1)
+				{
+					if(!boosted) { damagefactor = GetActorProperty(0,APROP_DamageFactor); boosted = true; SetActorProperty(0,APROP_DamageFactor,FixedMul(damagefactor,damagefactormod)); }
+				}
+				else
+				{
+					boosted = false;
+					SetActorProperty(0,APROP_DamageFactor,1.0);
+				}
+			}
+			else
+			{
+				boosted = false;
+				damagefactor = GetActorProperty(0,APROP_DamageFactor);
+				SetActorProperty(0,APROP_DamageFactor,1.0);
+			}
+			break;
           case CLASS_MARATHON:
             if (GetCVar("sams_nocustomgravity")) { SetActorProperty(0, APROP_Gravity, 1.0); }
             else { SetActorProperty(0, APROP_Gravity, 0.15); }
@@ -1369,6 +1397,25 @@ script "SAMSARA_CLIENT_ALTERNATIVECLASS" (int set, int pln) clientside
     if (cpln != pln) { terminate; }
 	
 	SamsaraAlternativeClass = set;
+}
+
+script "SAMSARA_BARATUSRANGECHECK" (void)
+{
+	int x = GetActorX(0);	int y = GetActorY(0);	int z = GetActorZ(0);
+	if(SetActivator(0,AAPTR_PLAYER_GETTARGET))
+	{
+		if((ClassifyActor(0) & ACTOR_MONSTER) || (ClassifyActor(0) & ACTOR_PLAYER))
+		{
+			int monx = GetActorX(0);	int mony = GetActorY(0);	int monz = GetActorZ(0);
+			int vectorx = monx - x;
+			int vectory = mony - y;
+			int vectorz = monz - z;
+			int length = magnitudeThree_f(vectorx,vectory,vectorz);
+			if(abs(length) < 128.0) { SetResultValue(1); terminate; } //when returning in other languages, the method would end, this is here for good measure
+		}
+	}
+	SetResultValue(0);
+	
 }
 
 script SAMSARA_DISCONNECT_CLIENT (int pln) disconnect clientside
