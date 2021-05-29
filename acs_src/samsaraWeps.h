@@ -54,11 +54,11 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
 	{"DisruptorEnergyBall",	"DisruptorPSIEnergy",	"", "","",""}, //+Added	
 	{"WTShieldTrigger",	"",	"", "","",""}, //+Added
 	{"HL Squeaks", "HLSqueakAmmo", "HL Crossbow", "Shell","",""}, //+Added	
-    {"SWRipperHeart", "HeartAmmo", "HeatSeekingCard", "","",""},	
+    {"SWRipperHeart", "HeartAmmo", "HeatSeekingCard", "","SWGasGrenade",""},	
     {"RandomMagicItem", "", "", "","",""},
     {"Ring of RA", "", "", "","",""},	
     {" Hunting Rifle With Scope ", "", " Dyn 'O' Mites ", "","",""},	
-	{"Q2GrenadeLauncher", "RocketAmmo", "Q2ETFRifle", "Q2Flechettes","Q2IonRipper","Cell"},	
+	{"Q2GrenadeLauncher", "RocketAmmo", "Q2ETFRifle", "Q2Flechettes","Q2Railgun","Cell"},	
 	{"Hexen2TomeOfPower","","Hexen2ForceCube","","",""},
 	{"Goldeneye_SniperRifle","Goldeneye_SniperMagazine","Goldeneye_SilencedD5K","Goldeneye_D5KMagazine","Goldeneye_GadgetGranter",""},
 	{"Catacomb_RandomGem","","","","",""},	
