@@ -59,7 +59,7 @@
 #define MAXMODES          	5
 #define CLASSCOUNT          28
 #define UNIQUECOUNT         3
-#define SLOTCOUNT           10
+#define SLOTCOUNT           13
 #define TIPCOUNT            2
 
 #define LMSMODES            6
@@ -133,12 +133,9 @@ sams_lmsult 0/1: Toggles whether players get their VII in LMS.\n\
 sams_uniquestart [0-4]: Toggles whether players get their unique on enter or spawn.\n\
 sams_chainsawstart [0-2]: Toggles whether players get their I on enter or spawn.\n\
 sams_peoplediewhentheyarekilled [0-3]: Players explode on death.\n\
-sams_punchdrunk 0/1: Toggles melee-only mode. Only works in deathmatch or coop.\n\
-sams_punchdrunkuniques 0/1: Toggles whether Punchdrunk uniques are present in normal play.\n\
 sams_merryxmas 0/1: Toggles XMas mode, changing the appearance of several textures and props. \n\
 sams_misccharacters 0-100: Adjusts the percentage chance of Misc characters and allies to spawn in place of health/armor bonuses. \n\
 sams_microwavepop 0/1: Changes the explosion behavior of Duke's Expander weapon. \n\
-sams_punchdrunksaws 0/1: Toggles whether Punchdrunk Chainsaws are present in normal play.\n\
 sams_armormode [0-4]: Toggles the type of armor that spawns in-game.\n\
 sams_nohealthcap 0/1: Toggles whether 100/200 is the health cap for players, or infinity.\n\
 sams_noult 0/1: Toggles whether the VII comes into play or never spawns.\n\
@@ -247,8 +244,8 @@ int PickupStates[CLASSCOUNT][24] =
 	{"Catacomb",    "CatacombFull",     	"CatacombEmpty",        	"CatacombSpecial",      	"CatacombPunchdrunk",      	   "CatacombPDFull",       	   "CatacombPDEmpty",          "CatacombPDSpecial",		    "",		"",		"",		""}
 };
 
-int ItoSArray[7] = {1, 3, 4, 5, 6, 7, 8};
-int StoIArray[SLOTCOUNT] = {-1, 1, -1, 2, 3, 4, 5, 6, 7, -1};
+int ItoSArray[11] = {1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+int StoIArray[SLOTCOUNT] = {-1, 1, -1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
 int ClassFades[CLASSCOUNT][5] =
 {
@@ -619,25 +616,6 @@ int ArmorModeNames[ARMORMODES] =
     "Quake (old)",
     "Marathon",
     "None",
-};
-
-int PunchDrunkItems[CLASSCOUNT][2] = 
-{
-    {"DoomguyPunchDrunk",   "DoomguyPunchUnique"},
-    {"ChexguyPunchDrunk",   "ChexguyPunchUnique"},
-    {"CorvusPunchDrunk",    "CorvusPunchUnique"},
-    {"BlazkoPunchDrunk",    "BlazkoPunchUnique"},
-    {"PariasPunchDrunk",    "PariasPunchUnique"},
-    {"DukePunchDrunk",      "DukePunchUnique"},
-    {"ManathorPunchDrunk",  "ManathorPunchUnique"},
-    {"RangerPunchDrunk",    "RangerPunchUnique"},
-	{"StrifePunchDrunk",    "StrifePunchUnique"},	
-//    {"Doom64GuyPunchDrunk", "Doom64GuyPunchUnique"},
-    {"C7ClassPunchDrunk",    "C7ClassPunchUnique"},		
-    {"KatarnPunchDrunk",    "KatarnPunchUnique"},	
-	{"MoomanPunchDrunk", "MoomanPunchUnique"}, 	
-	{"GrondovalPunchDrunk", "GrondovalPunchUnique"}, //+Added
-	{"FreemanPunchDrunk", "FreemanPunchUnique"}, //+Added	
 };
 
 int BanCVars[CLASSCOUNT] = 

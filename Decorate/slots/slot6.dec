@@ -224,7 +224,28 @@ actor SamsaraSlotSixDrop: SamsaraSlotSixPickup
   }
 }
 
-actor SamsaraRailgunReplace:  SamsaraSlotSixPickup replaces Railgun {}
+actor SamsaraRailgunReplace:  SamsaraSlotSixPickup replaces Railgun
+{
+	States
+	{
+		IWasDropped:
+			Goto SpawnLoop	
+		Doomguy:  RAIL A 35 A_ChangeFlag("FLOATBOB", 0)   goto SpawnLoop
+		Pickup:
+			TNT1 A 0 A_JumpIfInventory("DoomGuyClass", 1, "CheckDoomGuy")	 
+			TNT1 A 0 A_JumpIfInventory("StrifeClass", 1, "CheckStrife")	  
+			TNT1 A 0 A_JumpIfInventory("HalfLifeClass", 1, "CheckHL")
+			TNT1 A 0 A_JumpIfInventory("MarathonClass", 0, "CheckMarathon")
+			TNT1 A 0 A_JumpIfInventory("BondClass", 1, "CheckBond")
+			TNT1 A 0 A_JumpIf((ACS_ExecuteWithResult(229, 6) & 3) == 1, "PickupSuccess")
+			Goto PickupFailure
+		CheckDoomGuy:
+			TNT1 A 0 A_JumpIf((ACS_ExecuteWithResult(229, 10) & 3) == 1, 1)
+			Goto PickupFailure
+			TNT1 A 0 A_GiveInventory("DGHasRailGun")
+			Goto PickupSuccess
+	}
+}
 actor SamsaraSlotSix_Chex:    SamsaraSlotSixPickup replaces PhasingZorcher {}
 actor SamsaraSlotSix_Heretic: SamsaraSlotSixPickup replaces SkullRod {}
 actor SamsaraSlotSix_Strife:  SamsaraSlotSixPickup replaces Flamethrower

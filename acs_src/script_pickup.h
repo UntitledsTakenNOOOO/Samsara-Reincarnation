@@ -17,23 +17,8 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
     }
     int oldslot = slot;
     int success = 0;
-    int punchdrunk =  IsPunchdrunk & 1;
-    int pdUniques  = (IsPunchdrunk & 2) || punchdrunk;
-    int pdSaws     = (IsPunchdrunk & 4) || punchdrunk;
 
     slot = itemToSlot(slot);
-
-    if (slot == SLOT_CHAINSAW && pdSaws) { slot = SLOT_PUNCHDRUNKSAW; }
-    if (slot == SLOT_BFG9000 && punchdrunk && pdUniques) { slot = SLOT_UNIQUE; }
-
-    while (punchdrunk)
-    {
-        if (slot == SLOT_PUNCHDRUNKSAW && pdSaws) { break; }
-        if (slot == SLOT_UNIQUE && pdUniques) { break; }
-
-        SetActorState(0, "Invisible");
-        terminate;
-    }
     
     int hasSlot = SamsaraClientWeps[slot];
 
@@ -60,8 +45,7 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
             break;
             
           case 1:
-            if (pdUniques) { success = SetActorState(0, PickupStates[toClass][7]); }
-            if (!pdUniques || !success) 
+            if (!success) 
 			{ 
 				switch(SamsaraAlternativeClass)
 				{
@@ -85,8 +69,7 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
             break;
             
           case 2:
-            if (pdUniques) { success = SetActorState(0, PickupStates[toClass][4]); }
-            if (!pdUniques || !success) 
+            if (!success) 
 			{ 
 				switch(SamsaraAlternativeClass)
 				{
@@ -122,18 +105,6 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
             Spawn("SamsaraChangeFlash2", GetActorX(0), GetActorY(0), GetActorZ(0));
         }
         
-        switch (slot)
-        {
-          case SLOT_CHAINSAW:
-          case SLOT_PUNCHDRUNKSAW:
-            if (pdSaws)
-            {
-                if (hasSlot) { success = SetActorState(0, PickupStates[toClass][5]); }
-                else         { success = SetActorState(0, PickupStates[toClass][6]); }
-            }
-            break;
-        }
-
         if (!success)
         {
             if (hasSlot) 
@@ -185,28 +156,23 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
         switch (slot)
         {
           case SLOT_CHAINSAW:
-          case SLOT_PUNCHDRUNKSAW:
-            if (pdSaws) { success = SetActorState(0, PickupStates[toClass][4]); }
-            else 
-			{ 
-				switch(SamsaraAlternativeClass)
-				{
-					case 0:
-						SetActorState(0, PickupStates[toClass][0]);
-						break;
-					case 1:
-						SetActorState(0, PickupStates[toClass][8]);
-						break;
-					case 2:
-						SetActorState(0, PickupStates[toClass][12]);
-						break;
-					case 3:
-						SetActorState(0, PickupStates[toClass][16]);
-						break;
-					case 4:
-						SetActorState(0, PickupStates[toClass][20]);
-						break;
-				}
+			switch(SamsaraAlternativeClass)
+			{
+				case 0:
+					SetActorState(0, PickupStates[toClass][0]);
+					break;
+				case 1:
+					SetActorState(0, PickupStates[toClass][8]);
+					break;
+				case 2:
+					SetActorState(0, PickupStates[toClass][12]);
+					break;
+				case 3:
+					SetActorState(0, PickupStates[toClass][16]);
+					break;
+				case 4:
+					SetActorState(0, PickupStates[toClass][20]);
+					break;
 			}
             break;
         }
@@ -247,30 +213,10 @@ script SAMSARA_GIVEWEAPON (int slot, int dropped, int silent)
 {
     if (!IsServer) { terminate; }
     slot = itemToSlot(slot);
-    if (slot == -1) { terminate; }    
+    if (slot == -1) { terminate; }   
 
     int weaponStay = !!GetCVar("sv_weaponstay");
-    int punchdrunk = IsPunchdrunk & 1;
-    int pdSaws     = (IsPunchdrunk & 4) || punchdrunk;
 
-    if (pdSaws && slot == SLOT_CHAINSAW) { slot = SLOT_PUNCHDRUNKSAW; }
-
-    if (punchdrunk)
-    { 
-        if (slot == SLOT_BFG9000)
-        {
-            SetResultValue(ACS_ExecuteWithResult(SAMSARA_GIVEUNIQUE, 0));
-            terminate;
-        }
-
-        if (slot != SLOT_PUNCHDRUNKSAW)
-        {
-            SetResultValue(weaponStay * WEPFLAGS_WEAPONSTAY);
-            terminate;
-        }
-    }
-
-    
     int weaponGet  = 0;
     int pclass = samsaraClassNum();
     int hasWep = HasClassWeapon(pclass, slot);
@@ -287,7 +233,7 @@ script SAMSARA_GIVEWEAPON (int slot, int dropped, int silent)
     int ammo1   = ClassWeapons[pclass][slot][S_AMMO1],      a1bool  = !!StrLen(ammo1);
     int ammo2   = ClassWeapons[pclass][slot][S_AMMO2],      a2bool  = !!StrLen(ammo2);
     int check   = ClassWeapons[pclass][slot][S_CHECKITEM],  chkbool = !!StrLen(check);
-    
+    	
     if (!wepbool || (CheckInventory(ClassWeapons[pclass][slot][S_CHECKFAILITEM]) && !dropped))
     {
         SetResultValue(weaponStay * WEPFLAGS_WEAPONSTAY);
@@ -352,7 +298,7 @@ script SAMSARA_GIVEWEAPON (int slot, int dropped, int silent)
 			
 		}
 	}
-    
+	
     if (dropped && IsServer)
     {
         TakeInventory(ammo1, (CheckInventory(ammo1) - a1cnt) / 2);
@@ -376,7 +322,6 @@ script SAMSARA_GIVEUNIQUE (int alt)
     
     int uniqueGet = 0;
     int pclass = samsaraClassNum();
-    int pd = GetCVar("sams_punchdrunk") || GetCVar("sams_punchdrunkuniques");
 
     while (!uniqueGet && alt >= 0)
     {
@@ -386,7 +331,7 @@ script SAMSARA_GIVEUNIQUE (int alt)
     
     if (uniqueGet && IsServer)
     {
-        ACS_ExecuteAlways(SAMSARA_CLIENT_UNIQUEPICKUP, 0, GetCVar("compat_silentpickup"), pd, 0);
+        ACS_ExecuteAlways(SAMSARA_CLIENT_UNIQUEPICKUP, 0, GetCVar("compat_silentpickup"), 0, 0);
     }
     
     SetResultValue(uniqueGet);
@@ -465,7 +410,7 @@ script SAMSARA_CLIENT_WEAPONPICKUP (int slot, int soundmode, int dropped) client
 	
 }
 
-script SAMSARA_CLIENT_UNIQUEPICKUP (int soundmode, int punchdrunk) clientside
+script SAMSARA_CLIENT_UNIQUEPICKUP (int soundmode) clientside
 {
     int pln = PlayerNumber(), cpln = ConsolePlayerNumber();
     int pclass = samsaraClassNum();
@@ -473,8 +418,7 @@ script SAMSARA_CLIENT_UNIQUEPICKUP (int soundmode, int punchdrunk) clientside
     int logMsg;
     int pickupsound;
 
-    if (punchdrunk) { pickupsound = PunchdrunkUniqueSounds[pclass]; }
-    else { pickupsound = ClassUniqueSounds[pclass][SamsaraAlternativeClass]; }
+   pickupsound = ClassUniqueSounds[pclass][SamsaraAlternativeClass];
     
     if (cpln == pln && GetCVar("msg") == 0)
     {
@@ -482,8 +426,7 @@ script SAMSARA_CLIENT_UNIQUEPICKUP (int soundmode, int punchdrunk) clientside
         {
             for (i = 0; i < MSGCOUNT; i++)
             {
-                if (punchdrunk) { j = PunchDrunkUniqueMessages[pclass][i]; }
-                else { j = ClassUniqueMessages[pclass][SamsaraAlternativeClass][i]; }
+                j = ClassUniqueMessages[pclass][SamsaraAlternativeClass][i];
 
                 if (!StrLen(j)) { continue; }
                 QuoteStorage[quoteCount++] = j;

@@ -35,7 +35,6 @@ int IsServer = 0;
 int LMSMessaged = 0;
 int UnloadingNow = 0;
 int ArmorMode = -1;
-int IsPunchdrunk = 0;
 int MapArmors[ARMORCOUNT] = {-1};
 int ClientTipboxModifier, ClientTipClassModifier;
 
@@ -537,11 +536,6 @@ script SAMSARA_CLIENT_DECORATE (int which, int a1, int a2) clientside
         Print(l:"ALREADYFLYING");
         break;
 
-      case 8:
-        if (IsServer) { terminate; }
-        IsPunchdrunk = a1;
-        break;
-
       case 9:
         x = GetActorX(0); y = GetActorY(0); z = GetActorZ(0);
         i = GetActorPitch(0);
@@ -720,9 +714,6 @@ script SAMSARA_GETSETTINGS (void) net
 
     HudMessage(s:"Party mode is ", s:cond(GetCVar("sams_peoplediewhentheyarekilled"), "\cdON.", "\caOFF."), s:"\c- (", d:GetCVar("sams_peoplediewhentheyarekilled"), s:")";
             HUDMSG_FADEOUT, 6767, CR_WHITE, 50.1, 176.0, 3.0, 1.0);
-
-    HudMessage(s:"Gentleman mode is ", s:cond(GetCVar("sams_punchdrunk"), "\cdON.", "\caOFF."), s:"\c- (", d:GetCVar("sams_punchdrunk"), s:")";
-            HUDMSG_FADEOUT, 6768, CR_WHITE, 50.1, 192.0, 3.0, 1.0);
 
     HudMessage(s:"Limitless health is ", s:cond(GetCVar("sams_nohealthcap"), "\cdON.", "\caOFF.");
             HUDMSG_FADEOUT, 6769, CR_WHITE, 50.1, 208.0, 3.0, 1.0);
@@ -2267,6 +2258,9 @@ Script "Samsara_KillCount" (int override)
 	if(!(ClassifyActor(0) & ACTOR_MONSTER))
 		terminate;
 		
+	if(SpawnForced("StrRainDrop",0,0,0,0))
+		ACS_NamedExecuteWithResult("Stronghold_KillCount",0,0,0,0);	
+		
 	int noblood = CheckFlag(0,"NOBLOOD");
 	int health;
 	int healthtokens = CheckInventory("ShrunkMasterHealthTokens");
@@ -2930,3 +2924,536 @@ script "Catacomb_HourglassCooldown" (void)
         restart;
     }
 } 
+
+Script "Samsara_ResetInventory" (void)
+{
+	int pln = PlayerNumber();
+	ClearInventory();
+	GiveInventory("Clip", 50);
+	TakeInventory("GotWeapon0", 999);
+	TakeInventory("GotWeapon1", 999);
+	TakeInventory("GotWeapon2", 999);
+	TakeInventory("GotWeapon3", 999);
+	TakeInventory("GotWeapon4", 999);
+	TakeInventory("GotWeapon5", 999);
+	TakeInventory("GotWeapon6", 999);
+	TakeInventory("GotWeapon7", 999);
+	switch(PlayerClass(pln))
+	{
+		case 0:
+			TakeInventory(" Chaingun ", 999);
+			TakeInventory(" Chainsaw ", 999);
+			TakeInventory(" Railgun ", 999);
+			
+			GiveInventory(" Pistol ", 1);
+			GiveInventory(" Fist ", 1);
+			GiveInventory("DoomguyClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(" Pistol ");
+			break;
+		case 1:
+			TakeInventory("Super Bootspork", 999);
+			TakeInventory("Rapid Zorcher", 999);
+			TakeInventory("Gigazorcher 2100", 999);
+			
+			GiveInventory("Mini-Zorcher", 1);
+			GiveInventory(" Bootspoon ", 1);
+			GiveInventory("ChexClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Mini-Zorcher");
+			break;
+		case 2:
+			TakeInventory("Gauntlets of the Necromancer", 999);
+			TakeInventory("Dragon Claw", 999);
+			TakeInventory("Grim Ballista", 999);
+			TakeInventory("PermaRemoteBomb", 999);
+			TakeInventory("PermaTimeBomb", 999);
+			
+			GiveInventory("Elven Wand", 1);
+			GiveInventory(" Staff ", 1);
+			GiveInventory("CorvusClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("PermaRemoteBomb", 1);
+			GiveInventory("PermaTimeBomb", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Elven Wand");
+			break;
+		case 3:
+			TakeInventory("BJSuperKnife", 999);
+			TakeInventory("  Chaingun  ", 999);
+			TakeInventory("Mauser Rifle", 999);
+			
+			GiveInventory("Luger", 1);
+			GiveInventory("Knife", 1);
+			GiveInventory("WolfenClass", 1);
+			GiveInventory("CanWolfMovement", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Luger");
+			break;
+		case 4:
+			TakeInventory("PortFlechette", 999);
+			TakeInventory("PortMysticAmbit", 999);
+			TakeInventory("Serpent Staff", 999);
+			TakeInventory("Bloodscourge", 999);
+			TakeInventory("Hammer of Retribution", 999);
+			TakeInventory("Frost Shards", 999);
+			TakeInventory("Timon's Axe", 999);
+				
+			GiveInventory("Sapphire Wand", 1);
+			GiveInventory("Mace of Contrition", 1);
+			GiveInventory("HexenClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Sapphire Wand");
+			break;
+		case 5:
+			TakeInventory("Pipebombs", 999);
+			TakeInventory("Chaingun Cannon", 999);
+			TakeInventory("Golden Desert Eagle", 999);
+			TakeInventory("DukePortJetpack", 999);
+			TakeInventory("DukePetjack", 999);
+			TakeInventory("DukePortNiVi", 999);
+			TakeInventory("DukeNightVision", 999);
+			TakeInventory("  Shotgun  ", 999);
+			TakeInventory("Explosive Shotgun", 999);
+			TakeInventory("Chaingun Cannon", 999);
+			TakeInventory("RPG", 999);
+			TakeInventory("Freezethrower", 999);
+			TakeInventory("Devastator", 999);
+			
+			GiveInventory("Glock 17", 1);
+			GiveInventory("Mighty Boot", 1);
+			GiveInventory("DukeClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Glock 17");
+			
+			if (!CheckInventory("DukeBallgag"))
+			{
+				LocalAmbientSound("duke/mpdeath",127);
+				GiveInventory("DukeTauntCooldown",5);
+				ACS_ExecuteAlways(205,0,0);
+			}
+			break;
+		case 6:
+			TakeInventory("KKV-7 SMG Flechette", 999);
+			TakeInventory("MA-75B Assault Rifle", 999);
+			TakeInventory("SPNKR-25 Auto Cannon", 999);
+			TakeInventory("CanDualPistols", 999);
+			TakeInventory("CanDualShotties", 999);
+			TakeInventory("WSTE-M5 Combat Shotgun", 999);
+			TakeInventory("Fusion Pistol", 999);
+			TakeInventory("SPNKR-XP SSM Launcher", 999);
+			TakeInventory("TOZT-7 Napalm Unit", 999);
+			TakeInventory("ONI-71 Wave Motion Cannon", 999);
+			TakeInventory("Alien Weapon", 999);
+			TakeInventory(" Alien Weapon ", 999);
+			TakeInventory(".44 Magnum Mega Class A1", 999);
+
+			GiveInventory("OverMax", 200);
+			GiveInventory("OverOverMax", 300);
+			GiveInventory(".44 Magnum Mega Class A1", 1);
+			GiveInventory("Steel Knuckles", 1);
+			GiveInventory("RocketAmmo", 10);
+			GiveInventory("Shell", 20);
+			GiveInventory("Cell", 50);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("MarathonClass", 1);
+			GiveInventory("MagnumBullet", 100);
+			GiveInventory("MagnumBulletRight", 100);
+			GiveInventory("RifleBullet", 500);
+			GiveInventory("SmgBullet", 500);
+			GiveInventory("FusionBullet", 500);
+			GiveInventory("GrenadeInClip", 500);
+			GiveInventory("WMCAmmo", 500);
+			GiveInventory("MortarAmmo", 500);
+			GiveInventory("NapalmInTank", 500);
+			GiveInventory("SpankerAmmo", 2);
+			GiveInventory("KnifeAmmo", 2);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(".44 Magnum Mega Class A1");
+			break;
+		case 7:
+			TakeInventory("Laser Cannon", 999);
+			TakeInventory("Nailgun", 999);
+			TakeInventory("QuadDamageItem", 999);
+			TakeInventory("Thunderbolt", 999);
+			TakeInventory("Rocket Powered Impaler", 999);
+			TakeInventory("Double Shotgun", 999);
+			TakeInventory("Grenade Launcher", 999);
+			TakeInventory("  Rocket Launcher  ", 999);
+			TakeInventory("Super Nailgun", 999);	
+			TakeInventory("Clip", 50);
+			
+			GiveInventory("QuakeClass", 1);
+			GiveInventory("Single Shotgun", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("Shell", 25);
+			GiveInventory("Axe", 1);
+			SetWeapon("Single Shotgun");
+			break;
+		case 8:
+			TakeInventory("HeatSeeker", 999);
+			TakeInventory("Double Pistols", 999);
+			TakeInventory("Bazooka", 999);
+			TakeInventory("MP40", 999);
+			TakeInventory("Firebomb", 999);
+			TakeInventory("DrunkMissiles", 999);
+			TakeInventory("FlameWall", 999);
+			TakeInventory("Split Missile", 999);
+			TakeInventory("Excalibat", 999);
+			TakeInventory("DarkStaff", 999);
+			TakeInventory("God Hand", 999);
+			TakeInventory("Doggie", 999);
+			TakeInventory("Clip", 50);
+			
+			GiveInventory("RottClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("RPistol", 1);
+			GiveInventory("RottKnife", 1);
+			GiveInventory("DisplayMenu", 1);
+			GiveInventory("PlayMusic", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("RPistol");
+			break;
+		case 9:
+			TakeInventory("BlakeRefill", 999);
+			TakeInventory("BlakeSuperAutoCharge", 999);
+			TakeInventory("Slow Fire Protector", 999);
+			TakeInventory("Rapid Assault Rifle", 999);
+			TakeInventory("Dual Neutron Disruptor", 999);
+			TakeInventory("Plasma Discharge Unit", 999);
+			TakeInventory("Gatling Fusion Devastator", 999);
+			TakeInventory("Anti-Plasma Cannon", 999);
+			TakeInventory("BlakeShield", 999);
+			TakeInventory("Advanced Auto Charge Pistol", 999);
+			
+			GiveInventory("BlakeClass", 1);
+			GiveInventory("Auto Charge Pistol", 1);
+			GiveInventory("CanWolfMovement", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Auto Charge Pistol");
+			break;
+		case 10:
+			TakeInventory("Dynamite", 999);
+			TakeInventory("Flaregun", 999);
+			TakeInventory("Sawedoff", 999);
+			TakeInventory("Tommygun", 999);
+			TakeInventory("NapalmLauncher", 999);
+			TakeInventory("TeslaCannon", 999);
+			TakeInventory("LifeLeech", 999);
+			TakeInventory("GunsAkimboP", 999);
+			TakeInventory("GunsAkimboItem", 999);
+			TakeInventory("VoodooDoll", 999);
+			TakeInventory("SprayCan", 999);
+			TakeInventory("Flaregun2", 999);
+			
+			GiveInventory("CalebClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("Pitchfork", 1);
+			GiveInventory("   Revolver   ", 1);
+			SetWeapon("   Revolver   ");
+			break;
+		case 11:
+			TakeInventory(" Sigil ", 999);
+			TakeInventory("StrifeSigilPiece", 999);
+			TakeInventory("StrifeBeaconItem5", 999);
+			TakeInventory("  Crossbow  ", 999);
+			TakeInventory("Mini Missile Launcher", 999);
+			TakeInventory("Assault Gun", 999);
+			TakeInventory(" Grenade Launcher ", 999);
+			TakeInventory("Flame Thrower", 999);
+			TakeInventory(" Mauler ", 999);
+			TakeInventory("  Sigil  ", 999);
+			
+			GiveInventory("OverMax", 200);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("StrifeClass", 1);
+			GiveInventory("Punch Dagger", 1);
+			GiveInventory("   Pistol   ", 1);
+			SetWeapon("   Pistol   ");	
+			break;
+		case 12:
+			TakeInventory(" Arachnicator ", 999);
+			TakeInventory("  Sonic Shock  ", 999);
+			TakeInventory("Pellet Bomb", 999);
+			TakeInventory("  Dart Cannon  ", 999);
+			TakeInventory("    Missile Launcher    ", 999);
+			TakeInventory("Napalm Charge", 999);
+			TakeInventory(" Plasma Ball ", 999);
+			TakeInventory(" Eradicator Enhancement Chip ", 999);
+			TakeInventory(" EvilBuddy ", 999);
+			
+			GiveInventory("EradClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("  Claw  ", 1);
+			GiveInventory("  Ripper Disc  ", 1);
+			SetWeapon("  Ripper Disc  ");
+			break;
+		case 13:
+			TakeInventory("M24CAW", 999);
+			TakeInventory("M343Vulcan", 999);
+			TakeInventory("AssaultShotgun", 999);
+			TakeInventory("AlienDualBlaster", 999);
+			TakeInventory("AlienPlasmaRifle", 999);
+			TakeInventory("AlienAssaultCannon", 999);
+			TakeInventory("AlienDisintegrator", 999);
+			TakeInventory("SuperVulcan", 999);
+
+			GiveInventory("Taser", 1);
+			GiveInventory("CanWolfMovement", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("C7Class", 1);
+			SetWeapon("Taser");
+			break;
+		case 14:
+			TakeInventory("DirtShark", 999);
+			TakeInventory("ACR Combat Laser", 999);
+			TakeInventory("ACR ADD-ON", 999);
+			TakeInventory("Cyclops Particle Accelerator", 999);
+			TakeInventory("RMR Grenade Launcher", 999);
+			TakeInventory("RMR Railgun", 999);
+			TakeInventory(" RMR Plasma Cannon ", 999);
+			TakeInventory("Subestron Arm", 999);
+			TakeInventory("Estron Ball", 999);
+			
+			GiveInventory(" Laser Pistol ", 1);
+			GiveInventory("RMRClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(" Laser Pistol ");
+			break;
+		case 15:
+			TakeInventory("Thermal Detonator", 999);
+			TakeInventory("Stormtrooper Rifle", 999);
+			TakeInventory("Fusion Cutter", 999);
+			TakeInventory("Imperial Repeater", 999);
+			TakeInventory("Mortar Gun", 999);
+			TakeInventory("Concussion Rifle", 999);
+			TakeInventory("Assault Cannon", 999);
+			TakeInventory("DFSuperCharge", 999);
+			TakeInventory("Stun Gauntlets", 999);
+			TakeInventory("Czerka Adventurer", 999);
+			
+			GiveInventory("  Fist_2x5  ", 1);
+			GiveInventory("Bryar Pistol", 1);
+			GiveInventory("KatarnClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);			
+			SetWeapon("Bryar Pistol");	
+			break;
+		case 16:
+			TakeInventory(" Toxic Mutant Gun ", 999);
+			TakeInventory(" Plasma Shotgun ", 999);
+			TakeInventory(" Aldus Flamethrower ", 999);
+			TakeInventory(" Fast Chaingun ", 999);
+			TakeInventory(" Fast Rocket Launcher ", 999);
+			TakeInventory(" Laser Cannon ", 999);
+			TakeInventory(" Super Plasma Annihilator ", 999);
+			TakeInventory(" Lizard Crossbow ", 999);
+			TakeInventory("PGSuperTazer", 999);
+			TakeInventory("PGUltraTazer", 999);
+			TakeInventory("IPOGGrenadeItem", 999);
+			TakeInventory("IPOGTimeBombItem", 999);
+			TakeInventory("IPOGProximityMineItem", 999);
+			TakeInventory("IPOGCloneItem", 999);
+			
+			GiveInventory("POGreedClass", 1);
+			GiveInventory(" Tazer ", 1);
+			GiveInventory(" Aldus Pistol ", 1);
+			GiveInventory("OverMax", 200);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(" Aldus Pistol ");
+			break;
+		case 17:
+			TakeInventory(" 18mm Auto ", 999);
+			TakeInventory(" Phase Rifle ", 999);
+			TakeInventory(" AM Blaster ", 999);
+			TakeInventory("Phase Repeater", 999);
+			TakeInventory(" Lock-on Cannon ", 999);
+			TakeInventory(" AM Cyclone ", 999);
+			TakeInventory(" Disruptor Zodiac ", 999);
+			TakeInventory(" Disruptor Plasmalance ", 999);
+			TakeInventory("DisruptorPSIEnergy", 999);
+			TakeInventory("DisruptorPSICooldown", 999);
+		
+			GiveInventory(" 18mm Semi ", 1);
+			GiveInventory("Disruptor Fist", 1);
+			GiveInventory("DisruptorClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("DisruptorDrain", 1);
+			GiveInventory("DisruptorHealPSI", 1);
+			GiveInventory("DisruptorPSIEnergy", 10);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(" 18mm Semi ");
+			break;
+		case 18:
+			TakeInventory("WTShieldTrigger", 999);
+			TakeInventory("WTShieldUsed", 999);
+			TakeInventory("WTWeaponActive", 999);
+			TakeInventory("WTShieldDisable", 999);
+			TakeInventory("WTShieldCounter", 999);
+			TakeInventory("WTSpellCounter", 999);
+			TakeInventory("WTCastingSpell", 999);
+			TakeInventory("WTHalberdHold", 999);
+			TakeInventory("WTBowUpgrade", 999);
+			TakeInventory("WTSwordUpgrade", 999);
+			TakeInventory("WTFistActive", 999);
+			TakeInventory("WTFistAttack", 999);
+			
+			GiveInventory("Bow and Arrows", 1);
+			GiveInventory("Witchaven_Fists", 1);
+			GiveInventory("WitchavenClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("GrondovalStarterArmor", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Bow and Arrows");
+			break;
+		case 19:
+			TakeInventory("HalfLifeMusicPlayingToken", 1);
+			TakeInventory("HalfLifeOpposingForceSet", 1);
+			TakeInventory("HLHEVIsTalking", 1);
+			TakeInventory("HLHEVPickupID", 1);
+			TakeInventory("HLHEVDamageType", 1);
+			TakeInventory("HLSpeedTokens", 1);
+			
+			GiveInventory("9mm Pistol", 1);
+			GiveInventory("Crowbar", 1);
+			GiveInventory("HalfLifeClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("Clip", 30);
+			GiveInventory("Shell", 15);
+			GiveInventory("RocketAmmo", 5);	
+			GiveInventory("Flashlightammo", 4200);
+			SetWeapon("9mm Pistol");
+			break;
+		case 20:
+			GiveInventory("SWKatana", 1);
+			GiveInventory("SWFists", 1);
+			GiveInventory("SWShuriken", 1);
+			GiveInventory("GuardMode1", 1);
+			GiveInventory("SWClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("SWKatana");
+			break;
+		case 21:
+			GiveInventory("CMLaserPistol", 1);
+			GiveInventory("MagicFist", 1);
+			GiveInventory("CMClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("usingmagicnull", 1);
+			GiveInventory("OverMax", 200);
+			GiveInventory("MagicMode0", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("CMLaserPistol");
+			break;
+		case 22:
+			GiveInventory("PSMagnum", 1);
+			GiveInventory("PSMachete", 1);
+			GiveInventory("JonClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("PSMagnum");
+			break;
+		case 23:
+			GiveInventory(" .454 Casull Pistol ", 1);
+			GiveInventory(" RR Crowbar ", 1);
+			GiveInventory("RRClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(" .454 Casull Pistol ");
+			break;
+		case 24:
+			TakeInventory("Q2Silencer", 999);
+			TakeInventory("Q2EnvironmentSuit", 999);
+			TakeInventory("Q2Invulnerability", 999);
+			TakeInventory("Q2QuadDamage", 999);
+			TakeInventory("Q2DualFireDamage", 999);
+			TakeInventory("Q2DoubleDamage", 999);
+			
+			GiveInventory("Q2Blaster", 1);
+			GiveInventory("BittermanClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Q2Blaster");
+			break;
+		case 25:
+			TakeInventory("Hexen2Level", 0x7FFFFFFF);
+			TakeInventory("Hexen2Experience", 0x7FFFFFFF);
+			TakeInventory("Hexen2Intelligence", 0x7FFFFFFF);
+			TakeInventory("Hexen2Wisdom", 0x7FFFFFFF);
+			TakeInventory("Hexen2Dexterity", 0x7FFFFFFF);
+			TakeInventory("Hexen2Strength", 0x7FFFFFFF);
+			TakeInventory("Hexen2BlueManaAdd", 0x7FFFFFFF);
+			TakeInventory("Hexen2GreenManaAdd", 0x7FFFFFFF);
+			TakeInventory("Hexen2HealthAdd", 0x7FFFFFFF);
+			//TakeInventory("Hexen2Started", 1);
+			
+			GiveInventory("Hexen2BloodFire", 1);
+			GiveInventory("Hexen2Sickle", 1);
+			GiveInventory("Hexen2Class", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Q2Blaster");
+			break;
+		case 26:
+			GiveInventory("BondClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("Goldeneye_PP7Silenced", 1);
+			GiveInventory("Goldeneye_Slapper", 1);
+			GiveInventory("Goldeneye_PP7Magazine", 7);
+			GiveInventory("Goldeneye_PP7DualMagazine" ,7);
+			GiveInventory("Goldeneye_KF7Magazine", 30);
+			GiveInventory("Goldeneye_KF7DualMagazine", 30);
+			GiveInventory("Goldeneye_AutoShotgunMagazine", 5);
+			GiveInventory("Goldeneye_AutoShotgunDualMagazine", 5);
+			GiveInventory("Goldeneye_AR33Magazine", 30);
+			GiveInventory("Goldeneye_AR33DualMagazine", 30);
+			GiveInventory("Goldeneye_RocketLauncherMagazine", 1);
+			GiveInventory("Goldeneye_RocketLauncherDualMagazine", 1);
+			GiveInventory("Goldeneye_RCP90Magazine", 80);
+			GiveInventory("Goldeneye_RCP90DualMagazine", 80);
+			GiveInventory("Goldeneye_GoldenGunMagazine", 1);
+			GiveInventory("Goldeneye_GoldenGunDualMagazine", 1);
+			GiveInventory("Goldeneye_SniperMagazine", 8);
+			GiveInventory("Goldeneye_SniperDualMagazine", 8);
+			GiveInventory("Goldeneye_D5KMagazine", 80);
+			GiveInventory("Goldeneye_D5KDualMagazine", 80);
+			GiveInventory("Goldeneye_ThrowingKnivesMagazine", 1);
+			GiveInventory("Goldeneye_ThrowingKnivesDualMagazine", 1);
+			SetWeapon("Goldeneye_PP7Silenced");
+			break;
+		case 27:
+			TakeInventory("Catacomb_SmallHealthPotion", 999);
+			TakeInventory("Catacomb_LargeHealthPotion", 999);
+			TakeInventory("Catacomb_Waves", 999);
+			TakeInventory("Catacomb_XTerminators", 999);
+			TakeInventory("Catacomb_Bursts", 999);
+			TakeInventory("Catacomb_Zappers", 999);
+			TakeInventory("Catacomb_Nukes", 999);
+			TakeInventory("Catacomb_Bolts", 999);
+			TakeInventory("Catacomb_Hourglass", 999);
+			TakeInventory("Catacomb_HourglassCooldown", 999);	
+		
+			GiveInventory("Catacomb3D_MagicMissile", 1);
+			GiveInventory("CatacombClass", 1);
+			GiveInventory("CanWolfMovement", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Catacomb3D_MagicMissile");
+			break;
+	}
+}

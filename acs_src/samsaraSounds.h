@@ -12,6 +12,9 @@ int ClassPickupSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"doomguy/weaponget",
 			"doomguy/weaponget",
 			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
+			"doomguy/weaponget",
 		},
 		{
 			"doom64guy/weaponget",
@@ -490,10 +493,8 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"doomguy/weaponget",
 			"doomguy/weaponget",
 			"doomguy/weaponget",
-			"doomguy/weaponget",
 		},
 		{
-			"doom64guy/itemget",
 			"doom64guy/itemget",
 			"doom64guy/itemget",
 			"doom64guy/itemget",
@@ -515,10 +516,8 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
         "chex/weaponget",
         "chex/weaponget",
         "chex/weaponget",
-        "chex/weaponget",
     }},
     {{
-        "heretic/ammoget",
         "heretic/ammoget",
         "heretic/ammoget",
         "heretic/ammoget",
@@ -540,7 +539,6 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"wolfen/itemget",
 			"wolfen/itemget",
 			"wolfen/itemget",
-			"wolfen/itemget",
 		},
 		{
 			"wolfen/itemget",
@@ -552,10 +550,8 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"wolfen/itemget",
 			"wolfen/itemget",
 			"wolfen/itemget",
-			"wolfen/itemget",
 		},
 		{
-			"Totenkopf/getweapon",
 			"Totenkopf/getweapon",
 			"Totenkopf/getweapon",
 			"Totenkopf/getweapon",
@@ -578,7 +574,6 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"hexen/itemget",
 			"hexen/itemget",
 			"hexen/itemget",
-			"hexen/itemget",
 		},
 		{
 			"hexen/itemget",
@@ -590,10 +585,8 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"hexen/itemget",
 			"hexen/itemget",
 			"hexen/itemget",
-			"hexen/itemget",
 		},
 		{
-			"hexen/itemget",
 			"hexen/itemget",
 			"hexen/itemget",
 			"hexen/itemget",
@@ -616,7 +609,6 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"duke/itemget",
 			"duke/itemget",
 			"duke/itemget",
-			"duke/itemget",
 		},
 		{
 			"duke/woohoo",
@@ -628,7 +620,6 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"duke/woohoo",
 			"duke/woohoo",
 			"duke/woohoo",
-			"duke/itemget",
 		},
 	},
     {{
@@ -641,7 +632,6 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
         "marathon/itemget",
         "marathon/itemget",
         "marathon/bigitemget",
-        "marathon/itemget",
     }},
     {{
         "quakeweps/itemget",
@@ -653,7 +643,6 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
         "quakeweps/itemget",
         "quakeweps/itemget",
         "quakeweps/quadget",
-        "quakeweps/itemget",
     }},
 	{
 		{
@@ -666,7 +655,6 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"gen/pickup",
 			"gen/pickup",
 			"gen/pickup",
-			"gen/bpicku",
 		},
 		{
 			"gen/pickup",	
@@ -678,7 +666,6 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"gen/pickup",
 			"gen/pickup",
 			"gen/pickup",
-			"gen/bpicku",
 		},
 		{
 			"gen/pickup",	
@@ -690,7 +677,6 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"gen/pickup",
 			"gen/pickup",
 			"gen/pickup",
-			"gen/bpicku",
 		},
 		{
 			"gen/pickup",	
@@ -702,8 +688,18 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"gen/pickup",
 			"gen/pickup",
 			"gen/pickup",
-			"gen/bpicku",
 		},
+		{
+			"gen/pickup",	
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+		}
 	},
 	{
 		{	// Blake pickup sounds - Added this.
@@ -750,7 +746,6 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
         "strife/ammoget", // Rocket Launcher
         "strife/ammoget", // Plasma Rifle
         "strife/ammoget", // BFG9000
-        "strife/itemget", // Punchdrunk Chainsaw
     }},
 /*    {
         "doom64guy/itemget",

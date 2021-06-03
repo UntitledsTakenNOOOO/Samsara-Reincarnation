@@ -5,9 +5,6 @@ function int GiveClassWeapon(int class, int slot, int ammoMode)
 
 function int _giveclassweapon(int class, int slot, int ammoMode, int dropped, int nopd)
 {
-    int pdSaws     = (IsPunchdrunk & 4) || (IsPunchdrunk & 1);
-    if (pdSaws && slot == SLOT_CHAINSAW) { slot = SLOT_PUNCHDRUNKSAW; }
-
     int weapon = ClassWeapons[class][slot][S_WEP];
     int ammo1  = ClassWeapons[class][slot][S_AMMO1];
     int ammo2  = ClassWeapons[class][slot][S_AMMO2];
@@ -80,7 +77,6 @@ function int _giveclassweapon(int class, int slot, int ammoMode, int dropped, in
             break;
         }
     }
-
     return !!success;
 }
 
@@ -163,7 +159,6 @@ function void ApplyLMS(void)
         ACS_ExecuteWithResult(SAMSARA_DECORATE, 20, ARMOR_BLUE, -100 * lmsLevel);
     }
 	//ACS_ExecuteAlways(678,0,0,0,0);
-	//HandlePunchDrunk(respawning);
 } 
 
 function int samsaraClassNum(void)
@@ -188,7 +183,7 @@ function int slotToItem(int i)
 function int itemToSlot(int i)
 {
     i--;
-    if (i < 0 || i > 6) { return -1; }
+    if (i < 0 || i > 11) { return -1; }
     return ItoSArray[i];
 }
 
@@ -215,16 +210,7 @@ function int _giveunique(int cnum, int unum, int ignoreinv, int nopd)
     int success; 
     int i, j, tmpcount;
 
-    int punchdrunk = IsPunchdrunk & 1;
-    int pdUniques  = (IsPunchdrunk & 2) || punchdrunk;
-
     if (cnum == -1) { return -1; }
-
-    if (pdUniques && !nopd)
-    {
-        GiveInventory(PunchdrunkItems[cnum][1], 1);
-        return 1;
-    }
 
     if (unum == -1)
     {
@@ -432,39 +418,6 @@ function int HandleChainsawSpawn(int respawning)
     if (cs == 2) { ammomode = 1; }
 
     GiveClassWeapon(classnum, SLOT_CHAINSAW, ammomode);
-    return 1;
-}
-
-function int HandlePunchDrunk(int respawning)
-{
-    int cs = GetCVar("sams_punchdrunk");
-    int classnum = samsaraClassNum();
-    int i;
-
-    //delay(10);
-
-    if (cs <= 0) { return 0; }
-
-    for (i = 0; i < SLOTCOUNT; i++)
-    {
-        if (ClassWeapons[classnum][i][S_WEP] == ClassWeapons[classnum][SLOT_FIST][S_WEP]
-         || ClassWeapons[classnum][i][S_WEP] == ClassWeapons[classnum][SLOT_PUNCHDRUNKSAW][S_WEP]) { continue; }
-        if (i == SLOT_PISTOL)
-        {
-            if (isCoop()) { continue; }
-            else
-            {
-                GiveInventory(ClassWeapons[classnum][i][S_WEP], 1);
-            }
-        }
-
-        TakeInventory(ClassWeapons[classnum][i][S_WEP], 0x7FFFFFFF);
-        TakeInventory(ClassWeapons[classnum][i][S_AMMO1], 0x7FFFFFFF);
-        TakeInventory(ClassWeapons[classnum][i][S_AMMO2], 0x7FFFFFFF);
-    }
-
-    GiveClassWeapon(classnum, 0, 1);
-    GiveInventory(PunchDrunkItems[classnum][0], 1);
     return 1;
 }
 

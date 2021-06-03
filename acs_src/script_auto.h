@@ -348,23 +348,6 @@ script SAMSARA_OPEN open
         }
         */
 
-        opd = pd;
-        pd = !!GetCVar("sams_punchdrunk");
-
-        opdu = pdu;
-        pdu = !!GetCVar("sams_punchdrunkuniques");
-
-        opds = pds;
-        pds = !!GetCVar("sams_punchdrunksaws");
-
-        if (pd != opd || opdu != pdu || opds != pds || Timer() % 18 == 0)
-        {
-            IsPunchdrunk  = pd  << 0;
-            IsPunchdrunk |= pdu << 1;
-            IsPunchdrunk |= pds << 2;
-            ACS_ExecuteAlways(SAMSARA_CLIENT_DECORATE, 0, 8, IsPunchdrunk);
-        }
-        
         Delay(1);
     }
 }
@@ -431,7 +414,6 @@ script SAMSARA_SPAWN (int respawning)
 
     HandleChainsawSpawn(respawning);
     HandleUniqueSpawn(respawning);
-    HandlePunchdrunk(respawning);
     HandleInstagib(respawning);
 
     ACS_ExecuteAlways(SAMSARA_SCHEDULED, 0, respawning,0,0);
@@ -501,7 +483,7 @@ script SAMSARA_SPAWN (int respawning)
 		if(CheckInventory("ShrunkPlayer"))
 			GiveInventory("StepDeathLogic1",1);
         
-        if (GetUserCvar(pln,"sams_cl_ballgag")) 
+        if (GetUserCvar(pln,"sams_cl_ballgag") || CheckInventory("IsMorphed")) 
 		{ 
 			switch (samsaraClassNum())
 			{
@@ -553,6 +535,8 @@ script SAMSARA_SPAWN (int respawning)
 		{
 			case CLASS_DOOM:
 				doommode = GetUserCvar(pln,"sams_cl_doom64");
+				TakeInventory("SamsaraModeCounter",999);
+				GiveInventory("SamsaraModeCounter",doommode);
 				if(doommode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
 				{
 					TakeInventory("Samsara_ModeWeaponChange",1);
@@ -561,6 +545,11 @@ script SAMSARA_SPAWN (int respawning)
 						GiveInventory("Doom64GuyScalar",1);
 						if(CheckInventory("Doom64_IHaveUnmaker") && (!CheckInventory("Unmaker"))) 
 							GiveInventory("Unmaker", 1);
+							
+						TakeInventory(" Minigun ", 1);
+						TakeInventory(" GrenadeLauncher ", 1);
+						TakeInventory(" RailGun ", 1);
+						TakeInventory(" BFG10K ", 1);
 							
 						GiveInventory("Doom64Mode", 1); 
 						if(!CheckInventory("Doom64MonsterSet")) 
@@ -575,6 +564,31 @@ script SAMSARA_SPAWN (int respawning)
 					}
 					else 
 					{ 
+						int skillmultiplier = (GameSkill() == 0 || GameSkill() == 4);
+						if(CheckInventory("DGHasMinigun"))
+						{
+							GiveInventory(" Minigun ", 1);
+							TakeInventory("Clip", 20 * (1 + skillmultiplier));
+						}
+							
+						if(CheckInventory("DGHasGrenadeLauncher"))
+						{
+							GiveInventory(" GrenadeLauncher ", 1);
+							TakeInventory("RocketAmmo", 2 * (1 + skillmultiplier));
+						}
+							
+						if(CheckInventory("DGHasRailGun"))
+						{
+							GiveInventory(" RailGun ", 1);
+							TakeInventory("Cell", 40 * (1 + skillmultiplier));
+						}
+							
+						if(CheckInventory("DGHasBFG10K"))
+						{
+							GiveInventory(" BFG10K ", 1);
+							TakeInventory("Cell", 40 * (1 + skillmultiplier));
+						}
+							
 						GiveInventory("DoomGuyScalar",1);
 						SetActorProperty(0,APROP_SoundClass,"DoomGuy");
 						TakeInventory("Doom64Mode", 0x7FFFFFFF); 
@@ -589,6 +603,8 @@ script SAMSARA_SPAWN (int respawning)
 				wolfmode = GetUserCvar(pln,"sams_cl_wolfmode");
 				if(wolfmode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
 				{
+					TakeInventory("SamsaraModeCounter",999);
+					GiveInventory("SamsaraModeCounter",wolfmode);
 					TakeInventory("Samsara_ModeWeaponChange",1);
 					if (wolfmode > 0) 
 					{ 
@@ -689,6 +705,8 @@ script SAMSARA_SPAWN (int respawning)
 				break;
 			case CLASS_DUKE:
 				dukemode = GetUserCvar(pln,"sams_cl_dkclab");
+				TakeInventory("SamsaraModeCounter",999);
+				GiveInventory("SamsaraModeCounter",dukemode);
 				if(dukemode != previousvalue)
 				{
 					if(dukemode) 
@@ -762,6 +780,8 @@ script SAMSARA_SPAWN (int respawning)
 				break;
 			case CLASS_HALFLIFE:
 				halflifemode = GetUserCvar(pln,"sams_cl_shephardmode");
+				TakeInventory("SamsaraModeCounter",999);
+				GiveInventory("SamsaraModeCounter",halflifemode);
 				if(halflifemode != previousvalue)
 				{
 					if(halflifemode) 
@@ -1029,7 +1049,7 @@ script SAMSARA_SPAWN (int respawning)
             { 
                 i = JumpZFromHeight(41 + GetCVar("sams_jumpmod"), GetActorProperty(0, APROP_Gravity)); 
             }
-        else if(CheckWeapon("RedneckMotorcycle") || CheckInventory("ShrunkPlayer"))
+        else if(CheckWeapon("RedneckMotorcycle") || CheckInventory("ShrunkPlayer") || CheckInventory("IsMorphed"))
 			{
 				i = 0;
 			}
@@ -1226,11 +1246,11 @@ script SAMSARA_WOLFMOVE (void)
             
             angle   = GetActorAngle(0);
             
-            forwardx = cos(angle) * forward;
-            forwardy = sin(angle) * forward;
+            forwardx = cos(angle) * (forward / ((CheckInventory("IsMorphed") * 2) + 1));
+            forwardy = sin(angle) * (forward / ((CheckInventory("IsMorphed") * 2) + 1));
             
-            sidex = cos(angle-0.25) * side;
-            sidey = sin(angle-0.25) * side;
+            sidex = cos(angle-0.25) * (side / ((CheckInventory("IsMorphed") * 2) + 1));
+            sidey = sin(angle-0.25) * (side / ((CheckInventory("IsMorphed") * 2) + 1));
             
             velx = forwardx + sidex;
             vely = forwardy + sidey;

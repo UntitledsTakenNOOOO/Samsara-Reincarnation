@@ -29,7 +29,6 @@
 #define SLOT_PLASMARIFLE    7
 #define SLOT_BFG9000        8
 #define SLOT_BFG            8
-#define SLOT_PUNCHDRUNKSAW  9
 
 int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] = 
 {
@@ -144,7 +143,10 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Rocket Launcher",                 "RocketAmmo",   "",             "", ""},
         {"Plasma Rifle",                    "Cell",         "",             "", ""},
         {"B.F.G. 9000",                     "Cell",         "",             "", ""},
-        {" Chainsaw ",                      "",             "",             "", ""},
+		{" Minigun ",                     	"Clip",         "",             "", ""},
+		{" GrenadeLauncher ",               "RocketAmmo",   "",             "", ""},
+		{" Railgun ",               		"Cell",   		"",             "", ""},
+		{" BFG10K ",               			"Cell",   		"",             "", ""},
     },
 
     {   // Chexguy
@@ -157,7 +159,6 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Zorch Propulsor",                 "RocketAmmo",   "",             "", ""},
         {"Phasing Zorcher",                 "Cell",         "",             "", ""},
         {"LAZ Device",                      "Cell",         "",             "", ""},
-        {"Super Bootspork",                 "",             "",             "", ""},
     },
 
     {   // Corvus
@@ -170,7 +171,6 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Phoenix Rod",                     "RocketAmmo",   "",             "", ""},
         {"Hellstaff",                       "Cell",         "",             "", ""},
         {"DSparilStaff",                    "",             "",             "", ""},
-        {"Gauntlets of the Necromancer",    "",             "",             "", ""},
     },
 
     {   // B.J.
@@ -183,7 +183,6 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {" Rocket Launcher ",               "RocketAmmo",   "",             "", ""},
         {" Flamethrower ",                  "Cell",         "",             "", ""},
         {"Spear of Destiny",                "Cell",         "",             "", ""},
-        {"BJUberKnife",                     "",             "",             "", ""},
     },
 
     {   // Parias
@@ -196,7 +195,6 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Hammer of Retribution",           "Cell",         "",             "", ""},
         {"Firestorm",                       "Cell",         "",             "", ""},
         {"Wraithverge",                     "Cell",         "",             "", ""},
-        {"PortFlechette",                   "",             "",             "", ""},
     },
 
     {   // Duke
@@ -209,7 +207,6 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"RPG",                             "RocketAmmo",   "",             "", ""},
         {"Freezethrower",                   "Cell",         "",             "", ""},
         {"Devastator",                      "Cell",         "",             "", ""},
-        {"CalmYoLegsDuke",                  "",             "",             "", ""},
     },
 
     {   // Security Officer
@@ -222,7 +219,6 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"SPNKR-XP SSM Launcher",           "SpankerAmmo",  "RocketAmmo",   "",                 ""},
         {"TOZT-7 Napalm Unit",              "NapalmInTank", "Cell",         "",                 ""},
         {"ONI-71 Wave Motion Cannon",       "Cell",         "RocketAmmo",   "",                 ""},
-        {"Tech.50 Pacifier",                "",             "",             "",                 ""},
     },
 	
     {   // Ranger
@@ -235,7 +231,6 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"  Rocket Launcher  ",             "RocketAmmo",   "",             "",			  ""},
         {"Super Nailgun",                   "Clip",         "",             "", 		  ""},
         {"Thunderbolt",                     "Cell",         "",             "ForceCheck", ""},
-        {"Gauntlet",                        "",             "",             "", 		  ""},
     },
     {   // I.P. Freely
         {"RottKnife",                       "",             "",             "", ""},
@@ -280,7 +275,6 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {" Grenade Launcher ", 				"RocketAmmo",   "",             "", ""}, // Rocket Launcher
         {"Flame Thrower",                   "Cell",         "",             "", ""}, // Plasma Rifle
         {" Mauler ",        				"Cell",         "",             "", ""}, // BFG9000
-        {"Upgrades",                        "",             "",             "", ""}, // Punchdrunk Chainsaw
     },
 /*    {   // Doom 64 Guy
         {"  Fist  ",                        "",             "",             "", ""},
