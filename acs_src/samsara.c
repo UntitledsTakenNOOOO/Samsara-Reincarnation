@@ -148,7 +148,7 @@ script SAMSARA_DECORATE (int choice, int arg1, int arg2)
         {
             SetHudSize(400, 300, 0);
             Hudmessage(l:"DUKEDEADMESSAGE";
-            HUDMSG_PLAIN,1,CR_LIGHTBLUE,200.4,9.1,1.75);
+            HUDMSG_PLAIN,1024,CR_LIGHTBLUE,200.4,9.1,1.75);
             delay(15);
 
             if (!CheckInventory("DukeBallgag"))
@@ -366,7 +366,7 @@ script SAMSARA_DECORATE (int choice, int arg1, int arg2)
         if (GameType () != GAME_SINGLE_PLAYER)
         {
             SetHudSize(400, 300, 0);
-            Hudmessage(s:"Mash activator key to kill again!"; HUDMSG_PLAIN,1,CR_WHITE,200.4,9.1,1.75);
+            Hudmessage(s:"Mash activator key to kill again!"; HUDMSG_PLAIN,1024,CR_WHITE,200.4,9.1,1.75);
             delay(15);
 
             if (!CheckInventory("LeonardBallgag"))
@@ -503,7 +503,7 @@ script SAMSARA_CLIENT_DECORATE (int which, int a1, int a2) clientside
       case 3:
         SetHudSize(400, 300, 0);
         Hudmessage(l:"FOOTENGAGED";
-        HUDMSG_PLAIN,1,CR_LIGHTBLUE,200.4,9.1,1.0);
+        HUDMSG_PLAIN,1024,CR_LIGHTBLUE,200.4,9.1,1.0);
         break;
 
       case 4:
@@ -2258,7 +2258,7 @@ Script "Samsara_KillCount" (int override)
 	if(!(ClassifyActor(0) & ACTOR_MONSTER))
 		terminate;
 		
-	if(SpawnForced("StrRainDrop",0,0,0,0))
+	if(SpawnForced("StrongHoldLoaded",0,0,0,0))
 		ACS_NamedExecuteWithResult("Stronghold_KillCount",0,0,0,0);	
 		
 	int noblood = CheckFlag(0,"NOBLOOD");
