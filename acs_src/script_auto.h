@@ -358,6 +358,9 @@ script SAMSARA_RETURN return { UnloadingNow = 0; ACS_ExecuteWithResult(SAMSARA_S
 
 script SAMSARA_SPAWN (int respawning)
 {
+	if(GameType() == GAME_TITLE_MAP)
+		terminate;
+		
     int pln = PlayerNumber();
     int pcount, opcount;
     int startTime = Timer();
