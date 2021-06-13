@@ -808,6 +808,16 @@ script SAMSARA_SPAWN (int respawning)
 				}
 				break;
 				
+			case CLASS_RR:
+				if(CheckInventory(" RR Hunting Crossbow ") && CheckInventory(" Dyn 'O' Mites ") && CheckInventory("RocketAmmo")) { if(!CheckInventory(" RR Dynomite Crossbow ")) GiveInventory(" RR Dynomite Crossbow ", 1); }
+				else
+					TakeInventory(" RR Dynomite Crossbow ", 1);
+					
+				if(CheckInventory(" RR Hunting Crossbow ") && CheckInventory("ChickenAmmo")) { if(!CheckInventory(" Chicken Crossbow ")) GiveInventory(" Chicken Crossbow ", 1); }
+				else
+					TakeInventory(" Chicken Crossbow ", 1);
+				break;
+				
 			case CLASS_CATACOMB:
 				if(CheckInventory("Catacomb_Waves")) { if(!CheckInventory("Catacomb_WavesQuickSpell")) GiveInventory("Catacomb_WavesQuickSpell",1); }
 				else { TakeInventory("Catacomb_WavesQuickSpell",1); }				

@@ -2412,7 +2412,7 @@ Script 2689 (int mode)
 			else if(a == 1)
 			{
 				SetResultValue(0);
-				b = random(0, 10);
+				b = random(0, 11);
 				if(b < 5)
 				{
 					SpawnSpotFacing("RedneckRampage_Chicken", 0, 0);
@@ -2426,6 +2426,11 @@ Script 2689 (int mode)
 				else if(b <= 10)
 				{
 					SpawnSpotFacing("RedneckRampage_Cow", 0, 0);
+					break;
+				}
+				else
+				{
+					SpawnSpotFacing("RRBanjoConcert", 0, 0);
 					break;
 				}	
 				terminate;

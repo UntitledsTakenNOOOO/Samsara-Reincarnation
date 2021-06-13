@@ -3469,7 +3469,7 @@ int ClassUniqueMessages[CLASSCOUNT][MAXMODES][MSGCOUNT] =
 	{{ "Heart or Seeker Missiles... damn fortune cookies!","Who want-a some Wang?","Two Wangs are better than one.","My heat seeking drivers won't install. Damn Windows updates!","There's no place like home!","What is in these hearts!?","Must have a lot of cholestoral to produce a whole person.","","","",}},	
 	{{ "You found the Icon of Mann-ra!","Now you play the magic lottery.","This is what makes your character shine.","Because your guns weren't much to write home about. What about magic?","You expect me to pull a rabbit out of my hat?","For my next trick, I'll saw you in half.","That's it, I found the darklight. Game's over.","","","",}},	
 	{{ "You found the Ring of Ra!","I cast bouncy fiyabawls!","Jazz hands!","It's one of those light up rings in happy meals!","Hope it hits something.","No no! You're supposed to punch people with it!","You have become a Yellow Lantern.","","","",}},	
-	{{ "Huntin' Scope Rifle... or Chicken Crossbow?","I'm goin' redneck deer huntin'!","Bubba! Where'd you put the damn deer caller?","Aw shucks! I forgot to oil the bolt again!","Look out! It's the crazy chicken!","See? Chickens ain't no flightless birds, moran!","PETA will never take me alive! AHAHAHAHAHA!","Redneck Anti-air defense!","","",}},	
+	{{ "Huntin' Scope Rifle... or Chicken Crossbow Ammo?","I'm goin' redneck deer huntin'!","Bubba! Where'd you put the damn deer caller?","Aw shucks! I forgot to oil the bolt again!","Look out! It's the crazy chicken!","See? Chickens ain't no flightless birds, moran!","PETA will never take me alive! AHAHAHAHAHA!","Redneck Anti-air defense!","","",}},	
 	{{
 		"Grenade Launcher, Ion Ripper, or ETF Rifle",
 		"Isn't this the Razorjack?",
