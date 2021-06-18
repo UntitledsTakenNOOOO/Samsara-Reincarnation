@@ -679,6 +679,8 @@ script SAMSARA_SPAWN (int respawning)
 				hexmode = GetUserCvar(pln,"sams_cl_hexclass");
 				if(hexmode != previousvalue)
 				{
+					TakeInventory("SamsaraModeCounter",999);
+					GiveInventory("SamsaraModeCounter",hexmode);
 					GiveInventory("SamsaraAllySwitchCaller",1);
 					if (hexmode > 0) 
 					{ 
@@ -708,10 +710,10 @@ script SAMSARA_SPAWN (int respawning)
 				break;
 			case CLASS_DUKE:
 				dukemode = GetUserCvar(pln,"sams_cl_dkclab");
-				TakeInventory("SamsaraModeCounter",999);
-				GiveInventory("SamsaraModeCounter",dukemode);
 				if(dukemode != previousvalue)
 				{
+					TakeInventory("SamsaraModeCounter",999);
+					GiveInventory("SamsaraModeCounter",dukemode);
 					if(dukemode) 
 					{ 
 						if(!CheckInventory("DukeLabMonsterSet")) 
@@ -734,23 +736,6 @@ script SAMSARA_SPAWN (int respawning)
 					previousvalue = dukemode;
 				}
 				break;
-			case CLASS_BLAKE:
-				blakemode = GetUserCvar(pln,"sams_cl_bsaog");
-				if(blakemode != previousvalue)
-				{
-					if(blakemode) 
-					{ 
-						GiveInventory("BlakeAOGToken", 1); 
-						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
-					}
-					else 
-					{ 
-						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln); 
-						TakeInventory("BlakeAOGToken", 0x7FFFFFFF); 
-					}
-					previousvalue = blakemode;
-				}
-				break;				
 			case CLASS_ROTT:
 				rottmode = GetUserCvar(pln,"sams_cl_rottmode");
 				//only run these actions if the value changes
@@ -781,12 +766,31 @@ script SAMSARA_SPAWN (int respawning)
 					previousvalue = rottmode;
 				}
 				break;
+			case CLASS_BLAKE:
+				blakemode = GetUserCvar(pln,"sams_cl_bsaog");
+				if(blakemode != previousvalue)
+				{
+					TakeInventory("SamsaraModeCounter",999);
+					GiveInventory("SamsaraModeCounter",blakemode);
+					if(blakemode) 
+					{ 
+						GiveInventory("BlakeAOGToken", 1); 
+						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
+					}
+					else 
+					{ 
+						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln); 
+						TakeInventory("BlakeAOGToken", 0x7FFFFFFF); 
+					}
+					previousvalue = blakemode;
+				}
+				break;				
 			case CLASS_HALFLIFE:
 				halflifemode = GetUserCvar(pln,"sams_cl_shephardmode");
-				TakeInventory("SamsaraModeCounter",999);
-				GiveInventory("SamsaraModeCounter",halflifemode);
 				if(halflifemode != previousvalue)
 				{
+					TakeInventory("SamsaraModeCounter",999);
+					GiveInventory("SamsaraModeCounter",halflifemode);
 					if(halflifemode) 
 					{ 
 						GiveInventory("HalfLifeOpposingForce", 1); 

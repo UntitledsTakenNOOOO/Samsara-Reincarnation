@@ -646,7 +646,28 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
     },
 	{
         {" Bootspoon ", "Super Bootspork", "Mini-Zorcher", "Large Zorcher", "Super Large Zorcher", "Rapid Zorcher", "Zorch Propulsor", "Phasing Zorcher", "LAZ Device" },
-	}
+	},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{
+		{ "SWKatana", "SWSticky", "SWShuriken", "SWRiotgun", "SWGrenade", "SWUzi", "SWMissileLauncher", " SWRailgun ", "SWGuardianHead", "", "", "", "", "SWRipperHeart" },
+	},
 };
 /*
     {   // Corvus
