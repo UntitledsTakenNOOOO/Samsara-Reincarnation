@@ -384,8 +384,8 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
 	    {"SWFists",                    "",             "",            "", ""},
         {"SWSticky",                   "RocketAmmo",   "",            "", ""},
         {"SWShuriken",                 "",             "",            "", ""},
-        {"SWGrenade",                  "Shell",   "",            "", ""},
-        {"SWRiotgun",                  "Shell",        "",            "", ""},
+        {"SWRiotgun",                  "Shell",   "",            "", ""},
+        {"SWGrenade",                  "RocketAmmo",        "",            "", ""},
         {"SWUzi",                      "Clip",         "",            "", ""},
         {"SWMissileLauncher",          "RocketAmmo",   "",            "", ""},
         {" SWRailgun ",                "Cell",         "",            "", ""},
@@ -637,3 +637,339 @@ int SamsaraRGPProperties[CLASSCOUNT][SAMSARA_RGP_PAGES][SAMSARA_RGP_PROPERTIES] 
 	{{0,	0}, 		{0,		0},},	
 	{{0,	0}, 		{0,		0},},	
 };
+
+str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] = 
+{
+	{
+        {" Fist ", " Chainsaw ", " Pistol ", " Shotgun ", "Super Shotgun", " Chaingun ", "Rocket Launcher", "Plasma Rifle", "B.F.G. 9000", " Minigun ", " GrenadeLauncher ", " Railgun ", " BFG10K ", },
+		{" Fist ", " Chainsaw ", " Pistol ", " Shotgun ", "Super Shotgun", " Chaingun ", "Rocket Launcher", "Plasma Rifle", "B.F.G. 9000", "", "", "", "", "Unmaker"},
+    },
+	{
+        {" Bootspoon ", "Super Bootspork", "Mini-Zorcher", "Large Zorcher", "Super Large Zorcher", "Rapid Zorcher", "Zorch Propulsor", "Phasing Zorcher", "LAZ Device" },
+	}
+};
+/*
+    {   // Corvus
+        {" Staff ",                         "",             "",             "", ""},
+        {"Gauntlets of the Necromancer",    "",             "",             "", ""},
+        {"Elven Wand",                      "",             "",             "", ""},
+        {" Firemace ",                      "Shell",        "",             "", ""},
+        {"Ethereal Crossbow",               "Shell",        "",             "", ""},
+        {"Dragon Claw",                     "Clip",         "",             "", ""},
+        {"Phoenix Rod",                     "RocketAmmo",   "",             "", ""},
+        {"Hellstaff",                       "Cell",         "",             "", ""},
+        {"DSparilStaff",                    "",             "",             "", ""},
+    },
+
+    {   // B.J.
+        {"Knife",                           "",             "",             "", ""},
+        {"BJSuperKnife",                    "",             "",             "", ""},
+        {"Luger",                           "",             "",             "", ""},
+        {"Machine Gun",                     "Clip",         "",             "", ""},
+        {"Totenkopf_IHaveSTG44",     "Shell",         "",             "", ""},
+        {"  Chaingun  ",                    "Clip",         "",             "", ""},
+        {" Rocket Launcher ",               "RocketAmmo",   "",             "", ""},
+        {" Flamethrower ",                  "Cell",         "",             "", ""},
+        {"Spear of Destiny",                "Cell",         "",             "", ""},
+    },
+
+    {   // Parias
+        {"Mace of Contrition",              "",             "",             "", ""},
+        {"PortFlechette",                   "",             "",             "", ""},
+        {"Sapphire Wand",                   "",             "",             "", ""},
+        {"Frost Shards",                    "Clip",         "",             "", ""},
+        {"Timon's Axe",                     "Clip",         "",             "", ""},
+        {"Serpent Staff",                   "Clip",         "",             "", ""},
+        {"Hammer of Retribution",           "Cell",         "",             "", ""},
+        {"Firestorm",                       "Cell",         "",             "", ""},
+        {"Wraithverge",                     "Cell",         "",             "", ""},
+    },
+
+    {   // Duke
+        {"Mighty Boot",                     "",             "",             "", ""},
+        {"Pipebombs",                       "RocketAmmo",   "",             "", ""},
+        {"Glock 17",                        "",             "",             "", ""},
+        {"  Shotgun  ",                     "Shell",        "",             "", ""},
+        {"Explosive Shotgun",               "Shell",   "",             "", ""},
+        {"Chaingun Cannon",                 "Clip",         "",             "", ""},
+        {"RPG",                             "RocketAmmo",   "",             "", ""},
+        {"Freezethrower",                   "Cell",         "",             "", ""},
+        {"Devastator",                      "Cell",         "",             "", ""},
+    },
+
+    {   // Security Officer
+        {"Steel Knuckles",                  "",             "",             "",                 ""},
+        {"KKV-7 SMG Flechette",             "Clip",         "",             "CanDualPistols",   ""},
+        {".44 Magnum Mega Class A1",        "",             "",             "",                 ""},
+        {"WSTE-M5 Combat Shotgun",          "Shell",        "",             "CanDualShotties",  "LevelLimiter"},
+        {"Fusion Pistol",                   "FusionBullet", "Cell",         "",                 ""},
+        {"MA-75B Assault Rifle",            "RifleBullet",  "Clip",         "",                 ""},
+        {"SPNKR-XP SSM Launcher",           "SpankerAmmo",  "RocketAmmo",   "",                 ""},
+        {"TOZT-7 Napalm Unit",              "NapalmInTank", "Cell",         "",                 ""},
+        {"ONI-71 Wave Motion Cannon",       "Cell",         "RocketAmmo",   "",                 ""},
+    },
+	
+    {   // Ranger
+        {"Axe",                             "",             "",             "",		      ""},
+        {"Mjolnir",                         "",             "",             "", 		  ""},
+        {"Single Shotgun",                  "",             "",             "",  		  ""},
+        {"Double Shotgun",                  "Shell",        "",             "", 		  ""},
+        {"Grenade Launcher",                "RocketAmmo",   "",             "",  		  ""},
+        {"Nailgun",                         "Clip",         "",             "", 		  ""},
+        {"  Rocket Launcher  ",             "RocketAmmo",   "",             "",			  ""},
+        {"Super Nailgun",                   "Clip",         "",             "", 		  ""},
+        {"Thunderbolt",                     "Cell",         "",             "ForceCheck", ""},
+    },
+    {   // I.P. Freely
+        {"RottKnife",                       "",             "",             "", ""},
+        {"Heatseeker",                      "HSMissiles",   "Clip",        "", ""},
+        {"RPistol",                  		"",             "",             "", ""},
+        {"Double Pistols",                  "",    			"",             "", ""},
+        {"Bazooka",                         "RottMissiles",	"Shell",        "", ""},
+        {"MP40",                   			"", 			"",        		"", ""},
+        {" FireBomb ",                      "FBMissiles",   "RocketAmmo",   "", ""},
+        {"DrunkMissiles",                   "DMissiles",    "Cell",         "", ""},
+        {"Flamewall",                       "FWMissiles",   "Cell",         "", ""},
+    },
+	{	// Blake Stone
+        {"",                                "",             "",             "", ""},
+        {"BlakeSuperAutoCharge",            "",             "",             "", ""},
+        {"Auto Charge Pistol",              "",             "",             "", ""},
+        {"Slow Fire Protector",             "Shell",    	"",             "", ""},
+        {"Heavy Assault Weapon",             "Shell",    		"",             "", ""},
+        {"Rapid Assault Weapon",          "Clip",    		"",             "", ""},
+        {"Plasma Discharge Unit",           "RocketAmmo",   "",             "", ""},
+        {"Dual Neutron Disruptor",       "Cell",    		"",             "", ""},
+        {"Anti-Plasma Cannon",              "Cell",   		"",             "", ""},
+	},
+	{	// Caleb
+        {"Pitchfork",                       "",             "",             "", ""},
+        {"Dynamite",                        "RocketAmmo",   "",             "", ""},
+        {"   Revolver   ",                  "",             "",             "", ""},
+        {"Flaregun",             			"Shell",    	"",             "", ""},
+        {"SawedOff",             			"Shell",    	"",             "", ""},
+        {"Tommygun",             			"Clip",    		"",             "", ""},
+        {"NapalmLauncher",           		"RocketAmmo",   "",             "", ""},
+        {"TeslaCannon",          			"Cell",    		"",             "", ""},
+        {"LifeLeech",              			"Cell",   		"",             "", ""},	
+	},
+    {   // Strifeguy
+        {"Punch Dagger",                    "",             "",             "", ""}, // Fist
+        {"StrifeBeaconItem5",               "",             "",             "", ""}, // Chainsaw
+        {"   Pistol   ",                    "",             "",             "", ""}, // Pistol
+        {"  Crossbow  ",       				"Shell",        "",             "", ""}, // Shotgun
+        {"Mini Missile Launcher",           "RocketAmmo",   "",             "", ""}, // Super Shotgun
+        {"Assault Gun",                     "Clip",         "",             "", ""}, // Chaingun
+        {" Grenade Launcher ", 				"RocketAmmo",   "",             "", ""}, // Rocket Launcher
+        {"Flame Thrower",                   "Cell",         "",             "", ""}, // Plasma Rifle
+        {" Mauler ",        				"Cell",         "",             "", ""}, // BFG9000
+    },
+    {   // Eleena
+        {"  Claw  ",                        "",             "",             "", ""},
+        {" Arachnicator ",                  "RocketAmmo",   "",             "", ""},
+        {"  Ripper Disc  ",                 "",             "",             "", ""},
+        {"  Sonic Shock  ",                 "Shell",        "",             "", ""},
+        {"Pellet Bomb",                 	"Shell",        "",             "", ""},
+        {"  Dart Cannon  ",                 "Clip",         "",             "", ""},
+        {"    Missile Launcher    ",        "RocketAmmo",   "",             "", ""},
+        {"Napalm Charge",                   "Cell",         "",             "", ""},
+        {" Plasma Ball ",                   "Cell",         "",             "", ""},
+    },
+    {   // C7
+        {"",                   "",             				"",             "", ""}, // Fist
+        {"M24CAW",             "Clip",         				"",             "", ""}, // Chainsaw
+        {"Taser",              "",             				"",             "", ""}, // Pistol
+        {"M343Vulcan",         "Shell",        				"",             "", ""}, // Shotgun
+        {"AssaultShotgun",     "Shell",        				"",             "", ""}, // Super Shotgun
+        {"AlienDualBlaster",   "Clip",         				"",             "", ""}, // Chaingun
+        {"AlienPlasmaRifle",   "RocketAmmo",   				"",             "", ""}, // Rocket Launcher
+        {"AlienAssaultCannon", "Cell",         				"",             "", ""}, // Plasma Rifle
+        {"AlienDisintegrator", "Cell",         				"",             "", ""}, // BFG9000
+        {"",                   "",             				"",             "", ""}, // Punchdrunk Chainsaw
+	},
+    {   // RMR
+        {"",                			    "",             "",             "", ""}, // Fist
+        {"DirtShark",      				    "",         	"",             "", ""}, // Chainsaw
+        {" Laser Pistol ",     				"",             "",             "", ""}, // Pistol
+        {"ACR Laser Rifle",    				"Shell",        "",             "", ""}, // Shotgun
+        {"ACR ADD-ON",     	   				"Shell",        "",             "", ""}, // Super Shotgun
+        {"Cyclops Particle Accelerator", 	"Clip", 		"",     		"",	""}, // Chaingun
+        {"RMR Grenade Launcher", 			"RocketAmmo", 	"", 			"", ""}, // Rocket Launcher
+        {"RMR Railgun", 		 			"Cell",  	   	"",             "", ""}, // Plasma Rifle
+        {" RMR Plasma Cannon ",  			"Cell",      	"",             "", ""}, // BFG9000
+        {"",                     			"",          	"",             "", ""}, // Punchdrunk Chainsaw
+	},	
+    {   // Kyle Katarn
+        {"  Fist_2x5  ",                    "",             "",             "", ""},
+        {"Thermal Detonator",               "RocketAmmo",  	"",             "", ""},
+        {"Bryar Pistol",           			"",             "",             "", ""},
+        {"Stormtrooper Rifle",              "Shell",        "",             "", ""},
+        {"Fusion Cutter",             		"Shell",        "Shell",        "", ""},
+        {"Imperial Repeater",         		"Clip",        	"Clip",  	    "", ""},
+        {"Mortar Gun",           			"RocketAmmo",   "",             "", ""},
+        {"Concussion Rifle",        		"Cell",         "",             "", ""},
+        {"Assault Cannon",                  "Cell",         "RocketAmmo",   "", ""},
+        {"Stun Gauntlets",               	"",   			"",             "", ""},
+    },	
+	{	//Mooman
+		{" Tazer ",							"",				"",				"",	""},
+		{" Toxic Mutant Gun ",				"Cell",			"",				"",	""},
+		{" Aldus Pistol ",					"Clip",			"",				"",	""},
+		{" Plasma Shotgun ",				"Shell",		"",				"",	""},
+		{" Aldus Flamethrower ",			"Shell",		"",				"",	""},
+		{" Fast Chaingun ",					"Clip",			"",				"",	""},
+		{" Fast Rocket Launcher ",			"RocketAmmo",	"",				"",	""},
+		{" Laser Cannon ",					"Cell",			"",				"",	""},
+		{" Super Plasma Annihilator ",		"Cell",			"",				"",	""},
+	},	
+	{	//Jack
+		{"Disruptor Fist",					"",				"",				"",	""},
+		{" 18mm Auto ",						"Clip",			"",				"",	""},
+		{" 18mm Semi ",						"",				"",				"",	""},
+		{" Phase Rifle ",					"Clip",			"",				"",	""},
+		{" AM Blaster ",					"Shell",		"",				"",	""},
+		{"Phase Repeater",					"Clip",			"",				"",	""},
+		{" Lock-on Cannon ",				"RocketAmmo",	"",				"",	""},
+		{" AM Cyclone ",					"Shell",		"",				"",	""},
+		{" Disruptor Zodiac ",  			"Cell",			"",				"",	""},
+	},
+	//+Added
+	{	// Grondoval
+		{"WitchavenFists",						"",				"",				"",	""},
+		{"ShortSword",						"Clip",				"",				"",	""},
+		{"Bow and Arrows",					"",				"",				"",	""},
+		{"Pike Axe",						"Shell",		"",				"",	""},
+		{"Battle Axe",						"Shell",		"",				"",	""},
+		{"Ice Halberd",						"Clip",			"",				"",	""},
+		{"Fire Mace",						"RocketAmmo",	"",				"",	""},
+		{"Frozen two-hand sword",			"Cell",			"",				"",	""},
+		{"Spellbook",						"",				"",				"",	""},
+	},
+	{	//Freebutt
+		{"Crowbar",							"",					"",				"",	""},
+		{"Hornetgun",						"Cell",				"",				"",	""},
+		{"9mm Pistol",						"HL9mmCounter",		"Clip",			"",	""},
+		{".357 Python",						"HLPythonCounter",	"Clip",			"",	""},
+		{"Assault Shotgun",					"HLShotgunCounter",	"Shell",		"",	""},
+		{"MP5",								"HLMP5Counter",		"Clip",			"",	""},
+		{" RPG ",							"HLRPGCounter",		"RocketAmmo",	"",	""},
+		{"Gauss Cannon",					"Cell",				"",				"",	""},
+		{"E.G.O.N.",						"Cell",				"",				"",	""},
+	},	
+    {   // Lo Wang
+	    {"SWKatana",                    "",             "",            "", ""},
+        {"SWSticky",                   "RocketAmmo",   "",            "", ""},
+        {"SWShuriken",                 "",             "",            "", ""},
+        {"SWGrenade",                  "Shell",   "",            "", ""},
+        {"SWRiotgun",                  "Shell",        "",            "", ""},
+        {"SWUzi",                      "Clip",         "",            "", ""},
+        {"SWMissileLauncher",          "RocketAmmo",   "",            "", ""},
+        {" SWRailgun ",                "Cell",         "",            "", ""},
+        {"SWGuardianHead",             "Cell",         "",            "", ""},
+	},	
+    {   // Cybermage
+	    {"MagicFist",                    "",      		 "",            "", ""},
+        {"CMDarklightFoil",              "",      		 "",            "", ""},
+        {"CMLaserPistol",                "",             "",            "", ""},
+        {"CMFusionGun",                  "Shell",   	 "",            "", ""},
+        {"CMBlastRifle",                 "Shell",        "",            "", ""},
+        {"CMSMG",                      	 "Clip",         "",            "", ""},
+        {"CMRocketGun",          		 "RocketAmmo",   "",            "", ""},
+        {"CMHVBMG",                		 "Cell",         "",            "", ""},
+        {"CMPlasmaGun",             	 "Cell",         "",            "", ""},
+	},	
+    {   // Jon
+	    {"PSMachete",                    "",      		 "",            "", ""},
+        {" Anubis Mine ",                "RocketAmmo",	 "",            "", ""},
+        {"PSMagnum",                	 "",             "",            "", ""},
+        {"ExShotgun",                    "Shell",   	 "",            "", ""},
+        {"PSFlamethrower",               "Shell",        "",            "", ""},
+        {"PSM60",                      	 "Clip",         "",            "", ""},
+        {"PSCobraStaff",          		 "RocketAmmo",   "",            "", ""},
+        {"Sacred Manacle",               "Cell",         "",            "", ""},
+        {" Mummy Staff ",             	 "Cell",         "",            "", ""},
+	},	
+    {   // Leonard
+	    {" RR Crowbar ",                    "",      		"",            "", ""},
+        {" RR Rip Saw ",              		"Shell",      	"",            "", ""},
+        {" .454 Casull Pistol ",            "",             "",            "", ""},
+        {" RR Hunting Crossbow ",           "Shell",   	 	"",            "", ""},
+        {" Scattered Gun ",                 "Shell",        "",            "", ""},
+        {" Ranch Rifle ",                   "Clip",         "",            "", ""},
+        {" Dyn 'O' Mites ",          	"RocketAmmo",   "",            "", ""},
+        {" Alien Bra Gun ",                	"Cell",         "",            "", ""},
+        {" Alien Arm Cannon ",             	"Cell",         "",            "", ""},
+	},	
+	{   // Bitterman
+        {"",                   			    "",             "",             "", ""},
+        {"Q2MachineGun",                  	"Clip",         "",             "", ""},
+        {"Q2Blaster",           			"",             "",             "", ""},
+        {"Q2Shotgun",                       "Shell",        "",             "", ""},
+        {"Q2SuperShotgun",             	    "Shell",        "",             "", ""},
+        {"Q2Chaingun",         		        "Clip",         "",             "", ""},
+        {"Q2RocketLauncher",           		"RocketAmmo",   "",             "", ""},
+        {"Q2HyperBlaster",        		    "Cell",         "",             "", ""},
+        {"Q2BFG10K",                  		"Cell",         "",             "", ""},
+    },
+	{   // Demoness
+		{"Hexen2Sickle",                   	"",             "",             "", ""},
+        {"Hexen2IceMace",                  	"Clip",         "",             "", ""},
+        {"Hexen2BloodFire",           		"",             "",             "", ""},
+        {"Hexen2AcidRune",    			    "Clip",         "",             "", ""},
+        {"Hexen2SpellBookMagicMissile",             	    "Clip",         "",             "", ""},
+        {"Hexen2SpellBookBoneShard",        "Cell",         "",             "", ""},
+        {"Hexen2FireRune",           		"Cell",   		"",             "", ""},
+        {"Hexen2RavenStaff",        		"Clip",   		"Cell",   		"", ""},
+        {"Hexen2TempestStaff",              "Clip",   		"Cell",   		"", ""},
+    },
+	{   // Bond
+		{"Goldeneye_Slapper",               "",             "",             "", ""},
+        {"Goldeneye_ThrowingKnives",        "Goldeneye_ThrowingKnivesMagazine",		"Goldeneye_ThrowingKnivesAmmo",             "", ""},
+        {"Goldeneye_PP7Silenced",           "Goldeneye_PP7Magazine",            "Clip",             "", ""},
+        {"Goldeneye_KF7Soviet",     		"Goldeneye_KF7Magazine",         	"Clip",             "", ""},
+        {"Goldeneye_AutoShotgun",           "Goldeneye_AutoShotgunMagazine",	"Shell",             "", ""},
+        {"Goldeneye_AR33",        			"Goldeneye_AR33Magazine",         	"Clip",             "", ""},
+        {"Goldeneye_RocketLauncher",        "Goldeneye_RocketLauncherMagazine", "RocketAmmo",       "", ""},
+        {"Goldeneye_RCP90",        			"Goldeneye_RCP90Magazine",   		"Cell",   		"", ""},
+        {"Goldeneye_Moonraker",             "Cell",   		"",   		"", ""},
+    },
+	{   // Petton EverHail
+		{"",               	"",             "",         "", ""},
+        {"Catacomb_WavesQuickSpell",        		"Catacomb_Waves",		"",         "", ""},
+        {"Catacomb3D_MagicMissile",           		"",         "",         "", ""},
+        {"Catacomb_XterminatorsQuickSpell",     				"Catacomb_Xterminators",         "",         "", ""},
+        {"Catacomb_BurstsQuickSpell",           		"Catacomb_Bursts",		"",         "", ""},
+        {"Catacomb_ZappersQuickSpell",        				"Catacomb_Zappers",         "",         "", ""},
+        {"Catacomb_NukesQuickSpell",        	"Catacomb_Nukes", 	"",       	"", ""},
+        {"Catacomb_BoltsQuickSpell",        		"Catacomb_Bolts",   		"",   		"", ""},
+        {"Catacomb_Hourglass",             	"",   		"",   		"", ""},
+    },
+	{"DoomguyBerserker",    "",                 "", "","",""},
+    {"ChexSoulsphere",      "",                 "", "","",""},
+    {"PortTomeCoop",            "",                 "", "","",""},
+    {"WolfExtraLife",       "",                 "", "","",""},
+    {"PortMysticAmbit",     "",                 "", "","",""},
+    {"DukePortJetpack",     "DukeJetpackFuel",  "Shrinker", "ShrinkerAmmo","Expander","ExpanderAmmo"},
+    {"Alien Weapon",        "UnknownAmmo",      " Alien Weapon ", "UnknownAmmo2","",""},
+    {"Laser Cannon",        "Cell",             "", "","",""},
+    {"Excalibat",  			"BMissiles", 		"Split Missile", "SMissiles","Dark Staff","DSEnergy"}, // Added this
+	{"BlakeRefill",			"",					"", "","",""}, // Added this
+	{"VoodooDoll",			"Voodoo",			"Guns Akimbo",    "","Spraycan","SprayCanAmmo"}, // Added this
+    {"Upgrades",    "",                 		"", "","",""}, // Added this.
+//    {"Doom64GuyBerserk",    "",                 "", "","",""}, sayonara
+    {" Eradicator Enhancement Chip ",    "",                 "", "","",""},
+    {"C7ProxyMinePickup",   "C7ProxyMineAmmo",     "", "","",""}, // Added this.	
+    {"RMROxygenRecycler",   "", "RMRJetPack", "","",""}, // Added this.		
+    {"KatarnSupercharge", 	"", "", "","",""},	
+	{"IPOGRandomItemGenerator",	"",	"", "","",""}, //+Added	
+	{"DisruptorEnergyBall",	"DisruptorPSIEnergy",	"", "","",""}, //+Added	
+	{"WTShieldTrigger",	"",	"", "","",""}, //+Added
+	{"HL Squeaks", "HLSqueakAmmo", "HL Crossbow", "Shell","",""}, //+Added	
+    {"SWRipperHeart", "HeartAmmo", "HeatSeekingCard", "","SWGasGrenade",""},	
+    {"RandomMagicItem", "", "", "","",""},
+    {"Ring of RA", "", "", "","",""},	
+    {" Hunting Rifle With Scope ", "Clip", " Chicken Crossbow ", "ChickenAmmo","",""},	
+	{"Q2GrenadeLauncher", "RocketAmmo", "Q2ETFRifle", "Q2Flechettes","Q2Railgun","Cell"},	
+	{"Hexen2TomeOfPower","","Hexen2ForceCube","","",""},
+	{"Goldeneye_SniperRifle","Goldeneye_SniperMagazine","Goldeneye_SilencedD5K","Goldeneye_D5KMagazine","Goldeneye_GadgetGranter",""},
+	{"Catacomb_RandomGem","","","","",""},	*/
