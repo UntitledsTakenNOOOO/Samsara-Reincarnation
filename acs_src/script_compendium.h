@@ -8,14 +8,14 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 	{{"Parias", 5, "B+", "B-", "C-", "B", "Avg", "Brawler", "TIPSYM05", "TIPHIL05", "TIPPARIA", "TPLGHEXN", "TPCHHEXN", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }, {"Daedalon", 5, "C+", "D+", "C+", "C-", "Hard", "Mage", "TIPSYM05", "TIPHIL05", "TIPHMAGE", "TPLGHEXN", "TPCHHEXM", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }, {"Baratus", 5, "A-", "B-", "D", "D+", "Expert", "Berserker", "TIPSYM05", "TIPHIL05", "TIPBARAT", "TPLGHEXN", "TPCHHEXF", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }},
 	{{"Duke Nukem", 6, "A-", "E", "B-", "B", "Avg", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKE", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDN1", "CMPBGDN2", "CMPBGDN3", "CMPBGDN4", "CMPBGDN5", "", "", "", "DarkGray", "White" },{"Duke Nukem", 6, "A-", "E", "B-", "B", "Avg", "Crowd Control", "TIPSYM06", "TIPHIL06", "TIPDUKEB", "TPLGDUKE", "TPCHDUKE", "CMPSDUKE", "Gold", "CMPSDUKE", "Gold", "CMPBGDB1", "CMPBGDB2", "CMPBGDB3", "CMPBGDN4", "CMPBGDN5", "", "", "DarkGray", "White" }},
 	{{"Security Officer", 7, "B", "C", "D", "A+", "Expert", "Supression", "TIPSYM07", "TIPHIL07", "TIPSECOF", "TPLGMARA", "TPCHMARA", "CMPBMARA", "MarathonCompendiumWhite", "CMPSMARA", "MarathonCompendiumGreen", "CMPBGMA1", "CMPBGMA2", "CMPBGMA3", "CMPBGMA4", "CMPBGMA5", "", "", "", "MarathonCompendiumGray", "MarathonCompendiumWhite" }},
-	{{"Ranger", 8, "D+", "D+", "B", "B+", "Hard", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08", "", "", "", "QuakeCompendiumDarkGray", "QuakeCompendiumGray" }},
+	{{"Ranger", 8, "D+", "C+", "B", "B+", "Hard", "Artillery", "TIPSYM08", "TIPHIL08", "TIPRANGE", "TPLGQUAK", "TPCHQUAK", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBQUAK", "QuakeCompendiumBrown", "CMPBGQ11", "CMPBGQ12", "CMPBGQ13", "CMPBGQ14", "TIPSYM08", "", "", "", "QuakeCompendiumDarkGray", "QuakeCompendiumGray" }},
 	{{"Ian Paul Freeley", 9, "B+", "D", "C-", "D-", "Avg", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPIANPF", "TPLGROTT", "TPCHROTT", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }, {"Taradino Cassatt", 9, "B+", "D", "C-", "D-", "Avg", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPTCASS", "TPLGROTT", "TPCHTCAS", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" },{"Thi Barrett", 9, "B+", "D", "C-", "D-", "Avg", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPTBARR", "TPLGROTT", "TPCHTBAR", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }, {"Lorelei Ni", 9, "B+", "D", "C-", "D-", "Avg", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPLORNI", "TPLGROTT", "TPCHLLNI", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }, {"Doug Wendt", 9, "B+", "D", "C-", "D-", "Avg", "Demolitions", "TIPSYM09", "TIPHIL09", "TIPDOUGW", "TPLGROTT", "TPCHDOUG", "CMPBROTT", "RottCompendiumOrange", "CMPSROTT", "Orange", "CMPBGRT1", "CMPBGRT2", "", "CMPBGRT4", "CMPBGRT5", "", "", "", "Gray", "RottCompendiumOrange" }},
 	{{"Blake Stone", 10, "B", "C-", "B-", "A+", "Hard", "Skirmisher", "TIPSYM10", "TIPHIL10", "TIPBSTON", "TPLGBSTN", "TPCHBSTN", "CMPBBLAK", "BSCompendiumLightYellow", "CMPSBLAK", "BSCompendiumMediumGreen", "CMPBGBS1", "CMPBGBS2", "CMPBGBS3", "CMPBGRT4", "CMPBGBS5", "", "", "", "BSCompendiumYellow", "BSCompendiumLightYellow" }},
 	{{"Caleb", 11, "A", "E+", "D+", "A+", "Avg", "Pyromaniac", "TIPSYM11", "TIPHIL11", "TIPCALEB", "TPLGBLOD", "TPCHBLOD", "CMPBBLOD", "Red", "CMPSBLOD", "Red", "CMPBGBL1", "CMPBGBL2", "CMPBGBL3", "CMPBGBL4", "CMPBGBL5", "", "", "", "DarkGray", "White" }},
 	{{"Strifeguy", 12, "B+", "B, A+", "D-, A+", "B+", "Hard", "Strategist", "TIPSYM12", "TIPHIL12", "TIPSGUY", "TPLGSTRF", "TPCHSTRF", "CMPSSTRF", "untranslated", "CMPSSTRF", "untranslated", "CMPBGSR1", "CMPBGSR2", "CMPBGSR3", "CMPBGSR4", "CMPBGSR5", "CMPBGSR6", "", "", "DarkGray", "White" }},
 //	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White" }},
 	{{"Eleena", 13, "B+", "E", "D", "C+", "Hard", "Area Denial", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "CMPBERAD", "untranslated", "CMPSERAD", "untranslated", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5", "", "", "", "DarkGray", "White" }},
-	{{"Space Seal", 14, "D,A", "D-", "B+", "A-", "Avg", "Shredder", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "CMPBCOR7", "Corridor7CompendiumBrightYellow", "CMPSCOR7", "Corridor7CompendiumGreen", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "", "", "Corridor7CompendiumYellow", "Corridor7CompendiumBrightYellow" }},
+	{{"Space Seal", 14, "B+", "D-", "B+", "A-", "Avg", "DPS", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "CMPBCOR7", "Corridor7CompendiumBrightYellow", "CMPSCOR7", "Corridor7CompendiumGreen", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "", "", "Corridor7CompendiumYellow", "Corridor7CompendiumBrightYellow" }},
 	{{"LDF Commando", 15, "E", "D+", "S", "A+", "Very Easy", "Marksman", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
 	{{"Kyle Katarn", 16, "B", "B", "C", "A-,S", "Easy", "Assault", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5", "", "", "", "DarkGray", "White" }},
 	{{"Mooman", 17, "B", "C+", "B-", "B+", "Easy", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8", "DarkGray", "White" }},
@@ -25,10 +25,10 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 	{{"Lo Wang", 21, "S", "E", "B+", "B+", "Avg", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "CMPSDUKE", "", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5", "", "", "", "DarkGray", "White" }},
 	{{"Cybermage", 22, "A-", "C+", "C", "B+", "Hard", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "SMALLFONT", "Green", "SMALLFONT", "Yellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5", "", "", "", "DarkGray", "White" }},
 	{{"Jon", 23, "A-", "C-", "B-", "D+", "Avg", "Veteran", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "CMPSPOWR", "PowerSlaveCompendiumRed", "CMPSPOWR", "", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8", "PowerSlaveCompendiumDarkTan", "PowerSlaveCompendiumLightTan" }},
-	{{"Leonard", 24, "B+", "D-", "D+", "B-", "Avg", "Redneck Drunk", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "CMPBLEON", "untranslated", "CMPSLEON", "untranslated", "CMPBGRR1", "CMPBGRR2", "CMPBGRR3", "CMPBGRR4", "CMPBGRR5", "", "", "", "DarkGray", "White" }},
+	{{"Leonard", 24, "A", "B+", "C", "A", "Avg", "Drunkard", "TIPSYM25", "TIPHIL25", "TIPRRLEO", "TPLGLEON", "TPCHLEON", "CMPBLEON", "untranslated", "CMPSLEON", "untranslated", "CMPBGRR1", "CMPBGRR2", "CMPBGRR3", "CMPBGRR4", "CMPBGRR5", "", "", "", "DarkGray", "White" }},
 	{{"Bitterman", 25, "C", "D+", "C-", "B+", "Hard", "Armory", "TIPSYM26", "TIPHIL26", "TIPQ2MAN", "TPLGBITT", "TPCHBITT", "CMPSQUA2", "Quake2CompendiumWhite", "CMPSQUA2", "Quake2CompendiumGreen", "CMPBGQ21", "CMPBGQ22", "CMPBGQ23", "CMPBGQ14", "CMPBGQ25", "CMPBGQ26", "", "", "Quake2CompendiumGray", "Quake2CompendiumWhite" }},
 	{{"Demoness", 26, "B+,S", "D+,B-", "D+", "B+", "Hard", "Evolution", "TIPSYM27", "TIPHIL27", "TIPDEMON", "TPLGHEX2", "TPCHHEX2", "CMPSHEX2", "Gold", "CMPSHEX2", "Red", "CMPBGH21", "CMPBGH22", "CMPBGH23", "CMPBGH24", "CMPBGH25", "", "", "", "DarkGray", "White" }},
-	{{"James Bond", 27, "B", "D-", "C", "S", "Hard", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "GEFONTS", "Gold", "GEFONTS", "White", "CMPBGGE1", "CMPBGGE2", "", "CMPBGGE4", "CMPBGGE5", "", "", "", "DarkGray", "White" }},
+	{{"James Bond", 27, "C-", "D-", "C", "S", "Hard", "Spy", "TIPSYM28", "TIPHIL28", "TIPJBOND", "TPLGBOND", "TPCHBOND", "GEFONTS", "Gold", "GEFONTS", "White", "CMPBGGE1", "CMPBGGE2", "", "CMPBGGE4", "CMPBGGE5", "", "", "", "DarkGray", "White" }},
 	{{"Petton Everhail", 28, "A+", "B", "D+", "A-", "Expert", "Specialist", "TIPSYM29", "TIPHIL29", "TIPEVERH", "TPLGCT3D", "TPCHEVER", "CMPBWOLF", "TotenkopfCompendiumRed", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGCT1", "CMPBGCT2", "CMPBGCT3", "CMPBGCT4", "TIPSYM29", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }},
 };
 
@@ -294,7 +294,8 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Summary", "Originally a special forces marine, ever since joining the Slipgate program Ranger has seen a thousand deaths and escaped from a million more on a billion worlds. He has gone from military bases to medieval castles to arcane dimensions to hellish abysses to planes of eldritch madness best not spoken of. Through them all, Ranger has proven resilience and power that give even the most terrifying elder ones pause--with strange aeons, even death itself may die under fire of a well-aimed 9.9lb 750mm RHA rocket.", ""},
 			
 			{ "Traits", "Go Forth and Kick Ass: Quake's air physics were much looser, and practically invented strafejumping and rocketjumping. Ranger thus hangs in the air slightly longer than normal, and can rocketjump much easier.
-			\n\nDissolution of Eternity: While Ranger takes just as much damage as normal, he still has one fatal defensive flaw. When picking up a Soulsphere or Megasphere, the amount of health received slowly degenerates. This does not affect health bonus pickups.", ""},
+			\n\nDissolution of Eternity: While Ranger takes mostly as much damage as normal, he still has one fatal defensive flaw. When picking up a Soulsphere or Megasphere, the amount of health received slowly degenerates. This does not affect health bonus pickups.
+			\n\nShambler Hide: Ranger has found many curious items in the sinister lands beyond the slipgates, and this is one of them. Ranger wears armor that reduces all explosion damage by 25%. This is very handy for all those explosive-wielding freaks he goes up against, and is also very good for Rocket Jumping.", ""},
 			
 			{ "Changes", "- Quake had such a lower damage scale than Doom it wasn't even funny. The Vore had 400 HP, equivalent to two Centaurs. In co-op, his weapons have been buffed the fuck out.
 			\n\n- The Quad Damage is now a reuseable item, partly to help with the aforementioned damage issues, and partly because there was no appropriate item to replace it with. (Berserks didn't work--too rare, too erratically placed, not to mention should be more utility)
@@ -304,7 +305,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			\n\n- The nails and rockets originally travelled at the same speed. Here, nails have been increased to speed 75.
 			\n\n- Lava Nails, Multi-Grenades, Multi-Rockets, and Plasma Cells were handled a bit differently. There were no alt-fires, much less that swapped between weapons, and the ammo pickups were separate.
 			\n\n- The Double Barreled Shotgun's, Nailgun's, and Laser Cannon's animations are slightly smoother.
-			\n\n- The Shotgun and Double-Barreled Shotgun's damages are random by 1d3, while Quake's damage values were completely static. Turns out people are getting upset for using fake bullets. Whoops.
+//			\n\n- The Shotgun and Double-Barreled Shotgun's damages are random by 1d3, while Quake's damage values were completely static. Turns out people are getting upset for using fake bullets. Whoops.
 			\n\n- The trail behind the Nails and Lava Nails has been made a LOT more obvious, so enemies can see it more easily in DM.
 			\n\n- Ranger is fully 3D unlike in earlier samsara builds, giving him a more nostalgic visual feeling to him.", ""},
 		},
@@ -392,7 +393,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Summary", "Vengeance is all that is left in him now... His love was taken away from him. He was betrayed by his master and forced to see his friends executed before his very eyes. Even eternal banishment was not enough to stop Caleb. Vengeance had already driven him into an unstoppable blood lust. He wouldn't stop until he fully avenged his comrades, and his one true love. Caleb is exceptional at dealing with singular foes, but becomes rather lackluster at dealing with many, although he is still able to seal the deal. Caleb's sole purpose of living is to prove thathe is truly the \"One That Binds\".", ""},
 			
 			{ "Traits", "Boo Hoo... When does the hurting stop?: Caleb loves to inflict pain so much on his foes that he can kill them in more ways than any other hero. He is rather prone to hurting himself in the process, however.
-			\n\nGood. Bad. I'm the guy with the gun: Caleb is such an expert with his weapons, that he can fire them in alternative ways, usually at the expensive of ammo, easily able to drain his reverse in seconds if spammed constantly.", ""},
+			\n\nGood. Bad. I'm the guy with the gun: The weapons in Blood were fast, versatile, and of course, terrifyingly powerful. However, unlike games like Duke 3D, Redneck Rampage, and SW, the weapons don't really evolve much. Only steadily increasing in power. It's best to make the most of the weapons you do have than rely on an ultimate.", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -446,7 +447,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 		{
 			{ "Summary", "Despite the world having become relatively peaceful, the UFP none-the-less kept a well trained force of space seals for all their operations. When one of their experiments went awry and an alien force invaded, one such space seal, the last one remaining, rose up to defeat them. Armed with nothing more than an M24 Close Assault Weapon and a Taser, the space seal will compromise at nothing to ensure Humanity's victory.\n\nThe space seal has a few powerful advantages and disadvantages. His weapons are frighteningly powerful - They can tear even the mightiest beast to shreds. However, They are also the biggest ammo guzzlers out there, rapidly depleting his stock. Furthermore, there are only two kinds of ammo that he has, and he is more vulnerable to harm than his peers. He can do great harm; but it comes back to him in turn.", ""},
 			
-			{ "Traits", "Keep them away!: The space seal had no melee weapons in Corridor 7. The taser was his fallback. This applies here as well, the Space Seal must stay out of melee.
+			{ "Traits", "Ammo Hoarder: The space seal was taught to always conserve ammunition as much as possible. As a result, space seal gets slightly more 20% ammo from ammo pickups
 			\n\n Happy Birthday!: The Space Seal has a set of proximity mines that he can place anywhere, leaving all sorts of nasty traps for enemies. These mines use their own ammo supply.", ""},
 			
 			{ "Changes", "", ""},
@@ -462,8 +463,8 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Traits", "Bullets! My only weakness! Wait. what the hell is a \"bullet\"?: Most of Rebel Moon's warfare consisted of projectile attacks. Commando only has one hitscan weapon at his disposal. He is also weak against hitscan and tracer weapons such as shotguns and chainguns...
 			\n\nSpace is a cold, cooold place: Properly suited up for the harsh enviornment of space. The Commando also has some resistance to other hazardous elements, such as lava	, radiation and other floor hazards.", ""},
 			
-			{ "Changes", "-Rebel Moon and Rebel Moon rising, actually had a similar weapon system with damage like doom, however it lacked anything that fit the ultimate tier. So Plasma Cannon and Subestron Arm are buffed a lot, and the latter gaining a ripper property.
-			\n\n-No oxygen system in any of the Iwad games, so that is gone here too.
+			{ "Changes", "-Rebel Moon and Rebel Moon rising had an insanely low damage scale, so the damage of most weapons had to be multiplied by two, and the Subestron Arm given a ripper property.
+			\n\n-The oxygen recyclers did not give you health, but you don't need oxygen in doom.
 			\n\nThe particle accelerator and railgun were equals in rebel moon, and very close in rising, here the railgun was chosen and buffed to be the slot 6, while the other was put into a slot 4 spot.
 			\n\nCertain weapons had different speed and damage values depending on if you were playing the first or 2nd rebel moon, here we combined both to get the best of each, if the weapon wasn't already buffed.
 			", ""},
@@ -504,7 +505,8 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			
 			{ "Traits", "FEEL THE POWER!: Jack's psionic implants are the next step in warfare. If you are out of ammo, or you simply want to tackle the situation differently, you should unleash his powers on the unsuspecting enemies and witness the devastating results yourself!", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "In Disruptor, picking up red plasma or split meteorites replaced what was currently loaded in the weapon while you had them. Here, you can switch between the two on the fly using altfire.
+			\n\nThe Zodiac and Plasma Lance in Disruptor could only be used once before dropping them. You would have to locate another to use them again. Here, once you have them you have them, and use ammo just like any other weapon.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -532,7 +534,8 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Traits", "Hazardous Materials: Dr. Gordon Freeman is in charge of the manipulation and maintenance of various Toxic and Harmful materials either from our planet or from outer space. Freeman is experienced in the field and equipped with his H.E.V suit; he knows how to properly avoid getting harm so easily from Hazardous surfaces like acid, lava, or any other environment harmful source.
 			\n\nCombat Stress Reaction: Being just a scientist with minimal knowledge about guns and far less about combat, Dr. Freeman tends to act slowly and sometimes ineffectively with his arsenal when in a battles. although thanks to his weaponry training at Black Mesa he knows the mere basics of how to handle a weapon. Due to his scientific knowledge, he also knows how to use and do maintenance on alien or high tech guns like the gauss cannon.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "Coming from the tail-end of the early-3d Quake era, Half-Life had a very low damage scale, and its source code was only partially released. Damage of most weapons and HP of most enemies were increased by 250%. The rest we just had to hazard a guess.
+			\n\n Due to limitations with GZDoom's model support, Half-Life NPCs do not have facial animations.", ""},
 		},
 		{
 			{ "Summary", "A 22 year old marine assigned to the Hazardous Environment Combat Unit, Adrian Shephard was sent on an operation only knowing that his orders were at the Black Mesa Research Facilty. Little did he know, however, that his orders were to cover up any evidence of an alien invasion at the research facility. Adrian was only forced to do more than his call of duty when he was purposefully prevented from leaving the facility by the mysterious G-Man. Soon, he was almost in the same position as the rest of the faculty at the facility when the Black Operations and a mysterious race known as Race X joined the fray. Upon the defeat of the Geneworm, Adrian knew too much about Black Mesa, but the G-Man could not simply get rid of him - he was too skilled. While originally detained, G-Man decided to send Adrian to the same place he sent Freeman in the hopes of fulfilling duties he knew Freeman could not.", ""},
@@ -540,7 +543,8 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Traits", "Never forget that your weapon was made by the lowest bidder: While Freeman's arsenal consists of bleeding edge technology, most of Adrian's arsenal is standard issue. That said, Adrian's equipment is designed for killing as many enemies as he can while being produced in bulk, instead of being more powerful.
 			Leave no soldier left behind: Adrian was trained to fight with a squad. Fortunately, it's possible for Adrian to encounter fellow marines on the field under the right circumstances. Additionally, there's no chance of fighting other HECU units if you are deployed on your mission as Adrian first.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "Along with the changes detailed under Freeman's page, the M249 SAW now has a magazine capacity of 100 instead of 50 and the Deagle does less damage with the laser sight disabled.
+			\n\nIn Opposing Force, using the Displacer's altfire at the wrong place and time would drop you into a bottomless pit in the Borderworld Xen to your death. In Samsara, using it teleports you back to the spawn area of whatever map you're on, and back if you do it again. Rather a bit more helpful.", ""},
 		}
 	},
 	{
@@ -576,7 +580,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Traits", "TRAINING IS EVERYTHING!: As a hardened special forces soldier, Jon knows very well how to use the best military equipment around. Most of his human made weapons will require reload after all shots are depleted, so make sure not to get caught off guard!
 			\n\nOLD MEETS NEW!: And alongside the \"new\" man-made weapons, comes the \"old\" artifacts of ages gone by - whether it's the fearsome Cobra Staff the hectic Ring of Ra or the powerful Mummy Staff, Jon will definitely have a good reason to taunt his enemies.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "Powerslave was radically different on PS1 and Saturn from its build engine PC original. There was no reloading on firearms, some of the weapons had different behavior, and there was one new weapon added. In Samsara Reincarnation, Jon acts as a hybrid of the versions of himself from the console and PC versions.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -586,10 +590,11 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 		{
 			{ "Summary", "Leonard was an unassuming redneck living in Hickston alongside his brother Bubba, living peacefully without expectations. Sure, his neighbors were exceptionally annoying and sure, the land was filled with hostile dogs and wasps, but ultimately cheap ass whiskey and pork rinds were in abundance, and best of all, the two brothers owned their prized pig Bessie, their real pride. All that changed when Hickston was invaded by alien forces, who not only decided to eliminate all humans, bụt also clone their neighbors and let them do the dirty job, With Bessie stolen and endless clones of their now even more aggravating neighbors shooting everything in sight, Leonard decided he had enough. After shooting his way through Hickston and nearby locations and finally crash-landing the main alien UFO, Leonard returned home, only to find his brother Bubba had consumed all the whiskey and pork rinds, And so, he decided to fight in the wheel of Samsara, in hope of once again finding the peace that invasion had forever eliminated in his hometown.", ""},
 			
-			{ "Traits", "You screw with the bull, you get the horns: Growing in the deep south, Leonard has been experienced in firearms since infancy, thanks to his passion for hunting. The hunting crossbow and scoped rifle will be able pick off enemies from a distance, but if all else fails, a shower of AK-47 bullets will take care of the rest.
+			{ "Traits", "You screw with the bull, you get the horns: Growing in the deep south, Leonard has been experienced in firearms since infancy, but lacked access to more advanced weaponry. He can fashion anything he needs out of a crossbow and whatever explosive he finds lying around, and a shower of AK-47 bullets will take care of the rest.
 			\n\nSwamp gas my ass: Leonard doesn't have the intelligence to use medical equipment and thus relies on food to heal. Eating too much will make you gassy, and drinking too much will make you drunk.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "Redneck Rampage had a wide arsenal of varied and powerful weapons, but lacked anything that could qualify as an ultimate. Closest thing was the Teat Gun, but that wouldn't yield the best results. So we multiplied the Alien Arm Gun's damage by 10.
+			\n\nDamage values in RR varied all across the board. The pistol, despite its slow speed, took at least 3 shots to kill any enemy, and the automatics were exceptionally powerful. Here, the AK and Teat gun's damage were reduced and the pistol's damage was doubled.", ""},
 			
 			{ "Medikits", "When you pick up the Medikit, it will either:\n\nA) Give you pork rinds (instant healing)\n\nB) Give you a 6 pack of beer\n\nC) Give you 6 cow pies", "RRCMEDKT"},
 			{ "Soulspheres", "When you pick up the Soulsphere, it will either:\n\nA) Give you a dee-lishus goo goo cluster(instant healing)\n\nB) Give you a bottle of cheap ass whiskey...", "RRCSOULS"},
@@ -605,7 +610,10 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Traits", "Big Gun: Bitterman loves guns, but not just any guns, big guns. As such Bitterman was never too fond of melee weapons, so it's essential to keep some distance from foes. On the other hand, he does utilize more weapons than most heroes.
 			\n\nUck... this is bitter, man: While most of the other heroes are fine with charging towards enemies, Bitterman happens to be more a gun and cover type of guy. It is best to attack and take cover to the side during a fire fight.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "The blaster from Quake 2 was about as pathetic as it gets. So bad its damage was increased in MP rather than decreased like the Hyperblaster and Chaingun. So we doubled its damage.
+			\n\n Quake 2's damage scaling was a little mediocre considering the relatively slow fire rate of its weapons in comparison to the first game. So we used the damage values of similar weapons from sequels Quake 3 and 4 to yield much more reliable weaponry.
+			\n\n Quake 2's railgun did double damage to any monster that wasn't alerted yet. Now it does that damage to any enemy that isn't facing you, or while the silencer is active.
+			\n\n ETF Flechettes now have the ability to pierce force fields.", ""},
 		},
 		{
 			{ "", "", ""},
