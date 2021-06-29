@@ -156,9 +156,9 @@ function void ApplyLMS(void)
     if (lmsLevel > 0)
     {
         SetActorProperty(0, APROP_Health, GetActorProperty(0, APROP_Health) + (100 * (lmsLevel-1)));
-        ACS_ExecuteWithResult(SAMSARA_DECORATE, 20, ARMOR_BLUE, -100 * lmsLevel);
+        ACS_NamedExecuteWithResult("SamsaraDecorate", 20, ARMOR_BLUE, -100 * lmsLevel);
     }
-	//ACS_ExecuteAlways(678,0,0,0,0);
+	//ACS_NamedExecuteAlways("Samsara678",0,0,0,0);
 } 
 
 function int samsaraClassNum(void)

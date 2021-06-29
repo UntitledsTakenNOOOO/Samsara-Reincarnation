@@ -1,4 +1,4 @@
-script SAMSARA_PUKE_CLIENT (int mode, int arg1, int arg2) net clientside
+script "SamsaraPukeClient" (int mode, int arg1, int arg2) net clientside //227 SAMSARA_PUKE_CLIENT
 {
     switch (mode)
     {
@@ -12,17 +12,17 @@ script SAMSARA_PUKE_CLIENT (int mode, int arg1, int arg2) net clientside
     }
 }
 
-script SAMSARA_TIPBOX (void) net
+script "SamsaraTipbox" (void) net //300 -- SAMSARA_TIPBOX
 {
     int pln = PlayerNumber();
 
     ClientTipboxes[pln] = !ClientTipboxes[pln];
 
     SetPlayerProperty(0, ClientTipboxes[pln], PROP_TOTALLYFROZEN);
-    ACS_ExecuteAlways(SAMSARA_TIPBOX_CLIENT, 0, ClientTipboxes[pln], 0, 0);
+    ACS_NamedExecuteAlways("SamsaraTipboxClient", 0, ClientTipboxes[pln], 0, 0);
 }
 
-script SAMSARA_TIPBOX_CLIENT (int tipon, int mode) clientside
+script "SamsaraTipboxClient" (int tipon, int mode) clientside //301 -- SAMSARA_TIPBOX_CLIENT
 {
     int tipclass;
     int tipnum = 0;
@@ -127,7 +127,7 @@ script SAMSARA_TIPBOX_CLIENT (int tipon, int mode) clientside
     }
 }
 
-script 302 (int changelogshit) NET CLIENTSIDE
+script "SamsaraChangelog" (int changelogshit) NET CLIENTSIDE //302
 {
 switch (changelogshit)
 {

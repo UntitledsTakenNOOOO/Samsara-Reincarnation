@@ -1,4 +1,4 @@
-script SAMSARA_OPEN open
+script "SamsaraOpen" open  //623 -- SAMSARA_OPEN
 {
     IsServer = 1;
     int opd, pd;
@@ -352,11 +352,11 @@ script SAMSARA_OPEN open
     }
 }
 
-script SAMSARA_ENTER enter { ACS_ExecuteWithResult(SAMSARA_SPAWN, 0,0,0); }
-script SAMSARA_RESPAWN respawn { ACS_ExecuteWithResult(SAMSARA_SPAWN, 1,0,0); }
-script SAMSARA_RETURN return { UnloadingNow = 0; ACS_ExecuteWithResult(SAMSARA_SPAWN, 0,0,0); }
+script "SamsaraEnter" enter { ACS_NamedExecuteWithResult("SamsaraSpawn", 0,0,0); } //611 -- SAMSARA_ENTER
+script "SamsaraRespawn" respawn { ACS_NamedExecuteWithResult("SamsaraSpawn", 1,0,0); } //618 -- SAMSARA_RESPAWN
+script "SamsaraReturn" return { UnloadingNow = 0; ACS_NamedExecuteWithResult("SamsaraSpawn", 0,0,0); } //613 -- SAMSARA_RETURN
 
-script SAMSARA_SPAWN (int respawning)
+script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 {
 	if(GameType() == GAME_TITLE_MAP)
 		terminate;
@@ -383,14 +383,14 @@ script SAMSARA_SPAWN (int respawning)
 	TakeInventory("HalfLifeOpposingForceSet", 0x7FFFFFFF);
 	//ACS_NamedExecuteAlways("SAMSARA_RESETPLAYER_COOP",0,0,0,0);
     ServerEnterTimes[pln] = startTime;
-    ACS_ExecuteWithResult(SAMSARA_SYNTHFIRE, startTime);
+    ACS_NamedExecuteWithResult("SamsaraSynthFire", startTime);
 
     if (!CheckInventory("IsSamsaraClass")) { terminate; }
 
 
-    ACS_ExecuteAlways(SAMSARA_ENTER_CLIENT, 0, startTime,0,0);
-    ACS_ExecuteWithResult(SAMSARA_WOLFMOVE, startTime,0,0);
-    ACS_ExecuteWithResult(SAMSARA_QPOWERS,  startTime,0,0);
+    ACS_NamedExecuteAlways("SamsaraEnterClient", 0, startTime,0,0);
+    ACS_NamedExecuteWithResult("SamsaraWolfMove", startTime,0,0);
+    ACS_NamedExecuteWithResult("SamsaraQPowers",  startTime,0,0);
     
     if (isLMS()) { ApplyLMS(); }
     if (GetCvar("sams_lmsrules") == 1)
@@ -403,7 +403,7 @@ script SAMSARA_SPAWN (int respawning)
     if (!respawning)
     {
         ClientTipboxes[pln] = 0;
-        ACS_ExecuteAlways(SAMSARA_SCHEDULED, 0, respawning,1,0);
+        ACS_NamedExecuteAlways("SamsaraScheduled", 0, respawning,1,0);
 
         if (GetCVar("sv_shotgunstart") > 0) { GiveClassWeapon(samsaraClassNum(), 3, 3);}
         if (GetCvar("sams_backpackstart") == 1) { GiveInventory("Backpack",1); }
@@ -419,7 +419,7 @@ script SAMSARA_SPAWN (int respawning)
     HandleUniqueSpawn(respawning);
     HandleInstagib(respawning);
 
-    ACS_ExecuteAlways(SAMSARA_SCHEDULED, 0, respawning,0,0);
+    ACS_NamedExecuteAlways("SamsaraScheduled", 0, respawning,0,0);
 
     switch (samsaraClassNum())
     {
@@ -1087,7 +1087,7 @@ script SAMSARA_SPAWN (int respawning)
     }
 }
 
-script 677 ENTER
+script "SamsaraTurkeyPuncher" ENTER //677
 {
     delay(GetCvar("sams_superturboturkeyfrequency"));
     if (GetCvar("sams_superturboturkeypuncher3000") > 0)
@@ -1167,7 +1167,7 @@ script 677 ENTER
     restart;
 }*/
 
-script SAMSARA_SYNTHFIRE (int startTime)
+script "SamsaraSynthFire" (int startTime) //607 -- SAMSARA_SYNTHFIRE
 {
     int pln = PlayerNumber();
 
@@ -1189,9 +1189,9 @@ script SAMSARA_SYNTHFIRE (int startTime)
     TakeInventory("SynthFireRight", 0x7FFFFFFF);
 }
 
-script SAMSARA_CONFIRMCLASS (int which) { SetResultValue(SamsaraWepType == which); }
+script "SamsaraConfirmClass" (int which) { SetResultValue(SamsaraWepType == which); } //206 -- SAMSARA_CONFIRMCLASS
 
-script SAMSARA_WOLFMOVE (void)
+script "SamsaraWolfMove" (void) //673 -- SAMSARA_WOLFMOVE
 { 
     int pln = PlayerNumber();
     int realspeed = GetActorProperty(0, APROP_Speed);
@@ -1297,7 +1297,7 @@ script SAMSARA_WOLFMOVE (void)
     }
 }
 
-script SAMSARA_ENTER_CLIENT (void) clientside
+script "SamsaraEnterClient" (void) clientside //521 -- SAMSARA_ENTER_CLIENT
 {
     int execInt, oExecInt, execStr;
     int class, oClass;
@@ -1375,7 +1375,7 @@ script SAMSARA_ENTER_CLIENT (void) clientside
 
     for (i = 0; i < RESCOUNT; i++)
     {
-        ACS_ExecuteAlways(SAMSARA_RESONATE, 0, i, 16, 0);
+        ACS_NamedExecuteAlways("SamsaraResonate", 0, i, 16, 0);
     }
     
     DukeQuoteCooldown[pln] = 0; 
@@ -1418,7 +1418,7 @@ script SAMSARA_ENTER_CLIENT (void) clientside
             
             if (execInt != oExecInt)
             {
-                execStr = StrParam(s:"puke -", d:SAMSARA_PUKE, s:" ", d:execInt, s:" ", d:pln);
+                execStr = StrParam(s:"pukename -", s:"SamsaraPuke", s:" ", d:execInt, s:" ", d:pln);
                 //ConsoleCommand(execStr);
             }
         }
@@ -1455,7 +1455,7 @@ script "SAMSARA_BARATUSRANGECHECK" (void)
 	
 }
 
-script SAMSARA_DISCONNECT_CLIENT (int pln) disconnect clientside
+script "SamsaraDisconnectClient" (int pln) disconnect clientside //522 -- SAMSARA_DISCONNECT_CLIENT
 {
     // Comment out these lines for zdoom
     int cpln = ConsolePlayerNumber();
@@ -1466,7 +1466,7 @@ script SAMSARA_DISCONNECT_CLIENT (int pln) disconnect clientside
     SamsaraItemFlash    = Timer();
 }
 
-script SAMSARA_PUKE (int values, int pln) net
+script "SamsaraPuke" (int values, int pln) net //226 - SAMSARA_PUKE
 {
     array_wolfmove[pln]     = values & 1;
     array_vanillaAnim[pln]  = values & 2;
@@ -1476,7 +1476,7 @@ script SAMSARA_PUKE (int values, int pln) net
 }
 
 
-script SAMSARA_DEATH death
+script "SamsaraDeath" death //619 -- SAMSARA_DEATH
 {
 	int pln = PlayerNumber();
 	switch(PlayerClass(pln))

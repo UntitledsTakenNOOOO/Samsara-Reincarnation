@@ -1,4 +1,4 @@
-script SAMSARA_MEGAHEALTH (int hpcount, int hpPerSec, int delayTics)
+script "SamsaraMegaHealth" (int hpcount, int hpPerSec, int delayTics) //259 -- SAMSARA_MEGAHEALTH
 {
     int hpGiven = GetActorProperty(0, APROP_Health);
     int startHealth = hpGiven;
@@ -45,7 +45,7 @@ script SAMSARA_MEGAHEALTH (int hpcount, int hpPerSec, int delayTics)
     }
 }
 
-script SAMSARA_RECOIL (int degrees, int ticsup, int ticsdown) clientside
+script "SamsaraRecoil" (int degrees, int ticsup, int ticsdown) clientside //312 -- SAMSARA_RECOIL
 {
     if (degrees == 0) { terminate; }
     if (defaultCVar("sams_cl_norecoil", 0) == 1 && ticsup >= 0) { terminate; }
@@ -129,7 +129,7 @@ script SAMSARA_RECOIL (int degrees, int ticsup, int ticsdown) clientside
     }
 }
 
-script SAMSARA_QPOWERS (int startTime)
+script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
 {
     int pln = PlayerNumber();
     int quadTimer,  oQuadTimer;
@@ -434,7 +434,7 @@ script SAMSARA_QPOWERS (int startTime)
     }
 }
 
-script SAMSARA_QUAKE (int class, int slot, int dropped)
+script SAMSARA_QUAKE (int class, int slot, int dropped) //606
 {
     int givingQuad, givingLG;
 

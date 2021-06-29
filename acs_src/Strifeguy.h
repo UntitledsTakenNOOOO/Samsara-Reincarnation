@@ -1,6 +1,6 @@
 #define STRIFEGUY_UPG 703
      
-Script STRIFEGUY_UPG ENTER
+Script "StrifeGuy_UPG" ENTER //703 -- STRIFEGUY_UPG
 {
             if (PlayerClass(PlayerNumber())!=11) terminate; //Check if the class is strifeguy, otherwise terminate the script
             //Assign cvar values to variables
@@ -44,7 +44,7 @@ Script STRIFEGUY_UPG ENTER
             }
 }
 
-script SAMSARA_STRIFESIGIL (int class, int slot, int dropped)
+script SAMSARA_STRIFESIGIL (int class, int slot, int dropped) //667
 {
     int givingMauler, givingSigil;
 

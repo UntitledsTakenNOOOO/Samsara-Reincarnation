@@ -1,4 +1,4 @@
-script SAMSARA_SCHEDULED (int respawning, int slot)
+script "SamsaraScheduled" (int respawning, int slot) //674 -- SAMSARA_SCHEDULED
 {
     int pln = PlayerNumber();
     int class = samsaraClassNum();

@@ -53,7 +53,7 @@ global int 0:SamsaraGlobal[];
 #include "script_doom64.h"
 #include "script_compendium.h"
 
-script SAMSARA_DECORATE (int choice, int arg1, int arg2)
+script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORATE
 {
     int clipcount;
     int result;
@@ -155,7 +155,7 @@ script SAMSARA_DECORATE (int choice, int arg1, int arg2)
             {
                 LocalAmbientSound("duke/mpdeath",127);
                 GiveInventory("DukeTauntCooldown",5);
-                ACS_ExecuteAlways(205,0,0);
+                ACS_NamedExecuteAlways("DukeTauntCooldown",0,0);
             }
         }
         break;
@@ -327,7 +327,7 @@ script SAMSARA_DECORATE (int choice, int arg1, int arg2)
             {
                 LocalAmbientSound("Eleena/Suicide",127);
                 GiveInventory("EleenaTauntCooldown",5);
-                ACS_ExecuteAlways(610,0,0);
+                ACS_NamedExecuteAlways("EleenaTauntCooldown",0,0);
             }
         break;		
 		
@@ -373,7 +373,7 @@ script SAMSARA_DECORATE (int choice, int arg1, int arg2)
             {
                 LocalAmbientSound("leonard/mpdeath",127);
                 GiveInventory("LeonardTauntCooldown",5);
-                ACS_ExecuteAlways(706,0,0);
+                ACS_NamedExecuteAlways("LeonardTauntCooldown",0,0);
             }
         }
         break;
@@ -383,7 +383,7 @@ script SAMSARA_DECORATE (int choice, int arg1, int arg2)
 }
 
 //+Added
-script SAMSARA_WITCHAVEN (int which, int arg1, int arg2)
+script "SamsaraWitchaven" (int which, int arg1, int arg2) //707
 {
 	switch(which)
 	{
@@ -423,7 +423,7 @@ script SAMSARA_WITCHAVEN (int which, int arg1, int arg2)
 }
 
 //+Added
-script SAMSARA_WT_AUTOHEALER (void)
+script "SamsaraWTAutoHealer" (void) //708
 {
 	while(GetActorProperty(0,APROP_HEALTH) > 0)
 	{
@@ -448,7 +448,7 @@ script SAMSARA_WT_AUTOHEALER (void)
 }
 
 //+Added
-script SAMSARA_WT_CLIP (void)
+script "SamsaraWTClip" (void) //709
 {
 	int i = 0;
 	
@@ -469,7 +469,7 @@ script SAMSARA_WT_CLIP (void)
 }
 
 //+Added
-script HL_GAUSS_SCRIPT (void)
+script "HLGaussScript" (void) //622 -- HL_GAUSS_SCRIPT
 {
 	if((CheckInventory("HLGaussCounter") < 30) && (CheckInventory("HLGaussCharged") >= (CheckInventory("HLGaussCounter") * 10)))
 	{
@@ -481,7 +481,7 @@ script HL_GAUSS_SCRIPT (void)
 }
 
 
-script SAMSARA_CLIENT_DECORATE (int which, int a1, int a2) clientside
+script "SamsaraClientDecorate" (int which, int a1, int a2) clientside //212 -- SAMSARA_CLIENT_DECORATE
 {
     int i, j, k;
     int x, y, z;
@@ -626,7 +626,7 @@ script SAMSARA_CLIENT_DECORATE (int which, int a1, int a2) clientside
     SetResultValue(result);
 }
 
-script SAMSARA_GETSETTINGS (void) net
+script "SamsaraGetSettings" (void) net //676 -- SAMSARA_GETSETTINGS
 {
     int lmsLevel = middle(0, GetCVar("sams_lmslife"), LMSMODES-1);
     int lmsHP, lmsArmor;
@@ -769,7 +769,7 @@ int keys[3][26] = {{0},
 
 // Give keys as needed, for people joining the game.
 
-script 901 ENTER
+script "SamsaraKeyShare" ENTER //901
 {
     if (!(IsSinglePlayer() || IsCoop())) { terminate; }
 
@@ -786,7 +786,7 @@ script 901 ENTER
     }
 }
 
-script 902 (int a) { // Picked up a key, broadcast that shit to the whole world!
+script "SamsaraKeyBroadcast" (int a) { // Picked up a key, broadcast that shit to the whole world! --902
     if(keys[0][a] == 0 && isCoop() && !isSinglePlayer()) {
         Log(n:0,s:"\c* has picked up the ",s:keys[2][a],s:"\c*."); // Let the server admins know.
         HudMessageBold(n:0,s:"\c* has picked up the ",s:keys[2][a],s:"\c*.";HUDMSG_FADEOUT, 900, CR_GOLD, 0.5, 0.1, 3.0, 0.5);
@@ -801,7 +801,7 @@ script 902 (int a) { // Picked up a key, broadcast that shit to the whole world!
 // ITEM STUFF
 //////////////
 
-script 214 (int dukeshit)
+script "DukeResourceDrain" (int dukeshit) //214
 {
     switch(dukeshit)
     {
@@ -857,7 +857,7 @@ script 214 (int dukeshit)
     }
 }
 
-script 202 (void)
+script "TomeOfPowerCooldown" (void) //202
 {
     while (CheckInventory("TomeOfPowerCooldown") > 0)
     {
@@ -875,7 +875,7 @@ script 202 (void)
     }
 }
 
-script 207 (void)
+script "DiscOfRepulsionCooldown" (void) //207
 {
     if (CheckInventory("DiscOfRepulsionCooldown") > 0)
     {
@@ -885,7 +885,7 @@ script 207 (void)
     }
 }
 
-script 203 unloading
+script "SamsaraUnloading" unloading //203
 {
     int i;
     UnloadingNow = 1;
@@ -897,7 +897,7 @@ script 203 unloading
 // BOSS STUFF
 //////////////
 
-script 204 (int bossmonologueshit)
+script "SamsaraBossMonologue" (int bossmonologueshit) //204
 {
     switch(bossmonologueshit)
     {
@@ -1168,7 +1168,7 @@ script 204 (int bossmonologueshit)
     }
 }
 
-script 205 (void)
+script "DukeTauntCooldown" (void)  //205
 {
     while (CheckInventory("DukeTauntCooldown") > 0)
     {
@@ -1177,7 +1177,7 @@ script 205 (void)
     }
 }
 
-script 583 (int x, int y, int z)
+script "QuakeGrenade" (int x, int y, int z) //583
 {
     if (GetActorZ(0) - GetActorFloorZ(0) > 4.0)
     {
@@ -1189,7 +1189,7 @@ script 583 (int x, int y, int z)
     }
 }
 
-script 586 (int divI, int divF, int divF1)
+script "QuakeParticle" (int divI, int divF, int divF1) //586
 {
     int div = percFloat2(divI, divF, divF1);
 
@@ -1200,7 +1200,7 @@ script 586 (int divI, int divF, int divF1)
     SetActorVelocity(0, FixedMul(x, div), FixedMul(y, div), FixedMul(z, div), 0, 1);
 }
 
-script 678 (int which)
+script "Samsara678" (int which) //678
 {
     int x, y, z;
 
@@ -1210,17 +1210,17 @@ script 678 (int which)
 	switch(which)
 	{
 	case 1:
-		ACS_ExecuteAlways(682, 0, x, y, z);
+		ACS_NamedExecuteAlways("Samsara682", 0, x, y, z);
 		break;
 	case 2:
-		ACS_ExecuteAlways(721, 0, x, y, z);
-		ACS_ExecuteWithResult(681, x, y, z);
+		ACS_NamedExecuteAlways("Samsara721", 0, x, y, z);
+		ACS_NamedExecuteWithResult("Samsara681", x, y, z);
 		break;		
 	case 3:
-		ACS_ExecuteAlways(721, 0, x, y, z);
+		ACS_NamedExecuteAlways("Samsara721", 0, x, y, z);
 		break;				
 	default:
-		ACS_ExecuteAlways(679, 0, x, y, z);
+		ACS_NamedExecuteAlways("Samsara679", 0, x, y, z);
 		break;
 	}
 }
@@ -1228,7 +1228,7 @@ script 678 (int which)
 ////////////////////////////////
 #libdefine PUFF_DIST 8.0
 #libdefine PLAYER_VIEWHEIGHT 34.0
-script 721 (int px, int py, int pz) CLIENTSIDE
+script "Samsara721" (int px, int py, int pz) CLIENTSIDE //721
 { 
 	int tx, ty, tz;
 	int vx, vy, vz;
@@ -1275,7 +1275,7 @@ script 721 (int px, int py, int pz) CLIENTSIDE
 #libdefine D_PUFF_DELAY		1000
 #libdefine PUFF_ROT_UP		100
 
-script 681 (int px, int py, int pz) CLIENTSIDE
+script "Samsara681" (int px, int py, int pz) CLIENTSIDE //681
 {
 	int tx, ty, tz;
 	int e1x, e1y, e1z, e1l;
@@ -1453,7 +1453,7 @@ script 681 (int px, int py, int pz) CLIENTSIDE
 str lolpages[2] =
 { "HLGaussParticleYellow", "HLGaussParticleWhite" };
 
-script 682 (int tx, int ty, int tz) clientside
+script "Samsara682" (int tx, int ty, int tz) clientside //682
 {
     int t, i, k = 0, l, angle, pitch;
     int x, y, z;
@@ -1491,7 +1491,7 @@ script 682 (int tx, int ty, int tz) clientside
 
 ////////////////////////////////
 
-script 802 (void) clientside //without this = bye bye server
+script "Samsara802" (void) clientside //without this = bye bye server  //802
 {
 	int px, py, pz;
 	int tx, ty, tz;
@@ -1539,7 +1539,7 @@ script 802 (void) clientside //without this = bye bye server
 }
 
 #libdefine HL_BARNACLE_PULL_FACTOR 25.0
-script 803 (void) clientside
+script "Samsara803" (void) clientside //803
 {
 	int px, py, pz;
 	int tx, ty, tz;
@@ -1571,7 +1571,7 @@ script 803 (void) clientside
 }
 
 //+Modified
-script 679 (int tx, int ty, int tz) clientside
+script "Samsara679" (int tx, int ty, int tz) clientside //679
 {
     int t, i, k = 0, l;
     int x, y, z;
@@ -1610,7 +1610,7 @@ script 679 (int tx, int ty, int tz) clientside
     }
 }
 
-Script 2530 (int mode) // Samsara Extra Death Special Effects
+Script "ExtraDeathFX" (int mode) // Samsara Extra Death Special Effects -- 2530
 {
 	Switch(mode)
 	{
@@ -1625,7 +1625,7 @@ Script 2530 (int mode) // Samsara Extra Death Special Effects
 	}
 }
 
-Script 2560 (int mode)
+Script "CellPhoneHax" (int mode) //2560
 {
 	Switch(mode)
 	{
@@ -1810,7 +1810,7 @@ Script "Samsara_UniqueKeys" (void)
 	switch(PlayerClass(pln))
 	{
 		case 19:
-			ACS_ExecuteWithResult(2677,0,0,0);
+			ACS_NamedExecuteWithResult("HL2677",0,0,0);
 			break;
 		case 26:
 			ACS_NamedExecuteWithResult("BondActivateWatch",0,0,0);
@@ -1920,7 +1920,7 @@ str hexenfighterdropstrings[2] = {"DropCleric","DropMage"};
 str eradicatordropstrings[3] = {"DropDan","DropKamechak","DropMarine"};
 str ipogdropstrings[4] = {"DropCyborg","DropLizard","DropSpecimen","DropDominatrix"};
 
-Script 2999 (int class, int mode)
+Script "Samsara2999" (int class, int mode)
 {
 	int resultcounter = 0;	
 	int maxallies = 2;
@@ -2352,7 +2352,7 @@ int ArmorBonusMapCount = 0;
 int HealthBonusScriptCount = 0;
 int ArmorBonusScriptCount = 0;
 
-Script 2689 (int mode)
+Script "Samsara2689" (int mode)  //2689
 {
 	int any;
 	int spawnchance = random(0,100);
@@ -3040,7 +3040,7 @@ Script "Samsara_ResetInventory" (void)
 			{
 				LocalAmbientSound("duke/mpdeath",127);
 				GiveInventory("DukeTauntCooldown",5);
-				ACS_ExecuteAlways(205,0,0);
+				ACS_NamedExecuteAlways("DukeTauntCooldown",0,0);
 			}
 			break;
 		case 6:

@@ -4,7 +4,7 @@ int msgColors[22] =
     "\cl", "\cm", "\cn", "\co", "\cp", "\cq", "\cr", "\cs", "\ct", "\cu", "\cv"
 };
 
-script SAMSARA_CLIENT_CLASS (int slot) clientside
+script "SamsaraClientClass" (int slot) clientside //228 -- SAMSARA_CLIENT_CLASS
 {
 	int alternativeclass;
     int toClass = SamsaraClientClass-1;
@@ -209,7 +209,7 @@ script SAMSARA_CLIENT_CLASS (int slot) clientside
 *  (current count: 25)
 */
 
-script SAMSARA_GIVEWEAPON (int slot, int dropped, int silent)
+script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_GIVEWEAPON
 {
     if (!IsServer) { terminate; }
     slot = itemToSlot(slot);
@@ -294,7 +294,7 @@ script SAMSARA_GIVEWEAPON (int slot, int dropped, int silent)
 				}
             }
 
-            ACS_ExecuteAlways(SAMSARA_CLIENT_WEAPONPICKUP, 0, slot,GetCVar("compat_silentpickup"),dropped);		
+            ACS_NamedExecuteAlways("SamsaraClientWeaponPickup", 0, slot,GetCVar("compat_silentpickup"),dropped);		
 			
 		}
 	}
@@ -316,7 +316,7 @@ script SAMSARA_GIVEWEAPON (int slot, int dropped, int silent)
     SetResultValue((weaponStay * WEPFLAGS_WEAPONSTAY) + (success * WEPFLAGS_GOTWEAPON));
 }
 
-script SAMSARA_GIVEUNIQUE (int alt)
+script "SamsaraGiveUnique" (int alt) //231 -- SAMSARA_GIVEUNIQUE
 {
     if (!IsServer) { terminate; }
     
@@ -331,7 +331,7 @@ script SAMSARA_GIVEUNIQUE (int alt)
     
     if (uniqueGet && IsServer)
     {
-        ACS_ExecuteAlways(SAMSARA_CLIENT_UNIQUEPICKUP, 0, GetCVar("compat_silentpickup"), 0, 0);
+        ACS_NamedExecuteAlways("SamsaraClientUniquePickup", 0, GetCVar("compat_silentpickup"), 0, 0);
     }
     
     SetResultValue(uniqueGet);
@@ -339,7 +339,7 @@ script SAMSARA_GIVEUNIQUE (int alt)
 
 int QuoteStorage[MSGCOUNT];
 
-script SAMSARA_CLIENT_WEAPONPICKUP (int slot, int soundmode, int dropped) clientside
+script "SamsaraClientWeaponPickup" (int slot, int soundmode, int dropped) clientside //616 -- SAMSARA_CLIENT_WEAPONPICKUP
 {
     int pln = PlayerNumber(), cpln = ConsolePlayerNumber();
     int pclass = samsaraClassNum();
@@ -390,7 +390,7 @@ script SAMSARA_CLIENT_WEAPONPICKUP (int slot, int soundmode, int dropped) client
             if (soundmode == 1) { LocalAmbientSound("duke/weapontaunt", 127); }
             else { ActivatorSound("duke/weapontaunt", 127); }
             GiveInventory("DukeTauntCooldown",5);
-            ACS_ExecuteAlways(205,0,0);
+            ACS_NamedExecuteAlways("DukeTauntCooldown",0,0);
             DukeQuoteCooldown[pln] = 140;
         }
     }
@@ -403,14 +403,14 @@ script SAMSARA_CLIENT_WEAPONPICKUP (int slot, int soundmode, int dropped) client
             if (soundmode == 1) { LocalAmbientSound("Leonard/weapontaunt", 127); }
             else { ActivatorSound("Leonard/weapontaunt", 127); }
             GiveInventory("LeonardTauntCooldown",5);
-            ACS_ExecuteAlways(706,0,0);
+            ACS_NamedExecuteAlways("LeonardTauntCooldown",0,0);
             LeonardQuoteCooldown[pln] = 140;
         }
     }	
 	
 }
 
-script SAMSARA_CLIENT_UNIQUEPICKUP (int soundmode) clientside
+script "SamsaraClientUniquePickup" (int soundmode) clientside //633 -- SAMSARA_CLIENT_UNIQUEPICKUP
 {
     int pln = PlayerNumber(), cpln = ConsolePlayerNumber();
     int pclass = samsaraClassNum();

@@ -1,9 +1,9 @@
 // Banking off the fact that this never changes...
+#library "strfhelp"
 
 #include "zcommon.acs"
-
 #include "samsaraDefs.h"
-#library "strfhelp"
+
 
 #define VDOORSPEED  16
 #define VDOORWAIT   150
@@ -317,7 +317,7 @@ script << 0 >> (int type, int tag)
             print (s:"You've destroyed the Converter!");
             GiveInventory("QuestItem25", 1);
             GiveInventory("UpgradeStamina", 10);
-            ACS_ExecuteAlways(SAMSARA_STRIFEACCURACY, 0, -1,0,0);
+            ACS_NamedExecuteAlways("SamsaraStrifeAccuracy", 0, -1,0,0);
         }
         else
         {
@@ -347,7 +347,7 @@ script << 0 >> (int type, int tag)
         if (Floor_LowerToHighest (tag, 8, 128))
         {
             GiveInventory("UpgradeStamina", 10);
-            ACS_ExecuteAlways(SAMSARA_STRIFEACCURACY, 0, -1,0,0);
+            ACS_NamedExecuteAlways("SamsaraStrifeAccuracy", 0, -1,0,0);
             print(s:"Congratulations! You have completed the training area!");
         }
         else

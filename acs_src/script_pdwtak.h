@@ -1,4 +1,4 @@
-script SAMSARA_PDWTAK death
+script "SamsaraPDWTAK" death //675 -- SAMSARA_PDWTAK
 {
     int bombtimer, yourTID;
     int pdwtak = GetCVar("sams_peoplediewhentheyarekilled");

@@ -796,12 +796,12 @@ function int defaultTID(int def)
     }
 
     Thing_ChangeTID(0, tid);
-    ACS_ExecuteAlways(DEFAULTTID_SCRIPT, 0, tid,0,0);
+    ACS_NamedExecuteAlways("DefaultTIDScript", 0, tid,0,0);
 
     return tid;
 }
 
-script DEFAULTTID_SCRIPT (int tid) clientside
+script "DefaultTIDScript" (int tid) clientside //471 -- DEFAULTTID_SCRIPT
 {
     if (ConsolePlayerNumber() == -1) { terminate; }
     Thing_ChangeTID(0, tid);

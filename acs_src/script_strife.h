@@ -2,7 +2,7 @@ int KilledOracle = 0;
 int AwakenSpectres = 0;
 int SpectreTarget;
 
-script SAMSARA_STRIFEACCURACY (int which)
+script "SamsaraStrifeAccuracy" (int which) //313 -- SAMSARA_STRIFEACCURACY
 {
     if (which == -1) { which = CheckInventory("StrifeAccuracyCounter"); }
     which = middle(1, which, ACCURACYCOUNT) - 1;
@@ -19,10 +19,10 @@ script SAMSARA_STRIFEACCURACY (int which)
 
     GiveInventory(unique, 1);
 
-    ACS_ExecuteAlways(SAMSARA_CLIENT_ACCURACY, 0, GetCVar("compat_silentpickup"),0,0);
+    ACS_NamedExecuteAlways("SamsaraClientAccuracy", 0, GetCVar("compat_silentpickup"),0,0);
 }
 
-script SAMSARA_CLIENT_ACCURACY (int soundmode) clientside
+script "SamsaraClientAccuracy" (int soundmode) clientside //314 -- SAMSARA_CLIENT_ACCURACY
 {
     int pln = PlayerNumber(), cpln = ConsolePlayerNumber();
     int pclass = samsaraClassNum();
@@ -62,7 +62,7 @@ script SAMSARA_CLIENT_ACCURACY (int soundmode) clientside
     ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], 0.0, itof(ClassFades[pclass][4]) / 35);
 }
 
-script SAMSARA_BEACON (int noloop)
+script "SamsaraBeacon" (int noloop) //315 -- SAMSARA_BEACON
 {
     int pln, classnum, monType, monTID, success = 0;
     int beaconTID = defaultTID(0);
@@ -101,7 +101,7 @@ script SAMSARA_BEACON (int noloop)
     }
 }
 
-script SAMSARA_SPECTRES (int mode, int arg1, int arg2)
+script "SamsaraSpectres" (int mode, int arg1, int arg2) //316 -- SAMSARA_SPECTRES
 {
     int i,j,k,l, x,y,z;
     int result;
@@ -182,7 +182,7 @@ script SAMSARA_SPECTRES (int mode, int arg1, int arg2)
         GiveInventory("Communicator", 1);
         GiveInventory("QuestItem26", 1);
 
-        ACS_ExecuteAlways(SAMSARA_STRIFEACCURACY, 0, -1,0,0);
+        ACS_NamedExecuteAlways("SamsaraStrifeAccuracy", 0, -1,0,0);
         GiveInventory("UpgradeStamina", 1);
 
         if (CheckInventory("QuestItem23") && CheckInventory("QuestItem24") && CheckInventory("QuestItem21"))
@@ -198,7 +198,7 @@ script SAMSARA_SPECTRES (int mode, int arg1, int arg2)
       case 6:
         if (arg1 < 1 || arg1 > SIGILCOUNT)
         {
-            Log(s:"\caERROR\c-: Illegal value for sigil splinter given to script ", d:SAMSARA_SPECTRES, s:" (", d:arg1, s:")");
+            Log(s:"\caERROR\c-: Illegal value for sigil splinter given to script ", s:"SamsaraSpectres", s:" (", d:arg1, s:")");
             break;
         }
 
@@ -233,7 +233,7 @@ script SAMSARA_SPECTRES (int mode, int arg1, int arg2)
     SetResultValue(result);
 }
 
-script SAMSARA_SIGIL (int sequence)
+script "SamsaraSigil" (int sequence) //317 -- SAMSARA_SIGIL
 {
 	int i, splinterCount = 0;
 	switch(sequence)

@@ -66,7 +66,7 @@ script SAMSARA_MARATHON (int class, int slot, int dropped)
     }
 }
 
-script SAMSARA_RESONATE (int which, int frequency) clientside
+script "SamsaraResonate" (int which, int frequency) clientside //608
 {
     if (which < 0 || which >= RESCOUNT) { Log(s:"\caERROR\c- (minor): Attempted to resonate with invalid index (", d:which, s:")"); terminate; }
 
