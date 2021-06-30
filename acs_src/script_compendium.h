@@ -16,7 +16,7 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 //	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White" }},
 	{{"Eleena", 13, "B+", "E", "D", "C+", "Hard", "Area Denial", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "CMPBERAD", "untranslated", "CMPSERAD", "untranslated", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5", "", "", "", "DarkGray", "White" }},
 	{{"Space Seal", 14, "B+", "D-", "B+", "A-", "Avg", "DPS", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "CMPBCOR7", "Corridor7CompendiumBrightYellow", "CMPSCOR7", "Corridor7CompendiumGreen", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "", "", "Corridor7CompendiumYellow", "Corridor7CompendiumBrightYellow" }},
-	{{"LDF Commando", 15, "E", "D+", "S", "A+", "Very Easy", "Marksman", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "SMALLFONT", "LightBlue", "SMALLFONT", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
+	{{"LDF Commando", 15, "E", "D+", "S", "A+", "Very Easy", "Marksman", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "CMPBRMR", "untranslated", "CMPSRMR", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
 	{{"Kyle Katarn", 16, "B", "B", "C", "A-,S", "Easy", "Assault", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5", "", "", "", "DarkGray", "White" }},
 	{{"Mooman", 17, "B", "C+", "B-", "B+", "Easy", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8", "DarkGray", "White" }},
 	{{"Jack Curtis", 18, "A+", "C+", "C-", "B-", "Hard", "Psychic", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5", "", "", "", "DarkGray", "White" }},
@@ -36,7 +36,7 @@ int ClassFontScales[CLASSCOUNT][2] =
 {  
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
 	{ 2.67, 2.0 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },	
-	{ 2.5, 1.0 },	{ 1.5, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	
+	{ 2.5, 1.0 },	{ 1.5, 1.0 },	{ 4.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.125, 1.25 },	
 	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.5, 2.0 },
 };
@@ -514,7 +514,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},
 	{
 		{
-			{ "Summary", "One warrior, one sword, one arch enemy. Grondoval is the mightiest and bravest of all warriors from the land of Stazhia. He has been to chosen to travel to the Island of Char and slay the evil witch Illwhyrin. Not even Illwhyrin's sister, Cirae-Argoth, could kill Grondoval. With his weaponry and magic scrolls he is able to kill anyone, no matter how big, scary or brutal they are. \n\nGrondoval's weaponry is a unique and balanced mix of Witchaven I and II. The melee attacks are so strong and crushing, that even big enemies like the Archvile or Baron of Hell feel atrocious pain and are stunned for a moment. Thus he excels in melee and easily defeats any big enemy in a duel. But be careful: Large groups and hordes of enemies constitute a big threat to him and can easily surround him.", ""},
+			{ "Summary", "One warrior, one sword, one arch enemy. Grondoval is the mightiest and bravest of all warriors from the land of Stazhia. He has been chosen to travel to the Island of Char and slay the evil witch Illwhyrin. Not even Illwhyrin's sister, Cirae-Argoth, could kill Grondoval. With his weaponry and magic scrolls he is able to kill anyone, no matter how big, scary or brutal they are. \n\nGrondoval's weaponry is a unique and balanced mix of Witchaven I and II. The melee attacks are so strong and crushing, that even big enemies like the Archvile or Baron of Hell feel atrocious pain and are stunned for a moment. Thus he excels in melee and easily defeats any big enemy in a duel. But be careful: Large groups and hordes of enemies constitute a big threat to him and can easily surround him.", ""},
 			
 			{ "Traits", "Knight's Honor: Grondoval is mainly a melee user, while he has ranged options like his bow and other tools, he is mainly a melee warrior, and majority of his slots have melee only modes to converse ammo while still putting up a decent fight.
 			\n\nThou art a lord!: In Witchaven you could level up and gain more strength, health and armor. Instead, you start immediately as a veteran (250 HP, maximum armor of 300).
@@ -1914,9 +1914,10 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][21] =
 		{ "Black Widow Guardian", "COMP_THREAT_6", "The Black Widow is found in the Widow's Lair, protecting the Gravity Well and must be defeated to gain access to the Gravity Well's computer in order to plant the anti-matter bomb. As well as having the ability to spawn in Stalkers, the Widow is one of the few Strogg who have two forms. When her first form is defeated, she will teleport away and return moments later, suited up with stronger armor and more powerful weapons.", "Q2Widow", "CMPMQ235", "Q2Widow2", "CMPMQ236" },
 	}},
 	{{
+		{"Knight Archer", "COMP_THREAT_1", "Sharpshooters brought into the world of Thyrion by Eidolon to assist in its conquest. Characterized by their horned helmets and armored tunics, these knights will fire a mix of green and red arrows at any foe it encounters. Although they deal decent damage, they move and attack slowly and can be easily overwhelmed. Encountered throught Thyrion, they are found mostly in Blackmarsh.", "Hexen2KnightArcher", "CMPMH201"},
 	}},
 	{{
-		{ "Siberian Guard (Arkangelsk)", "COMP_THREAT_1", "", "Goldeneye_GreatGuard2", "TK14A1" },
+		{ "Siberian Guard (Arkangelsk)", "COMP_THREAT_1", "Soviet Conscripts drafted into guarding the Arkangelsk Dam in Siberia, these guys are seen wearing brown overcoats and exclusively carry KF7s. As they lack experience, they tend to miss a lot and can be dispatched rather easily.", "Goldeneye_GreatGuard2", "CMPMGE01" },
 	}},
 	{{
 		{ "Orc Warrior [3D]", "COMP_THREAT_1", "These treacherous little brutes come in groups guarding the halls of the Catacomb. Armed with spears, they don't do a lot of damage on their own, and they're not too durable, either. However, you still won't want to be cornered by a group of them. A little shorter than what you may expect an orc to look.", "Catacomb3D_Orc", "CT03A0" },
