@@ -1,8 +1,8 @@
 // Label, index, damage, defense, range, attack speed, difficulty, character symbol, small character, game logo, large character, big font, big font color, small font, small font color, background top wall, background bottom wall, background side banner right, background logo, background character symbol, background right banner, selected font color
 str ClassInfo[CLASSCOUNT][MAXMODES][28] = 
 { 
-	{{"Doomguy", 1, "A+", "C", "C", "D+", "Easy", "Damage", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01", "", "", "", "DarkGray", "White" }, {"Doomguy (N64)", 1, "A+", "C", "C", "C-", "Easy", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White", "Jingle bells graf smells" }},
-	{{"Chex Warrior", 2, "B-", "A+", "C+", "D", "Very Easy", "Defense", "TIPSYM02", "TIPHIL02", "TIPCHEX", "TPLGCHEX", "TPCHCHEX", "SMALLFONT", "Green", "SMALLFONT", "Green", "CMPBGCH1", "CMPBGCH2", "CMPBGCH3", "", "TIPSYM02", "", "", "", "DarkGray", "White" }},
+	{{"Doomguy", 1, "A+", "C", "C", "D+", "Easy", "Damage", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "CMPSDOOM", "Red", "CMPSDOOM", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01", "", "", "", "DarkGray", "White" }, {"Doomguy (N64)", 1, "A+", "C", "C", "C-", "Easy", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White", "Jingle bells graf smells" }},
+	{{"Chex Warrior", 2, "B-", "A+", "C+", "D", "Easiest", "Defense", "TIPSYM02", "TIPHIL02", "TIPCHEX", "TPLGCHEX", "TPCHCHEX", "CMPSDOOM", "Green", "CMPSDOOM", "Green", "CMPBGCH1", "CMPBGCH2", "CMPBGCH3", "", "TIPSYM02", "", "", "", "DarkGray", "White" }},
 	{{"Corvus", 3, "C", "B", "D+", "C+", "Hard", "Utility", "TIPSYM03", "TIPHIL03", "TIPCORV", "TPLGCORV", "TPCHCORV", "CMPSHERE", "White", "CMPSHERE", "White", "CMPBGHE1", "CMPBGHE2", "CMPBGHE3", "CMPBGHE4", "TIPSYM03", "", "", "", "DarkGray", "White" }},
 	{{"Blazkowicz", 4, "C-", "C+", "A", "A-", "Easy", "Survivalist", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWF1", "CMPBGWF2", "CMPBGWF3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" },{"Blazkowicz", 4, "C-", "C+", "B+", "A-", "Easy", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWS1", "CMPBGWS2", "CMPBGWS3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }, {"Blazkowicz", 4, "A-", "C+", "D+", "A-", "Avg", "Plunderer", "TIPSYM04", "TIPHIL29", "TIPTKOPF", "TPLGTKPF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumYellow", "CMPSWOLF", "TotenkopfCompendiumRed", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray", "Randy Pitchford laid an egg" }},
 	{{"Parias", 5, "B+", "B-", "C-", "B", "Avg", "Brawler", "TIPSYM05", "TIPHIL05", "TIPPARIA", "TPLGHEXN", "TPCHHEXN", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }, {"Daedalon", 5, "C+", "D+", "C+", "C-", "Hard", "Mage", "TIPSYM05", "TIPHIL05", "TIPHMAGE", "TPLGHEXN", "TPCHHEXM", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }, {"Baratus", 5, "A-", "B-", "D", "D+", "Expert", "Berserker", "TIPSYM05", "TIPHIL05", "TIPBARAT", "TPLGHEXN", "TPCHHEXF", "CMPSHEX1", "untranslated", "CMPSHEX1", "untranslated", "CMPBGH11", "CMPBGH12", "CMPBGH13", "CMPBGHE4", "CMPBGH15", "", "", "", "DarkGray", "White" }},
@@ -16,7 +16,7 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 //	{{"Doomguy (N64)", 13, "*****", "***", "***", "**", "*", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "SMALLFONT", "Red", "SMALLFONT", "Red", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White" }},
 	{{"Eleena", 13, "B+", "E", "D", "C+", "Hard", "Area Denial", "TIPSYM14", "TIPHIL14", "TIPELENA", "TPLGERAD", "TPCHERAD", "CMPBERAD", "untranslated", "CMPSERAD", "untranslated", "CMPBGER1", "CMPBGER2", "CMPBGER3", "CMPBGER4", "CMPBGER5", "", "", "", "DarkGray", "White" }},
 	{{"Space Seal", 14, "B+", "D-", "B+", "A-", "Avg", "DPS", "TIPSYM15", "TIPHIL15" , "TIPSSEAL", "TPLGCOR7", "TPCHCOR7", "CMPBCOR7", "Corridor7CompendiumBrightYellow", "CMPSCOR7", "Corridor7CompendiumGreen", "CMPBGC71", "CMPBGC72", "CMPBGC73", "CMPBGC74", "CMPBGC75", "", "", "", "Corridor7CompendiumYellow", "Corridor7CompendiumBrightYellow" }},
-	{{"LDF Commando", 15, "E", "D+", "S", "A+", "Very Easy", "Marksman", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "CMPBRMR", "untranslated", "CMPSRMR", "LightBlue", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
+	{{"LDF Commando", 15, "E", "D+", "S", "A+", "Easiest", "Marksman", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "CMPBRMR", "untranslated", "CMPSRMR", "RMRTeal", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
 	{{"Kyle Katarn", 16, "B", "B", "C", "A-,S", "Easy", "Assault", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5", "", "", "", "DarkGray", "White" }},
 	{{"Mooman", 17, "B", "C+", "B-", "B+", "Easy", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8", "DarkGray", "White" }},
 	{{"Jack Curtis", 18, "A+", "C+", "C-", "B-", "Hard", "Psychic", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5", "", "", "", "DarkGray", "White" }},
@@ -36,7 +36,7 @@ int ClassFontScales[CLASSCOUNT][2] =
 {  
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
 	{ 2.67, 2.0 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 1.0 },	{ 1.0, 1.0 },	
-	{ 2.5, 1.0 },	{ 1.5, 1.0 },	{ 4.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	
+	{ 2.5, 1.0 },	{ 1.5, 1.0 },	{ 4.0, 1.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.125, 1.25 },	
 	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.5, 2.0 },
 };
@@ -598,6 +598,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			
 			{ "Medikits", "When you pick up the Medikit, it will either:\n\nA) Give you pork rinds (instant healing)\n\nB) Give you a 6 pack of beer\n\nC) Give you 6 cow pies", "RRCMEDKT"},
 			{ "Soulspheres", "When you pick up the Soulsphere, it will either:\n\nA) Give you a dee-lishus goo goo cluster(instant healing)\n\nB) Give you a bottle of cheap ass whiskey...", "RRCSOULS"},
+			{ "Banjo Concert", "From an article found in the Hickston Hog, April 1, 1998: \n\nPIG FLATS - Mississipi. Astonishment and panic have gripped the populace of this hamlet, as annoying banjo music have awakened the townsfolk for the third night in a row. Reports said the people responsible are the long missing banjo artists, Billy Ray Jeter and the Old Coot, in spite of numerous reports that the two men have been killed numerous times. Scientists say that the dead Billy Rays and Old Coots must have been clones, and the unkillable ones are the genuine article.\n\n\"We believe banjo music and alien experimentation are responsible.\" Dr. Lewis Smart, a professor at Arkansas Middle School explained. \"They must have performed some experiment that causes banjo music to kill off the aging cells. It's all very scientific and complicated. You really need a degree or two to understand it.\" \n\nThe explanation provided little consolation to the sleepless townsfolk. \"That Billy Ray's a traitor!\" One angry townsman was quoted as saying. \"He used to be in a jug band, and now he's gone banjo on us! He done a damn sell out job on us jug music fans! Next thing you know, he'll be headlining Hollerpolooza And to add insult t' injury, now I just gones and wasted my best buckshot on 'im, and I still can't nail his ass. And now they is gone and said that banjo music is making him too tough for my rifle! Shiiiyit! Life ain't fair.\" \n\nSome scientists dispute the banjo theory, saying that the reason that Billy Ray and the Old Coot can't be killed are because of secret experiments by the evil Xatrix Corporation, which mistook Billy Ray and the Old Coot for videogame characters, and since videogame characters can't really be killed, neither can Billy Ray or the Old Coot. Xatrix was not available for comment. \n\nBilly Ray and the Old Coot were last seen heading in the direction of Hickston.", "RRBANJO" },
 		},
 		{
 			{ "", "", ""},
@@ -2331,7 +2332,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 				fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][0]);
 				fontscaledy = FixedMul(hudcentery,ClassFontScales[menuindex-1][0]);
 				SetHudSize(fontscaledx,fontscaledy,true);
-				SetHudClipRect(FixedMul(fontscaledx,0.05),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.1755),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.2));
+				SetHudClipRect(FixedMul(fontscaledx,0.05),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.1755),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.18));
 				for(a = 1; a < 21; a++)
 				{
 					if(StrLen(ClassWeaponInfo[menuindex-1][altskin][a-1][0]) != 0)
@@ -2476,6 +2477,31 @@ Script "Samsara_Compendium" (void) Net Clientside
 				}*/
 				SetHudClipRect(0,0,0,0,0);							
 				SetHudSize(hudcenterx,hudcentery,true);
+				if(abs(forwardmove) > 8 && buttons != oldbuttons)	
+				{	
+					if(StrLen(HeroInformation[menuindex-1][altskin][(menuitem-1)-sign(forwardmove)][0]) != 0) 	
+					{ 	
+						listindex-=sign(forwardmove); 	
+						condition = (FixedMul(hudboundsy*2,0.1+(0.025*(listindex-listyposition))) > FixedMul(hudboundsy,0.95));	
+						if(condition && sign(forwardmove) < 0)	
+							listyposition+=condition;	
+						else if (sign(forwardmove) > 0 && listyposition > 0)	
+							listyposition--;	
+					}	
+					else if(listindex == 1 && sign(forwardmove) > 0)	
+					{	
+						for(a = 0; a < 20; a++)	
+						{	
+							condition = (FixedMul(hudboundsy*2,0.1+(0.025*a)) > FixedMul(hudboundsy,0.95));	
+							if(condition)	
+								listyposition+=condition;	
+									
+							if(StrLen(HeroInformation[menuindex-1][altskin][a][0]) == 0) { menuitem = a; listindex = menuitem; break; }	
+						}	
+					}	
+					else { listindex = 1; listyposition = 0; }			
+					menuitem = listindex;	
+				}
 			}
 			else if(menutab == 2)
 			{
