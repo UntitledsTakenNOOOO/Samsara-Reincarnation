@@ -651,12 +651,18 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 		{" Staff ", "Gauntlets of the Necromancer", "Elven Wand", " Firemace ", "Ethereal Crossbow", "Dragon Claw", "Phoenix Rod", "Hellstaff", "DSparilStaff" },
 	},
 	{
-		{"Knife", "", "Luger", "Machine Gun", "", "  Chaingun  ", " Rocket Launcher ", " Flamethrower ", " Spear Of Destiny", "Totenkopf_FlameThrower", "Totenkopf_MG42" },
+		{"Knife", "", "Luger", "Machine Gun", "", "  Chaingun  ", " Rocket Launcher ", " Flamethrower ", " Spear Of Destiny", "", "" },
+		{"Knife", "", "Luger", "Machine Gun", "", "  Chaingun  ", " Rocket Launcher ", " Flamethrower ", " Spear Of Destiny", "", "" },
+		{"Knife", "", "Luger", "Machine Gun", "Totenkopf_STG44", "  Chaingun  ", " Rocket Launcher ", " Flamethrower ", " Spear Of Destiny", "Totenkopf_FlameThrower", "Totenkopf_MG42" },
 	},
 	{
 		{"Mace of Contrition", "", "Sapphire Wand", "Frost Shards", "Timon's Axe", "Hammer of Retribution", "Firestorm", "Wraithverge"},
+		{"Mace of Contrition", "", "Sapphire Wand", "Frost Shards", "Timon's Axe", "Hammer of Retribution", "Firestorm", "Wraithverge"},
+		{"Mace of Contrition", "", "Sapphire Wand", "Frost Shards", "Timon's Axe", "Hammer of Retribution", "Firestorm", "Wraithverge"},
 	},
 	{
+		{"Mighty Boot", "PipeBomb", "Glock 17", "  Shotgun  ", "Explosive Shotgun", "Chaingun Cannon", "RPG", "FreezeThrower", "Devastator", "Shrinker", "Expander", ""},
+		{"Mighty Boot", "PipeBomb", "Glock 17", "  Shotgun  ", "Explosive Shotgun", "Chaingun Cannon", "RPG", "FreezeThrower", "Devastator", "Shrinker", "Expander", ""},
 		{"Mighty Boot", "PipeBomb", "Glock 17", "  Shotgun  ", "Explosive Shotgun", "Chaingun Cannon", "RPG", "FreezeThrower", "Devastator", "Shrinker", "Expander", ""},
 	},
 	{
@@ -667,8 +673,13 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 	},
 	{
 		{"RottKnife", "Heatseeker", "RPistol", "Double Pistols", "Bazooka", "MP40", " FireBomb ", "DrunkMissiles", "FlameWall", "Excalibat", "Split Missile", "Dark Staff"},
+		{"RottKnife", "Heatseeker", "RPistol", "Double Pistols", "Bazooka", "MP40", " FireBomb ", "DrunkMissiles", "FlameWall", "Excalibat", "Split Missile", "Dark Staff"},
+		{"RottKnife", "Heatseeker", "RPistol", "Double Pistols", "Bazooka", "MP40", " FireBomb ", "DrunkMissiles", "FlameWall", "Excalibat", "Split Missile", "Dark Staff"},
+		{"RottKnife", "Heatseeker", "RPistol", "Double Pistols", "Bazooka", "MP40", " FireBomb ", "DrunkMissiles", "FlameWall", "Excalibat", "Split Missile", "Dark Staff"},
+		{"RottKnife", "Heatseeker", "RPistol", "Double Pistols", "Bazooka", "MP40", " FireBomb ", "DrunkMissiles", "FlameWall", "Excalibat", "Split Missile", "Dark Staff"},
 	},
 	{
+		{"", "", "Auto Charge Pistol", "Slow Fire Protector", "Heavy Assault Weapon", "Rapid Assault Weapon", "Plasma Discharge Unit", "Dual Neutron Disruptor", "Anti-Plasma Cannon"},
 		{"", "", "Auto Charge Pistol", "Slow Fire Protector", "Heavy Assault Weapon", "Rapid Assault Weapon", "Plasma Discharge Unit", "Dual Neutron Disruptor", "Anti-Plasma Cannon"},
 	},
 	{
@@ -699,6 +710,7 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 		{"WitchavenFists", "ShortSword", "Bow and Arrows", "Pike Axe", "Battle Axe", "Ice Halberd", "Fire Mace", "Frozen two-hand sword", "Spellbook"},
 	},
 	{
+		{"Crowbar", "Hornetgun", "9mm Pistol", ".357 Python", "Assault Shotgun", "MP5", " RPG ", "Gauss Cannon", "E.G.O.N.", "HL Squeaks", "HL Crossbow"},
 		{"Crowbar", "Hornetgun", "9mm Pistol", ".357 Python", "Assault Shotgun", "MP5", " RPG ", "Gauss Cannon", "E.G.O.N.", "HL Squeaks", "HL Crossbow"},
 	},
 	{
