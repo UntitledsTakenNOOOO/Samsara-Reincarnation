@@ -467,6 +467,10 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
     {
         GiveInventory("SPModeOn", 1);
     }
+	else if (isDeathMatch())
+	{
+		GiveInventory("DMModeOn", 1);
+	}	
     else if (isCoop())
     {
         GiveInventory("CoopModeOn", 1);

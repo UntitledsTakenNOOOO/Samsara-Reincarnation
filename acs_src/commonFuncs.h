@@ -509,6 +509,11 @@ function int isSinglePlayer(void)
     return GameType() == GAME_SINGLE_PLAYER;
 }
 
+function int isDeathMatch(void)
+{
+    return GameType() == GAME_NET_DEATHMATCH;
+}
+
 function int isLMS(void)
 {
     return GetCVar("lastmanstanding") || GetCVar("teamlms");
