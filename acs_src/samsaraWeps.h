@@ -466,7 +466,7 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Catacomb_ZappersQuickSpell",        				"Catacomb_Zappers",         "",         "", ""},
         {"Catacomb_NukesQuickSpell",        	"Catacomb_Nukes", 	"",       	"", ""},
         {"Catacomb_BoltsQuickSpell",        		"Catacomb_Bolts",   		"",   		"", ""},
-        {"Catacomb_Hourglass",             	"",   		"",   		"", ""},
+        {"Catacomb_AtomicQuickSpell",             	"Catacomb_Nukes",   		"Catacomb_Xterminators",   		"", ""},
     },	
 };
 
@@ -735,6 +735,6 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 		{"Goldeneye_Slapper", "Goldeneye_ThrowingKnives", "Goldeneye_PP7Silenced", "Goldeneye_KF7Soviet", "Goldeneye_AutoShotgun", "Goldeneye_AR33", "Goldeneye_RocketLauncher", "Goldeneye_RCP90", "Goldeneye_Moonraker", "Goldeneye_SniperRifle", "Goldeneye_SilencedD5K","Goldeneye_RemoteMine", "Goldeneye_GoldenGun"},
 	},
 	{
-		{"", "Catacomb_WavesQuickSpell", "Catacomb3D_MagicMissile", "Catacomb_XterminatorsQuickSpell", "Catacomb_BurstsQuickSpell", "Catacomb_ZappersQuickSpell", "Catacomb_NukesQuickSpell", "Catacomb_BoltsQuickSpell", ""},
+		{"", "Catacomb_WavesQuickSpell", "Catacomb3D_MagicMissile", "Catacomb_XterminatorsQuickSpell", "Catacomb_BurstsQuickSpell", "Catacomb_ZappersQuickSpell", "Catacomb_NukesQuickSpell", "Catacomb_BoltsQuickSpell", "Catacomb_AtomicQuickSpell", "", "", "", "Catacomb_Hourglass"},
 	},	
 };
