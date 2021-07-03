@@ -3466,5 +3466,6 @@ Script "Samsara_ResetInventory" (void)
 Script "Samsara_WeaponHotkeys" (int mode)
 {
 	int pln = PlayerNumber();
-	SetWeapon(ClassHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode]);
+	if(!SetWeapon(ClassHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode]))
+		UseInventory(ClassHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode]);
 }

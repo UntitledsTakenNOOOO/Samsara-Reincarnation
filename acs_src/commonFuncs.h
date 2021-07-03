@@ -509,11 +509,6 @@ function int isSinglePlayer(void)
     return GameType() == GAME_SINGLE_PLAYER;
 }
 
-function int isDeathMatch(void)
-{
-    return GameType() == GAME_NET_DEATHMATCH;
-}
-
 function int isLMS(void)
 {
     return GetCVar("lastmanstanding") || GetCVar("teamlms");
@@ -525,6 +520,11 @@ function int isCoop(void)
     int check2 = GetCVar("cooperative") || GetCVar("invasion") || GetCVar("survival");
 
     return check1 || check2;
+}
+
+function int isDeathMatch(void)
+{
+    return GameType() == GAME_NET_DEATHMATCH;
 }
 
 function int isInvasion(void)

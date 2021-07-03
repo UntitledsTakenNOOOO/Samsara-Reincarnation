@@ -369,7 +369,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
     int wsteSide;
     int armor, oarmor, type, otype;
     int i;
-	int doommode, dukemode, hexmode, wolfmode, rottmode, blakemode, halflifemode, previousvalue, cvalue;
+	int doommode, dukemode, hexmode, wolfmode, rottmode, blakemode, ipogmode, halflifemode, previousvalue, cvalue;
 	int targettid;
 	int bot = PlayerIsBot(pln);
 	
@@ -788,7 +788,37 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					}
 					previousvalue = blakemode;
 				}
-				break;				
+				break;	
+			case CLASS_POGREED:
+				ipogmode = GetUserCvar(pln,"sams_cl_ipogmode");
+				//only run these actions if the value changes
+				if(ipogmode != previousvalue)
+				{
+					GiveInventory("SamsaraAllySwitchCaller",1);
+					TakeInventory("IpogMode", 4);
+					GiveInventory("IpogMode",ipogmode);
+					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, ipogmode, pln); 
+					switch(ipogmode)
+					{				
+						default:
+							SetActorProperty(0,APROP_SoundClass,"Mooman");
+							break;
+						case 1:	
+							SetActorProperty(0,APROP_SoundClass,"Cyborg");
+							break;
+						case 2:
+							SetActorProperty(0,APROP_SoundClass,"Lizard");
+							break;
+						case 3:
+							SetActorProperty(0,APROP_SoundClass,"Specimen");
+							break;
+						case 4:
+							SetActorProperty(0,APROP_SoundClass,"Dominatrix");
+							break;
+					}
+					previousvalue = ipogmode;
+				}
+				break;
 			case CLASS_HALFLIFE:
 				halflifemode = GetUserCvar(pln,"sams_cl_shephardmode");
 				if(halflifemode != previousvalue)

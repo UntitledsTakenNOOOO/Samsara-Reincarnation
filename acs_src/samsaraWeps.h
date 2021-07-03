@@ -641,8 +641,8 @@ int SamsaraRGPProperties[CLASSCOUNT][SAMSARA_RGP_PAGES][SAMSARA_RGP_PROPERTIES] 
 str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] = 
 {
 	{
-        {" Fist ", " Chainsaw ", " Pistol ", " Shotgun ", "Super Shotgun", " Chaingun ", "Rocket Launcher", "Plasma Rifle", "B.F.G. 9000", " Minigun ", " GrenadeLauncher ", " Railgun ", " BFG10K ", },
-		{" Fist ", " Chainsaw ", " Pistol ", " Shotgun ", "Super Shotgun", " Chaingun ", "Rocket Launcher", "Plasma Rifle", "B.F.G. 9000", "", "", "", "", "Unmaker"},
+        {" Fist ", " Chainsaw ", " Pistol ", " Shotgun ", "Super Shotgun", " Chaingun ", "Rocket Launcher", "Plasma Rifle", "B.F.G. 9000", "", "", "", " Minigun ", " GrenadeLauncher ", " Railgun ", " BFG10K ", },
+		{" Fist ", " Chainsaw ", " Pistol ", " Shotgun ", "Super Shotgun", " Chaingun ", "Rocket Launcher", "Plasma Rifle", "B.F.G. 9000", "Unmaker", "", "", "", "", "", "" },
     },
 	{
         {" Bootspoon ", "Super Bootspork", "Mini-Zorcher", "Large Zorcher", "Super Large Zorcher", "Rapid Zorcher", "Zorch Propulsor", "Phasing Zorcher", "LAZ Device" },
@@ -656,9 +656,9 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 		{"Knife", "", "Luger", "Machine Gun", "Totenkopf_STG44", "  Chaingun  ", " Rocket Launcher ", " Flamethrower ", " Spear Of Destiny", "Totenkopf_FlameThrower", "Totenkopf_MG42" },
 	},
 	{
-		{"Mace of Contrition", "", "Sapphire Wand", "Frost Shards", "Timon's Axe", "Hammer of Retribution", "Firestorm", "Wraithverge"},
-		{"Mace of Contrition", "", "Sapphire Wand", "Frost Shards", "Timon's Axe", "Hammer of Retribution", "Firestorm", "Wraithverge"},
-		{"Mace of Contrition", "", "Sapphire Wand", "Frost Shards", "Timon's Axe", "Hammer of Retribution", "Firestorm", "Wraithverge"},
+		{"Mace of Contrition", "PortFlechette", "Sapphire Wand", "Frost Shards", "Timon's Axe", "Hammer of Retribution", "Firestorm", "Wraithverge"},
+		{"Mace of Contrition", "PortFlechette", "Sapphire Wand", "Frost Shards", "Timon's Axe", "Hammer of Retribution", "Firestorm", "Wraithverge"},
+		{"Mace of Contrition", "PortFlechette", "Sapphire Wand", "Frost Shards", "Timon's Axe", "Hammer of Retribution", "Firestorm", "Wraithverge"},
 	},
 	{
 		{"Mighty Boot", "PipeBomb", "Glock 17", "  Shotgun  ", "Explosive Shotgun", "Chaingun Cannon", "RPG", "FreezeThrower", "Devastator", "Shrinker", "Expander", ""},
@@ -729,7 +729,7 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 		{"Q2IonRipper", "Q2Blaster", "Q2Shotgun", "Q2SuperShotgun", "Q2Chaingun", "Q2RocketLauncher", "Q2HyperBlaster", "Q2BFG10K", "Q2Railgun", "Q2GrenadeLauncher", "Q2ETFRifle"}
 	},	
 	{
-		{"Hexen2Sickle", "Hexen2IceMace", "Hexen2BloodFire", "Hexen2AcidRune", "Hexen2SpellBookMagicMissile", "Hexen2SpellBookBoneShard", "Hexen2FireRune", "Hexen2RavenStaff", "Hexen2TempestStaff"},
+		{"Hexen2Sickle", "Hexen2IceMace", "Hexen2BloodFire", "Hexen2AcidRune", "Hexen2SpellBookMagicMissile", "Hexen2SpellBookBoneShard", "Hexen2FireRune", "Hexen2RavenStaff", "Hexen2TempestStaff", "Hexen2TomeOfPower", "Hexen2ForceCube" },
 	},
 	{
 		{"Goldeneye_Slapper", "Goldeneye_ThrowingKnives", "Goldeneye_PP7Silenced", "Goldeneye_KF7Soviet", "Goldeneye_AutoShotgun", "Goldeneye_AR33", "Goldeneye_RocketLauncher", "Goldeneye_RCP90", "Goldeneye_Moonraker", "Goldeneye_SniperRifle", "Goldeneye_SilencedD5K","Goldeneye_RemoteMine", "Goldeneye_GoldenGun"},
