@@ -702,6 +702,10 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 	},
 	{
 		{" Tazer ", " Toxic Mutant Gun ", "Aldus Pistol ", " Plasma Shotgun ", " Aldus Flamethrower ", " Fast Chaingun ", "Fast Rocket Launcher ", " Laser Cannon ", " Super Plasma Annihilator "},
+		{" Tazer ", " Toxic Mutant Gun ", "Aldus Pistol ", " Plasma Shotgun ", " Aldus Flamethrower ", " Fast Chaingun ", "Fast Rocket Launcher ", " Laser Cannon ", " Super Plasma Annihilator "},
+		{" Tazer ", " Toxic Mutant Gun ", "Aldus Pistol ", " Plasma Shotgun ", " Aldus Flamethrower ", " Fast Chaingun ", "Fast Rocket Launcher ", " Laser Cannon ", " Super Plasma Annihilator "},
+		{" Tazer ", " Toxic Mutant Gun ", "Aldus Pistol ", " Plasma Shotgun ", " Aldus Flamethrower ", " Fast Chaingun ", "Fast Rocket Launcher ", " Laser Cannon ", " Super Plasma Annihilator "},
+		{" Tazer ", " Toxic Mutant Gun ", "Aldus Pistol ", " Plasma Shotgun ", " Aldus Flamethrower ", " Fast Chaingun ", "Fast Rocket Launcher ", " Laser Cannon ", " Super Plasma Annihilator "},
 	},
 	{
 		{"Disruptor Fist", " 18mm Auto ", " 18mm Semi ", " Phase Rifle ", " AM Blaster ", "Phase Repeater", " Lock-On Cannon ", " AM Cyclone ", " Disruptor Zodiac ", "", "", "", " Disruptor Plasmalance "},
@@ -735,6 +739,6 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 		{"Goldeneye_Slapper", "Goldeneye_ThrowingKnives", "Goldeneye_PP7Silenced", "Goldeneye_KF7Soviet", "Goldeneye_AutoShotgun", "Goldeneye_AR33", "Goldeneye_RocketLauncher", "Goldeneye_RCP90", "Goldeneye_Moonraker", "Goldeneye_SniperRifle", "Goldeneye_SilencedD5K","Goldeneye_RemoteMine", "Goldeneye_GoldenGun"},
 	},
 	{
-		{"", "Catacomb_WavesQuickSpell", "Catacomb3D_MagicMissile", "Catacomb_XterminatorsQuickSpell", "Catacomb_BurstsQuickSpell", "Catacomb_ZappersQuickSpell", "Catacomb_NukesQuickSpell", "Catacomb_BoltsQuickSpell", "Catacomb_AtomicQuickSpell", "", "", "", "Catacomb_Hourglass"},
+		{"", "Catacomb_WavesQuickSpell", "Catacomb3D_MagicMissile", "Catacomb_XterminatorsQuickSpell", "Catacomb_BurstsQuickSpell", "Catacomb_ZappersQuickSpell", "Catacomb_NukesQuickSpell", "Catacomb_BoltsQuickSpell", "Catacomb_AtomicQuickSpell", "Catacomb_Hourglass", "", "", ""},
 	},	
 };
