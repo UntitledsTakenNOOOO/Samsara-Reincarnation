@@ -20,7 +20,7 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 	{{"Mooman", 17, "B", "C+", "B-", "B+", "Easy", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "CMPSIPOG", "IPOGRed", "CMPSIPOG", "IPOGRed", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "", "CMPBGIP7", "CMPBGIP8", "DarkGray", "White" }},
 	{{"Jack Curtis", 18, "A+", "C+", "C-", "B-", "Hard", "Psychic", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5", "", "", "", "DarkGray", "White" }},
 	{{"Grondoval", 19, "A+", "S", "E", "D-", "Hard", "Tank", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "CMPBWITCH", "Untranslated", "CMPBWITCH", "untranslated", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5", "", "", "", "DarkGray", "White" }},
-	{{"Gordon Freeman", 20, "S", "D", "B+", "D", "Expert", "Guerilla", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "SMALLFONT", "Orange", "SMALLFONT", "Orange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "", "DarkGray", "White" },{"Adrian Shephard", 20, "A+", "D", "B", "D+", "Hard", "Guerilla", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "SMALLFONT", "DarkGreen", "SMALLFONT", "DarkGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
+	{{"Gordon Freeman", 20, "S", "D", "B+", "D", "Expert", "Guerilla", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "CMPBHALF", "HalfLifeOrange", "CMPBHALF", "HalfLifeOrange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "", "HalfLifeGray", "HalfLifeWhite" },{"Adrian Shephard", 20, "A+", "D", "B", "D+", "Hard", "Guerilla", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "CMPBOPPF", "OpposingForceYellow", "CMPSOPPF", "OpposingForceGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
 	{{"Lo Wang", 21, "B", "E", "B+", "B+", "Hard", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "CMPSDUKE", "", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5", "", "", "", "DarkGray", "White" }},
 	{{"Cybermage", 22, "A-", "C+", "C", "B+", "Hard", "Magician", "TIPSYM23", "TIPHIL23", "TIPCMAGE", "TPLGCMDA", "TPCHCMDA", "CMPBCYBM", "CyberMageGreen", "CMPBCYBM", "CyberMageYellow", "CMPBGCM1", "CMPBGCM2", "CMPBGCM3", "CMPBGCM4", "CMPBGCM5", "", "", "", "CyberMageDarkGreen", "CyberMageGreen" }},
 	{{"Jon", 23, "A-", "C-", "B-", "D+", "Avg", "Veteran", "TIPSYM24", "TIPHIL24", "TIPPSJON", "TPLGPSEX", "TPCHPSEX", "CMPSPOWR", "PowerSlaveCompendiumRed", "CMPSPOWR", "", "CMPBGPS1", "CMPBGPS2", "CMPBGPS3", "CMPBGPS4", "CMPBGPS5", "CMPBGPS6", "CMPBGPS7", "CMPBGPS8", "PowerSlaveCompendiumDarkTan", "PowerSlaveCompendiumLightTan" }},
@@ -36,7 +36,7 @@ int ClassFontScales[CLASSCOUNT][2] =
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
 	{ 2.67, 2.0 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 0.75 },	{ 1.0, 1.0 },	
 	{ 2.5, 0.67 },	{ 1.5, 1.0 },	{ 4.0, 1.5 },	{ 2.0, 2.0 },	{ 1.0, 0.75 },	{ 1.0, 1.0 },	
-	{ 1.5, 1.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.5 },	{ 1.0, 1.0 },    { 2.125, 1.25 },
+	{ 1.5, 1.5 },	{ 2.0, 1.75 },	{ 1.0, 1.0 },	{ 2.5, 2.5 },	{ 1.0, 1.0 },    { 2.125, 1.25 },
 	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.5, 2.0 },
 };
 
@@ -540,7 +540,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Summary", "A 22 year old marine assigned to the Hazardous Environment Combat Unit, Adrian Shephard was sent on an operation only knowing that his orders were at the Black Mesa Research Facilty. Little did he know, however, that his orders were to cover up any evidence of an alien invasion at the research facility. Adrian was only forced to do more than his call of duty when he was purposefully prevented from leaving the facility by the mysterious G-Man. Soon, he was almost in the same position as the rest of the faculty at the facility when the Black Operations and a mysterious race known as Race X joined the fray. Upon the defeat of the Geneworm, Adrian knew too much about Black Mesa, but the G-Man could not simply get rid of him - he was too skilled. While originally detained, G-Man decided to send Adrian to the same place he sent Freeman in the hopes of fulfilling duties he knew Freeman could not.", ""},
 			
 			{ "Traits", "Never forget that your weapon was made by the lowest bidder: While Freeman's arsenal consists of bleeding edge technology, most of Adrian's arsenal is standard issue. That said, Adrian's equipment is designed for killing as many enemies as he can while being produced in bulk, instead of being more powerful.
-			Leave no soldier left behind: Adrian was trained to fight with a squad. Fortunately, it's possible for Adrian to encounter fellow marines on the field under the right circumstances. Additionally, there's no chance of fighting other HECU units if you are deployed on your mission as Adrian first.", ""},
+			\n\nLeave no soldier left behind: Adrian was trained to fight with a squad. Fortunately, it's possible for Adrian to encounter fellow marines on the field under the right circumstances. Additionally, there's no chance of fighting other HECU units if you are deployed on your mission as Adrian first.", ""},
 			
 			{ "Changes", "Along with the changes detailed under Freeman's page, the M249 SAW now has a magazine capacity of 100 instead of 50 and the Deagle does less damage with the laser sight disabled.
 			\n\nIn Opposing Force, using the Displacer's altfire at the wrong place and time would drop you into a bottomless pit in the Borderworld Xen to your death. In Samsara, using it teleports you back to the spawn area of whatever map you're on, and back if you do it again. Rather a bit more helpful.", ""},
@@ -2011,7 +2011,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 	int fontscaledx, fontscaledy;
 	while(CheckInventory("CompendiumOpened"))
 	{
-		int mousesensitivity = GetCvar("mouse_sensitivity");
+		int mousesensitivity = 1.0;//GetCvar("mouse_sensitivity");
 		int forwardmove = GetPlayerInput(-1, INPUT_FORWARDMOVE);
 		int sidemove = GetPlayerInput(-1, INPUT_SIDEMOVE);
 		int yaw = GetPlayerInput(-1, INPUT_YAW);
@@ -2034,10 +2034,6 @@ Script "Samsara_Compendium" (void) Net Clientside
 			cursory = 0;
 		else if(cursory > hudboundsy)
 			cursory = hudboundsy;
-			
-		//Thanks Graf^tm
-		if(mousesensitivity < 0.5)
-			mousesensitivity = 1.0;
 		
 		//PrintBold(s:"cursorx: ", d:cursorx, s:" cursory: ", d:cursory);
 		SetHudClipRect(FixedMul(hudboundsx,0.025), FixedMul(hudboundsy,0.025), FixedMul(hudboundsx,0.95), FixedMul(hudboundsy,0.95), FixedMul(hudboundsx,0.425));
