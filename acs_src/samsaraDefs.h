@@ -230,7 +230,7 @@ int PickupStates[CLASSCOUNT][24] =
     {"C7",      "C7Full",       "C7Empty",          "C7Special",        "C7Punchdrunk",        "C7PDFull",         "C7PDEmpty",        "C7PDSpecial",		"",		"",		"",		""},
     {"RMR",      "RMRFull",       "RMREmpty",          "RMRSpecial",        "",        "",         "",        ""},	
     {"Katarn",  "KatarnFull",   "KatarnEmpty",      "KatarnSpecial",    "KatarnPunchdrunk",    "KatarnPDFull",     "KatarnPDEmpty",    "KatarnPDSpecial",		"",		"",		"",		""},	
-	{"POGreed",		"POGreedFull",	"POGreedEmpty",		"POGreedSpecial",	"POGreedPunchdrunk",	"POGreedPDFull",	"POGreedPDEmpty",	"POGreedPDSpecial",		"",		"",		"",		""},
+	{"POGreed",		"POGreedFull",	"POGreedEmpty",		"POGreedSpecial",	"POGreedPunchdrunk",	"POGreedPDFull",	"POGreedPDEmpty",	"POGreedPDSpecial",		"POGreed",		"POGreedFull",		"POGreedEmpty",		"POGreedSpecial",		"POGreed",		"POGreedFull",		"POGreedEmpty",		"POGreedSpecial",		"POGreed",		"POGreedFull",		"POGreedEmpty",		"POGreedSpecial",		"POGreed",		"POGreedFull",		"POGreedEmpty",		"POGreedSpecial"},
     {"Disruptor",      "DisruptorFull",       "DisruptorEmpty",          "DisruptorSpecial",        "",        "",         "",        "",		"",		"",		"",		""},	
 	{"Witchaven",	"WitchavenFull","WitchavenEmpty",	"WitchavenSpecial",	"WitchavenPunchdrunk",	"WitchavenPDFull",	"WitchavenPDEmpty",	"WitchavenPDSpecial",		"",		"",		"",		""},
 	{"HalfLife",	"HalfLifeFull",	"HalfLifeEmpty",	"HalfLifeSpecial",	"HalfLifePunchDrunk",	"HalfLifePDFull",	"HalfLifePDEmpty",	"HalfLifePDSpecial",		"Shephard",		"ShephardFull",		"ShephardEmpty",		"ShephardSpecial"},

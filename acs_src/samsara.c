@@ -2258,11 +2258,20 @@ Script "Samsara_KillCount" (int override)
 	if(!(ClassifyActor(0) & ACTOR_MONSTER))
 		terminate;
 		
+	int HasXDeath; 
+	int isBoss = CheckFlag(0,"BOSS");
+	
+	if(GetPlayerAccountName(0) == 0)
+		HasXDeath = CheckActorState(0,"XDeath",1);
+	else
+		HasXDeath = 1;
+		
 	if(SpawnForced("StrongHoldLoaded",0,0,0,0))
 		ACS_NamedExecuteWithResult("Stronghold_KillCount",0,0,0,0);	
 		
 	int noblood = CheckFlag(0,"NOBLOOD");
 	int health;
+	int currentHealth = GetActorProperty(0, APROP_Health);	
 	int healthtokens = CheckInventory("ShrunkMasterHealthTokens");
 
 	if(healthtokens == 0)
@@ -2294,6 +2303,16 @@ Script "Samsara_KillCount" (int override)
 		GiveInventory("Hexen2Experience", FixedMul((health*2.5)>>16,(1.0+(0.05*CheckInventory("Hexen2Wisdom")))));
 		if(random(0.0,1.0) <= chance && !noblood)
 			SpawnForced("Hexen2SoulSphere",x,y,z,0,0);
+	}
+	
+	if(CheckInventory("StrifeClass") && !CheckInventory("BlackBirdTauntCooldown"))
+	{
+		if(isBoss)
+			GiveInventory("BlackBirdBossKill",1);
+		else if(HasXDeath && currentHealth < -health && random(0,20) <= 3)
+		{
+			GiveInventory("BlackBirdXDeath",1);
+		}
 	}
 }
 

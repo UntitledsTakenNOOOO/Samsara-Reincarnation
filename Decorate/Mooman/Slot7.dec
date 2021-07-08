@@ -38,6 +38,7 @@ Actor " Super Plasma Annihilator " : Weapon
 		Loop
 	Fire:
 		TNT1 A 0 A_JumpIfNoAmmo("Ready")
+		TNT1 A 0 A_GunFlash("FakeFlash")
 		TNT1 A 0 A_AlertMonsters
 		TNT1 A 0 A_GiveInventory("SamsaraRGPPage",1)
 		TNT1 A 0 A_JumpIfInventory("IPOGAtt1",1,"Fire1")
@@ -260,7 +261,10 @@ Actor " Super Plasma Annihilator " : Weapon
 		GW70 A 11
 		GW70 A 1 A_TakeInventory("SamsaraRGPPage",999)
 		GW70 A 0 A_Refire
-		goto Ready		
+		goto Ready	
+	FakeFlash:
+		TNT1 A 1
+		Stop
 	}
 }
 
@@ -274,7 +278,7 @@ Actor PGSuperPlasmaTrail
 	+THRUGHOST
 	+THRUSPECIES
 	Species "Player"
-	renderstyle add
+	//renderstyle add
 	scale 1.1
 	states
 	{
@@ -294,7 +298,7 @@ Actor PGSuperPlasmaPuff
 	+NOBLOCKMAP
 	+NOGRAVITY
 	scale 0.6
-	renderstyle add
+	//renderstyle add
 	states
 	{
 	Spawn:
@@ -335,8 +339,10 @@ Actor PGClipSuperPlasmaBall : FastProjectile
 	+RIPPER //X-X
 	-DONTRIP
 	+NOBOSSRIP
+	+HITTRACER
+	+BLOODLESSIMPACT
 	Damage (200)//(230)
-	renderstyle add
+	//renderstyle add
 	DamageType "PGPlasma"
 	states
 	{
@@ -346,6 +352,10 @@ Actor PGClipSuperPlasmaBall : FastProjectile
 	Death:
 		//TNT1 A 2 ACS_NamedExecuteWithResult("Samsara678")
 		TNT1 A 5 A_SpawnItemEx("PGSuperPlasmaPuff",0,0,0,0,0,1,0,SXF_CLIENTSIDE)
+		stop
+	XDeath:
+		TNT1 A 0 A_SpawnItemEx("PGSuperPlasmaPuff",0,0,0,0,0,1,0,SXF_CLIENTSIDE)
+		TNT1 A 1 A_GiveInventory("IPOGBloodGenerator", 1, AAPTR_TRACER)
 		stop
 	}
 }
@@ -360,9 +370,10 @@ Actor PGShellSuperPlasmaBall// : FastProjectile
 	PROJECTILE
 	-NOEXTREMEDEATH
 	+EXTREMEDEATH
-
+	+HITTRACER
+	+BLOODLESSIMPACT
 	Damage (65)
-	renderstyle add
+	//renderstyle add
 	DamageType "PGPlasma"
 	Alpha 0.8
 	Scale 1.8
@@ -379,6 +390,16 @@ Actor PGShellSuperPlasmaBall// : FastProjectile
 		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmall",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
 		TNT1 A 1 A_SpawnItemEx("PGSuperPlasmaPuff",0,0,0,0,0,1,0,SXF_CLIENTSIDE)
 		stop
+	XDeath:
+		TNT1 A 0 A_GiveInventory("IPOGBloodGenerator", 1, AAPTR_TRACER)
+		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmall",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
+		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmall",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
+		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmall",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
+		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmall",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
+		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmall",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
+		TNT1 A 1 A_SpawnItemEx("PGSuperPlasmaPuff",0,0,0,0,0,1,0,SXF_CLIENTSIDE)
+		stop
+		
 	}
 }
 
@@ -393,6 +414,8 @@ Actor PGShellSuperPlasmaBallSmall : PGShellSuperPlasmaBall
 	Damage (75)//(Random(40,45))
 	//-NOEXTREMEDEATH
 	//+EXTREMEDEATH
+	+BLOODLESSIMPACT
+	+HITTRACER
 	Scale 1.1
 	states
 	{
@@ -407,6 +430,10 @@ Actor PGShellSuperPlasmaBallSmall : PGShellSuperPlasmaBall
 	Death:
 		TNT1 A 1 A_SpawnItemEx("PGSuperPlasmaPuff",0,0,0,0,0,1,0,SXF_CLIENTSIDE)
 		stop
+	XDeath:
+		TNT1 A 0 A_GiveInventory("IPOGBloodGenerator", 1, AAPTR_TRACER)
+		TNT1 A 1 A_SpawnItemEx("PGSuperPlasmaPuff",0,0,0,0,0,1,0,SXF_CLIENTSIDE)
+		Stop
 	}
 }
 
@@ -420,6 +447,15 @@ Actor PGShellSuperPlasmaBallCoop : PGShellSuperPlasmaBall
 	states
 	{
 	Death:
+		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmallCoop",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
+		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmallCoop",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
+		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmallCoop",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
+		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmallCoop",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
+		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmallCoop",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
+		TNT1 A 1 A_SpawnItemEx("PGSuperPlasmaPuff",0,0,0,0,0,1,0,SXF_CLIENTSIDE)
+		stop
+	XDeath:
+		TNT1 A 0 A_GiveInventory("IPOGBloodGenerator", 1, AAPTR_TRACER)
 		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmallCoop",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
 		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmallCoop",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
 		TNT1 A 0 A_CustomMissile("PGShellSuperPlasmaBallSmallCoop",0,0,random(135,225),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(-20,20))
@@ -442,8 +478,10 @@ Actor PGRocketSuperPlasmaBall
 	+NODAMAGETHRUST
 	-NOEXTREMEDEATH
 	+EXTREMEDEATH
+	+HITTRACER
+	+BLOODLESSIMPACT
 	Damage (0)
-	renderstyle add
+	//renderstyle add
 	DamageType "PGPlasma"
 	scale 1.25
 	states
@@ -452,6 +490,12 @@ Actor PGRocketSuperPlasmaBall
 		GP70 A 1 bright A_SpawnItemEx("PGSuperPlasmaTrail",random(-5,5),random(-5,5),random(-5,5),momx*0.6,momy*0.6,momz*0.6,0,SXF_ABSOLUTEMOMENTUM|SXF_CLIENTSIDE|SXF_NOCHECKPOSITION)
 		loop
 	Death:
+		TNT1 A 0 A_Explode(150,160,0)
+		GP70 A 0 A_PlaySound("greed/rockboom",CHAN_BODY)
+		TNT1 AAAAAA 1 A_SpawnItemEx("PGSuperPlasmaPuff",random(-9,9),random(-9,9),random(-9,9),0,0,1,0,SXF_CLIENTSIDE)
+		stop
+	XDeath:
+		TNT1 A 0 A_GiveInventory("IPOGBloodGenerator", 1, AAPTR_TRACER)
 		TNT1 A 0 A_Explode(150,160,0)
 		GP70 A 0 A_PlaySound("greed/rockboom",CHAN_BODY)
 		TNT1 AAAAAA 1 A_SpawnItemEx("PGSuperPlasmaPuff",random(-9,9),random(-9,9),random(-9,9),0,0,1,0,SXF_CLIENTSIDE)
@@ -472,8 +516,9 @@ Actor PGCellSuperPlasmaBall
 	//+RIPPER
 	+RIPPER
 	+THRUACTORS
-	
-	renderstyle add
+	+HITTRACER
+	+BLOODLESSIMPACT
+	//renderstyle add
 	DamageType "PGPlasma"
 	scale 1.1
 	states
@@ -483,6 +528,10 @@ Actor PGCellSuperPlasmaBall
 		GP70 A 0 Bright A_CustomMissile("PGSuperPlasmaBallRipper", 0)
 		loop
 	Death:
+		TNT1 A 1 A_SpawnItemEx("PGSuperPlasmaPuff",0,0,0,0,0,1,0,SXF_CLIENTSIDE)
+		stop
+	XDeath:
+		TNT1 A 0 A_GiveInventory("IPOGBloodGenerator", 1, AAPTR_TRACER)
 		TNT1 A 1 A_SpawnItemEx("PGSuperPlasmaPuff",0,0,0,0,0,1,0,SXF_CLIENTSIDE)
 		stop
 	}
@@ -503,11 +552,16 @@ ACTOR PGSuperPlasmaBallRipper
 	+BLOODLESSIMPACT
 	+NOTIMEFREEZE
 	+NODAMAGETHRUST
+	+BLOODLESSIMPACT
+	+HITTRACER
 	States
 	{
 		Spawn:
-		TNT1 A 1 Bright
-		Stop
+			TNT1 A 1 Bright
+			Stop
+		XDeath:
+			TNT1 A 1 A_GiveInventory("IPOGBloodGenerator", 1, AAPTR_TRACER)
+			Stop
 	}
 }
 

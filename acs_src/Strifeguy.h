@@ -115,3 +115,35 @@ Script "Samsara_StrifeUpgradesMapSpot" (int set)
 		break;
 	}
 }
+
+script "BlackBirdTauntCooldown" (void)
+{
+    while (CheckInventory("BlackBirdTauntCooldown") > 0)
+    {
+        Delay(35);
+        TakeInventory("BlackBirdTauntCooldown", 1);
+    }
+}
+
+Script "StrifeBlackBirdQuote" (int type)
+{
+	Log(s:"Incoming message from Blackbird...");
+	switch(type)
+	{
+		case 0:
+			LocalAmbientSound("strife/blackbird/enter", 255);
+			break;
+		case 1:
+			LocalAmbientSound("strife/blackbird/roaming", 255);
+			break;
+		case 2:
+			LocalAmbientSound("strife/blackbird/killtaunt", 255);
+			break;
+		case 3:
+			LocalAmbientSound("strife/blackbird/xkilltaunt", 255);
+			break;
+		case 4:
+			LocalAmbientSound("strife/blackbird/bkilltaunt", 255);
+			break;
+	}
+}

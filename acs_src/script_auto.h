@@ -372,6 +372,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	int doommode, dukemode, hexmode, wolfmode, rottmode, blakemode, ipogmode, halflifemode, previousvalue, cvalue;
 	int targettid;
 	int bot = PlayerIsBot(pln);
+	int strifeCeilingHeight = GetActorCeilingZ(0); //strife related
+	int strifeLastKillCount;
 	
 	if(bot)
 		ACS_NamedExecuteAlways("Samsara_BotAltClassHandler",0,pln,0,0);
@@ -429,6 +431,10 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         
       case CLASS_CALEB:
         if (!respawning) { GiveInventory("CalebReady", 1); }
+        break;
+		
+	  case CLASS_STRIFE:
+	    if (!respawning) { If(ThingCountName("Candle",0) > 0 ) { GiveInventory("BlackBirdInStrife", 1); } GiveInventory("BlackBirdReady", 1); }
         break;
       
 	  case CLASS_ERAD:
@@ -502,6 +508,10 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					GiveInventory("CalebBallgag", 1); 
 					break;
 					
+				case CLASS_Strife:
+					GiveInventory("BlackBirdBallgag", 1); 
+					break;
+				
 				case CLASS_ERAD:
 					GiveInventory("EleenaBallgag", 1); 
 					break;
@@ -527,6 +537,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			TakeInventory("LoWangBallgag", 0x7FFFFFFF);
 			TakeInventory("JonBallgag", 0x7FFFFFFF);
 			TakeInventory("LeonardBallgag", 0x7FFFFFFF);
+			TakeInventory("BlackBirdBallgag", 0x7FFFFFFF);
 		}
 				
 		if (GetUserCvar(pln,"sams_cl_vanilladoom")) { GiveInventory("VanillaDoom", 1); }
@@ -789,6 +800,27 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					previousvalue = blakemode;
 				}
 				break;	
+			case CLASS_STRIFE:
+			{
+				if(!CheckInventory("BlackBirdBallgag") && !CheckInventory("BlackBirdTauntCooldown") && !CheckInventory("BlackBirdInStrife"))
+				{
+					if(strifeCeilingHeight != GetActorCeilingZ(0) && random(0,50) <= 1)
+					{
+						GiveInventory("BlackBirdTauntCooldown",5);
+						ACS_NamedExecuteWithResult("BlackBirdTauntCooldown",0,0,0,0);
+						ACS_NamedExecuteWithResult("StrifeBlackBirdQuote",1);			
+					}
+					else if(CheckInventory("KillCountAmount") > strifeLastKillCount && random(0,20) <= 3)
+					{
+						GiveInventory("BlackBirdTauntCooldown",5);
+						ACS_NamedExecuteWithResult("BlackBirdTauntCooldown",0,0,0,0);
+						ACS_NamedExecuteWithResult("StrifeBlackBirdQuote",2);
+					}
+				}
+				strifeCeilingHeight = GetActorCeilingZ(0);
+				strifeLastKillCount = CheckInventory("KillCountAmount");
+			}
+			break;
 			case CLASS_POGREED:
 				ipogmode = GetUserCvar(pln,"sams_cl_ipogmode");
 				//only run these actions if the value changes
