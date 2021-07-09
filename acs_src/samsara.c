@@ -2754,6 +2754,27 @@ Script "Samsara_BotAltClassHandler" (int playernum)
 				SetUserCvar(playernum,"sams_cl_bsaog",1);
 			}
 			break;
+		case 16:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Tobias Locke") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_ipogmode",1);
+			}
+			if(StrCmp(playername,"Xith") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_ipogmode",2);
+			}
+			if(StrCmp(playername,"Specimen 7") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_ipogmode",3);
+			}
+			if(StrCmp(playername,"Theola Nom") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_ipogmode",4);
+			}
+			break;
 		case 19:
 			playername = GetUserCvarString(playernum,"name");
 			playername = StrRight(playername,strlen(playername)-2);

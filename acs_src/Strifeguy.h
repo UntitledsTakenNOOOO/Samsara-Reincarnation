@@ -145,5 +145,8 @@ Script "StrifeBlackBirdQuote" (int type)
 		case 4:
 			LocalAmbientSound("strife/blackbird/bkilltaunt", 255);
 			break;
+		case 5:
+			LocalAmbientSound("strife/blackbird/death", 255);
+			break;
 	}
 }

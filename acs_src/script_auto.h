@@ -16,9 +16,7 @@ script "SamsaraOpen" open  //623 -- SAMSARA_OPEN
     {
 		HudMessage(s:"Reincarnation Changelist ",d:SAMSARA_CHANGELIST; HUDMSG_FADEOUT|HUDMSG_LOG, 93002, CR_GOLD, 1.5, 0.265, 2.0, 0.5);
 		HudMessage(s:"Press ",k:"samsara_compendium",s:" for extra information"; HUDMSG_FADEOUT|HUDMSG_LOG, 93003, CR_GOLD, 1.5, 0.285, 2.0, 0.5);
-        if (GameType() == GAME_TITLE_MAP)
-        {
-        }
+        if (GameType() == GAME_TITLE_MAP) { terminate; }
         if (isSinglePlayer())
         {
             if(GetCvar("sams_cvarinfo") == 0)
@@ -374,6 +372,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	int bot = PlayerIsBot(pln);
 	int strifeCeilingHeight = GetActorCeilingZ(0); //strife related
 	int strifeLastKillCount;
+	int strifeDead;
 	
 	if(bot)
 		ACS_NamedExecuteAlways("Samsara_BotAltClassHandler",0,pln,0,0);
@@ -816,7 +815,14 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						ACS_NamedExecuteWithResult("BlackBirdTauntCooldown",0,0,0,0);
 						ACS_NamedExecuteWithResult("StrifeBlackBirdQuote",2);
 					}
+					else if(GetActorProperty(0,APROP_Health) <= 0 && strifeDead == 0)
+					{
+						GiveInventory("BlackBirdTauntCooldown",5);
+						ACS_NamedExecuteWithResult("BlackBirdTauntCooldown",0,0,0,0);
+						ACS_NamedExecuteWithResult("StrifeBlackBirdQuote",5);
+					}
 				}
+				strifeDead = GetActorProperty(0,APROP_Health) <= 0;
 				strifeCeilingHeight = GetActorCeilingZ(0);
 				strifeLastKillCount = CheckInventory("KillCountAmount");
 			}
