@@ -54,7 +54,7 @@ int AccuracyUniques[CLASSCOUNT][ACCURACYCOUNT] =
     {"DoomZerkCounter",  "", "", "", "", "", "", "", "", ""},
     {"ChexSoulsphere",   "", "", "", "", "", "", "", "", ""},
     {"ArtiEgg2",         "", "", "", "", "", "", "", "", ""},
-    {"WolfExtraLife",    "", "", "", "", "", "", "", "", ""},
+    {"WolfStrifeUnique1",    "Totenkopf_FlameThrowerFuel", "WolfStrifeUnique2", "Cell", "WolfStrifeUnique3", "Shell", "", "", "", ""},
     {"PortMysticAmbit",  "", "", "", "", "", "", "", "", ""},
     {"DukeguyStrifeJet", "", "", "", "", "", "", "", "", ""},
     {"RandAlienWeapon",  "", "", "", "", "", "", "", "", ""},
