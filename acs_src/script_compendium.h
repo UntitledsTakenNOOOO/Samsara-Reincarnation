@@ -2021,6 +2021,70 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][21] =
 	}},
 };
 
+str CompendiumCredits = "\cmLead Developer\n\cjShiny Metagross
+\n\n\cmExecutive Developers\cj\nMagnolia\nShadowlink223
+\n\n\cmDevelopers\cj\nZircon\nTriaxis\nNorwegianLoki
+\n\n\cmAssistant Developers\cj\nRadioactiveTurtle\nLtMajorDude
+\n\n\cmHead Beta Tester\cj\nPangoro
+\n\n\cmBeta Testers\cj\nFlynn Taggart\nNecron 99\nLaserPope\nLaggy Blazko\nCubebert\nRadioactiveTurtle\nCrazyboy88\nLuisDHR19971
+\n\n\cmDiscord Managment\cj\nMeleemario\nLuisDHR19971\nZircon\nPangoro
+\n\n\cmFormer Developers\cj\nJesh\nDynamo\nHiragamer98\nIvanDobrovski
+\n\n\cmAdditional Credits\cj
+\nTerminus for creating Samsara
+\nIjon Tichy for making many Samsara systems
+\nKinsie for maintaining Samsara after 0.31
+\nDonald for creating Witchaven and Half Life class
+\nGardevoir for their Strife addon
+\nCyantusk for balance tweaks and In Pursuit of Greed Class
+\nCruduxy Pegg for polishing ZBloodX addon
+\nBouncyTEM for their Corridor 7 addon
+\ntehvappy50 for their Doom64 addon
+\nThe_Riet for adding Katarn
+\nLex Safonov for their Shadow Warrior TC
+\nPresidentPeople for allowing the use of their Zandronum player sprites temporarily
+\nMax-ED for their Re-Exhumed addon
+\nDoorhenge for making widescreen friendly hexen mace
+\nKnight_Kin for making the Hexen weapons improvement project
+\nScotty for creating the code for a laser guided RPG system
+\nTheCamaleonMaligno for their Q2 addon as a base
+\nLanHikariDS for making a fullscreen bitterman hud
+\n-Jes- for tweaking Eleena
+\n\n\cmSpecial Thanks\cj
+\nHiragamer for his amazing work on HUDs and every art related stuff
+\nWatermelon for teaching Jesh ACS
+\nFlynn Taggart for coming up with ideas and being a good artist
+\nJack Freeman for services for the mod and creating the original Bond class
+\nMeleemario for being a good friend to Shiny Metagross
+\nLtMajordude for gathering information needed to make this Compendium possible
+\nGZDoom and Zandronum developers
+\nID Software (For Doom, Doom II, Catacomb 3D, Wolfenstein 3D, Quake, and Quake II, as well as publishing Heretic, Hexen, and Hexen II. And the Doom engine, this project wouldn't be possible without it)
+\nTeam TNT for TNT Evilution
+\nRaven Software (For Heretic, Hexen, Hexen II, Hexen II Portals of Praevus, CyClones, and ShadowCaster)
+\nJAM Productions (For Blake Stone)
+\nDIP (Developers of Incredible Power) (For Rise of the Triad)
+\nApogee Software (For publishing Blake Stone & Rise of the Triad)
+\nAccolade Inc. (For Eradicator)
+\nMonolith Productions (For Blood)
+\nMidway Games LtD. (For Doom 64)
+\nCapstone Software (For Corridor 7, Witchaven, and Operation Body Count)
+\nFenris Wolf (For Rebel Moon Rising)
+\nRogue Entertainment (For Strife and Quake Mission Pack 2: Dissolution of Eternity)
+\nMind Shear Software (For In Pursuit Of Greed/Assassinators)
+\nInsomniac Games (For Disruptor)
+\nXatrix Entertainment (For Redneck Rampage and Quake 2 Ground Zeros)
+\nLucasArts Entertainment Company LLC (For Star Wars Dark Forces and Jedi Knight Dark Forces II)
+\nValve Software (For Half Life and Half-Life 2)
+\nGearbox Software (For Half-Life Opposing Force and Blue Shift)
+\n3D Realms Entertainment Inc. (For Duke Nukem 3D and Shadow Warrior)
+\nOrigin Systems (For Cybermage)
+\nLobotomy Software (For Powerslave)
+\nHipnotic Software (For Quake Mission Pack 1: Scourge of Armagon)
+\nRareWare LtD. (For Goldeneye 007)
+\nEon Productions (For the James Bond 007 film franchise and the Goldeneye Movie)
+\nSoftDisk Inc. (For Catacomb Adventure series)
+\nWolf Skevos Jones (For the Castle Totenkopf SDL mod for Wolfenstein 3D), as well as being an inspiration to develop mods
+";
+
 // I don't see the need to congest the regular hero arrays with double the length for one hero, so I will bite a bullet and make a separate one
 
 int drawclouds = 0;
@@ -2096,19 +2160,36 @@ Script "Samsara_Compendium" (void) Net Clientside
 		SetHudClipRect(0,0,0,0,0);
 		SetFont("SXHCURS");
 		SetHudSize(hudboundsx,hudboundsy,true);
-		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15989, CR_UNTRANSLATED, (cursorx*1.0), (cursory*1.0), 1.0);
+		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15986, CR_UNTRANSLATED, (cursorx*1.0), (cursory*1.0), 1.0);
 		SetFont("SMALLFONT");
 
 		if(menuindex == 0)
 		{
+			scrollstep = 4;
+			scrollmax = 400;
 			drawclouds = 1;
 			ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,0);
 			SetFont("SMALLFONT");
 			SetHudClipRect(0,0,0,0,0);
 			SetHudSize(hudcenterx,hudcentery,true);
 			HudMessage(s:"Close: ",k:"samsara_compendium"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15988, CR_BLACK, (FixedMul(hudcenterx,0.033)<<16)+0.1, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
+			
+			if(cursorx < (FixedMul(hudboundsx,0.98)) && cursorx > (FixedMul(hudboundsx,0.933)) && cursory < (FixedMul(hudboundsy,0.9875)) && cursory > (FixedMul(hudboundsy,0.967)))
+			{
+				hoverindex = CLASSCOUNT+1;
+				if(hoverindex != lasthover && hoverindex != 0)	{ lasthover = hoverindex; LocalAmbientSound("Compendium/Hover",104); }	
+				HudMessage(s:"Credits"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15987, CR_WHITE, (FixedMul(hudcenterx,0.967)<<16)+0.2, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
+				if(buttons & (BT_USE|BT_ATTACK))
+						menuindex = hoverindex;
+			}
+			else
+			{
+				if(lasthover > CLASSCOUNT) { hoverindex = 0; lasthover = 0; }
+				HudMessage(s:"Credits"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15987, CR_BLACK, (FixedMul(hudcenterx,0.967)<<16)+0.2, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
+			}
+			
 			SetHudSize(hudboundsx,hudboundsy,true);
-			if(lastmenuindex != menuindex) { removemessages(15990,16185); removemessages(16180,16189); lastmenuindex = menuindex; scrollcounter = 0; scrolltimer = 368; }
+			if(lastmenuindex != menuindex) { removemessages(15987,16185); removemessages(16180,16189); lastmenuindex = 0; scrollcounter = 0; scrolltimer = 368; }
 			int locationx, locationy;
 			int wheelangle = -0.25;
 			int rot;
@@ -2128,14 +2209,12 @@ Script "Samsara_Compendium" (void) Net Clientside
 						menuindex = a+1;
 				}
 				else 
-				{
-					hoverindex = 0;
+				{	
 					SetFont(ClassInfo[a][0][8]); 
 					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING|HUDMSG_ALPHA, 16000+a, "black", locationx*1.0, locationy*1.0, 1.0, 0.9); 	
 					locationx = hudcenterx+((squarecenter/4*cos(wheelangle+(FixedDiv(1.0,CLASSCOUNT*1.0)*(lasthover-1))))>>16);
 					locationy = hudcentery+((squarecenter/4*sin(wheelangle+(FixedDiv(1.0,CLASSCOUNT*1.0)*(lasthover-1))))>>16);
-					if((cursorx > locationx+24 || cursorx < locationx-24) || (cursory > locationy+24 || cursory < locationy-24))
-						lasthover = 0;
+					if(((cursorx > locationx+24 || cursorx < locationx-24) || (cursory > locationy+24 || cursory < locationy-24)) && lasthover <= CLASSCOUNT) { hoverindex = 0; lasthover = 0; }	
 				}			
 				//SetHudClipRect(0,0,0,0);
 			}
@@ -2155,8 +2234,10 @@ Script "Samsara_Compendium" (void) Net Clientside
 			else 
 				rottimer = 0;		
 		}
-		else
+		else if(menuindex <= CLASSCOUNT)
 		{
+			scrollstep = 4;
+			scrollmax = 400;
 			drawclouds = 0;
 			//======================================================================================================== Draw
 			if(lastmenuindex != menuindex || lastmenutab != menutab || lastmenuitem != menuitem || altskin != prevskin)
@@ -2191,7 +2272,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 				SelectionColors[1] = ClassInfo[menuindex-1][altskin][26];
 				prevskin = altskin;
 				monsterskin = 0;
-				removemessages(15990,16180);
+				removemessages(15987,16180);
 				scrollcounter = 368;
 				scrolltimer = 0;
 				lastmenuindex = menuindex;
@@ -2829,8 +2910,51 @@ Script "Samsara_Compendium" (void) Net Clientside
 			}
 			SetHudSize(hudboundsx,hudboundsy,true);
 		}
+		else if(menuindex == CLASSCOUNT+1)
+		{
+			scrollstep = 3;
+			scrollmax = 448;
+			drawclouds = 1;
+			ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,0);
+				
+			if(lastmenuindex != menuindex)
+			{		
+				LocalAmbientSound("marathon/shieldhit",88);
+				removemessages(15987,16189);
+				scrollcounter = 448;
+				scrolltimer = 0;
+				lastmenuindex = menuindex;
+				previewopened = false;
+				
+				SetFont("SMALLFONT");
+				SetHudClipRect(0,0,0,0,0);
+				SetHudSize(hudcenterx,hudcentery,true);
+				HudMessage(s:"Back: ",k:"+altattack"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15988, CR_BLACK, (FixedMul(hudcenterx,0.033)<<16)+0.1, (FixedMul(hudcentery,0.955)<<16)+0.1, 0);
+				SetHudSize(hudboundsx,hudboundsy,true);
+			}
+			if (buttons & (BT_ALTATTACK))
+				menuindex = 0;
+				
+			SetHudSize(hudboundsx,hudboundsy,true);
+			SetFont("SAMCMPB4");
+			SetHudClipRect(FixedMul(hudboundsx,0.05),FixedMul(hudboundsy,0.05),FixedMul(hudboundsx,0.9),FixedMul(hudboundsy,0.9),FixedMul(hudboundsx,0.85));
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 15990, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+			SetFont("SMALLFONT");
+			SetHudSize(hudcenterx,hudcentery,true);
+			SetHudClipRect(FixedMul(hudcenterx,0.05),FixedMul(hudcentery,0.05),FixedMul(hudcenterx,0.9),FixedMul(hudcentery,0.9),FixedMul(hudcenterx,0.85));
+			HudMessage(s:CompendiumCredits; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15987, CR_WHITE, (FixedMul(hudcenterx,0.5)<<16)+0.4, 32.0+(scrollcounter*1.0)+0.1, 0);
+			SetHudSize(hudboundsx,hudboundsy,true);
+			SetHudClipRect(0,0,0,0,0);
+		
+			scrollmaxcounter = 128+(2+StrLen(CompendiumCredits)/4); //little buffer for it complete properly
+			scrolltimer++;
+			if(scrolltimer%scrollstep==0) { scrollcounter--; }
+			if(scrolltimer == scrollstep) scrolltimer = 1;
+			if(scrollcounter < -scrollmaxcounter)
+				scrollcounter = scrollmax;
+		}
 		Delay(1);
-	}
+	}	
 	drawclouds = 0;
 	removemessages(15800,16200);
 	SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
