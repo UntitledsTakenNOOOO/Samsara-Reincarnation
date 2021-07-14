@@ -623,7 +623,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					TakeInventory("SamsaraModeCounter",999);
 					GiveInventory("SamsaraModeCounter",wolfmode);
 					TakeInventory("Samsara_ModeWeaponChange",1);
-					if (wolfmode > 0) 
+					if (wolfmode >= 0) 
 					{ 
 						TakeInventory("WolfenClassMode", 2); 
 						GiveInventory("WolfenClassMode", wolfmode); 
@@ -640,8 +640,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							if(CheckInventory("Totenkopf_IHavePowerArmor") && (!CheckInventory("TotenkopfHasPowerArmor"))) { GiveInventory("TotenkopfHasPowerArmor", 1); }
 							if(CheckInventory("Totenkopf_IAmWolverine") && (!CheckInventory("TotenkopfHasHealingOrb"))) { GiveInventory("TotenkopfHasHealingOrb", 1); }
 						}	
-						else
+						else if(wolfmode <= 1)
 						{
+//							PrintBold(s: "Your shit's being taken!" );
 							if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1); }
 							if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); }
 							TakeInventory("Totenkopf_PistolDual", 0x7FFFFFFF); TakeInventory("Totenkopf_Mauser", 0x7FFFFFFF); TakeInventory("Totenkopf_MauserDual", 0x7FFFFFFF); TakeInventory("Totenkopf_MP40Dual", 0x7FFFFFFF); TakeInventory("Totenkopf_STG44", 0x7FFFFFFF); TakeInventory("Totenkopf_FlameThrower", 0x7FFFFFFF);  TakeInventory("Totenkopf_MG42", 0x7FFFFFFF);  TakeInventory("Totenkopf_Sniper", 0x7FFFFFFF); TakeInventory("TotenkopfHasPowerArmor", 0x7FFFFFFF);  TakeInventory("TotenkopfHasHealingOrb", 0x7FFFFFFF); 
@@ -684,8 +685,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					}
 					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, wolfmode, pln);
 					previousvalue = wolfmode;
-					if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1);  }	
-					if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); } 
+//					if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1);  }	
+//					if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); } 
 				}
 				break;
 				
