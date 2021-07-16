@@ -433,7 +433,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         break;
 		
 	  case CLASS_STRIFE:
-	    if (!respawning) { If(ThingCountName("Candle",0) > 0 ) { GiveInventory("BlackBirdInStrife", 1); } GiveInventory("BlackBirdReady", 1); }
+	    if (!respawning) { If(ThingCountName("Candle",0) > 0 ) { GiveInventory("BlackBirdInStrife", 1); } if(!GetUserCvar(pln,"sams_cl_ballgag")) GiveInventory("BlackBirdReady", 1); }
         break;
       
 	  case CLASS_ERAD:
