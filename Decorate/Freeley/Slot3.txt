@@ -29,6 +29,7 @@ ACTOR Bazooka : weapon
      Fire: 
 	    TNT1 A 0 A_PlaySound("bazooka/shoot")
         BAZO E 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_JumpIfInventory("DMModeOn", 1, "DMFire")
 	 	TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
 	 	TNT1 A 0 A_FireCustomMissile("CompRottM",0,8,0,-8) // -16
      Continue:
@@ -46,6 +47,9 @@ ACTOR Bazooka : weapon
 	 CoopFire:
 		TNT1 A 0 A_FireCustomMissile("RottMissile",0,8,0,-8) // -16
 		Goto Continue
+	 DMFire:
+		TNT1 A 0 A_FireCustomMissile("RottMissileDM",0,8,0,-8) // -16
+		Goto Continue		
 	 } 
 }  
 
@@ -54,7 +58,7 @@ actor RottMissile
     Radius 11
     Height 8
     Speed 50
-    Damage (0)
+    Damage (40)
     SCALE 0.50
     PROJECTILE
 	+WINDTHRUST
@@ -80,7 +84,7 @@ actor RottMissile
 	XDeath:
 		TNT1 A 0 A_StopSound(5)
 		TNT1 A 0 A_PlaySound("gen/expl2",6,1.0,0,ATTN_NORM)	
-    	EXPL A 2 Bright A_Explode(75,48, 1, true, 24)
+    	EXPL A 2 Bright A_Explode(50,48, 1, true, 24)
         EXPL BCDEFGHIJKLMNOPQRST 2 Bright
         Stop
 	Crash:
@@ -89,13 +93,14 @@ actor RottMissile
 		TNT1 A 0 A_Jump(250,2)
 		TNT1 A 0 A_PlaySound("rmissile/cook",5,1.0,0,ATTN_NORM)	
 		TNT1 A 0
-    	EXPL A 2 Bright A_Explode(75,48, 1, true, 24)
+    	EXPL A 2 Bright A_Explode(50,48, 1, true, 24)
         EXPL BCDEFGHIJKLMNOPQRST 2 Bright
 		Stop
     }
 }
 
-Actor CompRottM : RottMissile { Speed 48 -THRUSPECIES Species "" Decal Scorch }
+Actor CompRottM : RottMissile { -THRUSPECIES Species "" Decal Scorch }
+actor RottMissileDM : RottMissile { Damage (0) Speed 42 }
 
 ACTOR MissileTrail
 {
