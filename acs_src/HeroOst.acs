@@ -183,7 +183,7 @@ Script "SamsaraOST_Loop" ENTER clientside
 	int hexen2cd = GetCvar("sams_cl_hex2cd");
 	If(GetCvar("sams_cl_heromusic") > 0  && (GetCvar("sams_cl_xmasmusic") == false || GetCvar("sams_merrychristmas") == false))
 	{
-		if(gameoverride != lastgame || herosoundtrack != lastmode || GetCvar("sams_cl_dkclab") != altskin || bloodcd != lastblud || hexen2cd != lasthex || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel"))
+		if(gameoverride != lastgame || herosoundtrack != lastmode || CheckInventory("SamsaraModeCounter") != altskin || bloodcd != lastblud || hexen2cd != lasthex || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel"))
 		{
 			If((herosoundtrack == 1 && CheckInventory("DoomguyClass") == TRUE) || ((gameoverride == 0 || gameoverride == 12) && herosoundtrack == 2))
 			{
@@ -314,6 +314,9 @@ Script "SamsaraOST_Loop" ENTER clientside
 			}
 			Else If((herosoundtrack == 1 && CheckInventory("HalfLifeClass") == TRUE) || ((gameoverride == 20 || gameoverride == 29) && herosoundtrack == 2))
 			{
+				if(CheckInventory("SamsaraModeCounter") != altskin)
+					TakeInventory("HalfLifeMusicPlayingToken",999);
+					
 				LocalSetMusic("d_empty",0);
 				if(!CheckInventory("HalfLifeMusicPlayingToken"))
 				{	
@@ -321,6 +324,7 @@ Script "SamsaraOST_Loop" ENTER clientside
 					if(SetTrack == 1)	
 						ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 4);
 				}
+				altskin = CheckInventory("SamsaraModeCounter");
 			}
 			Else If((herosoundtrack == 1 && CheckInventory("SWClass") == TRUE) || (gameoverride == 21 && herosoundtrack == 2))
 			{
@@ -378,7 +382,7 @@ Script "SamsaraOST_Loop" ENTER clientside
 				TakeInventory("HalfLifeMusicPlayingToken", 1);
 				GiveInventory("HeroSoundTrack", herosoundtrack);
 				TakeInventory("HeroSoundTrackXmas", 1);
-				altskin = GetCvar("sams_cl_dkclab");
+				altskin = CheckInventory("SamsaraModeCounter");
 				TakeInventory("HeroSoundTrackLevel", 2048);
 				GiveInventory("HeroSoundTrackLevel", GetLevelInfo(LEVELINFO_LEVELNUM));
 			}
@@ -421,51 +425,52 @@ Script "SamsaraOST_HalfLifeScriptedMusic" (int cause) clientside
 	int gameoverride = GetCVAR("sams_cl_heromusicoverride");
 	if(gameoverride == 29 && GetCvar("sams_cl_heromusic") == 2)
 		halflifeopposingforce = 1;
+		
 	if(!CheckInventory("HalfLifeMusicPlayingToken") && GetCvar("sams_cl_heromusic"))
 	{
-		StopSound(0, CHAN_NOPAUSE);
+		StopSound(0, CHAN_VOICE);
 		switch(cause)
 		{
 			case 1:
 				settrack = random(0,2);
-				PlaySound(0, HLMusicKey[settrack+(halflifeopposingforce*3)], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+				PlaySound(0, HLMusicKey[settrack+(halflifeopposingforce*3)], CHAN_VOICE|CHAN_NOPAUSE, 1.0, ATTN_NONE);
 				break;
 			case 2:
 				settrack = random(0,2);
-				PlaySound(0, HLMusicWeapon[settrack+(halflifeopposingforce*3)], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+				PlaySound(0, HLMusicWeapon[settrack+(halflifeopposingforce*3)], CHAN_VOICE|CHAN_NOPAUSE, 1.0, ATTN_NONE);
 				break;
 			case 3:
 				settrack = random(0,3);
-				PlaySound(0, HLMusicStart[settrack+(halflifeopposingforce*4)], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+				PlaySound(0, HLMusicStart[settrack+(halflifeopposingforce*4)], CHAN_VOICE|CHAN_NOPAUSE, 1.0, ATTN_NONE);
 				break;
 			case 4:	
 				if(!halflifeopposingforce)
 				{
 					settrack = random(0,7);
-					PlaySound(0, HLMusicRandom[settrack], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+					PlaySound(0, HLMusicRandom[settrack], CHAN_VOICE|CHAN_NOPAUSE, 1.0, ATTN_NONE);
 				}
 				else
 				{
 					settrack = random(8,12);	
-					PlaySound(0, HLMusicRandom[settrack], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+					PlaySound(0, HLMusicRandom[settrack], CHAN_VOICE|CHAN_NOPAUSE, 1.0, ATTN_NONE);
 				}
 				break;
 			case 5:	
 				if(!halflifeopposingforce)
 				{
 					settrack = random(0,2);
-					PlaySound(0, HLMusicBoss[settrack], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+					PlaySound(0, HLMusicBoss[settrack], CHAN_VOICE|CHAN_NOPAUSE, 1.0, ATTN_NONE);
 				}
 				else
 				{
 					settrack = random(3,4);	
-					PlaySound(0, HLMusicBoss[settrack], CHAN_NOPAUSE, 1.0, ATTN_NONE);
+					PlaySound(0, HLMusicBoss[settrack], CHAN_VOICE|CHAN_NOPAUSE, 1.0, ATTN_NONE);
 				}
 				break;
 		}
 		GiveInventory("HalfLifeMusicPlayingToken", 1);
 		Delay(4200);
 		TakeInventory("HalfLifeMusicPlayingToken", 0x7FFFFFFF);
-		StopSound(0, CHAN_NOPAUSE);
+		StopSound(0, CHAN_VOICE);
 	}
 }
