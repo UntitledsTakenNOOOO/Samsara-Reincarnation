@@ -2874,6 +2874,9 @@ Script "Samsara_ProjectilePredictor" (int type)
 		SetActivator(newplayer,AAPTR_Default);
 		Thing_ChangeTid(newtid1,0);
 		Thing_ChangeTid(newtid2,0);
+		
+		if(ClassifyActor(0) & ACTOR_WORLD)
+			terminate;
 	}
 }
 

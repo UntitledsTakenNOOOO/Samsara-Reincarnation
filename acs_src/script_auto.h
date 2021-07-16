@@ -556,6 +556,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				GiveInventory("SamsaraModeCounter",doommode);
 				if(doommode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
 				{
+					int skillmultiplier = (GameSkill() == 0 || GameSkill() == 4);
 					TakeInventory("Samsara_ModeWeaponChange",1);
 					if((GetUserCvar(pln,"sams_cl_doom64")))
 					{ 
@@ -563,6 +564,31 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						if(CheckInventory("Doom64_IHaveUnmaker") && (!CheckInventory("Unmaker"))) 
 							GiveInventory("Unmaker", 1);
 							
+						if(CheckInventory("DGHasMinigun"))
+						{
+							GiveInventory("GotWeapon4", 1);
+							GiveInventory(" Chaingun ", 1);
+							TakeInventory("Clip", 20 * (5 - skillmultiplier));
+						}
+						if(CheckInventory("DGHasGrenadeLauncher"))
+						{
+							GiveInventory("GotWeapon5", 1);
+							GiveInventory(" GrenadeLauncher ", 1);
+							TakeInventory("RocketAmmo", 2 * (5 - skillmultiplier));
+						}
+						if(CheckInventory("DGHasRailGun"))
+						{
+							GiveInventory("GotWeapon6", 1);
+							GiveInventory(" Railgun ", 1);
+							TakeInventory("Cell", 40 * (5 - skillmultiplier));
+						}
+						if(CheckInventory("DGHasBFG10K"))
+						{
+							GiveInventory("GotWeapon7", 1);
+							GiveInventory(" BFG10K ", 1);
+							TakeInventory("Cell", 40 * (5 - skillmultiplier));
+						}
+						
 						TakeInventory(" Minigun ", 1);
 						TakeInventory(" GrenadeLauncher ", 1);
 						TakeInventory(" RailGun ", 1);
@@ -581,29 +607,46 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					}
 					else 
 					{ 
-						int skillmultiplier = (GameSkill() == 0 || GameSkill() == 4);
 						if(CheckInventory("DGHasMinigun"))
 						{
 							GiveInventory(" Minigun ", 1);
 							TakeInventory("Clip", 20 * (1 + skillmultiplier));
-						}
-							
+						}			
 						if(CheckInventory("DGHasGrenadeLauncher"))
 						{
 							GiveInventory(" GrenadeLauncher ", 1);
 							TakeInventory("RocketAmmo", 2 * (1 + skillmultiplier));
-						}
-							
+						}					
 						if(CheckInventory("DGHasRailGun"))
 						{
 							GiveInventory(" RailGun ", 1);
 							TakeInventory("Cell", 40 * (1 + skillmultiplier));
-						}
-							
+						}		
 						if(CheckInventory("DGHasBFG10K"))
 						{
 							GiveInventory(" BFG10K ", 1);
 							TakeInventory("Cell", 40 * (1 + skillmultiplier));
+						}
+						
+						if(!CheckInventory("DGHasChaingun"))
+						{
+							TakeInventory("GotWeapon4", 1);
+							TakeInventory(" Chaingun ", 1);
+						}
+						if(!CheckInventory("DGHasRocketLauncher"))
+						{
+							TakeInventory("GotWeapon5", 1);
+							TakeInventory(" Rocket Launcher ", 1);
+						}
+						if(!CheckInventory("DGHasPlasmaRifle"))
+						{
+							TakeInventory("GotWeapon6", 1);
+							TakeInventory(" Plasma Rifle ", 1);
+						}
+						if(!CheckInventory("DGHasBF9000"))
+						{
+							TakeInventory("GotWeapon7", 1);
+							TakeInventory(" BFG9000 ", 1);
 						}
 							
 						GiveInventory("DoomGuyScalar",1);
@@ -633,7 +676,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							if(CheckInventory("Totenkopf_IHaveDualMausers") && (!CheckInventory("Totenkopf_MauserDual"))) { GiveInventory("Totenkopf_MauserDual", 1); }
 							if(CheckInventory("Totenkopf_IHaveDualPistols") && (!CheckInventory("Totenkopf_PistolDual"))) { GiveInventory("Totenkopf_PistolDual", 1); }
 							if(CheckInventory("Totenkopf_IHaveDualMP40s") && (!CheckInventory("Totenkopf_MP40Dual"))) { GiveInventory("Totenkopf_MP40Dual", 1); }
-							if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Totenkopf_STG44"))) { GiveInventory("Totenkopf_STG44", 1); }
+							if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Totenkopf_STG44"))) { GiveInventory("GotWeapon3", 1); GiveInventory("Totenkopf_STG44", 1); }
 							if(CheckInventory("Totenkopf_IHaveFlameThrower") && (!CheckInventory("Totenkopf_FlameThrower"))) { GiveInventory("Totenkopf_FlameThrower", 1); }
 							if(CheckInventory("Totenkopf_IHaveMG42") && (!CheckInventory("Totenkopf_MG42"))) { GiveInventory("Totenkopf_MG42", 1); }
 							if(CheckInventory("Totenkopf_IHaveScope") && (!CheckInventory("Totenkopf_Sniper"))) { GiveInventory("Totenkopf_Sniper", 1); }
@@ -642,7 +685,6 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						}	
 						else if(wolfmode <= 1)
 						{
-//							PrintBold(s: "Your shit's being taken!" );
 							if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1); }
 							if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); }
 							TakeInventory("Totenkopf_PistolDual", 0x7FFFFFFF); TakeInventory("Totenkopf_Mauser", 0x7FFFFFFF); TakeInventory("Totenkopf_MauserDual", 0x7FFFFFFF); TakeInventory("Totenkopf_MP40Dual", 0x7FFFFFFF); TakeInventory("Totenkopf_STG44", 0x7FFFFFFF); TakeInventory("Totenkopf_FlameThrower", 0x7FFFFFFF);  TakeInventory("Totenkopf_MG42", 0x7FFFFFFF);  TakeInventory("Totenkopf_Sniper", 0x7FFFFFFF); TakeInventory("TotenkopfHasPowerArmor", 0x7FFFFFFF);  TakeInventory("TotenkopfHasHealingOrb", 0x7FFFFFFF); 
@@ -685,8 +727,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					}
 					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, wolfmode, pln);
 					previousvalue = wolfmode;
-//					if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1);  }	
-//					if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); } 
+					//if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1);  }	
+					//if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); } 
 				}
 				break;
 				
