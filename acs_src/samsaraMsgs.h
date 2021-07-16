@@ -55,7 +55,7 @@ int ClassPickupMessages[CLASSCOUNT][MAXMODES][SLOTCOUNT][MSGCOUNT] =
 			{
 				"You got the Super Shotgun!",
 				"And I feel mighty!",
-				"The only Slot 3 allowed to get away with 200 damage.",
+				"Fucks shit up.",
 				"Where do the extra six pellets come from? Your pecs.",
 				"The souls of a million DWANGO5 marines resonate from within...",
 				"Clearly this solves even more problems.",
@@ -213,7 +213,7 @@ int ClassPickupMessages[CLASSCOUNT][MAXMODES][SLOTCOUNT][MSGCOUNT] =
 			{
 				"You got the Super Shotgun!",
 				"And I feel mighty!",
-				"The only Slot 3 allowed to get away with 200 damage.",
+				"Fucks shit up.",
 				"Where do the extra six pellets come from? Your pecs.",
 				"The souls of a million DWANGO5 marines resonate from within...",
 				"Clearly this solves even more problems.",
