@@ -234,10 +234,10 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
     },
     {   // I.P. Freely
         {"RottKnife",                       "",             "",             "", ""},
-        {"Heatseeker",                      "HSMissiles",   "Clip",        "", ""},
+        {"Bazooka",                      "HSMissiles",   "Clip",        "", ""},
         {"RPistol",                  		"",             "",             "", ""},
         {"Double Pistols",                  "",    			"",             "", ""},
-        {"Bazooka",                         "RottMissiles",	"Shell",        "", ""},
+        {"HeatSeeker",                         "RottMissiles",	"Shell",        "", ""},
         {"MP40",                   			"", 			"",        		"", ""},
         {" FireBomb ",                      "FBMissiles",   "RocketAmmo",   "", ""},
         {"DrunkMissiles",                   "DMissiles",    "Cell",         "", ""},
