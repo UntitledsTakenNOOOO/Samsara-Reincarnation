@@ -418,7 +418,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
     HandleChainsawSpawn(respawning);
     HandleUniqueSpawn(respawning);
-    HandleInstagib(respawning);
+	HandleInstagib(respawning);
 
     ACS_NamedExecuteAlways("SamsaraScheduled", 0, respawning,0,0);
 
@@ -1608,4 +1608,48 @@ script "SamsaraDeath" death //619 -- SAMSARA_DEATH
 	}
     Delay(1);
     TakeInventory("QuadDamagePower", 1);
+}
+
+script "HandleInstagibWeapons" (void)
+{
+	int classnum = samsaraClassNum();
+	switch(GetCvar("sams_slotmode"))
+	{
+		case 0:
+			GiveInventory(ClassWeapons[classnum][0][0],1);
+			break;
+		case 1:
+			GiveInventory(ClassWeapons[classnum][2][0],1);
+			break;
+		case 2:
+			GiveInventory("SamsaraSlotOnePickup",1);
+			break;
+		case 3:
+			GiveInventory("SamsaraSlotTwoPickup",1);
+			break;
+		case 4:
+			GiveInventory("SamsaraSlotThreePickup",1);
+			break;
+		case 5:
+			GiveInventory("SamsaraSlotFourPickup",1);
+			break;
+		case 6:
+			GiveInventory("SamsaraSlotFivePickup",1);
+			break;
+		case 7:
+			GiveInventory("SamsaraSlotSixPickup",1);
+			break;
+		case 8:
+			GiveInventory("SamsaraSlotSevenPickup",1);
+			break;
+		case 9:
+			GiveInventory("SamsaraUniquePickup1",1);
+			break;
+		case 10:
+			GiveInventory("SamsaraUniquePickup2",1);
+			break;
+		case 11:
+			GiveInventory("SamsaraUniquePickup3",1);
+			break;
+	}
 }

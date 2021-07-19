@@ -461,11 +461,11 @@ function int SamsaraArmorType(void)
 
 function int HandleInstagib(int respawning)
 {
-    int cs = GetCVar("instagib");
+    int cs = GetCvar("instagib");
     int classnum = samsaraClassNum();
     int i;
 
-    if (cs <= 0) { return 0; }
+    if (cs <= 0) { ConsoleCommand("set sv_infiniteammo 0"); return 0; }
 
     for (i = 0; i < SLOTCOUNT; i++)
     {
@@ -474,34 +474,10 @@ function int HandleInstagib(int respawning)
         TakeInventory(ClassWeapons[classnum][i][S_AMMO2], 0x7FFFFFFF);
     }
 
+	ConsoleCommand("set sv_infiniteammo 1");
     GiveInventory("InstagibModeOn",1);
-    if (CheckInventory("DoomguyClass") == 1) { GiveInventory("B.F.G. 9000",1); }
-    if (CheckInventory("ChexClass") == 1) { GiveInventory("LAZ Device",1); }
-    if (CheckInventory("CorvusClass") == 1) { GiveInventory("DSparilStaff",1); }
-    if (CheckInventory("WolfenClass") == 1) { GiveInventory("Spear of Destiny",1); }
-    if (CheckInventory("HexenClass") == 1) { GiveInventory("Wraithverge",1); }
-    if (CheckInventory("DukeClass") == 1) { GiveInventory("Devastator",1); }
-    if (CheckInventory("MarathonClass") == 1) { GiveInventory("ONI-71 Wave Motion Cannon",1); }
-    if (CheckInventory("QuakeClass") == 1) { GiveInventory("Thunderbolt",1); }
-    if (CheckInventory("RottClass") == 1) { GiveInventory("Flamewall",1); }		
-    if (CheckInventory("BlakeClass") == 1) { GiveInventory("Anti-Plasma Cannon",1); }	
-    if (CheckInventory("CalebClass") == 1) { GiveInventory("LifeLeech",1); }	
-    if (CheckInventory("StrifeClass") == 1) { GiveInventory(" Mauler ",1); }
-    if (CheckInventory("EradClass") == 1) { GiveInventory(" Plasma Ball ",1); }
-    if (CheckInventory("C7Class") == 1) { GiveInventory("AlienDisintegrator",1); }
-    if (CheckInventory("RMRClass") == 1) { GiveInventory(" RMR Plasma Cannon ",1); }
-    if (CheckInventory("KatarnClass") == 1) { GiveInventory("Assault Cannon",1); }	
-	if (CheckInventory("POGreedClass") == 1) { GiveInventory(" Super Plasma Annihilator ",1); }
-	if (CheckInventory("DisruptorClass") == 1) { GiveInventory(" Disruptor Zodiac ",1); }	
-	if (CheckInventory("WitchavenClass") == 1) { GiveInventory("Spellbook",1); } //+Added
-	if (CheckInventory("HalfLifeClass") == 1) { GiveInventory("E.G.O.N.",1); } //+Added	
-	if (CheckInventory("SWClass") == 1) { GiveInventory("SWGuardianHead",1); } //+Added
-	if (CheckInventory("CMClass") == 1) { GiveInventory("CMPlasmaGun",1); } //+Added
-	if (CheckInventory("JonClass") == 1) { GiveInventory(" Mummy Staff ",1); } //+Added		
-	if (CheckInventory("RRClass") == 1) { GiveInventory(" Alien Arm Cannon ",1); } //+Added	
-	if (CheckInventory("BittermanClass") == 1) { GiveInventory("Q2BFG10K",1); }
-	if (CheckInventory("Hexen2Class") == 1) { GiveInventory("Hexen2TempestStaff",1); }
-	if (CheckInventory("BondClass") == 1) { GiveInventory("Goldeneye_Moonraker",1); }
+		
+	ACS_NamedExecuteAlways("HandleInstagibWeapons",0,0,0,0);
 	return 1;
 }
 
