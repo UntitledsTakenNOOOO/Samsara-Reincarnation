@@ -461,6 +461,9 @@ function int SamsaraArmorType(void)
 
 function int HandleInstagib(int respawning)
 {
+	if(GetPlayerAccountName(0) == 0)
+		return 0;
+
     int cs = GetCvar("instagib");
     int classnum = samsaraClassNum();
     int i;
