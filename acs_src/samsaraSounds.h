@@ -528,6 +528,17 @@ int ClassPickupSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
         "Catacomb/Hourglass",
         "Catacomb/Score",
     }},	
+	{{
+        "Painkiller/Painkiller/Pickup",
+        "Painkiller/Stakegun/Pickup",
+        "Painkiller/Painkiller/Pickup",
+        "Painkiller/Shotgun/Pickup",
+        "Painkiller/Boltgun/Pickup",
+        "Painkiller/Rifle/Pickup",
+        "Painkiller/RocketLauncher/Pickup",
+        "Painkiller/ElectroDriver/Pickup",
+        "Painkiller/TarotCard/Pickup",
+    }},	
 };
 
 int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] = 
@@ -1063,6 +1074,17 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
         "Catacomb/Hourglass",
         "Catacomb/Score",
     }},	
+	{{
+        "Painkiller/Painkiller/Pickup",
+        "Painkiller/Stakegun/Pickup",
+        "Painkiller/Painkiller/Pickup",
+        "Painkiller/Shotgun/Pickup",
+        "Painkiller/Boltgun/Pickup",
+        "Painkiller/Rifle/Pickup",
+        "Painkiller/RocketLauncher/Pickup",
+        "Painkiller/ElectroDriver/Pickup",
+        "Painkiller/TarotCard/Pickup",
+    }},	
 };
 
 int ClassUniqueSounds[CLASSCOUNT][MAXMODES] = 
@@ -1095,6 +1117,7 @@ int ClassUniqueSounds[CLASSCOUNT][MAXMODES] =
 	{"Hexen2/ArtifactPickup", "" },
 	{"Goldeneye/Weaponup", "" },
 	{"Catacomb/GemGet", "" },
+	{"Painkiller/TarotCard/Pickup", "" }
 };
 
 int PunchDrunkUniqueSounds[CLASSCOUNT] = 

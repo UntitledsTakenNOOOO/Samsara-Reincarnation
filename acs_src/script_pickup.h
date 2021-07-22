@@ -21,7 +21,7 @@ script "SamsaraClientClass" (int slot) clientside //228 -- SAMSARA_CLIENT_CLASS
     slot = itemToSlot(slot);
     
     int hasSlot = SamsaraClientWeps[slot];
-
+	
     if (displaymode != 0)
     {
         if ((SamsaraItemFlash >= (Timer() - 35)) && (Timer() >= 70))

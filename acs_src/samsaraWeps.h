@@ -61,6 +61,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
 	{"Hexen2TomeOfPower","","Hexen2ForceCube","","",""},
 	{"Goldeneye_SniperRifle","Goldeneye_SniperMagazine","Goldeneye_SilencedD5K","Goldeneye_D5KMagazine","Goldeneye_GadgetGranter",""},
 	{"Catacomb_RandomGem","","","","",""},	
+	{"Painkiller_Tarot_SilverGiver","","","","",""},	
 };
 
 int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] = 
@@ -94,6 +95,7 @@ int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] =
 	{20,    0,     20,  0,		0,	0},
 	{0,     0,      0,  0,		0,	0},
 	{0,     0,      0,  0,		0,	0},	
+	{0,     0,      0,  0,		0,	0},	
 };
 
 int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
@@ -126,6 +128,7 @@ int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
 	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},
+	{-1,    -1,     -1, -1,     -1, -1},	
 	{-1,    -1,     -1, -1,     -1, -1},	
 };
 
@@ -468,6 +471,17 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Catacomb_BoltsQuickSpell",        		"Catacomb_Bolts",   		"",   		"", ""},
         {"Catacomb_AtomicQuickSpell",             	"Catacomb_Nukes",   		"Catacomb_Xterminators",   		"", ""},
     },	
+	{   // Daniel Garner
+		{"Painkiller_Painkiller",               	"",             "",         "", ""},
+        {"Painkiller_StakeGun",        				"Painkiller_StakeAmmo",		"Painkiller_GrenadeAmmo",         "", ""},
+        {"Painkiller_Painkiller",           		"",         "",         "", ""},
+        {"Painkiller_Shotgun",     					"Painkiller_ShellAmmo",         "Painkiller_FreezerAmmo",         "", ""},
+        {"Painkiller_BoltGun",           			"Painkiller_BoltAmmo",		"Painkiller_HeaterAmmo",         "", ""},
+        {"Painkiller_Rifle",        				"Painkiller_RifleAmmo",         "Painkiller_FlamerAmmo",         "", ""},
+        {"Painkiller_RocketLauncher",        		"Painkiller_GrenadeAmmo", 	"Painkiller_ChaingunAmmo",       	"", ""},
+        {"Painkiller_Electrodriver",        		"Painkiller_ShurikenAmmo",   		"Painkiller_ElectroAmmo",   		"", ""},
+        {"Painkiller_Tarot_GoldGiver",             	"",   		"",   		"", ""},
+    },	
 };
 
 int ClassScripts[CLASSCOUNT][SLOTCOUNT] = 
@@ -501,6 +515,7 @@ int ClassScripts[CLASSCOUNT][SLOTCOUNT] =
 	{0,0,                   0,  0,0,0,0,0,0,0},	
 	{0,0,                   0,  0,0,0,0,0,0,0},	
 	{0,0,                   0,  0,0,0,0,0,0,0},		
+	{0,0,                   0,  0,0,0,0,0,0,0},	
 };
 
 //+Added
@@ -602,6 +617,7 @@ str SamsaraRGP[CLASSCOUNT][SAMSARA_RGP_PAGES] =
 	{"",				"",},	
 	{"",				"",},	
 	{"",				"",},	
+	{"",				"",},	
 };
 
 #define SAMSARA_RGP_PROPERTIES	2
@@ -633,6 +649,7 @@ int SamsaraRGPProperties[CLASSCOUNT][SAMSARA_RGP_PAGES][SAMSARA_RGP_PROPERTIES] 
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
+	{{0,	0}, 		{0,		0},},	
 	{{0,	0}, 		{0,		0},},	
 	{{0,	0}, 		{0,		0},},	
 	{{0,	0}, 		{0,		0},},	

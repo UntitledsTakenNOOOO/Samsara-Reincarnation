@@ -1804,7 +1804,7 @@ Script "Samsara_ChangeAltClass" (void) net
 }
 
 //For our unique keys to be consolidated
-Script "Samsara_UniqueKeys" (void)
+Script "Samsara_UniqueKeys" (int key)
 {
 	int pln = PlayerNumber();
 	switch(PlayerClass(pln))
@@ -1814,6 +1814,12 @@ Script "Samsara_UniqueKeys" (void)
 			break;
 		case 26:
 			ACS_NamedExecuteWithResult("BondActivateWatch",0,0,0);
+			break;
+		case 28:
+			if(key == 1)
+				ACS_NamedExecuteWithResult("Painkiller_BlackTarot_Initiate",0,0,0,0);
+			else
+				ACS_NamedExecuteWithResult("Painkiller_GoldTarot_Activate",0,0,0,0);
 			break;
 	}
 }
