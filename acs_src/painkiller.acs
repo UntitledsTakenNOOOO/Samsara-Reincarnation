@@ -1,28 +1,6 @@
 #library "painkiller"
 #include "zcommon.acs"
 
-// A handy method of detecting what Source Port you're using and using appropriate
-// scripts for it. Thanks to TheZombieKiller!
-script "IsThisZandro" OPEN
-{
-    /*int s = unusedTID(37000, 47000);
-
-    if (SpawnForced("Doomsphere",0,0,0,s,0))
-	{
-	*/
-	if (GetPlayerAccountName(0) == 0)
-	{
-        //Log(s:"Zandronum check unsuccessful, assuming ZDoom.");
-        SetCVar("pk_runninginzandro",0);
-        SetCVar("pk_runninginzdoom",1);
-    } else {
-        //Thing_Remove(s);
-        //Log(s:"Zandronum check successful.");
-        SetCVar("pk_runninginzandro",1);
-        SetCVar("pk_runninginzdoom",0);
-    }
-}
-
 function int SetPointerExt(int assign_slot, int tid, int assign_to_tid) 
 {
 	int a = ActivatorTID(); // Get original activator tid if there is an activator (I have ASSUMED that it returns 0 if there is no activator)
@@ -236,40 +214,31 @@ Script "Painkiller_Loop" Enter
 	FadeTo (0, 0, 0, 0.0, 3.0);
 	if(CheckInventory("Painkiller_666Ammo_Power"))
 	{
-		TakeInventory("Painkiller_ShellAmmo",9999);
+		TakeInventory("Clip",9999);
+		TakeInventory("Shell",9999);
+		TakeInventory("RocketAmmo",9999);
+		TakeInventory("Cell",9999);
 		TakeInventory("Painkiller_FreezerAmmo",9999);
-		TakeInventory("Painkiller_StakeAmmo",9999);
-		TakeInventory("Painkiller_GrenadeAmmo",9999);
-		TakeInventory("Painkiller_RifleAmmo",9999);
 		TakeInventory("Painkiller_FlamerAmmo",9999);
-		TakeInventory("Painkiller_ChaingunAmmo",9999);
-		TakeInventory("Painkiller_ShurikenAmmo",9999);
 		TakeInventory("Painkiller_ElectroAmmo",9999);
-		TakeInventory("Painkiller_BoltAmmo",9999);
 		TakeInventory("Painkiller_HeaterAmmo",9999);
 		
-		SetAmmoCapacity("Painkiller_ShellAmmo",666);
+		SetAmmoCapacity("Clip",666);
+		SetAmmoCapacity("Shell",666);
+		SetAmmoCapacity("RocketAmmo",666);
+		SetAmmoCapacity("Cell",666);
 		SetAmmoCapacity("Painkiller_FreezerAmmo",666);
-		SetAmmoCapacity("Painkiller_StakeAmmo",666);
-		SetAmmoCapacity("Painkiller_GrenadeAmmo",666);
-		SetAmmoCapacity("Painkiller_RifleAmmo",666);
 		SetAmmoCapacity("Painkiller_FlamerAmmo",666);
-		SetAmmoCapacity("Painkiller_ChaingunAmmo",666);
-		SetAmmoCapacity("Painkiller_ShurikenAmmo",666);
 		SetAmmoCapacity("Painkiller_ElectroAmmo",666);
-		SetAmmoCapacity("Painkiller_BoltAmmo",666);
 		SetAmmoCapacity("Painkiller_HeaterAmmo",666);
 		
-		GiveInventory("Painkiller_ShellAmmo",666);
+		GiveInventory("Clip",666);
+		GiveInventory("Shell",666);
+		GiveInventory("RocketAmmo",666);
+		GiveInventory("Cell",666);
 		GiveInventory("Painkiller_FreezerAmmo",666);
-		GiveInventory("Painkiller_StakeAmmo",666);
-		GiveInventory("Painkiller_GrenadeAmmo",666);
-		GiveInventory("Painkiller_RifleAmmo",666);
 		GiveInventory("Painkiller_FlamerAmmo",666);
-		GiveInventory("Painkiller_ChaingunAmmo",666);
-		GiveInventory("Painkiller_ShurikenAmmo",666);
 		GiveInventory("Painkiller_ElectroAmmo",666);
-		GiveInventory("Painkiller_BoltAmmo",666);
 		GiveInventory("Painkiller_HeaterAmmo",666);
 	}
 	while(true)
@@ -676,25 +645,32 @@ Script "Painkiller_Freeze" (int thaw, int thawhealth, int renderstyle)
 			render = GetActorProperty(0, APROP_RenderStyle);
 			SetActorProperty(0,APROP_Health,health/2);
 			SetActorProperty(0,APROP_RenderStyle,STYLE_NORMAL);
+			SetActorProperty(0,APROP_Invulnerable,1);
 			for(loopcounter = 2450; loopcounter < 2459; loopcounter++)
-			{
+			{	
 				Thing_SetTranslation(0,loopcounter);
 				Delay(2);
 			}
 			
-			while(ClassifyActor(0) & ACTOR_ALIVE)
+			SetActorProperty(0,APROP_Invulnerable,0);
+			
+			while(GetActorProperty(0,APROP_Health) > 0)
 			{
 				freezetimer++;
 				if(freezetimer >= 175)
 				{
-					ACS_NamedExecuteAlways("Painkiller_Freeze",0,2,health,render);
+					ACS_NamedExecuteWithResult("Painkiller_Freeze",2,health,render,0);
 					terminate;
 				}
+				
 				Delay(1);
 			}
+			Thing_SetTranslation(0,0);
+			SetActorProperty(0,APROP_RenderStyle,render);
 			GiveInventory("Painkiller_IceShatter",1);
 			break;
 		Case 2:
+			SetActorProperty(0,APROP_Invulnerable,0);
 			SetActorProperty(0,APROP_Health,thawhealth);
 			SetActorProperty(0,APROP_RenderStyle,renderstyle);
 			SetActorState(0,"PainkillerIceThaw",true);
@@ -766,7 +742,7 @@ Script "Painkiller_StakeRetrieveTracer" (void)
 	{
 		Warp(newtid,-8.0,0,deltaZ,0,WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION);
 		SetActorAngle(0,angle+0.5);
-		SetActorPitch(0,-pitch);
+		SetActorPitch(0,pitch);
 		Delay(2);
 	}
 	//GiveInventory("Painkiller_NoInteractionOff",1);
@@ -1152,12 +1128,29 @@ Script "Painkiller_ComboAmmo" (int type, int cost)
 
 Script "Painkiller_MonsterKill" (void)
 {
+	//For monsters that burst, we will get the coordinates so we know where to put it
+	int monsterX = GetActorX(0);
+	int monsterY = GetActorY(0);
+	int monsterZ = GetActorZ(0);
 	Delay(105);
-	if(GetActorProperty(0,APROP_SpawnHealth) >= 300)
-		SpawnSpotFacingForced("Painkiller_RedSoul",0,0);
+	if(ClassifyActor(0) & ACTOR_World)
+	{
+		if(GetActorProperty(0,APROP_SpawnHealth) >= 300)
+			SpawnForced("Painkiller_RedSoul",monsterX,monsterY,monsterZ,0);
+		else
+			SpawnForced("Painkiller_GreenSoul",monsterX,monsterY,monsterZ,0);
+			
+		SpawnForced("Painkiller_CorpseBurstGibbed",monsterX,monsterY,monsterZ,0);
+	}
 	else
-		SpawnSpotFacingForced("Painkiller_GreenSoul",0,0);
-	GiveInventory("Painkiller_CorpseBurst2",1);
+	{
+		if(GetActorProperty(0,APROP_SpawnHealth) >= 300)
+			SpawnSpotFacingForced("Painkiller_RedSoul",0,0);
+		else
+			SpawnSpotFacingForced("Painkiller_GreenSoul",0,0);
+			
+		GiveInventory("Painkiller_CorpseBurst2",1);
+	}
 }
 
 Script "Painkiller_StartDemonMorph" (int duration)
@@ -1797,7 +1790,32 @@ Script "Painkiller_IsItGibbed" (void)
 
 Script "Painkiller_DemonMorph_Highlight" (void)
 {
+	int alpha = GetActorProperty(0,APROP_Alpha);
+	int style = GetActorProperty(0,APROP_RenderStyle);
+	int stencil = GetActorProperty(0,APROP_StencilColor);
 	SetActorProperty(0,APROP_RenderStyle,Style_Shaded);
 	SetActorProperty(0,APROP_StencilColor,"fc3d03");
 	SetActorProperty(0,APROP_Alpha,1.0);
+	Delay(1);
+	SetActorProperty(0,APROP_RenderStyle,style);
+	SetActorProperty(0,APROP_StencilColor,stencil);
+	SetActorProperty(0,APROP_Alpha,alpha);
+}
+
+Script "Painkiller_GibCreator" (void)
+{
+	int a = 0;
+	int height = (GetActorProperty(0,APROP_Height)>>16)*4;
+	int radius = GetActorProperty(0,APROP_Radius)>>16;
+	int volume = height * radius * radius;
+	int chunks = volume/2000;
+	if(chunks < 1)
+		chunks = 1;
+		
+	for(a = 0; a < chunks; a++)
+		GiveInventory("Painkiller_TossChunk", 1);
+	for(a = 0; a < chunks/2; a++)
+		GiveInventory("Painkiller_TossBlood", 1);
+	for(a = 0; a < chunks*2; a++)
+		GiveInventory("Painkiller_TossSpray", 1);
 }
