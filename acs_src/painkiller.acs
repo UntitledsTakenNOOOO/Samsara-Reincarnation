@@ -182,6 +182,17 @@ str Painkiller_Gold_CardGraphics[17][6] = {
 	{ "PKSCRD30", "PKBCRD30", "Rebirth", "Fully regenerate health and armor", "Painkiller_Rebirth", "Painkiller_Rebirth_Power" },
 };
 
+str PKArmors[4][2] = { 
+	{ "ArmorScrap", "PKARMOR1" },
+	{ "ArmorScrap200", "PKARMOR1" },
+	{ "ArmorPack1", "PKARMOR2" },
+	{ "ArmorPack2", "PKARMOR3" },
+};
+
+str PKCompass[24] = { "PKCOMP01", "PKCOMP02", "PKCOMP03", "PKCOMP04", "PKCOMP05", "PKCOMP06", "PKCOMP07", "PKCOMP08", 
+"PKCOMP09", "PKCOMP10", "PKCOMP11", "PKCOMP12", "PKCOMP13", "PKCOMP14", "PKCOMP15", "PKCOMP16", "PKCOMP17", "PKCOMP18",
+ "PKCOMP19", "PKCOMP20", "PKCOMP21", "PKCOMP22", "PKCOMP23", "PKCOMP24" }; 
+
 Script "Painkiller_BoltGunScopeGraphic" (void)
 {
 	while(CheckInventory("Painkiller_Zoomed"))
@@ -201,6 +212,7 @@ Script "Painkiller_Loop" Enter
 		terminate;
 		
 	//int musicvolume = GetCVAR("SND_MusicVolume");
+	int pln = PlayerNumber();
 	int musicvolume = 1.0;
 	int targetmusicvolume = musicvolume;
 	int laststate = 0;
@@ -243,9 +255,33 @@ Script "Painkiller_Loop" Enter
 	}
 	while(true)
 	{
-		SetHudSize(640,480,0);
-		HudMessage(d:CheckInventory("Painkiller_SoulCount");HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,1580,0,320.0,16.0,0.1,1.0);
-		SetHudSize(0,0,0);
+		if(GetCVar("screenblocks") == 11)
+		{
+			SetHudSize(320,200,0);
+			for(int armortype = 0; armortype < 4; armortype++)
+			{
+				if(GetArmorType(PKArmors[armortype][0],pln))
+				{
+					SetFont(PKArmors[armortype][1]);
+					HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1400,CR_UNTRANSLATED,10.0,191.0,0.1,1.0);
+					break;
+				}
+				else
+				{
+					SetFont("PKARMOR0");
+					HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1400,CR_UNTRANSLATED,10.0,191.0,0.1,1.0);
+				}
+			}
+			SetHudSize(960,700,0);
+			SetFont(PKCompass[(GetActorAngle(0)/182)/15]);
+			HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1401,CR_UNTRANSLATED,480.0,52.0,0.1,1.0);
+			SetHudSize(0,0,0);
+		}
+		else
+		{
+			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1400,CR_UNTRANSLATED,480.0,52.0,0.1,1.0);
+			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1401,CR_UNTRANSLATED,480.0,52.0,0.1,1.0);
+		}
 		if(CheckInventory("Painkiller_SilverSlot1") != lastsilver1)
 		{
 			TakeInventory(Painkiller_Silver_CardGraphics[lastsilver1-1][5],32);
@@ -643,31 +679,63 @@ Script "Painkiller_Freeze" (int thaw, int thawhealth, int renderstyle)
 		Case 1:
 			health = GetActorProperty(0, APROP_Health);
 			render = GetActorProperty(0, APROP_RenderStyle);
-			SetActorProperty(0,APROP_Health,health/2);
 			SetActorProperty(0,APROP_RenderStyle,STYLE_NORMAL);
 			SetActorProperty(0,APROP_Invulnerable,1);
-			for(loopcounter = 2450; loopcounter < 2459; loopcounter++)
-			{	
-				Thing_SetTranslation(0,loopcounter);
-				Delay(2);
-			}
 			
-			SetActorProperty(0,APROP_Invulnerable,0);
-			
-			while(GetActorProperty(0,APROP_Health) > 0)
+			if(GetCVar("sams_runninginzandro"))
 			{
-				freezetimer++;
-				if(freezetimer >= 175)
+				for(loopcounter = 2450; loopcounter < 2459; loopcounter++)
+				{	
+					Thing_SetTranslation(0,loopcounter);
+					Delay(2);
+				}
+
+				freezetimer = 0;
+				while(freezetimer <= 175)
 				{
-					ACS_NamedExecuteWithResult("Painkiller_Freeze",2,health,render,0);
-					terminate;
+					freezetimer++;
+					Delay(1);
 				}
 				
-				Delay(1);
+				if(GetActorProperty(0,APROP_Health) > GetActorProperty(0,APROP_SpawnHealth)/2)
+					ACS_NamedExecuteWithResult("Painkiller_Freeze",2,health,render,0);
+				else
+				{
+					Thing_SetTranslation(0,0);
+					SetActorProperty(0,APROP_RenderStyle,render);
+					GiveInventory("Painkiller_IceShatter",1);
+				}
 			}
-			Thing_SetTranslation(0,0);
-			SetActorProperty(0,APROP_RenderStyle,render);
-			GiveInventory("Painkiller_IceShatter",1);
+			else
+			{
+				SetActorProperty(0,APROP_Health,health/2);
+			
+				for(loopcounter = 2450; loopcounter < 2459; loopcounter++)
+				{	
+					Thing_SetTranslation(0,loopcounter);
+					Delay(2);
+				}
+				
+				SetActorProperty(0,APROP_Invulnerable,0);
+				SetActorFlag(0,"BUDDHA",1);
+				
+				while(GetActorProperty(0,APROP_Health) > 1)
+				{
+					freezetimer++;
+					if(freezetimer >= 175)
+					{
+						SetActorFlag(0,"BUDDHA",0);
+						ACS_NamedExecuteWithResult("Painkiller_Freeze",2,health,render,0);
+						terminate;
+					}
+					
+					Delay(1);
+				}
+				SetActorFlag(0,"BUDDHA",0);
+				Thing_SetTranslation(0,0);
+				SetActorProperty(0,APROP_RenderStyle,render);
+				GiveInventory("Painkiller_IceShatter",1);
+			}
 			break;
 		Case 2:
 			SetActorProperty(0,APROP_Invulnerable,0);
@@ -688,7 +756,7 @@ Script "Painkiller_StakeShatter" (void)
 {
 	SetActivator(0,AAPTR_TRACER);
 	//PrintBold(s:GetActorClass(0));
-	if((ClassifyActor(0) & ACTOR_ALIVE || GetActorProperty(0,APROP_MASS) > 500 || CheckFlag(0,"NOBLOOD") || !CheckInventory("Painkiller_RunStake")) && (GetActorClass(0) != "Painkiller_GrenadeHitBox"))
+	if((ClassifyActor(0) & ACTOR_ALIVE || GetActorProperty(0,APROP_MASS) > 500 || !CheckInventory("Painkiller_RunStake")) && (GetActorClass(0) != "Painkiller_GrenadeHitBox"))
 	{
 		SetResultValue(0);
 	}
@@ -1793,8 +1861,12 @@ Script "Painkiller_DemonMorph_Highlight" (void)
 	int alpha = GetActorProperty(0,APROP_Alpha);
 	int style = GetActorProperty(0,APROP_RenderStyle);
 	int stencil = GetActorProperty(0,APROP_StencilColor);
-	SetActorProperty(0,APROP_RenderStyle,Style_Shaded);
-	SetActorProperty(0,APROP_StencilColor,"fc3d03");
+	if(GetCvar("sams_runninginzandro"))
+		SetActorProperty(0,APROP_RenderStyle,STYLE_Shaded);
+	else
+		SetActorProperty(0,APROP_RenderStyle,STYLE_Stencil);
+		
+	SetActorProperty(0,APROP_StencilColor,0xfc3d03);
 	SetActorProperty(0,APROP_Alpha,1.0);
 	Delay(1);
 	SetActorProperty(0,APROP_RenderStyle,style);
@@ -1802,10 +1874,11 @@ Script "Painkiller_DemonMorph_Highlight" (void)
 	SetActorProperty(0,APROP_Alpha,alpha);
 }
 
-Script "Painkiller_GibCreator" (void)
+Script "Painkiller_GibCreator" (int frozen)
 {
+	int alive;
 	int a = 0;
-	int height = (GetActorProperty(0,APROP_Height)>>16)*4;
+	int height = ACS_NamedExecuteWithResult("Painkiller_GibHeightCheck");
 	int radius = GetActorProperty(0,APROP_Radius)>>16;
 	int volume = height * radius * radius;
 	int chunks = volume/2000;
@@ -1818,4 +1891,11 @@ Script "Painkiller_GibCreator" (void)
 		GiveInventory("Painkiller_TossBlood", 1);
 	for(a = 0; a < chunks*2; a++)
 		GiveInventory("Painkiller_TossSpray", 1);
+}
+
+Script "Painkiller_GibHeightCheck" (void)
+{
+	int height = (GetActorProperty(0,APROP_Height)>>16);
+	height += height * (3 * (GetActorProperty(0,APROP_Health) <= 0));
+	SetResultValue(height);
 }
