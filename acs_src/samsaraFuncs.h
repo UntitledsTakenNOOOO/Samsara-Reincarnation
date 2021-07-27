@@ -163,14 +163,14 @@ function void ApplyLMS(void)
 
 function int samsaraClassNum(void)
 {
-    int i;
+    /*int i;
 
     for (i = 0; i < CLASSCOUNT; i++)
     {
         if (CheckInventory(ClassItems[i])) { return i; }
-    }
+    }*/
 
-    return -1;
+    return PlayerClass(PlayerNumber());
 }
 
 function int slotToItem(int i)

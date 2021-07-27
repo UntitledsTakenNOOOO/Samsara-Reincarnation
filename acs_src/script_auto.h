@@ -483,9 +483,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
     }
 	
     pcount = PlayerCount();
-    
+	
     while (!endloop && ServerEnterTimes[pln] == startTime)
-    {		
+    {			
         if (GetUserCvar(pln,"sams_cl_wolfmove")) { GiveInventory("WolfenMovement", 1); }
         else { TakeInventory("WolfenMovement", 0x7FFFFFFF); }
 		
@@ -1020,7 +1020,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         TakeInventory("WeaponGetYaaaay2", 1);
         TakeInventory("Mace", 1);
         TakeInventory("MacePowered", 1);
-        if (GetCvar("sams_lmsrules") == 0) { ConvertClassWeapons(-1); }
+		//if (GetCvar("sams_lmsrules") == 0) { ConvertClassWeapons(-1); } seems pointless to have this, but will leave commented for now
 
         if (GetCVar("sams_banjetpack") && CheckInventory("DukePortJetpack"))
         {

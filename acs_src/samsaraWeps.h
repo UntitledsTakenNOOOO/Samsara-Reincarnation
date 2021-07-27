@@ -758,4 +758,7 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 	{
 		{"", "Catacomb_WavesQuickSpell", "Catacomb3D_MagicMissile", "Catacomb_XterminatorsQuickSpell", "Catacomb_BurstsQuickSpell", "Catacomb_ZappersQuickSpell", "Catacomb_NukesQuickSpell", "Catacomb_BoltsQuickSpell", "Catacomb_AtomicQuickSpell", "Catacomb_Hourglass", "", "", ""},
 	},	
+	{
+		{"Painkiller_Painkiller", "Painkiller_Stakegun", "Painkiller_Painkiller", "Painkiller_Shotgun", "Painkiller_Boltgun", "Painkiller_Rifle", "Painkiller_RocketLauncher", "Painkiller_Electrodriver", "Painkiller_Tarot_GoldGiver", "Painkiller_Tarot_SilverGiver", "Painkiller_Tarot_SilverGiver", "Painkiller_Tarot_SilverGiver"},
+	},	
 };
