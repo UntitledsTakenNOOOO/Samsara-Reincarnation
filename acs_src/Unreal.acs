@@ -1,0 +1,250 @@
+#library "Unreal"
+#include "zcommon.acs"
+#include "CommonFuncs.h"
+
+Script "DispersionPistolRecharge" Enter
+{
+	int chargetime;
+	int DPistolLevel = (CheckInventory("UDPistolUpgrade")+1);
+	int Dpistolammo = (CheckInventory("DPistolAmmo"));
+	if (Dpistolammo <= 10)
+		chargetime = 39;
+	else
+		chargetime = dpistolammo*9.1;
+	SetAmmoCapacity("DPistolAmmo", GetAmmoCapacity("DPistolAmmo")+DPistolLevel*10);	
+	If(CheckInventory("UnrealClass") == 1 && (ClassifyActor(0) && ACTOR_ALIVE))	
+	While(true)
+	{
+		GiveActorInventory(0,"DPistolAmmo", 1);
+		delay(39);		
+	}		
+}
+
+Script "Unreal_ShockCoreTidToken" (void)
+{
+	int newtid = UniqueTid()>>16;
+	Thing_ChangeTid(0,newtid);
+	//PrintBold(d:newtid);
+	//PrintBold(d:ActivatorTid());
+	SetActivatorToTarget(0);
+	TakeInventory("Unreal_ShockCoreTidToken",65536);
+	GiveInventory("Unreal_ShockCoreTidToken",newtid);
+}
+
+Script "Unreal_ASMDRetrieveTracer" (void)
+{
+	int newtid = UniqueTid()>>16;
+	Thing_ChangeTid(0,newtid);
+	SetActivatorToTarget(0);
+	int detectTid = CheckInventory("Unreal_ShockCoreTidToken");
+	TakeInventory("Unreal_ShockCoreTidToken",65536);
+	SetActivator(newtid,AAPTR_DEFAULT);
+	SetPointer(AAPTR_TRACER,detectTid);	
+	SetActivator(detectTid,AAPTR_TRACER);
+	SetPointer(AAPTR_TRACER,newtid);	
+	Thing_ChangeTid(newtid,0);
+	Thing_ChangeTid(detectTid,0);
+}
+
+Script "Unreal_ShockRifleCombo" (void)
+{
+	int newtid = UniqueTid();
+	Thing_ChangeTid(0,newtid);
+	SetActivator(0,AAPTR_TRACER);
+	//Thing_Remove(newtid);
+	SetActorState(0,"Explode",true);
+}
+
+Script "Unreal_Loop" Enter
+{
+	while(true)
+	{
+		int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+		if((buttons & BT_AltAttack) && (buttons & BT_Attack))
+		{
+			GiveInventory("Unreal_Combo", 1);
+		}
+		Delay(1);
+		TakeInventory("Unreal_Combo", 1);
+	}	
+}		
+
+/*Script "Unreal_EightballLockOn" (void)
+{
+	int newtid = UniqueTID()>>16;
+	ActivatorTID();
+	if(PickActor(0,1.0,1.0,2488,newtid, MF_SHOOTABLE, ML_BLOCKEVERYTHING | ML_BLOCKHITSCAN, PICKAF_FORCETID);
+	{
+		GiveActorInventory(newtid, "Unreal_EightballLockTimer", 1);
+		delay(5);
+	}
+}	*/
+
+Script "Unreal_CARifleCooldown" (void)
+{
+    if (CheckInventory("Unreal_CARCooldown") > 0)
+    {
+        delay(1);
+        TakeInventory("Unreal_CARCooldown",1);
+        restart;
+    }
+}	
+
+Script "UnrealHitBox" (int damage, int headshotdmg)
+{
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int z = GetActorZ(0);
+	int newtid = UniqueTID();
+	int oldTID = ActivatorTID();
+	Thing_ChangeTID(0,newtid);
+	
+	SetActivator(0, AAPTR_Tracer);
+	
+	int tx = GetActorX(0);
+	int ty = GetActorY(0);
+	int tz = GetActorZ(0);
+	int height = GetActorProperty(0,APROP_Height);
+	int width = GetActorProperty(0,APROP_Radius)*2;
+	int result;
+	if(width >= height)
+	{
+		if((z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.45)) && (z <= tz+FixedMul(GetActorProperty(0,APROP_Height),0.55)))
+		{
+			SetActorProperty(newtid,APROP_DamageType,"UnrealDecapitate");
+			SetResultValue(headshotdmg);
+		}
+		else
+		{
+			SetResultValue(damage);
+		}
+	}
+	else
+	{
+		if((z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.85))/* && (z <= tz+GetActorProperty(0,APROP_Height))*/)
+		{
+			if(SpawnForced("SamsaraMixerCompendiumToken",0,0,0,0))
+				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
+			else
+				result = 0;
+				
+			if(result == -1)
+				damage = -1;
+			else 
+				damage = headshotdmg;
+			SetActorProperty(newtid,APROP_DamageType,"UnrealDecapitate");
+			SetResultValue(headshotdmg);
+		}
+		else if((z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.45)) && (z < tz+FixedMul(GetActorProperty(0,APROP_Height),0.85)))
+		{
+			SetActorProperty(newtid,APROP_DamageType,"UnrealBullet");
+			SetResultValue(damage);
+		}
+		else
+		{
+			SetResultValue(damage);
+		}
+	}
+	Thing_ChangeTID(newtid,oldTID);
+}
+
+Script "Unreal_SpawnShockRifleHitBox" (int type)
+{
+	str hitbox;
+	switch(type)
+	{
+		case 3:
+			hitbox = "UASMDBallHitBox";
+			break;
+	}
+	int bombtid = UniqueTid();
+	int newtid = UniqueTid();
+	Thing_ChangeTid(0,bombtid);
+	SpawnSpotFacingForced(hitbox,0,newtid);
+	SetActivator(newtid,AAPTR_DEFAULT);
+	SetPointer(AAPTR_TRACER,bombtid);
+	Thing_ChangeTid(bombtid,0);
+}
+
+Script "Unreal_BloodGenerator_Offsets" (void)
+{
+	int missilex = GetActorX(0);
+	int missiley = GetActorY(0);
+	int missilez = GetActorZ(0);
+	SetActivator(0,AAPTR_Tracer);
+	int enemyx = GetActorX(0);
+	int enemyy = GetActorY(0);
+	int enemyz = GetActorZ(0);
+	int currentangle = GetActorAngle(0);
+	int vang = VectorAngle(enemyx - missilex, enemyy - missiley);
+	int angle = vang % 1.0;
+	TakeInventory("Unreal_BloodGeneratorAngle",999999);
+	TakeInventory("Unreal_BloodGeneratorZ",999999);
+	GiveInventory("Unreal_BloodGeneratorAngle",angle+65536);
+	GiveInventory("Unreal_BloodGeneratorZ",(missilez - enemyz)>>16 + 65536);
+}
+
+Script "Unreal_BloodGenerator_Return" (int mode) 
+{
+	int result;
+	switch(mode)
+	{
+		case 1:
+			result = ((CheckInventory("Unreal_BloodGeneratorAngle") - 65536)/182)+180;
+			break;
+		case 2:
+			result = CheckInventory("Unreal_BloodGeneratorZ");
+			break;
+	}
+	SetResultValue(result);
+}
+
+Script "Unreal_FootStepGenerator" enter
+{
+	if((ClassifyActor(0) & ACTOR_WORLD))
+		terminate;
+		
+	if(CheckInventory("UnrealClass"))
+	{
+		int speedx, speedy, lasttimer, velocity, movement;
+		
+		while((ClassifyActor(0) & ACTOR_ALIVE))
+		{
+			speedx = GetActorVelX(0);
+			speedy = GetActorVelY(0);
+			
+			velocity = magnitudeTwo_f(speedx, speedy);
+			if(velocity>>8 != 0)
+				movement = 750/((velocity>>8)*7);
+			else
+				movement = 0;
+													
+			if((Timer()-lasttimer) > movement && movement != 0)
+			{
+				//PlaySound(0, "HLPlayer/Step", CHAN_BODY, 1.0, false, ATTN_NORM);
+				SpawnSpotForced("Unreal_Step",0,0,0);
+				lasttimer = Timer();
+			}
+			
+			Delay(1);
+		}
+	}
+}
+
+Script "Unreal_GibHeightCheck" (void)
+{
+	int height = (GetActorProperty(0,APROP_Height)>>16);
+	//height += height * (3 * (GetActorProperty(0,APROP_Health) <= 0));
+	SetResultValue(height);
+}
+
+Script "Unreal_EightballReticle" (void)
+{
+	While(CheckInventory("Unreal_TargetLocked") == 1)
+	{
+		SetFont("8LOCKCH");
+		SetHUDSize(640,480,0);
+		HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD, 1624, CR_UNTRANSLATED, 320.0,240.0,0.1,1.0);
+		Delay(1);
+	}
+}		

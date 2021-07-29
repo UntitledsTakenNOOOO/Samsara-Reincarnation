@@ -62,6 +62,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
 	{"Goldeneye_SniperRifle","Goldeneye_SniperMagazine","Goldeneye_SilencedD5K","Goldeneye_D5KMagazine","Goldeneye_GadgetGranter",""},
 	{"Catacomb_RandomGem","","","","",""},	
 	{"Painkiller_Tarot_SilverGiver","","","","",""},	
+	{"Unreal_GESBioRifle","Cell","Unreal_Rifle","Shell","Unreal_Duster","Clip"},		
 };
 
 int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] = 
@@ -96,6 +97,7 @@ int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] =
 	{0,     0,      0,  0,		0,	0},
 	{0,     0,      0,  0,		0,	0},	
 	{0,     0,      0,  0,		0,	0},	
+	{0,     0,      0,  0,		0,	0},	
 };
 
 int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
@@ -128,6 +130,7 @@ int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
 	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},
+	{-1,    -1,     -1, -1,     -1, -1},	
 	{-1,    -1,     -1, -1,     -1, -1},	
 	{-1,    -1,     -1, -1,     -1, -1},	
 };
@@ -473,15 +476,26 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
     },	
 	{   // Daniel Garner
 		{"Painkiller_Painkiller",               	"",             "",         "", ""},
-        {"Painkiller_StakeGun",        				"Painkiller_StakeAmmo",		"Painkiller_GrenadeAmmo",         "", ""},
+        {"Painkiller_StakeGun",        				"Shell",		"RocketAmmo",         "", ""},
         {"Painkiller_Painkiller",           		"",         "",         "", ""},
-        {"Painkiller_Shotgun",     					"Painkiller_ShellAmmo",         "Painkiller_FreezerAmmo",         "", ""},
-        {"Painkiller_BoltGun",           			"Painkiller_BoltAmmo",		"Painkiller_HeaterAmmo",         "", ""},
-        {"Painkiller_Rifle",        				"Painkiller_RifleAmmo",         "Painkiller_FlamerAmmo",         "", ""},
-        {"Painkiller_RocketLauncher",        		"Painkiller_GrenadeAmmo", 	"Painkiller_ChaingunAmmo",       	"", ""},
-        {"Painkiller_Electrodriver",        		"Painkiller_ShurikenAmmo",   		"Painkiller_ElectroAmmo",   		"", ""},
+        {"Painkiller_Shotgun",     					"Shell",         "Painkiller_FreezerAmmo",         "", ""},
+        {"Painkiller_BoltGun",           			"Cell",		"Painkiller_HeaterAmmo",         "", ""},
+        {"Painkiller_Rifle",        				"Clip",         "Painkiller_FlamerAmmo",         "", ""},
+        {"Painkiller_RocketLauncher",        		"RocketAmmo", 	"Clip",       	"", ""},
+        {"Painkiller_Electrodriver",        		"Cell",   		"Painkiller_ElectroAmmo",   		"", ""},
         {"Painkiller_Tarot_GoldGiver",             	"",   		"",   		"", ""},
     },	
+	{   // Prisoner 849
+		{"Unreal_DispersionPistol",               	"DPistolAmmo",             "",         "", ""},
+        {"Unreal_Razorjack",        				"Cell",		"",         "", ""},
+        {"Unreal_Automag",           		"Clip",         "",         "", ""},
+        {"Unreal_ASMDShockRifle",     					"Shell",         "",         "", ""},
+        {"Unreal_FlakCannon",           			"Shell",		"",         "", ""},
+        {"Unreal_Stinger",        				"Clip",         "Clip",         "", ""},
+        {"Unreal_Eightball",        		"RocketAmmo", 	"RocketAmmo",       	"", ""},
+        {"Unreal_Minigun",        		"Cell",   		"",   		"", ""},
+        {"Unreal_Redeemer",             	"Cell",   		"",   		"", ""},
+    },		
 };
 
 int ClassScripts[CLASSCOUNT][SLOTCOUNT] = 
@@ -760,5 +774,5 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 	},	
 	{
 		{"Painkiller_Painkiller", "Painkiller_Stakegun", "Painkiller_Painkiller", "Painkiller_Shotgun", "Painkiller_Boltgun", "Painkiller_Rifle", "Painkiller_RocketLauncher", "Painkiller_Electrodriver", "Painkiller_Tarot_GoldGiver", "Painkiller_Tarot_SilverGiver", "Painkiller_Tarot_SilverGiver", "Painkiller_Tarot_SilverGiver"},
-	},	
+	},
 };

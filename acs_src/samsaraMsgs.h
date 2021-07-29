@@ -3612,6 +3612,30 @@ int ClassPickupMessages[CLASSCOUNT][MAXMODES][SLOTCOUNT][MSGCOUNT] =
 		{ "Time has Stopped!","ZA WARUDO!","Now I can't be late for work!","You don't pause game. Game pauses you.","This man has defeated old age! Doctors hate him!","Go grab a snack, take a piss, pay your taxes, whatever.","No projectile limit. Go nuts.","Ambush? What ambush?","","",},
 		{ "","","","","","","","","","",},
 	}},	
+	{{
+		{ "Painkiller.","","","","","","","","","",},
+		{ "Stakegun/Grenade Launcher. Find Some Souls!","","","","","","","","","",},
+		{ "Painkiller","","","","","","","","","",},
+		{ "Shotgun/Freezer.","","","","","","","","","",},
+		{ "Boltgun/Heater.","","","","","","","","","",},		
+		{ "Rifle/Flamethrower","","","","","","","","","",},
+		{ "Chaingun/Rocket Launcher.","","","","","","","","","",},
+		{ "ElectroDriver.","","","","","","","","","",},
+		{ "Random Gold Tarot Card.","","","","","","","","","",},
+		{ "","","","","","","","","","",},
+	}},	
+	{{
+		{ "You got the Dispersion Pistol.","","","","","","","","","",},
+		{ "You got the RazorJack. Find Some Skaarj!","","","","","","","","","",},
+		{ "You got the Automag.","","","","","","","","","",},
+		{ "You got the ASMD.","","","","","","","","","",},
+		{ "You got the Flak Cannon.","","","","","","","","","",},		
+		{ "You got the Stinger.","","","","","","","","","",},
+		{ "You got the Eightball Gun.","","","","","","","","","",},
+		{ "You got the Minigun.","","","","","","","","","",},
+		{ "You got the Redeemer and Quadshot.","","","","","","","","","",},
+		{ "","","","","","","","","","",},
+	}},		
 };
 
 
@@ -4008,6 +4032,30 @@ int ClassUniqueMessages[CLASSCOUNT][MAXMODES][MSGCOUNT] =
 		"",
 		"",
     }},
+	{{
+		"Random Silver Tarot Card.",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+    }},	
+	{{
+		"You got the GES Biorifle, Sniper Rifle, or Combat Assault Rifle.",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+		"",
+    }},		
 };
 
 int PunchDrunkUniqueMessages[CLASSCOUNT][MSGCOUNT] =

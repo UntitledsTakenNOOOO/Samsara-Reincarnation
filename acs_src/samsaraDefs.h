@@ -57,7 +57,7 @@
 #define SAMSARA_CL_VERSION          2601
 
 #define MAXMODES          	5
-#define CLASSCOUNT          29
+#define CLASSCOUNT          30
 #define UNIQUECOUNT         3
 #define SLOTCOUNT           13
 #define TIPCOUNT            2
@@ -95,11 +95,12 @@
 #define CLASS_BOND		26
 #define CLASS_CATACOMB	27
 #define CLASS_PAINKILLER	28
+#define CLASS_UNREAL 29
 
 #define SPEED_FORWARD       15
 #define SPEED_SIDE          13
 
-#define UNLOADCOUNT 74
+#define UNLOADCOUNT 75
 
 #define P_COUNT 2
 #define P_QUAD  0
@@ -211,6 +212,7 @@ int ClassItems[CLASSCOUNT] =
 	"BondClass", //+Added
 	"CatacombClass", //+Added	
 	"PainkillerClass", //+Added	
+	"UnrealClass", //+Added
 };
 
 int PickupStates[CLASSCOUNT][24] = 
@@ -244,7 +246,8 @@ int PickupStates[CLASSCOUNT][24] =
 	{"Demoness",    "DemonessFull",     "DemonessEmpty",        "DemonessSpecial",      "DemonessPunchdrunk",      "DemonessPDFull",       "DemonessPDEmpty",      "DemonessPDSpecial",		"",		"",		"",		""},
 	{"Bond",    	"BondFull",     	"BondEmpty",        	"BondSpecial",      	"BondPunchdrunk",      	   "BondPDFull",       	   "BondPDEmpty",          "BondPDSpecial",		    "",		"",		"",		""},
 	{"Catacomb",    "CatacombFull",     	"CatacombEmpty",        	"CatacombSpecial",      	"CatacombPunchdrunk",      	   "CatacombPDFull",       	   "CatacombPDEmpty",          "CatacombPDSpecial",		    "",		"",		"",		""},
-	{"Painkiller",    "PainkillerFull",     	"PainkillerEmpty",        	"PainkillerSpecial",      	"PainkillerPunchdrunk",      	   "PainkillerPDFull",       	   "PainkillerPDEmpty",          "PainkillerPDSpecial",		    "",		"",		"",		""}
+	{"Painkiller",    "PainkillerFull",     	"PainkillerEmpty",        	"PainkillerSpecial",      	"PainkillerPunchdrunk",      	   "PainkillerPDFull",       	   "PainkillerPDEmpty",          "PainkillerPDSpecial",		    "",		"",		"",		""},
+	{"Unreal",    "UnrealFull",     	"UnrealEmpty",        	"UnrealSpecial",      	"UnrealPunchdrunk",      	   "UnrealPDFull",       	   "UnrealPDEmpty",          "UnrealPDSpecial",		    "",		"",		"",		""}
 };
 
 int ItoSArray[11] = {1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
@@ -280,6 +283,7 @@ int ClassFades[CLASSCOUNT][5] =
 	{255, 255, 0,	0.1, 5},	
 	{255, 255, 0,	0.1, 5},	
 	{255, 255, 0,	0.1, 5},
+	{255, 255, 0,	0.1, 5},	
 	{255, 255, 0,	0.1, 5},	
 	{255, 255, 0,	0.1, 5},	
 };
@@ -345,7 +349,7 @@ int UnloadRemove[UNLOADCOUNT] =
 	"GibfistSide", "God Hand", "BStoneProtection", "IGotMyUnique", "DBSHOT", "DBSHOT1", "DB1", "DB2", "DB3", "DB4", "DB5", "DB6",
 	"DB7", "DB8", "DB9", "DB10", "DB11", "DB12", "DB13", "DB14", "DB15", "DB16", "DB17",
     "DB18", "DB19", "StopFromPickingShit", "EleenaTauntCooldown", "LeonardTauntCooldown", "CalebTauntCooldown", "LoWangTauntCooldown",
-	"JonTauntCooldown", "StopFromPickingTurrets_", "StrifeBeaconCooldown", "BloodGunsAkimboCooldown", "DisruptorPSICooldown", "Catacomb_HourglassCooldown"
+	"JonTauntCooldown", "StopFromPickingTurrets_", "StrifeBeaconCooldown", "BloodGunsAkimboCooldown", "DisruptorPSICooldown", "Catacomb_HourglassCooldown", "Unreal_CARCooldown"
 };
 
 int PowerOutVols[5] = {96, 104, 112, 120, 127};
@@ -536,6 +540,7 @@ int PeopleDieBlasts[CLASSCOUNT] =
 	"BondDiesWhenHeIsKilled", //+Added
 	"PettonDiesWhenHeIsKilled", //+Added
 	"DAnielDiesWhenHeIsKilled", //+Added	
+	"Prisoner849DiesWhenSheIsKilled", //+Added	
 };
 
 int PDWTAKItems[PDWTAKCOUNT][2] = 
@@ -658,6 +663,7 @@ int BanCVars[CLASSCOUNT] =
 	"sams_banbond", //+Added
 	"sams_banpetton", //+Added	
 	"sams_bandaniel", //+Added	
+	"sams_banprisoner", //+Added
 };
 
 int BanStrings[CLASSCOUNT] =
@@ -692,6 +698,7 @@ int BanStrings[CLASSCOUNT] =
 	"\c[m7]The admin has banned \cfBond\c[m7] from play.",	
 	"\c[m7]The admin has banned \cfPetton Everhail\c[m7] from play.",	
 	"\c[m7]The admin has banned \cfDaniel Garner\c[m7] from play.",	
+	"\c[m7]The admin has banned \cfPrisoner 849\c[m7] from play.",	
 };
 
 
@@ -733,6 +740,7 @@ int DamageCVars[CLASSCOUNT] =
 	"sams_bonddamage", //+Added	
 	"sams_pettondamage", //+Added		
 	"sams_danieldamage", //+Added	
+	"sams_prisonerdamage", //+Added	
 };
 
 int DefenseCVars[CLASSCOUNT] = 
@@ -767,6 +775,7 @@ int DefenseCVars[CLASSCOUNT] =
 	"sams_bonddefense", //+Added
 	"sams_pettondefense", //+Added	
 	"sams_danieldefense", //+Added	
+	"sams_prisonerdefense", //+Added		
 };
 
 int CVarDamageItems[DAMAGEMODES] = 
@@ -879,7 +888,8 @@ str PlayerActors[CLASSCOUNT] =
 	"Demoness", 
 	"JamesBond",
 	"PettonEverhail",
-	"DanielGarner"
+	"DanielGarner",
+	"UnrealPlayer"
 };
 
 int ChangelogString =
