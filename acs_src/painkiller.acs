@@ -147,11 +147,13 @@ str Painkiller_Gold_CardGraphics[17][6] = {
 	{ "PKSCRD30", "PKBCRD30", "Rebirth", "Fully regenerate health and armor", "Painkiller_Rebirth", "Painkiller_Rebirth_Power" },
 };
 
-str PKArmors[4][2] = { 
+str PKArmors[6][2] = { 
 	{ "ArmorScrap", "PKARMOR1" },
 	{ "ArmorScrap200", "PKARMOR1" },
 	{ "ArmorPack1", "PKARMOR2" },
 	{ "ArmorPack2", "PKARMOR3" },
+	{ "GreenArmorNoDrop", "PKARMOR2" }, 
+	{ "BlueArmorNoDrop", "PKARMOR3" },
 };
 
 str PKCompass[24] = { "PKCOMP01", "PKCOMP02", "PKCOMP03", "PKCOMP04", "PKCOMP05", "PKCOMP06", "PKCOMP07", "PKCOMP08", 
@@ -217,7 +219,7 @@ Script "Painkiller_Loop" Enter
 		if(GetCVar("screenblocks") == 11)
 		{
 			SetHudSize(320,200,0);
-			for(int armortype = 0; armortype < 4; armortype++)
+			for(int armortype = 0; armortype < 6; armortype++)
 			{
 				if(GetArmorType(PKArmors[armortype][0],pln))
 				{
@@ -1663,8 +1665,10 @@ Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 				int health = GetActorProperty(0,APROP_Health);
 				if(!CheckFlag(0,"BOSS"))
 				{
+					GiveInventory("Painkiller_Sceptred",1);
 					SetActorProperty(0,APROP_Health,1);
 					Delay(2);
+					TakeInventory("Painkiller_Sceptred",1);
 					SetActorProperty(0,APROP_Health,health);
 				}
 			}
@@ -1725,7 +1729,11 @@ Script "Painkiller_SoulCatcher" (int type)
 
 Script "Painkiller_IsItGibbed" (void)
 {
-	SetResultValue(GetActorProperty(0,APROP_Health) < -GetActorProperty(0,APROP_SpawnHealth));
+	int health = 66;
+	if(CheckInventory("Painkiller_Sceptred"))
+		health = 1;
+						
+	SetResultValue(GetActorProperty(0,APROP_Health) < -health);
 }
 
 Script "Painkiller_DemonMorph_Highlight" (void)

@@ -83,7 +83,7 @@ function int _giveclassweapon(int class, int slot, int ammoMode, int dropped, in
 function int HasClassWeapon(int class, int slot)
 {
     if (class == -1) { return 0; }
-
+	
     int weapon = ClassWeapons[class][slot][S_WEP];
     int checkitem = ClassWeapons[class][slot][S_CHECKITEM];
     int failitem = ClassWeapons[class][slot][S_CHECKFAILITEM];
@@ -442,14 +442,15 @@ function void SetArmorMode(void)
 function int SamsaraArmorType(void)
 {
     int i, j;
-    int pln = PlayerNumber();
+
+	if(GetArmorInfo(0) == "None")
+		return -1;
 
     for (i = 0; i < ARMORMODES; i++)
     {
         for (j = 0; j < ARMORCOUNT; j++)
         {
-            if (GetArmorType(ArmorItems[i][j][0], pln) > 0
-             || GetArmorType(ArmorItems[i][j][2], pln) > 0)
+            if (GetArmorInfo(0) == ArmorItems[i][j][0] || GetArmorInfo(0) == ArmorItems[i][j][2])
             {
                 return i;
             }
@@ -511,10 +512,15 @@ function int HandleBuffCVars(int respawning)
     // Since the CVars can be negative, we add to the cvar readings a value we know
     //   points to the "zero" index in the DamageModes/DefenseModes arrays.
     //   That way, -10 points to index 0 if the zero point is at index 10.
-    
+    //	Before, this ran a couple loops to determine the correct item. This is not
+	// 	 necessary when the items are static and causes a lot more memory to be used
+	
     int damagelevel  = min(max(GetCVar(dmgcvar) + DAMAGEZEROINDEX, 0), DAMAGEMODES-1);
     int defenselevel = min(max(GetCVar(defcvar) + DEFENSEZEROINDEX, 0), DEFENSEMODES-1);
+	GiveInventory(CVarDamageItems[damagelevel], 1);
+	GiveInventory(CVarDefenseItems[defenselevel], 1);
 
+	/*
     int i, j;
 
     for (i = 0; i < DAMAGEMODES; i++)
@@ -545,7 +551,7 @@ function int HandleBuffCVars(int respawning)
         {
             TakeInventory(j, 0x7FFFFFFF);
         }
-    }
+    }*/
 
     return 1;
 }

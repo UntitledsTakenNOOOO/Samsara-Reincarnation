@@ -1103,7 +1103,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         oarmor = armor;
         otype = type;
         armor = CheckInventory("Armor");
-        type = SamsaraArmorType();
+		type = SamsaraArmorType();
 
         if (oarmor > armor && otype == 3)
         {
@@ -1531,11 +1531,11 @@ script "SamsaraEnterClient" (void) clientside //521 -- SAMSARA_ENTER_CLIENT
             oExecInt = execInt;
             execInt = SamsaraClientVars();
             
-            if (execInt != oExecInt)
+            /*if (execInt != oExecInt)
             {
                 execStr = StrParam(s:"pukename -", s:"SamsaraPuke", s:" ", d:execInt, s:" ", d:pln);
                 //ConsoleCommand(execStr);
-            }
+            }*/
         }
 
         Delay(1);
