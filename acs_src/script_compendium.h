@@ -18,7 +18,7 @@ str ClassInfo[CLASSCOUNT][MAXMODES][28] =
 	{{"LDF Commando", 15, "E", "D+", "S", "A+", "Easiest", "Marksman", "TIPSYM16", "TIPHIL16", "TIPREBEL", "TPLGRMR", "TPCHRMR", "CMPBRMR", "untranslated", "CMPSRMR", "RMRTeal", "CMPBGRB1", "CMPBGRB2", "CMPBGRB3", "CMPBGRB4", "CMPBGRB5", "CMPBGRB6", "", "", "DarkGray", "White" }},
 	{{"Kyle Katarn", 16, "B", "B", "C", "A-,S", "Easy", "Assault", "TIPSYM17", "TIPHIL17", "TIPKYLEK", "TPLGKYLE", "TPCHKYLE", "CMPSSWDF", "DarkForcesGreen", "CMPSSWDF", "DarkForcesRed", "CMPBGDF1", "CMPBGDF2", "CMPBGDF3", "CMPBGDF4", "CMPBGDF5", "", "", "", "DarkForcesGray", "DarkForcesWhite" }},
 	{{"Mooman", 17, "B", "C+", "B-", "B+", "Easy", "Luck", "TIPSYM18", "TIPHIL18", "TIPMOOMN", "TPLGIPOG", "TPCHIPOG", "CMPSIPOG", "IPOGRed", "CMPSIPOG", "IPOGRed", "CMPBGIP1", "CMPBGIP2", "CMPBGIP3", "CMPBGIP4", "CMPBGIP5", "CMPBGIP6", "CMPBGIP7", "CMPBGIP8", "DarkGray", "White" }},
-	{{"Jack Curtis", 18, "A+", "C+", "C-", "B-", "Hard", "Psychic", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "SMALLFONT", "White", "SMALLFONT", "White", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5", "", "", "", "DarkGray", "White" }},
+	{{"Jack Curtis", 18, "A+", "C+", "C-", "B-", "Hard", "Psychic", "TIPSYM19", "TIPHIL19", "TIPJACKC", "TPLGJACK", "TPCHJACK", "CMPBDISRUP", "untranslated", "CMPSDISRUP", "untranslated", "CMPBGDS1", "CMPBGDS2", "CMPBGDS3", "CMPBGDS4", "CMPBGDS5", "", "", "", "DarkGray", "White" }},
 	{{"Grondoval", 19, "A+", "S", "E", "D-", "Hard", "Tank", "TIPSYM20", "TIPHIL20", "TIPGROND", "TPLGWTCH", "TPCHWTCH", "CMPBWITCH", "Untranslated", "CMPBWITCH", "untranslated", "CMPBGWT1", "CMPBGWT2", "CMPBGWT3", "CMPBGC74", "CMPBGWT5", "", "", "", "DarkGray", "White" }},
 	{{"Gordon Freeman", 20, "S", "D", "B+", "D", "Expert", "Guerilla", "TIPSYM21", "TIPHIL21", "TIPGFREE", "TPLGFREE", "TPCHFREE", "CMPBHALF", "HalfLifeOrange", "CMPBHALF", "HalfLifeOrange", "CMPBGHL1", "CMPBGHL2", "CMPBGHL3", "CMPBGHL4", "CMPBGHL5", "", "", "", "HalfLifeGray", "HalfLifeWhite" },{"Adrian Shephard", 20, "A+", "D", "B", "D+", "Hard", "Guerilla", "TIPSYM21", "TIPHIL21", "TIPASHEP", "TPLGSHEP", "TPCHSHEP", "CMPBOPPF", "OpposingForceYellow", "CMPSOPPF", "OpposingForceGreen", "CMPBGOP1", "CMPBGOP2", "CMPBGOP3", "CMPBGOP4", "CMPBGOP5", "CMPBGOP6", "", "", "DarkGray", "White" }},
 	{{"Lo Wang", 21, "B", "E", "B+", "B+", "Hard", "Ninja", "TIPSYM22", "TIPHIL22", "TIPLWANG", "TPLGWANG", "TPCHWANG", "CMPSDUKE", "", "SWCOOKIE", "Gray50", "CMPBGSW1", "CMPBGSW2", "", "CMPBGDN4", "CMPBGSW5", "", "", "", "DarkGray", "White" }},
@@ -35,7 +35,7 @@ int ClassFontScales[CLASSCOUNT][2] =
 {  
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
 	{ 2.67, 2.0 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 0.75 },	{ 1.0, 1.0 },	
-	{ 2.5, 0.67 },	{ 1.5, 1.0 },	{ 4.0, 1.5 },	{ 2.0, 2.0 },	{ 1.0, 0.75 },	{ 1.0, 1.0 },	
+	{ 2.5, 0.67 },	{ 1.5, 1.0 },	{ 4.0, 1.5 },	{ 2.0, 2.0 },	{ 1.0, 0.75 },	{ 1.5, 1.0 },	
 	{ 1.5, 1.5 },	{ 2.0, 1.75 },	{ 1.0, 1.0 },	{ 2.5, 2.5 },	{ 1.0, 1.0 },    { 2.125, 1.25 },
 	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.5, 2.0 },
 };
@@ -1058,16 +1058,16 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		{ "Random Item Generator", "Hunter's Log: Looks like this thing gives me one random inventory item. Cool. Here's what it can possibly give me:\n\nShield Charge: Gives extra protection for 30 seconds.\nGrenade: Launches a low gravity grenade.\nTime Bomb: After 3 seconds, the bomb detonates.\nProximity Mine: Places a mine in the ground. Its armed after 2 seconds.\nClone: Creates a clone of yourself.", "PPGUC0", "IPOGRandomItemGenerator", "u" }
 	}},
 	{{
-		{ "Baton", "It's a baton. That's it. Next!", "", "Disruptor Fist", "f" },
+		{ "Pistol Whip", "When your 18mm Handgun runs out of ammo, it will work as a makeshift baton in a pinch.", "", "Disruptor Fist", "f" },
 		{ "18mm Semi", "Part of the standard issue gear. Not as much firepower as some of the other weapons, but treated as a dear old friend by experienced LightStormers who rely upon its instantaneous shot and classic reliability.", "", " 18mm Semi ", "p" },
 		{ "18mm Auto", "Recent improvements in technology have allowed the standard 18mm to be permanently upgraded to a faster refire rate. Those who have tried it say they'll never go back.", "SQ72Q0", " 18mm Auto ", "1" },
 		{ "Phase Rifle", "The powerful laser bursts are extremely effective against organic enemies. While scarcity prohibits the general issue of \"High Frequency Ammo\", those in the know rave about its rapid recharge rate and ability to penetrate multiple targets.", "SQ72R0", " Phase Rifle ", "2" },
 		{ "AM Blaster", "A favorite among space-pirates, these shotgun type weapons emit a powerful spray especially effective in close quarters. Many of these models are equipped to fire double bursts when the trigger is held down longer than one second.\n\nAlt Fire: Hold down the Alt Fire key to deliver a more powerful shot compared to the primary fire.", "SQ72V0", " AM Blaster ", "3" },
 		{ "Phase Repeater", "Popular among certain terrorist organizations, these modified Phase Rifles dish out three times the damage, but do go through the ammo.", "SQ72U0", "Phase Repeater", "4" },
 		{ "Lock-on Cannon", "This weapon's slow-moving projectiles are deceiving: Once locked on to a target, they never miss and deliver intense damage. A special aiming reticle assists targeting: green indicates no enemies present, amber indicates enemies present but out of range, and red means fire away! While scarce, specially crafted Binary Lock-On Ammo is capable of neutralizing multiple targets with a single shot.", "SQ72S0", " Lock-on Cannon ", "5" },
-		{ "AM Cyclone", "Incorporating the same ammunition as the AM Blaser (or it used to before the Wheel of Samsara fixed that), this deadly device fires explosive rounds at once. The damage from this weapon is huge, so use in close quarters is not recommended.", "SQ72T0", " AM Cyclone ", "6" },
+		{ "AM Cyclone", "Incorporating the same ammunition as the AM Blaser, this deadly device fires five explosive rounds at once. The damage from this weapon is huge, so use in close quarters is not recommended.", "SQ72T0", " AM Cyclone ", "6" },
 		{ "Zodiac", "LightStormer authorities have confirmed the existence of this weapon type. They are used primarily in the outlaw zones of the Solar System and are not officially sanctioned for use by LightStormers.\n\nShoots out a shockwave that spreads out, damaging any enemies in the blast.", "SQ72W0", " Disruptor Zodiac ", "7" },
-		{ "Plasma Lance", "LightStormer authorities have confirmed the existence of this weapon type. They are used primarily in the outlaw zones of the Solar System and are not officially sanctioned for use by LightStormers.\n\nSprays a powerful spiraling plasma beam which can vaporize groups of enemies.", "SQ72Y0", " Disruptor Plasmalance ", "7" },
+		{ "Plasma Lance", "LightStormer authorities have confirmed the existence of this weapon type. They are used primarily in the outlaw zones of the Solar System and are not officially sanctioned for use by LightStormers.\n\nSprays a powerful spiraling plasma beam which can vaporize groups of enemies.", "SQ84Q0", " Disruptor Plasmalance ", "7" },
 		{ "Energy Ball", "Shoots a single sphere that will hit enemies around, not only dealing great damage, but also releasing health spheres when hitting enemy. Each sphere restores 5 HP.", "SQ72X0", "DisruptorEnergyBall", "u" }
 	}},
 	{{
