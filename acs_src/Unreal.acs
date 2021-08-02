@@ -248,3 +248,43 @@ Script "Unreal_EightballReticle" (void)
 		Delay(1);
 	}
 }		
+
+Script "Unreal_ASMDTrace" (void)
+{
+	int projX = GetActorX(0);
+	int projY = GetActorY(0);
+	int projZ = GetActorZ(0);
+	SetActivatorToTarget(0);
+	int angle = GetActorAngle(0);
+	int pitch = GetActorPitch(0);
+	int playX = GetActorX(0);
+	int playY = GetActorY(0);
+	int playZ = GetActorZ(0) + GetActorViewHeight(0);
+	int newtid = UniqueTid();
+	
+	int vectorX = projX - playX;
+	int vectorY = projY - playY;
+	int vectorZ = projZ - playZ;
+	
+	int distance = magnitudeThree_f(vectorX, vectorY, vectorZ);
+	
+	int offX = FixedDiv(vectorX,distance);
+	int offY = FixedDiv(vectorY,distance);
+	int offZ = FixedDiv(vectorZ,distance);
+	
+	for(int a = 70; a < (distance>>16); a+=70)
+	{
+		SpawnForced("U1ShockRippleB_Small",playX + (a * offX),playY + (a * offY),playZ + (a * offZ), newtid);
+		SetActorAngle(newtid,angle);
+		SetActorPitch(newtid,-pitch);
+		Delay(1);
+		while(ThingCountName("U1ShockRippleB_Small",newtid) > 15)
+			Delay(1);
+	}
+}
+
+Script "Unreal_TransferCharge" (void)
+{
+	SetActivatorToTarget(0);
+	SetResultValue(CheckInventory("UDispChargePower"));
+}

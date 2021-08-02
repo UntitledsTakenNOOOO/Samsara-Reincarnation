@@ -775,4 +775,7 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 	{
 		{"Painkiller_Painkiller", "Painkiller_Stakegun", "Painkiller_Painkiller", "Painkiller_Shotgun", "Painkiller_Boltgun", "Painkiller_Rifle", "Painkiller_RocketLauncher", "Painkiller_Electrodriver", "Painkiller_Tarot_GoldGiver", "Painkiller_Tarot_SilverGiver", "Painkiller_Tarot_SilverGiver", "Painkiller_Tarot_SilverGiver"},
 	},
+	{
+		{"Unreal_DispersionPistol", "Unreal_RazorJack", "Unreal_AutoMag", "Unreal_ASMDShockRifle", "Unreal_FlakCannon", "Unreal_Stinger", "Unreal_EightBall", "Unreal_Minigun", "Unreal_Redeemer", "Unreal_GESBioRifle", "Unreal_Rifle", "Unreal_Duster"},
+	},
 };
