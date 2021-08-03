@@ -1810,16 +1810,22 @@ Script "Samsara_UniqueKeys" (int key)
 	switch(PlayerClass(pln))
 	{
 		case 19:
-			ACS_NamedExecuteWithResult("HL2677",0,0,0);
+			if(key == 0)
+				ACS_NamedExecuteWithResult("HL2677",0,0,0);
 			break;
 		case 26:
-			ACS_NamedExecuteWithResult("BondActivateWatch",0,0,0);
+			if(key == 0)
+				ACS_NamedExecuteWithResult("BondActivateWatch",0,0,0);
 			break;
 		case 28:
 			if(key == 1)
 				ACS_NamedExecuteWithResult("Painkiller_BlackTarot_Initiate",0,0,0,0);
 			else
 				ACS_NamedExecuteWithResult("Painkiller_GoldTarot_Activate",0,0,0,0);
+			break;
+		case 29:
+			if(key == 0)
+				ACS_NamedExecuteWithResult("Unreal_RevertUpgrade",0,0,0);
 			break;
 	}
 }

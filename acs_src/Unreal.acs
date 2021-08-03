@@ -2,21 +2,48 @@
 #include "zcommon.acs"
 #include "CommonFuncs.h"
 
-Script "DispersionPistolRecharge" Enter
-{
-	int chargetime;
-	int DPistolLevel = (CheckInventory("UDPistolUpgrade")+1);
-	int Dpistolammo = (CheckInventory("DPistolAmmo"));
-	if (Dpistolammo <= 10)
-		chargetime = 39;
-	else
-		chargetime = dpistolammo*9.1;
-	SetAmmoCapacity("DPistolAmmo", GetAmmoCapacity("DPistolAmmo")+DPistolLevel*10);	
-	If(CheckInventory("UnrealClass") == 1 && (ClassifyActor(0) && ACTOR_ALIVE))	
-	While(true)
+Script "Unreal_Loop" Enter
+{	
+	int charging, speedx, speedy, lasttimer, velocity, movement;
+	int chargetime = 39;
+	While(CheckInventory("UnrealClass") == 1 && (ClassifyActor(0) && ACTOR_PLAYER))
 	{
-		GiveActorInventory(0,"DPistolAmmo", 1);
-		delay(39);		
+		int input = GetPlayerInput(-1,INPUT_BUTTONS);
+		int DPistolLevel = (CheckInventory("UDPistolUpgrade"));
+		int Dpistolammo = (CheckInventory("DPistolAmmo"));
+			
+		if(GetAmmoCapacity("DPistolAmmo") != 60 +(DPistolLevel*10))
+			SetAmmoCapacity("DPistolAmmo", 60+(DPistolLevel*10));
+		
+		if(!(input & BT_ALTATTACK) && charging >= chargetime)
+		{
+			charging = 0;
+			GiveInventory("DPistolAmmo", 1);
+		}
+			
+		if((input & BT_AltAttack) && (input & BT_Attack))
+			GiveInventory("Unreal_Combo", 1);
+			
+		charging++;
+		
+		speedx = GetActorVelX(0);
+		speedy = GetActorVelY(0);
+			
+		velocity = magnitudeTwo_f(speedx, speedy);
+		if(velocity>>8 != 0)
+			movement = 750/((velocity>>8)*7);
+		else
+			movement = 0;
+													
+		if((Timer()-lasttimer) > movement && movement != 0)
+		{
+			//PlaySound(0, "HLPlayer/Step", CHAN_BODY, 1.0, false, ATTN_NORM);
+			SpawnSpotForced("Unreal_Step",0,0,0);
+			lasttimer = Timer();
+		}
+		
+		delay(1);	
+		TakeInventory("Unreal_Combo", 1);
 	}		
 }
 
@@ -54,20 +81,6 @@ Script "Unreal_ShockRifleCombo" (void)
 	//Thing_Remove(newtid);
 	SetActorState(0,"Explode",true);
 }
-
-Script "Unreal_Loop" Enter
-{
-	while((ClassifyActor(0) & ACTOR_PLAYER) && CheckInventory("UnrealClass"))
-	{
-		int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
-		if((buttons & BT_AltAttack) && (buttons & BT_Attack))
-		{
-			GiveInventory("Unreal_Combo", 1);
-		}
-		Delay(1);
-		TakeInventory("Unreal_Combo", 1);
-	}	
-}		
 
 /*Script "Unreal_EightballLockOn" (void)
 {
@@ -199,38 +212,6 @@ Script "Unreal_BloodGenerator_Return" (int mode)
 	SetResultValue(result);
 }
 
-Script "Unreal_FootStepGenerator" enter
-{
-	if((ClassifyActor(0) & ACTOR_WORLD))
-		terminate;
-		
-	if(CheckInventory("UnrealClass"))
-	{
-		int speedx, speedy, lasttimer, velocity, movement;
-		
-		while((ClassifyActor(0) & ACTOR_ALIVE))
-		{
-			speedx = GetActorVelX(0);
-			speedy = GetActorVelY(0);
-			
-			velocity = magnitudeTwo_f(speedx, speedy);
-			if(velocity>>8 != 0)
-				movement = 750/((velocity>>8)*7);
-			else
-				movement = 0;
-													
-			if((Timer()-lasttimer) > movement && movement != 0)
-			{
-				//PlaySound(0, "HLPlayer/Step", CHAN_BODY, 1.0, false, ATTN_NORM);
-				SpawnSpotForced("Unreal_Step",0,0,0);
-				lasttimer = Timer();
-			}
-			
-			Delay(1);
-		}
-	}
-}
-
 Script "Unreal_GibHeightCheck" (void)
 {
 	int height = (GetActorProperty(0,APROP_Height)>>16);
@@ -277,14 +258,23 @@ Script "Unreal_ASMDTrace" (void)
 		SpawnForced("U1ShockRippleB_Small",playX + (a * offX),playY + (a * offY),playZ + (a * offZ), newtid);
 		SetActorAngle(newtid,angle);
 		SetActorPitch(newtid,-pitch);
-		Delay(1);
+		Delay(2);
 		while(ThingCountName("U1ShockRippleB_Small",newtid) > 15)
 			Delay(1);
 	}
 }
 
-Script "Unreal_TransferCharge" (void)
+Script "Unreal_TransferCharge" (int target)
 {
-	SetActivatorToTarget(0);
+	if(target)
+		SetActivatorToTarget(0);
+		
 	SetResultValue(CheckInventory("UDispChargePower"));
+}
+
+Script "Unreal_RevertUpgrade" (void)
+{
+	GiveInventory("UnrealDoUpgradeRevert",1);
+	Delay(9);
+	TakeInventory("UnrealDoUpgradeRevert",1);
 }
