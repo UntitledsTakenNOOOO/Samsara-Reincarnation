@@ -769,7 +769,7 @@ int CVarDamageItems[DAMAGEMODES] =
     "PowerDamageBuff-3",
     "PowerDamageBuff-2",
     "PowerDamageBuff-1",
-    "", // middle point
+    "Trigger", // middle point
     "PowerDamageBuff1",
     "PowerDamageBuff2",
     "PowerDamageBuff3",
@@ -814,7 +814,7 @@ int CVarDefenseItems[DEFENSEMODES] =
     "PowerDefenseBuff-3",
     "PowerDefenseBuff-2",
     "PowerDefenseBuff-1",
-    "", // middle point
+    "Trigger", // middle point
     "PowerDefenseBuff1",
     "PowerDefenseBuff2",
     "PowerDefenseBuff3",

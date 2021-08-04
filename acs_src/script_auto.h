@@ -1531,11 +1531,11 @@ script "SamsaraEnterClient" (void) clientside //521 -- SAMSARA_ENTER_CLIENT
             oExecInt = execInt;
             execInt = SamsaraClientVars();
             
-            if (execInt != oExecInt)
+            /*if (execInt != oExecInt)
             {
                 execStr = StrParam(s:"pukename -", s:"SamsaraPuke", s:" ", d:execInt, s:" ", d:pln);
                 //ConsoleCommand(execStr);
-            }
+            }*/
         }
 
         Delay(1);
