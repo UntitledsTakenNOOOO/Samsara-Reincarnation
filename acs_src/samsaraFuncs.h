@@ -438,7 +438,8 @@ function void SetArmorMode(void)
     }
 }
 
-function int SamsaraArmorType(void)
+//outdated
+/*function int SamsaraArmorType(void)
 {
     int i, j;
 
@@ -457,7 +458,7 @@ function int SamsaraArmorType(void)
     }
 
     return -1;
-}
+}*/
 
 function int HandleInstagib(int respawning)
 {
