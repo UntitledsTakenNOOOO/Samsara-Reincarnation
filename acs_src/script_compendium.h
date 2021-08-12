@@ -1,7 +1,7 @@
 // Label, index, damage, defense, range, attack speed, difficulty, character symbol, small character, game logo, large character, big font, big font color, small font, small font color, background top wall, background bottom wall, background side banner right, background logo, background character symbol, background right banner, selected font color
 str ClassInfo[CLASSCOUNT][MAXMODES][28] = 
 { 
-	{{"Doomguy", 1, "A+", "C", "C", "D+", "Easy", "Damage", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "CMPSDOOM", "Red", "CMPSDOOM", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01", "", "", "", "DarkGray", "White" }, {"Doomguy (N64)", 1, "A+", "C", "C", "C-", "Easy", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "CMPSD64", "Red", "CMPSD64", "untranslated", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White", "Jingle bells graf smells" }},
+	{{"Doomguy", 1, "A+", "C", "C", "D+", "Easy", "Damage", "TIPSYM01", "TIPHIL01", "TIPDGUY", "TPLGDOOM", "TPCHDOOM", "CMPSDOOM", "Red", "CMPSDOOM", "Red", "CMPBGDM1", "CMPBGDM2", "CMPBGDM3", "CMPBGDM4", "TIPHIL01", "", "", "", "DarkGray", "White" }, {"Doomguy (N64)", 1, "A+", "C", "C", "C-", "Easy", "Damage", "TIPSYM13", "TIPHIL13", "TIPD64G", "TPLG64DG", "TPCHDG64", "CMPSD64", "Red", "CMPSD64", "untranslated", "CMPBGD61", "CMPBGD62", "CMPBGD63", "CMPBGD64", "TIPSYM13", "CMPBGD66", "", "", "DarkGray", "White", "" }},
 	{{"Chex Warrior", 2, "B-", "A+", "C+", "D", "Easiest", "Defense", "TIPSYM02", "TIPHIL02", "TIPCHEX", "TPLGCHEX", "TPCHCHEX", "CMPSDOOM", "Green", "CMPSDOOM", "Green", "CMPBGCH1", "CMPBGCH2", "CMPBGCH3", "", "TIPSYM02", "", "", "", "DarkGray", "White" }},
 	{{"Corvus", 3, "C", "B", "D+", "C+", "Hard", "Utility", "TIPSYM03", "TIPHIL03", "TIPCORV", "TPLGCORV", "TPCHCORV", "CMPSHERE", "White", "CMPSHERE", "White", "CMPBGHE1", "CMPBGHE2", "CMPBGHE3", "CMPBGHE4", "TIPSYM03", "", "", "", "DarkGray", "White" }},
 	{{"Blazkowicz", 4, "C-", "C+", "A", "A-", "Easy", "Survivalist", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWF1", "CMPBGWF2", "CMPBGWF3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" },{"Blazkowicz", 4, "C-", "C+", "B+", "A-", "Easy", "Marksman", "TIPSYM04", "TIPHIL04", "TIPBLASK", "TPLGWOLF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumLightGray", "CMPSWOLF", "WolfCompendiumYellow", "CMPBGWS1", "CMPBGWS2", "CMPBGWS3", "CMPBGWF4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray" }, {"Blazkowicz", 4, "A-", "C+", "D+", "A-", "Avg", "Plunderer", "TIPSYM04", "TIPHIL29", "TIPTKOPF", "TPLGTKPF", "TPCHWOLF", "CMPBWOLF", "WolfCompendiumYellow", "CMPSWOLF", "TotenkopfCompendiumRed", "CMPBGTK1", "CMPBGTK2", "CMPBGTK3", "CMPBGTK4", "TIPSYM04", "", "", "", "WolfCompendiumGray", "WolfCompendiumLightGray", "Randy Pitchford laid an egg" }},
@@ -40,7 +40,7 @@ int ClassFontScales[CLASSCOUNT][2] =
 	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.5, 2.0 },
 };
 
-str CompendiumWheelRot[12] = { "CMPWHL01", "CMPWHL02", "CMPWHL03", "CMPWHL04", "CMPWHL05", "CMPWHL06", "CMPWHL07", "CMPWHL08", "CMPWHL09", "CMPWHL10", "CMPWHL11", "CMPWHL12"};
+str CompendiumWheelRot[29] = { "CMPWHL01", "CMPWHL02", "CMPWHL03", "CMPWHL04", "CMPWHL05", "CMPWHL06", "CMPWHL07", "CMPWHL08", "CMPWHL09", "CMPWHL10", "CMPWHL11", "CMPWHL12", "CMPWHL13", "CMPWHL14", "CMPWHL15", "CMPWHL16", "CMPWHL17", "CMPWHL18", "CMPWHL19", "CMPWHL20", "CMPWHL21", "CMPWHL22", "CMPWHL23", "CMPWHL24", "CMPWHL25", "CMPWHL26", "CMPWHL27", "CMPWHL28", "CMPWHL29" };
 
 str StatPages[3] = { "Summary", "Traits", "Changes" };
 str SelectionColors[2] = { "DarkGray", "white" };
@@ -2023,9 +2023,9 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][31] =
 
 str CompendiumCredits = "\cmLead Developer\n\cjShiny Metagross
 \n\n\cmExecutive Developers\cj\nMagnolia\nShadowlink223
-\n\n\cmAssistant Developers\cj\nRadioactiveTurtle\nLtMajorDude\nTriaxis\nNorwegianLoki\nZircon
+\n\n\cmAssistant Developers\cj\nRadioactiveTurtle\nLtMajorDude\nNorwegianLoki\nZircon
 \n\n\cmLead Beta Tester\cj\nPangoro
-\n\n\cmBeta Testers\cj\nFlynn Taggart\nNecron 99\nLaserPope\nLaggy Blazko\nCubebert\nRadioactiveTurtle\nCrazyboy88\nLuisDHR19971
+\n\n\cmBeta Testers\cj\nFlynn Taggart\nNecron 99\nLaserPope\nLaggy Blazko\nCubebert\nRadioactiveTurtle\nCrazyboy88\nLuisDHR19971\nNautilus\nTriaxis
 \n\n\cmDiscord Managment\cj\nMeleemario\nLuisDHR19971\nZircon\nPangoro
 \n\n\cmFormer Developers\cj\nJesh\nDynamo\nHiragamer98\nIvanDobrovski
 \n\n\cmAdditional Credits\cj
@@ -2125,7 +2125,8 @@ Script "Samsara_Compendium" (void) Net Clientside
 	cursorx = hudcenterx;
 	cursory = hudcentery;
 	//SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
-	int rottimer = 162;
+	int revolutions = 0;
+	int maxrevolutions = 32;
 	int fontscaledx, fontscaledy;
 	while(CheckInventory("CompendiumOpened"))
 	{
@@ -2218,21 +2219,21 @@ Script "Samsara_Compendium" (void) Net Clientside
 				}			
 				//SetHudClipRect(0,0,0,0);
 			}
-			if(rot >= 11) { rot = 0; LocalAmbientSound("Compendium/Wheel/Spin",127); }
+			//wheel rotation
+			if(rot >= 29) { rot = 0;  }
 			
+			SetHudSize(fixedmul(hudboundsx,0.55),fixedmul(hudboundsy,0.55),true);
 			SetFont(CompendiumWheelRot[rot]);
-			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16181, CR_UNTRANSLATED, hudcenterx*1.0, hudcentery*1.0, 0);
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16181, CR_UNTRANSLATED, fixedmul(hudcenterx,0.55)*1.0, fixedmul(hudcentery,0.55)*1.0, 0);
+			SetHudSize(hudboundsx,hudboundsy,true);
 			SetFont("CMPCNTSK");
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16180, CR_UNTRANSLATED, hudcenterx*1.0, hudcentery*1.0, 0);
-			rot += PowFloat(1.0075,rottimer)>>16;
-			
-			if(FixedMul(0.02,rottimer) < 1)
-				rot = 0;
-				
-			if(rottimer > 0)
-				rottimer--;
-			else 
-				rottimer = 0;		
+			if(revolutions <= maxrevolutions)
+			{
+				PrintBold(d:rot);
+				rot += 2 * (maxrevolutions - revolutions)/4;
+				if(rot >= 29) { rot = 0; revolutions++; LocalAmbientSound("Compendium/Wheel/Spin",127);}
+			}
 		}
 		else if(menuindex <= CLASSCOUNT)
 		{
