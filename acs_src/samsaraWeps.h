@@ -337,7 +337,7 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
     },	
 	{	//Mooman
 		{" Tazer ",							"",				"",				"",	""},
-		{" Toxic Mutant Gun ",				"Cell",			"",				"",	""},
+		{"IPOGRandomItemGenerator",				"",			"",				"",	""},
 		{" Aldus Pistol ",					"Clip",			"",				"",	""},
 		{" Plasma Shotgun ",				"Shell",		"",				"",	""},
 		{" Aldus Flamethrower ",			"Shell",		"",				"",	""},

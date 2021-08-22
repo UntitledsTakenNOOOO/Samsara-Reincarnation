@@ -43,7 +43,9 @@ ACTOR Q2BFG10K : Q2Weapon
 		TNT1 A 1 A_Lower
 		Wait
 	Fire:
+		TNT1 A 0 A_JumpIfInventory("DMModeOn", 1, "DMFire")
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
+		//TNT1 A 0 A_JumpIfInventory(PowerQ2QuadDamage,1,"QuadFire")		
 		TNT1 A 0 A_JumpIfInventory(PowerSilencer,1,"SilentFire")
 		TNT1 A 0 A_AlertMonsters
 		TNT1 A 0 A_PlaySound("Q2Weapons/BFG10kFire",CHAN_WEAPON)
@@ -61,6 +63,24 @@ ACTOR Q2BFG10K : Q2Weapon
 		QBFG PQQRSTUVWXYZ 3
 		QBF2 ABC 3
 		Goto Ready+1
+	DMFire:
+		TNT1 A 0 A_JumpIfInventory(PowerSilencer,1,"SilentDMFire")
+		TNT1 A 0 A_AlertMonsters
+		TNT1 A 0 A_PlaySound("Q2Weapons/BFG10kFire",CHAN_WEAPON)
+		QBFG HIJKLMNO 3
+		QBFG P 0 A_FireCustomMissile("BFG10KBallDM",0,1,10,8)
+		QBFG P 0 A_GunFlash
+		QBFG PQQRSTUVWXYZ 3
+		QBF2 ABC 3
+		Goto Ready+1	
+	SilentQuadFire:
+		TNT1 A 0 A_PlaySound("Q2Weapons/BFG10kFire",CHAN_WEAPON,0.25,0,3)
+		QBFG HIJKLMNO 3
+		QBFG P 0 A_FireCustomMissile("BFG10KBallDM",0,1,10,8)
+		QBFG P 0 A_GunFlash
+		QBFG PQQRSTUVWXYZ 3
+		QBF2 ABC 3
+		Goto Ready+1		
 	CoopFire:
 		TNT1 A 0 A_JumpIfInventory(PowerSilencer,1,"SilentCoopFire")
 		TNT1 A 0 A_AlertMonsters
@@ -148,13 +168,74 @@ Actor BFG10KBall : BFGBall
 		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
 		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
 		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
-		TNT1 A 0 A_Explode(200,256, !XF_HURTSOURCE, false, 256)
-		BGE1 C 5 Bright A_BFGSpray("BFGExtra",40,20)
+		TNT1 A 0 A_Explode(500,1000, !XF_HURTSOURCE, false, 256)
+		BGE1 C 5 Bright //A_BFGSpray("BFGExtra",40,20)
 		TNT1 A 0 A_GiveInventory(Clip,1)// this thing removes the orbiting particles
 		BGE1 DEF 5 Bright
 		Stop
 	}
 }
+
+Actor BFG10KBallDM : BFG10KBall
+{
+	Damage (200)
+	States
+	{
+	Spawn:
+		TNT1 A 1 NoDelay A_SpawnItem(BFG10KOrbitParticleSpawner)
+		TNT1 A 0 A_ChangeFlag(MISSILE,1)
+		TNT1 A 0 A_JumpIf(VelX==0&&VelY==0,"Death")
+		TNT1 A 0 A_PlaySound("Q2Weapons/BFG10KFly",1,0.66,1)
+		BGS1 ABAB 4 Bright
+		BGS1 A 2 Bright A_SetUserVar("user_angle",0)
+		BGS1 A 0 A_JumpIf(user_angle == 360, 3) 
+		BGS1 A 0 A_SetUserVar("user_angle",user_angle+45)
+		BGS1 A 0 A_CustomMissile("BFG10KBeamSpawnerDM",0,0,user_angle,CMF_AIMDIRECTION)
+		Goto Spawn+9
+		BGS1 A 2 Bright A_SetUserVar("user_angle",0)
+		BGS1 A 0 A_JumpIf(user_angle == 360, 3) 
+		BGS1 A 0 A_SetUserVar("user_angle",user_angle+45)
+		BGS1 A 0 A_CustomMissile("BFG10KBeamSpawnerDM",0,0,user_angle,CMF_AIMDIRECTION)
+		Goto Spawn+13
+		BGS1 B 2 Bright A_SetUserVar("user_angle",0)
+		BGS1 B 0 A_JumpIf(user_angle == 360, 3) 
+		BGS1 B 0 A_SetUserVar("user_angle",user_angle+45)
+		BGS1 B 0 A_CustomMissile("BFG10KBeamSpawnerDM",0,0,user_angle,CMF_AIMDIRECTION)
+		Goto Spawn+17
+		BGS1 B 2 Bright A_SetUserVar("user_angle",0)
+		BGS1 B 0 A_JumpIf(user_angle == 360, 3) 
+		BGS1 B 0 A_SetUserVar("user_angle",user_angle+45)
+		BGS1 B 0 A_CustomMissile("BFG10KBeamSpawnerDM",0,0,user_angle,CMF_AIMDIRECTION)
+		Goto Spawn+21
+		BGS1 B 0
+		Goto Spawn+9
+	Death:
+		BFE1 A 5 Bright A_StopSound(1)
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		BGE1 B 5 Bright
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 A 0 A_Explode(200,1000, !XF_HURTSOURCE, false, 256)
+		BGE1 C 5 Bright //A_BFGSpray("BFGExtra",40,5)
+		TNT1 A 0 A_GiveInventory(Clip,1)// this thing removes the orbiting particles
+		BGE1 DEF 5 Bright
+		Stop
+	}
+}	
+
 Actor BFG10KBall_Coop : BFG10KBall
 {
 	+THRUSPECIES
@@ -334,6 +415,17 @@ ACTOR BFG10KBeamSpawner
 		Stop
 	}
 }
+
+Actor BFG10KBeamSpawnerDM : BFG10KBeamSpawner
+{
+	States
+	{
+	Melee:
+		TNT1 A 1 A_CustomRailgun(5,0,0,0,RGF_SILENT,1,0,"Q2BulletPuff",0,0,8129,0,4.5,0,"BFG10KBeamTrail",-4)
+		Stop
+	}
+}	
+
 ACTOR BFG10KBeamSpawner_Coop : BFG10KBeamSpawner
 {
 	Species "Player"
@@ -450,6 +542,7 @@ Actor Q2Railgun : Q2Weapon
 		RLG2 ABCDEFGHI 5 A_WeaponReady
 		Goto Ready+1
 	Fire:
+		TNT1 A 0 A_JumpIfInventory("DMModeOn", 1, "DMFire")
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
 		TNT1 A 0 A_JumpIfInventory(PowerSilencer,1,"SilentFire")
 		TNT1 A 0 A_JumpIfTargetInLOS("FireSpotted", 72, JLOSF_TARGETLOS)
@@ -502,6 +595,32 @@ Actor Q2Railgun : Q2Weapon
 		RLG0 H 4// A_PlaySound("Q2Weapons/RailGunCharge",0,0.75)
 		RLG0 IJKLMNOPQRS 4
 		Goto Ready
+	DMFire:
+		TNT1 A 0 A_JumpIfInventory(PowerSilencer,1,"SilentFireDM")
+		TNT1 A 0 A_JumpIfTargetInLOS("FireSpottedDM", 72, JLOSF_TARGETLOS)
+		TNT1 A 0 A_AlertMonsters
+		TNT1 A 0 A_RailAttack(200,5,1,"2F 67 7F","White",RGF_FULLBRIGHT,1.0,"Q2RailgunPuff")
+		RLG0 E 3 A_GunFlash
+		RLG0 FG 4
+		RLG0 H 4// A_PlaySound("Q2Weapons/RailGunCharge",0,0.75)
+		RLG0 IJKLMNOPQRS 4
+		Goto Ready	
+	FireSpottedDM:
+		TNT1 A 0 A_AlertMonsters
+		TNT1 A 0 A_RailAttack(100,5,1,"2F 67 7F","White",RGF_FULLBRIGHT,1.0,"Q2RailgunPuff")
+		RLG0 E 3 A_GunFlash
+		RLG0 FG 4
+		RLG0 H 4// A_PlaySound("Q2Weapons/RailGunCharge",0,0.75)
+		RLG0 IJKLMNOPQRS 4
+		Goto Ready	
+	SilentFireDM:
+		TNT1 A 0 A_PlaySound("Q2Weapons/RailFire",CHAN_WEAPON,0.25,0,3)
+		TNT1 A 0 A_RailAttack(200,5,1,"2F 67 7F","White",RGF_FULLBRIGHT|RGF_SILENT,1.0,"Q2RailgunPuff")
+		RLG0 E 3 A_GunFlash
+		RLG0 FG 4
+		RLG0 H 4// A_PlaySound("Q2Weapons/RailGunCharge",0,0.75)
+		RLG0 IJKLMNOPQRS 4
+		Goto Ready		
 	Flash:
 		TNT1 A 0 A_SetPitch(Pitch-5.0)
 		TNT1 A 1 A_Light2
