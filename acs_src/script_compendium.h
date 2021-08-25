@@ -35,7 +35,7 @@ int ClassFontScales[CLASSCOUNT][2] =
 {  
 	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },	{ 2.5, 2.0 },	{ 1.0, 1.0 },	{ 1.1, 1.1 },
 	{ 2.0, 1.5 },	{ 4.5, 4.5 },	{ 2.0, 1.0 },	{ 1.5, 1.0 },	{ 2.0, 0.75 },	{ 1.0, 1.0 },	
-	{ 2.5, 0.67 },	{ 1.5, 1.0 },	{ 4.0, 1.5 },	{ 2.0, 2.0 },	{ 1.0, 0.75 },	{ 1.5, 1.0 },	
+	{ 2.5, 0.67 },	{ 1.5, 1.0 },	{ 4.0, 1.5 },	{ 2.0, 2.0 },	{ 0.6, 0.75 },	{ 1.5, 1.0 },	
 	{ 1.5, 1.5 },	{ 1.75, 1.5 },	{ 1.0, 0.5 },	{ 2.5, 2.5 },	{ 1.0, 1.0 },    { 2.125, 1.25 },
 	{ 4.5, 4.5 },	{ 1.0, 1.0 },	{ 1.0, 1.0 },    { 2.5, 2.0 },
 };
@@ -57,6 +57,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Changes", "- The Berserk operates off the Chainsaw as well as the Fist, allowing Doomguy to have a DPS alternative rather than focusing on only Burst.
 			\n	^- : When in Berserk, the Chainsaw deals 7-70 damage every 3 tics.
 			\n\n- The Berserk fist does more damage (from 20-200 to 120-240) and has different sounds. This allows the Berserk fist to be a viable weapon in comparison to the Rocket Launcher and Super Shotguns, especially against larger enemies.
+			\n\n- Smooth animations skews the damage of Doomguy's weapons overall higher, although it's still randomized. Turning on vanilla animations enables vanilla damage.
 			\n\n- The Fist no longer alerts monsters, because that was stupid.
 			\n\n- Doomguy never had to deal with ghosts. In Heretic and HeXen, the Shotgun, Super Shotgun, and Chaingun pass harmlessly through ghosts.
 			\n\n- There are not many other changes. In Samsara, the games meld to Doom II's gameplay, rather than vice-versa.", ""},
@@ -67,7 +68,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Traits", "...And I Am Still Mighty: Doomguy64 holds the Super Shotgun in the game as well as the BFG9000, one of the strongest ultimate weapons giving him quite the firepower. It's very hard for most other classes to match or exceed the damage on those 2 in their own weapons tier.
 			\n\nTo Hell With Respect!...Again!: Playing with Doom 64 mode is just like playing Doom 64, so show these newcomers who they better call granddaddy.
 			\n\nAss Kicking Console Power!: Doomguy64 came from a console version of doom for the nintendo 64, along with it came some slight variations to his weapons, his chaingun and pistol are slightly faster but more inaccurate, his chainsaw cuts enemies faster, his BFG is a tad slower, and his rockets have knockback, giving subtle differences from his original PC counterpart.
-			\n\nHellish Fantasy Redux: Doomguy64 Still uses a damage rolling system like in the origina doom 1 & 2.", ""},
+			\n\nHellish Fantasy Redux: Doomguy64 Still uses a damage rolling system like in the original doom 1 & 2.", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -124,6 +125,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			\n\nHeroes Don't Quit: Being a POW in Nazi camps taught B.J. some survival techniques the hard way. When low on health, B.J. can drink up certain piles of gibs and blood for a boost. Restricted only to decorations, unfortunately--can't slaughter imps and drink off them.", ""},
 			
 			{ "Changes", "- I was unable to get a hand on Wolfenstein for the Mac, so I don't know how accurate/inaccurate the Flamethrower/Rocket Launcher is to their game.
+			\n\n- The Mac version's rocket launcher didn't explode on impact with surfaces as the Wolf 3D engine lacked radius damage code. This was changed as every class should be able to kill the icon of sin.
 			\n\n- The Knife's unupgraded damage is more true to Wolf 3D, but its upgraded graphics/sound are the ones in Wolf3D.
 			\n\n- When upgraded, the knife does damage on every tic it's thrust in, reminiscent of other slot I weapons.
 			\n\n- The Spear of Destiny is now an actual weapon. Its behavior is entirely original, though its appearance is based on the Spear of Destiny boxart. A lot of Doom II levelsets practically require an ultimate weapon eventually.
@@ -136,6 +138,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			\n\nHeroes Don't Quit: Being a POW in Nazi camps taught B.J. some survival techniques the hard way. When low on health, B.J. can drink up certain piles of gibs and blood for a boost. Restricted only to decorations, unfortunately--can't slaughter imps and drink off them.", ""},
 			
 			{ "Changes", "- I was unable to get a hand on Wolfenstein for the Mac, so I don't know how accurate/inaccurate the Flamethrower/Rocket Launcher is to their game.
+			\n\n- The Mac version's rocket launcher didn't explode on impact with surfaces as the Wolf 3D engine lacked radius damage code. This was changed as every class should be able to kill the icon of sin.
 			\n\n- The Knife's unupgraded damage is more true to Wolf 3D, but its upgraded graphics/sound are the ones in Wolf3D.
 			\n\n- When upgraded, the knife does damage on every tic it's thrust in, reminiscent of other slot I weapons.
 			\n\n- The Spear of Destiny is now an actual weapon. Its behavior is entirely original, though its appearance is based on the Spear of Destiny boxart. A lot of Doom II levelsets practically require an ultimate weapon eventually.
@@ -147,7 +150,9 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Traits", "Call Apogee, Say 'Bullshit!': Poor B.J. was from an era where weapon design was much simpler. He has no Shotgun weapons, no Slot III weapon, and no weapons that use Ammo 2. Any Ammo 2 picked up is instead converted to Ammo 1.
 			\n\nHeroes Don't Quit: Being a POW in Nazi camps taught B.J. some survival techniques the hard way. When low on health, B.J. can drink up certain piles of gibs and blood for a boost. Restricted only to decorations, unfortunately--can't slaughter imps and drink off them.", ""},
 			
-			{ "Changes", "- Castle Totenkopf SDL uses a splash damage formula that falls quadratically instead of linearly like Doom does. As a result, explosive damage functions differently here than in the source.", ""},
+			{ "Changes", "- Castle Totenkopf SDL uses a splash damage formula that falls quadratically instead of linearly like Doom does. As a result, explosive damage functions differently here than in the source.
+			\n\n- The Kar98K and STG44 now do more consistent damage compared to the original.
+			\n\n- The Regeneration Sphere in Totenkopf SDL would provide BJ with perpetually regenerating health. In this game, it regenerates only up to 30, similar to Wolfenstein The New Order.", ""},
 		},
 	},
 	{
@@ -157,65 +162,55 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Traits", "Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
 			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Parias has Baratus' runspeed and HeXen's jump height.", ""},
 			
-			{ "Changes", "- The most obvious: Parias now has seven weapons instead of four.
+			{ "Changes", "- The most obvious: Parias, Daedolon, and Baratus now have at least 7 weapons instead of four.
+			\n\n- All three Hexen classes are now selectable, rather than having Parias use nearly all the games' weapons. This means the classes now have a lot of weapons that weren't actually in Hexen, but care was taken to ensure they are similar to weapons that would have appeared in Hexen had the number of weapons per class match Doom more closely.
 			\n\n- The Mace of Contrition no longer alerts monsters.
 			\n\n- The Firestorm's surrounding fireballs do more damage, having their A_Explode increased from radius 20/explosive damage 20 to 64/32, so as to match the power of the Plasma Rifle.
-			\n\n- The Hammer of Retribution forces its radius damage on enemies, so as to make up for its much slower speed with Rocket Launcher power.
-			\n\n- Timon's Axe and the Frost Shards have been given a little bit of an extra melee oomph, in order to emphasize his role as a close-range brawler.
 			\n\n- The Serpent Staff's poison bolts were reduced in damage from 5-40 to 4-16 per shot, so as to match Chaingun power.
 			\n\n- The heal of the Serpent Staff's melee has been increased and quickened, and can now heal for beyond 100 health, so as to give it an extra use.
 			\n\n- The Wraithverge takes 20 of each ammo now, rather than 17, to match the costliness of other ultimate weapons.
 			\n\n- The Wraithverge's rate of fire has been slightly decreased by adding a 20-tic hang time at the end, to match the slow rate of fire of other ultimate weapons.
-			\n\n- The Frost Shards' rate of fire has been slightly increased by reducing the after-shot frames from 15 tics to 11, to assist it in crowd-control.
 			\n\n- The Flechette no longer hurts allied players or the player, so as to reduce griefing.
-			\n\n- The Sapphire Wand's radius/height was reduced from 12/8 to 3/2, so as to help Parias in maps where he needs to shoot through the bars.
 			\n\n- Parias' mana 2 has a limit of 300 due to running off Cells, rather than 200.
 			\n\n- The Mystic Ambit Incant sprays armor shards as well as giving health, so as to additionally assist allies.
-			\n\n- The Wraithverge is now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", ""},
+			\n\n- The ultimates are now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", ""},
 		},
 		{
 			{ "Summary", "Being a high ranking mage, Daedolon only answers to Menelkir. What he may lack physically, he makes up for with mind and spirit. Being recognized as a prodigy from the Arcanum from a very young age, he quickly gained the ability to weave the fabric of reality with his spells. But spending a lifetime studying ancient tomes and scrolls did not afford him much physical training, and as a result, would rather stay out of brawls. As a result of his wide array of magical knowledge, most of his enemies are wise enough to stay on his good side.", ""},
 			
 			{ "Traits", "Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
-			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Parias has Baratus' runspeed and HeXen's jump height.", ""},
+			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Daedolon has Baratus' runspeed and HeXen's jump height.", ""},
 			
-			{ "Changes", "- The most obvious: Parias now has seven weapons instead of four.
-			\n\n- The Mace of Contrition no longer alerts monsters.
-			\n\n- The Firestorm's surrounding fireballs do more damage, having their A_Explode increased from radius 20/explosive damage 20 to 64/32, so as to match the power of the Plasma Rifle.
-			\n\n- The Hammer of Retribution forces its radius damage on enemies, so as to make up for its much slower speed with Rocket Launcher power.
-			\n\n- Timon's Axe and the Frost Shards have been given a little bit of an extra melee oomph, in order to emphasize his role as a close-range brawler.
-			\n\n- The Serpent Staff's poison bolts were reduced in damage from 5-40 to 4-16 per shot, so as to match Chaingun power.
-			\n\n- The heal of the Serpent Staff's melee has been increased and quickened, and can now heal for beyond 100 health, so as to give it an extra use.
-			\n\n- The Wraithverge takes 20 of each ammo now, rather than 17, to match the costliness of other ultimate weapons.
-			\n\n- The Wraithverge's rate of fire has been slightly decreased by adding a 20-tic hang time at the end, to match the slow rate of fire of other ultimate weapons.
+			{ "Changes", "- The most obvious: Parias, Daedolon, and Baratus now have at least 7 weapons instead of four.
+			\n\n- All three Hexen classes are now selectable, rather than having Parias use nearly all the games' weapons. This means the classes now have a lot of weapons that weren't actually in Hexen, but care was taken to ensure they are similar to weapons that would have appeared in Hexen had the number of weapons per class match Doom more closely.
+			\n\n- The Sapphire Wand no longer alerts monsters.
+			\n\n- The Arcs of Death have had their damage increased slightly to better match Plasma Rifle power.
+			\n\n- The Frost Shards have been given a little bit of an extra melee oomph, in order to give Daedolon some much needed melee ability.
+			\n\n- The Bloodscourge does greater damage to match its high ammo cost.
 			\n\n- The Frost Shards' rate of fire has been slightly increased by reducing the after-shot frames from 15 tics to 11, to assist it in crowd-control.
 			\n\n- The Flechette no longer hurts allied players or the player, so as to reduce griefing.
-			\n\n- The Sapphire Wand's radius/height was reduced from 12/8 to 3/2, so as to help Parias in maps where he needs to shoot through the bars.
-			\n\n- Parias' mana 2 has a limit of 300 due to running off Cells, rather than 200.
-			\n\n- The Mystic Ambit Incant sprays armor shards as well as giving health, so as to additionally assist allies.
-			\n\n- The Wraithverge is now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", ""},
+			\n\n- The Sapphire Wand's radius/height was reduced from 12/8 to 3/2, so as to help Daedolon in maps where he needs to shoot through the bars.
+			\n\n- Daedolon's mana 2 has a limit of 300 due to running off Cells, rather than 200.
+			\n\n- The Disc of Repulsion has a six second cooldown to make it much more useful.
+			\n\n- The ultimates are now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", ""},
 		},
 		{
 			{ "Summary", "A master figher of the legion, second only to Zedek, Baratus is just as aggressive as he is intimidating. Being trained mercilessly in the Legion, he has become a virtually unstoppable war machine who unnerves others by merely being in their presence. As he's a master of the weapons and artifacts of his order, he prefers to fight up close and personal; in this regard, he's unmatched. This isn't to say he doesn't use more complex weapons, given they are simple enough to use.", ""},
 			
 			{ "Traits", "Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
-			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Parias has Baratus' runspeed and HeXen's jump height.", ""},
+			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Baratus retains his superior agility.", ""},
 			
-			{ "Changes", "- The most obvious: Parias now has seven weapons instead of four.
-			\n\n- The Mace of Contrition no longer alerts monsters.
-			\n\n- The Firestorm's surrounding fireballs do more damage, having their A_Explode increased from radius 20/explosive damage 20 to 64/32, so as to match the power of the Plasma Rifle.
+			{ "Changes", "- The most obvious: Parias, Daedolon, and Baratus now have at least 7 weapons instead of four.
+			\n\n- All three Hexen classes are now selectable, rather than having Parias use nearly all the games' weapons. This means the classes now have a lot of weapons that weren't actually in Hexen, but care was taken to ensure they are similar to weapons that would have appeared in Hexen had the number of weapons per class match Doom more closely.
+			\n\n- The Spiked Gauntlets no longer alert monsters.
 			\n\n- The Hammer of Retribution forces its radius damage on enemies, so as to make up for its much slower speed with Rocket Launcher power.
-			\n\n- Timon's Axe and the Frost Shards have been given a little bit of an extra melee oomph, in order to emphasize his role as a close-range brawler.
-			\n\n- The Serpent Staff's poison bolts were reduced in damage from 5-40 to 4-16 per shot, so as to match Chaingun power.
-			\n\n- The heal of the Serpent Staff's melee has been increased and quickened, and can now heal for beyond 100 health, so as to give it an extra use.
-			\n\n- The Wraithverge takes 20 of each ammo now, rather than 17, to match the costliness of other ultimate weapons.
+			\n\n- Timon's Axe does double the original damage to further justify Baratus' role as a primarily melee fighter.
 			\n\n- The Wraithverge's rate of fire has been slightly decreased by adding a 20-tic hang time at the end, to match the slow rate of fire of other ultimate weapons.
-			\n\n- The Frost Shards' rate of fire has been slightly increased by reducing the after-shot frames from 15 tics to 11, to assist it in crowd-control.
 			\n\n- The Flechette no longer hurts allied players or the player, so as to reduce griefing.
-			\n\n- The Sapphire Wand's radius/height was reduced from 12/8 to 3/2, so as to help Parias in maps where he needs to shoot through the bars.
-			\n\n- Parias' mana 2 has a limit of 300 due to running off Cells, rather than 200.
-			\n\n- The Mystic Ambit Incant sprays armor shards as well as giving health, so as to additionally assist allies.
-			\n\n- The Wraithverge is now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", ""},
+			\n\n- Baratus' mana 2 has a limit of 300 due to running off Cells, rather than 200.
+			\n\n- The Dark Servant acts as a permanent inventory item and the Maulotaur it spawns has additional health.
+			\n\n- The Quietus now has a melee attack that the Fighter uses when enemies are close, and falls back to being melee only when ammunition is depleted rather than selecting another weapon.
+			\n\n- The ultimates are now picked up in one piece, rather than needing to be assembled. This is to match the other games' ultimates.", ""},
 		}
 	},
 	{
@@ -228,17 +223,16 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Changes", "- Duke's former standing sprite has been repurposed as a shooting sprite.
 			\n\n- Significantly more taunts all around, since it's an integral part of Duke's character.
 			\n\n- Animation times and sprites locations were tried to make as close as possible as their Duke Nukem 3D/64 counterparts, but there may be subtle differences.
-			\n\n- Damage values for the explosive Duke Nukem weapons are not as documented as well as the idtech1 weapons. Most of them are based off the Doomguy's similar weapons.
 			\n\n- The Chaingun Cannon has a new animation for firing, because replicating the old one was a bitch and a half.
 			\n\n- The Chaingun Cannon's bullets do 15 damage rather than 9 damage, in order to give it a boost over the other Chaingun weapons.
-			\n\n- The Pipebombs, RPG, and Explosive Shotgun work off the same ammo, now, rather than being separate.
+			\n\n- The Pipebombs and RPG work off the same ammo, now, rather than being separate.
+			\n\n- The Explosive Shotgun now uses 3 shells.
 			\n\n- The Explosive Shotgun has been brutally nerfed. It is now a separate weapon, rather than an ugprade for the shotgun, its spread is much wider, its cocking has been drastically lengthened, and its power diminished.
 			\n\n- The Mighty Boot works much different, due to Zandronum's/ZDoom's inability to have alt-fire used alongside primary fire in a way that works with Netplay. Rather than being used alongside weapons for extra oomph, now it puts some distance between an enemy and user.
 			\n\n- The Freezethrower shots no longer halve damage when bouncing off walls, due to engine limitations.
 			\n\n- The Freezethrower's shots do 22 damage rather than 20 damage, due to its slightly slower RoF compared to the Plasma Rifle.
 			\n\n- The Pipebomb's first, second, and third bounce are not a fixed height/amount, due to how ZDoom handles bouncing.
-			\n\n- The Pipebomb's three counts of bounce include walls, due to how ZDoom handles bouncing.
-			\n\n- Deployed pipebombs can no longer be shot up or picked up, due to my inability to figure it out.", ""},
+			\n\n- The Pipebomb's three counts of bounce include walls, due to how ZDoom handles bouncing.", ""},
 		},
 		{
 			{ "Summary", "He's rude. He's crude. He's a bad dude with a hell of a bad attitude. He's the number one bastard on several alien races' personal shitlists, and he made it to the top not with any special training, armor, or powers, but just by being the most hardcore son of a bitch imaginable. He's just a joe with a shotgun, a mean boot, and a mouth that can't stay shut--and that's all he needs. These assholes are going to have to go through him to get to the multiverse...and he just ran out of bubblegum.", "" },
@@ -249,17 +243,16 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Changes", "- Duke's former standing sprite has been repurposed as a shooting sprite.
 			\n\n- Significantly more taunts all around, since it's an integral part of Duke's character.
 			\n\n- Animation times and sprites locations were tried to make as close as possible as their Duke Nukem 3D/64 counterparts, but there may be subtle differences.
-			\n\n- Damage values for the explosive Duke Nukem weapons are not as documented as well as the idtech1 weapons. Most of them are based off the Doomguy's similar weapons.
-			\n\n- The Chaingun Cannon has a new animation for firing, because replicating the old one was a bitch and a half.
-			\n\n- The Chaingun Cannon's bullets do 15 damage rather than 9 damage, in order to give it a boost over the other Chaingun weapons.
-			\n\n- The Pipebombs, RPG, and Explosive Shotgun work off the same ammo, now, rather than being separate.
+			\n\n- The Triple Poison Shooter has a new animation for firing, because replicating the old one was a bitch and a half.
+			\n\n- The Triple Poison Shooter's bullets do 15 damage rather than 9 damage, in order to give it a boost over the other Chaingun weapons.
+			\n\n- The Pineapples and Coconut Launcher work off the same ammo, now, rather than being separate.
+			\n\n- The Explosive Shotgun now uses 3 shells.
 			\n\n- The Explosive Shotgun has been brutally nerfed. It is now a separate weapon, rather than an ugprade for the shotgun, its spread is much wider, its cocking has been drastically lengthened, and its power diminished.
-			\n\n- The Mighty Boot works much different, due to Zandronum's/ZDoom's inability to have alt-fire used alongside primary fire in a way that works with Netplay. Rather than being used alongside weapons for extra oomph, now it puts some distance between an enemy and user.
-			\n\n- The Freezethrower shots no longer halve damage when bouncing off walls, due to engine limitations.
-			\n\n- The Freezethrower's shots do 22 damage rather than 20 damage, due to its slightly slower RoF compared to the Plasma Rifle.
-			\n\n- The Pipebomb's first, second, and third bounce are not a fixed height/amount, due to how ZDoom handles bouncing.
-			\n\n- The Pipebomb's three counts of bounce include walls, due to how ZDoom handles bouncing.
-			\n\n- Deployed pipebombs can no longer be shot up or picked up, due to my inability to figure it out.", ""},
+			\n\n- The Mighty Sandle works much different, due to Zandronum's/ZDoom's inability to have alt-fire used alongside primary fire in a way that works with Netplay. Rather than being used alongside weapons for extra oomph, now it puts some distance between an enemy and user.
+			\n\n- The Ice Crusher shots no longer halve damage when bouncing off walls, due to engine limitations.
+			\n\n- The Ice Crusher's shots do 22 damage rather than 20 damage, due to its slightly slower RoF compared to the Plasma Rifle.
+			\n\n- The Pineapple's first, second, and third bounce are not a fixed height/amount, due to how ZDoom handles bouncing.
+			\n\n- The Pineapple's three counts of bounce include walls, due to how ZDoom handles bouncing.", ""},
 		}
 	},
 	{
@@ -267,14 +260,13 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Summary", "Freedom. That's all he wants, now. In one bitter day, the Security Officer went from lazily sleeping in to being in an eternal fight for his life at the behest of arrogant and psychotic AIs. Day in and day out, he fought endless battles without any reprieve, rest, or hope for peace, and even alternate timelines and dimensions held no solace for him. The only comfort he could take was in survival...and now even that is in constant peril--in this damned Wheel, the fighting will never cease. Instead, now it runs eternally. Will he ever find rest?", ""},
 			
 			{ "Traits", "To Never Shoot Where I Could Use Grenades: Several of the Security Officer's weapons boast an alt-fire--the magnums (when a second is picked up), shotguns (also when a second is picked up), assault rifle, alien weapon, and wave motion cannon. These different options allow him different methods to approach situations, or simply to shoot harder and faster.
-			\n\nNever Stop Running, Never Stop Firing: Long range does not exist to the Security Officer. His bullets are not instant hitscan, like the other heroes--they move at a much slower pace. Likewise, his projectiles have a slower travelling speed and are likely to easily be dodged.", ""},
+			\n\nNever Stop Running, Never Stop Firing: Long range does not exist to the Security Officer. His bullets are not instant hitscan, like the other heroes--they move at a much slower pace. Likewise, his projectiles have a slower travelling speed and are likely to easily be dodged.
+			\n\nIf I had a Rocket Launcher I'd make someone pay: Security Officer has to reload nearly all his weapons. However, unlike similar heroes like Freeman and Bond, SecOff can't reload manually and has to wait until his magazines are empty to reload.", ""},
 			
-			{ "Changes", "- In Zandronum, weapons bob from side to side instead of up and down. ZDoom has Marathon-style bobbing.
-			\n\n- Grenades, fists, and charged fusion shots no longer trigger switches, due to engine limitations. Sorry, Vidmasters.
+			{ "Changes", "- Grenades, fists, and charged fusion shots no longer trigger switches, due to engine limitations. Sorry, Vidmasters.
 			\n\n- The Security Officer now has a pain sound, so as to indicate when shots hit in DM play.
 			\n\n- The Shotgun has had its damage reduced, because 200-240 damage with a single shotgun in 40 tics HAH HAH HAH NOPE.
 			\n\n- In co-op, the Rocket Launcher has had its damage buffed from 250-300 to 305-390. Due to its incredibly slow RoF compared to the other rocket launchers, it needed a bit of a burst damage oomph.
-			\n\n- The Infrared has had its color changed from blue to green, due to Zandronum's lack of support for bluemap yet. ZDoom players don't have this issue.
 			\n\n- The Magnum can now be used underwater, just in case someone hasn't found a chainsaw in a water map.
 			\n\n- The Alien weapon has a lot more ammo and generally does more damage, in order to justify how much rarer it is compared to Marathon.
 			\n\n- The Fusion Pistol's charge no longer shakes and/or does higher beeps. Sorry.
@@ -296,9 +288,10 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			\n\nDissolution of Eternity: While Ranger takes mostly as much damage as normal, he still has one fatal defensive flaw. When picking up a Soulsphere or Megasphere, the amount of health received slowly degenerates. This does not affect health bonus pickups.
 			\n\nShambler Hide: Ranger has found many curious items in the sinister lands beyond the slipgates, and this is one of them. Ranger wears armor that reduces all explosion damage by 25%. This is very handy for all those explosive-wielding freaks he goes up against, and is also very good for Rocket Jumping.", ""},
 			
-			{ "Changes", "- Quake had such a lower damage scale than Doom it wasn't even funny. The Vore had 400 HP, equivalent to two Centaurs. In co-op, his weapons have been buffed the fuck out.
+			{ "Changes", "- Quake had such a lower damage scale than Doom it wasn't even funny. The Vore had 400 HP, equivalent to two Centaurs. In co-op and Singleplayer, his weapons have been buffed the fuck out.
 			\n\n- The Quad Damage is now a reuseable item, partly to help with the aforementioned damage issues, and partly because there was no appropriate item to replace it with. (Berserks didn't work--too rare, too erratically placed, not to mention should be more utility)
-			\n\n- The Double-Barreled Shotgun uses only one shell now instead of two, for the same reason. (64 damage for one shot hah hah hah hah NOPE)
+			\n\n- The Double-Barreled Shotgun uses only one shell now instead of two, for the same reason. (56 damage for two shells hah hah hah hah NOPE)
+			\n\n- By extension, when pistols use ammunition the Single Shotgun only consumes a shell for every two shots.
 			\n\n- In Quake, the projectiles had no hitbox. Here, their hitbox is simply obscenely tiny.
 			\n\n- Gravity has been ever-so-slightly reduced so as to simulate Quake's strange air physics.
 			\n\n- The nails and rockets originally travelled at the same speed. Here, nails have been increased to speed 75.
@@ -381,7 +374,9 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Traits", "Tough Training: Blake had a really tough army training, he has no weakness to anything. He's also unnecessarily disciplined.
 			\n\nTough Odds: Blake's weapons are not very ammo efficient, however having used them for ages makes him very expert at them and he uses all his weapons with super speed.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "Blake Stone didn't have real explosive mechanics because of technical limitations. Enemies caught in the blast simply had a damaging projectile warped to them. In Samsara, Blake Stone has normal explosive logic.
+			\n\n- Blake cannot destroy items with explosives, and can only harm himself with the Anti-Plasma Cannon.
+			\n\n- Blake's Plasma Discharge Unit had its firerate, damage, and range drastically reduced to keep it from being too devastatingly overpowered.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -392,9 +387,13 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Summary", "Vengeance is all that is left in him now... His love was taken away from him. He was betrayed by his master and forced to see his friends executed before his very eyes. Even eternal banishment was not enough to stop Caleb. Vengeance had already driven him into an unstoppable blood lust. He wouldn't stop until he fully avenged his comrades, and his one true love. Caleb is exceptional at dealing with singular foes, but becomes rather lackluster at dealing with many, although he is still able to seal the deal. Caleb's sole purpose of living is to prove thathe is truly the \"One That Binds\".", ""},
 			
 			{ "Traits", "Boo Hoo... When does the hurting stop?: Caleb loves to inflict pain so much on his foes that he can kill them in more ways than any other hero. He is rather prone to hurting himself in the process, however.
-			\n\nGood. Bad. I'm the guy with the gun: The weapons in Blood were fast, versatile, and of course, terrifyingly powerful. However, unlike games like Duke 3D, Redneck Rampage, and SW, the weapons don't really evolve much. Only steadily increasing in power. It's best to make the most of the weapons you do have than rely on an ultimate.", ""},
+			\n\nGood. Bad. I'm the guy with the gun: The weapons in Blood were fast, versatile, and of course, terrifyingly powerful. However, unlike games like Duke 3D, Redneck Rampage, and SW, the weapons don't really evolve much, only steadily increasing in power. It's best to make the most of the weapons you do have than rely on an ultimate.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "Caleb has a revolver as his starting pistol as the Flaregun would be too powerful.
+			\n\n- The lighter doesn't bob separately from the Spraycan/TNT, and still lowers when switching between the two as if you were switching to another weapon entirely.
+			\n\n- In DM, explosives do half damage and the Napalm Cannon's projectiles move significantly slower. Caleb's hitscan weapons also do damage much closer to the enemy cultists. In SP/Coop these values are normal.
+			\n\n- Caleb does not need to worry about finding spirit or fire armor to reduce damage from those attack types. Instead, armor works just as it does for everyone else.
+			\n\n- Unlike a lot of games in Samsara, Blood never had a source code release. The closest thing there ever was were reverse engineering efforts such as nBlood. Therefore, we cannot vouch for the 100% authenticity of his damage, accuracy, or radius values. What we can say, however, is close enough.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -402,13 +401,19 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},
 	{
 		{
-			{ "Summary", "In a world where everyone nearly died from a virus, the remaining people were oppressed by the Order, until one man joined the rebels to stop the entire order, who even killed their deity, The Entity. In Samsara, Strifeguy plays very tactically, requiring well thought out plans to make sure he destroys enemies and survives while doing so. However, he does lack range.", ""},
+			{ "Summary", "In a world where everyone nearly died from a virus, the remaining people were oppressed by the Order, until one man joined the rebels to stop them and kill their deity, The Entity. In the Wheel of Samsara, Strifeguy continues to fight against oppression just like he did all those years ago. Whether it comes from Hell, space, or fellow humans, Strifeguy will use his superior tactics and advanced weaponry to disable their machinations and ensure nothing like the Order ever rises again.", ""},
 			
 			{ "Traits", "Revolutionary: Lots of Strifeguy's weapons are very tricky to use. His slot 3 is weaker but isn't lobbed like his slot 5 which bounces off enemies and self harms. Even the slot 5 alt fire which sets a massive fire can kill you if you are not careful. His slot 6 is also a lobbed but powerful flamethrower, so aim and planning is key.
-			\n\nLast Stand: He may be tough, but even in critical condition he will have a speed reduction, which is why all health pickups and soulspheres are portable medikits of various sizes to heal him, and for providing ammo for his second and much deadlier ultimate, the Sigil!
-			\n\nEver evolving force: Strifeguy can barely aim and has terrible melee, but his berserk is an item that upgrades his max health by 10, and increasing his accuracy, allowing his shorter distance weapons to aim better and improving his longevity!", ""},
+			\n\nLast Stand: He may be tough, but in critical condition he will have a speed reduction, which is why all health pickups and soulspheres are portable medikits of various sizes to heal him, and for providing ammo for his second and much deadlier ultimate, the Sigil!
+			\n\nEver evolving force: Strifeguy can barely aim and has terrible melee, but his berserk is an item that upgrades his max health by 10, and increases his accuracy, allowing his shorter distance weapons to aim better and improving his longevity!", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "Selecting alternate ammo types is not handled by selecting a sister weapon, but rather by right-clicking.
+			\n\n- The Crossbow's Poison Bolts no longer kill humanoid enemies instantly. Rather, it does an additional 50 damage. This is usually instant death for most grunt-type enemies.
+			\n\n- Strifeguy has a proper pistol so his crossbow could be moved to slot 2.
+			\n\n- The Crossbow's Electric Bolts do double damage overall to match the power of other slot 2's
+			\n\n- White Phosphorous grenades do under a quarter of the damage they did in the original game. They are still insanely powerful.
+			\n\n- The Flamethrower has an overall better range than it originally did in Strife, and the range can be further increased with accuracy upgrades. This leaves the Grenade Launcher and Sigil as the only weapons unaffected by accuracy upgrades.
+			\n\n- StrifeGuy cannot self-harm with the Mauler Torpedo.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -431,12 +436,13 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},*/
 	{
 		{
-			{ "Summary", "Eleena has frequently done work for the Universal Mining Guild. When the crisis on loxia came along, she saw it as a wonderful opportunity for a little work and a lot of cash. Given the option, Eleena will avoid unnecessary conflicts and attempt to outmaneuver potential adversaries. However she is more than capable of overcoming almost any opponent, and will frequently outflank an enemy and attack from behind for maximum efficiency. \n\nNow she must finish one final mission: to clean up this planet of the remanescent enemies from Samsara", ""},
+			{ "Summary", "Eleena has frequently done work for the Universal Mining Guild. When the crisis on loxia came along, she saw it as a wonderful opportunity for a little work and a lot of cash. Considering her skills as an assassin, she proved herself more than capable of ridding Ioxia of the alien menace that conquered the place. After collecting her payment, she retired to her headquarters waiting for her next contract. \n\nNow she must finish one final mission: to clean up this planet of the remanescent enemies from Samsara", ""},
 			
-			{ "Traits", "Sneaky Cat: Eleena's natural speed and agility, combined with her extensive training with sneak attacks and use of her natural claw-like weaponry, make her a very dangerous foe.
-			\n\nHigher jump height: Although she is somewhat fragile physically, Eleena's dexterity makes her hard to hit. With her feline attributes, she is able to jump higher and farther than most enemies she has encountered.", ""},
+			{ "Traits", "Sneaky Cat: Although she is somewhat fragile physically, Eleena's natural speed and agility, combined with her extensive training with sneak attacks and use of her natural claw-like weaponry, make her a very dangerous foe.
+			\n\nArea Denial: Eleena has a broad supply of lobbed explosive weaponry, multi-projectile weapons, and seeking missiles that make her tough to engage in battle. Between her bouncing Pellet Bombs, the fearsome Napalm Charge, the triple barreled Dart Cannon, or whatever weapon mods she has up her sleeve, Eleena is exceptional at putting a lot of pressure on her enemies. Out maneuvering her may prove quite difficult, if not outright impossible.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "Some of Eleena's unique weapons were swapped with Dan Blaze's Pellat Bomb and Kamchak's Napalm Charge. These fit her role a little better and are overall better than her lackluster grenades.
+			\n\n The Missile Launcher is not capable of firing remote-guided missiles.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -444,12 +450,18 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},
 	{
 		{
-			{ "Summary", "Despite the world having become relatively peaceful, the UFP none-the-less kept a well trained force of space seals for all their operations. When one of their experiments went awry and an alien force invaded, one such space seal, the last one remaining, rose up to defeat them. Armed with nothing more than an M24 Close Assault Weapon and a Taser, the space seal will compromise at nothing to ensure Humanity's victory.\n\nThe space seal has a few powerful advantages and disadvantages. His weapons are frighteningly powerful - They can tear even the mightiest beast to shreds. However, They are also the biggest ammo guzzlers out there, rapidly depleting his stock. Furthermore, there are only two kinds of ammo that he has, and he is more vulnerable to harm than his peers. He can do great harm; but it comes back to him in turn.", ""},
+			{ "Summary", "Despite the world having become relatively peaceful, the UFP none-the-less kept a well trained force of space seals for all their operations. When one of their experiments went awry and an alien force invaded, one such space seal, the last one remaining, rose up to defeat them. Armed with nothing more than an M24 Close Assault Weapon and a Taser, the space seal will compromise at nothing to ensure Humanity's victory.", ""},
 			
-			{ "Traits", "Ammo Hoarder: The space seal was taught to always conserve ammunition as much as possible. As a result, space seal gets slightly more 20% ammo from ammo pickups
+			{ "Traits", "Shredder: The Space Seal's weapons are terrifyingly powerful, capable of tearing even the toughtest of beasts to shreds. However, they guzzle ammo quite quickly and their damage is wildly randomized. 
+			\n\n Ammo Hoarder: The space seal was taught to always conserve ammunition as much as possible. As a result, space seal gets slightly more 20% ammo from ammo pickups
 			\n\n Happy Birthday!: The Space Seal has a set of proximity mines that he can place anywhere, leaving all sorts of nasty traps for enemies. These mines use their own ammo supply.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "The Alien Plasma Rifle has an added feature: Its shots grow in power as they travel. This change was made to further compliment SpaceSeal's DPS role and to make it stand out more from other Slot 5s.
+			\n\n In C7, Mines could only be prematurely set off by detonating an explosive near them, such as the Plasma Rifle. In Samsara, you can just shoot them.
+			\n	 ^ - In Addition, neither Space Seal nor his allies can set off proximity mines by stepping on them. In DM, Seal can set off his own mines.
+			\n\n The M-343 Vulcan is much less disgustingly broken and the Ithaca Stakeout is far less completely dogshit. You should now have plenty of reason to use your other weapons.
+			\n\n The Alien Disintegrator uses a Doom-like BFG Spray instead of dealing a solid 1000 damage to everything in the user's line of sight.
+			\n\n Technically, the protagonist of C7 is named 'Space Marine'. 'Space Seal' is one of the selectable classes in Deathmatch. The name Seal was chosen because Space Marine would be far too generic of a name.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -457,10 +469,10 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},
 	{
 		{
-			{ "Summary", "Colonization of the Moon can be a difficult task. Especially when that task is caught up in immense political turmoil. Unable to come to terms, the colonies on the moon begin open rebellion against the United Nations. The U.N. quickly responds by mobilizing thier forces to deal with this rebellion, but the Lunar Alliance has an ace up their sleeve. The Alliance's operations hinge on the skill of a single LDF Commando, as well as a handfull LDF malitia. He endures racing against limited oxygen supplies and swarms of U.N. Personnel to ensure the LDF colonies remain standing strong. Only... the situation becomes far more complicated when an alien species is discovered laying dormant within the Moon... \n\nWith an arsenal consisting primarily of highly accurate, fast moving projectile based weaponry. The commando can easily hang back and deal consistent damage or pick off weak enemies with pot shots while his allies are in the fray.", ""},
+			{ "Summary", "Colonization of the Moon can be a difficult task. Especially when that task is caught up in immense political turmoil. Unable to come to terms, the colonies on the moon begin open rebellion against the United Nations. The U.N. quickly responds by mobilizing thier forces to deal with this rebellion, but the Lunar Alliance has an ace up their sleeve. The Alliance's operations hinge on the skill of a single LDF Commando and his squad of LDF Militia. He endures racing against limited oxygen supplies and swarms of U.N. Personnel to ensure the LDF colonies remain standing strong. Only... the situation becomes far more complicated when an alien species is discovered laying dormant within the Moon...", ""},
 			
-			{ "Traits", "Bullets! My only weakness! Wait. what the hell is a \"bullet\"?: Most of Rebel Moon's warfare consisted of projectile attacks. Commando only has one hitscan weapon at his disposal. He is also weak against hitscan and tracer weapons such as shotguns and chainguns...
-			\n\nSpace is a cold, cooold place: Properly suited up for the harsh enviornment of space. The Commando also has some resistance to other hazardous elements, such as lava	, radiation and other floor hazards.", ""},
+			{ "Traits", "Bullets! My only weakness! Wait. what the hell is a \"bullet\"?: Most of Rebel Moon's warfare consists of high speed projectile attacks that are just as accurate as the player. Commando only has one hitscan weapon at his disposal, which has minimal spread. This makes him unparalleled in his sniping prowess but leaves his damage and crowd control capabilities much to be desired. He is better off keeping his distance and letting his allies stay in the fray. 
+			\n\nSpace is a cold, cooold place: Properly suited up for the harsh enviornment of space, The Commando has some resistance to other hazardous elements, such as lava, radiation and other floor hazards.", ""},
 			
 			{ "Changes", "-Rebel Moon and Rebel Moon rising had an insanely low damage scale, so the damage of most weapons had to be multiplied by two, and the Subestron Arm given a ripper property.
 			\n\n-The oxygen recyclers did not give you health, but you don't need oxygen in doom.
@@ -474,23 +486,10 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},
 	{
 		{
-			{ "Summary", "Kyle Katarn worked for the Empire until he learned the truth about his father's death, from the Rebel spy, Jan Ors. Since then, he's been a mercenary for the Rebel Alliance, tallying up quite the record. Whether it's singlehandedly taking Boba fett down a peg or duking it out with Kell Dragons, you can be sure Kyle will come out on top. \n\nBeing no stranger to pain, Kyle's been through numerous battles in his carrer, which has toughened him up considerably. Unfortunately regardless of his expertise, he has to deal with less than reliable empire tech, which isn't exactly known for it's accuracy. In a team, he's best played on the frontlines, taking damage for everyone else.", ""},
+			{ "Summary", "Kyle Katarn worked for the Empire as a Stormtrooper until he learned the truth about his father's death from the Rebel spy, Jan Ors. Since then, he's been a mercenary for the Rebel Alliance tallying up quite the record. Whether it's singlehandedly taking Boba Fett down a peg or duking it out with Kell Dragons, you can be sure Kyle will come out on top.", ""},
 			
-			{ "Traits", "This Cloud be Interesting: After surviving his own form of hell through the Dark Tropper menace, Kyle always keeps his personal shield on hand, allowing him to start all missions with a free 100 armor, as well as recieve 10% less damage from anything, as long as it's not a physical, fire or explosive blow. 
-			\n\nA good Supply of Power Cells: Much of Kyle's weaponry had their own ammo types, but with the limited ammo types in the Doom universe, most of his arsenal needed to be modified to convert traditional ammunition to a form it can use. As such, each slot uses Clips, Shells, Rockets, and Cells as you would except that slot to use them.", ""},
-			
-			{ "Changes", "", ""},
-		},
-		{
-			{ "", "", ""},
-		}
-	},
-	{
-		{
-			{ "Summary", "Aldus Kaden, the leader of the A.V.C., survived the destruction of the homeplanet Eltho III through sheer luck. His high accuracy, fast reflexes, and extreme luck were the reasons why the imperial guards never caught him. Because his sound and appearance are very similiar to those of a cow, his companions call him by the name \"Mooman\". Many foes underestimate him, but Aldus is the most dangerous and strongest member of the A.V.C. \n\nPlaying as Mooman is like dicing: it's pure chance what will happen next. Prepare to rage if you don't get anything by pickups and be glad if you get tons of ammo by one single clip. His high jumping power and speed make evading projectiles an easy task. Aldus can both easily kill enemies in a duel and rip huge hordes apart, but you will need a lot of luck, or else you can prepare to be served medium-rare. Good luck - you'll need it.", ""},
-			
-			{ "Traits", "Slaughterhouse: There are many hungry demons out there who lust for your delicious meat. Thus poor Mooman takes 10% more damage from all melee attacks in the game.
-			\n\nWeak Conspecifics: Other bull-like enemies do way less damage against Aldus and receive more damage from him. Now is your time to go wild on bosses like the Cyberdemon and Minotaur.", ""},
+			{ "Traits", "This Could be Interesting: After surviving his own form of hell through the Dark Tropper menace, Kyle always keeps his personal shield on hand, allowing him to start all missions with a free 100 armor, as well as recieve 10% less damage from anything, as long as it's not a physical, fire or explosive blow. 
+			\n\nA good Supply of Power Cells: Being no stranger to pain, Kyle's been through numerous battles in his carrer, which has toughened him up considerably. Unfortunately regardless of his expertise, he has to deal with less than reliable empire tech, which isn't exactly known for it's accuracy. In a team, he's best played on the frontlines, taking damage for everyone else.", ""},
 			
 			{ "Changes", "", ""},
 		},
@@ -500,7 +499,20 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},
 	{
 		{
-			{ "Summary", "Having quickly advanced through the ranks of Earth's United Nations military branch, the \"Lightstormer Corps\", Jack Curtis has fought against many foes and supposed friends in his quest to defend the solar system. His skills with weapons are excellent on their own, but it is his psionic implants that truly elevate him to the next level. \n\nHaving lost his brother to the mad plans of his former commander-turned-traitor, he knows very well that the line that separates good and evil can become very thin. Thus, he has made it his duty in samsara to prevent any more threats to solar system, regarless of where these threats come from.", ""},
+			{ "Summary", "Aldus Kaden, the leader of the A.V.C., survived the destruction of the homeplanet Eltho III through sheer luck. His high accuracy, fast reflexes, and extreme luck were the reasons why the imperial guards never caught him. Because his sound and appearance are very similiar to those of a cow, his companions call him by the name \"Mooman\". Many foes underestimate him, but Aldus is the most dangerous and strongest member of the A.V.C.", ""},
+			
+			{ "Traits", "Roulette Wheel: Playing as Mooman is like a lottery, you never know what will happen next. Mooman relies heavily on random item generators from his slot 1 and unique that will give him very helpful equipment such as grenades, proximity bombs, energy forcefields, and even a holographic clone of himself that will help him fight.
+			\n\nDimension 2012: Mooman's weapons deal very high damage per second and are generally pretty efficient with ammo useage, however they tend to be very bizarre and unorthodox compared to similar weapons and his exposives work radically different from any other hero. Hailing from the year 15,432 A.D, Mooman is the most futuristic hero in Samsara by far and as a result his weapons can be almost too futuristic to comprehend.", ""},
+			
+			{ "Changes", "In Pursuit of Greed had a very high damage scale due to the high max HP of monsters and players. As such, all damage values have been divided by 2. The Flamer does full damage, however.", ""},
+		},
+		{
+			{ "", "", ""},
+		}
+	},
+	{
+		{
+			{ "Summary", "Having quickly advanced through the ranks of Earth's United Nations military branch, the \"Lightstormer Corps\", Jack Curtis has fought against many foes and supposed friends in his quest to defend the solar system. His skills with weapons are excellent on their own, but it is his psionic implants that truly elevate him to the next level. \n\nHaving lost his brother to the mad plans of his former commander-turned-traitor, he knows very well that the line that separates good and evil can become very thin. Thus, he has made it his duty in samsara to prevent any more threats to the solar system, regarless of where these threats come from.", ""},
 			
 			{ "Traits", "FEEL THE POWER!: Jack's psionic implants are the next step in warfare. If you are out of ammo, or you simply want to tackle the situation differently, you should unleash his powers on the unsuspecting enemies and witness the devastating results yourself!", ""},
 			
@@ -513,14 +525,16 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},
 	{
 		{
-			{ "Summary", "One warrior, one sword, one arch enemy. Grondoval is the mightiest and bravest of all warriors from the land of Stazhia. He has been chosen to travel to the Island of Char and slay the evil witch Illwhyrin. Not even Illwhyrin's sister, Cirae-Argoth, could kill Grondoval. With his weaponry and magic scrolls he is able to kill anyone, no matter how big, scary or brutal they are. \n\nGrondoval's weaponry is a unique and balanced mix of Witchaven I and II. The melee attacks are so strong and crushing, that even big enemies like the Archvile or Baron of Hell feel atrocious pain and are stunned for a moment. Thus he excels in melee and easily defeats any big enemy in a duel. But be careful: Large groups and hordes of enemies constitute a big threat to him and can easily surround him.", ""},
+			{ "Summary", "One warrior, one sword, one arch enemy. Grondoval is the mightiest and bravest of all warriors from the land of Stazhia. He has been chosen to travel to the Island of Char and slay the evil witch Illwhyrin. Not even Illwhyrin's sister, Cirae-Argoth, could kill Grondoval. With his weaponry and magic scrolls he is able to kill anyone, no matter how big, scary or brutal they are.", ""},
 			
-			{ "Traits", "Knight's Honor: Grondoval is mainly a melee user, while he has ranged options like his bow and other tools, he is mainly a melee warrior, and majority of his slots have melee only modes to converse ammo while still putting up a decent fight.
-			\n\nThou art a lord!: In Witchaven you could level up and gain more strength, health and armor. Instead, you start immediately as a veteran (250 HP, maximum armor of 300).
-			\n\nCunning Impostor: Using the weapons' enchantments now draw from ammo instead of temporary powerups, and the halberd has been modified to support a ranged enchantment.
-			\n\nEat Steel!: Grondoval's Melee attacks force painstates on enemies that can get them, allowing you to get those extra moments in to shread them.", ""},
+			{ "Traits", "Knight's Honor: Grondoval is mainly a melee user, with only a few ranged options. Weapons primarily use magic to power their attacks, but can be disabled at the push of a button to conserve ammo and use purely melee attacks. The melee attacks are so strong and crushing, that even big enemies like the Archvile or Baron of Hell feel atrocious pain and are stunned for a moment. Thus he excels in melee and easily defeats any big enemy in a duel. But be careful: Large groups and hordes of enemies constitute a big threat to him and can easily surround him.
+			\n\nThou art a lord!: In Witchaven you could level up and gain more strength, health and armor. Instead, you start immediately as a veteran (250 HP, maximum armor of 300). Additionally, Grondoval starts with 150 hp and 50 points of basic armor.
+			\n\nCunning Impostor: Using the weapons' enchantments now draw from ammo instead of temporary powerups, and the halberd has been modified to support a ranged enchantment.", ""},
 			
-			{ "Changes", "-First and foremost, weapons don't break like in witchaven, and you don't need to use an enchanting well to powerup your weapons, instead you can access both versions on command.", ""},
+			{ "Changes", "-First and foremost, weapons don't break like in witchaven, and you don't need to use an enchanting well to powerup your weapons, instead you can access both versions on command.
+			\n\n The Halberd is blue and has a ranged enchantment that fires icy bolts in rapid succession. In Witchaven 2 the Halberd would glow bright orange and the enchantment would work like any other melee weapon's
+			\n\n Grondoval cannot stand on arrows that he has fired into a wall.
+			\n\n Witchaven's weapon bobbing is impossible to replicate with the limited tools available, so what we have is the closest possible compromise.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -528,32 +542,38 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},
 	{
 		{
-			{ "Summary", "Gordon Freeman, once a scientist, employee of the month, quiet man, and an Idol to all of his coworkers, reached the bottom of disgrace when an experiment with interdimensional portals went wrong and opened a gate to a merciless alien race; Gordon was forced to raise his crowbar and make his way through an infested Black Mesa while being forced to kill his own co-workers and being hunted by the military. He travelled to the Xen dimensions to kill an alien overlord called the \"Nihilanth\" in the hopes of ending the invasion. After getting the Job done, the mysterious G-Man offered him a job, and transported him in the depths of he11 alongside fellow heroes from both earth, space, past, future, and mythical lands with one goal... survival.", ""},
+			{ "Summary", "Gordon Freeman, once a scientist, employee of the month, quiet man, and an Idol to all of his coworkers, reached the bottom of disgrace when an experiment with interdimensional portals went wrong and opened a gate to a merciless alien race; Gordon was forced to raise his crowbar and make his way through an infested Black Mesa while being forced to kill his own co-workers and being hunted by the military. He travelled to the Xen dimensions to kill an alien overlord called the \"Nihilanth\" in the hopes of ending the invasion. After getting the Job done, the mysterious G-Man offered him a job, and transported him in the depths of hell alongside fellow heroes from both earth, space, past, future, and mythical lands with one goal... survival.", ""},
 			
-			{ "Traits", "Hazardous Materials: Dr. Gordon Freeman is in charge of the manipulation and maintenance of various Toxic and Harmful materials either from our planet or from outer space. Freeman is experienced in the field and equipped with his H.E.V suit; he knows how to properly avoid getting harm so easily from Hazardous surfaces like acid, lava, or any other environment harmful source.
-			\n\nCombat Stress Reaction: Being just a scientist with minimal knowledge about guns and far less about combat, Dr. Freeman tends to act slowly and sometimes ineffectively with his arsenal when in a battles. although thanks to his weaponry training at Black Mesa he knows the mere basics of how to handle a weapon. Due to his scientific knowledge, he also knows how to use and do maintenance on alien or high tech guns like the gauss cannon.", ""},
+			{ "Traits", "Hazardous Materials: Dr. Gordon Freeman is in charge of the manipulation and maintenance of various Toxic and Harmful materials either from our planet or from outer space. Freeman is experienced in the field and equipped with his H.E.V suit; he knows how to properly avoid getting harmed so easily from Hazardous surfaces like acid, lava, or any other environment harmful source.
+			\n\nCombat Stress Reaction: Gordon Freeman's weapons have a ton of stopping power that can bring down even the toughest of enemies rather easily. However, being just a scientist with minimal knowledge about guns and far less about combat, Dr. Freeman tends to act slowly and sometimes ineffectively with his arsenal when in battle. Gordon only knows the basics of how to operate firearms and recoil tends to overwhelm him due to his limited expertise. Due to this, firerates and reload times can be quite slow, meaning Freeman is best suited for using guerilla tactics to ambush his opponents and pick them off one by one, lest he be overwhelmed.", ""},
 			
-			{ "Changes", "Coming from the tail-end of the early-3d Quake era, Half-Life had a very low damage scale, and its source code was only partially released. Damage of most weapons and HP of most enemies were increased by 250%. The rest we just had to hazard a guess.
+			{ "Changes", "Coming from the tail-end of the early-3d Quake era, Half-Life had a very low damage scale, and its source code was only partially released. Damage of most weapons and HP of most enemies were increased by 300%. The rest we just had to hazard a guess.
 			\n\n Due to limitations with GZDoom's model support, Half-Life NPCs do not have facial animations.", ""},
 		},
 		{
 			{ "Summary", "A 22 year old marine assigned to the Hazardous Environment Combat Unit, Adrian Shephard was sent on an operation only knowing that his orders were at the Black Mesa Research Facilty. Little did he know, however, that his orders were to cover up any evidence of an alien invasion at the research facility. Adrian was only forced to do more than his call of duty when he was purposefully prevented from leaving the facility by the mysterious G-Man. Soon, he was almost in the same position as the rest of the faculty at the facility when the Black Operations and a mysterious race known as Race X joined the fray. Upon the defeat of the Geneworm, Adrian knew too much about Black Mesa, but the G-Man could not simply get rid of him - he was too skilled. While originally detained, G-Man decided to send Adrian to the same place he sent Freeman in the hopes of fulfilling duties he knew Freeman could not.", ""},
 			
-			{ "Traits", "Never forget that your weapon was made by the lowest bidder: While Freeman's arsenal consists of bleeding edge technology, most of Adrian's arsenal is standard issue. That said, Adrian's equipment is designed for killing as many enemies as he can while being produced in bulk, instead of being more powerful.
+			{ "Traits", "Never forget that your weapon was made by the lowest bidder: While Freeman's arsenal consists of bleeding edge technology, most of Adrian's arsenal is standard issue. That said, Adrian's military expertise means he can fire and reload much faster than Gordon can, instead of simply being more powerful. He's still better off taking encounters slowly and tactically, as per his Marine Corps training.
 			\n\nLeave no soldier left behind: Adrian was trained to fight with a squad. Fortunately, it's possible for Adrian to encounter fellow marines on the field under the right circumstances. Additionally, there's no chance of fighting other HECU units if you are deployed on your mission as Adrian first.", ""},
 			
-			{ "Changes", "Along with the changes detailed under Freeman's page, the M249 SAW now has a magazine capacity of 100 instead of 50 and the Deagle does less damage with the laser sight disabled.
+			{ "Changes", "Along with the changes detailed under Freeman's page, the M249 SAW now has a magazine capacity of 75 instead of 50 and the Deagle does less damage with the laser sight disabled.
 			\n\nIn Opposing Force, using the Displacer's altfire at the wrong place and time would drop you into a bottomless pit in the Borderworld Xen to your death. In Samsara, using it teleports you back to the spawn area of whatever map you're on, and back if you do it again. Rather a bit more helpful.", ""},
 		}
 	},
 	{
 		{
-			{ "Summary", "Lo wang was a bodyguard for Zilla Enterprises, which has control over every major industry in Japan. However, this has led to corruption. Master Zilla, the president of the Zilla Enterprise, was planning to conquer Japan using creatures from the \"dark side\". When he discovered this, Lo wang quit his job as a bodyguard. After Zilla sent his thugs after Lo Wang, and killed his old master, Lo Wang sought vengeance. After defeating Master Zilla in a volcanic fortress, he had to fight him again above the strees of Tokyo. His fight was not yet over, as his evil twin, Hung Lo, sent forces to attack him in the hopes of taking over the world. After firing a nuke in close proximity to his brother, the Wheel of Samsara rescued him from disintegration.", ""},
+			{ "Summary", "Lo wang was a bodyguard for Zilla Enterprises, which has control over every major industry in Japan. However, this has led to corruption. Master Zilla, the president of Zilla Enterprises, was planning to conquer Japan using creatures from the \"dark side\". When he discovered this, Lo Wang quit his job as a bodyguard. After Zilla sent his thugs after Lo Wang and killed his old master, Lo Wang sought vengeance. After defeating Master Zilla in a volcanic fortress, he had to fight him again above the streets of Tokyo. His fight was not yet over, as his evil twin, Hung Lo, sent forces to attack him in the hopes of taking over the world. After firing a nuke in close proximity to his brother, the Wheel of Samsara rescued him from disintegration.", ""},
 			
-			{ "Traits", "Who wants some Lo wang?: Much like Shadow Warrior's brothers, Duke Nukem and Blood, Lo Wang also lack good defense.
-			\n\nI am like Duke Nukem! HAHAHA!: He can mow the crowds, and beat the ever living shit out of things while making remarks just like Duke. But he has even more tricks, from brutal melee weapons to slice open foes and a monsterous !!!NUKE!!!", ""},
+			{ "Traits", "Who wants some Wang?: Despite appearing as some silly old man, Lo Wang's skills in weapons both old and new are unmistakable. He can use multiple firemodes for many of his weapons, such as firing heatseeking rockets, firing a burst of 4 shotshells, dual-wielding his Uzis, and even firing a nuclear warhead, Lo Wang as no shortage of ways to take out his enemies. However, Lo Wang can die quite quickly if he's careless.
+			\n\nMaster of disaster! HAHAHA!: While Lo Wang has access to some pretty devastating gear, it's his skills in martial arts that really make him stand out. Lo Wang's sword is exceedingly sharp and deadly, and no one can throw a flurry of punches quite like him. Feel free to switch between guns and swords as needed, so you can slice, dice, beat, blow away, and annihilated anything that stands in your way.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "Punching a wall only sometimes hurts Wang instead of all the time.
+			\n\n- I couldn't understand SW's blast radius values, so they instead use the values of similar weapons used by Duke.
+			\n\n- Sticky Bombs do half damage when stuck to wall or surface.
+			\n ^ The first person sprite for Sticky Bombs matches their pickup and projectile sprites, having a blue stripe instead of brown.
+			\n\n The fireballs spawned by a 40mm grenade blast were merely cosmetic in Shadow Warrior. In Samsara, they do damage.
+			\n\n SW's viewbobbing is inertia-based, which cannot be faithfully executed using ZDoom's limited tools.
+			\n\n In SW, the Nuke missile did no damage on a direct hit, and only 800 from the blast. In Samsara, the missile does another 800 on a direct hit and forces its entire radius damage on everything regardless of distance to justify its increased rarity.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -561,12 +581,18 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},
 	{
 		{
-			{ "Summary", "Before adopting his current name, the legendary Cybermage was nothing more than a regular citizen living like hundreds of others in a bleak future where oppressive corporations had long since replaced local governments. Yet, on one seemingly regular day, he did the unthinkable: he spotted hitmen who were about to kill somebody, and he shielded the target with his won body, dying in his place. His world never expected such acts of kindness. But the Cybermage also certainly didn't expect that the one who he saved was an important scientist at SARCorp, who after recovering his body, performed unspeakable experiments on him. Bringing him back to life, he implanted the Darklight, as source of unimaginable power, into his skull. Waking up and emerging from the stasis tube he had been confined in for so long, he soon discovered that a new war erupted between the corporations as well as a new evil known as Necrom, Master of the Darklight. However, this time he would not sit back and watch as he did for so many years. This time the would take matters into his own hands. After mastering his powers and teaming up with several underground rebel organizations, the Cybermage became a legend of his own by single-handedly defeating his nemesis, Necrom, and his Legion of minions. With his revenge enacted and his debts repaid to those who aided him on his quest, the Cybermage had seemingly retired in peace. However, with great power comes great responsibility, and after all he had experienced, the Cybermage decides to help keep the Wheel of Samsara clear of any potential world-endangering threats.", ""},
+			{ "Summary", "Before adopting his current name, the legendary Cybermage was nothing more than a regular citizen living like hundreds of others in a bleak future where oppressive corporations had long since replaced local governments. Yet, on one seemingly regular day, he did the unthinkable: he spotted hitmen who were about to kill somebody, and he shielded the target with his own body, dying in his place. His world never expected such acts of kindness. But the Cybermage also certainly didn't expect that the one who he saved was an important scientist at SARCorp, who after recovering his body, performed unspeakable experiments on him. Bringing him back to life, he implanted the Darklight, a source of unimaginable power, into his skull. Waking up and emerging from the stasis tube he had been confined in for so long, he soon discovered that a new war erupted between the corporations as well as a new evil known as Necrom, Master of the Darklight. However, this time he would not sit back and watch as he did for so many years. This time the would take matters into his own hands. After mastering his powers and teaming up with several underground rebel organizations, the Cybermage became a legend of his own by single-handedly defeating his nemesis, Necrom, and his Legion of minions. With his revenge enacted and his debts repaid to those who aided him on his quest, the Cybermage had seemingly retired in peace. However, with great power comes great responsibility, and after all he had experienced, the Cybermage decides to help keep the Wheel of Samsara clear of any potential world-endangering threats.", ""},
 			
-			{ "Traits", "Tools of Destruction: While it's true that the corporations oppressed their citizens, it's also true that they possibly developed the most effective weapons for quelling upheavals. From the ever-reliable Blast Rifle and SMG to the devastating Plasma Obliterator, the Cybermage has no shortage of tools to deal with most situations with the utmost efficiency. 
+			{ "Traits", "Tools of Destruction: While it's true that the corporations oppressed their citizens, it's also true that they possibly developed the most effective weapons for quelling upheavals. Many of Cybermage's weapons cannot be fired automatically as the trigger is depressed, but are capable of firing as fast as the user's fingers are. 
 			\n\nThe Gem Glows Bright: With the Darklight implanted in Cybermage's forehead comes a wide variety of magical abilities that he can use to bring even the mightiest of foes down. Finding special icons of Mann-Ra and absorbing the life force of fallen enemies allows the Darklight to evolve to fearsome tool of mass destruction.", ""},
 			
-			{ "Changes", "", ""},
+			{ "Changes", "Cybermage's magic spells used a slowly regenerating pool of mana in the original. However, since it's a fist weapon the basic starting spell uses no ammo and all additional spells use ammo like any other weapons do.
+			\n\n- We have no idea how much damage the weapons in Cybermage actually do, so the damage values are made up.
+			\n\n- Cybermage gave players the ability to physically aim weapons up and down. These sprites are used for recoil animations instead.
+			\n\n- Cybermage used an inventory screen for selecting weapons and items that had the appearance of Cybermage using his hand to grab items out of the air. That inventory screen isn't present here and weapon switching is handled like any other character.
+			\n\n- Cybermage lacks a lot of weapons and items from his original game in the interest of a more streamlined arsenal.
+			\n\n- The Heavy Blaster MG in Cybermage was fully automatic like a plasma rifle, but much slower than Doomguy's. The weapon now fires in a 5-round and transitions to automatic if the trigger is still being held.
+			\n\n- Older versions of Samsara gave Cybermage a heavily altered arsenal of weapons. This isn't as much the case anymore. There are still subtle changes to his guns but only for the purpose of making his experience easier in a much faster game like Doom.", ""},
 		},
 		{
 			{ "", "", ""},
@@ -574,7 +600,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},
 	{
 		{
-			{ "Summary", "Originally part of a special forces team heading to the ancient city of Karnak, which had been taken over by unknown forces, Jon P. ended up with more than he bargained for when he discovered the city was in fact attacked by the Kilmaats, an alien race who were attempting to resurrect the soul of King Ramses and use its powers to take over the world. Facing off against horrifying ancient mummies brought back to life and cunning allens determined to stop at nothing hardened Jon who was able not only to rescue Ramses' body, but also to prevent the detonation of a nuclear device left behind by the aliens to annihilate the Earth. After his victory and the Kilmaat's subsequent retreat, nobody knew what became of Jon. Some say he remained stranded on the aliens spaceship in an effort to defuse the nuke. Others said he was buried in the ruins of Karnak alongside the dead, only to be excavated centuries later. Yet others said he acquired god-like powers and became a pharaoh looking over the world's prosperity thanks to King Ramses' powers. But now that Jon has resurfaced, fighting in the wheel of Samsara, all that is known is that he will never allow such an invasion to happen again.", ""},
+			{ "Summary", "Originally part of a special forces team heading to the ancient city of Karnak, which had been taken over by unknown forces, Jon P. ended up with more than he bargained for when he discovered the city was in fact attacked by the Kilmaats, an alien race who were attempting to resurrect the soul of King Ramses and use its powers to take over the world. Facing off against horrifying ancient mummies brought back to life and cunning allens determined to stop at nothing hardened Jon who was able not only to rescue Ramses' body, but also to prevent the detonation of a nuclear device left behind by the aliens to annihilate the Earth. After his victory and the Kilmaat's subsequent retreat, nobody knew what became of Jon. Some say he remained stranded on the aliens spaceship in an effort to defuse the nuke. Others said he was buried in the ruins of Karnak alongside the dead, only to be excavated centuries later. Yet others said he acquired god-like powers and became a pharaoh looking over the world's prosperity thanks to King Ramses' powers. But now that Jon has resurfaced fighting in the wheel of Samsara, all that is known is that he will never allow such an invasion to happen again.", ""},
 			
 			{ "Traits", "TRAINING IS EVERYTHING!: As a hardened special forces soldier, Jon knows very well how to use the best military equipment around. Most of his human made weapons will require reload after all shots are depleted, so make sure not to get caught off guard!
 			\n\nOLD MEETS NEW!: And alongside the \"new\" man-made weapons, comes the \"old\" artifacts of ages gone by - whether it's the fearsome Cobra Staff the hectic Ring of Ra or the powerful Mummy Staff, Jon will definitely have a good reason to taunt his enemies.", ""},
@@ -605,12 +631,12 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 	},
 	{
 		{
-			{ "Summary", "With all the pods sent down to the surface at the same time, Bitterman's pod was clipped by \"cowbow\" and narrowly missed being hit by another eager marine. However thanks to having no control over his \"flying brick\", Bitterman over-shot his designated landing zone and crash-landed in the outskirts of Cerberon. The chaos caused by the by the Air Force's dogfights and indiscriminate bombing of Cerberon allowed Bitterman to find a decent weapon and fight back. Shortly afterward, Bitterman learned over the radio that only five percent of the ground forces were operational. By destroying his main objective, the \"Big Gun\", the air force and bombers were able to target important objectives. Bitterman's next core objective was to locate and assassinate the Makron. While many speculate that he was captured by the Strogg. In reality, he was abducted into the ranks of Samsara, where his new commanders believe he is just what they need to neutralize other realms.", ""},
+			{ "Summary", "With all the pods sent down to the surface at the same time, Bitterman's pod was clipped by \"cowbow\" and narrowly missed being hit by another eager marine. However thanks to having no control over his \"flying brick\", Bitterman over-shot his designated landing zone and crash-landed in the outskirts of Cerberon. The chaos caused by the Air Force's dogfights and indiscriminate bombing of Cerberon allowed Bitterman to find a decent weapon and fight back. Shortly afterward, Bitterman learned over the radio that only five percent of the ground forces were operational. By destroying his main objective, the \"Big Gun\", the air force and bombers were able to target important objectives. Bitterman's next core objective was to locate and assassinate the Makron. While many speculate that he was captured by the Strogg. In reality, he was abducted into the ranks of Samsara, where his new commanders believe he is just what they need to neutralize other realms.", ""},
 			
 			{ "Traits", "Big Gun: Bitterman loves guns, but not just any guns, big guns. As such Bitterman was never too fond of melee weapons, so it's essential to keep some distance from foes. On the other hand, he does utilize more weapons than most heroes.
-			\n\nUck... this is bitter, man: While most of the other heroes are fine with charging towards enemies, Bitterman happens to be more a gun and cover type of guy. It is best to attack and take cover to the side during a fire fight.", ""},
+			\n\nI'm a real Bitter Man!: Bitterman also has wide variety of powerups at his disposal. From Dual Fire Damage making his weapons fire twice as fast, silencer which allows to make silent takedowns of his enemies using any weapon, and of course, Double Damage and the ever terrifying Quad Damage. Bitterman has no shortage of ways to increase his effectiveness in a firefight.", ""},
 			
-			{ "Changes", "The blaster from Quake 2 was about as pathetic as it gets. So bad its damage was increased in MP rather than decreased like the Hyperblaster and Chaingun. So we doubled its damage.
+			{ "Changes", "The blaster from Quake 2 was about as pathetic as it gets. So bad its damage was increased in MP rather than decreased like other weapons. So we doubled its damage.
 			\n\n Quake 2's damage scaling was a little mediocre considering the relatively slow fire rate of its weapons in comparison to the first game. So we used the damage values of similar weapons from sequels Quake 3 and 4 to yield much more reliable weaponry.
 			\n\n Quake 2's railgun did double damage to any monster that wasn't alerted yet. Now it does that damage to any enemy that isn't facing you, or while the silencer is active.
 			\n\n ETF Flechettes now have the ability to pierce force fields.", ""},
@@ -623,18 +649,20 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 		{
 			{ "Summary", "The Demoness is a unique creature, the only one of her kind. She was created by Eidolon and could be considered to be his daughter. She was meant to be the progenitor of a new race of elite minions who would serve as the Serpent Rider's personal agents. \n\nEidolon taught his creation many harsh lessons and gave her considerable powers, yet he was never able to finish his work, as he was slain by mortal heroes. The Demoness was too weak at the time to intervene in any way. However, when she learned that the soul of her master had been stolen by Praevus, she went into an unholy rage and decided to deal with the blasphemer and his minions in person.", ""},
 			
-			{ "Traits", "I've dabbled in the Dark Arts: In Hexen 2 she only had 4 weapons, here she also has all 4 of the necromancer's weapons to match other chars and to show off other powerful options to her kit.
+			{ "Traits", "I've dabbled in the Dark Arts: In Hexen 2 she only had 4 weapons, here she also has all 4 of the necromancer's weapons to match other chars and to show off other powerful options to her kit. Additionally, Demoness levels up as she kills enemies, acquiring new skills as she levels up. Among these skills are her own with the addition of the Necromancer's.
 			\n\nSouthpaw Demon: Unlike the rest of the samsara roster, Demoness is left handed, and thus might gave some newer players some struggles or even more ease then before on her attacks.", ""},
 			
-			{ "Changes", "- Hexen 2, being a cousin of Quake, also had such a low damaging scale, while enemy hitpoints were reasonably on par with Doom. Given how the Tempest Staff couldn't even kill some of the weakest enemies in one hit, the damage values have been buffed around twice as much.
-			\n ^- Additionally, additional characteristics have been added to some of the Demoness's weapons.
+			{ "Changes", "- The most obvious: Demoness has 9 weapons instead of 4, including the Necromancer's 4 weapons and the Crusader's Ice Mace. She also gains access to the Necromancer's passive skills when she levels up.
+			\n\n Hexen 2, being a cousin of Quake, also had such a low damaging scale, while enemy hitpoints were reasonably on par with Doom. Given how the Tempest Staff couldn't even kill some of the weakest enemies in one hit, the damage values have been buffed around twice as much.
+			\n ^- Additionally, unique characteristics have been added to some of the Demoness's weapons.
 			\n\n- The strength, intelligence, wisdom, and dexterity stat were static, but given that the Demoness levels up it made more sense to allow these stats to also grow.
 			\n ^-Intelligence and dexterity had no role in game - intelligence boosts damage of ranged weapons with each point over 10 by 2 percent, while dexerity increases the range of the Demoness's pistol weapon.
 			\n\n- The acid rune never had radius damage. Because doubling the damage of the weapon was too low, a stacking poison damage has been added to the projectile when it hits a target, and will leave a weak, small cloud that hurts enemies.
 			\n\n- The powered acid rune missile does 50% more damage than in the original. 
 			\n\n- The Tempest staff projectile does enough damage now to compensate for being a slot 7 with it's slow rate of fire.
 			\n\n- The Tempest staff lightning chain is also now capable of chaining to more enemies to be more effective at clearing crowds given it's a powered BFG slot weapon.
-			\n\n- The weapons here use substantially less ammo than in their original games.", ""},
+			\n\n- The weapons here use substantially less ammo than in their original games.
+			\n\n- The starting ammo limits of the mana types are 200 each, rather than 100 each in the original.", ""},
 			
 			{ "Levelling", "Levelling the demoness can be done by killing enemies. The more hitpoints the enemy has, the more experience points you gain. Experience is only given for kills you have netted.
 			\n\nYou start out with a random amount of intelligence, wisdom, strength, and dexterity, and you start out at level 1. Everytime you level up, you gain 1 point in each statistic. You also gain 16-22 ammo capacity for both manas.
@@ -659,9 +687,11 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			\n\nShaken, not stirred: James Bond usually tries not to go into a situation guns blazing, and instead prefers a more discreet approach. Any spy knows aiming for the vitals can deliver an easy blow.", ""},
 			
 			{ "Changes", "- Goldeneye damage values use a substantially smaller scale than most of the other games that can be found in Samsara. It seemed to make sense to multiply all damage values by 10.
-			\n\n- The moonraker was able to pierce walls. Makes sense for the weapon to pierce enemies too given it's an ultimate. Any enemies it can't rip it will do a high amount of damage to.
-			\n\n- The moonraker is an ultimate, so it needs to do way more than 20 damage per shot, no matter the ammo cost.
+			\n\n- The Moonraker laser was able to pierce thin walls and doors. Given the lack of this ability, it instead pierces enemies.
+			\n ^- The Moonraker laser also had infinite ammo in the original game. Instead it uses 2 cells per shot.
+			\n\n- The Moonraker laser is an ultimate, so it does 50 times the damage opposed to the 10 times damage buffs other weapons got.
 			\n\n- Goldeneye had duel wielding mechanics, but usually it involved enemies that dropped their weapons when they were dual wielding. This was a strange mechanic - instead, any weapon can be dual wielded here that could be dual wielded in Goldeneye.
+			\n ^- By extension, Bond can dual wield in MP, whereas in the original there was no way to obtain dual weapons of any kind.
 			\n\n- Goldeneye mines won't stack on each other when thrown on top of each other. It causes too many issues.
 			\n\n- The weapons will sway left and right, but won't sway up and down when aiming upwards or downwards.", ""},
 		},
@@ -704,11 +734,11 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		},
 		{
 			{ "Fist", "Your iron-clad knuckles are a little better than nothing.\n\n[Remains unchanged to Doomguy's Fist.]", "", "  Fist  ", "f" },
-			{ "Pistol", "The Pistol is the only weapon you start out with. But you'll use anything in a pinch, no matter how pathetic it may feel.\n\n[Remains unchanged to Doomguy's Pistol.]", "", "  Pistol  ", "p" },
+			{ "Pistol", "The Pistol is the only weapon you start out with. But you'll use anything in a pinch, no matter how pathetic it may feel.\n\n[Fires slightly faster than Doomguy's Pistol.]", "", "  Pistol  ", "p" },
 			{ "Chainsaw", "The Chainsaw cuts the baddies like standing timber, but you have to get close.\n\n[Does twice more damage than Doomguy's Chainsaw.]", "64SWZ0", "  Chainsaw  ", "1" },
 			{ "Shotgun", "Shotguns deliver a heavy punch at close range and a generous pelting from a distance.\n\n[Unlike Doomguy's Shotgun, the screen jerks up and down for a bit when firing.]", "64SGZ0", "   Shotgun   ", "2" },
 			{ "Super Shotgun", "Combat Shotguns are double-barreled, sawed-off killing sticks. These gats are the ultimate in pellet warfare. Beware, two barrels not only deliver more fire power, but take more time to reload.\n\n[Unlike Doomguy's Super Shotgun, this super shotgun can knock the player back a bit when fired.]", "64DBZ0", " Super Shotgun ", "3" },
-			{ "Chaingun", "Chainguns direct heavy firepower into your opponent, making him do the chaingun cha-cha.\n\n[Unlike Doomguy's Chaingun, the screen will jerk up and down rapidly when fired at a consistent rate.]", "64CGZ0", "   Chaingun   ", "4" },
+			{ "Chaingun", "Chainguns direct heavy firepower into your opponent, making him do the chaingun cha-cha.\n\n[Unlike Doomguy's Chaingun, the screen will jerk up and down rapidly when fired at a consistent rate. It fires slightly faster.]", "64CGZ0", "   Chaingun   ", "4" },
 			{ "Rocket Launcher", "Rocket Launchers deliver an explosive rocket that can turn one bad dude inside-out. Be careful with this one. Firing in close proximity at an object or enemy is bad for your health.\n\n[Unlike Doomguy's Rocket Launcher, this rocket launcher can knock the player back a bit when fired.]", "64MLZ0", "   Rocket Launcher   ", "5" },
 			{ "Plasma Rifle", "Plasma Rifles shoot multiple rounds of plasma energy.\n\n[Unlike Doomguy's Plasma Rifle, which has a bit of a delay when releasing the fire trigger, Doom 64 Guy's Plasma Rifle does not have that delay when releasing the fire trigger, although this plasma rifle fires at a slightly slower rate.]", "64PRZ0", " Plasma Rifle ", "6" },
 			{ "B.F.G. 9000", "BFG 9000s are the prize of the military's arsenal. Great for clearing the room of those unwelcome guests. There is a downside. It takes a second or two to charge prior to firing, so don't expect to fire right away.\n\n[Remains unchanged to Doomguy's BFG 9000.]", "64BFZ0", " B.F.G. 9000 ", "7" },
@@ -785,7 +815,7 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 			{ "Mace of Contrition", "The Mace will only cause contrition in an enemy after numerous beatings. This weapon should only be used as a last resort because of its short range!", "", "Mace of Contrition", "f" },
 			{ "Jade Wand", "A rather weak wand which will slowly melt away your enemies, emphasis on slowly. It's not too good outside of close range, either.", "", "Sapphire Wand", "p" },
 			{ "Poison Cloud Flechette", "When a Cleric, such as Parias, uses the flechette, it produces a poison gas cloud, lethal to any who venture near.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
-			{ "Crusader's Longbow", "The Crusader's Longbow is a standard longbow of the Church's order. The arrows are infused with yellow energy which will fry and pierce your enemies.", "H114A0", "Frost Shards", "2" },
+			{ "Crusader's Longbow", "The Crusader's Longbow is a standard longbow of the Church's order. The arrows are infused with electric energy which will fry and pierce your enemies.", "H114A0", "Frost Shards", "2" },
 			{ "Bishop's Shortsword", "The Bishop's Shortsword is a unique sword in the religious order - only a truly holy warrior can wield the power of this sword to vanquish evil with holy fire in a wave.", "H119H0", "Timon's Axe", "3" },
 			{ "Serpent Staff", "The essence of the sacred Kalrath serpent is contained within this staff. Feed it with the blue mana and it will serve you faithfully by spitting twin venom spheres at your enemies. Using this staff up close will drain your enemy's life and give some of it to you!", "WCSSA0", "Serpent Staff", "4" },
 			{ "Ice Fang", "This staff is a weapon created by the Church's order. Only a true devotee has the spirit to vanquish the cold touch of the staff, but when in the right hands, it will quickly freeze your enemies.", "H117A0", "Hammer of Retribution", "5" },
@@ -795,7 +825,7 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		},
 		{
 			{ "Sapphire Wand", "Useful for killing enemies, eventually, this wand will fire quick magical blue darts at your target. There is no limit to the amount of charges in this wand and it requires no mana.", "", "Sapphire Wand", "p" },
-			{ "Time Bomb Flechette", "When a mage like Daedolon drops this, it explodes like a timb bomb.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
+			{ "Time Bomb Flechette", "When a mage like Daedolon drops this, it explodes like a time bomb.\nIt is an inventory item and has unlimited ammunition but also a cooldown timer.", "PSBGA0", "PortFlechette", "1" },
 			{ "Frost Shards", "This spell lets you shoot frozen shards from your hands. These ice bolts are significantly stronger than the Sapphire Wand's small darts, so use Frost Shards whenever possible to freeze your enemies where they stand.", "WFRSA0", "Frost Shards", "2" },
 			{ "Fire Blast", "This spell contrasts with the Frost Shards. It fires a wave of fire which will burn your victims to a crisp.", "H113Y0", "Timon's Axe", "3" },
 			{ "Blight Shock", "This staff is feared by many, even those who use it, for it's unpredictable toxic projectiles that bounce around wherever they hit. Therefore, this weapon is best used against crowds rather than high profile targets.", "TSOGA0", "Serpent Staff", "4" },
@@ -826,7 +856,7 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 			{ "Explosive Shotgun", "Later in the game, you may find another shotgun that fires exclusively explosive shotgun shells. They do a serious amount of damage to anyone they hit. Be careful about using them in small areas though - you may catch yourself in the blast.", "DXSPA0", "Explosive Shotgun", "3" },
 			{ "Chaingun Cannon", "This rapid fire chaingun is a good weapon for dispersing several enemies at once.", "CHGPA0", "Chaingun Cannon", "4" },
 			{ "RPG", "The rocket launched weapon is great for dealing with enemies from a distance. When the rocket hits, it explodes with enough force to affect anything right around it, Duke included, so beware.", "DRPGA0", "RPG", "5" },
-			{ "Freezethrower", "Streams of freezing nitrogen discharge through the environment as this weapon chills its victims down to the point of death and ultimate crystallization.", "FRZPA0", "Freezethrower", "6" },
+			{ "Freezethrower", "Streams of freezing nitrogen discharge through the environment as this weapon chills its victims down to the point of death and ultimately crystallization.", "FRZPA0", "Freezethrower", "6" },
 			{ "Devastator", "Straight out of the Pentagon's top secret labs comes this double barreled brute of a weapon which lets loose swarms of miniature stinger missiles in the direction of your enemies.", "DEVPA0", "Devastator", "7" },
 			{ "Jetpack", "Duke's government-issue jetpack is one of his greatest tools, whether in mortal conflict against raging aliens or in personal grudge matches in multiplayer. Turn it on, then use the jump and crouch keys to raise and lower yourself.\n\nIf the Jetpack is banned by server admin, this weapon instead gives you 8x boot damage.", "DKJTA0", "DukePortJetpack", "u" },
 			{ "Shrinker", "This slick weapon will shrink your enemies to pint-sized for several seconds. During that time, Duke can stomp and squish the shrunken foes by walking on top of them.\nThe Shrinker is ineffective and deals no damage towards boss type enemies.", "DKSRR0", "Shrinker", "u" },
@@ -852,7 +882,7 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		{ ".44 Magnum Mega Class A1", "The new standard issue sidearm for all field personnel doesn't look much like your old .45 MMC, does it? That is because it has been built for a single purpose, by a dedicated people and not by underpaid laborers toiling for a thinly-veiled government-owned arms manufacturing machine (oiled with the blood of the underclasses, by the way) which exists solely to line the pockets of the greedy bureaucrats who run the military/industrial complex.\n\nAutomatically reloads after 8 rounds.", "", ".44 Magnum Mega Class A1", "p" },
 		{ "KKV-7 SMG Flechette", "...the flechette, with its small cross-section (4mm), longer body and pointed nose experiences far less wind resistance and thus retains more muzzle velocity over a greater distance with a flatter trajectory than its less advanced \"slug-thrower\" counterparts. its armor piercing capabilities rival those of the mighty M1A2 .75 BR and the bio-organic trauma it inflicts is terrifying (being somewhat less effective against mechanical targets).\n\nAutomatically reloads after 32 rounds.", "FSMGA0", "KKV-7 SMG Flechette", "1" },
 		{ "Extra .44 Magnum", "(This weapon is obtained along with KKV-7 SMG Flechette)\n\nThe .44 Magnum has already been explained. Just know that you can dual wield two of these bad boys.", "", "CanDualPistols", "1" },
-		{ "WSTE-M5 Combat Shotgun", "While going through some data I appropriated from the Marathon (looking for design notes, of course) I stumbled across a reference to a weapon used by Imperialist forces against the inserectionists during the Ares Raid; July 14, 2444. (Never heard of it? I'm not surprised!) Many years of loving craftsmanship went into the design and construction of this brutal tool of mayhem, I hope you can appreciate that. I won't waste my time trying to explain the loading mechanism to you - your primitive mind could never grasp its complex nature.\n\nPicking up another shotgun will allow you to dual wield them.\n Press the Alt Fire key to dual wield shotguns. ", "SHTYA0", "WSTE-M5 Combat Shotgun", "2" },
+		{ "WSTE-M5 Combat Shotgun", "While going through some data I appropriated from the Marathon (looking for design notes, of course) I stumbled across a reference to a weapon used by Imperialist forces against the inserectionists during the Ares Raid; July 14, 2444. (Never heard of it? I'm not surprised!) Many years of loving craftsmanship went into the design and construction of this brutal tool of mayhem, I hope you can appreciate that. I won't waste my time trying to explain the loading mechanism to you - your primitive mind could never grasp its complex nature.\n\nPicking up another shotgun will allow you to dual wield them, although you will need to find a Fusion Pistol in order to gain another shotgun.\n Press the Alt Fire key to dual wield shotguns. ", "SHTYA0", "WSTE-M5 Combat Shotgun", "2" },
 		{ "Zeus-Class Fusion Pistol", "The S'pht have done their best to create an infinite supply of fusion batteries out of the finite number you were transported on board with. If it were not for their ingenuity and industrious nature you wouldn't be able to run around firing with reckless abandon at everything that moves as you are wont to do. But, like the hundredth copy of a third generation duplication of a substandard bootleg - they're a little fuzzy. One might even say unstable.\n\nHold down the Alt Fire key to charge up a powerful shot.\nAutomatically reloads after 20 rounds.", "FUSPA0", "Fusion Pistol", "3" },
 		{ "MA-75B Assault Rifle", "The original M .75 was a ridiculous toy designed to impress aging pompous generals. Gone are the preposterously short barrel and the prodigious recoil that made firing the weapon akin to wrestling a greased pig. Still here is the oxygen hungry ammunition that makes it impossible to fire in vacuum.\n\nPress the Alt Fire key to use the integrated Grenade Launcher.\nPrimary Fire automatically reloads after 52 rounds.\nSecondary Fire automatically reloads after 7 grenades.", "RIFLA0", "MA-75B Assault Rifle", "4" },
 		{ "SPNKR-XP SSM Launcher", "A self-important human once said \"... sometimes a cigar is just a cigar.\" This may be so, but in the case of the <<rocket launcher>> you've got one majorly explosive cigar.\n\nWhen you switch to this weapon, you must wait for it to be raised up before you can use it.\nWhen you switch to another weapon, you must wait for this weapon to lower down completely before you can use another weapon.\nAutomatically reloads after 2 rockets.\nCareful, the reload is slow.\n", "RCKLA0", "SPNKR-XP SSM Launcher", "5" },
@@ -947,20 +977,20 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		},
 	},
 	{{
-		{ "Auto Charge Pistol", "The ACP does not require a charge pack; you'll have to wait for the unit to recharge. It's a silent attack weapon, so skulk around awhile - firing it won't announce your presence!", "", "Auto Charge Pistol", "p" },
-		{ "Ammo Recharge Battery", "Replenishes 25% of the ammo capacity of the current weapon. This is an inventory item.", "BAMRA0", "BlakeRefill", "1" },
+		{ "Auto Charge Pistol", "The ACP does not require a charge pack; you'll have to wait for the unit to recharge. It's a silent attack weapon, so skulk around awhile - firing it won't announce your presence!", "BWP1A0", "Auto Charge Pistol", "p" },
+		{ "Auto Charge Pistol Upgrade", "Upgrades the Auto Charge Pistol to do slightly more damage. Now you can do stealth takedowns on tougher enemies without much issue.", "BWP1A0", "BlakeSuperAutoCharge", "1" },
 		{ "Slow Fire Protector", "This weapon requires a charge pack for use. There is a slight recharge period between shots fired. However, it does allow for more rapid fire than the Auto Charge Pistol.", "BWP2A0", "Slow Fire Protector", "2" },
-		{ "Heavy Assault Rifle", "You know, this weapon looks like it should be a Rapid Assault Rifle... Either way, it's similar to the Slow Fire Protector but is a bit more powerful.", "BWP3A0", "Heavy Assault Rifle", "3" },
-		{ "Rapid Assault Rifle", "A medium speed repeat-fire unit, the Rapid Assault Rifle requires a charge pack. Like the Slow Fire Protector it cannot recharge itself.", "BWP4A0", "Rapid Assault Rifle", "4" },
+		{ "Heavy Assault Weapon", "You know, this weapon looks like it should be a Rapid Assault Weapon... Either way, it's similar to the Slow Fire Protector but is a bit more powerful.", "BWP3A0", "Heavy Assault Weapon", "3" },
+		{ "Rapid Assault Weapon", "A medium speed repeat-fire unit, the Rapid Assault Weapon requires a charge pack. Like the Slow Fire Protector it cannot recharge itself.", "BWP4A0", "Rapid Assault Weapon", "4" },
 		{ "Plasma Discharge Unit", "If you want to dispatch some enemies P.D.Q. - use the P.D.U. (Plasma Discharge Unit). With a wide range of detonation and repeat fire capabilities, this is a powerful weapon. It also requires an energy charge pack for operation. ", "BWP5A0", "Plasma Discharge Unit", "5" },
 		{ "Dual Neutron Disruptor", "This high speed repeat-fire unit is fitted with dual, oscillating barrels. It packs a wallop, but requires the stored energy of a charge pack.", "BWP6A0", "Dual Neutron Disruptor", "6" },
 		{ "Anti-Plasma Cannon", "If you want to dispatch some enemies P.D.Q. - use the A.P.C. (Anti-Plasma Cannon). This is the weapon of choice when Blake wants to dish out some pain. It also requires an energy charge pack for operation. The Anti-Plasma Cannon can also destroy unlocked doors.", "BWP7A0", "Anti-Plasma Cannon", "7" },
-		{ "Xylan Shield", "Okay...so it's hard to pronounce (and it looks more of an orb than a shield) - they're worth 5000 in added score points! (Even though points do not matter in the wheel of Samsara...)\n\nGives you 75% fire damage reduction and 50% damage reduction on all other sources for 6 seconds.", "BORBA0", "BlakeShield", "u" }
+		{ "Ammo Recharge Battery", "Replenishes 25% of the ammo capacity of the current weapon. This is an inventory item.", "BAMRA0", "BlakeRefill", "u" }
 	}},
 	{{
 		{ "Pitchfork", "This handy tool can be very effective if you can get close enough to your foes to use it on them. It doesn't need ammo, so you'll always have it to fall back on if you need it.", "", "Pitchfork", "f" },
 		{ "Revolver", "You can't be a gunslinger if you don't have a revolver at hand.", "", "   Revolver   ", "p" },
-		{ "Dynamites", "Light one up and chuck it at a group of zombies and you'll be rewarded with red rain and chunks of rotted flesh on the brim of your hat. The longer you hold down the fire button, the farther you'll throw the bundle. Watch the meter on the status bar to gauge the distance. The primary mode explodes on impact, while the alternative mode will burn all the way down before it explodes, making for some interesting traps.\n\nYou will instantly die if you light the dynamite for too long!", "TBOXA0", "Dynamite", "1" },
+		{ "TNT Bundle", "Light one up and chuck it at a group of zombies and you'll be rewarded with red rain and chunks of rotted flesh on the brim of your hat. The longer you hold down the fire button, the farther you'll throw the bundle. Watch the meter on the status bar to gauge the distance. The primary mode explodes on impact, while the alternative mode will burn all the way down before it explodes, making for some interesting traps.\n\nYou will instantly die if you light the dynamite for too long!", "TBOXA0", "Dynamite", "1" },
 		{ "Flare Pistol", "Fires burning projectiles that lodge easily in flesh and continue to burn for a short period of time. Unless you dive into water, you'll take damage until the flare burns itself out, by which time it may be too late. The alternative fire launches a starburst flare that douses a large area with flames. Can provide effective crowd control.", "FGRNA0", "Flaregun", "2" },
 		{ "Sawed-Off Shotgun", "A trusty companion if ever there was one. It doesn't have great range, but it packs a hell of a wallop up close. Can be fired either a barrel at a time or both at once for extra damage.", "SOSPA0", "Sawedoff", "3" },
 		{ "Tommy Gun", "The Tommy Gun is a favorite of the Cabal for its rapid rate of fire and impressive accuracy. On the down side, it chews up ammo quickly. The alternative mode is a strafing attack that covers a wider area with twice as many bullets, which is an effective way to clear out a room.", "TOMPA0", "Tommygun", "4" },
@@ -980,7 +1010,7 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		{ "Assault Gun", "Until your accuracy goes up, you'll be spraying bullets everywhere, but it's still a useful weapon.\nA well-rounded weapon. It's easy to find ammo for this one...\n\n[Picking up this weapon for the first time will grant you: 1 piece of the Sigil]", "SGRFA0", "Assault Gun", "4" },
 		{ "Grenade Launcher", "(Press the Alt Fire key to toggle between firing modes.)\n\n(High Explosive \"HE\" Grenades) High-explosive means just that... BOOM!\n(White-Phosphorus \"WP\" Grenades) WP is an incendiary device - it will start an inferno that lasts a long time.\n\n[Picking up this weapon for the first time will grant you: 1 piece of the Sigil]", "SGRLA0", " Grenade Launcher ", "5" },
 		{ "Flame Thrower", "Whoosh!\n\n[Picking up this weapon for the first time will grant you: 1 piece of the Sigil]", "SFLMA0", "Flame Thrower", "6" },
-		{ "Mauler", "(Press the Alt Fire key to toggle between firing modes.)\n\nThe mauler has two firing modes, scatter and torpedo. Torpedo is much more lethal, and may well damage you.\nShoots rounds of energy in normal mode, and a huge ball of destruction in powerup mode.\n\n[Picking up this weapon for the first time will grant you: 1 piece of the Sigil]", "SMAUA0", " Mauler ", "7" },
+		{ "Mauler", "(Press the Alt Fire key to toggle between firing modes.)\n\nThe mauler has two firing modes, scatter and torpedo. Torpedo is much more lethal.\nShoots rounds of energy in normal mode, and a huge ball of destruction in powerup mode.\n\n[Picking up this weapon for the first time will grant you: 1 piece of the Sigil]", "SMAUA0", " Mauler ", "7" },
 		{ "Sigil", "It is considered a sentient weapon which is worshipped by The Order, thought to have been created by the Entity and the Spectres as a means to corrupt the people into evil desires.", "SIGPE0", " Sigil ", "7" },
 		{ "Stamina & Accuracy Upgrades", "Stamina Upgrades: Increased stamina means you can have more than 100 health points. Very handy. This also increases your melee damage and restores your current HP to 100%.\n\nAccuracy Upgrades: Increased accuracy means your weapon will fire more accurately.\n\nWhen you pick this item, you get both these upgrades at the same time.\nThe maximum upgrades you can get to is 10 upgrades.", "UPGRK0", "Upgrades", "u" }
 	}},
@@ -1046,16 +1076,16 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		{ "Weapon Supercharge", "Doubles weapon fire rate for a limited time.\n\nPicking up one Supercharge will hold 12 seconds of doubled fire rate once activated. Picking up another Supercharge will add an additional 12 seconds. The maximum time for Supercharge is 60 seconds, in other words, 5 Supercharges.", "J9-_A0", "DFSuperCharge", "u" }
 	}},
 	{{
-		{ "Tazer", "Hunter's Log: I lost the instruction manual for all these weapons so I'm just going to wild guess on what each of these things do. Starting with this taser. It's a taser. Or should I spell it as tazer? Ah, who cares?", "", " Tazer ", "f" },
-		{ "Aldus Pistol", "Hunter's Log: That's a weird looking pistol. Oh well, gets the job done and it never runs out of ammo.", "", " Aldus Pistol ", "p" },
-		{ "Toxic Mutant Gun", "Hunter's Log: Boy, these weapons look weird so far. When I fire it at something, they continuously take damage overtime for a while. Probably because of the acid from this thing.", "GW80Z0", " Toxic Mutant Gun ", "1" },
+		{ "Tazer", "Hunter's Log: I lost the instruction manual for all these weapons so I'm just going to take a wild guess on what each of these things do. Starting with this taser. It's a taser. Or should I spell it as tazer? Ah, who cares?", "", " Tazer ", "f" },
+		{ "Auto-Pistol", "Hunter's Log: That's a weird looking pistol. Oh well, gets the job done and it never runs out of ammo.", "", " Aldus Pistol ", "p" },
+		{ "Random Item Generator", "Hunter's Log: Looks like this thing gives me one random inventory item. Cool. Here's what it can possibly give me:\n\nShield Charge: Gives extra protection for 30 seconds.\nGrenade: Launches a low gravity grenade.\nTime Bomb: After 3 seconds, the bomb detonates.\nProximity Mine: Places a mine in the ground. Its armed after 2 seconds.\nClone: Creates a clone of yourself.", "PPGUC0", "IPOGRandomItemGenerator", "1" },
 		{ "Plasma Shotgun", "Hunter's Log: If this is a shotgun, why does it look different than that shotgun that green armored guy has? Well, it seems to fire five plasma balls in a spread shot, so that's good.", "GW20Z0", " Plasma Shotgun ", "2" },
-		{ "Aldus Flamethrower", "Hunter's Log: Hey, this flamethrower doesn't look weird. It's got a good fire rate and the flames travel far, so I like it so far, even if this thing eats up a lot of the ammunition. But if it shoots flames, why don't the enemies take damage overtime like with that toxic mutant gun?", "GW30Z0", " Aldus Flamethrower ", "3" },
-		{ "Fast Chaingun", "Hunter's Log: Not as powerful as the flamethrower but it's good if I need to save some the flamethrower ammo. I dunno why it's called the \"fast\" chaingun though. I've seen faster.", "GW40Z0", " Fast Chaingun ", "4" },
-		{ "Rocket Launcher", "Hunter's Log: There's not much to say about this. It's just a rocket launcher. Does good enough damage though. Better not be stupid and shoot me in the face with this thing.", "GW50Z0", " Fast Rocket Launcher ", "5" },
+		{ "Flamer", "Hunter's Log: Hey, this flamethrower doesn't look weird. It's got a good fire rate and the flames travel far, so I like it so far, even if this thing eats up a lot of the ammunition. But if it shoots flames, why don't the enemies take damage overtime like with that toxic mutant gun?", "GW30Z0", " Aldus Flamethrower ", "3" },
+		{ "Vulcan", "Hunter's Log: Not as powerful as the flamethrower but it's good if I need to save some of the flamethrower ammo.", "GW40Z0", " Fast Chaingun ", "4" },
+		{ "Rocket Launcher", "Hunter's Log: There's not much to say about this. It's just a rocket launcher. Does good enough damage though. Better not be stupid and shoot myself in the face with this thing.", "GW50Z0", " Fast Rocket Launcher ", "5" },
 		{ "Laser Cannon", "Hunter's Log: It does what it's supposed to: a cannon that shoots laser beams at a good fast rate and can do some damage. I wonder how you can top this off...?", "GW60Z0", " Laser Cannon ", "6" },
 		{ "Super Plasma Annihilator", "Hunter's Log: Oh baby, I like this one. It eats up a good amount of ammunition but it's worth it. Not only does this do some serious damage but it shoots all around me!", "GW70Z0", " Super Plasma Annihilator ", "7" },
-		{ "Random Item Generator", "Hunter's Log: Looks like this thing gives me one random inventory item. Cool. Here's what it can possibly give me:\n\nShield Charge: Gives extra protection for 30 seconds.\nGrenade: Launches a low gravity grenade.\nTime Bomb: After 3 seconds, the bomb detonates.\nProximity Mine: Places a mine in the ground. Its armed after 2 seconds.\nClone: Creates a clone of yourself.", "PPGUC0", "IPOGRandomItemGenerator", "u" }
+		{ "Another Random Item Generator", "Hunter's Log: Another Random Item Generator. You know the drill", "PPGUC0", "IPOGRandomItemGenerator", "u" }
 	}},
 	{{
 		{ "Pistol Whip", "When your 18mm Handgun runs out of ammo, it will work as a makeshift baton in a pinch.", "", "Disruptor Fist", "f" },
@@ -1136,7 +1166,7 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		{ "Bombardier", "Fires long-range, self-propelled explosive projectiles. An excellent weapon against vehicles and hardpoints, and devastating against personnel. Its drawbacks are its comparatively small magazine and relatively slow speed.", "CMRLF0", "CMRocketGun", "5" },
 		{ "Heavy Blaster MG", "The most devastating anti-personnel weapon devised by man, it fires an almost continuous stream of destructive plasma charges. Its biggest drawback is that it fires so fast you can exhaust its magazine before you know it.", "CMHVF0", "CMHVBMG", "6" },
 		{ "Plasma Obliterator", "The most devastating plasma weapon devised by man, the aptly named Plasma Obliterator fires a huge stream of destructive plasma charges, dealing heavy damage to all types of targets, but being particularly effective against large crowds of enemies. Care must be taken at close range to avoid being caught in the plasma discharge yourself.", "CMPGE0", "CMPlasmaGun", "7" },
-		{ "Icon of Mann-ra", "Your Magicial Fist can utilize more spells. The Icon of Mann-ra can randomly give you one of the following spells:\n\nElectroschism: Wraps itself tightly around its target and drains health from it for the duration of the spell.\nMagna Rip: Unleashes the natural powers of magnetism against the target, releasing a powerful energy wave which upon hitting a target release further (but weaker) waves around itself.\nPainwave: A literal wall of energy that sticks itself to a surface and rapidly drains the health of anything caught within its radius. Can penetrate through enemies and when it disappears, it explodes. Useful against larger targets or as an area denial attack.\nNova: Extremely powerful energy balls that upon contact release multiple explosions for an extended period, combining truly devastating damage with a large blast radius. Its only drawbacks are its large ammo consumption and its complete uselessness at close range.", "CMUQA0", "RandomMagicItem", "u" }
+		{ "Icon of Mann-ra", "Your Magicial Fist can utilize more spells. The Icon of Mann-ra can randomly give you one of the following spells:\n\nElectroschism: Wraps itself tightly around its target and drains health from it for the duration of the spell.\nMagna Rip: Unleashes the natural powers of magnetism against the target, releasing a powerful energy wave which upon hitting a target releases smaller and weaker waves around itself.\nPainwave: A literal wall of energy that sticks itself to a surface and rapidly drains the health of anything caught within its radius. Can penetrate through enemies and when it disappears, it explodes. Useful against larger targets or as an area denial attack.\nNova: Extremely powerful energy balls that upon contact release multiple explosions for an extended period, combining truly devastating damage with a large blast radius. Its only drawbacks are its large ammo consumption and its complete uselessness at close range.", "CMUQA0", "RandomMagicItem", "u" }
 	}},
 	{{
 		{ "Machete", "Sharp, Reliable. Never runs out of ammo! If it wasn't strapped to your leg when you bailed out of the chopper, you'd be in a world of hurt, my friend.", "", "PSMachete", "f" },
@@ -1146,7 +1176,7 @@ str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] =
 		{ "Flamethrower", "Perfect for mummy roasting. A great close-quarters tool, but be extra careful not to burn yourself. And watch the fuel level - it goes too quick if you're not careful.", "WFTRA0", "PSFlamethrower", "3" },
 		{ "M60", "Your standard infantry support weapon. With a range of well over 1,000 meters and a 550 rounds per minute rate of fire, the \"sixty\" is an ideal everyday weapon. Remember to watch your ammo - fire in six to nine round bursts for max effect.\n\nWill automatically reload after 99 shots.", "WM60A0", "PSM60", "4" },
 		{ "Cobra Staff", "A great long-range weapon that will destroy most enemies with one hit! RULE #1 - You WILL get toasted if your foe is close you, so use extreme caution RULE# 2 - Make sure you have a clear field of fire, as the Cobras will detonate if they strike a stair, ledge or wall that may be hindering your aim. RULE #3 - If you don't have a target, the cobra may decide to turn on you! Try not to kill yourself, ok? Other than that, have fun!\n\nWhen you switch to this weapon, you must wait for it to be activated before you can use it.", "WCSTA0", "PSCobraStaff", "5" },
-		{ "Eye of Rah", "This sacred gauntlet is the mightiest weapon you will find. An artifact of incredible power, you can use it to summon the wrath of the gods upon those who dare oppose you.\n\nMust be targeting an enemy to fire this weapon.", "WTSMA0", "Sacred Manacle", "6" },
+		{ "Sacred Manacle", "This sacred gauntlet is the mightiest weapon you will find. An artifact of incredible power, you can use it to summon the wrath of the gods upon those who dare oppose you.\n\nMust be targeting an enemy to fire this weapon.", "WTSMA0", "Sacred Manacle", "6" },
 		{ "Mummy Staff", "This ancient weapon will turn you into a mummy, giving you a very powerful ancient power.\n\nWhen you switch to this weapon, you must wait for it to be activated before you can use it.\nWhen you switch to another weapon, you must wait for this weapon to deactivate completely before you can use another weapon.", "WMSTA0", " Mummy Staff ", "7" },
 		{ "Ring of Ra", "This sacred ring is one of the mightiest weapons you will find. An artifact of incredible power, you can use it to spew deadly orbs of molten fire upon those who dare oppose you.", "WRORA0", "Ring of RA", "u" }
 	}},
