@@ -1511,13 +1511,13 @@ script "SamsaraEnterClient" (void) clientside //521 -- SAMSARA_ENTER_CLIENT
         if (oClass != class) { SamsaraItemFlash = Timer(); }
         
 		//seems unnecessary
-        /*for (i = 0; i < SLOTCOUNT; i++)
+        for (i = 0; i < SLOTCOUNT; i++)
         {
             j = SamsaraClientWeps[i];
             SamsaraClientWeps[i] = HasClassWeapon(class, i);
             
             if (j != SamsaraClientWeps[i]) { SamsaraClientWepFlashes[i] = Timer(); }
-        }*/
+        }
 		    
         if (IsServer)
         {
