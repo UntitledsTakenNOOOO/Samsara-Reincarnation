@@ -547,7 +547,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Traits", "Hazardous Materials: Dr. Gordon Freeman is in charge of the manipulation and maintenance of various Toxic and Harmful materials either from our planet or from outer space. Freeman is experienced in the field and equipped with his H.E.V suit; he knows how to properly avoid getting harmed so easily from Hazardous surfaces like acid, lava, or any other environment harmful source.
 			\n\nCombat Stress Reaction: Gordon Freeman's weapons have a ton of stopping power that can bring down even the toughest of enemies rather easily. However, being just a scientist with minimal knowledge about guns and far less about combat, Dr. Freeman tends to act slowly and sometimes ineffectively with his arsenal when in battle. Gordon only knows the basics of how to operate firearms and recoil tends to overwhelm him due to his limited expertise. Due to this, firerates and reload times can be quite slow, meaning Freeman is best suited for using guerilla tactics to ambush his opponents and pick them off one by one, lest he be overwhelmed.", ""},
 			
-			{ "Changes", "Coming from the tail-end of the early-3d Quake era, Half-Life had a very low damage scale, and its source code was only partially released. Damage of most weapons and HP of most enemies were increased by 300%. The rest we just had to hazard a guess.
+			{ "Changes", "Coming from the tail-end of the early-3d Quake era, Half-Life had a very low damage scale, and its source code was only partially released. Damage of most weapons and HP of most enemies were increased by 200 or 300%. The rest we just had to hazard a guess.
 			\n\n Due to limitations with GZDoom's model support, Half-Life NPCs do not have facial animations.", ""},
 		},
 		{
@@ -557,6 +557,8 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			\n\nLeave no soldier left behind: Adrian was trained to fight with a squad. Fortunately, it's possible for Adrian to encounter fellow marines on the field under the right circumstances. Additionally, there's no chance of fighting other HECU units if you are deployed on your mission as Adrian first.", ""},
 			
 			{ "Changes", "Along with the changes detailed under Freeman's page, the M249 SAW now has a magazine capacity of 75 instead of 50 and the Deagle does less damage with the laser sight disabled.
+			\n\n The Knife does the same damage as the crowbar instead of dealing double.
+			\n\n The Desert Eagle does 35 damage without the laser sight enabled, and 70 with it enabled. The Sniper Rifle works in a similar way, dealing 150 unscoped and 300 scoped.
 			\n\nIn Opposing Force, using the Displacer's altfire at the wrong place and time would drop you into a bottomless pit in the Borderworld Xen to your death. In Samsara, using it teleports you back to the spawn area of whatever map you're on, and back if you do it again. Rather a bit more helpful.", ""},
 		}
 	},
