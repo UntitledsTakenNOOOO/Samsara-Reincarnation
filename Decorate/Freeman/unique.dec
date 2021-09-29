@@ -738,7 +738,7 @@ Actor "HL Crossbow" : HLWeapon
 		Goto FireFinishOpp
 	FireZoomedOpp:
 		//TNT1 A 0 A_FireCustomMissile("HLM40A1BulletZoomed", 0, 0, 0, 0, 0, 0.25)
-		TNT1 A 0 A_FireBullets(-1,0,1,300,"HLM40A1PuffZoomed", FBF_NORANDOM|FBF_NORANDOMPUFFZ|FBF_EXPLICITANGLE)
+		TNT1 A 0 A_FireBullets(-1,0,1,1,"HLM40A1PuffZoomed", FBF_NORANDOM|FBF_NORANDOMPUFFZ|FBF_EXPLICITANGLE)
 		Goto FireFinishOpp
 	FireCoopOpp:
 		TNT1 A 0 A_JumpIfInventory("HLXBowIsZoomed",1,"FireZoomedCoopOpp")
@@ -747,7 +747,7 @@ Actor "HL Crossbow" : HLWeapon
 		Goto FireFinishOpp
 	FireZoomedCoopOpp:
 		//TNT1 A 0 A_FireCustomMissile("HLM40A1BulletZoomedCoop", 0, 0, 0, 0, 0, 0.25)
-		TNT1 A 0 A_FireBullets(-1,0,1,300,"HLM40A1PuffZoomedCoop", FBF_NORANDOM|FBF_NORANDOMPUFFZ|FBF_EXPLICITANGLE)
+		TNT1 A 0 A_FireBullets(-1,0,1,1,"HLM40A1PuffZoomedCoop", FBF_NORANDOM|FBF_NORANDOMPUFFZ|FBF_EXPLICITANGLE)
 		Goto FireFinishOpp
 	FireFinishOpp:
 		OP06 BCDEFGHIJKLMNOPQRSTUVWXYZ 1
@@ -771,7 +771,7 @@ Actor "HL Crossbow" : HLWeapon
 		Goto FireFinishLastOpp
 	FireZoomedLastOpp:
 		//TNT1 A 0 A_FireCustomMissile("HLM40A1BulletZoomed", 0, 0, 0, 0, 0, 0.25)
-		TNT1 A 0 A_FireBullets(1,0,1,300,"HLM40A1PuffZoomed", FBF_NORANDOM|FBF_NORANDOMPUFFZ|FBF_EXPLICITANGLE)
+		TNT1 A 0 A_FireBullets(1,0,1,1,"HLM40A1PuffZoomed", FBF_NORANDOM|FBF_NORANDOMPUFFZ|FBF_EXPLICITANGLE)
 		Goto FireFinishLastOpp
 	FireFinishLastOpp:
 		OP09 BCDEFGHIJKLMNOPQRSTUVWXYZ 1
@@ -787,7 +787,7 @@ Actor "HL Crossbow" : HLWeapon
 		Goto FireFinishLastOpp
 	FireCoopLastZoomedOpp:
 		//TNT1 A 0 A_FireCustomMissile("HLM40A1BulletZoomedCoop", 0, 0, 0, 0, 0, 0.25)
-		TNT1 A 0 A_FireBullets(1,0,1,300,"HLM40A1PuffZoomedCoop", FBF_NORANDOM|FBF_NORANDOMPUFFZ|FBF_EXPLICITANGLE)
+		TNT1 A 0 A_FireBullets(1,0,1,1,"HLM40A1PuffZoomedCoop", FBF_NORANDOM|FBF_NORANDOMPUFFZ|FBF_EXPLICITANGLE)
 		Goto FireFinishOpp
 	FireLastReloadOpp:
 		TNT1 A 0 A_JumpIfInventory("HLXBowAmmoCounter",5,"WIdleOpp")
@@ -947,11 +947,12 @@ Actor HLXBowBolt
     Height 4
     Mass 5
     Speed 55
-    Damage (100)
+    Damage (0)
     DamageType "HLBullet"
 	+NOEXTREMEDEATH
 	+BLOODSPLATTER
 	+NODAMAGETHRUST
+	+HITTRACER
 	Scale 0.5
 	states
 	{
@@ -960,6 +961,7 @@ Actor HLXBowBolt
 		loop
 	Crash:
 		TNT1 A 0 A_StopSound(CHAN_6)
+		TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",100),8,!XF_HURTSOURCE,0,8)
 		TNT1 A 0 A_Playsound("HLXbow/Hit/Wall", CHAN_5)
 		TNT1 A 0 A_Jump(128,1,2,3,4,5,6,7)		
 		TNT1 AAAAAA 0 A_SpawnItemEx("HLPuffSpark",0,0,0,FRandom(1,4),0,Random(0,3),Random(-90,90))
@@ -976,12 +978,14 @@ Actor HLXBowBolt
 		TNT1 AAAAAA 0 A_SpawnItemEx("HLPuffSpark",0,0,0,FRandom(1,4),0,Random(0,3),Random(-90,90))
 		TNT1 A 0
 		TNT1 A 0 A_SpawnItemEx("HLXBowSpark", 0, 0, 0, 0, 0, 0, 0, 288)
+		TNT1 A 0 A_SetDamageType("HLExplosive")
 		BOLT A 17
 		TNT1 A 0 A_Explode(120,70)
 		TNT1 A 0 A_PlaySound("halflife/mp5_grenadehit",CHAN_BODY)
 		TNT1 A 5 A_SpawnItemEx("HLSmallExplosionBoom",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
 		stop
 	XDeath:
+		TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",100),8,!XF_HURTSOURCE,0,8)
 		TNT1 A 0 A_StopSound(CHAN_6)
 		TNT1 A 0 A_Playsound("HLXbow/Hit/Body", CHAN_5)
 		TNT1 A 5
@@ -1002,24 +1006,23 @@ Actor HLXBowBoltCoop : HLXBowBolt { Species "Player" +THRUSPECIES Speed 60 }
 
 Actor HLM40A1Bullet : HLBullet 
 { 
-	DamageType "HLBullet"
-	Damage (150)
-	+THRUGHOST  
-	+NOEXTREMEDEATH
-	+NODAMAGETHRUST
-	Scale 0.5 
-	Speed 512
+	+THRUGHOST
+	Damage (0) 
 	States
 	{
-		SpawnLoop:
-			TNT1 A 1
-			loop
-	}
+		Crash:
+		Death:
+			TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
+			Goto Super::Death
+		XDeath:
+			TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
+			Goto Super::XDeath
+	}		
 }
 Actor HLM40A1BulletCoop : HLBulletCoop 
 { 
 	DamageType "HLBullet"
-	Damage (150)
+	Damage (0)
 	+THRUGHOST  
 	+NOEXTREMEDEATH
 	+NODAMAGETHRUST
@@ -1030,10 +1033,67 @@ Actor HLM40A1BulletCoop : HLBulletCoop
 		SpawnLoop:
 			TNT1 A 1
 			loop
+		Crash:
+		Death:
+			TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
+			Goto Super::Death
+		XDeath:
+			TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
+			Goto Super::XDeath			
 	}
 }
 
-Actor HLM40A1Puff : HLBulletPuff { +NODAMAGETHRUST +NOEXTREMEDEATH }
-Actor HLM40A1PuffCoop : HLBulletPuffCoop { +NODAMAGETHRUST +NOEXTREMEDEATH }
-Actor HLM40A1PuffZoomed : HLBulletPuff { +NODAMAGETHRUST +NOEXTREMEDEATH }
-Actor HLM40A1PuffZoomedCoop : HLBulletPuffCoop { +NODAMAGETHRUST +NOEXTREMEDEATH }
+Actor HLM40A1Puff : HLBulletPuff 
+{ 
+	+NODAMAGETHRUST 
+	+NOEXTREMEDEATH 
+	+PUFFGETSOWNER
+	States
+	{
+		XDeath:
+			TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
+			Goto Super::Spawn	
+	}		
+}
+Actor HLM40A1PuffCoop : HLBulletPuffCoop { 
+	+NODAMAGETHRUST 
+	+NOEXTREMEDEATH 
+	+PUFFGETSOWNER
+	States
+	{
+		XDeath:
+			TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
+			Goto Super::Spawn	
+	}		
+}
+Actor HLM40A1PuffZoomed : HLBulletPuff { 
+	+NODAMAGETHRUST 
+	+NOEXTREMEDEATH 
+	+FORCERADIUSDMG
+	+PUFFONACTORS
+	+PUFFGETSOWNER
+	+HITTRACER
+	States
+	{
+		Melee:
+		XDeath:
+			TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
+			TNT1 A 1
+			Stop
+	}		
+}
+Actor HLM40A1PuffZoomedCoop : HLBulletPuffCoop { 
+	+NODAMAGETHRUST 
+	+NOEXTREMEDEATH 
+	+FORCERADIUSDMG
+	+PUFFGETSOWNER
+	+HITTRACER
+	States
+	{
+		Melee:
+		XDeath:
+			TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
+			TNT1 A 1
+			Stop
+	}		
+}
