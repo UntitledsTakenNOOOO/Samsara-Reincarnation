@@ -550,6 +550,8 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			
 			{ "Changes", "Coming from the tail-end of the early-3d Quake era, Half-Life had a very low damage scale, and its source code was only partially released. Damage of most weapons and HP of most enemies were increased by 200 or 300%. The rest we just had to hazard a guess.
 			\n\n- Headshots in Half-Life did triple damage. However, since base damage was already doubled they instead do double damage, Doom 3-Style.
+			\n\n- Nearly all explosives shared the same damage in Half-Life. That's not the case here, as MP5 grenades dealing up to 300 damage would be kind of insane.
+			\n\n- The MP5 grenade does 50 additional damage on a direct hit. This isn't the case in HL.
 			\n\n- Due to limitations with GZDoom's model support, Half-Life NPCs do not have facial animations.", ""},
 		},
 		{
