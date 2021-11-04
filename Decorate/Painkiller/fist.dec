@@ -77,12 +77,12 @@ ACTOR Painkiller_Painkiller : PainkillerWeapon
 			Goto Ready
 		AltFire:
 			PK04 A 0 A_JumpIfInventory("Painkiller_Combo",1,"Combo")
+			PK04 A 0 A_JumpIfInventory("Painkiller_PainkillerCombo",1,"StartReturnCombo")
 			PK04 A 0 A_JumpIfInventory("Painkiller_PainkillerAlt",1,"StartReturn")
-			PK04 A 0 A_JumpIfInventory("Painkiller_PainkillerCombo",1,"IdleAltWaitCombo")
 			PK04 A 0 A_PlaySound("Painkiller/Painkiller/Shoot",CHAN_5)
 			PK04 A 0 A_FireCustomMissile("Painkiller_Painkiller_Head")
 			PK04 A 0 A_GiveInventory("Painkiller_PainkillerAlt",1)
-			PK04 ABCDE 2
+			PK04 ABCDE 1 
 			PK04 F 0 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"Return") PK04 F 2 A_WeaponReady(WRF_NOPRIMARY)
 			PK04 G 0 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"Return") PK04 G 2 A_WeaponReady(WRF_NOPRIMARY)
 			PK04 H 0 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"Return") PK04 H 2 A_WeaponReady(WRF_NOPRIMARY)
@@ -106,7 +106,7 @@ ACTOR Painkiller_Painkiller : PainkillerWeapon
 			PK04 Z 0 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"Return") PK04 Z 2 A_WeaponReady(WRF_NOPRIMARY)
 			Goto IdleAlt
 		IdleAltWait:
-			PK06 ABCDEFGHIJKL 10 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"Return")
+			PK06 AAABBBCCCDDDEEEFFFGGGHHHIIIJJJKKKLLL 3 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"Return")
 			Loop
 		IdleAlt:
 			PK06 ABCDEFGHIJKL 10 A_WeaponReady
@@ -119,16 +119,16 @@ ACTOR Painkiller_Painkiller : PainkillerWeapon
 			PK05 A 0 A_TakeInventory("Painkiller_PainkillerAlt",1)
 			PK05 A 0 A_TakeInventory("Painkiller_PainkillerReturned",1)
 			PK05 A 0 A_PlaySound("Painkiller/Painkiller/Reload",CHAN_5)
-			PK05 ABCDEFGHIJKLMNOP 2
+			PK05 ABCDEFGHIJKLMNOP 2 A_WeaponReady(WRF_NOSWITCH)
 			PK05 P 0
 			Goto Ready
 		Combo:
 			PK04 A 0 A_StopSound(CHAN_6)
-			PK04 A 0 A_JumpIfInventory("Painkiller_PainkillerCombo",1,"IdleAltWaitCombo")
+			PK04 A 0 A_JumpIfInventory("Painkiller_PainkillerCombo",1,"StartReturnCombo")
 			PK04 A 0 A_PlaySound("Painkiller/Painkiller/Shoot",CHAN_5)
 			PK04 A 0 A_FireCustomMissile("Painkiller_Painkiller_Blades")
 			PK04 A 0 A_GiveInventory("Painkiller_PainkillerCombo",1)
-			PK04 ABCDE 2
+			PK04 ABCDE 1
 			PK04 F 0 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"ReturnCombo") PK04 F 2 A_WeaponReady(WRF_NOPRIMARY)
 			PK04 G 0 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"ReturnCombo") PK04 G 2 A_WeaponReady(WRF_NOPRIMARY)
 			PK04 H 0 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"ReturnCombo") PK04 H 2 A_WeaponReady(WRF_NOPRIMARY)
@@ -151,11 +151,15 @@ ACTOR Painkiller_Painkiller : PainkillerWeapon
 			PK04 Y 0 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"ReturnCombo") PK04 Y 2 A_WeaponReady(WRF_NOPRIMARY)
 			PK04 Z 0 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"ReturnCombo") PK04 Z 2 A_WeaponReady(WRF_NOPRIMARY)
 			Goto IdleAltWaitCombo
+		StartReturnCombo:
+			PK05 A 0 A_TakeInventory("Painkiller_PainkillerCombo",1)
+			PK05 A 0 A_TakeInventory("Painkiller_PainkillerAlt",1)
+			Goto IdleAltWaitCombo			
 		IdleAltCombo:
 			PK06 ABCDEFGHIJKL 10 A_WeaponReady
 			Loop	
 		IdleAltWaitCombo:
-			PK06 ABCDEFGHIJKL 10 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"ReturnCombo")
+			PK06 AAABBBCCCDDDEEEFFFGGGHHHIIIJJJKKKLLL 3 A_JumpIfInventory("Painkiller_PainkillerReturned",1,"ReturnCombo")
 			Loop
 		ReturnCombo:
 			PK05 A 0 A_TakeInventory("Painkiller_PainkillerCombo",1)
@@ -237,7 +241,7 @@ Actor Painkiller_Painkiller_Blades : PainkillerProjectile
 	Radius 8
 	Height 16
 	Speed 12
-	Damage (66)
+	Damage (100)
 	DamageType "Painkiller"
 	+RIPPER
 	+THRUACTORS
@@ -248,8 +252,9 @@ Actor Painkiller_Painkiller_Blades : PainkillerProjectile
 			TNT1 A 0
 			TNT1 A 0 A_PlaySound("Painkiller/Painkiller/Loop",CHAN_BODY,0.5,true)
 		SpawnLoop:
-			PK00 A 0 A_JumpIfInventory("Painkiller_PainkillerAlt",1,1,AAPTR_Target)
-			PK00 AA 1 A_Explode(66,12, 0, 1, 12)
+			PK00 A 0 A_JumpIfInventory("Painkiller_PainkillerCombo",1,1,AAPTR_Target)
+			Goto Return
+			PK00 AA 1 A_Explode(100,12, 0, 1, 12)
 			Loop
 		Return:
 			PK00 A 0 A_SpawnItemEx("Painkiller_Painkiller_Blades_Return",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERPOINTERS)
