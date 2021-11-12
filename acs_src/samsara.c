@@ -3065,7 +3065,7 @@ Script "Samsara_PickupMode" (void) net clientside
 		SetUserCvar(PlayerNumber(),"sams_cl_pickupmode", 0);
 }
 
-Str modestringsdefault[2] = { "Off", "On" };
+Str modestringsdefault[2] = { "On", "Off" };
 Str modestringswolf[3] = { "Classic", "Lost Missons", "Totenkopf SDL" };
 Str modestringshexen[3] = { "Parias", "Daedolon", "Baratus" };
 Str modestringsrott[5] = { "Ian Paul Freeley", "Taradino Cassatt", "Thi Barrett", "Lorelei Ni", "Doug Wendt" };
