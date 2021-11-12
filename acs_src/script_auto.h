@@ -544,9 +544,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         
         if (GetUserCvar(pln,"sams_cl_weaponhud")) { GiveInventory("ExpandedHud", 1); }
         else { TakeInventory("ExpandedHud", 0x7FFFFFFF); }
-		
-		if (GetUserCvar(pln, "sams_hlnoreload")) { GiveInventory("HLNoReload", 1); }
-		else { TakeInventory("HLNoReload", 0x7FFFFFFF); }
+				
+        if (GetCvar("sams_permakimbo") == 1) { GiveInventory("AkimboStay", 1); }
+        else { TakeInventory("AkimboStay", 0x7FFFFFFF); }			
 		
 		switch (samsaraClassNum())
 		{
