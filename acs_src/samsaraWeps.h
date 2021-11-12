@@ -170,7 +170,7 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Dragon Claw",                     "Clip",         "",             "", ""},
         {"Phoenix Rod",                     "RocketAmmo",   "",             "", ""},
         {"Hellstaff",                       "Cell",         "",             "", ""},
-        {"DSparilStaff",                    "",             "",             "", ""},
+        {"DSparilStaff",                    "Cell",             "",             "", ""},
     },
 
     {   // B.J.
