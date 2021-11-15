@@ -2438,7 +2438,7 @@ script "SamsaraBossMonologue" (int bossmonologueshit) //204
       case 29: // Alec Trevelyan
 	  if (GetCVar("sams_nomonologues"))
 	  {
-		SetActorState(0,"SpawnLoop");
+		SetActorState(0,"Idle");
 	  }
 	  else
 	  {
