@@ -550,6 +550,17 @@ int ClassPickupSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
         "Unreal/WeaponPickup",
         "Unreal/WeaponPickup",
     }},		
+	{{
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+    }},		
 };
 
 int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] = 
@@ -1107,6 +1118,17 @@ int ClassDropSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
         "Unreal/WeaponPickup",
         "Unreal/WeaponPickup",
     }},		
+	{{
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+        "RTCW/WeaponPickup",
+    }},		
 };
 
 int ClassUniqueSounds[CLASSCOUNT][MAXMODES] = 
@@ -1140,7 +1162,8 @@ int ClassUniqueSounds[CLASSCOUNT][MAXMODES] =
 	{"Goldeneye/Weaponup", "" },
 	{"Catacomb/GemGet", "" },
 	{"Painkiller/TarotCard/Pickup", "" },
-	{"Unreal/WeaponPickup", "" }	
+	{"Unreal/WeaponPickup", "" },		
+	{"RTCW/WeaponPickup", "" }		
 };
 
 int PunchDrunkUniqueSounds[CLASSCOUNT] = 

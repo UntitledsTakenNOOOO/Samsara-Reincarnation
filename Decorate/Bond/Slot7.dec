@@ -168,7 +168,7 @@ ACTOR Goldeneye_Moonraker : Weapon
 	GE00 A 0 A_JumpIfInventory("BondDualWieldToken", 1, 1)
 	Goto Fire+2
 	GE00 A 0 A_JumpIfInventory("BondAlternateFire", 1, "Ready")
-	GE00 A 0 A_JumpIfInventory("Cell", 6, 5)
+	GE00 A 0 A_JumpIfInventory("Cell", 4, 5)
 	GE00 A 0 A_JumpIfInventory("BondDryFireSpamProtector1", 1, "FireFinish")
 	GE00 A 0 A_PlaySound("Goldeneye/DryFire", CHAN_7)
 	GE00 A 0 ACS_NamedExecuteAlways("BondDryFireSpamBlocker_Primary")
@@ -858,19 +858,20 @@ ACTOR Goldeneye_Moonraker : Weapon
 Actor Goldeneye_MoonrakerRay : Goldeneye_BulletTracer
 {
     //+FORCEDECAL
-    +RIPPER
+    //+RIPPER
+	//+THRUACTORS
     +FORCERADIUSDMG
     RenderStyle Translucent
-    Damage(25)
+    Damage(160)
     States
     {
         Spawn:
 			GE00 A 0
-			GE00 A 0 A_SetUserVar("user_damage",100)
+			GE00 A 0 A_SetUserVar("user_damage",160)
 			TNT1 A 1
 			GE00 A 0 A_ChangeVelocity(velx*2,vely*2,velz*2,CVF_REPLACE)
 		SpawnLoop:
-            GE00 A 1 Bright
+            GE00 A 1 Bright //A_Explode(CallACS("BondHitBox",2),8, !XF_HURTSOURCE, 0, 8)
             loop
         Death:
             TNT1 A 0 A_CustomMissile("Goldeneye_MoonrakerRayPenetrate1",0,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER,pitch)
@@ -880,15 +881,17 @@ Actor Goldeneye_MoonrakerRay : Goldeneye_BulletTracer
             TNT1 A 0
             Stop
         XDeath:
+			//TNT1 A 0 A_CustomMissile("Goldeneye_MoonrakerRayPenetrate1",0,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER,pitch)
 			TNT1 A 0 A_Explode(CallACS("BondHitBox",user_damage),8,!XF_HURTSOURCE,0,8)
-            TNT1 A 0 A_Explode(75,8,!XF_HURTSOURCE,0,8)
+            //TNT1 A 0 A_Explode(75,8,!XF_HURTSOURCE,0,8)
             TNT1 A 0 A_Playsound("Goldeneye/Zap", CHAN_5)
             //TNT1 AAAAAAAA 0 A_SpawnItemEx("Goldeneye_Debris", frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-360, 360), SXF_NOCHECKPOSITION)
             TNT1 A 0 A_SpawnItemEx("Goldeneye_BulletImpact", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION)
             TNT1 A 0
             Stop
         Crash:
-            TNT1 A 0 A_Explode(75,8,!XF_HURTSOURCE,0,8)
+			//TNT1 A 0 A_CustomMissile("Goldeneye_MoonrakerRayPenetrate1",0,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER,pitch)
+            TNT1 A 0 A_Explode(CallACS("BondHitBox",user_damage),8,!XF_HURTSOURCE,0,8)
             TNT1 A 0 A_Playsound("Goldeneye/Zap", CHAN_5)
             TNT1 AAAAAAAA 0 A_SpawnItemEx("Goldeneye_Debris", frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-360, 360), SXF_NOCHECKPOSITION)
             TNT1 A 0 A_SpawnItemEx("Goldeneye_BulletImpact", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION)
@@ -907,7 +910,7 @@ Actor Goldeneye_MoonrakerRayPenetrate1 : Goldeneye_MoonrakerRay
 	{
 		Spawn:
 			TNT1 A 0
-			TNT1 A 1
+			TNT1 A 1 A_Explode(2,8, !XF_HURTSOURCE, 0, 8)
 			stop
 		Death:
 			TNT1 A 0 A_CustomMissile("Goldeneye_MoonrakerRayPenetrate2",0,0,0,CMF_AIMDIRECTION)

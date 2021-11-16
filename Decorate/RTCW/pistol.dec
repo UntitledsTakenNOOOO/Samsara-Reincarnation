@@ -1,0 +1,458 @@
+Actor RTCW_Luger : RTCW_Weapon
+{
+	Weapon.SlotNumber 1
+	Weapon.SlotPriority 2
+	Weapon.SelectionOrder 2000
+	Weapon.AmmoUse1 1
+	Weapon.AmmoUse2 0
+	Weapon.AmmoType1 "RTCW_LugerMagazine"
+	Weapon.AmmoType2 "Clip"
+	Weapon.AmmoGive2 8
+	Obituary "%o was killed (luger) by %k."
+	Inventory.Pickupmessage "Luger P08"
+	Inventory.PickupSound "RTCW/WeaponPickup"
+	Tag "Luger"
+	+WEAPON.NOALERT
+	+WEAPON.AMMO_OPTIONAL
+	States
+	{
+		Spawn:
+			RW98 A -1
+			Stop
+		Deselect:
+			RW00 V 0 A_PlaySound("RTCW/Change",CHAN_7)
+			RW00 V 0 A_JumpIfInventory("RTCW_LugerSilencerAttached",1,"DeselectSilencer")
+			RW00 GHIJK 2
+			Goto Super::Deselect
+		DeselectSilencer:
+			RW04 GHIJK 2
+			Goto Super::Deselect
+		Ready:
+			RW00 A 0 A_JumpIfInventory("RTCW_LugerSilencerAttached",1,"ReadySilencer")
+			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW00 A 0 A_GiveInventory("RTCW_WeaponToken",2)
+			RW00 A 0
+			RW00 LMNO 2
+		ReadyLoop:
+			RW00 A 0 A_JumpIfInventory("RTCW_LugerSilencerAttached",1,"ReadySilencedLoop")
+			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+			RW00 A 1 A_WeaponReady(WRF_ALLOWRELOAD)		
+			Loop
+		ReadySilencer:
+			RW04 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW04 A 0 A_GiveInventory("RTCW_WeaponToken",3)
+			RW04 LMNO 2
+		ReadySilencedLoop:
+			RW04 A 0 A_JumpIfInventory("RTCW_LugerSilencerAttached",1,1)
+			Goto ReadyLoop
+			RW04 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+			RW04 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+			Loop
+		NoAmmo:
+			RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+			RW00 A 17
+			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
+			Goto Deselect
+		NoAmmoSilenced:
+			RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+			RW04 A 17
+			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
+			Goto Deselect
+		Fire:
+			RW00 B 0 A_JumpIfInventory("RTCW_LugerSilencerAttached",1,"FireSilenced")
+			RW00 B 0 A_JumpIfInventory("RTCW_LugerMagazine",1,1)
+			Goto Reload
+			RW00 B 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
+			RW00 B 0 A_TakeInventory("RTCW_LugerMagazine",1)
+			RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
+			RW00 B 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
+			RW00 B 0 A_GunFlash("FireFlash")
+			RW00 B 0 A_FireCustomMissile("RTCW_LugerTracer",frandom(-2.0,2.0),0,0,4,0,frandom(-2.0,2.0))
+			RW00 B 0 A_PlaySound("RTCW/Luger/Fire",CHAN_Weapon)
+			RW00 BCDEFG 2
+			Goto ReadyLoop
+		FireSilenced:
+			RW04 B 0 A_JumpIfInventory("RTCW_LugerMagazine",1,1)
+			Goto Reload
+			RW04 B 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
+			RW04 B 0 A_TakeInventory("RTCW_LugerMagazine",1)
+			RW04 B 0 A_FireCustomMissile("RTCW_LugerTracer",frandom(-2.0,2.0),0,0,4,0,frandom(-2.0,2.0))
+			RW04 B 0 A_PlaySound("RTCW/Luger/SilencerFire",CHAN_Weapon)
+			RW04 BCDEFG 2
+			Goto ReadySilencedLoop
+		FireFlash:
+			RW03 B 2 Bright
+			Stop
+		AltFire:
+			RW02 I 0 A_JumpIfInventory("RTCW_LugerSilencerAttached",1,"RemoveSilencer")
+			RW02 I 0 A_PlaySound("RTCW/Luger/SilencerAttach",CHAN_6)
+			RW02 I 0 A_GiveInventory("RTCW_LugerSilencerAttached",1)
+			RW02 IJKL 2
+			RW02 M 0
+			RW05 "[\]" 2
+			RW06 ABCDEFGHIJKLMNOPQRSTUV 2
+			RW04 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW04 A 0 A_GiveInventory("RTCW_WeaponToken",3)
+			Goto ReadySilencedLoop
+		RemoveSilencer:
+			RW06 W 0 A_PlaySound("RTCW/Luger/SilencerRemove",CHAN_6)
+			RW06 W 0 A_TakeInventory("RTCW_LugerSilencerAttached",1)
+			RW06 "WXYZ[\]" 2
+			RW07 ABCDEFGHIJKL 2
+			RW07 M 0
+			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW00 A 0 A_GiveInventory("RTCW_WeaponToken",2)
+			Goto ReadyLoop
+		Reload:
+			TNT1 A 0 A_JumpIfInventory("RTCW_LugerMagazine",0,"ReadyLoop")
+			TNT1 A 0 A_JumpIfInventory("Clip",1,"ReloadSuccess")
+			RW00 A 0 A_JumpIfInventory("RTCW_LugerSilencerAttached",1,"NoAmmoSilenced")
+			goto NoAmmo
+			TNT1 A 0
+			goto ReadyLoop
+		ReloadSuccess:
+			TNT1 A 0 A_JumpIfInventory("RTCW_LugerMagazine",1,1)
+			goto ReloadSuccessNoAmmo		
+			RW00 A 0 A_PlaySound("RTCW/Luger/Reload",CHAN_6)
+			RW00 A 0 A_JumpIfInventory("RTCW_LugerSilencerAttached",1,"ReloadSuccessSilenced")
+			RW00 "QRSTUVWXYZ[\]" 2
+			RW01 ABCDEFGHIJKLM 2
+			RW00 A 0
+			goto SetAmmo
+		ReloadSuccessNoAmmo:	
+			RW00 A 0 A_PlaySound("RTCW/Luger/Reload",CHAN_6)
+			RW00 A 0 A_JumpIfInventory("RTCW_LugerSilencerAttached",1,"ReloadSuccessSilenced")
+			RW00 "QRSTUVWXYZ[\]" 2
+			RW01 ABCDEFGHIJKLM 2
+			RW01 N 0 A_PlaySound("RTCW/Luger/Reload2",CHAN_6)
+			RW01 NOPQRSTUVWXYZ 2
+			RW00 A 0
+			goto SetAmmo				
+		ReloadSuccessSilenced:
+			TNT1 A 0 A_JumpIfInventory("RTCW_LugerMagazine",1,1)
+			goto ReloadSuccessNoAmmoSilenced			
+			RW04 "QRSTUVWXYZ[\]" 2
+			RW05 ABCDEFGHIJKLM 2
+			RW04 A 0
+			goto SetAmmo
+		ReloadSuccessNoAmmoSilenced:			
+			RW04 "QRSTUVWXYZ[\]" 2
+			RW05 ABCDEFGHIJKLM 2
+			RW05 N 0 A_PlaySound("RTCW/Luger/Reload2",CHAN_6)
+			RW05 NOPQRSTUVWXYZ 2
+			RW04 A 0
+			goto SetAmmo	
+		SetAmmo:
+			TNT1 A 0 A_GiveInventory("RTCW_LugerMagazine",8)
+			Goto ReadyLoop
+		ReloadAmmo:
+			TNT1 A 0 A_JumpIfInventory("RTCW_LugerMagazine",0,"ReadyLoop")
+			TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+			goto ReadyLoop
+			TNT1 A 0 A_GiveInventory("RTCW_LugerMagazine",1)
+			TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+			Loop
+		Kicking:
+			TNT1 A 0 A_Gunflash("KickingFoot")
+		KickingDelay:
+			RW00 A 0 A_JumpIfInventory("RTCW_LugerSilencerAttached",1,"KickingSilencedDelay")
+			RW00 A 18
+			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
+			Goto ReadyLoop
+		KickingSilencedDelay:
+			RW04 A 18
+			RW04 A 0 A_TakeInventory("RTCW_Kicking",1)
+			Goto ReadyLoop
+		KickingFoot:
+			RW99 ABCD 2
+			RW99 E 0 A_FireCustomMissile("RTCW_KickProjectile",0,0,0,-8)
+			RW99 EFGHI 2
+			Stop
+	}
+}
+
+//Was 6 damage, now 12
+Actor RTCW_LugerTracer : RTCW_Tracer
+{ 
+	States
+	{
+		Crash:
+		Death:
+			TNT1 A 0 A_Explode(CallACS("RTCW_BulletDamage",12),8,!XF_HURTSOURCE,0,8)
+			Goto Super::Death
+		XDeath:
+			TNT1 A 0 A_Explode(CallACS("RTCW_BulletDamage",12),8,!XF_HURTSOURCE,0,8)
+			Goto Super::XDeath
+	}
+}
+
+Actor RTCW_LugerMagazine : Ammo
+{
+	Inventory.MaxAmount 8
+	Ammo.BackpackMaxAmount 8
+	States
+	{
+		Spawn:
+			RW00 A -1
+			Stop
+	}
+}
+
+Actor RTCW_LugerSilencerAttached : Inventory { +INVENTORY.UNDROPPABLE Inventory.MaxAmount 1 Inventory.InterHubAmount 1 }
+
+Actor RTCW_Colt : RTCW_Weapon
+{
+	Weapon.SlotNumber 1
+	Weapon.SlotPriority 3
+	Weapon.SelectionOrder 1600
+	Weapon.AmmoUse1 1
+	Weapon.AmmoUse2 0
+	Weapon.AmmoType1 "RTCW_ColtMagazine"
+	Weapon.AmmoType2 "Clip"
+	Obituary "%o was killed (colt) by %k."
+	Inventory.Pickupmessage "Colt"
+	Inventory.PickupSound "RTCW/WeaponPickup"
+	Tag "Colt"
+	+WEAPON.NOALERT
+	+WEAPON.AMMO_OPTIONAL
+	States
+	{
+		Spawn:
+			RW98 A -1
+			Stop
+		Deselect:
+			RW00 V 0 A_PlaySound("RTCW/Change",CHAN_7)
+			RW00 V 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"DeselectDual")
+			RW00 GHIJK 2
+			Goto Super::Deselect
+		DeselectDual:
+			RW04 NOPQR 2
+			Goto Super::Deselect
+		Ready:
+			RW00 A 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"ReadyDual")
+			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW00 A 0 A_GiveInventory("RTCW_WeaponToken",4)
+			RW00 LMNO 2
+		ReadyLoop:
+			RW00 A 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"ReadyDualLoop")
+			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+			RW00 A 1 A_WeaponReady(WRF_ALLOWRELOAD)		
+			Loop
+		ReadyDual:
+			RW04 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW04 A 0 A_GiveInventory("RTCW_WeaponToken",5)
+			RW04 STUVW 2
+		ReadyDualLoop:
+			RW04 A 0 A_JumpIfInventory("RTCW_ColtDualWield",1,1)
+			Goto ReadyLoop
+			RW04 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+			RW04 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+			Loop
+		NoAmmo:
+			RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+			RW00 A 17
+			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
+			Goto Deselect
+		NoAmmoDual:
+			RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+			RW04 A 17
+			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
+			Goto Deselect
+		Fire:
+			RW00 B 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"FireDual")
+			RW00 B 0 A_JumpIfInventory("RTCW_ColtMagazine",1,1)
+			Goto Reload
+			RW00 B 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
+			RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
+			RW00 B 0 A_TakeInventory("RTCW_ColtMagazine",1)
+			RW00 B 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
+			RW00 B 0 A_GunFlash("FireFlash")
+			RW00 B 0 A_FireCustomMissile("RTCW_ColtTracer",frandom(-1.0,1.0),0,0,4,0,frandom(-1.0,1.0))
+			RW00 B 0 A_PlaySound("RTCW/Colt/Fire",CHAN_Weapon)
+			RW00 BCDEFG 2
+			Goto ReadyLoop
+		FireFlash:
+			RW03 B 2 Bright
+			Stop
+		FireDual:
+			RW04 B 0 A_JumpIf(CallACS("RTCW_Decorate",8)==1,"FireDual2")
+			RW04 B 0 A_JumpIfInventory("RTCW_ColtMagazine",1,1)
+			Goto Reload
+		FireDual1:
+			RW04 B 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
+			RW04 B 0 A_GiveInventory("RTCW_FiringToken",1)
+			RW04 B 0 A_TakeInventory("RTCW_ColtMagazine",1)
+			RW04 B 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
+			RW04 B 0 A_GunFlash("FireFlashDual1")
+			RW04 B 0 A_FireCustomMissile("RTCW_ColtTracer",frandom(-1.0,1.0),0,0,4,0,frandom(-1.0,1.0))
+			RW04 B 0 A_PlaySound("RTCW/Colt/Fire",CHAN_Weapon)
+			RW04 B 2
+			RW04 CDEFGH 1
+			Goto ReadyLoop
+		FireDual2:
+			RW04 I 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
+			RW04 I 0 A_GiveInventory("RTCW_FiringToken",1)
+			RW04 I 0 A_TakeInventory("RTCW_ColtMagazine2",1)
+			RW04 I 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
+			RW04 I 0 A_GunFlash("FireFlashDual2")
+			RW04 I 0 A_FireCustomMissile("RTCW_ColtTracer",frandom(-1.0,1.0),0,0,4,0,frandom(-1.0,1.0))
+			RW04 I 0 A_PlaySound("RTCW/Colt/Fire",CHAN_Weapon)
+			RW04 I 2
+			RW04 JKLMN 1
+			Goto ReadyLoop
+		FireFlashDual1:
+			RW03 C 2 Bright
+			Stop
+		FireFlashDual2:
+			RW03 D 2 Bright
+			Stop
+		AltFire:
+			RW01 Z 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"Single")
+			RW01 Z 0 A_PlaySound("RTCW/Change",CHAN_7)
+			RW01 Z 0 A_GiveInventory("RTCW_ColtDualWield",1)
+			RW01 "Z[\]" 2
+			RW06 "[\]" 2
+			RW07 AB 2
+			RW04 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW04 A 0 A_GiveInventory("RTCW_WeaponToken",5)
+			Goto ReadyDualLoop
+		Single:
+			RW06 R 0 A_PlaySound("RTCW/Change",CHAN_7)
+			RW06 R 0 A_TakeInventory("RTCW_ColtDualWield",1)
+			RW06 RSTU 2
+			TNT1 A 0
+			RW02 JKL 2
+			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW00 A 0 A_GiveInventory("RTCW_WeaponToken",4)
+			Goto ReadyLoop
+		Reload:
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"ReloadDual")
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReadyLoop")
+			TNT1 A 0 A_JumpIfInventory("Clip",1,"ReloadSuccess")
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",1,1)
+			goto NoAmmo
+			TNT1 A 0
+			goto ReadyLoop
+		ReloadSuccess:
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",1,1)
+			goto ReloadNoAmmo		
+			RW00 A 0 A_PlaySound("RTCW/Colt/Reload",CHAN_6)
+			RW00 "QRSTUVWXYZ[\]" 2
+			RW01 ABCDEFGHIJKLM 2
+			RW00 A 0
+			goto ReloadAmmo
+		ReloadNoAmmo:
+			RW00 A 0 A_PlaySound("RTCW/Colt/Reload",CHAN_6)
+			RW00 "QRSTUVWXYZ[\]" 2
+			RW01 ABCDEFGHIJKLM 2 
+			RW01 N 0 A_PlaySound("RTCW/Colt/Reload1_2",CHAN_6)
+			RW01 NOPQRSTUVWXYZ 2
+			RW00 A 0
+			goto ReloadAmmo		
+		ReloadAmmo:
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReadyLoop")
+			TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+			goto ReadyLoop
+			TNT1 A 0 A_GiveInventory("RTCW_ColtMagazine",1)
+			TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+			Loop
+		ReloadDual:
+			TNT1 A 0 A_JumpIfInventory("Clip",1,3)
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",1,1)
+			Goto ReloadSuccessDual
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",1,1)
+			Goto ReloadNoAmmoDual
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,1)
+			goto ReloadSuccessDual
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",0,"ReadyLoop")
+			goto ReloadSuccessDual
+		ReloadSuccessDual:
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",1,1)
+			Goto ReloadNoAmmoDual	
+			RW04 Y 0 A_PlaySound("RTCW/Colt/Reload2",CHAN_6)
+			RW04 "YZ[\]" 2
+			RW05 ABCDEFGHIJKLMNOPQRSTUV 2
+			RW04 A 0
+			goto ReloadAmmoDual
+		ReloadNoAmmoDual:
+			RW04 Y 0 A_PlaySound("RTCW/Colt/Reload2",CHAN_6)
+			RW04 "YZ[\]" 2
+			RW05 ABCDEFGHIJKLMNOPQRSTUV 2
+			RW05 W 0 A_PlaySound("RTCW/Colt/Reload2_2",CHAN_6)
+			RW05 "WXYZ[\]" 2
+			RW06 ABCDEFGHIJKLMNO 2
+			RW04 A 0
+			goto ReloadAmmoDual		
+		ReloadAmmoDual:
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReloadSecond")
+			TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+			goto ReadyLoop
+			TNT1 A 0 A_GiveInventory("RTCW_ColtMagazine",1)
+			TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+			Loop
+		ReloadSecond:
+			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",0,"ReadyLoop")
+			TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+			goto ReadyLoop
+			TNT1 A 0 A_GiveInventory("RTCW_ColtMagazine2",1)
+			TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+			Loop
+		Kicking:
+			TNT1 A 0 A_Gunflash("KickingFoot")
+		KickingDelay:
+			RW00 A 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"KickingDelayDual")
+			RW00 A 18
+			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
+			Goto ReadyLoop
+		KickingDelayDual:
+			RW04 A 18
+			RW04 A 0 A_TakeInventory("RTCW_Kicking",1)
+			Goto ReadyLoop
+		KickingFoot:
+			RW99 ABCD 2
+			RW99 E 0 A_FireCustomMissile("RTCW_KickProjectile",0,0,0,-8)
+			RW99 EFGHI 2
+			Stop
+	}
+}
+
+//Was 8 damage, now 16
+Actor RTCW_ColtTracer : RTCW_Tracer
+{ 
+	States
+	{
+		Crash:
+		Death:
+			TNT1 A 0 A_Explode(CallACS("RTCW_BulletDamage",16),8,!XF_HURTSOURCE,0,8)
+			Goto Super::Death
+		XDeath:
+			TNT1 A 0 A_Explode(CallACS("RTCW_BulletDamage",16),8,!XF_HURTSOURCE,0,8)
+			Goto Super::XDeath
+	}
+}
+
+Actor RTCW_ColtMagazine : Ammo
+{
+	Inventory.MaxAmount 8
+	Ammo.BackpackMaxAmount 8
+	States
+	{
+		Spawn:
+			RW00 A -1
+			Stop
+	}
+}
+
+Actor RTCW_ColtMagazine2 : Ammo
+{
+	Inventory.MaxAmount 8
+	Ammo.BackpackMaxAmount 8
+	States
+	{
+		Spawn:
+			RW00 A -1
+			Stop
+	}
+}
+
+Actor RTCW_ColtDualWield : Inventory { +INVENTORY.UNDROPPABLE Inventory.MaxAmount 1 Inventory.InterHubAmount 1 }

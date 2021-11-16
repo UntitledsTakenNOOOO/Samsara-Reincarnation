@@ -63,6 +63,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
 	{"Catacomb_RandomGem","","","","",""},	
 	{"Painkiller_Tarot_SilverGiver","","","","",""},	
 	{"Unreal_GESBioRifle","Cell","Unreal_Rifle","Shell","Unreal_Duster","Clip"},		
+	{"RTCW_FlameThrower","Cell","RTCW_AlliedCrate","","RTCW_STEN","Clip"},			
 };
 
 int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] = 
@@ -96,8 +97,9 @@ int UniqueMaxes[CLASSCOUNT][CHOICECOUNT_U] =
 	{20,    0,     20,  0,		0,	0},
 	{0,     0,      0,  0,		0,	0},
 	{0,     0,      0,  0,		0,	0},	
-	{0,     0,      0,  0,		0,	0},	
-	{0,     0,      0,  0,		0,	0},	
+	{0,     0,      0,  0,		0,	0},
+	{0,     0,      0,  0,		0,	0},		
+	{0,     0,      0,  0,		0,	0},		
 };
 
 int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
@@ -132,7 +134,8 @@ int UniqueCounts[CLASSCOUNT][CHOICECOUNT_U] =
 	{-1,    -1,     -1, -1,     -1, -1},
 	{-1,    -1,     -1, -1,     -1, -1},	
 	{-1,    -1,     -1, -1,     -1, -1},	
-	{-1,    -1,     -1, -1,     -1, -1},	
+	{-1,    -1,     -1, -1,     -1, -1},		
+	{-1,    -1,     -1, -1,     -1, -1},			
 };
 
 int UniqueScripts[CLASSCOUNT] = {0, 0, 0, 0, 0, 0, SAMSARA_MARATHON, 0, 0, 0};
@@ -176,7 +179,7 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Dragon Claw",                     "Clip",         "",             "", ""},
         {"Phoenix Rod",                     "RocketAmmo",   "",             "", ""},
         {"Hellstaff",                       "Cell",         "",             "", ""},
-        {"DSparilStaff",                    "",             "",             "", ""},
+        {"DSparilStaff",                    "Cell",             "",             "", ""},
     },
 
     {   // B.J.
@@ -333,17 +336,17 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"  Fist_2x5  ",                    "",             "",             "", ""},
         {"Thermal Detonator",               "RocketAmmo",  	"",             "", ""},
         {"Bryar Pistol",           			"",             "",             "", ""},
-        {"Stormtrooper Rifle",              "Shell",        "",             "", ""},
+        {"Stormtrooper Rifle",              "Clip",        "",             "", ""},
         {"Fusion Cutter",             		"Shell",        "Shell",        "", ""},
-        {"Imperial Repeater",         		"Clip",        	"Clip",  	    "", ""},
+        {"Imperial Repeater",         		"Cell",        	"Cell",  	    "", ""},
         {"Mortar Gun",           			"RocketAmmo",   "",             "", ""},
         {"Concussion Rifle",        		"Cell",         "",             "", ""},
-        {"Assault Cannon",                  "Cell",         "RocketAmmo",   "", ""},
+        {"Assault Cannon",                  "Shell",         "RocketAmmo",   "", ""},
         {"Stun Gauntlets",               	"",   			"",             "", ""},
     },	
 	{	//Mooman
 		{" Tazer ",							"",				"",				"",	""},
-		{" Toxic Mutant Gun ",				"Cell",			"",				"",	""},
+		{"IPOGRandomItemGenerator",				"",			"",				"",	""},
 		{" Aldus Pistol ",					"Clip",			"",				"",	""},
 		{" Plasma Shotgun ",				"Shell",		"",				"",	""},
 		{" Aldus Flamethrower ",			"Shell",		"",				"",	""},
@@ -379,8 +382,8 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
 		{"Crowbar",							"",					"",				"",	""},
 		{"Hornetgun",						"Cell",				"",				"",	""},
 		{"9mm Pistol",						"HL9mmCounter",		"Clip",			"",	""},
-		{".357 Python",						"HLPythonCounter",	"Clip",			"",	""},
 		{"Assault Shotgun",					"HLShotgunCounter",	"Shell",		"",	""},
+		{".357 Python",						"HLPythonCounter",	"Shell",			"",	""},
 		{"MP5",								"HLMP5Counter",		"Clip",			"",	""},
 		{" RPG ",							"HLRPGCounter",		"RocketAmmo",	"",	""},
 		{"Gauss Cannon",					"Cell",				"",				"",	""},
@@ -495,6 +498,17 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"Unreal_Eightball",        		"RocketAmmo", 	"RocketAmmo",       	"", ""},
         {"Unreal_Minigun",        		"Cell",   		"",   		"", ""},
         {"Unreal_Redeemer",             	"Cell",   		"",   		"", ""},
+    },	
+	{   // RTCW BJ
+		{"RTCW_Knife",               	"",             "",         "", ""},
+        {"RTCW_Grenade",        				"RocketAmmo",		"",         "", ""},
+        {"RTCW_Luger",           		"RTCW_LugerMagazine",         "Clip",         "", ""},
+        {"RTCW_MP40",     					"RTCW_MP40Magazine",         "Clip",         "", ""},
+        {"RTCW_Mauser",           			"RTCW_MauserMagazine",		"Shell",         "", ""},
+        {"RTCW_FG42",        				"RTCW_FG42Magazine",         "Clip",         "", ""},
+        {"RTCW_Panzerfaust",        		"RocketAmmo", 	"",       	"", ""},
+        {"RTCW_Venom",        		"RTCW_VenomMagazine",   		"Cell",   		"", ""},
+        {"RTCW_TeslaGun",             	"Cell",   		"",   		"", ""},
     },		
 };
 
@@ -529,7 +543,6 @@ int ClassScripts[CLASSCOUNT][SLOTCOUNT] =
 	{0,0,                   0,  0,0,0,0,0,0,0},	
 	{0,0,                   0,  0,0,0,0,0,0,0},	
 	{0,0,                   0,  0,0,0,0,0,0,0},		
-	{0,0,                   0,  0,0,0,0,0,0,0},	
 };
 
 //+Added
@@ -631,7 +644,6 @@ str SamsaraRGP[CLASSCOUNT][SAMSARA_RGP_PAGES] =
 	{"",				"",},	
 	{"",				"",},	
 	{"",				"",},	
-	{"",				"",},	
 };
 
 #define SAMSARA_RGP_PROPERTIES	2
@@ -663,7 +675,6 @@ int SamsaraRGPProperties[CLASSCOUNT][SAMSARA_RGP_PAGES][SAMSARA_RGP_PROPERTIES] 
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
 	{{0,	0}, 		{0,		0},},
-	{{0,	0}, 		{0,		0},},	
 	{{0,	0}, 		{0,		0},},	
 	{{0,	0}, 		{0,		0},},	
 	{{0,	0}, 		{0,		0},},	
@@ -777,5 +788,5 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 	},
 	{
 		{"Unreal_DispersionPistol", "Unreal_RazorJack", "Unreal_AutoMag", "Unreal_ASMDShockRifle", "Unreal_FlakCannon", "Unreal_Stinger", "Unreal_EightBall", "Unreal_Minigun", "Unreal_Redeemer", "Unreal_GESBioRifle", "Unreal_Rifle", "Unreal_Duster"},
-	},
+	},	
 };

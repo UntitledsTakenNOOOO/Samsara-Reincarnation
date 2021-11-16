@@ -714,8 +714,8 @@ str HL_HUD_AmmoInts[10][9] =
 str HL_HUD_WeaponBarGraphics[10][5] = 
 {
 	{"Hornetgun", "HWMSLOT", "OPFWMB", "HWMSLOT1", "OPFWM1"},
-	{".357 Python", "HWMSLOT", "OPFWMB", "HWMSLOT2", "OPFWM2"},
-	{"Assault Shotgun", "HWMSLOT", "OPFWMB", "HWMSLOT3", "OPFWM3"},
+	{"Assault Shotgun", "HWMSLOT", "OPFWMB", "HWMSLOT2", "OPFWM2"},
+	{".357 Python", "HWMSLOT", "OPFWMB", "HWMSLOT3", "OPFWM3"},
 	{"MP5", "HWMSLOT", "OPFWMB", "HWMSLOT4", "OPFWM4"},
 	{" RPG ", "HWMSLOT", "OPFWMB", "HWMSLOT5", "OPFWM5"},
 	{"Gauss Cannon", "HWMSLOT", "OPFWMB", "HWMSLOT6", "OPFWM6"},
@@ -1134,6 +1134,14 @@ Script "HalfLifeRecoil" (int weapon) clientside
 			for(a = 0; a < 8; a++) { SetActorPitch(0, GetActorPitch(0) - a*56); Delay(1); }
 			for(a = 7; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*56); Delay(1); }
 			break;
+		case 8:
+			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*70); Delay(1); }
+			for(a = 3; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*33); Delay(3); }
+			break;		
+		case 9:
+			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*56); Delay(1); }
+			for(a = 3; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*33); Delay(1); }
+			break;				
 	}
 }
 
@@ -1592,6 +1600,46 @@ Script "HalfLifeFootStepGeneratorEnemy" (int steptype)
 			}
 		}
 		terminate;
+	}
+}
+
+Script "HalfLife_BulletDamage" (int damage)
+{
+	int bulletX = GetActorX(0);
+	int bulletY = GetActorY(0);
+	int bulletZ = GetActorZ(0);
+	SetActivator(0,AAPTR_Tracer);
+	int monsterX = GetActorX(0);
+	int monsterY = GetActorY(0);
+	int monsterZ = GetActorZ(0);
+	int monsterHealth = GetActorProperty(0,APROP_Health);
+	int monsterHeight = GetActorProperty(0,APROP_Height);
+	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
+	
+	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
+	
+	if(monsterWidth > monsterHeight)
+	{
+		int monsterAngle = GetActorAngle(0);
+		int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
+		int angle = vang % 1.0;
+		
+		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.4) && bulletZ < monsterZ + FixedMul(monsterHeight,0.6) && ((abs(monsterAngle - angle)) < 0.6 && (abs(monsterAngle - angle)) > 0.4))
+		{			
+			SetResultValue(damage*2);
+		}
+		else
+			SetResultValue(damage);
+	}
+	else
+	{
+		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.8))
+		{
+				
+			SetResultValue(damage*2);
+		}
+		else
+			SetResultValue(damage);
 	}
 }
 

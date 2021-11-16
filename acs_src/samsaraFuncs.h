@@ -164,7 +164,6 @@ function void ApplyLMS(void)
 function int samsaraClassNum(void)
 {
     /*int i;
-
     for (i = 0; i < CLASSCOUNT; i++)
     {
         if (CheckInventory(ClassItems[i])) { return i; }
@@ -439,7 +438,8 @@ function void SetArmorMode(void)
     }
 }
 
-function int SamsaraArmorType(void)
+//outdated
+/*function int SamsaraArmorType(void)
 {
     int i, j;
 
@@ -458,7 +458,7 @@ function int SamsaraArmorType(void)
     }
 
     return -1;
-}
+}*/
 
 function int HandleInstagib(int respawning)
 {
@@ -522,12 +522,10 @@ function int HandleBuffCVars(int respawning)
 
 	/*
     int i, j;
-
     for (i = 0; i < DAMAGEMODES; i++)
     {
         j = CVarDamageItems[i];
         if (!StrLen(j)) { continue; }
-
         if (damagelevel == i)
         {
             if (!CheckInventory(j)) { GiveInventory(j, 1); }
@@ -537,12 +535,10 @@ function int HandleBuffCVars(int respawning)
             TakeInventory(j, 0x7FFFFFFF);
         }
     }
-
     for (i = 0; i < DEFENSEMODES; i++)
     {
         j = CVarDefenseItems[i];
         if (!StrLen(j)) { continue; }
-
         if (defenselevel == i)
         {
             if (!CheckInventory(j)) { GiveInventory(j, 1); }

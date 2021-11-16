@@ -57,9 +57,9 @@ Actor PettonEverhail : PlayerPawn
 			Loop
 		See:
 			CTPL AAAABBBB 1 A_GiveInventory("WolfCheckMoving")
-			CTPL A 0 A_SpawnItemEx("Catacomb_FootStepL",0,0,1,0,0,-2,0,SXF_CLIENTSIDE)
+			CTPL A 0 A_SpawnItemEx("Catacomb_Step",0,0,1,0,0,-2,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
 			CTPL AAAACCCC 1 A_GiveInventory("WolfCheckMoving")
-			CTPL A 0 A_SpawnItemEx("Catacomb_FootStepR",0,0,1,0,0,-2,0,SXF_CLIENTSIDE)
+			CTPL A 0 A_SpawnItemEx("Catacomb_Step",0,0,1,0,0,-2,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
 			Loop
 		Missile:
 			CTPL A 6
@@ -677,7 +677,7 @@ actor PettonEverhail_ShrinkEffect : PettonEverhail
 	}
 }
 
-Actor Catacomb_FootStepL 
+/*Actor Catacomb_FootStepL 
 {
 	RenderStyle Add
 	+NOINTERACTION
@@ -704,7 +704,7 @@ Actor Catacomb_FootStepL
 		TNT1 A 2
 		Stop
 	Death:
-		TNT1 A 5 A_PlaySound("Catacomb/FootStepL")
+		TNT1 A 5 A_PlaySound("Catacomb/FootStepLeft")
 		Stop
 	}
 }
@@ -717,10 +717,37 @@ Actor Catacomb_FootStepR : Catacomb_FootStepL
 		TNT1 A 2
 		Stop
 	Death:
-		TNT1 A 5 A_PlaySound("Catacomb/FootStepR")
+		TNT1 A 5 A_PlaySound("Catacomb/FootStepRight")
 		Stop	
 	}
-}	
+}	*/
+
+Actor Catacomb_Step 
+{
+	+NOBLOCKMAP
+	+CLIENTSIDEONLY
+	+NOGRAVITY
+	+NOINTERACTION
+	Height 4
+	Radius 2
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 0 A_CheckFloor("Step")
+			TNT1 A 1
+			stop
+		Step:
+			TNT1 A 0 A_Jump(128, "StepRight")
+			TNT1 A 0 A_Playsound("Catacomb/FootStepLeft", CHAN_BODY, 1.0)
+			TNT1 A 1 
+			stop
+		StepRight:
+			TNT1 A 0 A_Playsound("Catacomb/FootStepRight", CHAN_BODY, 1.0)
+			TNT1 A 1 
+			stop
+	}
+}
 
 actor Catacomb_Boolean: Inventory
 {
@@ -728,6 +755,7 @@ actor Catacomb_Boolean: Inventory
     +UNDROPPABLE
     -INVBAR
 }
+
 Actor Catacomb_SmallHealthPotion : HealthPickup //replaces medikit
 {
 	Health 25

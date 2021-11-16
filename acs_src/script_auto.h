@@ -483,9 +483,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
     }
 	
     pcount = PlayerCount();
-	
+    
     while (!endloop && ServerEnterTimes[pln] == startTime)
-    {			
+    {		
         if (GetUserCvar(pln,"sams_cl_wolfmove")) { GiveInventory("WolfenMovement", 1); }
         else { TakeInventory("WolfenMovement", 0x7FFFFFFF); }
 		
@@ -544,9 +544,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         
         if (GetUserCvar(pln,"sams_cl_weaponhud")) { GiveInventory("ExpandedHud", 1); }
         else { TakeInventory("ExpandedHud", 0x7FFFFFFF); }
-		
-		if (GetUserCvar(pln, "sams_hlnoreload")) { GiveInventory("HLNoReload", 1); }
-		else { TakeInventory("HLNoReload", 0x7FFFFFFF); }
+				
+        if (GetCvar("sams_permakimbo") == 1) { GiveInventory("AkimboStay", 1); }
+        else { TakeInventory("AkimboStay", 0x7FFFFFFF); }			
 		
 		switch (samsaraClassNum())
 		{
@@ -1020,7 +1020,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         TakeInventory("WeaponGetYaaaay2", 1);
         TakeInventory("Mace", 1);
         TakeInventory("MacePowered", 1);
-		//if (GetCvar("sams_lmsrules") == 0) { ConvertClassWeapons(-1); } seems pointless to have this, but will leave commented for now
+        //if (GetCvar("sams_lmsrules") == 0) { ConvertClassWeapons(-1); } seems pointless to have this, but will leave commented for now
 
         if (GetCVar("sams_banjetpack") && CheckInventory("DukePortJetpack"))
         {
@@ -1103,9 +1103,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         oarmor = armor;
         otype = type;
         armor = CheckInventory("Armor");
-		type = SamsaraArmorType();
+        type = GetArmorInfo(0);
 
-        if (oarmor > armor && otype == 3)
+        if (oarmor > armor && (strleft(otype,1) == "M"))
         {
             if (samsaraClassNum() == CLASS_MARATHON)
             {
@@ -1510,6 +1510,7 @@ script "SamsaraEnterClient" (void) clientside //521 -- SAMSARA_ENTER_CLIENT
         
         if (oClass != class) { SamsaraItemFlash = Timer(); }
         
+		//seems unnecessary
         for (i = 0; i < SLOTCOUNT; i++)
         {
             j = SamsaraClientWeps[i];
@@ -1517,7 +1518,7 @@ script "SamsaraEnterClient" (void) clientside //521 -- SAMSARA_ENTER_CLIENT
             
             if (j != SamsaraClientWeps[i]) { SamsaraClientWepFlashes[i] = Timer(); }
         }
-        
+		    
         if (IsServer)
         {
             array_wolfmove[pln]     = !!GetCVar("sams_cl_wolfmove");

@@ -1211,36 +1211,39 @@ Script "BondZoomAmountCheck" (void)
 
 Script "BondHitBox" (int damage)
 {
-	int x = GetActorX(0);
-	int y = GetActorY(0);
-	int z = GetActorZ(0);
+	int bulletX = GetActorX(0);
+	int bulletY = GetActorY(0);
+	int bulletZ = GetActorZ(0);
+	SetActivator(0,AAPTR_Tracer);
+	int monsterX = GetActorX(0);
+	int monsterY = GetActorY(0);
+	int monsterZ = GetActorZ(0);
 	int newtid = UniqueTID();
-	int oldTID = ActivatorTID();
-	Thing_ChangeTID(0,newtid);
-	
-	SetActivator(0, AAPTR_Tracer);
-	
-	int tx = GetActorX(0);
-	int ty = GetActorY(0);
-	int tz = GetActorZ(0);
-	int height = GetActorProperty(0,APROP_Height);
-	int width = GetActorProperty(0,APROP_Radius)*2;
+	int oldTID = ActivatorTID();	
+	int monsterHealth = GetActorProperty(0,APROP_Health);
+	int monsterHeight = GetActorProperty(0,APROP_Height);
+	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
 	int result;
-	if(width >= height)
+	
+	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
+	
+	if(monsterWidth > monsterHeight)
 	{
-		if((z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.45)) && (z <= tz+FixedMul(GetActorProperty(0,APROP_Height),0.55)))
-		{
+		int monsterAngle = GetActorAngle(0);
+		int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
+		int angle = vang % 1.0;
+		
+		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.4) && bulletZ < monsterZ + FixedMul(monsterHeight,0.6) && ((abs(monsterAngle - angle)) < 0.6 && (abs(monsterAngle - angle)) > 0.4))
+		{			
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeHead");
 			SetResultValue(damage*3);
 		}
 		else
-		{
-			SetResultValue(-1);
-		}
-	}
+			SetResultValue(damage/2);
+	}		
 	else
 	{
-		if((z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.85))/* && (z <= tz+GetActorProperty(0,APROP_Height))*/)
+		if((bulletZ >= monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.80)))/* && (z <= tz+GetActorProperty(0,APROP_Height))*/
 		{
 			if(SpawnForced("SamsaraMixerCompendiumToken",0,0,0,0))
 				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
@@ -1250,19 +1253,19 @@ Script "BondHitBox" (int damage)
 			if(result == -1)
 				damage = -1;
 			else 
-				damage*=3;
+				SetResultValue(damage*3);
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeHead");
-			SetResultValue(damage);
+			SetResultValue(damage*3);
 		}
-		else if((z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.45)) && (z < tz+FixedMul(GetActorProperty(0,APROP_Height),0.85)))
+		else if((bulletZ >= monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.45)) && (bulletZ < monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.80)))
 		{
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeTorso");
-			SetResultValue(damage);
+			SetResultValue(damage/2);
 		}
 		else
 		{
-			SetResultValue(-1);
+			SetResultValue(damage*0);
 		}
 	}
 	Thing_ChangeTID(newtid,oldTID);
-}
+}			

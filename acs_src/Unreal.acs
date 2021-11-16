@@ -117,6 +117,7 @@ Script "UnrealHitBox" (int damage, int headshotdmg)
 	int tx = GetActorX(0);
 	int ty = GetActorY(0);
 	int tz = GetActorZ(0);
+	int monsterHealth = GetActorProperty(0,APROP_Health);	
 	int height = GetActorProperty(0,APROP_Height);
 	int width = GetActorProperty(0,APROP_Radius)*2;
 	int result;
@@ -125,6 +126,8 @@ Script "UnrealHitBox" (int damage, int headshotdmg)
 		if((z <= tz+FixedMul(GetActorProperty(0,APROP_Height),0.45)) && (z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.62)))
 		{
 			SetActorProperty(newtid,APROP_DamageType,"UnrealDecapitate");
+			if(monsterHealth - (headshotdmg) <= 0)
+				GiveInventory("Unreal_HeadshotGibGenerator", 1);			
 			SetResultValue(headshotdmg);
 		}
 		else
@@ -146,6 +149,8 @@ Script "UnrealHitBox" (int damage, int headshotdmg)
 			else 
 				damage = headshotdmg;
 			SetActorProperty(newtid,APROP_DamageType,"UnrealDecapitate");
+			if(monsterHealth - (headshotdmg) <= 0)
+				GiveInventory("Unreal_HeadshotGibGenerator", 1);		
 			SetResultValue(headshotdmg);
 		}
 		else if((z >= tz+FixedMul(GetActorProperty(0,APROP_Height),0.45)) && (z < tz+FixedMul(GetActorProperty(0,APROP_Height),0.62)))
@@ -266,9 +271,10 @@ Script "Unreal_ASMDTrace" (void)
 
 Script "Unreal_TransferCharge" (int target)
 {
-	if(target)
+//	if(target)
 		SetActivatorToTarget(0);
-		
+	
+//	PrintBold(d:CheckInventory("UDispChargePower"));
 	SetResultValue(CheckInventory("UDispChargePower"));
 }
 
@@ -278,3 +284,24 @@ Script "Unreal_RevertUpgrade" (void)
 	Delay(9);
 	TakeInventory("UnrealDoUpgradeRevert",1);
 }
+
+Script "Unreal_GibScale" (void)
+{
+			int oldTID = ActivatorTID();
+			int target = UniqueTID();
+			Thing_ChangeTID(0, target);
+			SetActivator(0,AAPTR_Master);
+			int height = (GetActorProperty(0,APROP_Height)*4)>>16;
+			int radius = GetActorProperty(0,APROP_Radius)>>16;
+			//To make up for my mistake that is too widespread to address head on, I will do it here
+			SetActorPosition(target,GetActorX(0),GetActorY(0),GetActorZ(0)+(height/2),0);
+
+			SetActivator(target);
+			Thing_ChangeTID(target, oldTID);
+			int spacecube = height*radius*radius;
+			if(spacecube < 5000) { SetActorProperty(0,APROP_ScaleX,1.0); SetActorProperty(0,APROP_ScaleY,1.0); }
+			else if(spacecube < 50000) { SetActorProperty(0,APROP_ScaleX,1.2); SetActorProperty(0,APROP_ScaleY,1.2); }
+			else if(spacecube < 500000) { SetActorProperty(0,APROP_ScaleX,1.5); SetActorProperty(0,APROP_ScaleY,1.5); }
+			else if(spacecube < 1000000) { SetActorProperty(0,APROP_ScaleX,2.0); SetActorProperty(0,APROP_ScaleY,2.0); }
+			else { SetActorProperty(0,APROP_ScaleX,1.0); SetActorProperty(0,APROP_ScaleY,1.0); }
+}			
