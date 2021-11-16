@@ -238,6 +238,7 @@ Script "RTCW_Decorate" (int value, int arg1, int arg2, int arg3)
 				{
 					default: AmbientSound("RTCW/BJ/Step",127); break;
 					case 2: AmbientSound("RTCW/Zombie/Step",127); break;
+					case 5: AmbientSound("RTCW/EliteGuard/Step",127); break;
 					case 14: AmbientSound("RTCW/Loper/Step",127); break;
 					case 15: AmbientSound("RTCW/SuperSoldier/Step",127); break;
 				}
@@ -273,6 +274,25 @@ Script "RTCW_Decorate" (int value, int arg1, int arg2, int arg3)
 				SetPointer(AAPTR_MASTER,newtid);
 				
 				SpawnForced("RTCW_Humanoid_BlackGuard_FG42Flash",0,0,0,partTid);
+				SetActivator(partTid,AAPTR_DEFAULT);
+				Thing_ChangeTID(partTid,0);
+				SetPointer(AAPTR_MASTER,newtid);
+			}
+			else if(CheckInventory("RTCW_IsEliteGuard"))
+			{
+				Thing_ChangeTID(0, newtid);
+				GiveInventory("RTCWDiscardPanzerfaust",1);
+				if(GetActorClass(0)=="RTCW_HelgaVonBulow")
+				{
+					SpawnForced("RTCW_Humanoid_EliteGuard_Sten",0,0,0,partTid);
+					TakeActorInventory(newtid,"RTCW_InfantryWeapon",256);	
+					GiveActorInventory(newtid,"RTCW_InfantryWeapon",3);	
+				}
+				else
+				{
+					SpawnForced("RTCW_Humanoid_EliteGuard_LugerSilenced",0,0,0,partTid);
+					TakeActorInventory(newtid,"RTCW_InfantryWeapon",256);		
+				}
 				SetActivator(partTid,AAPTR_DEFAULT);
 				Thing_ChangeTID(partTid,0);
 				SetPointer(AAPTR_MASTER,newtid);
@@ -377,7 +397,7 @@ Script "RTCW_Decorate" (int value, int arg1, int arg2, int arg3)
 			Thing_Remove(0);
 			break;
 		case 41:
-			if(random(0,256) > 32)
+			if(random(0,256) > 64)
 				SetResultValue(-1);
 			else
 				SetResultValue(1);
@@ -395,6 +415,10 @@ Script "RTCW_Decorate" (int value, int arg1, int arg2, int arg3)
 				}
 				Delay(1);
 			}
+			break;
+		case 43:
+			Delay(105);
+			TakeInventory("RTCW_StenHeat",10);
 			break;
 		case 100:
 			SetActivator(0,AAPTR_Target);
@@ -426,7 +450,7 @@ Script "RTCW_Enter" enter
 			TakeInventory("RTCW_StenHeat",10);
 		}
 		
-		//steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
+		steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
 		Delay(1);
 		
 		//Drastically reduced cooldown
@@ -813,7 +837,7 @@ Script "RTCW_OverHeat" (void) clientside
 			if(GetCvar("sv_infiniteammo"))
 				TakeInventory("RTCW_VenomHeat",150);
 		}
-		if(CheckWeapon("RTCW_Sten"))
+		else if(CheckWeapon("RTCW_Sten"))
 		{
 			if(GetCvar("screenblocks") < 12 && CheckInventory("RTCW_StenHeat"))
 			{
@@ -938,8 +962,6 @@ Script "RTCW_HandleLean" (void)
 		Delay(1);
 	}
 }
-
-
 
 Script "RTCW_TeslaArc" (int space, int height, int user) clientside
 {
@@ -1211,10 +1233,15 @@ Script "RTCW_KnifeDamage" (void)
 	int vang = VectorAngle(monsterX - knifeX, monsterY - knifeY);
 	int angle = vang % 1.0;
 	
-	if(knifeZ > monsterZ + (monsterHeight / 3) && (abs(monsterAngle - angle)) < 0.6 && (abs(monsterAngle - angle)) > 0.4)
-		SetResultValue(200);
+	if(!CheckInventory("RTCW_NoHeadShotToken"))
+	{
+		if(knifeZ > monsterZ + (monsterHeight / 3) && (abs(monsterAngle - angle)) < 0.6 && (abs(monsterAngle - angle)) > 0.4)
+			SetResultValue(200);
+		else
+			SetResultValue(15);
+	}
 	else
-		SetResultValue(random(10,18));
+		SetResultValue(15);
 }
 
 Script "RTCW_BulletDamage" (int damage)
@@ -1256,10 +1283,10 @@ Script "RTCW_BulletDamage" (int damage)
 	}
 	else
 	{
-		if(!CheckInventory("RTCW_NoHeadShotToken") && bulletZ > monsterZ + FixedMul(monsterHeight,0.8))
+		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.8))
 		{
 			GiveInventory("RTCW_RemoveHat",1);
-			if(monsterHealth - (damage*3) <= 0)
+			if(!CheckInventory("RTCW_NoHeadShotToken") && monsterHealth - (damage*3) <= 0)
 				PlaySound(0,"RTCW/HeadShot",CHAN_ITEM,1.0,0,ATTN_NORM);
 				
 			SetResultValue(damage*3);
@@ -1392,7 +1419,7 @@ Script "RTCW_AlertRemoval" (void)
 
 //Infantry Properties
 str infantrySSstates[16][32] = 
-{ {"QueryHear", "QuerySee", "InstantAlert", "InstantCombat", "QueryToAlert", "AlertIdleTurnLeft", "AlertIdleTurnRight", "FireStand", "AlertIdle", "CombatStand"},
+{ {"QueryHear", "QuerySee", "InstantAlert", "InstantCombat", "QueryToAlert", "AlertIdleTurnLeft", "AlertIdleTurnRight", "FireStand", "AlertIdle", "CombatStand", "CombatTurn" },
   {}, 
   {},
   {},
@@ -3374,6 +3401,248 @@ Script "RTCW_EnemyPartsPicker" (int model, int type)
 					break;
 			}
 			break;
+		case 4:
+			GiveActorInventory(newtid,"RTCW_IsScientist",1);
+			switch(type)
+			{
+				case 0:
+					randomBody = random(0,3);
+					randomHat = random(0,1);
+					randomHead = random(1,3);
+					
+					switch(randomBody)
+					{
+						case 0: SpawnForced("RTCW_Humanoid_Mechanic_BodyDefault",GetActorX(0),GetActorY(0),GetActorZ(0),partTid); break;
+						case 1: SpawnForced("RTCW_Humanoid_Mechanic_BodyRocket",GetActorX(0),GetActorY(0),GetActorZ(0),partTid); break;
+						case 2: SpawnForced("RTCW_Humanoid_Mechanic_BodySWF",GetActorX(0),GetActorY(0),GetActorZ(0),partTid); break;
+						case 3: SpawnForced("RTCW_Humanoid_Mechanic_BodyRadio",GetActorX(0),GetActorY(0),GetActorZ(0),partTid); break;
+					}
+					
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);	
+						
+					SpawnForced(strParam(s:"RTCW_Humanoid_Mechanic_Head",d:randomHead),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+						
+					if(randomHead < 3)	
+						SpawnForced("RTCW_Humanoid_Mechanic_Blink1",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					else
+						SpawnForced("RTCW_Humanoid_Mechanic_Blink3",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+						
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+						
+					switch(randomBody)
+					{
+						case 0:
+							if(randomHat == 1)
+							{
+								SpawnForced("RTCW_Humanoid_Mechanic_Cap",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+								SetActivator(partTid,AAPTR_DEFAULT);
+								Thing_ChangeTID(partTid,0);
+								SetPointer(AAPTR_MASTER,newtid);
+							}
+							break;
+						case 1: case 2:
+							if(randomHat == 1)
+							{
+								SpawnForced("RTCW_Humanoid_Mechanic_Headset",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+								SetActivator(partTid,AAPTR_DEFAULT);
+								Thing_ChangeTID(partTid,0);
+								SetPointer(AAPTR_MASTER,newtid);
+							}
+							break;
+						case 3:
+							SpawnForced("RTCW_Humanoid_Mechanic_Headset",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+							SetActivator(partTid,AAPTR_DEFAULT);
+							Thing_ChangeTID(partTid,0);
+							SetPointer(AAPTR_MASTER,newtid);
+							break;
+					}
+						
+					SpawnForced("RTCW_Humanoid_Mechanic_Luger",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+					GiveActorInventory(newtid,"RTCW_InfantryWeapon",randomGun);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+					
+					SpawnForced("RTCW_Humanoid_Mechanic_LugerFlash",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+						
+					Thing_ChangeTID(newtid,activator);
+					break;
+			}
+			break;
+		case 5:
+			GiveActorInventory(newtid,"RTCW_InfantrySS_IsOfficer",1);
+			GiveActorInventory(newtid,"RTCW_IsEliteGuard",1);
+			switch(type)
+			{
+				case 0:
+					randomBody = random(0,1)*random(0,1)*random(0,1);
+					randomhead = random(1,5);
+					randomGun = random(0,32);
+					
+					if(randomBody == 0)
+					{
+						SpawnForced(strparam(s:"RTCW_Humanoid_EliteGuard_Body",d:random(1,3)),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+						SetActivator(partTid,AAPTR_DEFAULT);
+						Thing_ChangeTID(partTid,0);
+						SetPointer(AAPTR_MASTER,newtid);
+					
+						SpawnForced(strparam(s:"RTCW_Humanoid_EliteGuard_Head",d:randomHead),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+						SetActivator(partTid,AAPTR_DEFAULT);
+						Thing_ChangeTID(partTid,0);
+						SetPointer(AAPTR_MASTER,newtid);	
+					}
+					else
+					{
+						SpawnForced(strparam(s:"RTCW_Humanoid_EliteGuard_BodyCastle",d:random(1,2)),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+						SetActivator(partTid,AAPTR_DEFAULT);
+						Thing_ChangeTID(partTid,0);
+						SetPointer(AAPTR_MASTER,newtid);
+					
+						until(randomHead != 2 && randomHead != 5)
+						{
+							randomhead = random(1,5);
+						}
+						SpawnForced(strparam(s:"RTCW_Humanoid_EliteGuard_HeadCastle",d:randomHead),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+						SetActivator(partTid,AAPTR_DEFAULT);
+						Thing_ChangeTID(partTid,0);
+						SetPointer(AAPTR_MASTER,newtid);	
+					}
+
+					if(randomHead < 3)
+					{
+						SpawnForced(strparam(s:"RTCW_Humanoid_EliteGuard_Hair",d:randomHead),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+						SetActivator(partTid,AAPTR_DEFAULT);
+						Thing_ChangeTID(partTid,0);
+						SetPointer(AAPTR_MASTER,newtid);
+					}
+					else if(randomHead == 5)
+					{
+						if(random(0,1) == 0)
+						{
+							SpawnForced("RTCW_Humanoid_EliteGuard_Glasses",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+							SetActivator(partTid,AAPTR_DEFAULT);
+							Thing_ChangeTID(partTid,0);
+							SetPointer(AAPTR_MASTER,newtid);
+							
+							SpawnForced("RTCW_Humanoid_EliteGuard_Beret",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+							SetActivator(partTid,AAPTR_DEFAULT);
+							Thing_ChangeTID(partTid,0);
+							SetPointer(AAPTR_MASTER,newtid);
+						}
+					}
+					
+					SpawnForced(strparam(s:"RTCW_Humanoid_EliteGuard_Blink",d:randomHead),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+					
+					if(randomGun < 24)
+					{
+						SpawnForced("RTCW_Humanoid_EliteGuard_Sten",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+						GiveActorInventory(newtid,"RTCW_InfantryWeapon",3);
+						SetActivator(partTid,AAPTR_DEFAULT);
+						Thing_ChangeTID(partTid,0);
+						SetPointer(AAPTR_MASTER,newtid);
+					}
+					else if(randomGun < 28)
+					{
+						SpawnForced("RTCW_Humanoid_EliteGuard_Mauser",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+						GiveActorInventory(newtid,"RTCW_InfantryWeapon",2);
+						SetActivator(partTid,AAPTR_DEFAULT);
+						Thing_ChangeTID(partTid,0);
+						SetPointer(AAPTR_MASTER,newtid);
+						
+						SpawnForced("RTCW_Humanoid_EliteGuard_MauserFlash",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+						SetActivator(partTid,AAPTR_DEFAULT);
+						Thing_ChangeTID(partTid,0);
+						SetPointer(AAPTR_MASTER,newtid);
+					}
+					else
+					{
+						SpawnForced("RTCW_Humanoid_EliteGuard_Panzerfaust",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+						GiveActorInventory(newtid,"RTCW_InfantryWeapon",4);
+						SetActivator(partTid,AAPTR_DEFAULT);
+						Thing_ChangeTID(partTid,0);
+						SetPointer(AAPTR_MASTER,newtid);
+						
+						SpawnForced("RTCW_Humanoid_EliteGuard_PanzerfaustFlash",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+						SetActivator(partTid,AAPTR_DEFAULT);
+						Thing_ChangeTID(partTid,0);
+						SetPointer(AAPTR_MASTER,newtid);
+					}
+					
+					Thing_ChangeTID(newtid,activator);
+					break;
+				case 1:
+					SpawnForced("RTCW_Humanoid_Helga_Body",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);	
+					
+					SpawnForced("RTCW_Humanoid_Helga_Head",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+					
+					SpawnForced("RTCW_Humanoid_Helga_Blink",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+					
+					SpawnForced("RTCW_Humanoid_EliteGuard_Panzerfaust",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+					GiveActorInventory(newtid,"RTCW_InfantryWeapon",4);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+						
+					SpawnForced("RTCW_Humanoid_EliteGuard_PanzerfaustFlash",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+
+					Thing_ChangeTID(newtid,activator);
+					break;
+				case 2:
+					SpawnForced("RTCW_Humanoid_Priestess_Body",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);	
+					
+					SpawnForced("RTCW_Humanoid_Priestess_Head",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+					
+					SpawnForced("RTCW_Humanoid_Priestess_Blink",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+					
+					SpawnForced("RTCW_Humanoid_Priestess_FG42",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+					GiveActorInventory(newtid,"RTCW_InfantryWeapon",5);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+					
+					SpawnForced("RTCW_Humanoid_Priestess_FG42Flash",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);	
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+
+					Thing_ChangeTID(newtid,activator);
+					break;
+			}
+			break;
 		case 6:
 			GiveActorInventory(newtid,"RTCW_IsBlackGuard",1);
 			GiveActorInventory(newtid,"RTCW_InfantrySS_IsOfficer",1);
@@ -3911,32 +4180,51 @@ Script "RTCW_EnemyPartsPicker" (int model, int type)
 			}
 			break;
 		case 8:
-			GiveActorInventory(newtid,"RTCW_NoHeadShotToken",1);
-			randomHat = random(0,2);
-			randomBody = random(1,4);
-			SpawnForced(strparam(s:"RTCW_Zombie_Body",d:randomBody),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
-			SetActivator(partTid,AAPTR_DEFAULT);
-			Thing_ChangeTID(partTid,0);
-			SetPointer(AAPTR_MASTER,newtid);
-			
-			SpawnForced(strparam(s:"RTCW_Zombie_Head",d:randomBody),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
-			SetActivator(partTid,AAPTR_DEFAULT);
-			Thing_ChangeTID(partTid,0);
-			SetPointer(AAPTR_MASTER,newtid);
-			
-			if(randomBody == 2 && randomHat > 0)
+			switch(type)
 			{
-				if(randomHat == 1) 
-					SpawnForced("RTCW_Zombie_Hair",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
-				else if(randomHat == 2)
-					SpawnForced("RTCW_Zombie_Helmet",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
-				
-				SetActivator(partTid,AAPTR_DEFAULT);
-				Thing_ChangeTID(partTid,0);
-				SetPointer(AAPTR_MASTER,newtid);
+				case 0:
+					GiveActorInventory(newtid,"RTCW_NoHeadShotToken",1);
+					randomHat = random(0,2);
+					randomBody = random(1,4);
+					SpawnForced(strparam(s:"RTCW_Zombie_Body",d:randomBody),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+					
+					SpawnForced(strparam(s:"RTCW_Zombie_Head",d:randomBody),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+					
+					if(randomBody == 2 && randomHat > 0)
+					{
+						if(randomHat == 1) 
+							SpawnForced("RTCW_Zombie_Hair",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+						else if(randomHat == 2)
+							SpawnForced("RTCW_Zombie_Helmet",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+						
+						SetActivator(partTid,AAPTR_DEFAULT);
+						Thing_ChangeTID(partTid,0);
+						SetPointer(AAPTR_MASTER,newtid);
+					}
+					
+					Thing_ChangeTID(newtid,activator);
+					break;
+				case 1:
+					GiveActorInventory(newtid,"RTCW_NoHeadShotToken",1);
+					SpawnForced("RTCW_Zombie_Body5",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+					
+					SpawnForced("RTCW_Zombie_Head5",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+					SetActivator(partTid,AAPTR_DEFAULT);
+					Thing_ChangeTID(partTid,0);
+					SetPointer(AAPTR_MASTER,newtid);
+
+					Thing_ChangeTID(newtid,activator);
+					break;
 			}
-			
-			Thing_ChangeTID(newtid,activator);
 			break;
 		case 13:
 			GiveActorInventory(newtid,"RTCW_NoHeadShotToken",1);
@@ -4170,6 +4458,11 @@ Script "RTCW_PartBroadcast" (int enemy, int state)
 				case 97:	SetActorState(0,"FireVenom",1);					break;
 				case 98:	SetActorState(0,"Kick",1);						break;
 				case 99:	SetActorState(0,"Frightened",1);				break;
+				case 100:	SetActorState(0,"CartwheelL",1);				break;
+				case 101:	SetActorState(0,"CartwheelR",1);				break;
+				case 102:	SetActorState(0,"Roll",1);						break;
+				case 103:	SetActorState(0,"AlertStrafeLeft_2H",1);		break;
+				case 104:	SetActorState(0,"AlertStrafeRight_2H",1);		break;
 			}
 			break;
 		case 8:
@@ -4200,6 +4493,7 @@ Script "RTCW_PartBroadcast" (int enemy, int state)
 				case 23:	SetActorState(0,"Walk1",1);				break;
 				case 24:	SetActorState(0,"Walk2",1);				break;
 				case 25:	SetActorState(0,"WalkDamaged",1);		break;
+				case 26:	SetActorState(0,"Raise",1);				break;
 			}
 			break;
 		case 13:
@@ -4266,6 +4560,11 @@ Script "RTCW_Infantry" (void)
 		{
 			oldX = GetActorX(0); oldY = GetActorY(0); oldZ = GetActorZ(0); oldAngle = GetActorAngle(0);;
 			GiveInventory("RTCWMoveParts",1);
+			
+			velocity = 0.15/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1);
+			
+			if(abs(velocity) < 0.15)
+				steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,CheckInventory("RTCW_IsEliteGuard")*5,steptimer,velocity);
 		}
 		if(GetActorProperty(0,APROP_Alpha) != oldAlpha)
 		{
@@ -4273,21 +4572,26 @@ Script "RTCW_Infantry" (void)
 			GiveInventory("RTCWAlphaToken",oldAlpha);
 			GiveInventory("RTCWFadeChildren",1);
 		}
-		if(ClassifyActor(0) & ACTOR_ALIVE)
-			steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,0,steptimer,0.15/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
-		else if(!deadTimer)
+		
+		if(abs(velocity) < 0.15)
+			steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,CheckInventory("RTCW_IsEliteGuard")*5,steptimer,velocity);
+		
+		if(ClassifyActor(0) & ACTOR_DEAD)
 		{
-			deadTimer = 1;
-			GiveInventory("RTCWTellMyChildrenILoveThem",1);
-		}
-		else
-		{
-			if(deadTimer > 1050)
+			if(!deadTimer)
 			{
-				GiveInventory("RTCWRemoveChildren",1);
-				terminate;
+				deadTimer = 1;
+				GiveInventory("RTCWTellMyChildrenILoveThem",1);
 			}
-			deadTimer++;
+			else
+			{
+				if(deadTimer > 1050)
+				{
+					GiveInventory("RTCWRemoveChildren",1);
+					terminate;
+				}
+				deadTimer++;
+			}
 		}
 		Delay(1);	
 	}
@@ -4305,6 +4609,11 @@ Script "RTCW_Zombie" (void)
 		{
 			oldX = GetActorX(0); oldY = GetActorY(0); oldZ = GetActorZ(0); oldAngle = GetActorAngle(0);;
 			GiveInventory("RTCWMoveParts",1);
+			
+			velocity = 0.15/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1);
+			
+			if(abs(velocity) < 0.15)
+				steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,14,steptimer,velocity);
 		}
 		if(GetActorProperty(0,APROP_Alpha) != oldAlpha)
 		{
@@ -4312,9 +4621,8 @@ Script "RTCW_Zombie" (void)
 			GiveInventory("RTCWAlphaToken",oldAlpha);
 			GiveInventory("RTCWFadeChildren",1);
 		}
-		if(ClassifyActor(0) & ACTOR_ALIVE)
-			steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,2,steptimer,0.15/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
-		else
+			
+		if(ClassifyActor(0) & ACTOR_DEAD)
 		{
 			if(deadTimer > 1050)
 			{
@@ -4356,10 +4664,16 @@ Script "RTCW_Loper" (void)
 	Delay(2);
 	while(1)
 	{
+		
 		if(GetActorX(0) != oldX || GetActorY(0) != oldY || GetActorZ(0) != oldZ || GetActorAngle(0) != oldAngle)
 		{
 			oldX = GetActorX(0); oldY = GetActorY(0); oldZ = GetActorZ(0); oldAngle = GetActorAngle(0);;
 			GiveInventory("RTCWMoveParts",1);
+			
+			velocity = 0.15/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1);
+			
+			if(abs(velocity) < 0.15)
+				steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,14,steptimer,velocity);
 		}
 		if(GetActorProperty(0,APROP_Alpha) != oldAlpha)
 		{
@@ -4367,9 +4681,8 @@ Script "RTCW_Loper" (void)
 			GiveInventory("RTCWAlphaToken",oldAlpha);
 			GiveInventory("RTCWFadeChildren",1);
 		}
-		if(ClassifyActor(0) & ACTOR_ALIVE)
-			steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,14,steptimer,0.15/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
-		else
+		
+		if(ClassifyActor(0) & ACTOR_DEAD)
 		{
 			if(deadTimer > 1050)
 			{
@@ -4400,6 +4713,11 @@ Script "RTCW_SuperSoldier" (int proto)
 		{
 			oldX = GetActorX(0); oldY = GetActorY(0); oldZ = GetActorZ(0); oldAngle = GetActorAngle(0);
 			GiveInventory("RTCWMoveParts",1);
+			
+			velocity = 0.1/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1);
+		
+			if(abs(velocity) < 0.1)
+				steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,15,steptimer,velocity);
 		}
 		health = GetActorProperty(0,APROP_Health);
 		while(lastdamagedhealth - 100 > health)
@@ -4513,7 +4831,7 @@ Script "RTCW_SuperSoldier" (int proto)
 				}
 			}
 		}
-		steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,15,steptimer,0.1/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
+		
 		if(ClassifyActor(0) & ACTOR_DEAD && droppedGun == 0)
 		{
 			ACS_NamedExecuteWithResult("RTCW_Decorate",16,(4+weapon*3)+(4*!proto));
@@ -4634,43 +4952,5 @@ Script "RTCW_CorpseDestroy" (int state)
 	{
 		case 0: SetActorState(0,"CorpseGib",1); break;
 		case 1: SetActorState(0,"DyingGib",1); break;
-	}
-}
-
-Script "RTCW_FootStepGenerator" enter
-{
-	if((ClassifyActor(0) & ACTOR_WORLD))
-		terminate;
-		
-	if(CheckInventory("RTCWClass"))
-	{
-		int speedx, speedy, lasttimer, velocity, movement;
-		
-		while((ClassifyActor(0) & ACTOR_ALIVE))
-		{
-			//we'll handle crouch here too
-			if(GetActorViewHeight(0) <=  GetActorViewHeight(0) / 2 << 16)
-				GiveInventory("LigmaBalls",1);
-			else
-				TakeInventory("LigmaBalls",1);
-		
-			speedx = GetActorVelX(0);
-			speedy = GetActorVelY(0);
-			
-			velocity = magnitudeTwo_f(speedx, speedy);
-			if(velocity>>8 != 0)
-				movement = 750/((velocity>>8)*7);
-			else
-				movement = 0;
-													
-			if((Timer()-lasttimer) > movement && movement != 0)
-			{
-				//PlaySound(0, "HLPlayer/Step", CHAN_BODY, 1.0, false, ATTN_NORM);
-				SpawnSpotForced("RTCWStep",0,0,0);
-				lasttimer = Timer();
-			}
-			
-			Delay(1);
-		}
 	}
 }
