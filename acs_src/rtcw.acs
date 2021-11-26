@@ -236,11 +236,12 @@ Script "RTCW_Decorate" (int value, int arg1, int arg2, int arg3)
 			{
 				switch(arg1)
 				{
-					default: AmbientSound("RTCW/BJ/Step",127); break;
-					case 2: AmbientSound("RTCW/Zombie/Step",127); break;
-					case 5: AmbientSound("RTCW/EliteGuard/Step",127); break;
-					case 14: AmbientSound("RTCW/Loper/Step",127); break;
-					case 15: AmbientSound("RTCW/SuperSoldier/Step",127); break;
+					default: PlaySound(0,"RTCW/BJ/Step",CHAN_BODY,1.0,0); break;
+					case 2: PlaySound(0,"RTCW/Zombie/Step",CHAN_BODY,1.0,0); break;
+					case 5: PlaySound(0,"RTCW/EliteGuard/Step",CHAN_BODY,1.0,0); break;
+					case 13: PlaySound(0,"RTCW/Loper/Step",CHAN_BODY,1.0,0); break;
+					case 14: PlaySound(0,"RTCW/Beast/Step",CHAN_BODY,1.0,0); Radius_Quake2(0,2,10,0,512,""); break;
+					case 15: PlaySound(0,"RTCW/SuperSoldier/Step",CHAN_BODY,1.0,0); Radius_Quake2(0,1,15,0,384,""); break;
 				}
 				
 				SetResultValue(timer());
@@ -1429,15 +1430,15 @@ str infantrySSstates[16][32] =
   {},
   {},
   {},
-  {"See","CombatMove","CombatIdle","Attack","SpiritAttack"},
+  {"See","CombatMove","CombatIdle","Attack","SpiritAttack","CombatTurn"},
   {},
   {},
   {},
   {},
   {"HoverIdle"},
-  {"TorsoIdle","TorsoCombatIdle"},
-  {},
-  {"AlertIdle","CombatIdle"},
+  {"TorsoIdle","CombatIdle","CombatTurn"},
+  {"RelaxedIdle","Combat","CombatIdle","CombatTurn","Melee"},
+  {"AlertIdle","CombatIdle","AlertTurn","CombatTurn"},
 };
 Script "RTCW_EnemyState" (int enemy, int state)
 {
@@ -4259,6 +4260,7 @@ Script "RTCW_EnemyPartsPicker" (int model, int type)
 			SetActivator(partTid,AAPTR_DEFAULT);
 			Thing_ChangeTID(partTid,0);
 			SetPointer(AAPTR_MASTER,newtid);
+			Thing_ChangeTID(newtid,activator);
 			break;
 		case 15:
 			GiveActorInventory(newtid,"RTCW_NoHeadShotToken",1);
@@ -4547,6 +4549,9 @@ Script "RTCW_PartBroadcast" (int enemy, int state)
 				case 14:	SetActorState(0,"CombatIdle1",1);	break;
 				case 15:	SetActorState(0,"CombatIdle2",1);	break;
 				case 16:	SetActorState(0,"CombatIdle3",1);	break;
+				case 17:	SetActorState(0,"TurnL1",1);		break;
+				case 18:	SetActorState(0,"TurnL3",1);		break;
+				case 19:	SetActorState(0,"TurnR3",1);		break;
 			}
 			break;
 	}
@@ -4575,9 +4580,6 @@ Script "RTCW_Infantry" (void)
 			GiveInventory("RTCWAlphaToken",oldAlpha);
 			GiveInventory("RTCWFadeChildren",1);
 		}
-		
-		if(abs(velocity) < 0.15)
-			steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,CheckInventory("RTCW_IsEliteGuard")*5,steptimer,velocity);
 		
 		if(ClassifyActor(0) & ACTOR_DEAD)
 		{
@@ -4616,7 +4618,7 @@ Script "RTCW_Zombie" (void)
 			velocity = 0.15/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1);
 			
 			if(abs(velocity) < 0.15)
-				steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,14,steptimer,velocity);
+				steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,2,steptimer,velocity);
 		}
 		if(GetActorProperty(0,APROP_Alpha) != oldAlpha)
 		{
@@ -4676,7 +4678,7 @@ Script "RTCW_Loper" (void)
 			velocity = 0.15/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1);
 			
 			if(abs(velocity) < 0.15)
-				steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,14,steptimer,velocity);
+				steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,13,steptimer,velocity);
 		}
 		if(GetActorProperty(0,APROP_Alpha) != oldAlpha)
 		{
@@ -4693,6 +4695,28 @@ Script "RTCW_Loper" (void)
 				terminate;
 			}
 			deadTimer++;
+		}
+		Delay(1);	
+	}
+}
+
+Script "RTCW_Beast" (void)
+{
+	int steptimer = timer();
+	int doStep, velocity, oldX, oldY, oldZ, oldAngle, oldAlpha, deadTimer;
+	Delay(2);
+	while(1)
+	{
+		TakeInventory("RTCW_SpiritChargeDelay",1);
+		if(GetActorX(0) != oldX || GetActorY(0) != oldY || GetActorZ(0) != oldZ || GetActorAngle(0) != oldAngle)
+		{
+			oldX = GetActorX(0);
+			oldY = GetActorY(0);
+			oldZ = GetActorZ(0);
+			velocity = 0.15/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1);
+			
+			if(abs(velocity) < 0.15)
+				steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,14,steptimer,velocity);
 		}
 		Delay(1);	
 	}
