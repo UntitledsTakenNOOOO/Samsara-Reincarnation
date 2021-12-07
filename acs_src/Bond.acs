@@ -1227,13 +1227,13 @@ Script "BondHitBox" (int damage)
 	
 	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
 	
-	if(monsterWidth > monsterHeight)
+	if(!CheckInventory("IsFatButBiped") && monsterWidth > monsterHeight)
 	{
 		int monsterAngle = GetActorAngle(0);
 		int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
 		int angle = vang % 1.0;
 		
-		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.4) && bulletZ < monsterZ + FixedMul(monsterHeight,0.6) && ((abs(monsterAngle - angle)) < 0.6 && (abs(monsterAngle - angle)) > 0.4))
+		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
 		{			
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeHead");
 			SetResultValue(damage*3);
@@ -1243,8 +1243,9 @@ Script "BondHitBox" (int damage)
 	}		
 	else
 	{
-		if((bulletZ >= monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.80)))/* && (z <= tz+GetActorProperty(0,APROP_Height))*/
+		if(!CheckInventory("NoHeadShots") && (bulletZ >= monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.75)))/* && (z <= tz+GetActorProperty(0,APROP_Height))*/
 		{
+			GiveInventory("RTCW_RemoveHat",1);
 			if(SpawnForced("SamsaraMixerCompendiumToken",0,0,0,0))
 				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
 			else
@@ -1252,12 +1253,11 @@ Script "BondHitBox" (int damage)
 				
 			if(result == -1)
 				damage = -1;
-			else 
-				SetResultValue(damage*3);
+
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeHead");
 			SetResultValue(damage*3);
 		}
-		else if((bulletZ >= monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.45)) && (bulletZ < monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.80)))
+		else if(!CheckInventory("NoHeadShots") && (bulletZ >= monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.5)) && (bulletZ < monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.75)))
 		{
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeTorso");
 			SetResultValue(damage/2);

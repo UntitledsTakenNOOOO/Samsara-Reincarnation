@@ -1237,7 +1237,7 @@ Script "RTCW_KnifeDamage" (void)
 	int vang = VectorAngle(monsterX - knifeX, monsterY - knifeY);
 	int angle = vang % 1.0;
 	
-	if(!CheckInventory("RTCW_NoHeadShotToken"))
+	if(!CheckInventory("NoHeadShots"))
 	{
 		if(knifeZ > monsterZ + (monsterHeight / 3) && (abs(monsterAngle - angle)) < 0.6 && (abs(monsterAngle - angle)) > 0.4)
 			SetResultValue(200);
@@ -1269,14 +1269,14 @@ Script "RTCW_BulletDamage" (int damage)
 	else
 		PlaySound(0,"RTCW/BulletHitFlesh",CHAN_6,0.5,0,ATTN_NORM);
 	
-	if(monsterWidth > monsterHeight)
+	if(monsterWidth >= monsterHeight && !CheckInventory("IsFatButBiped"))
 	{
 		int monsterAngle = GetActorAngle(0);
 		int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
 		int angle = vang % 1.0;
 		
-		if(!CheckInventory("RTCW_NoHeadShotToken") && bulletZ > monsterZ + FixedMul(monsterHeight,0.5) && bulletZ < monsterZ + FixedMul(monsterHeight,0.9) && ((abs(monsterAngle - angle)) < 0.6 && (abs(monsterAngle - angle)) > 0.4))
-		{
+		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
+		{	
 			if(monsterHealth - (damage*3) <= 0)
 				PlaySound(0,"RTCW/HeadShot",CHAN_ITEM,1.0,0,ATTN_NORM);
 				
@@ -1287,10 +1287,22 @@ Script "RTCW_BulletDamage" (int damage)
 	}
 	else
 	{
-		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.8))
+		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.75))
 		{
+			int result;
+			if(SpawnForced("SamsaraMixerCompendiumToken",0,0,0,0))
+				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
+			else
+				result = 0;
+				
+			if(result == -1)
+			{
+				SetResultValue(-1);
+				terminate;
+			}
+		
 			GiveInventory("RTCW_RemoveHat",1);
-			if(!CheckInventory("RTCW_NoHeadShotToken") && monsterHealth - (damage*3) <= 0)
+			if(!CheckInventory("NoHeadShots") && monsterHealth - (damage*3) <= 0)
 				PlaySound(0,"RTCW/HeadShot",CHAN_ITEM,1.0,0,ATTN_NORM);
 				
 			SetResultValue(damage*3);
@@ -4109,7 +4121,7 @@ Script "RTCW_EnemyPartsPicker" (int model, int type)
 			{
 				case 0: case 1:
 					randomBody = random(0,2);
-					GiveActorInventory(newtid,"RTCW_NoHeadShotToken",1);
+					GiveActorInventory(newtid,"NoHeadShots",1);
 					GiveActorInventory(newtid,"RTCW_FlameRetardant",1);
 					switch(randomBody)
 					{
@@ -4187,7 +4199,7 @@ Script "RTCW_EnemyPartsPicker" (int model, int type)
 			switch(type)
 			{
 				case 0:
-					GiveActorInventory(newtid,"RTCW_NoHeadShotToken",1);
+					GiveActorInventory(newtid,"NoHeadShots",1);
 					randomHat = random(0,2);
 					randomBody = random(1,4);
 					SpawnForced(strparam(s:"RTCW_Zombie_Body",d:randomBody),GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
@@ -4215,7 +4227,7 @@ Script "RTCW_EnemyPartsPicker" (int model, int type)
 					Thing_ChangeTID(newtid,activator);
 					break;
 				case 1:
-					GiveActorInventory(newtid,"RTCW_NoHeadShotToken",1);
+					GiveActorInventory(newtid,"NoHeadShots",1);
 					SpawnForced("RTCW_Zombie_Body5",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
 					SetActivator(partTid,AAPTR_DEFAULT);
 					Thing_ChangeTID(partTid,0);
@@ -4231,7 +4243,7 @@ Script "RTCW_EnemyPartsPicker" (int model, int type)
 			}
 			break;
 		case 13:
-			GiveActorInventory(newtid,"RTCW_NoHeadShotToken",1);
+			GiveActorInventory(newtid,"NoHeadShots",1);
 			GiveActorInventory(newtid,"RTCW_FlameRetardant",1);
 			
 			SpawnForced("RTCW_Drone_Body",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
@@ -4263,7 +4275,7 @@ Script "RTCW_EnemyPartsPicker" (int model, int type)
 			Thing_ChangeTID(newtid,activator);
 			break;
 		case 15:
-			GiveActorInventory(newtid,"RTCW_NoHeadShotToken",1);
+			GiveActorInventory(newtid,"NoHeadShots",1);
 			GiveActorInventory(newtid,"RTCW_MetalMonster",1);
 			GiveActorInventory(newtid,"RTCW_FlameRetardant",1);
 			SpawnForced("RTCW_SuperSoldier_GunFlash",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
@@ -4295,7 +4307,7 @@ Script "RTCW_EnemyPartsPicker" (int model, int type)
 			Thing_ChangeTID(newtid,activator);
 			break;
 		case 16:
-			GiveActorInventory(newtid,"RTCW_NoHeadShotToken",1);
+			GiveActorInventory(newtid,"NoHeadShots",1);
 			GiveActorInventory(newtid,"RTCW_MetalMonster",1);
 			GiveActorInventory(newtid,"RTCW_FlameRetardant",1);
 			SpawnForced("RTCW_SuperSoldier_GunFlash",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
