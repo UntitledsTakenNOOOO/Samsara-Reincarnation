@@ -421,6 +421,12 @@ Script "RTCW_Decorate" (int value, int arg1, int arg2, int arg3)
 			Delay(105);
 			TakeInventory("RTCW_StenHeat",10);
 			break;
+		case 44:
+			SetActivatorToTarget(0);
+			SetHudSize(1280,960,1);
+			SetFont("RTCWKNIF");
+			HudMessage(s:"A"; HUDMSG_FADEOUT|HUDMSG_ALPHA, 1200, CR_UNTRANSLATED, 640.0, 768.0, 0.1, 0.67, 1.0);
+			break;
 		case 100:
 			SetActivator(0,AAPTR_Target);
 			PrintBold(s:GetActorClass(0));
@@ -793,6 +799,9 @@ Script "RTCW_PlayerController" (void)
 		if(clearPain) { clearPain = 0; painSet = 0; painTimer = 0; }
 		if(clearKick) { clearKick = 0; kickSet = 0; kickTimer = 0; }
 		if(clearSwim) { clearSwim = 0; swimSet = 0; swimTimer = 0; }
+		
+		if(CheckWeapon("RTCW_Knife"))
+			LineAttack(0,GetActorAngle(0),GetActorPitch(0),0,"RTCW_KnifeHintPuff","None",64.0);
 		
 		Delay(1);
 		crouchOld = crouching;
@@ -1222,7 +1231,7 @@ Script "RTCW_BloodGenerator_Return" (int mode)
 	SetResultValue(result);
 }
 
-Script "RTCW_KnifeDamage" (void)
+Script "RTCW_KnifeDamage" (int hint)
 {
 	int knifeX = GetActorX(0);
 	int knifeY = GetActorY(0);
@@ -1240,12 +1249,27 @@ Script "RTCW_KnifeDamage" (void)
 	if(!CheckInventory("NoHeadShots"))
 	{
 		if(knifeZ > monsterZ + (monsterHeight / 3) && (abs(monsterAngle - angle)) < 0.6 && (abs(monsterAngle - angle)) > 0.4)
-			SetResultValue(200);
+		{	
+			if(hint == 0)
+				SetResultValue(200);
+			else
+				SetResultValue(1);
+		}
 		else
-			SetResultValue(15);
+		{
+			if(hint == 0)
+				SetResultValue(15);
+			else
+				SetResultValue(0);
+		}
 	}
 	else
-		SetResultValue(15);
+	{
+		if(hint == 0)
+			SetResultValue(15);
+		else
+			SetResultValue(0);
+	}
 }
 
 Script "RTCW_BulletDamage" (int damage)
@@ -1300,8 +1324,8 @@ Script "RTCW_BulletDamage" (int damage)
 				SetResultValue(-1);
 				terminate;
 			}
-		
-			GiveInventory("RTCW_RemoveHat",1);
+			if(StrLeft(GetActorClass(0),4)=="RTCW")
+				GiveInventory("RTCW_RemoveHat",1);
 			if(!CheckInventory("NoHeadShots") && monsterHealth - (damage*3) <= 0)
 				PlaySound(0,"RTCW/HeadShot",CHAN_ITEM,1.0,0,ATTN_NORM);
 				
