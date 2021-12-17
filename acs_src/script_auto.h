@@ -539,14 +539,17 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			TakeInventory("BlackBirdBallgag", 0x7FFFFFFF);
 		}
 				
-		if (GetUserCvar(pln,"sams_cl_vanilladoom")) { GiveInventory("VanillaDoom", 1); }
-        else { TakeInventory("VanillaDoom", 0x7FFFFFFF); }
+		if (GetUserCvar(pln,"sams_cl_smoothdoom")) { GiveInventory("SmoothDoom", 1); }
+        else { TakeInventory("SmoothDoom", 0x7FFFFFFF); }
         
         if (GetUserCvar(pln,"sams_cl_weaponhud")) { GiveInventory("ExpandedHud", 1); }
         else { TakeInventory("ExpandedHud", 0x7FFFFFFF); }
 				
         if (GetCvar("sams_permakimbo") == 1) { GiveInventory("AkimboStay", 1); }
         else { TakeInventory("AkimboStay", 0x7FFFFFFF); }			
+		
+        if (GetCvar("sams_doombalance") == 1) { GiveInventory("VanillaDoom", 1); }
+        else { TakeInventory("VanillaDoom", 0x7FFFFFFF); }				
 		
 		switch (samsaraClassNum())
 		{
@@ -668,9 +671,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					TakeInventory("Samsara_ModeWeaponChange",1);
 					if (wolfmode >= 0) 
 					{ 
-						TakeInventory("WolfenClassMode", 2); 
+						TakeInventory("WolfenClassMode", 3); 
 						GiveInventory("WolfenClassMode", wolfmode); 
-						if(wolfmode == 2)
+						if(wolfmode == 3)
 						{
 							TakeInventory("WolfExtraLife", 0x7FFFFFFF); if(CheckInventory("Totenkopf_IHaveMauser") && (!CheckInventory("Totenkopf_Mauser"))) { GiveInventory("Totenkopf_Mauser", 1); }
 							if(CheckInventory("Totenkopf_IHaveDualMausers") && (!CheckInventory("Totenkopf_MauserDual"))) { GiveInventory("Totenkopf_MauserDual", 1); }
@@ -683,7 +686,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							if(CheckInventory("Totenkopf_IHavePowerArmor") && (!CheckInventory("TotenkopfHasPowerArmor"))) { GiveInventory("TotenkopfHasPowerArmor", 1); }
 							if(CheckInventory("Totenkopf_IAmWolverine") && (!CheckInventory("TotenkopfHasHealingOrb"))) { GiveInventory("TotenkopfHasHealingOrb", 1); }
 						}	
-						else if(wolfmode <= 1)
+						else if(wolfmode <= 2)
 						{
 							if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1); }
 							if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); }

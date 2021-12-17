@@ -3136,6 +3136,7 @@ Script "Samsara_UniqueKeys" (int key)
 	switch(PlayerClass(pln))
 	{
 		case 19:
+			ACS_NamedExecuteWithResult("HL2677",0,0,0);
 			if(key == 0)
 				ACS_NamedExecuteWithResult("HL2677",0,0,0);
 			break;
@@ -4040,9 +4041,13 @@ Script "Samsara_BotAltClassHandler" (int playernum)
 			{	
 				SetUserCvar(playernum,"sams_cl_wolfmode",1);
 			}
-			if(StrCmp(playername,"B.J. Blazkowicz (Totenkopf)") == 0)
+			if(StrCmp(playername,"B.J. Blazkowicz (Mac)") == 0)
 			{	
 				SetUserCvar(playernum,"sams_cl_wolfmode",2);
+			}			
+			if(StrCmp(playername,"B.J. Blazkowicz (Totenkopf)") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_wolfmode",3);
 			}
 			break;
 		case 4:
