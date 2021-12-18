@@ -32,32 +32,42 @@ actor "Plasma Discharge Unit": InstantSwitchWeapon
 
       Fire:
 		TNT1 A 0 A_JumpIfInventory("BlakeAOGToken", 1, "FireAOG")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
         BCAN B 3
+	  Hold:	
         TNT1 A 0 A_PlayWeaponSound("BCannon/Fire")
-        BCAN C 3 BRIGHT A_FireCustomMissile("BCannonProj", 0, 1, 0, 12)
+		TNT1 A 0 A_JumpIfInventory("SPModeOn", 1, "SPHold")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopHold")
+        BCAN C 4 BRIGHT A_FireCustomMissile("BCannonProjDM", 0, 1, 0, 12, 0, 8)
 		BCAN D 3
 		BCAN E 3 A_Refire
         Goto Ready	
 	  FireAOG:	
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFireAOG")
         BCAN G 3
+	  HoldAOG:	
         TNT1 A 0 A_PlayWeaponSound("BCannon/Fire")
-        BCAN H 3 BRIGHT A_FireCustomMissile("BCannonProj", 0, 1, 0, 12)
+		TNT1 A 0 A_JumpIfInventory("SPModeOn", 1, "SPHoldAOG")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopHoldAOG")		
+        BCAN H 4 BRIGHT A_FireCustomMissile("BCannonProjDM", 0, 1, 0, 12, 0, 8)
 		BCAN I 3
-		BCAN J 3 A_Refire
-        Goto Ready	  
-      CoopFire:
-        BCAN B 3
-        TNT1 A 0 A_PlayWeaponSound("BCannon/Fire")
-        BCAN C 3 BRIGHT A_FireCustomMissile("BCannonProjCoop", 0, 1, 0, 12)
+		BCAN J 2 A_Refire("HoldAOG")
+        Goto Ready	 
+	  SPHold:
+        BCAN C 4 BRIGHT A_FireCustomMissile("BCannonProj", 0, 1, 0, 12, 0, 8)
+		BCAN D 3
+		BCAN E 3 A_Refire
+        Goto Ready		  
+      CoopHold:
+        BCAN C 4 BRIGHT A_FireCustomMissile("BCannonProjCoop", 0, 1, 0, 12, 0, 8)
 		BCAN D 3
 		BCAN E 3 A_Refire
 		Goto Ready
-	  CoopFireAOG:
-        BCAN G 3
-        TNT1 A 0 A_PlayWeaponSound("BCannon/Fire")
-        BCAN H 3 BRIGHT A_FireCustomMissile("BCannonProjCoop", 0, 1, 0, 12)
+	  SPHoldAOG:
+        BCAN H 4 BRIGHT A_FireCustomMissile("BCannonProj", 0, 1, 0, 12, 0, 8)
+		BCAN I 3
+		BCAN J 2 A_Refire("HoldAOG")
+        Goto Ready	 	  
+	  CoopHoldAOG:
+        BCAN H 4 BRIGHT A_FireCustomMissile("BCannonProjCoop", 0, 1, 0, 12, 0, 8)
 		BCAN I 3
 		BCAN J 3 A_Refire
         Goto Ready		
@@ -71,14 +81,15 @@ Actor BCannonProj
 	+WINDTHRUST
 	+BLOODLESSIMPACT
 	+FORCEXYBILLBOARD
-	Damage 5
+	Damage 7
 	Radius 8
 	Height 8
 	Scale 1.25
-	Speed 30
+	Speed 16
 	Decal Scorch
 	DamageType "BCannonProj"
 	DeathSound "BCannon/Boom"
+	Gravity 0.3
 	States
 	{
 		Spawn:
@@ -86,7 +97,22 @@ Actor BCannonProj
 		Loop
 		Death:
 			TNT1 A 0 A_ChangeFlag("NOGRAVITY", 1)
-			TNT1 A 0 A_Explode(Random(50,177), 128, 0)
+			TNT1 A 0 A_Explode(110, 64, 0)
+			TNT1 A 0 A_BFGSpray("BCannonPuff", 15, 3)
+			BCAP BCDEF 3 Bright
+		Stop
+	}
+}
+
+Actor BCannonProjDM : BCannonProj
+{
+	Damage 5
+	States
+	{
+		Death:
+			TNT1 A 0 A_ChangeFlag("NOGRAVITY", 1)
+			TNT1 A 0 A_Explode(100, 64, 0)
+			TNT1 A 0 A_BFGSpray("BCannonPuff", 6, 1)
 			BCAP BCDEF 3 Bright
 		Stop
 	}
@@ -100,3 +126,18 @@ Actor BCannonProjCoop : BCannonProj
 	+DONTHARMSPECIES
 	+MTHRUSPECIES
 }
+
+Actor BCannonPuff 
+{
+	+NOGRAVITY
+	+NOINTERACTION
+	RenderStyle Normal
+	Scale 1.0
+	DamageType "BCannonProj"	
+	States
+	{
+		Spawn:
+			BCAP BCDEF 3 Bright
+		Stop
+	}
+}			

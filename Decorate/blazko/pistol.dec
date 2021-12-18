@@ -20,17 +20,21 @@ actor Luger: InstantSwitchWeapon
         Loop
 
       Ready:
+		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",3,6)
 		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,4)
 		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,2)
         WPST F 1 A_WeaponReady
         loop
 		WPST K 1 A_WeaponReady
         loop
+		WPST L 1 A_WeaponReady
+        loop		
         TK02 A 1 A_WeaponReady
         loop		
 
       Fire:
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireCTK")
+		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",3,"FireCTK")
+		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireMac")
         TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"FireLost")
 		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"CheckForAmmo")
       Fire2:
@@ -59,6 +63,19 @@ actor Luger: InstantSwitchWeapon
         WPST H 3 BRIGHT A_FireBullets(0,0,1,7,"BlankPuff2")
         WPST IJ 4
         Goto Ready
+	  FireMac:
+		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"CheckForAmmo")
+      Fire2Mac:
+        WPST M 3
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"TakePistolAmmo")
+      Fire3Mac:
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFireMac") //"CoopFire")
+        WPST N 0 A_PlayWeaponSound("wolfen/pistol3")
+		WPST N 0 A_FireBullets(0,0,1,1,"BlankPuff2Bloodless",0,128)
+        WPST N 0 A_FireBullets(0,0,1,2,"BlankPuff2Bloodless",0,256)
+        WPST N 3 BRIGHT A_FireBullets(0,0,1,7,"BlankPuff2")
+        WPST OP 4
+        Goto Ready	
 		
       SPFire:
         WPST F 0 A_PlayWeaponSound("wolfen/pistol")
@@ -120,6 +137,28 @@ actor Luger: InstantSwitchWeapon
         WPST IJ 4
         Goto Ready
 
+      CoopFireMac:
+        WPST N 0 A_PlayWeaponSound("wolfen/pistol3")
+		WPST N 0 A_JumpIfCloser(128, "CoopFireMac.Close")
+		WPST N 0 A_JumpIfCloser(256, "CoopFireMac.Medium")
+		WPST N 0 A_JumpIfCloser(512, "CoopFireMac.Far")	
+		Goto CoopFireMac.Far
+	  CoopFireMac.Close:	
+        WPST N 3 BRIGHT A_FireCustomMissile("WolfenBullet",0,0,0,1)
+		WPST N 0 BRIGHT A_FireCustomMissile("WolfenBulletSupplement",0,0,0,1)
+		Goto CoopFireMacEnd
+	  CoopFireMac.Medium:	
+        WPST N 3 BRIGHT A_FireCustomMissile("WolfenBullet2",0,0,0,1)
+		WPST N 0 BRIGHT A_FireCustomMissile("WolfenBulletSupplement",0,0,0,1)
+		Goto CoopFireMacEnd	
+	  CoopFireMac.Far:	
+        WPST N 3 BRIGHT A_FireCustomMissile("WolfenBullet3",0,0,0,1)
+		WPST N 0 BRIGHT A_FireCustomMissile("WolfenBulletSupplement",0,0,0,1)
+		Goto CoopFireMacEnd
+	  CoopFireMacEnd:	
+        WPST OP 4
+        Goto Ready		
+		
       CoopFireLost:
         WPST K 0 A_PlayWeaponSound("wolfen/pistol2")
 		WPST C 0 A_JumpIfCloser(128, "CoopFireLost.Close")
@@ -140,7 +179,7 @@ actor Luger: InstantSwitchWeapon
 		Goto CoopFireLostEnd
 	  CoopFireLostEnd:	
         WPST IJ 4
-        Goto Ready		
+        Goto Ready			
         
       SPFireOld:
         WPST F 0 A_PlayWeaponSound("wolfen/pistol")
@@ -201,7 +240,8 @@ actor Luger: InstantSwitchWeapon
         Goto Ready		
       
       CheckForAmmo:
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2, 6)	  
+		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",3, 6)	  
+		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2, 8)	 
 		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1, 3)
         TNT1 A 0 A_JumpIfInventory("Clip",1,"Fire2")
         TNT1 A 0 A_SelectWeapon("Knife")
@@ -212,10 +252,14 @@ actor Luger: InstantSwitchWeapon
 		TNT1 A 0 A_JumpIfInventory("Clip", 1, "FireCTK2")
 		TNT1 A 0 A_SelectWeapon("Knife")
 		Goto Deselect		
+		TNT1 A 0 A_JumpIfInventory("Clip", 1, "Fire2Mac")
+		TNT1 A 0 A_SelectWeapon("Knife")
+		Goto Deselect			
 		
       TakePistolAmmo:
         TNT1 A 0 A_TakeInventory("Clip",1)
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireCTK3")
+		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",3,"FireCTK3")
+		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"Fire3Mac")
 		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"Fire3Lost")
         goto Fire3
     }
