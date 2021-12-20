@@ -1635,7 +1635,7 @@ script "SamsaraBossMonologue" (int bossmonologueshit) //204
       case 15: // G'or
 	  if (GetCVar("sams_nomonologues"))
 	  {
-		SetActorState(0,"SpawnLoop");
+		SetActorState(0,"Idle");
 	  }
 	  else
 	  {
@@ -1748,7 +1748,7 @@ script "SamsaraBossMonologue" (int bossmonologueshit) //204
       case 17: // Terran Jump Commando  (RMR)
 	  if (GetCVar("sams_nomonologues"))
 	  {
-		SetActorState(0,"SpawnLoop");
+		SetActorState(0,"Idle");
 	  }
 	  else
 	  {
@@ -1800,7 +1800,7 @@ script "SamsaraBossMonologue" (int bossmonologueshit) //204
       case 18: // General Rom Mohc (Dark Forces)
 	  if (GetCVar("sams_nomonologues"))
 	  {
-		SetActorState(0,"SpawnLoop");
+		SetActorState(0,"Idle");
 	  }
 	  else
 	  {

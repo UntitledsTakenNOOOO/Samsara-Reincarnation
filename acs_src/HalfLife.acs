@@ -1135,11 +1135,11 @@ Script "HalfLifeRecoil" (int weapon) clientside
 			for(a = 7; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*56); Delay(1); }
 			break;
 		case 8:
-			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*64); Delay(1); }
-			for(a = 3; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*33); Delay(2); }
+			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*56); Delay(1); }
+			for(a = 3; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*33); Delay(3); }
 			break;		
 		case 9:
-			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*48); Delay(1); }
+			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*56); Delay(1); }
 			for(a = 3; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*33); Delay(1); }
 			break;				
 	}
@@ -1618,13 +1618,13 @@ Script "HalfLife_BulletDamage" (int damage)
 	
 	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
 	
-	if(monsterWidth > monsterHeight)
+	if(!CheckInventory("IsFatButBiped") && monsterWidth > monsterHeight)
 	{
 		int monsterAngle = GetActorAngle(0);
 		int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
 		int angle = vang % 1.0;
 		
-		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.4) && bulletZ < monsterZ + FixedMul(monsterHeight,0.6) && ((abs(monsterAngle - angle)) < 0.6 && (abs(monsterAngle - angle)) > 0.4))
+		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
 		{			
 			SetResultValue(damage*2);
 		}
@@ -1633,9 +1633,20 @@ Script "HalfLife_BulletDamage" (int damage)
 	}
 	else
 	{
-		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.8))
+		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.75))
 		{
+			int result;
+			if(SpawnForced("SamsaraMixerCompendiumToken",0,0,0,0))
+				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
+			else
+				result = 0;
 				
+			if(result == -1)
+			{
+				SetResultValue(-1);
+				terminate;
+			}
+
 			SetResultValue(damage*2);
 		}
 		else
@@ -1651,3 +1662,43 @@ Script "HalfLife_BulletDamage" (int damage)
 		Delay(5);
 	}
 }*/
+
+Script "HL_BloodGenerator_Offsets" (void)
+{
+	int missilex = GetActorX(0);
+	int missiley = GetActorY(0);
+	int missilez = GetActorZ(0);
+	int missileAngle = GetActorAngle(0);
+	SetActivator(0,AAPTR_Tracer);
+		
+	int enemyx = GetActorX(0);
+	int enemyy = GetActorY(0);
+	int enemyz = GetActorZ(0);
+	int currentangle = GetActorAngle(0);
+	int vang = VectorAngle(enemyx - missilex, enemyy - missiley);
+	int angle = vang % 1.0;
+	TakeInventory("HL_BloodGeneratorBleedAngle",999999);
+	TakeInventory("HL_BloodGeneratorAngle",999999);
+	TakeInventory("HL_BloodGeneratorZ",999999);
+	GiveInventory("HL_BloodGeneratorAngle",angle+65536);
+	GiveInventory("HL_BloodGeneratorBleedAngle",missileAngle+65536);
+	GiveInventory("HL_BloodGeneratorZ",(missilez - enemyz)>>16 + 65536);
+}
+
+Script "HL_BloodGenerator_Return" (int mode) 
+{
+	int result;
+	switch(mode)
+	{
+		case 1:
+			result = ((CheckInventory("HL_BloodGeneratorAngle") - 65536)/182)+180;
+			break;
+		case 2:
+			result = CheckInventory("HL_BloodGeneratorZ");
+			break;
+		case 3:
+			result = ((CheckInventory("HL_BloodGeneratorBleedAngle") - 65536)/182);
+			break;
+	}
+	SetResultValue(result);
+}
