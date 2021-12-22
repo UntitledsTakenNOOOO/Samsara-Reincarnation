@@ -376,7 +376,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	
 	if(bot)
 		ACS_NamedExecuteAlways("Samsara_BotAltClassHandler",0,pln,0,0);
-	
+		
+	TakeInventory("ShrunkPlayer",1);
+	UnMorphActor(0,1);
 	TakeInventory("Doom64MonsterSet", 0x7FFFFFFF);
 	TakeInventory("WolfLostMonsterSet", 0x7FFFFFFF);
 	TakeInventory("TotenkopfMonsterSet", 0x7FFFFFFF);
@@ -703,8 +705,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						{	
 							TakeInventory("WolfLostMonsterSet", 0x7FFFFFFF);
 							GiveInventory("TotenkopfMonsterSet", 1); 
-							targettid = UniqueTid();
 							SpawnForced("TotenkopfMapDummy",0,0,0,targettid);
+							targettid = UniqueTid();
 							SetPointerExt(AAPTR_TARGET, 0, targettid);
 							Thing_ChangeTID(targettid, 0);
 						}
@@ -915,6 +917,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							SpawnForced("HalfLifeAdrianModeMapDummy",0,0,0,targettid);//SetActorState(0, "AdrianModeOn", true); 
 							SetPointerExt(AAPTR_TARGET, 0, targettid);
 							Thing_ChangeTID(targettid, 0);
+							GiveInventory("HalfLifeOpposingForceSet",1);
 						}
 					}
 					else 

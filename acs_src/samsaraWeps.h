@@ -178,7 +178,7 @@ int ClassWeapons[CLASSCOUNT][SLOTCOUNT][CHOICECOUNT] =
         {"BJSuperKnife",                    "",             "",             "", ""},
         {"Luger",                           "",             "",             "", ""},
         {"Machine Gun",                     "Clip",         "",             "", ""},
-        {"Totenkopf_IHaveSTG44",     "Shell",         "",             "", ""},
+        {"Totenkopf_IHaveSTG44",     		"Shell",         "",             "", ""},
         {"  Chaingun  ",                    "Clip",         "",             "", ""},
         {" Rocket Launcher ",               "RocketAmmo",   "",             "", ""},
         {" Flamethrower ",                  "Cell",         "",             "", ""},
