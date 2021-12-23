@@ -3119,17 +3119,17 @@ Script "Samsara_ChangeAltClass" (void) net
 	switch(PlayerClass(pln))
 	{
 		case 0:
-			mode = GetUserCvar(pln,"sams_cl_doom64");
-			SetUserCvar(pln,"sams_cl_doom64",!mode);
+			mode = !GetUserCvar(pln,"sams_cl_doom64");
+			SetUserCvar(pln,"sams_cl_doom64",mode);
 			break;
 		case 3:
-			mode = GetUserCvar(pln,"sams_cl_wolfmode");
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_wolfmode");
 			if(mode == 2)
 				mode = 0;
 			else
 				mode++;
 				
-			SetUserCvar(pln,"sams_cl_wolfmode",mode);
+			SetUserCvar(PlayerNumber(),"sams_cl_wolfmode",mode);
 			break;
 		case 4:
 			mode = GetUserCvar(pln,"sams_cl_hexclass");
@@ -3141,8 +3141,8 @@ Script "Samsara_ChangeAltClass" (void) net
 			SetUserCvar(pln,"sams_cl_hexclass",mode);
 			break;
 		case 5:
-			mode = GetUserCvar(pln,"sams_cl_dkclab");
-			SetUserCvar(pln,"sams_cl_dkclab",!mode);
+			mode = !GetUserCvar(pln,"sams_cl_dkclab");
+			SetUserCvar(pln,"sams_cl_dkclab",mode);
 			break;
 		case 8:
 			mode = GetUserCvar(pln,"sams_cl_rottmode");
@@ -3154,12 +3154,12 @@ Script "Samsara_ChangeAltClass" (void) net
 			SetUserCvar(pln,"sams_cl_rottmode",mode);
 			break;
 		case 9:
-			mode = GetUserCvar(pln,"sams_cl_bsaog");
-			SetUserCvar(pln,"sams_cl_bsaog",!mode);
+			mode = !GetUserCvar(pln,"sams_cl_bsaog");
+			SetUserCvar(pln,"sams_cl_bsaog",mode);
 			break;
 		case 19:
-			mode = GetUserCvar(pln,"sams_cl_shephardmode");
-			SetUserCvar(pln,"sams_cl_shephardmode",!mode);
+			mode = !GetUserCvar(pln,"sams_cl_shephardmode");
+			SetUserCvar(pln,"sams_cl_shephardmode",mode);
 			break;
 	}
 	ACS_NamedExecuteWithResult("Samsara_LogClass",PlayerClass(pln),mode);
@@ -3171,39 +3171,33 @@ Script "Samsara_LogClass" (int type, int mode) clientside
 	switch(type)
 	{
 		case 0:
+			SetUserCvar(PlayerNumber(),"sams_cl_doom64",mode);
 			Log(s:"\cgDoom 64 Mode: ", s:"\ck", s:modestringsdefault[mode]);
 			break;
-		case 3:
-			if(mode == 2)
-				mode = 0;
-			else
-				mode++;
-				
+		case 3:		
+			SetUserCvar(PlayerNumber(),"sams_cl_wolfmode",mode);
 			Log(s:"\cgWolfenstein 3D Mode: ", s:"\ck", s:modestringswolf[mode]);
 			break;
 		case 4:
-			if(mode == 2)
-				mode = 0;
-			else
-				mode++;
-				
+			SetUserCvar(PlayerNumber(),"sams_cl_hexclass",mode);
 			Log(s:"\cgHexen Class: ", s:"\ck", s:modestringshexen[mode]);
 			break;
 		case 5:
+			SetUserCvar(PlayerNumber(),"sams_cl_dkclab",mode);
 			Log(s:"\cgDuke Nukem Life's a Beach: ", s:"\ck", s:modestringsdefault[mode]);
 			break;
 		case 8:
-			if(mode == 4)
-				mode = 0;
-			else
-				mode++;
-				
+			SetUserCvar(PlayerNumber(),"sams_cl_rottmode",mode);
 			Log(s:"\cgH.U.N.T. Team Member: ", s:"\ck", s:modestringsrott[mode]);
 			break;
 		case 9:
+			SetUserCvar(PlayerNumber(),"sams_cl_bsaog",mode);
 			Log(s:"\cgBlake Stone Aliens of Gold: ", s:"\ck", s:modestringsdefault[mode]);
 			break;
 		case 19:
+			SetUserCvar(PlayerNumber(),"sams_cl_shephardmode",mode);
+			if(CheckInventory("flashlightinventory") == true)
+				ACS_NamedExecuteWithResult("HL2677",0,0,0,0);
 			Log(s:"\cgHalf Life Opposing Force: ", s:"\ck", s:modestringsdefault[mode]);
 			break;
 	}

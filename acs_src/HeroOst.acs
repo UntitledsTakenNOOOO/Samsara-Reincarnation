@@ -159,36 +159,23 @@ str gameClassesSTR[28] = {
 	"HalfLifeClass", "SWClass", "CMClass", "JonClass", "RRClass", "BittermanClass", "Hexen2Class", "BondClass", "CatacombClass"
 };
 
-Script "SamsaraOST_Enter" ENTER clientside
-{
+Script "SamsaraOST_Enter" Enter
+{	
 	if(GameType() == GAME_TITLE_MAP)
 		terminate;
-		
-	ACS_NamedExecuteWithResult("SamsaraOST_Loop",0,0,0,0);
-		
-	Delay(1);
-	if(CheckInventory("HalfLifeClass") && GetCvar("sams_cl_heromusic"))
-	{
-		ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 3);
-		TakeInventory("HalfLifeMusicPlayingToken", 1);
-	}
-}
 
-Script "SamsaraOST_Loop" (void)
-{	
-	int altskin;
-	int settrack, lastmode, lastgame, lastblud, lasthex;
-	int herosoundtrack = GetCvar("sams_cl_heromusic");
-	int gameoverride = GetCvar("sams_cl_heromusicoverride");
-	int	bloodcd  = GetCvar("sams_cl_bloodcd");
-	int hexen2cd = GetCvar("sams_cl_hex2cd");
-	If(GetCvar("sams_cl_heromusic") > 0  && (GetCvar("sams_cl_xmasmusic") == false || GetCvar("sams_merrychristmas") == false))
+	int altskin, settrack, lastmode, lastgame, lastblud, lasthex, pln = PlayerNumber();
+	int herosoundtrack = GetUserCVAR(pln,"sams_cl_heromusic");
+	int gameoverride = GetUserCVAR(pln,"sams_cl_heromusicoverride");
+	int	bloodcd  = GetUserCVAR(pln,"sams_cl_bloodcd");
+	int hexen2cd = GetUserCVAR(pln,"sams_cl_hex2cd");
+	If(herosoundtrack > 0  && (GetUserCVAR(pln,"sams_cl_xmasmusic") == false || GetCVAR("sams_merrychristmas") == false))
 	{
 		if(gameoverride != lastgame || herosoundtrack != lastmode || CheckInventory("SamsaraModeCounter") != altskin || bloodcd != lastblud || hexen2cd != lasthex || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel"))
 		{
 			If((herosoundtrack == 1 && CheckInventory("DoomguyClass") == TRUE) || ((gameoverride == 0 || gameoverride == 12) && herosoundtrack == 2))
 			{
-				if(GetCVAR("sams_cl_doom64") || gameoverride == 12)	
+				if(GetUserCVAR(pln,"sams_cl_doom64") || gameoverride == 12)	
 				{
 					SetTrack = random(0,22);
 					LocalSetMusic(Doom64Music[SetTrack],0);				
@@ -211,7 +198,7 @@ Script "SamsaraOST_Loop" (void)
 			}
 			Else If((herosoundtrack == 1 && CheckInventory("WolfenClass") == TRUE) || ((gameoverride == 3 || gameoverride == 30) && herosoundtrack == 2))
 			{
-				if(GetCVAR("sams_cl_wolfmode") == 2 || gameoverride == 30)
+				if(GetUserCVAR(pln,"sams_cl_wolfmode") == 2 || gameoverride == 30)
 				{
 						SetTrack = random(2,14);
 						LocalSetMusic(TotenkopfMusic[SetTrack],0);		
@@ -229,7 +216,7 @@ Script "SamsaraOST_Loop" (void)
 			}		
 			Else If((herosoundtrack == 1 && CheckInventory("DukeClass") == TRUE) || ((gameoverride == 5 || gameoverride == 28) && herosoundtrack == 2))
 			{
-				If(GetCvar("sams_cl_dkclab") || gameoverride == 28)
+				If(GetUserCvar(pln,"sams_cl_dkclab") || gameoverride == 28)
 				{
 					SetTrack = random(40,45);
 					LocalSetMusic(DukeMusic[SetTrack],0);
@@ -262,7 +249,7 @@ Script "SamsaraOST_Loop" (void)
 			}
 			Else If((herosoundtrack == 1 && CheckInventory("CalebClass") == TRUE) || (gameoverride == 10 && herosoundtrack == 2))
 			{
-				If(GetCVAR("sams_cl_bloodcd"))
+				If(GetUserCvar(pln,"sams_cl_bloodcd"))
 				{
 					SetTrack = random(0,7);
 					LocalSetMusic(BloodCDMusic[SetTrack],0);				
@@ -315,6 +302,12 @@ Script "SamsaraOST_Loop" (void)
 			}
 			Else If((herosoundtrack == 1 && CheckInventory("HalfLifeClass") == TRUE) || ((gameoverride == 20 || gameoverride == 29) && herosoundtrack == 2))
 			{
+				if(timer() == 0)
+				{
+					ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 3);
+					TakeInventory("HalfLifeMusicPlayingToken", 1);
+				}
+			
 				if(CheckInventory("SamsaraModeCounter") != altskin)
 					TakeInventory("HalfLifeMusicPlayingToken",999);
 					
@@ -358,7 +351,7 @@ Script "SamsaraOST_Loop" (void)
 			}	
 			Else If((herosoundtrack == 1 && CheckInventory("Hexen2Class") == TRUE) || (gameoverride == 26 && herosoundtrack == 2))
 			{
-				If(GetCVAR("sams_cl_hex2cd"))
+				If(GetUserCvar(pln,"sams_cl_hex2cd"))
 				{
 					SetTrack = random(0,25);
 					LocalSetMusic(Hexen2CDMusic[SetTrack],0);
@@ -389,7 +382,7 @@ Script "SamsaraOST_Loop" (void)
 			}
 		}
 	}
-	Else if(GetCvar("sams_cl_xmasmusic") && GetCvar("sams_merrychristmas"))
+	Else if(GetUserCvar(pln,"sams_cl_xmasmusic") && GetCvar("sams_merrychristmas") && herosoundtrack > 0)
 	{
 		if(CheckInventory("HeroSoundTrackXmas") < 1 || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel"))
 		{
@@ -409,12 +402,13 @@ Script "SamsaraOST_Loop" (void)
 			TakeInventory("HeroSoundTrack", 2);
 			TakeInventory("HeroSoundTrackXmas", 1);
 			TakeInventory("HalfLifeMusicPlayingToken", 1);
+			TakeInventory("HeroSoundTrackLevel", 2048);
 		}
 	}
-	lastmode = GetCvar("sams_cl_heromusic");
-	lastgame = GetCvar("sams_cl_heromusicoverride");
-	lastblud = GetCvar("sams_cl_bloodcd");
-	lasthex  = GetCvar("sams_cl_hex2cd");
+	lastmode = GetUserCvar(pln,"sams_cl_heromusic");
+	lastgame = GetUserCvar(pln,"sams_cl_heromusicoverride");
+	lastblud = GetUserCvar(pln,"sams_cl_bloodcd");
+	lasthex  = GetUserCvar(pln,"sams_cl_hex2cd");
 	Delay(1);
 	restart;
 }

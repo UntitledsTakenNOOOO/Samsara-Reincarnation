@@ -705,8 +705,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						{	
 							TakeInventory("WolfLostMonsterSet", 0x7FFFFFFF);
 							GiveInventory("TotenkopfMonsterSet", 1); 
-							SpawnForced("TotenkopfMapDummy",0,0,0,targettid);
 							targettid = UniqueTid();
+							SpawnForced("TotenkopfMapDummy",0,0,0,targettid);
 							SetPointerExt(AAPTR_TARGET, 0, targettid);
 							Thing_ChangeTID(targettid, 0);
 						}
