@@ -377,6 +377,27 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
             }
         }
         break;
+		
+	  case 38:
+		if(GetCvar("sams_notimefreeze"))
+		{
+			GiveInventory("InvulnPowerup",1);
+		}
+		else
+		{
+			if(CheckInventory("CorvusClass"))
+			{
+				PlaySound(0,"heretic/itemget");
+				GiveInventory("TimeFreezeSphereHeretic",1);		
+			}
+			else
+			{
+				PlaySound(0,"misc/p_pkup", CHAN_ITEM);
+				GiveInventory("PowerTimeFreezer",1);
+				GiveInventory("PowerTimeFreezerColor",1);
+			}
+		}
+		break;
     }
     
     SetResultValue(result);
@@ -4365,11 +4386,14 @@ Script "Samsara_PlayerShrinker" (int condition)
 
 script "Catacomb_HourglassCooldown" (void)
 {
-    if (CheckInventory("Catacomb_HourglassCooldown") > 0)
+	if(!GetCvar("sams_notimefreeze"))
+		GiveInventory("PowerCatacomb_TimeFreeze",1);
+	else
+		GiveInventory("PowerCatacomb_Invulnerability",1);
+    while(CheckInventory("Catacomb_HourglassCooldown") > 0)
     {
         delay(35);
         TakeInventory("Catacomb_HourglassCooldown",1);
-        restart;
     }
 } 
 
