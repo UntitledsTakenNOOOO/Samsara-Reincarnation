@@ -695,6 +695,7 @@ str ClassHotKeyWeapon[CLASSCOUNT][MAXMODES][SLOTCOUNT+3] =
 	{
 		{"Knife", "", "Luger", "Machine Gun", "", "  Chaingun  ", " Rocket Launcher ", " Flamethrower ", " Spear Of Destiny", "", "" },
 		{"Knife", "", "Luger", "Machine Gun", "", "  Chaingun  ", " Rocket Launcher ", " Flamethrower ", " Spear Of Destiny", "", "" },
+		{"Knife", "", "Luger", "Machine Gun", "", "  Chaingun  ", " Rocket Launcher ", " Flamethrower ", " Spear Of Destiny", "", "" },
 		{"Knife", "", "Luger", "Machine Gun", "Totenkopf_STG44", "  Chaingun  ", " Rocket Launcher ", " Flamethrower ", " Spear Of Destiny", "Totenkopf_FlameThrower", "Totenkopf_MG42" },
 	},
 	{
