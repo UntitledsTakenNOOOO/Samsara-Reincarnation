@@ -1,47 +1,14 @@
-#define STRIFEGUY_UPG 703
-     
-Script "StrifeGuy_UPG" ENTER //703 -- STRIFEGUY_UPG
+   Script "StrifeGuy_UPG" ENTER
 {
-            if (PlayerClass(PlayerNumber())!=11) terminate; //Check if the class is strifeguy, otherwise terminate the script
-            //Assign cvar values to variables
-            int aup=GetCvar("sams_strifeaccuracy"); //Accuracy Upgrade
-            int sup=GetCvar("sams_strifestamina");  //Stamina Upgrade
-            //Cap out the values
-            if (aup>10) aup=10;
-            if (aup<0) aup=0;
-            if (sup>10) sup=10;
-            if (sup<0) sup=0;
-
-            if (gametype()==2) //If it is competitive gamemode
-            {
-                    //Completely clear out of upgrades
-                    TakeInventory("AccuracyUpgrade1", CheckInventory("AccuracyUpgrade1"));
-                    TakeInventory("AccuracyUpgrade2", CheckInventory("AccuracyUpgrade2"));
-                    TakeInventory("StaminaUpgradeHealth", CheckInventory("StaminaUpgradeHealth"));
-                    TakeInventory("StaminaUpgradeDamage", CheckInventory("StaminaUpgradeDamage"));
-                    GiveInventory("AccuracyUpgrade1", aup);
-                    GiveInventory("AccuracyUpgrade2", aup);
-                    GiveInventory("StaminaUpgradeHealth", 10*sup);
-                    GiveInventory("StaminaUpgradeDamage", sup);
-            }
-            else //If it is cooperative gamemode
-            {
-                    if (CheckInventory("AccuracyUpgrade1")<aup) //If you don't have enough upgrades, give some
-                    {
-                            TakeInventory("AccuracyUpgrade1", CheckInventory("AccuracyUpgrade1"));
-                            GiveInventory("AccuracyUpgrade1", aup);
-                    }
-                    if (CheckInventory("AccuracyUpgrade2")<aup) //Same
-                    {
-                            TakeInventory("AccuracyUpgrade2", CheckInventory("AccuracyUpgrade2"));
-                            GiveInventory("AccuracyUpgrade2", aup);
-                    }
-                    if (CheckInventory("StaminaUpgradeDamage")<sup) //Same
-                    {
-                            TakeInventory("StaminaUpgradeDamage", CheckInventory("StaminaUpgradeDamage"));
-                            GiveInventory("StaminaUpgradeDamage", sup);
-                    }
-            }
+	if (PlayerClass(PlayerNumber())!=11) terminate; //Check if the class is strifeguy, otherwise terminate the script
+    
+    int sup=GetCvar("sams_strifeupgrades");
+	
+	GiveInventory("AccuracyUpgrade1", sup);
+    GiveInventory("AccuracyUpgrade2", sup);
+    GiveInventory("StaminaUpgradeDamage", sup);
+	GiveInventory("StrifeUpgradeCount",sup);
+	SetActorProperty(0,APROP_SpawnHealth,100+(sup*10));
 }
 
 script SAMSARA_STRIFESIGIL (int class, int slot, int dropped) //667

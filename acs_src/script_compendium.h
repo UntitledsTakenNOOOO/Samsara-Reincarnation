@@ -2060,7 +2060,7 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][31] =
 
 str CompendiumCredits = "\cmLead Developer\n\cjShiny Metagross
 \n\n\cmExecutive Developers\cj\nMagnolia\nShadowlink223
-\n\n\cmAssistant Developers\cj\nRadioactiveTurtle\nLtMajorDude\nNorwegianLoki\nZircon
+\n\n\cmAssistant Developers\cj\nCubebert\nRadioactiveTurtle\nLtMajorDude\nNorwegianLoki\nZircon
 \n\n\cmLead Beta Tester\cj\nPangoro
 \n\n\cmBeta Testers\cj\nFlynn Taggart\nNecron 99\nLaserPope\nLaggy Blazko\nCubebert\nRadioactiveTurtle\nCrazyboy88\nLuisDHR19971\nNautilus\nTriaxis
 \n\n\cmDiscord Managment\cj\nMeleemario\nLuisDHR19971\nZircon\nPangoro

@@ -430,7 +430,14 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         break;
 		
 	  case CLASS_STRIFE:
-	    if (!respawning) { If(ThingCountName("Candle",0) > 0 ) { GiveInventory("BlackBirdInStrife", 1); } if(!GetUserCvar(pln,"sams_cl_ballgag")) GiveInventory("BlackBirdReady", 1); }
+	    if (!respawning) 
+		{ 
+			if(ThingCountName("Candle",0) > 0 ) 
+				GiveInventory("BlackBirdInStrife", 1); 
+				
+			if(!GetUserCvar(pln,"sams_cl_ballgag")) 
+				GiveInventory("BlackBirdReady", 1); 
+		}
         break;
       
 	  case CLASS_ERAD:
@@ -544,7 +551,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				
         if (GetCvar("sams_permakimbo") == 1) { GiveInventory("AkimboStay", 1); }
         else { TakeInventory("AkimboStay", 0x7FFFFFFF); }			
-		
+				
 		switch (samsaraClassNum())
 		{
 			case CLASS_DOOM:
@@ -841,6 +848,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				break;	
 			case CLASS_STRIFE:
 			{
+				SetActorProperty(0,APROP_SpawnHealth,100+(CheckInventory("StrifeUpgradeCount")*10));
 				if(!CheckInventory("BlackBirdBallgag") && !CheckInventory("BlackBirdTauntCooldown") && !CheckInventory("BlackBirdInStrife"))
 				{
 					if(strifeCeilingHeight != GetActorCeilingZ(0) && random(0,50) <= 1)
