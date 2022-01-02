@@ -2267,7 +2267,6 @@ Script "Samsara_Compendium" (void) Net Clientside
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16180, CR_UNTRANSLATED, hudcenterx*1.0, hudcentery*1.0, 0);
 			if(revolutions <= maxrevolutions)
 			{
-				PrintBold(d:rot);
 				rot += 2 * (maxrevolutions - revolutions)/4;
 				if(rot >= 29) { rot = 0; revolutions++; LocalAmbientSound("Compendium/Wheel/Spin",127);}
 			}

@@ -3233,6 +3233,19 @@ Script "Samsara_UniqueKeys" (void) net
 		case 19:
 			ACS_NamedExecuteWithResult("HL2677",0,0,0);
 			break;
+		case 23:
+			if(((timer() > CheckInventory("LeonardPissTimer") + 10500) || CheckInventory("LeonardPissTimer") == 0) && GetActorProperty(0,APROP_Health) > 0)
+			{
+				TakeInventory("LeonardPissTimer",2147483647);
+				GiveInventory("LeonardPissTimer",timer());
+				if(GetActorProperty(0,APROP_Health) < 90)
+					SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_Health)+2);
+				else if(GetActorProperty(0,APROP_Health) < 100)
+					SetActorProperty(0,APROP_Health,100);
+					
+				Playsound(0,"Leonard/Pee",CHAN_6,1.0,0,ATTN_NORM);
+			}
+			break;
 		case 26:
 			ACS_NamedExecuteWithResult("BondActivateWatch",0,0,0);
 			break;

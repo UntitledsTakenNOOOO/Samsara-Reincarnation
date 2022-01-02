@@ -430,6 +430,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         break;
 		
 	  case CLASS_STRIFE:
+		SetActorProperty(0,APROP_SpawnHealth,100+(CheckInventory("StrifeUpgradeCount")*10));
+		SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_SpawnHealth));
 	    if (!respawning) 
 		{ 
 			if(ThingCountName("Candle",0) > 0 ) 
