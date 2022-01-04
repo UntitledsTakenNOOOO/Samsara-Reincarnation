@@ -1512,6 +1512,7 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][31] =
 		{ "Mk 1 Pfhor Juggernaut", "", "The Pfhor Juggernauts or Utfoo Heavy Assault Crafts are the strongest enemies of the Marathon enemies. Juggernauts are equipped with close-range machine guns and long-range guided grenades.", "M1Juggernaut", "CMPMMA36" },
 		{ "Pfhor Juggernaut Minor", "", "Juggernauts are now given a new look, new weapons, and they no longer prioritize their weapons based on the distance to their target.", "JuggernautMinor", "CMPMMA37" },
 		{ "Pfhor Juggernaut Major", "", "Major Juggernauts have higher health and shoot more often. No doubt one of the deadliest enemies you will encounter.", "JuggernautMajor", "CMPMMA38" },
+		{ "Headless", "COMP_THREAT_1", "Headless are dumb, bipedal creatures, but seem to be biological, rather than supernatural, in origin. The headless has a bank of mysterious sensory organs running down its abdomen, which it seems to use for tracking prey. The headless cries out, and bleeds red blood when injured. Its principal weapon is its ability to project a semi-solid mass of noxious spittle. If injured while spitting, the Headless's own scream causes the spitting process to be stopped.", "Marathon_Headless", "M_HDA1A5" },
 	}},
 	{{
 		{ "Grunt", "", "Goons with probes inserted into their pleasure centers; wired up so when they kill someone, they get paroxysms of ecstasy. In essence, customized serial killers. Easy to kill, and they tote shotgun shells. It's like a little Christmas each time you blow a Grunt away!", "QGrunt", "CMPMQ101" },
