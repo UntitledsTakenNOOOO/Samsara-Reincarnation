@@ -240,6 +240,18 @@ int ClassPickupSounds[CLASSCOUNT][MAXMODES][SLOTCOUNT] =
 			"gen/pickup",
 			"gen/bpicku",
 		},
+		{
+			"gen/pickup",	
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/pickup",
+			"gen/bpicku",
+		},
 	},
 	{
 		{	// Blake sounds - Added this.
