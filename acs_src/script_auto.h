@@ -557,14 +557,14 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		switch (samsaraClassNum())
 		{
 			case CLASS_DOOM:
-				doommode = GetCvar("sams_cl_doom64");
+				doommode = GetUserCvar(pln,"sams_cl_doom64");
 				TakeInventory("SamsaraModeCounter",999);
 				GiveInventory("SamsaraModeCounter",doommode);
 				if(doommode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
 				{
 					int skillmultiplier = (GameSkill() == 0 || GameSkill() == 4);
 					TakeInventory("Samsara_ModeWeaponChange",1);
-					if((GetCvar("sams_cl_doom64")))
+					if(doommode)
 					{ 
 						GiveInventory("Doom64GuyScalar",1);
 						if(CheckInventory("Doom64_IHaveUnmaker") && (!CheckInventory("Unmaker"))) 
@@ -666,7 +666,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
 			case CLASS_WOLFEN:
-				wolfmode = GetCvar("sams_cl_wolfmode");
+				wolfmode = GetUserCvar(pln,"sams_cl_wolfmode");
 				if(wolfmode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
 				{
 					TakeInventory("SamsaraModeCounter",999);
@@ -739,7 +739,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				break;
 				
 			case CLASS_HEXEN:
-				hexmode = GetCvar("sams_cl_hexclass");
+				hexmode = GetUserCvar(pln,"sams_cl_hexclass");
 				if(hexmode != previousvalue)
 				{
 					TakeInventory("SamsaraModeCounter",999);
@@ -772,7 +772,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
 			case CLASS_DUKE:
-				dukemode = GetCvar("sams_cl_dkclab");
+				dukemode = GetUserCvar(pln,"sams_cl_dkclab");
 				if(dukemode != previousvalue)
 				{
 					TakeInventory("SamsaraModeCounter",999);
@@ -800,7 +800,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
 			case CLASS_ROTT:
-				rottmode = GetCvar("sams_cl_rottmode");
+				rottmode = GetUserCvar(pln,"sams_cl_rottmode");
 				//only run these actions if the value changes
 				if(rottmode != previousvalue)
 				{
@@ -830,7 +830,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
 			case CLASS_BLAKE:
-				blakemode = GetCvar("sams_cl_bsaog");
+				blakemode = GetUserCvar(pln,"sams_cl_bsaog");
 				if(blakemode != previousvalue)
 				{
 					TakeInventory("SamsaraModeCounter",999);
@@ -878,7 +878,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			}
 			break;
 			case CLASS_POGREED:
-				ipogmode = GetCvar("sams_cl_ipogmode");
+				ipogmode = GetUserCvar(pln,"sams_cl_ipogmode");
 				//only run these actions if the value changes
 				if(ipogmode != previousvalue)
 				{
@@ -908,7 +908,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
 			case CLASS_HALFLIFE:
-				halflifemode = GetCvar("sams_cl_shephardmode");
+				halflifemode = GetUserCvar(pln,"sams_cl_shephardmode");
 				if(halflifemode != previousvalue)
 				{
 					TakeInventory("SamsaraModeCounter",999);
