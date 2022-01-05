@@ -1399,7 +1399,7 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][31] =
 			{ "Adolf Hitler", "COMP_THREAT_5", "The essence of evil, he's got a few surprises for you. ", "MechaHitler", "WMAHA0", "Hitler", "WADOA0" },
 			{ "Angel of Death", "COMP_THREAT_5", "After grabbing the Spear, B.J. Blazkowicz is teleported to Hell, where he must defeat the demonic Angel in order to prove that he is worthy enough to wield the Spear. The Angel's only method of attack is firing powerful orbs at a target.", "AngelOfDeath", "WADHA0" },
 			{ "Devil Incarnate", "COMP_THREAT_5", "He is a demonic creature from Hell summoned by Hitler's unholy ritual. Using the Spear of Destiny, Hitler took control over the monster and commanded him to aid the Third Reich. Like the Angel of Death, you'll meet him after grabbing the Spear. His only attack is to fire orbs at you, but the orbs are very powerful.", "DevilIncarnate", "DEINA0" },
-			{ "Mage", "COMP_THREAT_2", "You have already encountered some twisted stuff like ghosts, mutants, Hitler clones, and hellish creatures under the command of Mein Fuhrer. A mage should not sound too outlandish at this point...", "Mage", "C3DMA0" },
+			{ "Russian Red Army", "COMP_THREAT_3", "Normally, the Workers' and Peasants' Red Army fights the nazis, but today, they're after you.", "Wolf3D_RussianRedArmy", "_WFSA1" },
 		},
 		{
 		},
