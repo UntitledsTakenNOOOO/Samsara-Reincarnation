@@ -1365,6 +1365,8 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][31] =
 			{ "Doctor Schabbs", "COMP_THREAT_5", "He is nuts and prefers killing to all other activities. Watch out for flying syringes or you'll be a mutant too!", "DoctorSchabbs", "WSCBA0" },
 			{ "Otto Giftmacher", "COMP_THREAT_4", "The amoral scientist responsible for designing chemical weapons. Beware his rumored \"Super Otto\" alter-ego, where he can shoot three rockets in a spread shot fashion...", "OttoGiftmacher", "WOTTA0" },
 			{ "General Fettgesicht", "COMP_THREAT_5", "The organizer of the chemical war.", "GeneralFettgesicht", "WFETA0" },
+			{ "Kapitan Gerhardt von Schreiber", "COMP_THREAT_4", "He was recently promoted to Captain of the Tirpitz. Reports say that he has a sick fascination with blowing prisoners up with his hand held rocket launcher and feeding the sharks with their remains.", "GerhardtVonSchreiber", "LE00A0" },
+			{ "Generalleutnant Stahlkopf", "COMP_THREAT_4", "A childhood friend of Submarine Willy with a skull made partially of steel. He's a sadist armed with two chainguns and he will not stop shooting until you are ripped to shreds.", "GeneralleutnantStahlkopf", "LE01A0" },
 			{ "Submarine Willy", "COMP_THREAT_4", "The commander of a submarine, Willy is known and feared for his various mental problems and rage outbursts. Even a lobotomy didn't improve his temper. Equipped with a chain gun and a machine gun, Willy is definitely prepared for battle.", "SubmarineWilly", "SUBWA0" },
 			{ "Barnacle Wilhelm", "COMP_THREAT_5", "This salty dog barks a missile launcher / chaingun welcome from his weathered fists! Don't rub his fur the wrong way!", "BarnacleWilhelm", "WBARA0" },
 			{ "Professor Quarkblitz", "COMP_THREAT_5", "Killing him will stop the further usage of specially bred bat units and ensure that his Robot doesn't go past the prototype stage. However, he is armed with a rocket launcher and a Chain Gun, so don't expect him to go down easily.", "ProfessorQuarkblitz", "PROQA0" },
@@ -2062,7 +2064,7 @@ str CompendiumCredits = "\cmLead Developer\n\cjShiny Metagross
 \n\n\cmExecutive Developers\cj\nMagnolia\nShadowlink223
 \n\n\cmAssistant Developers\cj\nCubebert\nRadioactiveTurtle\nLtMajorDude\nNorwegianLoki\nZircon
 \n\n\cmLead Beta Tester\cj\nPangoro
-\n\n\cmBeta Testers\cj\nFlynn Taggart\nNecron 99\nLaserPope\nLaggy Blazko\nCubebert\nRadioactiveTurtle\nCrazyboy88\nLuisDHR19971\nNautilus\nTriaxis
+\n\n\cmBeta Testers\cj\nFlynn Taggart\nNecron 99\nLaserPope\nLaggy Blazko\nCubebert\nRadioactiveTurtle\nCrazyboy88\nLuisDHR19971\nNautilus
 \n\n\cmDiscord Managment\cj\nMeleemario\nLuisDHR19971\nZircon\nPangoro
 \n\n\cmFormer Developers\cj\nJesh\nDynamo\nHiragamer98\nIvanDobrovski
 \n\n\cmAdditional Credits\cj

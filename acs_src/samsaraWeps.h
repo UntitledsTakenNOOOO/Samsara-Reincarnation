@@ -34,7 +34,7 @@ int ClassUniques[CLASSCOUNT][CHOICECOUNT_U] =
 {
 	{"DoomguyBerserker",    "",                 "", "","",""},
     {"ChexSoulsphere",      "",                 "", "","",""},
-    {"PortTomeCoop",            "",                 "", "","",""},
+    {"PortTomeCoop",        "",                 "", "","",""},
     {"WolfExtraLife",       "",                 "", "","",""},
     {"PortMysticAmbit",     "",                 "", "","",""},
     {"DukePortJetpack",     "DukeJetpackFuel",  "Shrinker", "ShrinkerAmmo","Expander","ExpanderAmmo"},
