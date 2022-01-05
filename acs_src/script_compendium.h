@@ -1377,7 +1377,7 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][31] =
 			{ "Adolf Hitler", "COMP_THREAT_5", "The essence of evil, he's got a few surprises for you. ", "MechaHitler", "WMAHA0", "Hitler", "WADOA0" },
 			{ "Angel of Death", "COMP_THREAT_5", "After grabbing the Spear, B.J. Blazkowicz is teleported to Hell, where he must defeat the demonic Angel in order to prove that he is worthy enough to wield the Spear. The Angel's only method of attack is firing powerful orbs at a target.", "AngelOfDeath", "WADHA0" },
 			{ "Devil Incarnate", "COMP_THREAT_5", "He is a demonic creature from Hell summoned by Hitler's unholy ritual. Using the Spear of Destiny, Hitler took control over the monster and commanded him to aid the Third Reich. Like the Angel of Death, you'll meet him after grabbing the Spear. His only attack is to fire orbs at you, but the orbs are very powerful.", "DevilIncarnate", "DEINA0" },
-			{ "Mage", "COMP_THREAT_2", "You have already encountered some twisted stuff like ghosts, mutants, Hitler clones, and hellish creatures under the command of Mein Fuhrer. A mage should not sound too outlandish at this point...", "Mage", "C3DMA0" },
+			{ "Russian Red Army", "COMP_THREAT_3", "Normally, the Workers' and Peasants' Red Army fights the nazis, but today, they're after you.", "Wolf3D_RussianRedArmy", "_WFSA1" },
 		},
 		{
 		},
@@ -1488,6 +1488,7 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][31] =
 		{ "Mk 1 Pfhor Juggernaut", "", "The Pfhor Juggernauts or Utfoo Heavy Assault Crafts are the strongest enemies of the Marathon enemies. Juggernauts are equipped with close-range machine guns and long-range guided grenades.", "M1Juggernaut", "CMPMMA36" },
 		{ "Pfhor Juggernaut Minor", "", "Juggernauts are now given a new look, new weapons, and they no longer prioritize their weapons based on the distance to their target.", "JuggernautMinor", "CMPMMA37" },
 		{ "Pfhor Juggernaut Major", "", "Major Juggernauts have higher health and shoot more often. No doubt one of the deadliest enemies you will encounter.", "JuggernautMajor", "CMPMMA38" },
+		{ "Headless", "COMP_THREAT_1", "Headless are dumb, bipedal creatures, but seem to be biological, rather than supernatural, in origin. The headless has a bank of mysterious sensory organs running down its abdomen, which it seems to use for tracking prey. The headless cries out, and bleeds red blood when injured. Its principal weapon is its ability to project a semi-solid mass of noxious spittle. If injured while spitting, the Headless's own scream causes the spitting process to be stopped.", "Marathon_Headless", "M_HDA1A5" },
 	}},
 	{{
 		{ "Grunt", "", "Goons with probes inserted into their pleasure centers; wired up so when they kill someone, they get paroxysms of ecstasy. In essence, customized serial killers. Easy to kill, and they tote shotgun shells. It's like a little Christmas each time you blow a Grunt away!", "QGrunt", "CMPMQ101" },
