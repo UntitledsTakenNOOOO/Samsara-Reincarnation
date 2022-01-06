@@ -398,6 +398,9 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 			}
 		}
 		break;
+	  case 39:
+		SetActorProperty(0,APROP_Renderstyle,STYLE_NORMAL);
+		break;
     }
     
     SetResultValue(result);

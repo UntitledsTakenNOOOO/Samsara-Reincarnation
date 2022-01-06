@@ -681,7 +681,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						}	
 						else if(wolfmode <= 1)
 						{
-							if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", 1); }
+							if(CheckInventory("Wolfen_IHaveExtraLife") && (!CheckInventory("WolfExtraLife"))) { GiveInventory("WolfExtraLife", CheckInventory("Wolfen_IHaveExtraLife")); }
 							if(CheckInventory("Totenkopf_IHaveSTG44") && (!CheckInventory("Machine Gun"))) { GiveInventory("Machine Gun", 1); }
 							TakeInventory("Totenkopf_PistolDual", 0x7FFFFFFF); TakeInventory("Totenkopf_Mauser", 0x7FFFFFFF); TakeInventory("Totenkopf_MauserDual", 0x7FFFFFFF); TakeInventory("Totenkopf_MP40Dual", 0x7FFFFFFF); TakeInventory("Totenkopf_STG44", 0x7FFFFFFF); TakeInventory("Totenkopf_FlameThrower", 0x7FFFFFFF);  TakeInventory("Totenkopf_MG42", 0x7FFFFFFF);  TakeInventory("Totenkopf_Sniper", 0x7FFFFFFF); TakeInventory("TotenkopfHasPowerArmor", 0x7FFFFFFF);  TakeInventory("TotenkopfHasHealingOrb", 0x7FFFFFFF); 
 						}
