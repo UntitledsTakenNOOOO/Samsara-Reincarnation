@@ -4,31 +4,39 @@
 
 Script "BondAim" Enter// Clientside
 {	
+	int yawrequired = 640;
+	int inputCounter;
 	TakeInventory("BondDualWieldToken",1);
 	while(ClassifyActor(0) & ACTOR_PLAYER)
 	{
 		if(!CheckInventory("BondClass"))
 			terminate; 
 				
-		int yawrequired;
-		int yaw = GetPlayerInput(-1, INPUT_YAW);
+		int yaw = GetPlayerInput(-1, MODINPUT_YAW);	
 		int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
-		yawrequired = ((CheckInventory("BondGunAngle") - 5) + sign(yaw)) * 640;
 
-		if(yaw > 0)
+		if(yaw > 0 && inputCounter > 1)
 		{
 			//if(!CheckInventory("BondFiringToken"))
 				if(yaw > yawrequired  || buttonPress & BT_Left)
+				{
 					if(CheckInventory("BondGunAngle") > 1)
+					{
+						inputcounter = 0;
 						TakeInventory("BondGunAngle", 1);
+					}
+				}
 		}
-		else if(yaw < 0)
+		else if(yaw < 0 && inputCounter > 1)
 		{
 			//if(!CheckInventory("BondFiringToken"))
-				if(yaw < yawrequired  || buttonPress & BT_Right)
+				if(yaw < -yawrequired  || buttonPress & BT_Right)
+				{
+					inputcounter = 0;
 					GiveInventory("BondGunAngle", 1);
+				}
 		}
-		else
+		else if(yaw == 0)
 		{
 			//if(!CheckInventory("BondFiringToken"))
 			//{
@@ -50,6 +58,7 @@ Script "BondAim" Enter// Clientside
 			TakeInventory("BondSecondaryToken",1); 
 		
 		Delay(1);
+		inputcounter++;
 	}
 }
 
