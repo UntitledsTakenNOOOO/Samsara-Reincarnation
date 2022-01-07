@@ -1349,6 +1349,7 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][31] =
 		{ "Iron Lich", "COMP_THREAT_4", "What is the Iron Lich? It is just an ordinary monster... that can shoot powerful balls of fire, can summon a pesky tornado, and can launch a deadly ice attack. Word of advice: kill this ordinary monster IMMEDIATELY.", "IronLich3", "LICHA1" },
 		{ "Maulotaur", "COMP_THREAT_5", "Maulotaurs greatly resemble the mythological Minotaur, except that they wield giant hammers (or mauls), which they use to smash their enemies into a pulp.", "Minotaur3", "MNTRA1" },
 		{ "D'Sparil & His Chaos Serpent", "COMP_THREAT_5", "He is the first and the youngest of the trio of Serpent Riders, using cunning and deception to initially gain dominance of Parthoris, the world of Heretic. He declared the supernatural race of the Sidhe to be forever hunted as heretics to their new Order. When you first encounter him, he will be riding a Green Chaos Serpent. Once his mount has been defeated, D'Sparil fights his enemy using his own powers.", "Sorcerer5", "CMPMHE12", "Sorcerer6", "SOR2M1" },
+		{ "CyClone Grunt", "COMP_THREAT_2", "These are the mainstay of the CyClone forces. They are the size of a large human male and equpped with an armored suit and a variety of weapons. Grunts have been reported carrying everything from projectile weapons to plasma guns. Like the rest of the invading forces, their actions are believed to be dictated by a commanding intelligence.", "CyCloneGrunt", "CYC1A1" },
 	}},
 	{
 		{
