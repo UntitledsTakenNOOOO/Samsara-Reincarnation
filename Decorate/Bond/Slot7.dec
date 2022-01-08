@@ -858,20 +858,20 @@ ACTOR Goldeneye_Moonraker : Weapon
 Actor Goldeneye_MoonrakerRay : Goldeneye_BulletTracer
 {
     //+FORCEDECAL
-    //+RIPPER
-	//+THRUACTORS
+    +THRUACTORS
     +FORCERADIUSDMG
     RenderStyle Translucent
-    Damage(160)
+    Damage(25)
+	Obituary "%o was zapped by %k's laser."
     States
     {
         Spawn:
 			GE00 A 0
-			GE00 A 0 A_SetUserVar("user_damage",160)
+			GE00 A 0 A_SetUserVar("user_damage",100)
 			TNT1 A 1
 			GE00 A 0 A_ChangeVelocity(velx*2,vely*2,velz*2,CVF_REPLACE)
 		SpawnLoop:
-            GE00 A 1 Bright //A_Explode(CallACS("BondHitBox",2),8, !XF_HURTSOURCE, 0, 8)
+            GE00 A 1 Bright ACS_NamedExecuteWithResult("Samsara_ProjectilePredictor",5)
             loop
         Death:
             TNT1 A 0 A_CustomMissile("Goldeneye_MoonrakerRayPenetrate1",0,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER,pitch)
@@ -881,23 +881,41 @@ Actor Goldeneye_MoonrakerRay : Goldeneye_BulletTracer
             TNT1 A 0
             Stop
         XDeath:
-			//TNT1 A 0 A_CustomMissile("Goldeneye_MoonrakerRayPenetrate1",0,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER,pitch)
 			TNT1 A 0 A_Explode(CallACS("BondHitBox",user_damage),8,!XF_HURTSOURCE,0,8)
-            //TNT1 A 0 A_Explode(75,8,!XF_HURTSOURCE,0,8)
+            TNT1 A 0 A_Explode(75,8,!XF_HURTSOURCE,0,8)
             TNT1 A 0 A_Playsound("Goldeneye/Zap", CHAN_5)
             //TNT1 AAAAAAAA 0 A_SpawnItemEx("Goldeneye_Debris", frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-360, 360), SXF_NOCHECKPOSITION)
             TNT1 A 0 A_SpawnItemEx("Goldeneye_BulletImpact", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION)
             TNT1 A 0
             Stop
         Crash:
-			//TNT1 A 0 A_CustomMissile("Goldeneye_MoonrakerRayPenetrate1",0,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER,pitch)
-            TNT1 A 0 A_Explode(CallACS("BondHitBox",user_damage),8,!XF_HURTSOURCE,0,8)
+            TNT1 A 0 A_Explode(75,8,!XF_HURTSOURCE,0,8)
             TNT1 A 0 A_Playsound("Goldeneye/Zap", CHAN_5)
             TNT1 AAAAAAAA 0 A_SpawnItemEx("Goldeneye_Debris", frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-1, 1), frandom(-360, 360), SXF_NOCHECKPOSITION)
             TNT1 A 0 A_SpawnItemEx("Goldeneye_BulletImpact", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION)
             TNT1 A 0
             Stop
     }
+}
+
+Actor Goldeneye_MoonrakerRay_Explosion
+{
+	Projectile
+	Height 2
+	Radius 1
+	Speed 0
+	Obituary "%o was zapped by %k's laser."
+	+NOINTERACTION
+	+FORCERADIUSDMG
+	+NODAMAGETHRUST
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 0 A_Explode(random(4,8), 6, !XF_HURTSOURCE, false, 6)
+			TNT1 A 1
+			Stop
+	}
 }
 
 Actor Goldeneye_MoonrakerRayCoop : Goldeneye_MoonrakerRay { +THRUSPECIES Species "Player" }
@@ -910,7 +928,7 @@ Actor Goldeneye_MoonrakerRayPenetrate1 : Goldeneye_MoonrakerRay
 	{
 		Spawn:
 			TNT1 A 0
-			TNT1 A 1 A_Explode(2,8, !XF_HURTSOURCE, 0, 8)
+			TNT1 A 1
 			stop
 		Death:
 			TNT1 A 0 A_CustomMissile("Goldeneye_MoonrakerRayPenetrate2",0,0,0,CMF_AIMDIRECTION)

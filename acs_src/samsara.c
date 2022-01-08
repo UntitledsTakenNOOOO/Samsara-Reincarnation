@@ -4293,6 +4293,9 @@ Script "Samsara_ProjectilePredictor" (int type)
 		case 4:
 			typeactor = "Ksphere_Rott_Explosion";
 			break;
+		case 5:
+			typeactor = "Goldeneye_MoonrakerRay_Explosion";
+			break;
 	}
 	SpawnForced(typeactor,GetActorX(newactivator),GetActorY(newactivator),GetActorZ(newactivator),newtid3);
 	SetActivator(newtid3,AAPTR_Default);

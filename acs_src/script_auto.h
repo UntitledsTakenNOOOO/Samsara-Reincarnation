@@ -815,13 +815,13 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				SetActorProperty(0,APROP_SpawnHealth,100+(CheckInventory("StrifeUpgradeCount")*10));
 				if(!CheckInventory("BlackBirdBallgag") && !CheckInventory("BlackBirdTauntCooldown") && !CheckInventory("BlackBirdInStrife"))
 				{
-					if(strifeCeilingHeight != GetActorCeilingZ(0) && random(0,50) <= 1)
+					if(strifeCeilingHeight != GetActorCeilingZ(0) && random(0,100) <= 1)
 					{
 						GiveInventory("BlackBirdTauntCooldown",5);
 						ACS_NamedExecuteWithResult("BlackBirdTauntCooldown",0,0,0,0);
 						ACS_NamedExecuteWithResult("StrifeBlackBirdQuote",1);			
 					}
-					else if(CheckInventory("KillCountAmount") > strifeLastKillCount && random(0,20) <= 3)
+					else if(CheckInventory("KillCountAmount") > strifeLastKillCount && random(0,40) <= 3)
 					{
 						GiveInventory("BlackBirdTauntCooldown",5);
 						ACS_NamedExecuteWithResult("BlackBirdTauntCooldown",0,0,0,0);
