@@ -460,16 +460,17 @@ function void SetArmorMode(void)
     return -1;
 }*/
 
-function int HandleInstagib(int respawning)
+function int HandleInstagib(int turnedOff)
 {
 	if(GetPlayerAccountName(0) == 0)
 		return 0;
-
+		
     int cs = GetCvar("instagib");
     int classnum = samsaraClassNum();
     int i;
 
-    if (cs <= 0) { ConsoleCommand("set sv_infiniteammo 0"); return 0; }
+	if (!turnedOff && cs <= 0) return 0;
+    else if (cs <= 0) { ConsoleCommand("set sv_infiniteammo 0"); return 0; }
 
     for (i = 0; i < SLOTCOUNT; i++)
     {

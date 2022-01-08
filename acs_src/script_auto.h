@@ -373,6 +373,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	int strifeCeilingHeight = GetActorCeilingZ(0); //strife related
 	int strifeLastKillCount;
 	int strifeDead;
+	int oldInstaGib;
 	
 	if(bot)
 		ACS_NamedExecuteAlways("Samsara_BotAltClassHandler",0,pln,0,0);
@@ -415,7 +416,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
     HandleChainsawSpawn(respawning);
     HandleUniqueSpawn(respawning);
-	HandleInstagib(respawning);
+	HandleInstagib(GetCvar("instagib") != oldInstagib);
+	oldInstagib = GetCvar("instagib");
 
     ACS_NamedExecuteAlways("SamsaraScheduled", 0, respawning,0,0);
 
