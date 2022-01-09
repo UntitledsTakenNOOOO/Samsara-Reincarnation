@@ -1574,7 +1574,12 @@ script "HandleInstagibWeapons" (void)
 	switch(GetCvar("sams_slotmode"))
 	{
 		case 0:
-			GiveInventory(ClassWeapons[classnum][0][0],1);
+			if (CheckInventory("BlakeClass") || CheckInventory("C7Class") || CheckInventory("RMRClass") || CheckInventory("BittermanClass")) {
+				GiveInventory(ClassWeapons[classnum][2][0],1);
+			}
+			else {
+				GiveInventory(ClassWeapons[classnum][0][0],1);
+			}
 			break;
 		case 1:
 			GiveInventory(ClassWeapons[classnum][2][0],1);
