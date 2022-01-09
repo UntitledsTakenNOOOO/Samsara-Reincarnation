@@ -729,7 +729,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						else
 						{
 							SetActorProperty(0,APROP_SoundClass,"HexenBaratus");
-							GiveInventory("Mace of Contrition", 1);
+							if (!GetCvar("instagib") == 1) {
+								GiveInventory("Mace of Contrition", 1);
+							}
 						}
 					}
 					else 
@@ -737,7 +739,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, hexmode, pln); 
 						SetActorProperty(0,APROP_SoundClass,"HexenPlayer");
 						TakeInventory("HexenClassMode", 0x7FFFFFFF); 
-						GiveInventory("Mace of Contrition", 1); 
+						if (!GetCvar("instagib") == 1) {
+							GiveInventory("Mace of Contrition", 1); 
+						}
 					}	
 					previousvalue = hexmode;
 				}
@@ -1585,6 +1589,9 @@ script "HandleInstagibWeapons" (void)
 			GiveInventory(ClassWeapons[classnum][2][0],1);
 			break;
 		case 2:
+			if (CheckInventory("HexenClass") || CheckInventory("BlakeClass") || CheckInventory("StrifeClass") || CheckInventory("POGreedClass")) {
+				GiveInventory(ClassWeapons[classnum][2][0],1);
+			}
 			GiveInventory("SamsaraSlotOnePickup",1);
 			break;
 		case 3:
