@@ -1613,12 +1613,40 @@ script "HandleInstagibWeapons" (void)
 			GiveInventory("SamsaraSlotSevenPickup",1);
 			break;
 		case 9:
+			if (CheckInventory("DoomguyClass")) {
+				GiveInventory(ClassWeapons[classnum][0][0],1);
+			}
+			
+			if (CheckInventory("ChexClass") || CheckInventory("CorvusClass") || CheckInventory("WolfenClass") || CheckInventory("HexenClass") || CheckInventory("DukeClass") || CheckInventory("BlakeClass") || CheckInventory("StrifeClass") || CheckInventory("C7Class") || CheckInventory("RMRClass") || CheckInventory("KatarnClass") || CheckInventory("POGreedClass") || CheckInventory("DisruptorClass") || CheckInventory("WitchavenClass") || CheckInventory("CMClass") || CheckInventory("Hexen2Class")) {
+				GiveInventory(ClassWeapons[classnum][2][0],1);
+			}
+			
 			GiveInventory("SamsaraUniquePickup1",1);
 			break;
 		case 10:
+			if (CheckInventory("DoomguyClass")) {
+				GiveInventory(ClassWeapons[classnum][0][0],1);
+			}
+		
+			if (CheckInventory("ChexClass") || CheckInventory("CorvusClass") || CheckInventory("WolfenClass") || CheckInventory("CalebClass") || CheckInventory("RMRClass") || CheckInventory("Hexen2Class")) {
+				GiveInventory(ClassWeapons[classnum][2][0],1);
+			}
+			
+			if (CheckInventory("SWClass")) {
+				GiveInventory("SamsaraSlotFivePickup",1);
+			}
+			
 			GiveInventory("SamsaraUniquePickup2",1);
 			break;
 		case 11:
+			if (CheckInventory("DoomguyClass")) {
+				GiveInventory(ClassWeapons[classnum][0][0],1);
+			}
+		
+			if (CheckInventory("ChexClass") || CheckInventory("CorvusClass") || CheckInventory("WolfenClass") || CheckInventory("SWClass")) {
+				GiveInventory(ClassWeapons[classnum][2][0],1);
+			}
+			
 			GiveInventory("SamsaraUniquePickup3",1);
 			break;
 	}
