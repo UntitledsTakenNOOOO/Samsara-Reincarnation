@@ -725,12 +725,26 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						{
 							SetActorProperty(0,APROP_SoundClass,"HexenDaedalon");
 							TakeInventory("Mace of Contrition", 0x7FFFFFFF); 
+							if ((GetCvar("instagib") == 1 && (GetCvar("sams_slotmode") == 0 || GetCvar("sams_slotmode") == 1))) {
+								GiveInventory("Sapphire Wand", 1);
+							}
 						}
 						else
 						{
 							SetActorProperty(0,APROP_SoundClass,"HexenBaratus");
-							if (!GetCvar("instagib") == 1) {
-								GiveInventory("Mace of Contrition", 1);
+							GiveInventory("Mace of Contrition", 1);
+							if (GetCvar("instagib") == 1) {
+								if (GetCvar("sams_slotmode") == 0) {
+									TakeInventory("Sapphire Wand", 1);
+								}
+								else if (GetCvar("sams_slotmode") == 1) {
+									GiveInventory("Sapphire Wand", 1);
+									TakeInventory("Mace of Contrition", 1);
+								}
+								else if (GetCvar("sams_slotmode") >= 2) {
+									TakeInventory("Sapphire Wand", 1);
+									TakeInventory("Mace of Contrition", 1);
+								}
 							}
 						}
 					}
@@ -739,8 +753,19 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, hexmode, pln); 
 						SetActorProperty(0,APROP_SoundClass,"HexenPlayer");
 						TakeInventory("HexenClassMode", 0x7FFFFFFF); 
-						if (!GetCvar("instagib") == 1) {
-							GiveInventory("Mace of Contrition", 1); 
+						GiveInventory("Mace of Contrition", 1); 
+						if (GetCvar("instagib") == 1) {
+							if (GetCvar("sams_slotmode") == 0) {
+								TakeInventory("Sapphire Wand", 1);
+							}
+							else if (GetCvar("sams_slotmode") == 1) {
+								GiveInventory("Sapphire Wand", 1);
+								TakeInventory("Mace of Contrition", 1);
+							}
+								else if (GetCvar("sams_slotmode") >= 2) {
+									TakeInventory("Sapphire Wand", 1);
+									TakeInventory("Mace of Contrition", 1);
+								}
 						}
 					}	
 					previousvalue = hexmode;
@@ -1578,7 +1603,11 @@ script "HandleInstagibWeapons" (void)
 	switch(GetCvar("sams_slotmode"))
 	{
 		case 0:
-			if (CheckInventory("BlakeClass") || CheckInventory("C7Class") || CheckInventory("RMRClass") || CheckInventory("BittermanClass")) {
+			// Special cases where the class doesn't have a fist.
+			if (CheckInventory("BlakeClass") || 
+				CheckInventory("C7Class") || 
+				CheckInventory("RMRClass") || 
+				CheckInventory("BittermanClass")) {
 				GiveInventory(ClassWeapons[classnum][2][0],1);
 			}
 			else {
@@ -1589,7 +1618,16 @@ script "HandleInstagibWeapons" (void)
 			GiveInventory(ClassWeapons[classnum][2][0],1);
 			break;
 		case 2:
-			if (CheckInventory("HexenClass") || CheckInventory("BlakeClass") || CheckInventory("StrifeClass") || CheckInventory("POGreedClass")) {
+			// Special cases where the class has either an upgrade for another weapon
+			// or otherwise can't equip their Slot I. The first case involves non-Totenkopf
+			// Blazkowicz getting a knife for the upgrade and the rest will get their pistols.
+			if ((CheckInventory("WolfenClass") && (CheckInventory("WolfenClassMode")) <= 1)) {
+				GiveInventory(ClassWeapons[classnum][0][0],1);
+			}
+			else if (CheckInventory("HexenClass") || 
+				CheckInventory("BlakeClass") || 
+				CheckInventory("StrifeClass") || 
+				CheckInventory("POGreedClass")) {
 				GiveInventory(ClassWeapons[classnum][2][0],1);
 			}
 			GiveInventory("SamsaraSlotOnePickup",1);
@@ -1613,40 +1651,91 @@ script "HandleInstagibWeapons" (void)
 			GiveInventory("SamsaraSlotSevenPickup",1);
 			break;
 		case 9:
-			if (CheckInventory("DoomguyClass")) {
+			// Special cases involving the Uniques are a bit more involved, but
+			// ultimatly managable. Basically, if it's an upgrade to an existing
+			// weapon or an inventory item, just give them the Slot IV.
+			if (CheckInventory("DoomguyClass") || CheckInventory("CMClass")) {
 				GiveInventory(ClassWeapons[classnum][0][0],1);
 			}
-			
-			if (CheckInventory("ChexClass") || CheckInventory("CorvusClass") || CheckInventory("WolfenClass") || CheckInventory("HexenClass") || CheckInventory("DukeClass") || CheckInventory("BlakeClass") || CheckInventory("StrifeClass") || CheckInventory("C7Class") || CheckInventory("RMRClass") || CheckInventory("KatarnClass") || CheckInventory("POGreedClass") || CheckInventory("DisruptorClass") || CheckInventory("WitchavenClass") || CheckInventory("CMClass") || CheckInventory("Hexen2Class")) {
-				GiveInventory(ClassWeapons[classnum][2][0],1);
+			else if (CheckInventory("ChexClass") || 
+				CheckInventory("CorvusClass") || 
+				(CheckInventory("WolfenClass") && (CheckInventory("WolfenClassMode")) <= 1) || 
+				CheckInventory("HexenClass") || 
+				CheckInventory("DukeClass") || 
+				CheckInventory("BlakeClass") || 
+				CheckInventory("StrifeClass") || 
+				CheckInventory("EradClass") ||
+				CheckInventory("C7Class") || 
+				CheckInventory("RMRClass") || 
+				CheckInventory("SWClass") ||
+				CheckInventory("KatarnClass") || 
+				CheckInventory("POGreedClass") || 
+				CheckInventory("DisruptorClass") || 
+				CheckInventory("Hexen2Class")) {
+				GiveInventory("SamsaraSlotFourPickup",1);
 			}
-			
+			else if (CheckInventory("WitchavenClass")) {
+				GiveInventory("SamsaraSlotOnePickup",1);
+			}
 			GiveInventory("SamsaraUniquePickup1",1);
 			break;
 		case 10:
-			if (CheckInventory("DoomguyClass")) {
+			// Special cases involving the Unique 2. 
+			if (CheckInventory("DoomguyClass") || CheckInventory("CMClass")) {
 				GiveInventory(ClassWeapons[classnum][0][0],1);
 			}
-		
-			if (CheckInventory("ChexClass") || CheckInventory("CorvusClass") || CheckInventory("WolfenClass") || CheckInventory("CalebClass") || CheckInventory("RMRClass") || CheckInventory("Hexen2Class")) {
-				GiveInventory(ClassWeapons[classnum][2][0],1);
+			else if (CheckInventory("ChexClass") || 
+				CheckInventory("CorvusClass") || 
+				(CheckInventory("WolfenClass") && (CheckInventory("WolfenClassMode")) <= 1) || 
+				CheckInventory("HexenClass") || 
+				CheckInventory("DukeClass") || 
+				CheckInventory("BlakeClass") || 
+				CheckInventory("CalebClass") ||
+				CheckInventory("StrifeClass") || 
+				CheckInventory("EradClass") ||
+				CheckInventory("C7Class") || 
+				CheckInventory("RMRClass") || 
+				CheckInventory("KatarnClass") || 
+				CheckInventory("POGreedClass") || 
+				CheckInventory("DisruptorClass") ||  
+				CheckInventory("Hexen2Class")) {
+				GiveInventory("SamsaraSlotFourPickup",1);
 			}
-			
-			if (CheckInventory("SWClass")) {
+			else if (CheckInventory("SWClass")) {
 				GiveInventory("SamsaraSlotFivePickup",1);
+			}	
+			else if (CheckInventory("WitchavenClass")) {
+				GiveInventory("SamsaraSlotOnePickup",1);
 			}
-			
 			GiveInventory("SamsaraUniquePickup2",1);
 			break;
 		case 11:
-			if (CheckInventory("DoomguyClass")) {
+			// Special cases involving the Unique 3. 
+			if (CheckInventory("DoomguyClass") || CheckInventory("CMClass")) {
 				GiveInventory(ClassWeapons[classnum][0][0],1);
 			}
-		
-			if (CheckInventory("ChexClass") || CheckInventory("CorvusClass") || CheckInventory("WolfenClass") || CheckInventory("SWClass")) {
-				GiveInventory(ClassWeapons[classnum][2][0],1);
+			else if (CheckInventory("ChexClass") || 
+				CheckInventory("CorvusClass") || 
+				(CheckInventory("WolfenClass") && (CheckInventory("WolfenClassMode")) <= 1) || 
+				CheckInventory("HexenClass") || 
+				CheckInventory("BlakeClass") || 
+				CheckInventory("StrifeClass") || 
+				CheckInventory("EradClass") ||
+				CheckInventory("C7Class") || 
+				CheckInventory("RMRClass") || 
+				CheckInventory("SWClass") ||
+				CheckInventory("KatarnClass") || 
+				CheckInventory("POGreedClass") || 
+				CheckInventory("DisruptorClass") || 
+				CheckInventory("Hexen2Class")) {
+				GiveInventory("SamsaraSlotFourPickup",1);
 			}
-			
+			else if ((CheckInventory("WolfenClass") && (CheckInventory("WolfenClassMode")) == 2)) {
+				GiveInventory("SamsaraSlotTwoPickup",1);
+			}
+			else if (CheckInventory("WitchavenClass")) {
+				GiveInventory("SamsaraSlotOnePickup",1);
+			}
 			GiveInventory("SamsaraUniquePickup3",1);
 			break;
 	}
