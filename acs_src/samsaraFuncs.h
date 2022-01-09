@@ -472,12 +472,14 @@ function int HandleInstagib(int turnedOff)
 	if (!turnedOff && cs <= 0) return 0;
     else if (cs <= 0) { ConsoleCommand("set sv_infiniteammo 0"); return 0; }
 
-    for (i = 0; i < SLOTCOUNT; i++)
-    {
-        TakeInventory(ClassWeapons[classnum][i][S_WEP], 0x7FFFFFFF);
-        TakeInventory(ClassWeapons[classnum][i][S_AMMO1], 0x7FFFFFFF);
-        TakeInventory(ClassWeapons[classnum][i][S_AMMO2], 0x7FFFFFFF);
-    }
+	if (!CheckInventory("CatacombClass")) {
+		for (i = 0; i < SLOTCOUNT; i++)
+		{
+			TakeInventory(ClassWeapons[classnum][i][S_WEP], 0x7FFFFFFF);
+			TakeInventory(ClassWeapons[classnum][i][S_AMMO1], 0x7FFFFFFF);
+			TakeInventory(ClassWeapons[classnum][i][S_AMMO2], 0x7FFFFFFF);
+		}
+	}
 
 	ConsoleCommand("set sv_infiniteammo 1");
     GiveInventory("InstagibModeOn",1);
