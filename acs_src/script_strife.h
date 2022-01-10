@@ -245,7 +245,7 @@ script "SamsaraSigil" (int sequence) //317 -- SAMSARA_SIGIL
 			{
 				if (CheckInventory(SigilSplinters[i])) { splinterCount++; }
 			}
-			DamageThing(2 * (6-splinterCount), 0);
+			DamageThing(2 * splinterCount, 0);
 			break;
 		case 2:
 			Delay(4);

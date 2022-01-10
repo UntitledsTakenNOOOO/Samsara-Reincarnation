@@ -117,3 +117,8 @@ Script "StrifeBlackBirdQuote" (int type)
 			break;
 	}
 }
+
+Script "StrifeSigilPreferred" (void)
+{
+	SetResultValue(CheckInventory("StrifeSigilPiece"));
+}
