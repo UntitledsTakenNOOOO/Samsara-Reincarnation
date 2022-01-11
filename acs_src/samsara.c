@@ -4955,3 +4955,120 @@ Script "Samsara_WeaponHotkeys" (int mode)
 	if(!SetWeapon(ClassHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode]))
 		UseInventory(ClassHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode]);
 }
+
+Script "Samsara_MapInventory" (int item, int dropped)
+{
+	int weaponStay = GetCvar("sv_weaponstay");
+	int maxDistance = 80;
+	int invokerX = GetActorX(0)>>16;
+	int invokerY = GetActorY(0)>>16;
+	int invokerZ = GetActorZ(0)>>16;
+	int inventoryX, inventoryY, inventoryZ, result;
+	
+	int displaymode;
+    if (GetCVar("sams_runninginzdoom") == 1)
+    {
+        displaymode = GetCVar("sams_zd_pickupmode");
+    } else {
+        displaymode = GetUserCVar(ConsolePlayerNumber(), "sams_cl_pickupmode");
+    }
+	
+	switch(item)
+	{
+		case 0:
+			if(!CheckInventory("Totenkopf_IHaveMauser"))
+			{
+				GiveInventory("Totenkopf_MauserPickedUpX",invokerX+65536);
+				GiveInventory("Totenkopf_MauserPickedUpY",invokerY+65536);
+				GiveInventory("Totenkopf_MauserPickedUpZ",invokerZ+65536);
+				GiveInventory("Samsara_ModeWeaponChange",1);
+				GiveInventory("Totenkopf_IHaveMauser",1);
+				GiveInventory("Clip",5);
+				FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Totenkopf_IHaveDualMausers"))
+			{
+				inventoryX = CheckInventory("Totenkopf_MauserPickedUpX")-65536;
+				inventoryY = CheckInventory("Totenkopf_MauserPickedUpY")-65536;
+				inventoryZ = CheckInventory("Totenkopf_MauserPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Totenkopf_MauserPickedUpX",131072);
+					TakeInventory("Totenkopf_MauserPickedUpY",131072);
+					TakeInventory("Totenkopf_MauserPickedUpZ",131072);
+					GiveInventory("Totenkopf_MauserPickedUpX",invokerX+65536);
+					GiveInventory("Totenkopf_MauserPickedUpY",invokerY+65536);
+					GiveInventory("Totenkopf_MauserPickedUpZ",invokerZ+65536);
+					GiveInventory("Totenkopf_IHaveDualMausers",1);
+					GiveInventory("Samsara_ModeWeaponChange",1);
+					GiveInventory("Clip",5);
+					if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = 1;
+				}
+			}
+			else if(dropped)
+				result = 1;
+			break;
+		case 1:
+			if(!CheckInventory("  Chaingun  "))
+			{
+				GiveInventory("Totenkopf_MP40PickedUpX",invokerX+65536);
+				GiveInventory("Totenkopf_MP40PickedUpY",invokerY+65536);
+				GiveInventory("Totenkopf_MP40PickedUpZ",invokerZ+65536);
+				GiveInventory("Samsara_ModeWeaponChange",1);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Totenkopf_IHaveDualMP40s"))
+			{
+				inventoryX = CheckInventory("Totenkopf_MP40PickedUpX")-65536;
+				inventoryY = CheckInventory("Totenkopf_MP40PickedUpY")-65536;
+				inventoryZ = CheckInventory("Totenkopf_MP40PickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Totenkopf_MP40PickedUpX",131072);
+					TakeInventory("Totenkopf_MP40PickedUpY",131072);
+					TakeInventory("Totenkopf_MP40PickedUpZ",131072);
+					GiveInventory("Totenkopf_MP40PickedUpX",invokerX+65536);
+					GiveInventory("Totenkopf_MP40PickedUpY",invokerY+65536);
+					GiveInventory("Totenkopf_MP40PickedUpZ",invokerZ+65536);
+					GiveInventory("Totenkopf_IHaveDualMP40s",1);
+					GiveInventory("Samsara_ModeWeaponChange",1);
+					GiveInventory("Clip",16);
+					if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = 1;
+				}
+			}
+			else if(dropped)
+				result = 1;
+			break;
+		case 2:
+			if(dropped == 1 && CheckInventory("Shell") < GetAmmoCapacity("Shell"))
+			{
+				GiveInventory("Samsara_ModeWeaponChange", 1);
+				GiveInventory("Totenkopf_IHaveSTG44", 1);
+				GiveInventory("Shell",30);
+				if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon"); 
+				FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+				result = 1;
+			}
+			else if(dropped == 0)
+			{
+				if(weaponStay == 0 || !CheckInventory("Totenkopf_IHaveSTG44"))
+				{
+					GiveInventory("Totenkopf_IHaveSTG44", 1);
+					GiveInventory("Samsara_ModeWeaponChange", 1);
+					GiveInventory("Shell",30);
+					if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon"); 
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !weaponStay;
+				}
+				else result = 0;
+			}
+			break;
+	}
+	SetResultValue(result);
+	//PrintBold(s:"Distance X: ",d:abs(invokerX - inventoryX),s:", Distance Y: ",d:abs(invokerY - inventoryY),s:", Distance Z: ",d:abs(invokerZ - inventoryZ));
+}
