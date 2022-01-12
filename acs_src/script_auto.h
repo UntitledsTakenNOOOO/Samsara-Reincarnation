@@ -374,6 +374,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	int strifeLastKillCount;
 	int strifeDead;
 	int oldInstaGib;
+	int pariasLastRepairTimer;
 	
 	if(bot)
 		ACS_NamedExecuteAlways("Samsara_BotAltClassHandler",0,pln,0,0);
@@ -726,6 +727,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, hexmode, pln); 
 						if(hexmode == 1)
 						{
+							SetActorProperty(0,APROP_Speed,0.9225);
 							SetActorProperty(0,APROP_SoundClass,"HexenDaedalon");
 							TakeInventory("Mace of Contrition", 0x7FFFFFFF); 
 							if ((GetCvar("instagib") == 1 && (GetCvar("sams_slotmode") == 0 || GetCvar("sams_slotmode") == 1))) {
@@ -734,6 +736,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						}
 						else
 						{
+							SetActorProperty(0,APROP_Speed,1.3375);
 							SetActorProperty(0,APROP_SoundClass,"HexenBaratus");
 							GiveInventory("Mace of Contrition", 1);
 							if (GetCvar("instagib") == 1) {
@@ -753,6 +756,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					}
 					else 
 					{ 
+						SetActorProperty(0,APROP_Speed,1.0);
 						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, hexmode, pln); 
 						SetActorProperty(0,APROP_SoundClass,"HexenPlayer");
 						TakeInventory("HexenClassMode", 0x7FFFFFFF); 
@@ -805,18 +809,33 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					switch(rottmode)
 					{				
 						default:
+							SetActorProperty(0,APROP_DamageFactor,0.9);
+							SetActorProperty(0,APROP_ViewHeight,50.0);
+							SetActorProperty(0,APROP_Speed,0.9);
 							SetActorProperty(0,APROP_SoundClass,"Freely");
 							break;
 						case 1:	
+							SetActorProperty(0,APROP_DamageFactor,1.0);
+							SetActorProperty(0,APROP_ViewHeight,48.0);
+							SetActorProperty(0,APROP_Speed,1.0);
 							SetActorProperty(0,APROP_SoundClass,"Cassatt");
 							break;
 						case 2:
+							SetActorProperty(0,APROP_DamageFactor,1.1);
+							SetActorProperty(0,APROP_ViewHeight,46.0);
+							SetActorProperty(0,APROP_Speed,1.1);
 							SetActorProperty(0,APROP_SoundClass,"Barrett");
 							break;
 						case 3:
+							SetActorProperty(0,APROP_DamageFactor,1.2);
+							SetActorProperty(0,APROP_ViewHeight,44.0);
+							SetActorProperty(0,APROP_Speed,1.2);
 							SetActorProperty(0,APROP_SoundClass,"Ni");
 							break;
 						case 4:
+							SetActorProperty(0,APROP_DamageFactor,0.8);
+							SetActorProperty(0,APROP_ViewHeight,52.0);
+							SetActorProperty(0,APROP_Speed,0.8);
 							SetActorProperty(0,APROP_SoundClass,"Wendt");
 							break;
 					}
@@ -1116,21 +1135,46 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         {
 		  case CLASS_HEXEN:
 			int boosted, damagefactor, damagefactormod;
-			if(CheckInventory("HexenClassMode")==2)
+			if(CheckInventory("HexenClassMode")>0)
 			{
 				damagefactormod = 0.5;
-				if(ACS_NamedExecuteWithResult("SAMSARA_BARATUSRANGECHECK")==1)
+				if(CheckInventory("HexenClassMode")==1)
 				{
-					if(!boosted) { damagefactor = GetActorProperty(0,APROP_DamageFactor); boosted = true; SetActorProperty(0,APROP_DamageFactor,FixedMul(damagefactor,damagefactormod)); }
+					GiveInventory("DaedalonInRangeBroadcast",1);
+					if(!CheckInventory("DaedalonInRange"))
+					{
+						if(!boosted) { damagefactor = GetActorProperty(0,APROP_DamageFactor); boosted = true; SetActorProperty(0,APROP_DamageFactor,FixedMul(damagefactor,damagefactormod)); }		
+					}
+					else
+					{
+						ACS_NamedExecuteWithResult("SamsaraDecorate",40);
+						boosted = false;
+						SetActorProperty(0,APROP_DamageFactor,1.0);
+					}
 				}
-				else
+				else if(CheckInventory("HexenClassMode")==2)
 				{
-					boosted = false;
-					SetActorProperty(0,APROP_DamageFactor,1.0);
+					if(ACS_NamedExecuteWithResult("SAMSARA_BARATUSRANGECHECK")==1)
+					{
+						if(!boosted) { damagefactor = GetActorProperty(0,APROP_DamageFactor); boosted = true; SetActorProperty(0,APROP_DamageFactor,FixedMul(damagefactor,damagefactormod)); }
+					}
+					else
+					{
+						boosted = false;
+						SetActorProperty(0,APROP_DamageFactor,1.0);
+					}
 				}
 			}
 			else
 			{
+				if(IsSinglePlayer() || IsCoop())
+				{
+					if(timer() > pariasLastRepairTimer + 35)
+					{
+						pariasLastRepairTimer = timer();
+						GiveInventory("PariasArmorRepair",1);
+					}
+				}
 				boosted = false;
 				damagefactor = GetActorProperty(0,APROP_DamageFactor);
 				SetActorProperty(0,APROP_DamageFactor,1.0);
@@ -1544,16 +1588,19 @@ script "SAMSARA_CLIENT_ALTERNATIVECLASS" (int set, int pln) clientside
 script "SAMSARA_BARATUSRANGECHECK" (void)
 {
 	int x = GetActorX(0);	int y = GetActorY(0);	int z = GetActorZ(0);
-	if(SetActivator(0,AAPTR_PLAYER_GETTARGET))
+	if(CheckInventory("HexenClassMode")==2)
 	{
-		if((ClassifyActor(0) & ACTOR_MONSTER) || (ClassifyActor(0) & ACTOR_PLAYER))
+		if(SetActivator(0,AAPTR_PLAYER_GETTARGET))
 		{
-			int monx = GetActorX(0);	int mony = GetActorY(0);	int monz = GetActorZ(0);
-			int vectorx = monx - x;
-			int vectory = mony - y;
-			int vectorz = monz - z;
-			int length = magnitudeThree_f(vectorx,vectory,vectorz);
-			if(abs(length) < 128.0) { SetResultValue(1); terminate; } //when returning in other languages, the method would end, this is here for good measure
+			if((ClassifyActor(0) & ACTOR_MONSTER) || (ClassifyActor(0) & ACTOR_PLAYER))
+			{
+				int monx = GetActorX(0);	int mony = GetActorY(0);	int monz = GetActorZ(0);
+				int vectorx = monx - x;
+				int vectory = mony - y;
+				int vectorz = monz - z;
+				int length = magnitudeThree_f(vectorx,vectory,vectorz);
+				if(abs(length) < 128.0) { SetResultValue(1); terminate; } //when returning in other languages, the method would end, this is here for good measure
+			}
 		}
 	}
 	SetResultValue(0);

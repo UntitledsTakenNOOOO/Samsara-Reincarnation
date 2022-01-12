@@ -148,11 +148,11 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Summary", "William \"B.J.\" Blazkowicz was the one that started it all, a secret agent that personally fought his way out of the horrifying Nazi prisons and personally slew Adolf Hitler, armed with nothing more than a pistol, a knife, and undying devotion to his country. Having gone up against an endless sea of Nazis, mystic beasts, undead monstrosities, and towering madmen, B.J. has seen it all and fought it all. If it's a threat to the world, he will put it down. Without questions, without hesitation, and without compromises.", ""},
 			
 			{ "Traits", "Call Apogee, Say 'Bullshit!': Poor B.J. was from an era where weapon design was much simpler. He has no Shotgun weapons, no Slot III weapon, and no weapons that use Ammo 2. Any Ammo 2 picked up is instead converted to Ammo 1.
-			\n\nHeroes Don't Quit: Being a POW in Nazi camps taught B.J. some survival techniques the hard way. When low on health, B.J. can drink up certain piles of gibs and blood for a boost. Restricted only to decorations, unfortunately--can't slaughter imps and drink off them.", ""},
+			\n\nHeroes Don't Quit: Being a POW in Nazi camps taught B.J. some survival techniques the hard way. When low on health, B.J. can drink up certain piles of gibs and blood for a boost. Restricted only to decorations, unfortunately--can't slaughter imps and drink off them.
+			\n\nNazi Treasure: Totenkopf Blazkowicz had more rewards to finding secrets than a high score. Playing secret levels 2 and 3 rewarded the player with regenerating armor and health. Finding 20 and 30 secrets are now required for the rewards.", ""},
 			
 			{ "Changes", "- Castle Totenkopf SDL uses a splash damage formula that falls quadratically instead of linearly like Doom does. As a result, explosive damage functions differently here than in the source.
-			\n\n- The Kar98K and STG44 now do more consistent damage compared to the original.
-			\n\n- The Regeneration Sphere in Totenkopf SDL would provide BJ with perpetually regenerating health. In this game, it regenerates only up to 30, similar to Wolfenstein The New Order.", ""},
+			\n\n- The Kar98K and STG44 now do more consistent damage compared to the original." },
 		},
 	},
 	{
@@ -160,7 +160,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Summary", "A high cleric of the Church, second only to Traductus, Parias is both a man of faith and a man of action. His righteousness is rivalled only by his terrifying power, and he can swap at a moment's notice from praying for his enemies' souls to hacking their spine in twain. Being a student of both the arcane and the martial arts has made him a robust fighter that can swap from a physical to a mystical fighting capability whenever a situation calls for it, and makes him perhaps the most terrifying Hero in the Wheel of Samsara.", ""},
 			
 			{ "Traits", "Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
-			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Parias has Baratus' runspeed and HeXen's jump height.", ""},
+			\n\nSaint's Blessing: HeXen's gameplay had a large emphasis on class niches. While he couldn't do this in his source game, Parias has gained the passive to repair the armor of nearby players by just being around them (except in competitive game modes).", ""},
 			
 			{ "Changes", "- The most obvious: Parias, Daedolon, and Baratus now have at least 7 weapons instead of four.
 			\n\n- All three Hexen classes are now selectable, rather than having Parias use nearly all the games' weapons. This means the classes now have a lot of weapons that weren't actually in Hexen, but care was taken to ensure they are similar to weapons that would have appeared in Hexen had the number of weapons per class match Doom more closely.
@@ -179,7 +179,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Summary", "Being a high ranking mage, Daedolon only answers to Menelkir. What he may lack physically, he makes up for with mind and spirit. Being recognized as a prodigy from the Arcanum from a very young age, he quickly gained the ability to weave the fabric of reality with his spells. But spending a lifetime studying ancient tomes and scrolls did not afford him much physical training, and as a result, would rather stay out of brawls. As a result of his wide array of magical knowledge, most of his enemies are wise enough to stay on his good side.", ""},
 			
 			{ "Traits", "Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
-			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Daedolon has Baratus' runspeed and HeXen's jump height.", ""},
+			\n\nTarrasch Rule: HeXen's gameplay had a large emphasis on player characteristics. Because Daedalon is a ranged fighter, he gets defensive bonuses from staying away from monsters.", ""},
 			
 			{ "Changes", "- The most obvious: Parias, Daedolon, and Baratus now have at least 7 weapons instead of four.
 			\n\n- All three Hexen classes are now selectable, rather than having Parias use nearly all the games' weapons. This means the classes now have a lot of weapons that weren't actually in Hexen, but care was taken to ensure they are similar to weapons that would have appeared in Hexen had the number of weapons per class match Doom more closely.
@@ -198,7 +198,7 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "Summary", "A master figher of the legion, second only to Zedek, Baratus is just as aggressive as he is intimidating. Being trained mercilessly in the Legion, he has become a virtually unstoppable war machine who unnerves others by merely being in their presence. As he's a master of the weapons and artifacts of his order, he prefers to fight up close and personal; in this regard, he's unmatched. This isn't to say he doesn't use more complex weapons, given they are simple enough to use.", ""},
 			
 			{ "Traits", "Fianchetto: In HeXen, every class had 0.25 RadiusDamageFactor--which meant they only took a quarter damage from explosives. This is retained here, allowing him to wade through the fray with minimal damage to get closer.
-			\n\nBoden's Mate: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee, Baratus retains his superior agility.", ""},
+			\n\nProphylaxis: HeXen's gameplay had a large emphasis on mobility. Not only did the classes have different speeds, but there was also quite a bit of platforming. In order to help close the distance and get into melee for defensive bonuses, Baratus retains his superior agility.", ""},
 			
 			{ "Changes", "- The most obvious: Parias, Daedolon, and Baratus now have at least 7 weapons instead of four.
 			\n\n- All three Hexen classes are now selectable, rather than having Parias use nearly all the games' weapons. This means the classes now have a lot of weapons that weren't actually in Hexen, but care was taken to ensure they are similar to weapons that would have appeared in Hexen had the number of weapons per class match Doom more closely.
@@ -420,21 +420,6 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 			{ "", "", ""},
 		}
 	},
-/*	{
-		{
-			{ "Summary", "The demon slaying man. The resurrected myth. The reappearing icon. The reawakened legend. The hero returning. Doomguy has stood against untold legions throughout all 20 years of his one-man war on Hell, and here he returns in a new but familar form. He is a man that still needs no introduction, as his abilities have been proven and honed and harnessed time and time again--the rest of the heroes will have to work double to even match the bar Doomguy64 is still constantly raising.", ""},
-			
-			{ "Traits", "...And I Am Still Mighty: Doomguy64 holds the Super Shotgun in the game as well as the BFG9000, one of the strongest ultimate weapons giving him quite the firepower. It's very hard for most other classes to match or exceed the damage on those 2 in their own weapons tier.
-			\n\nTo Hell With Respect!...Again!: Doomguy64 has been recreated with gameplay similar to regular doom and matches 64 to a close extent. Playing with him is just like playing Doom 64, so show these newcomers who they better call granddaddy.
-			\n\nAss Kicking Console Power~!: Doomguy64 came from a console version of doom for the nintendo 64, along with it came some slight varations to the weapons, his chaingun is slightly faster but more inaccurate, his bfg is a tad slower, and his rockets have knockback, giving subtle differences from his original pc counterpart.
-			\n\nHellish Fantasy Redux: Doomguy64 Still uses a damage rolling system like in the origina doom 1 & 2.", ""},
-			
-			{ "Changes", "", ""},
-		},
-		{
-			{ "", "", ""},
-		}
-	},*/
 	{
 		{
 			{ "Summary", "Eleena has frequently done work for the Universal Mining Guild. When the crisis on loxia came along, she saw it as a wonderful opportunity for a little work and a lot of cash. Considering her skills as an assassin, she proved herself more than capable of ridding Ioxia of the alien menace that conquered the place. After collecting her payment, she retired to her headquarters waiting for her next contract. \n\nNow she must finish one final mission: to clean up this planet of the remanescent enemies from Samsara", ""},

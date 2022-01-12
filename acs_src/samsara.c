@@ -401,6 +401,10 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 	  case 39:
 		SetActorProperty(0,APROP_Renderstyle,STYLE_NORMAL);
 		break;
+	  case 40:
+		Delay(3);
+		TakeInventory("DaedalonInRange",1);
+		break;
     }
     
     SetResultValue(result);
