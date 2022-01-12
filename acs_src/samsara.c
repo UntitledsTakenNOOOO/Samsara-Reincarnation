@@ -5052,7 +5052,12 @@ Script "Samsara_MapInventory" (int item, int dropped)
 				GiveInventory("Shell",30);
 				if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon"); 
 				FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+				ACS_NamedExecuteWithResult("Samsara_MapInventoryLogger",2);
 				result = 1;
+			}
+			else if(CheckInventory("Totenkopf_IHaveSTG44") && CheckInventory("Shell") >= GetAmmoCapacity("Shell"))
+			{
+				result = 0;
 			}
 			else if(dropped == 0)
 			{
@@ -5063,12 +5068,372 @@ Script "Samsara_MapInventory" (int item, int dropped)
 					GiveInventory("Shell",30);
 					if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon"); 
 					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					ACS_NamedExecuteWithResult("Samsara_MapInventoryLogger",2);
 					result = !weaponStay;
 				}
 				else result = 0;
 			}
 			break;
+		case 3: 
+			if(!CheckInventory("Assault Shotgun")) { result = 1; }	
+			else if(CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,13);
+				GiveInventory("Shell",8);
+			}
+			break;
+		case 4:
+			if(!CheckInventory(".357 Python")) { result = 1; }	
+			else if(CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,12);
+				GiveInventory("Shell",6);
+			}
+			break;
+		case 5:
+			if(!CheckInventory("MP5")) { result = 1; }	
+			else if(CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,14);
+				GiveInventory("Clip",50);
+				GiveInventory("RocketAmmo",3);
+			}
+			break;
+		case 6:
+			if(!CheckInventory(" RPG ")) { result = 1; }	
+			else if(CheckInventory("RocketAmmo") >= GetAmmoCapacity("RocketAmmo")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,15);
+				GiveInventory("RocketAmmo",10);
+			}
+			break;
+		case 7:
+			if(!CheckInventory("Gauss Cannon")) { result = 1; }	
+			else if(CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,16);
+				GiveInventory("Cell",30);
+			}
+			break;
+		case 8:
+			weaponStay = GetCvar("sams_permault");
+			if(!CheckInventory("E.G.O.N.")) { result = 1; }	
+			else if(CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,17);
+				GiveInventory("Cell",70);
+			}
+			break;
+		case 9:
+			if(!CheckInventory("Goldeneye_ThrowingKnives"))
+			{
+				GiveInventory("Goldeneye_KnifePickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_KnifePickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_KnifePickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_ThrowingKnivesDualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_KnifePickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_KnifePickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_KnifePickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_KnifePickedUpX",131072);
+					TakeInventory("Goldeneye_KnifePickedUpY",131072);
+					TakeInventory("Goldeneye_KnifePickedUpZ",131072);
+					GiveInventory("Goldeneye_KnifePickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_KnifePickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_KnifePickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_ThrowingKnivesDualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Goldeneye_ThrowingKnivesAmmo") < GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo")) { result = 1; }
+			else if(dropped && CheckInventory("Goldeneye_ThrowingKnivesAmmo") >= GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo")) { result = -100; }
+			break;
+		case 10:
+			if(!CheckInventory("Goldeneye_KF7Soviet"))
+			{
+				GiveInventory("Goldeneye_KF7SovietPickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_KF7SovietPickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_KF7SovietPickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_KF7DualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_KF7SovietPickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_KF7SovietPickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_KF7SovietPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_KF7SovietPickedUpX",131072);
+					TakeInventory("Goldeneye_KF7SovietPickedUpY",131072);
+					TakeInventory("Goldeneye_KF7SovietPickedUpZ",131072);
+					GiveInventory("Goldeneye_KF7SovietPickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_KF7SovietPickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_KF7SovietPickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_KF7DualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Clip") < GetAmmoCapacity("Clip")) { result = 1; }
+			else if(dropped && CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = -100; }
+			break;
+		case 11:
+			if(!CheckInventory("Goldeneye_AutoShotgun"))
+			{
+				GiveInventory("Goldeneye_AutoShotgunPickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_AutoShotgunPickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_AutoShotgunPickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_AutoShotgunDualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_AutoShotgunPickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_AutoShotgunPickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_AutoShotgunPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_AutoShotgunPickedUpX",131072);
+					TakeInventory("Goldeneye_AutoShotgunPickedUpY",131072);
+					TakeInventory("Goldeneye_AutoShotgunPickedUpZ",131072);
+					GiveInventory("Goldeneye_AutoShotgunPickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_AutoShotgunPickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_AutoShotgunPickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_AutoShotgunDualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Shell") < GetAmmoCapacity("Shell")) { result = 1; }
+			else if(dropped && CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = -100; }
+			break;
+		case 12:
+			if(!CheckInventory("Goldeneye_AR33"))
+			{
+				GiveInventory("Goldeneye_AR33PickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_AR33PickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_AR33PickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_AR33DualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_AR33PickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_AR33PickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_AR33PickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_AR33PickedUpX",131072);
+					TakeInventory("Goldeneye_AR33PickedUpY",131072);
+					TakeInventory("Goldeneye_AR33PickedUpZ",131072);
+					GiveInventory("Goldeneye_AR33PickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_AR33PickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_AR33PickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_AR33DualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Clip") < GetAmmoCapacity("Clip")) { result = 1; }
+			else if(dropped && CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = -100; }
+			break;
+		case 13:
+			if(!CheckInventory("Goldeneye_RocketLauncher"))
+			{
+				GiveInventory("Goldeneye_RocketLauncherPickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_RocketLauncherPickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_RocketLauncherPickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_RocketLauncherDualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_RocketLauncherPickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_RocketLauncherPickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_RocketLauncherPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_RocketLauncherPickedUpX",131072);
+					TakeInventory("Goldeneye_RocketLauncherPickedUpY",131072);
+					TakeInventory("Goldeneye_RocketLauncherPickedUpZ",131072);
+					GiveInventory("Goldeneye_RocketLauncherPickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_RocketLauncherPickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_RocketLauncherPickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_RocketLauncherDualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("RocketAmmo") < GetAmmoCapacity("RocketAmmo")) { result = 1; }
+			else if(dropped && CheckInventory("RocketAmmo") >= GetAmmoCapacity("RocketAmmo")) { result = -100; }
+			break;
+		case 14:
+			if(!CheckInventory("Goldeneye_RCP90"))
+			{
+				GiveInventory("Goldeneye_RCP90PickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_RCP90PickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_RCP90PickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_RCP90DualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_RCP90PickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_RCP90PickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_RCP90PickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_RCP90PickedUpX",131072);
+					TakeInventory("Goldeneye_RCP90PickedUpY",131072);
+					TakeInventory("Goldeneye_RCP90PickedUpZ",131072);
+					GiveInventory("Goldeneye_RCP90PickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_RCP90PickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_RCP90PickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_RCP90DualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Cell") < GetAmmoCapacity("Cell")) { result = 1; }
+			else if(dropped && CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = -100; }
+			break;
+		case 15:
+			weaponStay = GetCvar("sams_permault");
+			if(!CheckInventory("Goldeneye_Moonraker"))
+			{
+				GiveInventory("Goldeneye_GoldenGun",1);
+				GiveInventory("Goldeneye_LaserPickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_LaserPickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_LaserPickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_LaserDualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_LaserPickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_LaserPickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_LaserPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_LaserPickedUpX",131072);
+					TakeInventory("Goldeneye_LaserPickedUpY",131072);
+					TakeInventory("Goldeneye_LaserPickedUpZ",131072);
+					GiveInventory("Goldeneye_LaserPickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_LaserPickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_LaserPickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_LaserDualToken",1);
+					GiveInventory("Goldeneye_GoldenGunDualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Cell") < GetAmmoCapacity("Cell")) { result = 1; }
+			else if(dropped && CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = -100; }
+			break;
+		case 16:
+			if(!CheckInventory("WSTE-M5 Combat Shotgun"))
+			{
+				GiveInventory("MarathonShotgunPickedUpX",invokerX+65536);
+				GiveInventory("MarathonShotgunPickedUpY",invokerY+65536);
+				GiveInventory("MarathonShotgunPickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("CanDualShotties"))
+			{
+				inventoryX = CheckInventory("MarathonShotgunPickedUpX")-65536;
+				inventoryY = CheckInventory("MarathonShotgunPickedUpY")-65536;
+				inventoryZ = CheckInventory("MarathonShotgunPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("MarathonShotgunPickedUpX",131072);
+					TakeInventory("MarathonShotgunPickedUpY",131072);
+					TakeInventory("MarathonShotgunPickedUpZ",131072);
+					GiveInventory("MarathonShotgunPickedUpX",invokerX+65536);
+					GiveInventory("MarathonShotgunPickedUpY",invokerY+65536);
+					GiveInventory("MarathonShotgunPickedUpZ",invokerZ+65536);
+					GiveInventory("CanDualShotties",1);
+					PlaySound(0,"marathon/itemget");
+					FadeRange(0,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Shell") < GetAmmoCapacity("Shell")) { result = 1; }
+			else if(dropped && CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = -100; }
+			break;
+		case 17:
+			if(!CheckInventory("SWUzi"))
+			{
+				GiveInventory("SWUziPickedUpX",invokerX+65536);
+				GiveInventory("SWUziPickedUpY",invokerY+65536);
+				GiveInventory("SWUziPickedUpZ",invokerZ+65536);
+				GiveInventory("UziAmountCheck",1);
+				result = 1-!weaponStay;
+			}
+			else if(CheckInventory("UziAmountCheck") < 2)
+			{
+				inventoryX = CheckInventory("SWUziPickedUpX")-65536;
+				inventoryY = CheckInventory("SWUziPickedUpY")-65536;
+				inventoryZ = CheckInventory("SWUziPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("SWUziPickedUpX",131072);
+					TakeInventory("SWUziPickedUpY",131072);
+					TakeInventory("SWUziPickedUpZ",131072);
+					GiveInventory("SWUziPickedUpX",invokerX+65536);
+					GiveInventory("SWUziPickedUpY",invokerY+65536);
+					GiveInventory("SWUziPickedUpZ",invokerZ+65536);
+					GiveInventory("UziAmountCheck",1);
+					PlaySound(0,"Item/SWpickup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Clip") < GetAmmoCapacity("Clip")) { result = 1; }
+			else if(dropped && CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = -100; }
+			break;
 	}
 	SetResultValue(result);
 	//PrintBold(s:"Distance X: ",d:abs(invokerX - inventoryX),s:", Distance Y: ",d:abs(invokerY - inventoryY),s:", Distance Z: ",d:abs(invokerZ - inventoryZ));
+}
+
+Script "Samsara_MapInventoryLogger" (int message) clientside
+{
+	str logmsg;
+	switch(message)
+	{
+		default: break;
+		case 2: logmsg = "STG44 Assault Rifle"; break;
+	}
+	Log(s:msgColors[GetCVar("msg0color")], s:logmsg);
 }
