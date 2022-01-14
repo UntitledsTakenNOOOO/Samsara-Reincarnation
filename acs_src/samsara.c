@@ -2518,7 +2518,180 @@ script "SamsaraBossMonologue" (int bossmonologueshit) //204
         SetFont("BIGFONT");
         HudMessageBold(l:"BOSS_MONOLOGUE_JANUS12"; HUDMSG_FADEOUT, 15, CR_GOLD,320.4, 150.0, 5.5, 1.0);				
 		}
-        break;		
+        break;	
+		Case 30: // IPoG Chancellor
+			if (GetCVar("sams_nomonologues"))
+			{
+				SetActorState(0,"Spawn2");
+			}
+			else
+			{
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR01"; HUDMSG_FADEOUT,15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(154);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR02"; HUDMSG_FADEOUT, 15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(175);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR03"; HUDMSG_FADEOUT, 15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(154);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR04"; HUDMSG_FADEOUT, 15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(180);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR05"; HUDMSG_FADEOUT, 15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(140);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR06"; HUDMSG_FADEOUT,15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(100);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR07"; HUDMSG_FADEOUT, 15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(200);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR08"; HUDMSG_FADEOUT, 15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(200);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR09"; HUDMSG_FADEOUT, 15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(140);	
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR10"; HUDMSG_FADEOUT, 15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(140);	
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR11"; HUDMSG_FADEOUT, 15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(140);			
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_CHANCELLOR12"; HUDMSG_FADEOUT, 15, CR_GRAY,320.4, 150.0, 5.5, 1.0);
+				delay(140);				
+			}
+			break;
+		Case 31: // SoD Robot
+			if (GetCVar("sams_nomonologues"))
+			{
+				SetActorState(0,"Idle");
+			}
+			else
+			{
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT01"; HUDMSG_FADEOUT,15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(154);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT02"; HUDMSG_FADEOUT, 15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(175);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				AmbientSound("robot/sight", 127);
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT03"; HUDMSG_FADEOUT, 15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(154);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT04"; HUDMSG_FADEOUT, 15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(180);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT05"; HUDMSG_FADEOUT, 15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(140);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT06"; HUDMSG_FADEOUT,15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(100);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT07"; HUDMSG_FADEOUT, 15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(200);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT08"; HUDMSG_FADEOUT, 15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(200);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT09"; HUDMSG_FADEOUT, 15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(140);	
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT10"; HUDMSG_FADEOUT, 15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(140);	
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT11"; HUDMSG_FADEOUT, 15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(140);			
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_ROBOT12"; HUDMSG_FADEOUT, 15, CR_BLUE,320.4, 150.0, 5.5, 1.0);
+				delay(140);				
+			}
+			break;
+		Case 32: // Panz Grosse
+			if (GetCVar("sams_nomonologues"))
+			{
+				SetActorState(0,"Idle");
+			}
+			else
+			{			
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ01"; HUDMSG_FADEOUT,15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				delay(154);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ02"; HUDMSG_FADEOUT, 15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				delay(175);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ03"; HUDMSG_FADEOUT, 15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				delay(154);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ04"; HUDMSG_FADEOUT, 15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				delay(180);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ05"; HUDMSG_FADEOUT, 15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				delay(140);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ06"; HUDMSG_FADEOUT,15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				delay(100);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ07"; HUDMSG_FADEOUT, 15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				delay(200);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ08"; HUDMSG_FADEOUT, 15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				delay(200);
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ09"; HUDMSG_FADEOUT, 15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				delay(140);	
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ10"; HUDMSG_FADEOUT, 15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				delay(140);	
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ11"; HUDMSG_FADEOUT, 15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				delay(140);			
+				SetHudSize(640, 400, 0);
+				SetFont("BIGFONT");
+				HudMessageBold(l:"BOSS_MONOLOGUE_PANZ12"; HUDMSG_FADEOUT, 15, CR_BLACK,320.4, 150.0, 5.5, 1.0);
+				AmbientSound("Totenkopf/Boss4Sight", 127);
+				delay(140);				
+			}
+			break;
     }
 }
 
