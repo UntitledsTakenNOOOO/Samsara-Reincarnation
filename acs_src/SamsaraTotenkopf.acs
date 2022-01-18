@@ -1,0 +1,208 @@
+Script "Totenkopf_BloodGenerator_Offsets" (void)
+{
+	int missilex = GetActorX(0);
+	int missiley = GetActorY(0);
+	int missilez = GetActorZ(0);
+	SetActivator(0,AAPTR_Tracer);
+	int enemyx = GetActorX(0);
+	int enemyy = GetActorY(0);
+	int enemyz = GetActorZ(0);
+	int currentangle = GetActorAngle(0);
+	int vang = VectorAngle(enemyx - missilex, enemyy - missiley);
+	int angle = vang % 1.0;
+	TakeInventory("Totenkopf_BloodGeneratorAngle",999999);
+	TakeInventory("Totenkopf_BloodGeneratorZ",999999);
+	GiveInventory("Totenkopf_BloodGeneratorAngle",angle+65536);
+	GiveInventory("Totenkopf_BloodGeneratorZ",(missilez - enemyz)>>16 + 65536);
+}
+
+Script "Totenkopf_BloodGenerator_Return" (int mode) 
+{
+	int result;
+	switch(mode)
+	{
+		case 1:
+			result = ((CheckInventory("Totenkopf_BloodGeneratorAngle") - 65536)/182)+180;
+			break;
+		case 2:
+			result = CheckInventory("Totenkopf_BloodGeneratorZ");
+			break;
+	}
+	SetResultValue(result);
+}
+
+Script "Totenkopf_Tracer" (int type, int space, int height) clientside
+{
+	if(random(1,4) > 1)
+		terminate;
+		
+	int t, i, k = 0, l, angle, pitch, x, y, z, tx, ty, tz, vx, vy, vz, mag, magI, horz;
+	str segment;
+	switch(type)
+	{
+		case 1:
+			i = 128;
+			segment = "Totenkopf_Tracer_Trail";
+			break;
+		case 2:
+			i = 128;
+			segment = "Totenkopf_Tracer_Trail_Mutagen";
+			break;
+		case 3:
+			i = 128;
+			segment = "Totenkopf_Tracer_Trail_DeathMutant";
+			break;
+	}
+	
+	int newtid = UniqueTid();
+
+	tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0);
+	
+	SetActivatorToTarget(0);	
+	
+	int xoff = sin(GetActorAngle(0)) * horz;
+	int yoff = cos(GetActorAngle(0)) * horz;
+			
+	x = GetActorX(0) + xoff;
+	y = GetActorY(0) + yoff;
+	z = GetActorZ(0) + height*1.0;
+	
+	int vectorx = tx - x;
+	int vectory = ty - y;
+	int vectorz = tz - z;
+	angle = VectorAngle(vectorx, vectory);
+	
+	int length = magnitudeTwo(vectorx>>16,vectory>>16);
+	pitch = VectorAngle(length<<16, vectorz);
+
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+    for (i = i; i < magI; i += space)
+    {
+        SpawnForced(segment, x+(vx*i), y+(vy*i), z+(vz*i), newtid);
+		SetActorPitch(newtid, pitch);
+		SetActorAngle(newtid, angle);
+		if(i % 1500 == 0)
+			Delay(1);
+    }
+}
+
+Script "Totenkopf_DeathMutantTracer" (int x, int y, int z)
+{
+	if(random(1,4) > 1)
+		terminate;
+	
+	//PrintBold(s:"X: ",d:x,s:" Y: ",d:y,s:" Z: ",d:z);
+	
+	Delay(1);
+	
+	str segment = "Totenkopf_Tracer_Trail_DeathMutant";
+	int t, i, k = 0, l, angle, pitch, tx, ty, tz, vx, vy, vz, mag, magI, horz;
+
+	int newtid = UniqueTid();
+	PrintBold(s:GetActorClass(0));
+
+	tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0);
+	PrintBold(s:"X: ",d:tx,s:" Y: ",d:ty,s:" Z: ",d:tz);
+	
+	int vectorx = tx - x;
+	int vectory = ty - y;
+	int vectorz = tz - z;
+	angle = VectorAngle(vectorx, vectory);
+	
+	int length = magnitudeTwo(vectorx>>16,vectory>>16);
+	pitch = VectorAngle(length<<16, vectorz);
+
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+    for (i = i; i < magI; i += 1)
+    {
+        SpawnForced(segment, x+(vx*i), y+(vy*i), z+(vz*i), newtid);
+		SetActorPitch(newtid, pitch);
+		SetActorAngle(newtid, angle);
+		if(i % 1500 == 0)
+			Delay(1);
+    }
+	Thing_ChangeTid(newtid,0);
+}
+
+Script "Totenkopf_SniperScope" (void)
+{
+	While(CheckWeapon("Totenkopf_Sniper"))
+	{
+		SetActorProperty(0,APROP_Speed,0.25);
+		SetHudSize(288,188,0);
+		SetFont("TK12N0");
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,1944,0,368.0,130.0,0.05,1.0);
+		Delay(1);
+	}
+	SetActorProperty(0,APROP_Speed,1.0);
+}
+
+Script "Totenkopf_BurningVoice" (void)
+{
+	str voice;
+	int activator = ActivatorTid();
+	int newtid = UniqueTid();
+	Thing_ChangeTid(0,newtid);
+	SetActivator(0,AAPTR_Master);
+	if(StrLen(GetActorProperty(0,APROP_DeathSound)) != 0)
+		voice = GetActorProperty(0,APROP_Deathsound);
+	else if(StrLen(GetActorProperty(0,APROP_PainSound)) != 0)
+		voice = GetActorProperty(0,APROP_Painsound);
+
+	PlaySound(0,voice,CHAN_VOICE,1.0,0,ATTN_NORM);
+	Thing_ChangeTid(newtid,activator);
+}
+
+Script "Totenkopf_Loop" Enter
+{
+	while(true)
+	{
+		if(CheckInventory("TotenkopfHasPowerArmor"))
+		{
+			if(!GetArmorType("TotenkopfPowerArmor",PlayerNumber())&&!GetArmorType("TotenkopfPowerArmorKeeper",PlayerNumber())&&!GetArmorType("TotenkopfPowerArmorPickup",PlayerNumber()))
+			{
+				int armoramount = CheckInventory("BasicArmor");
+				TakeInventory("BasicArmor",300);
+				GiveInventory("TotenkopfPowerArmorKeeper",armoramount);
+			}
+			If(CheckInventory("BasicArmor") < 100)
+				GiveInventory("TotenkopfPowerArmorKeeper",1);
+		}
+		if(CheckInventory("TotenkopfHasHealingOrb"))
+		{
+			If(GetActorProperty(0,APROP_Health) < 100)
+				GiveInventory("TotenkopfHealingOrbHealer",1);
+		}
+		
+		if(CheckInventory("TotenkopfSecretCounter") >= 20 && !CheckInventory("TotenkopfHasPowerArmor"))
+			{ GiveInventory("TotenkopfPowerArmor",1); GiveInventory("Totenkopf_GimmeDat",1); } 
+		if(CheckInventory("TotenkopfSecretCounter") >= 30 && !CheckInventory("TotenkopfHasHealingOrb"))
+			{ GiveInventory("TotenkopfHealingOrb",1);	 GiveInventory("Totenkopf_GimmeDat",1); }
+			
+		Delay(9); //yeah sure, why not?
+	}
+}
+
+Script "Totenkopf_ActiveSound" (int toggle)
+{
+	if(toggle == 2 && random(0,100) > 99)
+		PlaySound(0,"Totenkopf/OfficerSearch",CHAN_VOICE,1.0,0,ATTN_NORM);
+		//SetActorProperty(0,APROP_ActiveSound,"Totenkopf/OfficerSearch");
+	else if(toggle == 1 && random(0,100) > 99)
+		PlaySound(0,"Totenkopf/GuardSearch",CHAN_VOICE,1.0,0,ATTN_NORM);
+		//SetActorProperty(0,APROP_ActiveSound,"Totenkopf/GuardSearch");
+	else if(toggle == 0 && random(0,100) > 99)
+		PlaySound(0,"Totenkopf/GuardCombat",CHAN_VOICE,1.0,0,ATTN_NORM);
+		//SetActorProperty(0,APROP_ActiveSound,"Totenkopf/GuardCombat");
+		
+	SetResultValue(1);
+}
+
+Script "Totenkopf_ExplosiveFactor" (void)
+{
+	SetResultValue(2-(!SetActivator(0,AAPTR_Tracer)||(CheckFlag(0,"BOSS")||CheckFlag(0,"BOSSDEATH")||CheckFlag(0,"DONTRIP"))));
+}

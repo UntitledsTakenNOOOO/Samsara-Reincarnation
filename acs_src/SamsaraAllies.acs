@@ -1,0 +1,495 @@
+int misccharacterclasses = 8;
+int checkclassindices[8] = {19,23,5,11,24,10,25,14};
+int activetokenselectors[8];
+
+script "HeroOnMap" Open
+{
+	int clients = PlayerCount();
+	int playervalue;
+	for(int a = 0; a < misccharacterclasses; a++)
+	{
+		activetokenselectors[a] = 0;
+	}
+	
+	for(int p = 0; p < clients; p++)
+	{	
+		if(PlayerInGame(p) == true)
+		{
+			for(int b = 0; b < misccharacterclasses; b++)
+			{
+				if(PlayerClass(p) == checkclassindices[b])
+				{
+					activetokenselectors[b] = 1;
+				}
+			}
+		}
+		else
+		{
+			clients += 1;
+		}
+	}
+}
+
+int HealthBonusMapCount = 0;
+int ArmorBonusMapCount = 0;
+int HealthBonusScriptCount = 0;
+int ArmorBonusScriptCount = 0;
+
+Script "Samsara2689" (int mode)  //2689
+{
+	int any;
+	int spawnchance = random(0,100);
+	SetResultValue(0);
+	Switch(mode)
+	{	
+		Case 1:
+			HealthBonusScriptCount++;
+			if(HealthBonusScriptCount > HealthBonusMapCount) { SetResultValue(0); terminate; }
+					
+			break;
+		Case 2:
+			ArmorBonusScriptCount++;
+			if(ArmorBonusScriptCount > ArmorBonusMapCount) { SetResultValue(0); terminate; }
+				
+			break;
+	}
+
+	if(spawnchance > GetCvar("sams_misccharacters") || GetCvar("sams_misccharacters") == 0)
+	{
+		terminate;
+	}
+	
+	for(int pre = 0; pre < misccharacterclasses; pre++)
+	{
+		if(activetokenselectors[pre] == 1)
+		{
+			any = true;
+			break;
+		}
+	}
+	
+	if(any == false)
+	{
+		terminate;
+	}
+
+	while(true)
+	{
+		int a, b;
+		
+		if(activetokenselectors[a] == true)
+		{
+			if(a == 0)
+			{	
+				Switch(mode)
+				{	
+					Case 1:
+						SpawnSpotFacing("HLScientist", 0, 0);
+						break;
+					Case 2:
+						SpawnSpotFacing("HLSecurityGuard", 0, 0);
+						break;
+				}
+				terminate;
+			}
+			else if(a == 1)
+			{
+				SetResultValue(0);
+				b = random(0, 11);
+				if(b < 5)
+				{
+					SpawnSpotFacing("RedneckRampage_Chicken", 0, 0);
+					break;
+				}
+				else if(b < 8)
+				{
+					SpawnSpotFacing("RedneckRampage_Pig", 0, 0);
+					break;
+				}
+				else if(b <= 10)
+				{
+					SpawnSpotFacing("RedneckRampage_Cow", 0, 0);
+					break;
+				}
+				else
+				{
+					SpawnSpotFacing("RRBanjoConcert", 0, 0);
+					break;
+				}	
+				terminate;
+			}
+			else if(a == 2)
+			{
+				SetResultValue(0);
+				SpawnSpotFacing("Duke3DBabe", 0, 0);
+				terminate;
+			}
+			else if(a == 3)
+			{
+				SetResultValue(0);
+				SpawnSpotFacing("StrifePeasant", 0, 0);		
+				terminate;
+			}
+			else if(a == 4)
+			{
+				SetResultValue(0);
+				SpawnSpotFacing("Q2Insane", 0, 0);
+				terminate;
+			}
+			else if(a == 5)
+			{
+				b = random(0, 10);
+				SetResultValue(0);
+				
+				if(b < 2)
+					SpawnSpotFacing("BloodInnocentMime", 0, 0);
+					
+				else
+					SpawnSpotFacing("BloodInnocentMoron", 0, 0);
+				
+				terminate;
+			}
+			else if(a == 6)
+			{
+				SetResultValue(0);
+				SpawnSpotFacing("Hexen2_Sheep", 0, 0);
+				terminate;
+			}
+			else if(a == 7)
+			{
+				if(mode == 1)
+					SpawnSpotFacing("RMRLDFGuard", 0, 0);
+				else if(mode == 2)
+					SpawnSpotFacing("RMRLDFMilitia", 0, 0);
+				terminate;
+			}
+		}
+		
+		if(a >= misccharacterclasses-1)
+			a = random(-1,misccharacterclasses-1);
+		else
+			a++;
+	}
+}
+
+Script "BonusItemCount" Open
+{
+	HealthBonusScriptCount = 0;
+	ArmorBonusScriptCount = 0;
+	HealthBonusMapCount = ThingCountName("HealPack0", 0);
+	ArmorBonusMapCount = ThingCountName("ArmorScrap200", 0);
+}
+
+Script "AllyCellPhone" ENTER
+{
+	If(CheckInventory("HexenClass") || CheckInventory("RoTTClass") || CheckInventory("POGreedClass") || CheckInventory("EradClass") || CheckInventory("RRClass"))
+	{
+		if(!CheckInventory("AllyCellPhone") && CheckInventory("KillCountBar") == 250 && !CheckInventory("CellPhoneGiven"))
+		{
+			GiveInventory("AllyCellPhone", 1);
+			GiveInventory("CellPhoneGiven", 1);
+		}
+		else if(CheckInventory("CellPhoneGiven") && !CheckInventory("AllyCellPhone"))
+		{
+			TakeInventory("CellPhoneGiven", 1);
+			TakeInventory("KillCountBar", 250);
+		}
+		delay(1);
+		restart;
+	}
+	else
+	{
+		terminate;
+	}
+}
+
+str rottdropstrings[5] = {"DropIan","DropTaradino","DropThi","DropLorelei","DropDoug"};
+str hexendropstrings[2] = {"DropFighter","DropMage"};
+str hexenmagedropstrings[2] = {"DropFighter","DropCleric"};
+str hexenfighterdropstrings[2] = {"DropCleric","DropMage"};
+str eradicatordropstrings[3] = {"DropDan","DropKamechak","DropMarine"};
+str ipogdropstrings[4] = {"DropCyborg","DropLizard","DropSpecimen","DropDominatrix"};
+
+Script "Samsara2999" (int class, int mode)
+{
+	int resultcounter = 0;	
+	int maxallies = 2;
+	if(class == 1)
+		mode = ceilZandronum((mode*1.0)/100); //the shit I have to do to cleanup Zandronum's mistakes
+	
+	Switch(class)
+	{
+		Case 1:	
+		maxallies = 5;
+		For(int a = 0; a < 36; a++)
+		{
+			Delay(1);
+			If(a==35)
+			{
+				if(resultcounter == maxallies)
+				{
+					SetActorState(0,"Death",TRUE);
+					terminate;
+				}
+				
+				if(mode != resultcounter)
+				{
+					//PrintBold(d:resultcounter);
+					SetActorState(0,rottdropstrings[resultcounter],TRUE);
+				}
+					
+				a=0;
+				resultcounter++;
+			}
+		}
+		break;
+		Case 2:	
+		maxallies = 2;
+		For(int b = 0; b < 36; b++)
+		{
+			Delay(1);
+			If(b==35)
+			{
+				If(resultcounter == maxallies)
+				{
+					SetActorState(0,"Death",TRUE);
+					terminate;
+				}
+				switch(mode)
+				{
+					case 1:
+						SetActorState(0,hexenmagedropstrings[resultcounter],TRUE);
+						b=0;
+						resultcounter++;
+						break;
+					case 2:
+						SetActorState(0,hexenfighterdropstrings[resultcounter],TRUE);
+						b=0;
+						resultcounter++;
+						break;
+					default:
+						SetActorState(0,hexendropstrings[resultcounter],TRUE);
+						b=0;
+						resultcounter++;
+						break;
+				}
+			}
+		}
+		break;
+		Case 3:	
+		maxallies = 3;
+		For(int c = 0; c < 36; c++)
+		{
+			Delay(1);
+			If(c==35)
+			{
+				If(resultcounter == maxallies)
+				{
+					SetActorState(0,"Death",TRUE);
+					terminate;
+				}
+				SetActorState(0,eradicatordropstrings[resultcounter],TRUE);
+				c=0;
+				resultcounter++;
+			}
+		}
+		break;
+		Case 4:	
+		maxallies = 4;
+		For(int d = 0; d < 36; d++)
+		{
+			Delay(1);
+			If(d==35)
+			{
+				If(resultcounter == maxallies)
+				{
+					SetActorState(0,"Death",TRUE);
+					terminate;
+				}
+				SetActorState(0,ipogdropstrings[resultcounter],TRUE);
+				d=0;
+				resultcounter++;
+			}
+		}
+		break;
+	}
+}
+
+Script "Samsara_AllyBeaconDrops" (void)
+{
+	switch (samsaraClassNum())
+	{
+		case CLASS_ROTT:
+			SetResultValue(CheckInventory("RottMode"));
+			break;
+	}
+}
+
+Script "Samsara_AllySwitch" (void)
+{
+	int activator = ActivatorTid();
+	int playeractivator = ActivatorTid();
+	int newtid = UniqueTid();
+	Thing_ChangeTid(0,newtid);
+	SetActivator(0,AAPTR_Master);
+	int pln = PlayerNumber();
+	int playertid = UniqueTid();
+	int newtid2 = UniqueTid();
+	Thing_ChangeTid(0,playertid);
+	switch(PlayerClass(pln))
+	{
+		case 4:
+			if(GetUserCvar(pln,"sams_cl_hexclass")==0)
+			{
+				if(CheckActorClass(newtid,"ClericAlly"))
+				{
+					SpawnSpotFacingForced("FighterAlly",newtid,newtid2);
+				}
+				else
+					terminate;
+			}
+			else if(GetUserCvar(pln,"sams_cl_hexclass")==1)
+			{
+				if(CheckActorClass(newtid,"MageAlly"))
+				{
+					SpawnSpotFacingForced("ClericAlly",newtid,newtid2);
+				}
+				else
+					terminate;
+			}
+			else if(GetUserCvar(pln,"sams_cl_hexclass")==2)
+			{
+				if(CheckActorClass(newtid,"FighterAlly"))
+				{
+					SpawnSpotFacingForced("MageAlly",newtid,newtid2);
+				}
+				else
+					terminate;
+			}
+			break;
+		case 8:
+			switch(GetUserCvar(pln,"sams_cl_rottmode"))
+			{
+				Case 0:
+					if(CheckActorClass(newtid,"IanPaulFreeley"))
+					{
+						SpawnSpotFacingForced("DougWendt",newtid,newtid2);
+					}
+					else
+						terminate;
+					break;
+				Case 1:
+					if(CheckActorClass(newtid,"TaradinoCassatt"))
+					{
+						SpawnSpotFacingForced("IanPaulFreeley",newtid,newtid2);
+					}
+					else
+						terminate;
+					break;
+				Case 2:
+					if(CheckActorClass(newtid,"ThiBarret"))
+					{
+						SpawnSpotFacingForced("TaradinoCassatt",newtid,newtid2);
+					}
+					else
+						terminate;
+					break;
+				Case 3:
+					if(CheckActorClass(newtid,"LoreleiNi"))
+					{
+						SpawnSpotFacingForced("ThiBarret",newtid,newtid2);
+					}
+					else
+						terminate;
+					break;
+				Case 4:
+					if(CheckActorClass(newtid,"DougWendt"))
+					{
+						SpawnSpotFacingForced("LoreleiNi",newtid,newtid2);
+					}
+					else
+						terminate;
+					break;
+			}
+			break;
+	}
+	SetActorAngle(newtid2,GetActorAngle(newtid));
+	Thing_SetTranslation(newtid2,-1);
+	SetActivator(newtid2,AAPTR_DEFAULT);
+	SetPointer(AAPTR_MASTER,playertid);
+	Thing_Remove(newtid);
+	Thing_ChangeTid(playertid,playeractivator);
+	Thing_ChangeTid(0,activator);
+}
+
+Script "Samsara_BeaconSpawner" (int mode)
+{
+	int pln = PlayerNumber();
+	int newtid = UniqueTid();
+	int playertid = UniqueTid();
+	int activator = ActivatorTid();
+	Thing_ChangeTid(0,playertid);
+	switch(PlayerClass(pln))
+	{
+		case 4:
+			switch(mode)
+			{
+				case 0:
+					SpawnForced("StrifeBeaconHexen_Allies",GetActorX(0),GetActorY(0),GetActorZ(0),newtid);
+					Thing_SetTranslation(newtid,-1);
+					SetActivator(newtid,AAPTR_DEFAULT);
+					SetPointer(AAPTR_MASTER,playertid);
+					break;
+				case 1:
+					SpawnForced("StrifeBeaconHexenMage_Allies",GetActorX(0),GetActorY(0),GetActorZ(0),newtid);
+					Thing_SetTranslation(newtid,-1);
+					SetActivator(newtid,AAPTR_DEFAULT);
+					SetPointer(AAPTR_MASTER,playertid);
+					break;
+				case 2:
+					SpawnForced("StrifeBeaconHexenFighter_Allies",GetActorX(0),GetActorY(0),GetActorZ(0),newtid);
+					Thing_SetTranslation(newtid,-1);
+					SetActivator(newtid,AAPTR_DEFAULT);
+					SetPointer(AAPTR_MASTER,playertid);
+					break;
+			}
+			break;
+		case 8:
+			SpawnSpotForced("StrifeBeaconRott_Allies",0,newtid,0);
+			SetActorAngle(newtid,CheckInventory("RottMode")*182);
+			Thing_SetTranslation(newtid,-1);
+			SetActivator(newtid,AAPTR_DEFAULT);
+			SetPointer(AAPTR_MASTER,playertid);
+			break;
+	}
+	Thing_ChangeTid(playertid,activator);
+}
+
+Script "Samsara_AllyCheckMaster" (void)
+{
+	SetResultValue(SetActivator(0,AAPTR_MASTER));
+}
+
+Script "CellPhoneHax" (int mode) //2560
+{
+	Switch(mode)
+	{
+		Case 0:
+			Delay(160);
+			GiveInventory("AllyCellPhoneHax1",1);
+			break;
+		Case 1:
+			Delay(160);
+			GiveInventory("AllyCellPhoneHax2",1);
+			break;
+	}
+}
+
+Script "Samsara_AllyHealthRegen" (void)
+{
+	While(GetActorProperty(0, APROP_Health) > 0)
+	{
+		HealThing(1);
+		Delay(35);
+	}
+}

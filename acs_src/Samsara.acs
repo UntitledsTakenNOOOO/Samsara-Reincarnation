@@ -1,0 +1,592 @@
+//======================================================================================================================
+//									Any changes to a file prefixed "SAMSARA", compile this
+//======================================================================================================================
+
+#library "samsara"
+#include "zcommon.acs"
+
+#include "commonFuncs.acs"
+#include "SamsaraDefs.acs"
+
+int array_wolfmove[PLAYERMAX];
+int array_vanillaAnim[PLAYERMAX];
+int array_ballgag[PLAYERMAX];
+int array_weaponBar[PLAYERMAX];
+int array_pickupswitch[PLAYERMAX];
+int array_rottbar[PLAYERMAX];
+int DukeQuoteCooldown[PLAYERMAX];
+int LeonardQuoteCooldown[PLAYERMAX];
+int ServerEnterTimes[PLAYERMAX];
+int WolfenEnterTimes[PLAYERMAX];
+int ClientEnterTimes[PLAYERMAX];
+int ClientTipboxes[PLAYERMAX];
+int ResonantTimes[PLAYERMAX][RESCOUNT];
+int ScheduledTimes[PLAYERMAX][3];
+
+int SamsaraWepType, SamsaraClientClass, SamsaraItemFlash, SamsaraAlternativeClass;
+int SamsaraClientWeps[SLOTCOUNT] = {0};
+int SamsaraClientWepFlashes[SLOTCOUNT] = {0};
+int IsServer = 0;
+int LMSMessaged = 0;
+int UnloadingNow = 0;
+int ArmorMode = -1;
+int MapArmors[ARMORCOUNT] = {-1};
+int ClientTipboxModifier, ClientTipClassModifier;
+
+global int 0:SamsaraGlobal[];
+
+#include "SamsaraWeps.acs"
+#include "SamsaraFuncs.acs"
+#include "SamsaraSounds.acs"
+#include "SamsaraMsgs.acs"
+#include "SamsaraTipbox.acs"
+#include "SamsaraPickup.acs"
+#include "SamsaraStrife.acs"
+#include "SamsaraEvent.acs"
+#include "SamsaraScheduled.acs"
+#include "SamsaraPDWTAK.acs"
+#include "SamsaraGeneral.acs"
+#include "SamsaraAllies.acs"
+#include "SamsaraSTRFHELP.acs"
+
+//======================================================================================================================
+//													Class Includes
+//======================================================================================================================
+#include "SamsaraDoom64.acs"
+#include "SamsaraHeretic.acs"
+#include "SamsaraHexen.acs"
+#include "SamsaraTotenkopf.acs"
+#include "SamsaraBlake.acs"
+#include "SamsaraDuke.acs"
+#include "SamsaraMarathon.acs"
+#include "SamsaraQuake1.acs"
+#include "SamsaraStrifeguy.acs"
+#include "SamsaraBlood.acs"
+#include "SamsaraEradicator.acs"
+#include "SamsaraRMR.acs"
+#include "SamsaraSW.acs"
+#include "SamsaraIPOG.acs"
+#include "SamsaraWitchaven.acs"
+#include "SamsaraDisruptor.acs"
+#include "SamsaraExhumed.acs"
+#include "SamsaraRR.acs"
+#include "SamsaraQuake2.acs"
+#include "SamsaraCatacomb.acs"
+
+//SCRIPTS
+//200:
+//201: Check if SP/DM/co-op for the Tome of Power/Morph Ovum.
+//202: Cooldown for Tome of Power.
+//203: Take away all the shit on level ending!
+//204: Boss monologues.
+//205: Cooldown for Duke's taunts.
+//207: Flechette cooldown.
+//208: Buddha mode for B.J.'s Extra Life.
+//209: Activate Send Full Button Info and activate sv_banjetpack/sv_lmslife/sv_lmsult.
+//212: Displaying text.
+//214: Duke Jetpack/Visor fuel draining.
+//901-902: I'm pretty sure Synert is a wizard, too.
+//224: Doomguy's vanilla animations. By Ijon Tichy, transcribed by Llewellyn.
+//225: Weapon bar. By Ijon Tichy, transcribed by Llewellyn.
+
+script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORATE
+{
+    int clipcount;
+    int result;
+    int i, j, k;
+    int x, y, z;
+    int armorIndex, armorToSet;
+    int pln = PlayerNumber();
+    
+    switch (choice)
+    {
+      case 1:
+        result = GetActorProperty(0, APROP_Dropped);
+        break;
+        
+      case 2:
+        if (CheckInventory("WolfenMovement") == 1) { SetActorState(0, "Spawn"); }
+        break;
+        
+      case 3:
+        result = !(GetCVar("sv_itemrespawn") || GetCVar("sv_weaponstay"));
+        break;
+        
+      case 4:
+        result = isInvasion() || !(isCoop() || isSinglePlayer());
+        break;
+
+      case 5:
+        SetActivatorToTarget(0);
+        result = CheckInventory("Cell");
+        if (arg1) { TakeInventory("Cell", result); }
+        break;
+
+      case 6:
+        result = GetCVar("skulltag");
+        break;
+      
+      case 7:
+        if (arg2 != 1)
+        {
+            GiveQuad(arg1);
+        }
+        else
+        {
+            if (isLMS())
+            {
+                if (GetCvar("sams_permaquad") == 1)
+                { GiveInventory("QuadDamageItem", 1); }
+                break;
+            }
+
+            GiveQuad(arg1);
+
+            if (GetCvar("sams_permaquad") == 1)//if (isCoop() || isSinglePlayer())
+            { GiveInventory("QuadDamageItem", 1); }
+        }
+        break;
+
+      case 8:
+        result = defaultCVar("sams_cl_expparticles", 0);
+        if (!result) { result = 100; }
+
+        result = max(0, result);
+
+        result *= max(arg1, 1);
+        result /= max(arg2, 1);
+
+        GiveInventory("QuakeExplosionCounter", result);
+        break;
+
+      case 9:
+        clipcount = CheckInventory("Clip");
+
+        if (clipcount < 50)
+        {
+            GiveInventory("Clip", 50 - clipcount);
+            TakeInventory("Clip", CheckInventory("Clip") - 50);
+            result = 1;
+        }
+        break;
+
+      case 10:
+        TakeInventory("QuakeExplosionCounter", arg1);
+        result = CheckInventory("QuakeExplosionCounter");
+        break;
+
+      case 15:
+        SetActorProperty(0, APROP_Speed, percFloat(arg1, arg2));
+        break;
+        
+      case 16:
+        if (GameType () != GAME_SINGLE_PLAYER)
+        {
+            SetHudSize(400, 300, 0);
+            Hudmessage(l:"DUKEDEADMESSAGE";
+            HUDMSG_PLAIN,1024,CR_LIGHTBLUE,200.4,9.1,1.75);
+            delay(15);
+
+            if (!CheckInventory("DukeBallgag"))
+            {
+                LocalAmbientSound("duke/mpdeath",127);
+                GiveInventory("DukeTauntCooldown",5);
+                ACS_NamedExecuteAlways("DukeTauntCooldown",0,0);
+            }
+        }
+        break;
+
+      case 17:
+        if (arg1) { result = GetCVar("sams_permault"); }
+        else { result = GetCVar("sv_weaponstay"); }
+        break;
+
+      case 18:
+        if (MapArmors[0] == -1) { CheckMapArmors(); }
+        SetArmorMode();
+
+        i = Timer() != 0;
+
+        if (MapArmors[ARMOR_YELLOW] == 1) { i += 2; }
+
+        SetActorState(0, ArmorModeStates[ArmorMode][i]);
+        break;
+
+      case 19:
+        result = isLMS();
+        break;
+
+      case 20:
+        SetArmorMode();
+
+        armorIndex = -1;
+        armorToSet = arg1;
+
+        for (i = 0; i < ARMORCOUNT; i++)
+        {
+            if (GetArmorType(ArmorItems[ArmorMode][i][0], pln))
+            {
+                armorIndex = i;
+                break;
+            }
+        }
+
+        arg1 = middle(0, arg1, ARMORCOUNT-1);
+        i = CheckInventory("Armor");
+        j = ArmorItems[ArmorMode][arg1][1];
+
+        if (j == 0) { result = 0; break; }
+
+
+        /* If we're adding armor, always follow through
+           Else, if the ending armor count is lower than the current armor count
+           and we're not upgrading our armor, give up now */
+
+        if (arg2 > 0)
+        {
+            if (arg1 <= armorIndex) { armorToSet = armorIndex; }
+        }
+        else if (((arg2 == 0 && i > j) || (arg2 < 0 && i > -arg2)) && (arg1 <= armorIndex))
+        {
+            result = 0;
+            break;
+        }
+
+        if (arg2 <= 0)
+        {
+            TakeInventory("BasicArmor", i);
+            GiveInventory(ArmorItems[ArmorMode][armorToSet][0], 1);
+
+            k = CheckInventory("Armor");
+
+            if (arg2 == 0) { break; }
+
+            TakeInventory("BasicArmor", k-1);
+            GiveInventory("InfiniteArmorBonus", -arg2 - 1);
+        }
+        else
+        {
+            TakeInventory("BasicArmor", i);
+            GiveInventory(ArmorItems[ArmorMode][armorToSet][0], 1);
+
+            k = CheckInventory("Armor");
+            TakeInventory("BasicArmor", k-1);
+
+            GiveInventory("InfiniteArmorBonus", (i + arg2) - 1);
+        }
+
+        result = 1;
+        break;
+
+      case 21:
+        i = CheckInventory("Armor");
+        if (i < arg1) { result = 0; break; }
+
+        TakeInventory("BasicArmor", i-arg1);
+        result = 1;
+        break;
+
+      case 22:
+        result = GetCVar("sams_nohealthcap");
+        break;
+
+      case 23:
+        GiveInventory("TimeBombPause", 1);
+        Delay(arg1);
+        TakeInventory("TimeBombPause", 1);
+        break;
+
+      case 24:
+        result = GetCVar("sams_noult");
+        break;
+
+      case 25:
+        if (GameType() == GAME_NET_COOPERATIVE)
+		{ AmbientSound("quake/invisannouncer",127); }
+		else
+		{ LocalAmbientSound("quake/invisannouncer",127); }
+        break;
+		
+	  case 26:
+	    if (CheckInventory("PowerInvisibility") == 0)
+		{ GiveInventory("PowerInvisibility",1); }
+		else
+		{ TakeInventory("PowerInvisibility",1); 
+		delay(1);
+		GiveInventory("PowerShadow",1);
+		delay(1);
+		GiveInventory("PowerShadow",1); }
+	    break;
+
+      case 27:
+        result = GetCVar("sams_nounique");
+        break;
+
+      case 28:
+        result = GetCVar("sams_noinvuln");
+        break;
+
+      case 29:
+        result = GetCVar("instagib");
+        break;
+
+      case 30:
+		if (GetCVar("sams_runninginzdoom") == 1)
+		{
+			result = GetCVar("sams_zd_bloodyhell");
+			//log(s:"ZDoom ",i:result);
+		} else {
+			result = GetCVar("sams_cl_bloodyhell");
+			//log(s:"Zandro ",i:result);
+		}
+        break;
+
+      case 31:
+        if (GetCVar("sams_runninginzdoom") == 1)
+		{
+			result = GetCVar("sams_zd_bloodypersistent");
+		} else {
+			result = GetCVar("sams_cl_bloodypersistent");
+		}
+        break;
+
+      case 32:
+        result = GetCVar("sams_nohealth");
+        break;
+
+      case 33:
+        result = GetCVar("sams_vanillaquake");
+        break;
+		
+		case 34:
+            if (!CheckInventory("EleenaBallgag"))
+            {
+                LocalAmbientSound("Eleena/Suicide",127);
+                GiveInventory("EleenaTauntCooldown",5);
+                ACS_NamedExecuteAlways("EleenaTauntCooldown",0,0);
+            }
+        break;		
+		
+	  case 35:
+		i = CheckInventory("Clip");
+		j = CheckInventory("Shell");
+		k = CheckInventory("RocketAmmo");
+		x = CheckInventory("Cell");
+		
+		if(i >= WitchavenSpellCost[arg1][0]
+		&& j >= WitchavenSpellCost[arg1][1]
+		&& k >= WitchavenSpellCost[arg1][2]
+		&& x >= WitchavenSpellCost[arg1][3])
+		{	result = 1;
+			if(!GetCvar("sv_infiniteammo"))
+			{
+				TakeInventory("Clip",WitchavenSpellCost[arg1][0]);
+				TakeInventory("Shell",WitchavenSpellCost[arg1][1]);
+				TakeInventory("RocketAmmo",WitchavenSpellCost[arg1][2]);
+				TakeInventory("Cell",WitchavenSpellCost[arg1][3]);}
+			}
+		else
+		{	result = 0;}
+		break;
+		
+	  case 36:
+		if(arg1 == 1)
+			result = GetCVar("sams_microwavepop");
+			
+		else
+			result = SpawnForced("RPGExplosion", GetActorX(0), GetActorY(0), GetActorZ(0) + (GetActorProperty(0,APROP_Height) * 2), 0, 0);
+			
+		break;
+		
+	  case 37:
+        if (GameType () != GAME_SINGLE_PLAYER)
+        {
+            SetHudSize(400, 300, 0);
+            Hudmessage(s:"Mash activator key to kill again!"; HUDMSG_PLAIN,1024,CR_WHITE,200.4,9.1,1.75);
+            delay(15);
+
+            if (!CheckInventory("LeonardBallgag"))
+            {
+                LocalAmbientSound("leonard/mpdeath",127);
+                GiveInventory("LeonardTauntCooldown",5);
+                ACS_NamedExecuteAlways("LeonardTauntCooldown",0,0);
+            }
+        }
+        break;
+		
+	  case 38:
+		if(GetCvar("sams_notimefreeze"))
+		{
+			GiveInventory("InvulnPowerup",1);
+		}
+		else
+		{
+			if(CheckInventory("CorvusClass"))
+			{
+				PlaySound(0,"heretic/itemget");
+				GiveInventory("TimeFreezeSphereHeretic",1);		
+			}
+			else
+			{
+				PlaySound(0,"misc/p_pkup", CHAN_ITEM);
+				GiveInventory("PowerTimeFreezer",1);
+				GiveInventory("PowerTimeFreezerColor",1);
+			}
+		}
+		break;
+	  case 39:
+		SetActorProperty(0,APROP_Renderstyle,STYLE_NORMAL);
+		break;
+	  case 40:
+		Delay(3);
+		TakeInventory("DaedalonInRange",1);
+		break;
+    }
+    
+    SetResultValue(result);
+}
+
+script "SamsaraClientDecorate" (int which, int a1, int a2) clientside //212 -- SAMSARA_CLIENT_DECORATE
+{
+    int i, j, k;
+    int x, y, z;
+	int result;
+    int deathresult;
+    int xdeathresult;
+
+    SetFont("SMALLFONT");
+    switch (which)
+    {
+      case 1:
+        Print(l:"NOTUNLESSINJURED");
+        break;
+        
+      case 2:
+        Print(s:"");
+        break;
+        
+      case 3:
+        SetHudSize(400, 300, 0);
+        Hudmessage(l:"FOOTENGAGED";
+        HUDMSG_PLAIN,1024,CR_LIGHTBLUE,200.4,9.1,1.0);
+        break;
+
+      case 4:
+        while (1)
+        {
+            if (defaultCVar("sams_cl_noadditivepickups", 0))
+            {
+                SetActorProperty(0, APROP_RenderStyle, STYLE_Normal);
+                SetActorProperty(0, APROP_Alpha, itof(a1)/100);
+            }
+            else
+            {
+                SetActorProperty(0, APROP_RenderStyle, STYLE_Add);
+                SetActorProperty(0, APROP_Alpha, itof(a2)/100);
+            }
+
+            Delay(35);
+        }
+        break;
+        
+      case 5:
+        Print(l:"NOFUEL");
+        break;
+        
+      case 6:
+        Print(l:"NOPOWER");
+        break;
+        
+      case 7:
+        Print(l:"ALREADYFLYING");
+        break;
+
+      case 9:
+        x = GetActorX(0); y = GetActorY(0); z = GetActorZ(0);
+        i = GetActorPitch(0);
+        j = GetActorAngle(0);
+        k = unusedTID(4000, 14000);
+
+        z += itof(cond(keyDown(BT_CROUCH), random(10, 14), random(30, 34)));
+        Spawn("GauntletSparks", x + FixedMul(cos(i), 16 * cos(j)), y + FixedMul(cos(i), 16 * sin(j)), z - (16 * sin(i)), k);
+        SetActorVelocity(k, GetActorVelX(0), GetActorVelY(0), GetActorVelZ(0), 0,0);
+        break;
+		
+    case 10:
+        if (GetCVar("sams_runninginzdoom") == 1)
+		{
+			if(GetCvar("sams_zd_bloodyhell") == -1) { SetActorState(0,"XDeathHappyfun"); }
+			if(GetCvar("sams_zd_bloodyhell") == 1) { SetActorState(0,"XDeathNashgore"); }
+			if(GetCvar("sams_zd_bloodyhell") == 2) { SetActorState(0,"XDeathBrutal"); }
+			if(GetCvar("sams_zd_bloodyhell") == 3) { xdeathresult = random(1,2);	
+			if(xdeathresult==1) { SetActorState(0,"XDeathNightmare1"); }
+			if(xdeathresult==2) { SetActorState(0,"XDeathNightmare2"); } }	
+		} else {
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == -1) { SetActorState(0,"XDeathHappyfun"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 1) { SetActorState(0,"XDeathNashgore"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 2) { SetActorState(0,"XDeathBrutal"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 3) { xdeathresult = random(1,2);
+			if(xdeathresult==1) { SetActorState(0,"XDeathNightmare1"); }
+			if(xdeathresult==2) { SetActorState(0,"XDeathNightmare2"); } }
+		}
+        break;
+		
+    case 11:
+	    if (GetCVar("sams_runninginzdoom") == 1)
+		{
+			if(GetCvar("sams_zd_bloodyhell") == -1) { SetActorState(0,"DeathHappyfun"); }
+			if(GetCvar("sams_zd_bloodyhell") == 1) { SetActorState(0,"DeathNashgore"); }
+			if(GetCvar("sams_zd_bloodyhell") == 2) { SetActorState(0,"DeathBrutal"); }
+			if(GetCvar("sams_zd_bloodyhell") == 3) { deathresult = random(1,6);
+			if(deathresult==1) { SetActorState(0,"DeathNightmare1"); }
+			if(deathresult==2) { SetActorState(0,"DeathNightmare2"); }
+			if(deathresult==3) { SetActorState(0,"DeathNightmare3"); }
+			if(deathresult==4) { SetActorState(0,"DeathNightmare4"); }
+			if(deathresult==5) { SetActorState(0,"DeathNightmare5"); }
+			if(deathresult==6) { SetActorState(0,"DeathNightmare6"); } }
+			break;
+		} else {
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == -1) { SetActorState(0,"DeathHappyfun"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 1) { SetActorState(0,"DeathNashgore"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 2) { SetActorState(0,"DeathBrutal"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 3) { deathresult = random(1,6);
+			if(deathresult==1) { SetActorState(0,"DeathNightmare1"); }
+			if(deathresult==2) { SetActorState(0,"DeathNightmare2"); }
+			if(deathresult==3) { SetActorState(0,"DeathNightmare3"); }
+			if(deathresult==4) { SetActorState(0,"DeathNightmare4"); }
+			if(deathresult==5) { SetActorState(0,"DeathNightmare5"); }
+			if(deathresult==6) { SetActorState(0,"DeathNightmare6"); } }
+			break;
+		}
+        break;
+		
+	case 12:
+	    if (GetCVar("sams_runninginzdoom") == 1)
+		{
+			result = GetCVar("sams_zd_bloodyhell");
+		} else {
+			result = GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell");
+		}
+        break;
+	
+	case 13:
+	    if (GetCVar("sams_runninginzdoom") == 1)
+		{
+			result = GetCVar("sams_zd_bloodypersistent");
+		} else {
+			result = GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodypersistent");
+		}
+        break;
+	
+	case 14:
+		if (GetCVar("sams_runninginzdoom") == 1)
+			result = GetCVar("sams_cl_dkclab");
+			
+		else
+			result = GetUserCVar(ConsolePlayerNumber(), "sams_cl_dkclab");
+			
+		break;
+    }
+    
+    SetResultValue(result);
+}

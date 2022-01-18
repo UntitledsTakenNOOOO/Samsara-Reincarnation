@@ -1,0 +1,1763 @@
+script "HLGaussScript" (void) //622 -- HL_GAUSS_SCRIPT
+{
+	if((CheckInventory("HLGaussCounter") < 30) && (CheckInventory("HLGaussCharged") >= (CheckInventory("HLGaussCounter") * 10)))
+	{
+		SetResultValue(1);
+		GiveInventory("HLGaussCounter",1);
+	}
+	else
+		SetResultValue(0);
+}
+
+script "HLWalkRun" (int momx, int momy, int momz) //2723
+{
+    // This script determines if we should walk or run.
+    // Notes: Fastest running speed is 24.
+    // Fastest walking speed is 12.
+    if (momx < 0) momx = -momx;
+    if (momy < 0) momy = -momy;
+    if (momz < 0) momz = -momz;
+    SetResultValue((momx + momy)> 12);
+}
+
+script "HLCrouchCheck" (void) //2724
+{
+    if(GetActorViewHeight(0) <=  GetActorViewHeight(0) / 2 << 16)
+		SetResultValue(1);
+    else
+		SetResultValue(0);
+
+}
+
+/*
+Guided Rocket Launcher
+By Scotty
+
+Set SC_DEBUG_MODE 1 in the console to use debug mode! It displays useless data in a hudmessage
+and puts pretty blue trails behind the rockets. Ooooooh!
+
+The constants below can be used to make quick changes to the behavior.
+
+LATENCY: The length in time, in tics, with which the rockets recalculate their trajectories.
+
+NUMBER_ROCKETS:	The max number of rockets that you can have following the laser.
+					Any over will just fly straight where you were aiming.
+
+ROCKET_SPEED: The speed with which the rocket will travel. (Duh)
+
+ROCKET_CUTOFF: The minimum distance away from the laser for the rocket to recalculate
+				its angle and pitch. (If it gets too close to the laser, it will stop 
+				updating its trajectory and just fly straight for wherever it was heading.
+					
+ROCKET_TURNVALUE: A fixed point number representing the max angle that rockets can adjust 
+					per update. This creates a curve effect. Use 0 to ignore this and just
+					use whateverangle and pitch it needs to head straight for the laser.
+
+*/
+
+#define	LATENCY			1
+#define	NUMBER_ROCKETS	100
+#define ROCKET_SPEED	20
+#define ROCKET_CUTOFF 	32
+#define ROCKET_TURNVALUE 0.02
+
+bool rocket[NUMBER_ROCKETS] = {0};
+
+int laserX = 0;
+int laserY = 0;
+int laserZ = 0;
+
+
+//==============================================================================
+//Finds the first zero element in the rocket[] array.
+//This would be much more useful if I could pass in a pointer to the array!
+//
+//Parameters:
+//elements -	INT, the number of elements in the array. 	
+//
+//Returns:	INT value for the first element with a 0; -1 if none were found.
+function int checkForFirstZero (int elements) {
+	int result = -1;
+	int i;
+	bool found = 0;
+	//Cycle through each value in the rocket array
+	for(i = 0; i < elements || !found; i++) {
+		if(rocket[i] == 0) {
+			result = i;
+			found = 1;
+		}
+	}
+	return result;
+}
+
+//Taken and modified from a function on the zdoom wiki
+//http://zdoom.org/wiki/GetTargetPitch
+function int getTargetPitch (int tid1, int targetX, int targetY, int targetZ) {
+    int x, y, z, xy, a;
+    x = GetActorX(tid1) - targetX;
+    y = GetActorY (tid1) - targetY;
+    z = GetActorZ(tid1) - targetZ;
+    a = VectorAngle(x, y);
+
+    if ((a + 0.125) % 0.5 > 0.25)
+        xy = FixedDiv(y, sin(a));
+    else
+        xy = FixedDiv(x, cos(a));
+
+    return -VectorAngle(xy, z);
+}
+
+
+//==============================================================================
+//Returns the signed difference between two angles
+//
+//Parameters:
+//angleA -	FIXED, The first angle to compare
+//angleB -	FIXED, The second angle to compare
+//
+function int diffAngle(int angleA, int angleB) {
+	int result = angleA - angleB;
+	if(result > 0.5) {
+		result -= 1.0;
+	} else if (result < -0.5) {
+		result += 1.0;
+	}
+	return result;
+}
+
+//==============================================================================
+//This is a function that creates a curve effect on the projectile.
+//Essentially what it does is takes a target angle, the projectile's current
+//angle, finds the difference between the two, and adds or subtracts a small
+//fixed numbner (changeValue) from the current angle and returns the result,
+//so it eases closer to the result rather than just being the result.
+//
+//Parameters:
+//targetAngle -		FIXED, The target angle that the projectile needs to have
+//currentAngle - 	FIXED, the current angle that the projectile has
+//changeValue -		FIXED, a small value to change the current angle by.	
+//
+function int closeIn(int targetAngle, int currentAngle, int changeValue) { 
+	int diff = diffAngle(currentAngle, targetAngle);
+	int result; 
+	if(abs(diff) < changeValue) {
+		result = targetAngle;
+	} else if(diff > 0) {
+		result = currentAngle - changeValue;
+	} else if (diff < 0) {
+		result = currentAngle + changeValue;
+	}
+	
+	return result;
+}
+
+//==============================================================================
+//This is the meat and potatoes of the mod!
+//This takes the TID of a rocket, the X, Y, and Z positions of a target (laser),
+//Does math to figure out where the rocket needs to go and changes the velocity
+//accordingly.
+//
+//Parameters:
+//projectileTID -	INT, The TID of the projectile
+//targetX - 		INT, The target X coordinate
+//targetY - 		INT, The target Y coordinate
+//targetZ - 		INT, The target Z coordinate
+//speed -			INT, the speed with which the projectile will move
+//cutoff -			FIXED, the distance with which to make the projectile stop following the target.
+//turnValue - 		FIXED, the amount per call the rocket is allowed to turn. Pass 0 to ignore this and just use the target angle.
+//
+//Returns: bool value that indicates if the projectile can follow its target.
+//
+function bool setVelocityToTarget(int projectileTID, int targetX, int targetY, int targetZ, int speed, int cutoff, int turnValue) {
+	
+	//Fixed point variables which define the individual X, Y, and Z distances 
+	//that the rocket is from the target.
+	int disX = ((targetX  << 16) - getactorx(projectileTID));
+	int disY = ((targetY  << 16) - getactory(projectileTID));
+	int disZ = ((targetZ  << 16) - getactorZ(projectileTID));
+	//Int equivalents of the values above. These are used to determine the cutoff distance.
+	int idisX = disX / 65535;
+	int idisY = disY / 65535;
+	int idisZ = disZ / 65535;
+	//Actual distance the projectile is from the target.
+	int distance = sqrt(idisx * idisx + idisy * idisy + idisz * idisz);
+	
+	//This is to check for a cutoff distance.
+	//This is used because without it, if you were to shoot the rocket downward at a
+	//specific range of angles, it doesn't want to touch the ground. Instead it
+	//goes berserk in place, hovering just above the floor.
+	if(distance > cutoff) {
+		//Target and Current Angle
+		int targetAngle = vectorAngle(disX, disY);
+		int currentAngle = getActorAngle(projectileTID);
+		
+		//Target and Current Pitch
+		
+		int targetPitch = getTargetPitch(projectileTid, laserX << 16, laserY << 16, laserZ << 16);
+		//Normalize the pitch to a positive value.
+		if(targetPitch < -0.5) {
+			targetPitch += 1.0;
+		}
+		//Grab the current pitch
+		int currentPitch = getActorPitch(projectileTID);
+		//This is intended to fix a small anomaly that causes a rocket to fly out of the 
+		//launcher at 0.0 pitch at first then readjust, without regard to the player pitch.
+		if(currentPitch == 0) {
+			currentPitch = targetPitch;
+		}
+		
+		//Next Angle and Pitch
+		int nextAngle, nextPitch;
+		//If the turnValue is not 0, we'll calculate the next angle by the difference
+		//between the target and current angles, plus or minus the turnvalue.
+		//This creates a curve effect!
+		if(turnValue != 0) {
+			nextAngle = closeIn(targetAngle, currentAngle, turnValue);
+			nextPitch = closeIn(targetPitch, currentPitch, turnValue);
+		//If the turnValue is 0, we'll just set the pitch and angle to what it needs to be.
+		//This was the original incarnation of this weapon used and it works really well
+		//if you're annoyed by the curve effect.
+ 		} else {
+			nextAngle = targetAngle;
+			nextPitch = targetPitch;
+		}
+			
+		//Next X, Y, and Z velocities
+		//Trig here to make sure the combined X, Y, and Z velocities equal the speed that is passed in.
+		int nextVelX = fixedmul(Cos(nextAngle), Cos(nextPitch)) * speed;
+		int nextVelY = fixedmul(Sin(nextAngle), Cos(nextPitch)) * speed;
+		int nextVelZ = sin(nextPitch) * speed;
+		
+		//Chage the velocity here using the calculated values above.
+		setActorVelocity(projectileTid, nextVelX, nextVelY, nextVelZ, 0, 0);
+		
+		//Store the pitch and angle data on the actor's Pitch and Angle.
+		//Angle affects the look, and the values on both will be used next round to 
+		//determine the velocities to set.
+		setActorPitch(projectileTID, nextPitch);
+		setActorAngle(projectileTID, nextAngle);
+		
+		//Dumps debug data if the cvar SC_DEBUG_MODE is set to true.
+		if(getCvar("SC_DEBUG_MODE") == 1) {
+			hudmessagebold(
+				s:"TargetX:   ", i: targetX,
+				s:"\nTargetY:   ", i: targetY,
+				s:"\nTargetZ:   ", i: targetZ,
+				s:"\nRocketX:  ", f: getactorx(projectileTID),
+				s:"\nRocketY:  ", f: getactory(projectileTID),
+				s:"\nRocketZ:  ", f: getactorz(projectileTID),
+				s:"\nDisX:     ", f: disx,
+				s:"\nDisY:     ", f: disy,
+				s:"\nDisZ:     ", f: disz,
+				s:"\nDist:     ", f: sqrt((idisx * idisx) + (idisy * idisy)) << 16,			
+				s:"\nT-Angle:  ", f: targetAngle,
+				s:"\nC-Angle:  ", f: currentAngle,
+				s:"\nT-Pitch:  ", f: targetPitch,
+				s:"\nC-Pitch:  ", f: currentPitch,
+				s:"\nX-Vel:    ", f: nextVelX,
+				s:"\nY-Vel:    ", f: nextVelY,
+				s:"\nZ-Vel:    ", f: nextVelZ;
+				HUDMSG_LOG, 10, 0, 0.1, 0.5, 35
+			);
+			SpawnSpotForced("Trail", projectileTID, 0, 0);
+		}
+		return TRUE;
+	} 
+	return FALSE;
+}
+
+script "rocketFollow" (void) {
+	//Grab the first slot available for a rocket to occupy
+	int checkedArray = checkForFirstZero(NUMBER_ROCKETS);
+	//If the result is good...
+	if(checkedArray != -1) { 
+		thing_changetid(0,20000 + checkedArray);
+		//Store the rocket's TID - 20000 in the array. This will flag it as occupied.
+		rocket[activatorTID() - 20000] = 1;
+		Bool follow = true;
+		//Then the rocket follows the laser until it's exploded or it gets too close to the laser.
+		while(rocket[activatorTID() - 20000] == 1 && follow) {
+			follow = setVelocityToTarget(activatorTID(), laserX, laserY, laserZ, ROCKET_SPEED, ROCKET_CUTOFF, ROCKET_TURNVALUE);
+			delay(LATENCY);
+		}
+	}
+}
+
+script "rocketCleanup" (void)
+{
+	if(activatorTID() != 0) {
+		//Open a slot in the array
+		rocket[activatorTID() - 20000] = 0;
+		//Make sure the velocity is 0
+		setActorVelocity(activatorTID(), 0, 0, 0, 0, 0);
+		thing_changeTid(0, 0);
+	}
+}
+
+script "getLaserCoords" (int x, int y, int z) {
+	laserX = x;
+	laserY = y;
+	laserZ = Z;
+}
+
+script "HL2677" (void) net Clientside //2677
+{
+	if(CheckInventory("HalfLifeClass") == true && GetActorProperty(0,APROP_Health) > 0)// just for safety purposes
+	{
+		if(!CheckInventory("HalfLifeOpposingForce"))
+		{
+			localambientsound("HEV/Flashlight", 127);
+			if(CheckInventory("flashlightinventory") == true)
+			{
+				TakeInventory("flashlightinventory", 1);
+			}
+			else
+			{
+				GiveInventory("flashlightinventory", 1);
+			}
+		}
+		else
+		{
+			if(CheckInventory("flashlightinventory") == true)
+			{
+				localambientsound("PCV/NightVisionOff", 127);
+				TakeInventory("flashlightinventory", 1);
+			}
+			else
+			{
+				localambientsound("PCV/NightVisionOn", 127);
+				GiveInventory("flashlightinventory", 1);
+			}
+		}
+	}
+}
+
+int fbeamx, fbeamy, fbeamz;
+
+script "HL2678" (int which) //2678
+{
+    int x, y, z;
+    x = GetActorX(0); y = GetActorY(0); z = GetActorZ(0);	
+    switch(which)
+    {
+    case 0:
+		SetActivatorToTarget(0);
+        ACS_NamedExecuteAlways("HL2679", 0, x, y, z);
+        break;
+    case 1:
+		SetActivatorToTarget(0);
+        ACS_NamedExecuteAlways("HL2680", 0, x, y, z);
+        ACS_NamedExecuteWithResult("HL2681", x, y, z);
+        break;
+	case 2:
+        ACS_NamedExecuteWithResult("HL2682", fbeamx, fbeamy, fbeamz);
+        break;
+	case 3:
+	    fbeamx = GetActorX(0); fbeamy = GetActorY(0); fbeamz = GetActorZ(0);
+		break;
+    }
+}
+ 
+str lolpages[2] =
+{ "HLGaussParticleYellow", "HLGaussParticleWhite" };
+
+script "HL2679" (int tx, int ty, int tz) clientside //2679
+{
+    int t, i, k = 0, l, angle, pitch;
+    int x, y, z;
+    int vx, vy, vz, mag, magI;
+    str particle;
+   
+    particle = lolpages[CheckInventory("SamsaraRGPPage")];
+ 
+    angle = GetActorAngle(0) - 0.1;
+    pitch = GetActorPitch(0);
+   
+    if(angle < 0)
+        angle += 1.0;
+       
+    x = GetActorX(0) + cos(angle) * ftoi(10 * cos(pitch));
+    y = GetActorY(0) + sin(angle) * ftoi(10 * cos(pitch));
+   
+    if(pitch <= 0.0)
+		z = GetActorZ(0) + GetActorViewHeight(0)-(GetActorProperty(0,APROP_AttackZOffset)/2) + 10 * (1.0 - cos(pitch));	
+	else
+		z = GetActorZ(0) + GetActorViewHeight(0)-(GetActorProperty(0,APROP_AttackZOffset)/2) - 10 * (1.0 - cos(pitch));
+       
+ 
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+ 
+    for (i = 0; i < magI; i += 2)
+    {
+        SpawnForced(particle, x+(vx*i), y+(vy*i), z+(vz*i),28000+PlayerNumber(),GetActorAngle(0) >> 8);
+		SetActorPitch(28000+PlayerNumber(), -pitch);
+	}
+}
+ 
+////////////////////////////////
+#libdefine PUFF_DIST 8.0
+#libdefine PLAYER_VIEWHEIGHT 34.0
+ 
+script "HL2680" (int px, int py, int pz) CLIENTSIDE //2680
+{
+    int tx, ty, tz;
+    int vx, vy, vz;
+    int repeat, vl;
+    int angle, pitch;
+    int i;
+ 
+    angle = GetActorAngle(0) - 0.05;
+    pitch = GetActorPitch(0);
+    tx = GetActorX(0) + cos(angle) * ftoi(15 * cos(pitch));
+    ty = GetActorY(0) + sin(angle) * ftoi(15 * cos(pitch));
+   
+    if(pitch <= 0.0)
+        tz = GetActorZ(0) + (GetActorViewHeight(0)-(GetActorProperty(0,APROP_AttackZOffset)/2) - 3.5) + 15 * (1.0 - cos(pitch));
+    else
+        tz = GetActorZ(0) + (GetActorViewHeight(0)-(GetActorProperty(0,APROP_AttackZOffset)/2) - 3.5) - 15 * (1.0 - cos(pitch));
+   
+    vx = px - tx;
+    vy = py - ty;
+    vz = pz - tz;
+    vl = magnitudeThree_f(vx,vy,vz);
+   
+    vx = FixedMul(FixedDiv(vx,vl),PUFF_DIST);
+    vy = FixedMul(FixedDiv(vy,vl),PUFF_DIST);
+    vz = FixedMul(FixedDiv(vz,vl),PUFF_DIST);
+   
+    repeat = (FixedDiv(vl,PUFF_DIST)) >> 16;
+   
+    if(repeat <= 0)
+        terminate;
+       
+    for(i = 1; i <= repeat; i++)
+    {
+        Spawn("HLEgonParticle",tx + (i * vx),ty + (i * vy),tz + (i * vz),0,0);
+        if(i % 125 == 0)
+            Delay(1); //Force delay to reduce lag
+    }
+}
+ 
+#libdefine D_PUFF_DIST_E1   9.0
+#libdefine D_PUFF_DIST_ROT  2
+#libdefine D_PUFF_CHOOSER   2
+#libdefine D_PUFF_DELAY     1000
+#libdefine PUFF_ROT_UP      100
+ 
+script "HL2681" (int px, int py, int pz) CLIENTSIDE //2681
+{
+    int tx, ty, tz;
+    int e1x, e1y, e1z, e1l;
+    int e2x, e2y, e2z, e2l;
+    int e3x, e3y, e3z, e3l;
+    int kf1, kf2, kf3, kfd;
+    int repeat, helper;
+    int angle, pitch, i;
+   
+    int puff_dist_e1 = GetCVAR("hl_pd_line");
+    int puff_dist_rot = GetCVAR("hl_pd_rot");
+    int puff_chooser = GetCVAR("hl_puff_chooser");
+    int puff_delay = GetCVAR("hl_puff_delay");
+   
+    if(puff_dist_e1 <= 0)
+        puff_dist_e1 = D_PUFF_DIST_E1;
+    else
+        puff_dist_e1 = puff_dist_e1 << 16;
+       
+    if(puff_dist_rot <= 0)
+        puff_dist_rot = D_PUFF_DIST_ROT;
+       
+    if(puff_chooser <= 0)
+        puff_chooser = D_PUFF_CHOOSER;
+       
+    if(puff_delay <= 0)
+        puff_delay = D_PUFF_DELAY;
+   
+    angle = GetActorAngle(0) - 0.05;
+    pitch = GetActorPitch(0);
+    tx = GetActorX(0) + cos(angle) * ftoi(15 * cos(pitch));
+    ty = GetActorY(0) + sin(angle) * ftoi(15 * cos(pitch));
+   
+    if(pitch <= 0.0)
+        tz = GetActorZ(0) + (GetActorViewHeight(0)-(GetActorProperty(0,APROP_AttackZOffset)/2) - 2) + 15 * (1.0 - cos(pitch));
+    else
+        tz = GetActorZ(0) + (GetActorViewHeight(0)-(GetActorProperty(0,APROP_AttackZOffset)/2) - 2) - 15 * (1.0 - cos(pitch));
+ 
+    e1x = px - tx;
+    e1y = py - ty;
+    e1z = pz - tz;
+   
+    e1l = magnitudeThree_f(e1x,e1y,e1z);
+    e1x = FixedDiv(e1x,e1l);
+    e1y = FixedDiv(e1y,e1l);
+    e1z = FixedDiv(e1z,e1l);
+   
+    kf1 = e1x;
+    kf2 = e1y;
+    kf3 = e1z;
+   
+    kfd = FixedMul(tx,kf1);
+    kfd += FixedMul(ty,kf2);
+    kfd += FixedMul(tz,kf3);
+   
+    if(kf1 == 0)
+    {
+        if(kf2 == 0)
+        {
+            if(kf3 == 0)
+                terminate;
+           
+            e2x = 0;
+            e2y = FixedDiv(kfd,kf2);
+            e2z = 0;
+        }
+        else if(kf3 == 0)
+        {
+            e2x = 0;
+            e2y = 0;
+            e2z = FixedDiv(kfd,kf3);
+        }
+        else
+        {
+            e2x = FixedDiv(kfd,kf1);
+            e2y = 0;
+            e2z = 0;
+        }
+    }
+    else if(kf2 == 0)
+    {
+        if(kf3 == 0)
+        {
+            e2x = 0;
+            e2y = 0;
+            e2z = FixedDiv(kfd,kf3);
+        }
+        else
+        {
+            e2x = 0;
+            e2y = FixedDiv(kfd,kf2);
+            e2z = 0;
+        }
+    }
+    else if(kf3 == 0)
+    {
+        e2x = 0;
+        e2y = 0;
+        e2z = FixedDiv(kfd,kf3);
+    }
+    else
+    {
+        e2x = 0;
+        e2y = 0;
+        e2z = FixedDiv(kfd,kf3);
+    }
+   
+    e2x = e2x - tx;
+    e2y = e2y - ty;
+    e2z = e2z - tz;
+     
+    e2l = magnitudeThree_f(e2x,e2y,e2z);
+    e2x = FixedDiv(e2x,e2l);
+    e2y = FixedDiv(e2y,e2l);
+    e2z = FixedDiv(e2z,e2l);
+   
+    e3x = FixedMul(e1y,e2z) - FixedMul(e1z,e2y);
+    e3y = FixedMul(e1z,e2x) - FixedMul(e1x,e2z);
+    e3z = FixedMul(e1x,e2y) - FixedMul(e1y,e2x);
+   
+    e3l = magnitudeThree_f(e3x,e3y,e3z);
+    e3x = FixedDiv(e3x,e3l);
+    e3y = FixedDiv(e3y,e3l);
+    e3z = FixedDiv(e3z,e3l);
+   
+    repeat = (FixedDiv(e1l,PUFF_DIST)) >> 16;
+    repeat *= 8;
+   
+    if(repeat <= 0)
+        terminate;
+       
+    for(i = 1; i <= repeat; i++)
+    {
+        if(i % puff_chooser == 0)
+        {
+            kf1 = tx;
+            kf1 += (i * e1x);
+            kf2 = ty;
+            kf2 += (i * e1y);
+            kf3 = tz;
+            kf3 += (i * e1z);
+           
+            helper = puff_dist_rot * i;
+            helper = ((helper + (timer()*4)) % 256) << 8;
+           
+            if(i < PUFF_ROT_UP)
+            {
+                kf1 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),sin(helper)),e2x);
+                kf2 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),sin(helper)),e2y);
+                kf3 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),sin(helper)),e2z);
+               
+                kf1 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),cos(helper)),e3x);
+                kf2 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),cos(helper)),e3y);
+                kf3 += FixedMul(FixedMul(i * (puff_dist_e1 / PUFF_ROT_UP),cos(helper)),e3z);
+            }
+            else
+            {
+                kf1 += FixedMul(FixedMul(puff_dist_e1,sin(helper)),e2x);
+                kf2 += FixedMul(FixedMul(puff_dist_e1,sin(helper)),e2y);
+                kf3 += FixedMul(FixedMul(puff_dist_e1,sin(helper)),e2z);
+               
+                kf1 += FixedMul(FixedMul(puff_dist_e1,cos(helper)),e3x);
+                kf2 += FixedMul(FixedMul(puff_dist_e1,cos(helper)),e3y);
+                kf3 += FixedMul(FixedMul(puff_dist_e1,cos(helper)),e3z);
+            }
+           
+            Spawn("HLEgonParticleHelix",kf1,kf2,kf3,0,GetActorAngle(0) >> 8);
+		}
+       
+        if(i % puff_delay == 0)
+            Delay(1); //Force delay to reduce lag
+    }
+}
+
+script "HL2682" (int tx, int ty, int tz) clientside //2682
+{
+    int t, i, k = 0, l, angle, pitch;
+    int x, y, z;
+    int vx, vy, vz, mag, magI;
+    str particle;
+   
+    angle = GetActorAngle(0) - 0.1;
+    pitch = GetActorPitch(0);
+   
+    if(angle < 0)
+        angle += 1.0;
+       
+    x = GetActorX(0) + cos(angle) * ftoi(10 * cos(pitch));
+    y = GetActorY(0) + sin(angle) * ftoi(10 * cos(pitch));
+   
+    if(pitch <= 0.0)
+        z = GetActorZ(0) + 34.0 * (1.0 - cos(pitch));
+    else
+        z = GetActorZ(0) + 34.0 * (1.0 - cos(pitch));
+       
+ 
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+ 
+    for (i = 0; i < magI; i += 2)
+    {
+		SetActivatorToTarget(0);
+		particle = lolpages[CheckInventory("SamsaraRGPPage")];
+        SpawnForced(particle, x+(vx*i), y+(vy*i), z+(vz*i),28500+PlayerNumber(),GetActorAngle(0) >> 8);
+		SetActorPitch(28500+PlayerNumber(), GetActorPitch(0));
+	}
+}
+
+str damagestrings[26] = { "", "HEV/BulletDamage", "HEV/EnergyDamage", "HEV/FireDamage", "HEV/ShockDamage" , "", "HEV/Hazard",
+"HEV/MinorFracture", "HEV/MajorFracture", "HEV/MinorLacerations", "HEV/MajorLacerations", "", "HEV/Detection3", "", "PCV/Boop",
+"PCV/Boop", "PCV/Boop", "PCV/Boop", "", "PCV/Det", "PCV/Boop", "PCV/Boop", "PCV/Boop", "PCV/Boop", "", "PCV/Det"};
+
+str armorstrings[40] = {"HEV/Armor5","HEV/Armor10","HEV/Armor15","HEV/Armor20","HEV/Armor25",
+"HEV/Armor30", "HEV/Armor35", "HEV/Armor40","HEV/Armor45", "HEV/Armor50", "HEV/Armor55", "HEV/Armor60",
+"HEV/Armor65","HEV/Armor70", "HEV/Armor75", "HEV/Armor80", "HEV/Armor85", "HEV/Armor90", "HEV/Armor95",
+"HEV/Armor100", "PCV/Fuzz","PCV/Fuzz","PCV/Fuzz","PCV/Fuzz","PCV/Fuzz",
+"PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz","PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz",
+"PCV/Fuzz","PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz",
+"PCV/Fuzz"};
+
+str pickupstrings[24] = {"","HEV/Hornet","HEV/Magnum","HEV/Shotgun","HEV/SMG","HEV/RPG",
+"HEV/Gauss","HEV/Egon","HEV/Crossbow","","PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip",
+"PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip"};
+
+str HL_HUD_Colors[6] = { "HEVBlue", "HEVBlue", "HEVYellow", "PCVGreen", "HEVRed", "HEVRed"  }; //HLUpper, OPUpper, HLNormal, OPNormal, HLLower, OPLower
+str HL_HUD_HealthArmorGraphics[6] = { "HLHEALTB", "OPFHLTHB", "HLHEALTH", "OPFHLTH0", "HHEALTHR", "OPFHLTHR"  }; //HLHigh, OPHigh, HLMed, OPMEd, HLLow, OPLow
+str HL_HUD_Bars[2] = { "HL1HBAR", "OPFBAR" };
+str HL_HUD_HealthArmorSuits[4] = { "HLSUIT0", "OPFARM0", "HLSUIT1", "OPFARM1" };
+str HL_HUD_Numbers[2] = { "HL1NUMS", "OPFNUMS" };
+int HL_HUD_HealthValues[3] = { 100, 30, 0 }; //max, lower, none
+int HL_HUD_ArmorValues[2] = { 101, 0 };
+int HL_HUD_HealthArmorKillValues[6][2] = { 
+	{ 10, 	 1    },
+	{ 50, 	 200  },
+	{ 100, 	 300  },
+	{ 500, 	 400  },
+	{ 1000,  500  },
+	{ 10000, 1000 }, 
+};
+
+// weapon, ammotype1, ammotype2, primaryammo, secondaryammo, hlammofont1, hlammofont2, opammofont1, opammofont2, secondarynomagazine
+str HL_HUD_AmmoStrings[10][10] = 
+{
+	{ "9mm Pistol", "HL9mmCounter", "HL9mmCounter", "Clip", "Clip", "HPKUP1", "OPFAMM01", "HPKUP1", "OPFAMM01", "" }, 
+	{ "Hornetgun", "HornetGunAmmo", "ShockRoachAmmo", "HornetGunAmmo", "ShockRoachAmmo", "HPKUP8", "OPFAMM08", "HPKUP8", "OPFAMM08", "" }, 
+	{ ".357 Python", "HLPythonCounter", "HLDeagleCounter", "Shell", "Shell", "HPKUP2", "OPFAMM02", "HPKUP2", "OPFAMM02", "" }, 
+	{ "Assault Shotgun", "HLShotgunCounter", "HLShotgunCounter", "Shell", "Shell", "HPKUP4", "OPFAMM04", "HPKUP4", "OPFAMM04", "" }, 
+	{ "MP5", "HLMP5Counter", "HLMP5Counter", "Clip", "Clip", "HPKUP1", "OPFAMM01", "HPKUP3", "OPFAMM03", "RocketAmmo" }, 
+	{ " RPG ", "HLRPGCounter", "HLSporeCounter", "RocketAmmo", "RocketAmmo", "HPKUP6", "OPFAMM05", "HPKUP6", "OPFAMM05", "" }, 
+	{ "Gauss Cannon", "Cell", "HLSawCounter", "Cell", "Cell", "HPKUP7", "OPFAMM07", "HPKUP7", "OPFAMM07", "" }, 
+	{ "E.G.O.N.", "Cell", "Cell", "Cell", "Cell", "HPKUP7", "OPFAMM09", "HPKUP7", "OPFAMM09", "" }, 
+	{ "HL Crossbow", "HLXBowAmmoCounter", "HLXBowAmmoCounter", "Shell", "Shell", "HPKUP5", "OPFAMM07", "HPKUP5", "OPFAMM07", "" }, 
+	{ "HL Squeaks", "HLSqueakAmmo", "RocketAmmo", "HLSqueakAmmo", "RocketAmmo", "HPKUP11", "OPFAMM10", "HPKUP11", "OPFAMM10", "" }, 
+};
+// maxammotype1, maxammotype2, hllowamount, oplowamount, hllowamounttotal, oplowamounttotal, secondarysingleammotype, removecounterwhenempty, removesecondarycounterwhenempty
+str HL_HUD_AmmoInts[10][9] = 
+{
+	{ 17, 17, 6, 6, 30, 30, 0, 0 },
+	{ 8, 10, 3, 4, 3, 4, 0, 0, 0 },
+	{ 6, 7, 3, 3, 10, 10, 0, 0, 0 },
+	{ 8, 8, 3, 3, 10, 10, 0, 0, 0 },
+	{ 50, 50, 16, 16, 30, 30, 5, 0, 1 },
+	{ 1, 5, 1, 2, 5, 5, 0, 0, 0 },
+	{ 0, 50, 40, 21, 40, 40, 0, 0, 0 },
+	{ 0, 0, 40, 40, 40, 40, 0, 0, 0 },
+	{ 5, 5, 2, 2, 10, 10, 0, 0, 0 },
+	{ 5, 0, 2, 5, 2, 5, 0, 1, 1 }
+};
+
+str HL_HUD_WeaponBarGraphics[10][5] = 
+{
+	{"Hornetgun", "HWMSLOT", "OPFWMB", "HWMSLOT1", "OPFWM1"},
+	{"Assault Shotgun", "HWMSLOT", "OPFWMB", "HWMSLOT2", "OPFWM2"},
+	{".357 Python", "HWMSLOT", "OPFWMB", "HWMSLOT3", "OPFWM3"},
+	{"MP5", "HWMSLOT", "OPFWMB", "HWMSLOT4", "OPFWM4"},
+	{" RPG ", "HWMSLOT", "OPFWMB", "HWMSLOT5", "OPFWM5"},
+	{"Gauss Cannon", "HWMSLOT", "OPFWMB", "HWMSLOT6", "OPFWM6"},
+	{"E.G.O.N.", "HWMSLOT", "OPFWMB", "HWMSLOT7", "OPFWM7"},
+	{"HL Crossbow", "HWMSLOT", "OPFWMB", "HWMSLOT8", "OPFWM8"},
+	{"HL Squeaks", "HWMSLOT", "OPFWMB", "HWMSLOT9", "OPFWM9"},
+	{"Crowbar", "HWMSLOT", "OPFWMB", "HWMSLOT0", "OPFWM0"}
+};
+
+script "Freeman_HEV_Enter" ENTER clientside//hev suit
+{
+	int a, b, c, d, e, suitcharge;
+	int armormod;
+	int armorrange = -1;
+	int currenthealth;
+	int currentarmor; // more like old but I refuse to fix it
+	if(CheckInventory("HalfLifeClass"))
+	{
+		While(ClassifyActor(0) & ACTOR_PLAYER)
+		{
+			If(GetCvar("sams_cl_hevtalk") == true)
+			{
+				If(GetActorProperty(0,APROP_Health) - CurrentHealth < 0)
+				{
+					if(CheckInventory("HLHEVIsTalking") == false)
+					{
+						GiveInventory("HLHEVIsTalking", 1);
+						ACS_NamedExecuteAlways("HLHEVTalk",0,0,0,0);
+						if(CheckInventory("HLHEVDamageType") == 7)
+						{
+							if(GetActorProperty(0,APROP_Health) - CurrentHealth <= -50){TakeInventory("HLHEVDamageType", 255); GiveInventory("HLHEVDamageType", 8);}
+						}
+						LocalAmbientSound(damagestrings[CheckInventory("HLHEVDamageType")+(13*CheckInventory("HalfLifeOpposingForce"))],127);
+					}
+				}
+				// done with health chunk, now armor
+				if(CurrentArmor > 0) // well I suppose since the HEV talks to the player when taking damage hearing this is rare
+				{
+					if(CheckInventory("BasicArmor") - CurrentArmor > 1)
+					{
+						if(CheckInventory("HLHEVIsTalking") == false)
+						{
+							GiveInventory("HLHEVIsTalking", 1);
+							ACS_NamedExecuteAlways("HLHEVTalk",0,0,0,0);
+							if(!CheckInventory("HalfLifeOpposingForce"))
+								LocalAmbientSound("HEV/ArmorGone",127);
+							else
+								LocalAmbientSound("PCV/Buzz",127);
+						}
+					}
+				}
+			
+				armormod = (CheckInventory("BasicArmor")-5)/5;
+				if(CheckInventory("BasicArmor") - CurrentArmor > 0)
+				{
+					if(armorrange != armormod)
+					{
+						if(CheckInventory("HLHEVIsTalking") == false)
+						{
+							GiveInventory("HLHEVIsTalking", 1);
+							ACS_NamedExecuteAlways("HLHEVTalk",0,0,0,0);
+							LocalAmbientSound(armorstrings[armormod+(20*CheckInventory("HalfLifeOpposingForce"))],127);
+						}
+					}
+					armorrange = armormod;
+				}
+			
+				//done with armor, and of lower priority if pickups :D
+				if(CheckInventory("HLHEVPickupID") != 0)
+				{
+					if(CheckInventory("HLHEVIsTalking") == false)
+					{
+						GiveInventory("HLHEVIsTalking", 1);
+						ACS_NamedExecuteAlways("HLHEVTalk",0,3,0,0);
+						LocalAmbientSound(pickupstrings[CheckInventory("HLHEVPickupID")+(12*CheckInventory("HalfLifeOpposingForce"))],127);
+					}
+					TakeInventory("HLHEVPickupID", 255);
+				}	
+			}
+			
+			CurrentHealth = GetActorProperty(0,APROP_Health);
+			CurrentArmor = CheckInventory("BasicArmor");
+			
+			if(GetActorProperty(0, APROP_Health) > 0)
+			{
+				if(CheckInventory("flashlightinventory") == true)
+				{
+					if(!CheckInventory("HalfLifeOpposingForce"))
+					{
+						if(CheckInventory("FlashLightAmmo") == 0)
+						{
+							ACS_NamedExecuteAlways("HL2677",0,0,0,0);
+						}
+						TakeInventory("FlashLightAmmo", 1);
+							
+						if(CheckInventory("FlashLightAmmo") > 840)
+						{
+							SetFont("HFLIGHT2");
+							SetHudSize(640,480,0);
+							HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,1,0,700.1,100.1,0.0,0.5);
+							SetHudSize(0,0,0);
+							SetFont("SMALLFONT");
+						}
+						else
+						{
+							SetFont("HFLIGHT5");
+							SetHudSize(640,480,0);
+							HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,1,0,700.1,100.1,0.0,0.5);
+							SetHudSize(0,0,0);
+							SetFont("SMALLFONT");
+						}
+							
+							if(!GetCVar("sams_runninginzdoom") || GetCVar("sams_runninginzandro"))
+								NamedRequestScriptPuke("HL2683",0,0,0);
+							
+							else
+								LineAttack(0, GetActorAngle(0), GetActorPitch(0), 0, "HLFlashLight", "none", 2048.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL, 0);
+						
+					}
+					else
+					{
+					if(CheckInventory("FlashLightAmmo") == 0)
+						{
+							ACS_NamedExecuteAlways("HL2677",0,0,0,0);
+						}
+						SetHudSize(40,160,1);
+						SetFont("HUDNV0");
+						HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,17458,0,20.0,80.0,0.2,0.1);
+						SetHudSize(360,400,1);
+						SetFont("HUDNV1");
+						HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,17459,0,180.0,200.0,0.2,0.66);
+						GiveInventory("HLPCVNightVision", 1);
+						TakeInventory("FlashLightAmmo", 1);
+					}
+				}
+			}
+			else
+			{
+				SetFont("none");
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,1,0,700.1,100.1,0.033,0.5);
+				TakeInventory("flashlightinventory", 1);
+			}
+			
+			if(CheckInventory("flashlightinventory") == false)
+			{
+				SetFont("none");
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,1,0,700.1,100.1,0.033,0.5);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,17458,0,180.0,200.0,0.2,0.66);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,17459,0,180.0,200.0,0.2,0.66);
+				
+				GiveInventory("FlashLightAmmo", 2);
+				TakeInventory("HLPCVNightVision", 65536);
+			}
+			
+			// Flashlight HUD shit
+				
+			if(CheckInventory("FlashLightAmmo") > 840)
+			{
+				SetFont("HFLIGHT1"); if(CheckInventory("HalfLifeOpposingForce")) { SetFont("HNVIS1"); }
+				SetHudSize(640,480,0);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,2,0,700.1,100.1,0.0,0.5);
+				SetFont("HFLIGHT0"); if(CheckInventory("HalfLifeOpposingForce")) { SetFont("HNVIS0"); }
+				SetHUDClipRect(700+(-32*(CheckInventory("FlashLightAmmo")-4200)/4200),100,32,32);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,3,0,700.1,100.1,0.0,0.5);
+				SetHUDClipRect(0,0,0,0);
+				SetHudSize(0,0,0);
+				SetFont("SMALLFONT");
+			}
+			else
+			{
+				SetFont("HFLIGHT4"); if(CheckInventory("HalfLifeOpposingForce")) { SetFont("HNVIS4"); }
+				SetHudSize(640,480,0);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,2,0,700.1,100.1,0.0,0.5);
+				SetFont("HFLIGHT3"); if(CheckInventory("HalfLifeOpposingForce")) { SetFont("HNVIS3"); }
+				SetHUDClipRect(700+(-32*(CheckInventory("FlashLightAmmo")-4200)/4200),100,32,32);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,3,0,700.1,100.1,0.0,0.5);
+				SetHUDClipRect(0,0,0,0);
+				SetHudSize(0,0,0);
+				SetFont("SMALLFONT");
+			}
+			
+			if(GetCVAR("screenblocks") == 11)
+			{
+				SetHudSize(640,480, 0);
+				int ArmorCount = CheckInventory("BasicArmor");
+				int KillCount = CheckInventory("KillCountAmountTrue");
+				for(a = 0; a < 3; a++)
+				{
+					if(GetActorProperty(0, APROP_HEALTH) > HL_HUD_HealthValues[a])
+					{
+						SetFont(HL_HUD_HealthArmorGraphics[CheckInventory("HalfLifeOpposingForce")+(a*2)]);
+						HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 30.0, 463.2, 0.033, 0.5+(0.1 * (5 + abs(a-1))));
+						SetFont(HL_HUD_Bars[CheckInventory("HalfLifeOpposingForce")]);
+						HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 110.0, 460.2, 0.033,0.5+(0.1 * (5 + abs(a-1))));		
+						SetFont(HL_HUD_HealthArmorSuits[CheckInventory("HalfLifeOpposingForce")]);
+						HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 170.0, 463.2, 0.033, 0.5+0);		
+						SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HUDMessage(d:GetActorProperty(0, APROP_HEALTH); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[(a*2)+CheckInventory("HalfLifeOpposingForce")], 45.1, 460.2, 0.033, 0.5+(0.1 * (5 + abs(a-1))));
+						break;
+					}
+				}	
+				for(b = 0; b < 2; b++)
+				{
+					if(ArmorCount >= HL_HUD_ArmorValues[b])
+					{
+						SuitCharge=36*ArmorCount/100;
+						SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d:ArmorCount; HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[2+CheckInventory("HalfLifeOpposingForce")], 210.1, 460.2, 0.033, 0.5+(0.2 * (2 + abs(b-1))));
+						SetHUDClipRect(140, 461-SuitCharge, 64, 100);		
+						SetFont(HL_HUD_HealthArmorSuits[CheckInventory("HalfLifeOpposingForce")+2]);
+						HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 170.0, 463.2, 0.033, 0.5+(0.2 * (2 + abs(b-1))));			
+						SetHUDClipRect(0,0,0,0);
+						SetHUDSize(0,0,0);
+						break;
+					}
+				}
+				for(c = 0; c < 6; c++)
+				{
+					if(KillCount < HL_HUD_HealthArmorKillValues[c][0])
+					{
+						SetHudSize(900,600,0);	
+						SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: KillCount; HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[2+CheckInventory("HalfLifeOpposingForce")], -15.2, 575.2, 0.033, 0.5+(1.0 * (HL_HUD_HealthArmorKillValues[c][1]/1000)));
+						SetHudSize(0,0,0);
+						break;
+					}
+				}
+				SetHUDSize(640, 480, 0);	
+				for(d = 0; d < 10; d++)
+				{
+					if(CheckWeapon(HL_HUD_AmmoStrings[d][0]))	
+					{
+						if(CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]) > 0 || HL_HUD_AmmoInts[d][7] == 0)
+						{
+							//Magazine
+							if(strcmp(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")], HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) != 0)
+							{
+								if(CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]) < HL_HUD_AmmoInts[d][2+CheckInventory("HalfLifeOpposingForce")])
+								{	
+									SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 620.2, 460.2, 0.033, 0.5+0.2);
+								}
+								else
+								{
+									SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 620.2, 460.2, 0.033, 0.5+0.2);
+								}
+							}
+							
+							//Ammo divider
+							if(strcmp(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")], HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) != 0)
+							{
+								SetFont(HL_HUD_Bars[CheckInventory("HalfLifeOpposingForce")]); HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 630.0, 460.2, 0.033, 0.5+0.2);
+							}
+							
+							//Ammo Total
+							if(CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) < HL_HUD_AmmoInts[d][4+CheckInventory("HalfLifeOpposingForce")])
+							{				
+								SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 700.2, 460.2, 0.033, 0.5+0.2);
+							}
+							else
+							{
+								SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 700.2, 460.2, 0.033, 0.5+0.2);
+							}
+							//Ammo Graphic
+							SetFont(HL_HUD_AmmoStrings[d][5+CheckInventory("HalfLifeOpposingForce")]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 720.2, 450.2, 0.033, 0.5+0.2);
+							
+							if(strcmp(HL_HUD_AmmoStrings[d][9], "") > 0 && HL_HUD_AmmoInts[d][8] != 0 && CheckInventory(HL_HUD_AmmoStrings[d][9]) > 0)
+							{
+								SetFont(HL_HUD_AmmoStrings[d][7+CheckInventory("HalfLifeOpposingForce")]);
+								HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 720.2, 430.2, 0.033,0.5+0.2); 
+								SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]);
+								if(CheckInventory(HL_HUD_AmmoStrings[d][9]) < HL_HUD_AmmoInts[d][6])
+								{
+									HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][9]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 700.2, 430.2, 0.033, 0.5+0.2); 
+								}
+								else
+								{
+									HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][9]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 700.2, 430.2, 0.033, 0.5+0.2); 
+								}
+							}
+							break;
+						}
+					}
+				}
+				SetHUDSize(640, 480, 1);
+				SetFont(HL_HUD_WeaponBarGraphics[0][1+CheckInventory("HalfLifeOpposingForce")]);
+				for(e = 0; e < 10; e++)
+				{
+					HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, (230+(20*(e))) * 1.0, 0.1, 0.033,0.5+0.001);
+					If(CheckInventory(HL_HUD_WeaponBarGraphics[e][0]))
+					{
+						SetFont(HL_HUD_WeaponBarGraphics[e][3+CheckInventory("HalfLifeOpposingForce")]);
+						HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, (230+(20*(e))) * 1.0, 0.1, 0.033,0.5+0.2);
+						SetFont(HL_HUD_WeaponBarGraphics[0][1+CheckInventory("HalfLifeOpposingForce")]);
+					}		
+				}
+				SetHUDSize(0,0,0);
+			}	
+			else
+			{
+				SetFont("none");
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,3,0,590.1,120.1,0.033,0.5);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,2,0,590.1,120.1,0.033,0.5);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,1,0,590.1,120.1,0.033,0.5);
+				SetHudSize(0,0,0);
+				SetHUDClipRect(0,0,0,0);
+				SetFont("SMALLFONT");
+			}
+			Delay(1);
+		}	
+	}
+	else
+	{
+		if(CheckInventory("flashlightinventory") == true)
+		{
+			TakeInventory("flashlightinventory", 1);
+		}
+		SetFont("none");
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,3,0,590.1,120.1,0.033,0.5);
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,2,0,590.1,120.1,0.033,0.5);
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,1,0,590.1,120.1,0.033,0.5);
+		SetHudSize(0,0,0);
+		SetHUDClipRect(0,0,0,0);
+		SetFont("SMALLFONT");
+		terminate;
+	}
+}
+
+str HLDamageIndicators[2][13] = {
+	{ "", "", "HLDMG8", "HLDMG7", "HLDMG4", "HLDMG2", "HLDMG1", "", "", "", "HLDMG6", "HLDMG3" },
+	{ "", "", "PCV_NUKE", "PCV_FIRE", "PCV_ELEC", "PCV_OXY", "PCV_ACID", "", "", "", "PCV_ICE", "PCV_BIOH" }
+};
+
+Script "HL_HUD_DMGTypes" (void)
+{
+    if(CheckInventory("HalfLifeClass"))
+    {
+		SetHUDSize(640, 480, 1);
+		for(int a = 1; a < 13; a++)
+		{
+			if(CheckInventory("HLHEVDamageType") == a && GetActorProperty(0, APROP_HEALTH) > 0 && StrCmp(HLDamageIndicators[CheckInventory("HalfLifeOpposingForce")][a], "") != 0)
+			{
+				SetFont(HLDamageIndicators[CheckInventory("HalfLifeOpposingForce")][a]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_FADEINOUT, 23780, 0, 45.1, 420.2, 0.1,1.0,0.75);
+			}
+		}
+		SetHUDSize(0,0,0);
+	}
+}
+
+str HLPickupIDsNew[2][11] = 
+{
+	{ "", "HPKUP20H", "HPKUP12H", "HPKUP14H", "HPKUP13H", "HPKUP17H", "HPKUP18H", "HPKUP19H", "HPKUP16H", "HPKUP15H", "" },
+	{ "", "OPFSLT01", "OPFSLT02", "OPFSLT03", "OPFSLT04", "OPFSLT05", "OPFSLT06", "OPFSLT07", "OPFSLT08", "OPFSLT09", "" }
+};
+
+Script "HL_HUD_Pickups" (void)
+{
+	if(CheckInventory("HalfLifeClass"))
+	{
+		SetHUDSize(640, 480, 1);
+		for(int a = 1; a < 11; a++)
+		{
+			if(CheckInventory("HLHEVPickupID") == a && StrCmp(HLPickupIDsNew[CheckInventory("HalfLifeOpposingForce")][a], "") != 0)
+			{
+				SetFont(HLPickupIDsNew[CheckInventory("HalfLifeOpposingForce")][a]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_FADEINOUT, 23781, 0, 720.2, 400.2, 0.333,1.0,3.0);
+			}
+		}
+		SetHUDSize(0,0,0);		
+	}
+}	
+
+Script "HL2683" (void) NET //2683
+{
+	LineAttack(0, GetActorAngle(0), GetActorPitch(0), 0, "HLFlashLight", "none", 2048.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL, 0);
+}
+
+Script "Freeman_HoldAlt" (void)
+{
+	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS); // Checks what keys the player is pressing
+	if (buttonPress & BT_ALTATTACK)
+	{
+		SetResultValue (1);
+	}
+	else
+	{
+		SetResultValue (0);
+	}
+}
+
+Script "HalfLifeRecoil" (int weapon) clientside
+{
+	int a;
+	int pln = PlayerNumber();
+	if (GetUserCvar(pln,"sams_cl_norecoil")) { terminate; }	
+	switch(weapon)
+	{
+		case 1:
+			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*32); Delay(1); }
+			for(a = 3; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*32); Delay(1); }
+			break;
+		case 2:
+			for(a = 0; a < 5; a++) { SetActorPitch(0, GetActorPitch(0) - a*64); Delay(1); }
+			for(a = 4; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*64); Delay(1); }
+			break;
+		case 3:
+			for(a = 0; a < 5; a++) { SetActorPitch(0, GetActorPitch(0) - a*56); Delay(1); }
+			for(a = 4; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*56); Delay(1); }
+			break;
+		case 4:
+			for(a = 0; a < 3; a++) { SetActorPitch(0, GetActorPitch(0) - a*32); Delay(1); }
+			for(a = 2; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*32); Delay(1); }
+			break;
+		case 5:
+			for(a = 0; a < 5; a++) { SetActorPitch(0, GetActorPitch(0) - a*48); Delay(1); }
+			for(a = 4; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*48); Delay(1); }
+			break;
+		case 6:
+			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*56); Delay(1); }
+			for(a = 3; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*56); Delay(1); }
+			break;
+		case 7:
+			for(a = 0; a < 8; a++) { SetActorPitch(0, GetActorPitch(0) - a*56); Delay(1); }
+			for(a = 7; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*56); Delay(1); }
+			break;
+		case 8:
+			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*56); Delay(1); }
+			for(a = 3; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*33); Delay(3); }
+			break;		
+		case 9:
+			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*56); Delay(1); }
+			for(a = 3; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*33); Delay(1); }
+			break;				
+	}
+}
+
+Script "HalfLifeLaserSight" (int mode)
+{
+	switch(mode)
+	{
+		case 1:
+		if(!CheckWeapon(".357 Python")||!CheckInventory("HalfLifeOpposingForce"))
+			terminate;
+			
+		if(CheckInventory("HLDeagleLaserActivated"))
+			LineAttack(0, GetActorAngle(0), GetActorPitch(0), 0, "HLDeagleLaserdot", "none", 8192.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL, 0);
+		else
+			terminate;
+		break;
+		case 2:
+		if(!CheckWeapon(" RPG "))
+			terminate;
+		
+		if(!CheckInventory("HalfLifeOpposingForce")&&!CheckInventory("HLRPGReload")&&!CheckInventory("laserdeactive"))
+			LineAttack(0, GetActorAngle(0), GetActorPitch(0), 0, "RPGLaserdot", "none", 8192.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL, 0);
+		break;
+	}
+	Delay(1);
+	restart;
+}
+
+Script "HalfLifeHiveHandRecharge" (void)
+{
+	if(!CheckWeapon("Hornetgun"))
+	{
+		terminate;
+	}
+	else
+		{
+			if(!CheckInventory("HLHiveHandFiring"))
+			{
+				Delay(12);
+				GiveInventory("HornetGunAmmo", 1);
+				GiveInventory("ShockRoachAmmo", 1);
+			}
+			else
+			{
+				Delay(7);
+			}
+			restart;
+		}
+}
+
+str HLWeaponSelectedTokens[11] = { "freeman_fistselected", "freeman_pistolselected", "freeman_slot1selected", "freeman_slot2selected", "freeman_slot3selected"
+, "freeman_slot4selected", "freeman_slot5selected", "freeman_slot6selected", "freeman_slot7selected", "freeman_uniqueselected", "freeman_unique2selected" };
+
+Script "HalfLifeWeaponSkin" (int token) clientside
+{
+	if(CheckInventory("HalfLifeOpposingForce") && CheckInventory(HLWeaponSelectedTokens[token]))
+	
+		SetResultValue(1);
+	else
+		SetResultValue(0);
+}
+
+script "HalfLifeAllyFunctions" (int options) // half life ally functions -- 2684
+{
+	int mypositionx = GetActorX(0);
+	int mypositiony = GetActorY(0);
+	int mypositionz = GetActorZ(0);
+	int result;
+	int seetoken = CheckInventory("seetoken");
+	Switch(options)
+	{
+	case 1:
+		SetActivatorToTarget(0);	
+		if((ClassifyActor(0) & ACTOR_PLAYER))
+		{
+			result = 1;
+		}
+		else if((ClassifyActor(0) & ACTOR_MONSTER) && CheckInventory("AllyToken") == false && seetoken == 1)
+		{
+			result = 2;
+		}
+		else
+		{
+			result = 0;
+		}
+		SetResultValue(result);
+		break;
+	case 2:
+		SetActivatorToTarget(0);		
+		if(ACS_NamedExecuteWithResult("HLWalkRun",(GetActorVelX(0) / 1.0), (GetActorVelY(0) / 1.0), (GetActorVelZ(0) / 1.0)) 
+		|| distance_ftoi(mypositionx, mypositiony, mypositionz, GetActorX(0), GetActorY(0), GetActorZ(0)) > 640)
+		{
+			SetResultValue(1);
+		}
+		else
+		{
+		    SetResultValue(0);
+		}
+		break;
+	case 3:
+		SetActivatorToTarget(0);
+		If(GetActorX(0) - mypositionx > 2048 || GetActorX(0) - mypositionx < -2048)
+		{
+			SetResultValue(1);
+		}
+		If(GetActorProperty(0,APROP_Waterlevel) > 1 && GetActorZ(0) - GetActorFloorZ(0) > 32)
+		{
+			SetResultValue(1);
+		}
+		If(GetActorProperty(0,APROP_Health) <= 0)
+		{
+			
+			SetResultValue(1);
+		}
+		else
+		{
+			SetResultValue(0);
+		}
+		break;
+	case 4:
+		if(GetActorProperty(0,APROP_WaterLevel) > 1)
+		{	
+			SetActivator(0,AAPTR_Master);
+			if(GetActorZ(0) - mypositionz > 32)
+			{	
+				SetResultValue(1);
+			}
+			else
+			{
+				SetResultValue(0);
+			}
+			break;
+		}
+		SetActivator(0,AAPTR_Master);
+		if(GetActorZ(0) - mypositionz > 32)
+		{
+			SetResultValue(1);
+		}
+		else
+		{
+			SetResultValue(0);
+		}
+		break;
+	case 5:
+		SetActivatorToTarget(0);
+		If(GetActorProperty(0,APROP_Health) < 100)
+		{
+			SetResultValue(1);
+		}
+		Else
+		{
+			SetResultValue(0);
+		}
+		break;
+	case 6: //talk timer
+		If(CheckInventory("TalkToken") == 0)
+		{
+		GiveInventory("TalkToken", 1);
+		Delay(256);
+		TakeInventory("TalkToken", 1);
+		}
+		else{}	
+		break;
+	}
+}
+
+script "HL2685" (int cause) clientside //2685
+{
+	if(cause < 11)
+	{
+		TakeInventory("HLHEVDamageType", 255);
+		GiveInventory("HLHEVDamageType", cause+1);
+		ACS_NamedExecuteAlways("HL_HUD_DMGTypes", 0, 0, 0, 0);
+	}
+	else
+	{
+		TakeInventory("HLHEVPickupID", 255);
+		GiveInventory("HLHEVPickupID", cause-10);
+		ACS_NamedExecuteAlways("HL_HUD_Pickups", 0, 0, 0, 0);	
+		ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 2, 0, 0);	
+	}
+}
+
+script "HLHEVTalk" (int talktimer) clientside //2686
+{
+	Switch(talktimer)
+	{
+		case 0:
+		if(CheckInventory("HLHEVIsTalking") == 1)
+		{
+			delay(80);
+			TakeInventory("HLHevIsTalking", 1);
+		}
+		break;
+		case 1:
+		if(CheckInventory("HLHEVIsTalking") == 1)
+		{
+			delay(360);
+			TakeInventory("HLHevIsTalking", 1);
+		}
+		break;
+		case 2:
+		if(CheckInventory("HLHEVIsTalking") == 1)
+		{
+			delay(160);
+			TakeInventory("HLHevIsTalking", 1);
+		}
+		break;
+		case 3: 
+		if(CheckInventory("HLHEVIsTalking") == 1)
+		{
+			delay(105);
+			TakeInventory("HLHevIsTalking", 1);
+		}
+		break;
+	}
+	terminate;
+}
+
+bool freemanonmap;
+
+Script "HalfLifeDisplacerTeleportDecide" (void)
+{
+	SetActorProperty(0, APROP_Damage, 0);
+	Delay(1);
+	If(CheckInventory("HalfLifeClass"))
+	{
+		SetActivator(0, AAPTR_Tracer);
+		If(GetActorProperty(0,APROP_Health) <= 0 || GetActorProperty(0,APROP_SpawnHealth) < 2000 || ((ClassifyActor(0) & ACTOR_MONSTER) || (ClassifyActor(0) & ACTOR_PLAYER)))
+		{
+			If((ClassifyActor(0) & ACTOR_MONSTER) || (ClassifyActor(0) & ACTOR_PLAYER))
+				SetResultValue(1);
+		}
+		else
+		{
+			SetResultValue(0);
+		}
+	}
+}
+
+Script "HalfLifeStartCoordinate" enter
+{
+	If(CheckInventory("HalfLifeClass"))
+	{
+		TakeInventory("HLDisplacerTeleporterX", 0x7FFFFFFF);
+		TakeInventory("HLDisplacerTeleporterY", 0x7FFFFFFF);
+		TakeInventory("HLDisplacerTeleporterZ", 0x7FFFFFFF);
+		TakeInventory("HLDisplacerTeleporterXStart", 0x7FFFFFFF);
+		TakeInventory("HLDisplacerTeleporterYStart", 0x7FFFFFFF);
+		TakeInventory("HLDisplacerTeleporterZStart", 0x7FFFFFFF);
+		TakeInventory("HLDisplacerTeleportedPlayer", 0x7FFFFFFF);
+		GiveInventory("HLDisplacerTeleporterXStart", (GetActorX(0)>>16)+65536);
+		GiveInventory("HLDisplacerTeleporterYStart", (GetActorY(0)>>16)+65536);
+		GiveInventory("HLDisplacerTeleporterZStart", (GetActorZ(0)>>16)+65536);
+	}
+}
+
+Script "HalfLifeDisplacerTeleport" (int type)
+{
+	int x, y, z;
+
+	if(type == 1)
+	{
+		x = GetActorX(0);
+		y = GetActorY(0);
+		z = GetActorZ(0);
+		int oldTID, target;
+		oldTID = ActivatorTID();
+		target = UniqueTID();
+		Thing_ChangeTID(0, target);
+		SetActivator(0, AAPTR_Tracer);
+		If(GetActorProperty(0,APROP_Health) > 0 || GetActorProperty(0,APROP_SpawnHealth) >= 2500 || (!(ClassifyActor(0) & ACTOR_MONSTER) || (!ClassifyActor(0) & ACTOR_PLAYER)))
+		{	
+			SetActivator(target);
+			Thing_ChangeTID(target, oldTID);
+			Thing_Remove(0);
+			terminate;
+		}
+		Warp(0, x, y, z, 0, WARPF_ABSOLUTEPOSITION|WARPF_NOCHECKPOSITION);
+		SetActorVelocity(0,0,0,0,0,0);
+		PlaySound(oldTID, "HLDisplacer/TeleportOut", CHAN_7, 1.0, 0, ATTN_NORM);
+	}
+	else if(type == 2)
+	{
+		if(CheckInventory("HLDisplacerTeleportedPlayer"))
+		{
+			x = CheckInventory("HLDisplacerTeleporterX")<<16;
+			y = CheckInventory("HLDisplacerTeleporterY")<<16;
+			z = CheckInventory("HLDisplacerTeleporterZ")<<16;
+			TakeInventory("HLDisplacerTeleportedPlayer", 1);
+			SpawnForced("HLDisplacerRing",GetActorX(0),GetActorY(0),GetActorZ(0)+(32<<16),0,0);
+			SpawnForced("HLPlayerTeleportPost",GetActorX(0),GetActorY(0),GetActorZ(0)+(32<<16),0,0);	
+			Warp(0, x, y, z, 0, WARPF_ABSOLUTEPOSITION|WARPF_NOCHECKPOSITION);
+			SpawnForced("HLPlayerTeleportPost",x,y,z+(32<<16),0,0);
+			PlaySound(0, "HLDisplacer/TeleportOut", CHAN_7, 1.0, 0, ATTN_NORM);
+			TakeInventory("HLDisplacerTeleporterX", 131072);
+			TakeInventory("HLDisplacerTeleporterY", 131072);
+			TakeInventory("HLDisplacerTeleporterZ", 131072);
+		}
+		else
+		{
+			GiveInventory("HLDisplacerTeleporterX", (GetActorX(0)>>16)+65536);
+			GiveInventory("HLDisplacerTeleporterY", (GetActorY(0)>>16)+65536);
+			GiveInventory("HLDisplacerTeleporterZ", (GetActorZ(0)>>16)+65536);
+			x = CheckInventory("HLDisplacerTeleporterXStart")<<16;
+			y = CheckInventory("HLDisplacerTeleporterYStart")<<16;
+			z = CheckInventory("HLDisplacerTeleporterZStart")<<16;
+			GiveInventory("HLDisplacerTeleportedPlayer", 1);
+			SpawnForced("HLDisplacerRing",GetActorX(0),GetActorY(0),GetActorZ(0)+(32<<16),0,0);
+			SpawnForced("HLPlayerTeleportPost",GetActorX(0),GetActorY(0),GetActorZ(0)+(32<<16),0,0);
+			Warp(0, x, y, z, 0, WARPF_ABSOLUTEPOSITION|WARPF_NOCHECKPOSITION);
+			SpawnForced("HLPlayerTeleportPost",x,y,z+(32<<16),0,0);
+			PlaySound(0, "HLDisplacer/TeleportOut", CHAN_7, 1.0, 0, ATTN_NORM);
+		}		
+		SetActorVelocity(0,0,0,0,0,0);	
+	}
+}
+
+Script "HalfLifeGrenadeFuse" (void)
+{
+	int oldTID, target;
+	oldTID = ActivatorTID();
+	target = UniqueTID();
+	Thing_ChangeTID(0, target);
+	SetActivator(0, AAPTR_Target);
+	int grenadefuse = CheckInventory("HLGrenadeFuse");
+	SetActivator(target);
+	Thing_ChangeTID(target, oldTID);
+	GiveInventory("HLGrenadeFuse", grenadefuse);
+	
+	while(CheckInventory("HLGrenadeFuse") > 0)
+	{
+		TakeInventory("HLGrenadeFuse", 1);
+		Delay(1);
+	}
+	
+	SetActorState(0, "Death", true);
+	terminate;
+}
+
+Script "HalfLifeSniperScope" (void)
+{
+	While(CheckInventory("HalfLifeOpposingForce") && CheckInventory("HLXBowIsZoomed"))
+	{
+		SetHudSize(640,480,0);
+		SetFont("HLM40A1Z");
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,17460,0,321.0,240.0,0.2,1.0);
+		Delay(1);
+	}
+	SetHudSize(0,0,0);
+	SetFont("none");
+	HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,17460,0,160.0,100.0,0.2,1.0);
+	terminate;
+}
+
+Script "HalfLifeAllyWalkRunSpeed" (int set)
+{
+	if(CheckFlag(0,"SHOOTABLE") == false)
+		terminate;
+	int speed = CheckInventory("HLSpeedTokens");
+	switch(set)
+	{
+		case 0:
+			SetActorProperty(0, APROP_Speed, (speed<<16)/2);
+			break;
+		case 1:
+			SetActorProperty(0, APROP_Speed, speed<<16);
+			break;
+		case 2:
+			SetActorProperty(0, APROP_Speed, (speed<<16)/4);
+			break;
+		case 3:
+			SetActorProperty(0, APROP_Speed, (speed<<16)/5);
+			break;
+		case 4:
+			SetActorProperty(0, APROP_Speed, (FixedMul(1.5,speed)<<16));
+			break;
+		case 5:
+			SetActorProperty(0, APROP_Speed, (speed<<16)*2);
+			break;
+	}
+}
+
+Script "HalfLifeFootStepGenerator" enter
+{
+	if((ClassifyActor(0) & ACTOR_WORLD))
+		terminate;
+		
+	if(CheckInventory("HalfLifeClass"))
+	{
+		int speedx, speedy, lasttimer, velocity, movement;
+		
+		while((ClassifyActor(0) & ACTOR_ALIVE))
+		{
+			//we'll handle crouch here too
+			if(GetActorViewHeight(0) <=  GetActorViewHeight(0) / 2 << 16)
+				GiveInventory("HalfLifeCrouching",1);
+			else
+				TakeInventory("HalfLifeCrouching",1);
+		
+			speedx = GetActorVelX(0);
+			speedy = GetActorVelY(0);
+			
+			velocity = magnitudeTwo_f(speedx, speedy);
+			if(velocity>>8 != 0)
+				movement = 750/((velocity>>8)*7);
+			else
+				movement = 0;
+													
+			if((Timer()-lasttimer) > movement && movement != 0)
+			{
+				//PlaySound(0, "HLPlayer/Step", CHAN_BODY, 1.0, false, ATTN_NORM);
+				SpawnSpotForced("HLStep",0,0,0);
+				lasttimer = Timer();
+			}
+			
+			Delay(1);
+		}
+	}
+}
+
+//should be harmless to have mixer references here
+str HalfLifeFootStepSoundObjects[3] = { "HLStep", "HLRobotStep", "HLVoltigoreStep" };
+
+Script "HalfLifeFootStepGeneratorEnemy" (int steptype)
+{
+	if((ClassifyActor(0) & ACTOR_WORLD))
+		terminate;
+		
+	if((ClassifyActor(0) & ACTOR_MONSTER))
+	{
+		int speedx, speedy, currentx, currenty, lastx, lasty, lasttimer, velocity, movement;
+		
+		while((ClassifyActor(0) & ACTOR_ALIVE))
+		{
+			lastx = GetActorX(0);
+			lasty = GetActorY(0);
+			Delay(1);
+			currentx = GetActorX(0);
+			currenty = GetActorY(0);
+			
+			speedx = abs(currentx - lastx)>>16;
+			speedy = abs(currenty - lasty)>>16;
+			
+			velocity = magnitudeTwo(speedx, speedy);
+			
+			if(velocity != 0)
+				movement = 500/(velocity*7);
+			else
+				movement = 0;
+			
+			if((Timer()-lasttimer) > movement && movement != 0)
+			{
+				SpawnSpotForced(HalfLifeFootStepSoundObjects[steptype],0,0,0);
+				lasttimer = Timer();
+			}
+		}
+		terminate;
+	}
+}
+
+Script "HalfLife_BulletDamage" (int damage)
+{
+	int bulletX = GetActorX(0);
+	int bulletY = GetActorY(0);
+	int bulletZ = GetActorZ(0);
+	SetActivator(0,AAPTR_Tracer);
+	int monsterX = GetActorX(0);
+	int monsterY = GetActorY(0);
+	int monsterZ = GetActorZ(0);
+	int monsterHealth = GetActorProperty(0,APROP_Health);
+	int monsterHeight = GetActorProperty(0,APROP_Height);
+	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
+	
+	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
+	
+	if(!CheckInventory("IsFatButBiped") && monsterWidth > monsterHeight)
+	{
+		int monsterAngle = GetActorAngle(0);
+		int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
+		int angle = vang % 1.0;
+		
+		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
+		{			
+			SetResultValue(damage*2);
+		}
+		else
+			SetResultValue(damage);
+	}
+	else
+	{
+		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.75))
+		{
+			int result;
+			if(SpawnForced("SamsaraMixerCompendiumToken",0,0,0,0))
+				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
+			else
+				result = 0;
+				
+			if(result == -1)
+			{
+				SetResultValue(-1);
+				terminate;
+			}
+
+			SetResultValue(damage*2);
+		}
+		else
+			SetResultValue(damage);
+	}
+}
+
+/*Script "HalfLifeOpposingForceFireEnhancer" Enter
+{
+	While(true)
+	{
+		GiveInventory("HLOpposingForceFireEnhancer", 1);
+		Delay(5);
+	}
+}*/
+
+Script "HL_BloodGenerator_Offsets" (void)
+{
+	int missilex = GetActorX(0);
+	int missiley = GetActorY(0);
+	int missilez = GetActorZ(0);
+	int missileAngle = GetActorAngle(0);
+	SetActivator(0,AAPTR_Tracer);
+		
+	int enemyx = GetActorX(0);
+	int enemyy = GetActorY(0);
+	int enemyz = GetActorZ(0);
+	int currentangle = GetActorAngle(0);
+	int vang = VectorAngle(enemyx - missilex, enemyy - missiley);
+	int angle = vang % 1.0;
+	TakeInventory("HL_BloodGeneratorBleedAngle",999999);
+	TakeInventory("HL_BloodGeneratorAngle",999999);
+	TakeInventory("HL_BloodGeneratorZ",999999);
+	GiveInventory("HL_BloodGeneratorAngle",angle+65536);
+	GiveInventory("HL_BloodGeneratorBleedAngle",missileAngle+65536);
+	GiveInventory("HL_BloodGeneratorZ",(missilez - enemyz)>>16 + 65536);
+}
+
+Script "HL_BloodGenerator_Return" (int mode) 
+{
+	int result;
+	switch(mode)
+	{
+		case 1:
+			result = ((CheckInventory("HL_BloodGeneratorAngle") - 65536)/182)+180;
+			break;
+		case 2:
+			result = CheckInventory("HL_BloodGeneratorZ");
+			break;
+		case 3:
+			result = ((CheckInventory("HL_BloodGeneratorBleedAngle") - 65536)/182);
+			break;
+	}
+	SetResultValue(result);
+}
+
+Script "HalfLifeWeaponGivingItems" (int weapon)
+{
+	switch(weapon)
+	{
+		default: break;
+		case 3:
+			if(!CheckInventory("Assault Shotgun"))
+			{
+				ACS_NamedExecuteAlways("HL2685",0,13);
+				GiveInventory("Shell",8);
+			}
+			break;
+		case 4:
+			if(!CheckInventory(".357 Python"))
+			{
+				ACS_NamedExecuteAlways("HL2685",0,12);
+				GiveInventory("Shell",6);
+			}
+			break;
+		case 5:
+			if(!CheckInventory("MP5"))
+			{
+				ACS_NamedExecuteAlways("HL2685",0,14);
+				GiveInventory("Clip",50);
+				GiveInventory("RocketAmmo",3);
+			}
+			break;
+		case 6:
+			if(!CheckInventory(" RPG "))
+			{
+				ACS_NamedExecuteAlways("HL2685",0,15);
+				GiveInventory("RocketAmmo",10);
+			}
+			break;
+		case 7:
+			if(!CheckInventory("Gauss Cannon"))
+			{
+				ACS_NamedExecuteAlways("HL2685",0,16);
+				GiveInventory("Cell",30);
+			}
+			break;
+		case 8:
+			if(!CheckInventory("E.G.O.N."))
+			{
+				ACS_NamedExecuteAlways("HL2685",0,17);
+				GiveInventory("Cell",70);
+			}
+			break;
+	}
+}
