@@ -1,0 +1,451 @@
+#define PTID_START 2000
+#define MAGIC_CIRCLE_BASE 3000
+#define RAILINITTID 9000
+
+function int sqrt_z(int number)
+{
+	if(number <= 3)
+	{
+		if(number > 0)
+		{
+			return 1;
+		}
+		return 0;
+	}
+	
+	int oldAns = number >> 1,                     
+	    newAns = (oldAns + number / oldAns) >> 1; 
+	
+	while(newAns < oldAns)
+	{
+		oldAns = newAns;
+		newAns = (oldAns + number / oldAns) >> 1;
+	}
+
+	return oldAns;
+}
+
+function int DecideUziReload(int uzi_t) {
+	int res = 0;
+	int hasbackpack = 0;
+	if(GetAmmoCapacity("Clip") == 400)
+		hasbackpack = 1;
+	if(!uzi_t) { // single uzi
+		if(CheckInventory("Clip") && !(CheckInventory("Clip") % 50)) { // below if statements fix causing a reload when walking over ammo bug
+			if((hasbackpack && CheckInventory("Clip") == 400) || (!hasbackpack && CheckInventory("Clip") == 200))
+				res = 0;
+			else
+				res = 1;
+		}
+	}
+	else {
+		if(CheckInventory("Clip") && !(CheckInventory("Clip") % 100)) {
+			if((hasbackpack && CheckInventory("Clip") == 400) || (!hasbackpack && CheckInventory("Clip") == 200))
+				res = 0;
+			else
+				res = 1;
+		}	
+	}
+	return res;
+}
+
+Script "SWCloneTID" (void) // TID change hack for Wang Clone -- 710
+{
+	Thing_ChangeTID(3000, 3000+PlayerNumber());
+}
+
+
+Script "SWCloneRemove" (void) // Remove wang if one exists -- 711
+{
+	Thing_Damage(3000+PlayerNumber(), 999, MOD_EXIT);
+}
+
+Script "SW713" (int DoubleReloading) //713
+{
+    if(DecideUziReload(1) && !CheckInventory("ReloadSignal"))
+		DoubleReloading = 1;
+	SetResultValue(DoubleReloading);
+}
+
+script "LoWangTauntCooldown" (void) //719
+{
+    while (CheckInventory("LoWangTauntCooldown") > 0)
+    {
+        Delay(35);
+        TakeInventory("LoWangTauntCooldown", 1);
+    }
+}
+
+Script "LoWangBallGag" (int type) NET //720
+{
+	if(CheckInventory("LoWangBallgag"))
+	{
+		TakeInventory("LoWangBallgag", 1);
+		Print(s:"Ballgag Off");
+	}
+	else
+	{
+		GiveInventory("LoWangBallGag", 1);
+		Print(s:"Ballgag On");
+	}
+}
+
+Script "SW740" (int Reloading) //740
+{
+    if(DecideUziReload(0) && !CheckInventory("ReloadSignal"))
+		Reloading = 1;
+	SetResultValue(Reloading);
+}
+
+script "SW741" (int ButtonPress) //741
+{
+    ButtonPress = 0;
+    int FireButton1 = GetPlayerInput(-1, INPUT_BUTTONS);
+    if (FireButton1 & BT_ATTACK)
+	    ButtonPress = 1;
+   
+    SetResultValue(ButtonPress);
+}
+
+// Decides mode switch for Missile Launcher
+// Missilemode 1 = heat seeker, 2 = nuke
+Script "SWMissileMode" (void) //742
+{
+	int res = CheckInventory("MissileMode");
+	
+	res = (res + 1) % 3;
+	
+	if(res == 1) {
+		if(!CheckInventory("HeatSeekerCharge")) { // if we don't have any heatseeker, don't change mode to this
+			if(!CheckInventory("GotNuke")) // if we have no nukes at all also don't bother
+				res = -1;
+			else
+				res = 2;
+		} // else res can be kept as 1
+	}
+	else if(res == 2) {
+		if(!CheckInventory("GotNuke")) // if I don't have nuke just switch over to normal mode
+			res = 0;
+	}
+	
+	TakeInventory("MissileMode", 3);
+	if(res != -1)
+		GiveInventory("MissileMode", res);
+	SetResultValue(res);
+}
+
+Script "SW743" (void) //743
+{
+	int res = 0;
+	if(CheckInventory("HeatSeekerCharge") || CheckInventory("GotNuke"))
+		res = 1;
+	SetResultValue(res);
+}
+
+Script "SW744" (int density) //744
+{
+	Thing_ChangeTID(0, RAILINITTID);
+	SetactivatorToTarget(RAILINITTID);
+	int ptid = ActivatorTID();
+	int newtid = ptid + RAILINITTID;
+	Thing_ChangeTID(RAILINITTID, newtid);
+	
+    int plX; int plY;  int plZ;
+    int grX; int grY;  int grZ;
+    int vX;  int vY;   int vZ;
+    int nX;  int nY;   int nZ;
+    int bX;  int bY;   int bZ;
+    int magnitude;
+    int pointCount;
+    int pointOffset;
+    plX = GetActorX(ptid); grX = GetActorX(newtid);
+    plY = GetActorY(ptid); grY  = GetActorY(newtid);
+    plZ = GetActorZ(ptid)+32.0; grZ  = GetActorZ(newtid);
+	int faceangle = VectorAngle(grX - plX, grY - plY);
+    vX   = grX - plX;       vY   = grY - plY;       vZ   = grZ - plZ;
+
+    magnitude = magnitudeThree(vX >> 16, vY >> 16, vZ >> 16);
+
+    pointCount  = magnitude / density;
+    pointOffset = magnitude - (pointCount * density);
+
+    if (magnitude != 0)
+    {
+        nX = vX / magnitude; nY = vY / magnitude; nZ = vZ / magnitude;
+
+        int i; int j;
+        for (i = 1; i < pointCount; i++)
+        {
+            j = (i * density) + pointOffset;
+
+            bX = (nX * j) + plX;
+            bY = (nY * j) + plY;
+            bZ = (nZ * j) + plZ;
+
+            Spawn("SWRailTrail", bX, bY, bZ, 0, faceangle >> 8);
+        }
+    }
+}
+
+script "SW745" (int actor_num, int radius) //745
+{
+     int angle = GetUserVariable(0, "user_angle") * 360; 
+     Thing_ChangeTID(0, MAGIC_CIRCLE_BASE);
+	 SetActivatorToTarget(0);
+	 int owner = ActivatorTID();
+	 // the below arrangement ensures each and every fireball gets a unique TID relative to the owner's tid
+	 int newtid =  MAGIC_CIRCLE_BASE + ((owner % 100) + 1) * 12 + actor_num;
+	 Thing_ChangeTID(MAGIC_CIRCLE_BASE, newtid);
+	 
+	 int cx = radius * cos(angle) + GetActorX(owner);
+	 int cy = radius * sin(angle) + GetActorY(owner);
+	 int cz = GetActorZ(owner) + 32.125;
+	 
+	 SetActorPosition(newtid, cx, cy, cz, 0);
+}
+
+Script "SW746" (void) //746
+{
+	int res = 0;
+	SetActivatorToTarget(0);
+    if(GetActorProperty(0, APROP_HEALTH) <= 0 || !CheckInventory("MagicCircleCounter")) {
+		res = 1;
+		TakeInventory("MagicCircleCounter", 50);
+	}
+	SetResultValue(res);
+}
+
+// CRUCIAL SCRIPT!!!!
+Script "SW747" ENTER //747
+{
+	If(CheckInventory("SWClass") == true)
+	{
+	Thing_ChangeTID(0, PTID_START + PlayerNumber());
+	TakeInventory("MagicCircleCounter", 50);
+	TakeInventory("MagicCircleSpawner", 999);	
+	}
+}
+
+Script "SW748" (int mode) //748
+{
+	if(!mode)
+		SetActorProperty(0, APROP_SPEED, 6.0);
+	else {
+		GiveInventory("SWFistYell", mode);
+		if(CheckInventory("SWFistYell") >= 18) {
+			GiveInventory("LoWangFrustratedTaunt", 1);
+			TakeInventory("SWFistYell", 12);
+		}
+	}
+}
+
+str FortuneCookieText[100] = { "Fortune Say: Sorry, you no win this time, try again.",
+                              "Fortune Say: Baseball wrong. Man with 4 balls cannot walk.",
+							  "Fortune Say: No man is island, except Lo Wang.",
+							  "Fortune Say: You should kill all business associates.",
+							  "Fortune Say: You should not scratch yourself there.",
+							  "Fortune Say: Man who stand on toilet, high on pot.",
+							  "Fortune Say: Man who buy drowned cat pay for wet pussy.",
+							  "Fortune Say: Don't you know you the scum of society?!",
+							  "Fortune Say: Man trapped in pantry has ass in jam.",
+							  "Fortune Say: You never going to score.",
+							  "Fortune Say: You try harder get along. Be a nice man.",
+							  "Fortune Say: 26-31-43-82-16-29",
+							  "Fortune Say: Your chi attracts many chicks.",
+							  "Fortune Say: Man who fart in church sit in own pew.",
+							  "Fortune Say: It is better to have loved and lost than to have loved and got syphilis",
+							  "Fortune Say: There is much death in future.",
+							  "Fortune Say: (c)1997, 3DRealms fortune cookie company.",
+							  "Fortune Say: Courtesy is contagious. So is Gonorrhea",
+							  "Fortune Say: Having sex is like playing bridge, If you don't have a good partner, you better have a good hand.",
+							  "Fortune Say: Laugh and the world laughs with you. Cry and the world laughs at you.",
+							  "Fortune Say: No one ever died from a broken heart. But a heart sliced from their chest while they looked on screaming? Not gonna lie. That's killed a couple people.",
+							  "Fortune Say: ERROR 404 - FORTUNE NOT FOUND",
+							  "Fortune Say: Help! I am being held prisoner in a video game factory.",
+							  "Fortune Say: Wangs out for Harambe.",
+							  "Fortune Say: Information is not knowledge. Knowledge is not wisdom. Wisdom is not truth. Truth is not beauty. Beauty is not love. Love is not music. Music is the best. - FZ",
+							  "Fortune Say: A Wang in the hand is worth two in the bush.",
+							  "Fortune Say: You will stop procrastinating. Later.",
+							  "Fortune Say: Cardboard belt is a waist of paper.",
+							  "Fortune Say: The difference between an oral thermometer and a rectal thermometer is all a matter of taste.",
+							  "Fortune Say: Some days you're the pigeon. Other days you're the statue. Today is more of a statue day.",
+							  "Fortune Say: You don't need a parachute to skydive. You need a parachute to skydive twice.",
+							  "Fortune Say: That's what ki said.",
+							  "Fortune Say: The good news: you're not paranoid. The bad news: everyone is actually trying to kill you.",
+							  "Fortune Say: Ingredients: wheat, sugar, lysergic acid diethylamide, yellow #5.",
+							  "Fortune Say: Small cookies bring great joy.",
+							  "Fortune Say: Cookie monster wasn't here.",
+							  "Fortune Say: Don't sweat the petty things and don't pet the sweaty things. - George Carlin",
+							  "Fortune Say: You're never too old to learn something stupid.",
+							  "Fortune Say: With sufficient thrust, pigs fly just fine.",
+							  "Fortune Say: I love the smell of cookies in the morning. Smells like... Cookies.",
+							  "Fortune Say: The forecast calls for... Death? Yup. I'm just seeing a whole lot of death. Bummer for you, I guess.",
+							  "Fortune Say: 'Fuck Confucius'. - Bill Hicks.",
+							  "Fortune Say: He who takes advice from a cookie is sure to crumble.",
+							  "Fortune Say: Confucius say it is easy to hate and difficult to love. Frankie say relax.",
+							  "Fortune Say: Thank you Lo Wang! But your fortune is in another cookie!",
+							  "Fortune Say: All men eat, but Fu Man Chu.",
+							  "Fortune Say: You are not illiterate",
+							  "Fortune Say: The difference between an oral thermometer and a rectal thermometer is all a mater of taste.",
+							  "Fortune Say: Your mom says hi.",
+							  "Fortune Say: Add 'in bed' to this fortune to make it super sexy. In bed!",
+							  "Fortune Say: Lucky numbers: 23, 34, 42, 69, 666.",
+							  "Fortune Say: Never hit a man with glasses. Hit him with a baseball bat.",
+							  "Fortune Say: There is no cookie.",
+							  "Fortune Say: You're the best. Around. Nothing's ever going to keep you down.",
+							  "Fortune Say: It's time to kick ass and chew bubble gum. And... Oh look! Here's my gum!",
+							  "Fortune Say: These aren't the cookies you're looking for.",
+							  "Fortune Say: Some mistakes are too fun to make only once.",
+							  "Fortune Say: Add fortune please, Alan.",
+							  "Fortune Say: The Wang abides.",
+							  "Fortune Say: Is this fortune repeating because you got it again, or is it repeating because it was placed in the pool twice?",
+							  "Fortune Say: Whoever coined the phrase 'quiet as a mouse' never stepped on one.",
+							  "Fortune Say: What's a seven-letter word for 'cryptic'?",
+							  "Fortune Say: Nothing. Go fuck yourself.",
+							  "Fortune Say: You will find a fortune cookie.",
+							  "Fortune Say: No Wang is an island.",
+							  "Fortune Say: This is my katana, this is my gun. One for killing, the other's for... OK, the other's also for killing.",
+							  "Fortune Say: Live Wang and prosper.",
+							  "Fortune Say: Fortune favors those who shoot the bold right in their stupid bold faces.",
+							  "Fortune Say: All your cookie belong to us.",
+							  "Fortune Say: 'One day you will see why I am so great.' - Duke Nukem",
+							  "Fortune Say: These cookies only contain slightly less grease than Randy Pitchford's forehead.",
+							  "Fortune Say: Mildly more healthy than Goo-Goo Clusters.",
+							  "Fortune Say: The early bird gets the worm. The second mouse gets cheese.",
+							  "Fortune Say: To maintain perfect accuracy, shoot first and call whatever you hit the target.",
+							  "Fortune Say: Baseball has it wrong. Man with four balls cannot walk.",
+							  "Fortune Say: To be is to do. - Socrates 
+							  \n\n To do is to be. - Sarte 
+							  \n\n Do be do be do. - Sinatra",
+							  "Fortune Say: Time is an illusion. Lunchtime doubly so.",
+							  "Fortune Say: Man who drops soap in prison shower is super bummed.",
+							  "Fortune Say: There can be only Wang.",
+							  "Fortune Say: You will be attacked by demons.",
+							  "Fortune Say: That's all, folks! Don't toss your cookies!",
+							  "Fortune Sya: You that read wrong.",
+							  "Fortune Say: Man who pushes piano off roof of orphanage, get A flat minor",
+							  "Fortune Say: Making these isn't easy. But you know what is? Your mom.",
+							  "Fortune Say: Fucking in a cemetary is exhibitionism during a zombie apocalypse.",
+							  "Fortune Say: You have been eaten by a gru.",
+							  "Fortune Say: Is this fortune repeating because you got it again, or is it repeating because it was placed in the pool twice?",
+							  "Fortune Say: Why so serious, Sam?",
+							  "Fortune Say: Man who fall in vat of coffee, in dark waters.",
+							  "Fortune Say: Good? Bad? I'm the guy with the cookie.",
+							  "Fortune Say: Our Advertisement rates: $29.99/month.",
+							  "Fortune Say: Man who stick dick in radioactive core, has lots of balls.",
+							  "Fortune Say: Man who masturbates near electric fence is pulling from cold dead Wang.",
+							  "Fortune Say: These took more effort than Tekwar.",
+							  "Fortune Say: OH NO! You're going to monkey hell!",
+							  "Fortune Say: People who work for waste management, have giant dumpers.",
+							  "Fortune Say: CONGRATULATIONS! You are our 1,000,000th customer! Click here to claim your prize!",
+							  "Fortune Say: Help Wanted! Someone to time travel with me. Bring your own weapons. Safety not guaranteed. I have only done this once before.",
+                              };
+
+Script "SWFortuneCookie" (void) ClientSide //8432
+{
+        int cookietext = random(0, 99);
+	    SetFont("SWCOOKIE");
+		SetHudSize(640, 480, 1);
+	    HudMessage(s:FortuneCookieText[cookietext]; HUDMSG_FADEOUT, 0, CR_UNTRANSLATED, 320.4, 360.0, 5.0, 1.0);
+		SetHudSize(0, 0, 0);
+		SetFont("SMALLFONT");
+}
+
+Script "StickyLocation" (int swicheroo)
+{
+	int currentx = GetActorX(0);
+	int currenty = GetActorY(0);
+	int currentz = GetActorZ(0);
+	SetActivator(0, AAPTR_Tracer);
+	int monsterx = GetActorX(0);
+	int monstery = GetActorY(0);
+	int monsterz = GetActorZ(0);
+	
+	Switch(swicheroo)
+	{
+		Case 0:
+			SetResultValue(0);
+			break;
+	
+		Case 1:
+			if(GetActorProperty(0,APROP_Radius) < 20)
+				SetResultValue(5);
+			
+			else
+				SetResultValue(GetActorProperty(0,APROP_Radius) - 10);
+			
+			break;
+			
+		Case 2:
+			SetResultValue((monsterz - currentz) >> 16);
+			break;
+
+		Case 3:
+			int currentangle = GetActorAngle (0);
+			int vang = VectorAngle(monsterx - currentx, monstery - currenty);
+			int angle = ((vang - currentangle) % 1.0) / 182; //haha, lazy
+			SetResultValue(angle);
+			break;
+			
+		Case 4:
+			if(GetActorProperty(0, APROP_Health) <= 0)
+				SetResultValue(1);
+				
+			else
+				SetResultValue(0);
+	}
+}	
+
+// creating this for real infinite ammo
+Script "SW_FireRocketLauncher" (int mode)
+{
+	if(!GetCvar("sv_infiniteammo"))
+	{
+		if(mode == 1)
+		{
+			TakeInventory("RocketAmmo", 30);
+			TakeInventory("GotNuke", 1);
+			TakeInventory("SWNuke", 1);
+		}
+		else
+			TakeInventory("HeatSeekerCharge", 1);
+	}
+	SetResultValue(1);
+}
+
+script SAMSARA_WANGHEAD (int class, int slot, int dropped)
+{
+    int givingSWGuardianHead, givingSWNuke;
+
+    int stay = GetCVar("sv_weaponstay") && !dropped;
+    int ultStay = GetCVar("sams_permault") && !dropped;
+
+    switch (slot)
+    {
+      case SLOT_BFG9000:
+	    if (!CheckInventory("SWGuardianHead")
+         || (!ultStay && (GetAmmoCapacity("Cell") > CheckInventory("Cell"))))
+        {
+            givingSWGuardianHead = 1;
+        }
+		
+        if (givingSWGuardianHead)
+        {
+            GiveInventory("SWGuardianHead", 1);
+        }
+
+        if (!CheckInventory("SWNuke")       
+		 || (!ultStay))
+		{
+            givingSWNuke = 1;
+        }
+		
+        if (givingSWNuke)
+        {
+            GiveInventory("SWNuke", 1);
+        }
+
+        SetResultValue(givingSWGuardianHead || givingSWNuke);
+        break;
+    }
+}

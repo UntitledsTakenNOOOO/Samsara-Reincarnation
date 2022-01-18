@@ -1,0 +1,1960 @@
+//======================================================================================================================
+//												Hotkey Scripts
+//======================================================================================================================
+
+Script "Samsara_WeaponHotkeys" (int mode)
+{
+	int pln = PlayerNumber();
+	if(!SetWeapon(ClassHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode]))
+		UseInventory(ClassHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode]);
+}
+
+// Until Zandronum doesn't crash with the old keybindings in KEYCONF, this will be required, I'm afraid
+
+Str modestringsdefault[2] = { "Off", "On" };
+Str modestringswolf[3] = { "Classic", "Lost Missons", "Totenkopf SDL" };
+Str modestringshexen[3] = { "Parias", "Daedolon", "Baratus" };
+Str modestringsrott[5] = { "Ian Paul Freeley", "Taradino Cassatt", "Thi Barrett", "Lorelei Ni", "Doug Wendt" };
+str heromusicmodes[3] = { "Off", "Class", "Game" };
+str pickupmodes[3] = { "Old-Style", "Hybrid", "Class" };
+
+Script "Samsara_Keybinds_Clientside" (int button) net clientside
+{
+	int mode;
+	Switch(button)
+	{
+		Case 1:
+			SetUserCvar(PlayerNumber(),"sams_cl_vanilladoom", !GetUserCvar(PlayerNumber(),"sams_cl_vanilladoom"));
+			
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_vanilladoom");
+			Log(s:"\cgVanilla Doom Animations ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+			
+		Case 3:
+			SetUserCvar(PlayerNumber(),"sams_cl_ballgag", !GetUserCvar(PlayerNumber(),"sams_cl_ballgag"));
+			
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_ballgag");
+			Log(s:"\cgCharacters can talk ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+			
+		Case 5:
+			SetUserCvar(PlayerNumber(),"sams_cl_moremessages", !GetUserCvar(PlayerNumber(),"sams_cl_moremessages"));
+			
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_moremessages");
+			Log(s:"\cgAlternate messages: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+			
+		Case 6:
+			SetUserCvar(PlayerNumber(),"sams_cl_printpickup", !GetUserCvar(PlayerNumber(),"sams_cl_printpickup"));
+			
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_printpickup");
+			Log(s:"\cgPrint pickup messages: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+			
+		Case 7:
+			SetUserCvar(PlayerNumber(),"sams_cl_norecoil", !GetUserCvar(PlayerNumber(),"sams_cl_norecoil"));
+			
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_norecoil");
+			Log(s:"\cgRanger Recoil: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+			
+		Case 8:
+			if(GetUserCvar(PlayerNumber(),"sams_cl_heromusic") == 2)
+				SetUserCvar(PlayerNumber(),"sams_cl_heromusic", 0);
+			else
+				SetUserCvar(PlayerNumber(),"sams_cl_heromusic", GetUserCvar(PlayerNumber(),"sams_cl_heromusic")+1);
+			
+			If(GetCvar("sams_cl_heromusic") == false)
+			{
+				StopSound(0, CHAN_VOICE);
+				LocalSetMusic("*",0);
+			}
+			else 
+				ACS_NamedExecuteWithResult("SamsaraOST_Enter",0,0,0,0);	
+				
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_heromusic");
+			Log(s:"\cgHero Music: ", s:"\ck", s:heromusicmodes[mode]);
+			break;
+			
+		Case 9:
+			if(GetUserCvar(PlayerNumber(),"sams_cl_pickupmode") < 2)
+				SetUserCvar(PlayerNumber(),"sams_cl_pickupmode", GetUserCvar(PlayerNumber(),"sams_cl_pickupmode")+1);
+					
+			else
+				SetUserCvar(PlayerNumber(),"sams_cl_pickupmode", 0);
+				
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_pickupmode");
+			Log(s:"\cgPickup Mode: ", s:"\ck", s:heromusicmodes[mode]);
+			break;
+	}
+}
+
+Script "Samsara_Keybinds" (int button) net
+{
+	int mode;
+	Switch(button)
+	{
+		Case 2:
+			SetUserCvar(PlayerNumber(),"sams_cl_wolfmove", !GetUserCvar(PlayerNumber(),"sams_cl_wolfmove"));
+			
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_wolfmove");
+			Log(s:"\cgWolfenstein Character Movement ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+
+		Case 4:
+			SetUserCvar(PlayerNumber(),"sams_cl_weaponhud", !GetUserCvar(PlayerNumber(),"sams_cl_weaponhud"));
+			
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_weaponhud");
+			Log(s:"\cgWeapon bar ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+			
+		Case 10:
+			SetUserCvar(PlayerNumber(),"sams_cl_rottbar", !GetUserCvar(PlayerNumber(),"sams_cl_rottbar"));
+			
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_pickupmode");
+			Log(s:"\cgRott Bar: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+	}
+}
+
+Script "Samsara_ChangeAltClass" (void) net
+{
+	int mode;
+	int pln = PlayerNumber();
+	switch(PlayerClass(pln))
+	{
+		case 0:
+			mode = !GetUserCvar(pln,"sams_cl_doom64");
+			SetUserCvar(pln,"sams_cl_doom64",mode);
+			break;
+		case 3:
+			mode = GetUserCvar(PlayerNumber(),"sams_cl_wolfmode");
+			if(mode == 2)
+				mode = 0;
+			else
+				mode++;
+				
+			SetUserCvar(PlayerNumber(),"sams_cl_wolfmode",mode);
+			break;
+		case 4:
+			mode = GetUserCvar(pln,"sams_cl_hexclass");
+			if(mode == 2)
+				mode = 0;
+			else
+				mode++;
+				
+			SetUserCvar(pln,"sams_cl_hexclass",mode);
+			break;
+		case 5:
+			mode = !GetUserCvar(pln,"sams_cl_dkclab");
+			SetUserCvar(pln,"sams_cl_dkclab",mode);
+			break;
+		case 8:
+			mode = GetUserCvar(pln,"sams_cl_rottmode");
+			if(mode == 4)
+				mode = 0;
+			else
+				mode++;
+				
+			SetUserCvar(pln,"sams_cl_rottmode",mode);
+			break;
+		case 9:
+			mode = !GetUserCvar(pln,"sams_cl_bsaog");
+			SetUserCvar(pln,"sams_cl_bsaog",mode);
+			break;
+		case 19:
+			mode = !GetUserCvar(pln,"sams_cl_shephardmode");
+			SetUserCvar(pln,"sams_cl_shephardmode",mode);
+			break;
+	}
+	ACS_NamedExecuteWithResult("Samsara_LogClass",PlayerClass(pln),mode);
+}
+
+//Sigh
+Script "Samsara_LogClass" (int type, int mode) clientside
+{
+	switch(type)
+	{
+		case 0:
+			SetUserCvar(PlayerNumber(),"sams_cl_doom64",mode);
+			Log(s:"\cgDoom 64 Mode: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+		case 3:		
+			SetUserCvar(PlayerNumber(),"sams_cl_wolfmode",mode);
+			Log(s:"\cgWolfenstein 3D Mode: ", s:"\ck", s:modestringswolf[mode]);
+			break;
+		case 4:
+			SetUserCvar(PlayerNumber(),"sams_cl_hexclass",mode);
+			Log(s:"\cgHexen Class: ", s:"\ck", s:modestringshexen[mode]);
+			break;
+		case 5:
+			SetUserCvar(PlayerNumber(),"sams_cl_dkclab",mode);
+			Log(s:"\cgDuke Nukem Life's a Beach: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+		case 8:
+			SetUserCvar(PlayerNumber(),"sams_cl_rottmode",mode);
+			Log(s:"\cgH.U.N.T. Team Member: ", s:"\ck", s:modestringsrott[mode]);
+			break;
+		case 9:
+			SetUserCvar(PlayerNumber(),"sams_cl_bsaog",mode);
+			Log(s:"\cgBlake Stone Aliens of Gold: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+		case 19:
+			SetUserCvar(PlayerNumber(),"sams_cl_shephardmode",mode);
+			if(CheckInventory("flashlightinventory") == true)
+				ACS_NamedExecuteWithResult("HL2677",0,0,0,0);
+			Log(s:"\cgHalf Life Opposing Force: ", s:"\ck", s:modestringsdefault[mode]);
+			break;
+	}
+}
+
+//For our unique keys to be consolidated
+Script "Samsara_UniqueKeys" (void) net
+{
+	int pln = PlayerNumber();
+	switch(PlayerClass(pln))
+	{
+		case 19:
+			ACS_NamedExecuteWithResult("HL2677",0,0,0);
+			break;
+		case 23:
+			if(((timer() > CheckInventory("LeonardPissTimer") + 10500) || CheckInventory("LeonardPissTimer") == 0) && GetActorProperty(0,APROP_Health) > 0)
+			{
+				TakeInventory("LeonardPissTimer",2147483647);
+				GiveInventory("LeonardPissTimer",timer());
+				if(GetActorProperty(0,APROP_Health) < 90)
+					SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_Health)+2);
+				else if(GetActorProperty(0,APROP_Health) < 100)
+					SetActorProperty(0,APROP_Health,100);
+					
+				Playsound(0,"Leonard/Pee",CHAN_6,1.0,0,ATTN_NORM);
+			}
+			break;
+		case 26:
+			ACS_NamedExecuteWithResult("BondActivateWatch",0,0,0);
+			break;
+	}
+}
+
+//======================================================================================================================
+//													Get Settings
+//======================================================================================================================
+
+script "SamsaraGetSettings" (void) net //676 -- SAMSARA_GETSETTINGS
+{
+    int lmsLevel = middle(0, GetCVar("sams_lmslife"), LMSMODES-1);
+    int lmsHP, lmsArmor;
+    int lmsUlt, lmsUnique;
+    int ultStay, highLow;
+
+    if (lmsLevel) { lmsHP    = 100*lmsLevel; lmsArmor = 100*lmsLevel; }
+    else { lmsHP = 100; lmsArmor = 0; }
+
+    if (GetCVar("sams_lmsunique")) { lmsUnique = "\cdwith"; }
+    else { lmsUnique = "\cgwithout"; }
+
+    if (GetCVar("sams_lmsult")) { lmsUlt = "\cdwith"; }
+    else { lmsUlt = "\cgwithout"; }
+
+    if (GetCVar("sams_permault")) { ultStay = "\cdstay"; }
+    else { ultStay = "\cado not stay"; }
+
+    if (GetCVar("sams_jumpmod") < 0) { highLow = "\calower"; }
+    else { highLow = "\cfhigher"; }
+
+    SetHudSize(640, 480, 1);
+
+    if (isLMS())
+    {
+        HudMessage(s:"Spawning with \ca", d:lmsHP, s:" health\c- and \cd", d:lmsArmor, s:" armor\c-";
+            HUDMSG_FADEOUT, 6761, CR_WHITE, 50.1, 80.0, 3.0, 1.0);
+        
+        HudMessage(s:"You spawn ", s:lmsUnique, s:"\c- your unique and ", s:lmsUlt, s:"\c- your slot 7";
+            HUDMSG_FADEOUT, 6762, CR_WHITE, 50.1, 104.0, 3.0, 1.0);
+    }
+    else
+    {
+        HudMessage(s:"Slot 7 pickups ", s:ultStay, s:"\c- on pickup";
+            HUDMSG_FADEOUT, 6761, CR_WHITE, 50.1, 80.0, 3.0, 1.0);
+
+        HudMessage(s:"Armor mode is \cf", s:ArmorModeNames[ArmorMode];
+            HUDMSG_FADEOUT, 6762, CR_WHITE, 50.1, 96.0, 3.0, 1.0);
+    }
+
+    if (GetCVar("sams_jumpmod"))
+    {
+        HudMessage(s:"You jump \cn", d:abs(GetCVar("sams_jumpmod")), s:"\c- units ", s:highLow, s:"\c- than normal";
+                HUDMSG_FADEOUT, 6763, CR_WHITE, 50.1, 112.0, 3.0, 1.0);
+    }
+    else
+    {
+        HudMessage(s:"Jumping is \cbnormal";
+                HUDMSG_FADEOUT, 6763, CR_WHITE, 50.1, 112.0, 3.0, 1.0);
+    }
+
+
+    if (GetCVar("sams_banjetpack"))
+    {
+        HudMessage(s:"Duke's and Rebel Moon Commando's jetpack is \cgBANNED.";
+                HUDMSG_FADEOUT, 6764, CR_WHITE, 50.1, 128.0, 3.0, 1.0);
+    }
+    else
+    {
+        HudMessage(s:"Duke's and Rebel Moon Commando's jetpack is \cdALLOWED.";
+                HUDMSG_FADEOUT, 6764, CR_WHITE, 50.1, 128.0, 3.0, 1.0);
+    }
+
+    if (GetCVar("sams_banwolfmove"))
+    {
+        HudMessage(s:"Wolfenstein movement is \cgBANNED.";
+                HUDMSG_FADEOUT, 6765, CR_WHITE, 50.1, 144.0, 3.0, 1.0);
+    }
+    else
+    {
+        HudMessage(s:"Wolfenstein movement is \cdALLOWED.";
+                HUDMSG_FADEOUT, 6765, CR_WHITE, 50.1, 144.0, 3.0, 1.0);
+    }
+
+    if (GetCVar("sams_nocustomgravity"))
+    {
+        HudMessage(s:"Custom gravities are \cadisabled.";
+                HUDMSG_FADEOUT, 6766, CR_WHITE, 50.1, 160.0, 3.0, 1.0);
+    }
+    else
+    {
+        HudMessage(s:"Custom gravities are \cdenabled.";
+                HUDMSG_FADEOUT, 6766, CR_WHITE, 50.1, 160.0, 3.0, 1.0);
+    }
+
+    HudMessage(s:"Party mode is ", s:cond(GetCVar("sams_peoplediewhentheyarekilled"), "\cdON.", "\caOFF."), s:"\c- (", d:GetCVar("sams_peoplediewhentheyarekilled"), s:")";
+            HUDMSG_FADEOUT, 6767, CR_WHITE, 50.1, 176.0, 3.0, 1.0);
+
+    HudMessage(s:"Limitless health is ", s:cond(GetCVar("sams_nohealthcap"), "\cdON.", "\caOFF.");
+            HUDMSG_FADEOUT, 6769, CR_WHITE, 50.1, 208.0, 3.0, 1.0);
+
+    HudMessage(s:"Chainsaw/unique start: \ca", d:GetCVar("sams_chainsawstart"), s:"\c- / \cn", d:GetCvar("sams_uniquestart");
+            HUDMSG_FADEOUT, 6770, CR_WHITE, 50.1, 224.0, 3.0, 1.0);
+}
+
+//======================================================================================================================
+//													Key Share
+//======================================================================================================================
+
+int keys[3][26] = {{0},
+    {"RedCard", "YellowCard", "BlueCard", "RedSkull", "YellowSkull", "BlueSkull", "KeyBlue", "KeyGreen", "KeyYellow", "ChexRedCard", "ChexYellowCard", "ChexBlueCard", "RedFlemKey", "YellowFlemKey", "BlueFlemKey", "KeyAxe", "KeyCastle", "KeyCave", "KeyDungeon", "KeyEmerald", "KeyFire", "KeyHorn", "KeyRusted", "KeySilver", "KeySteel", "KeySwamp"},
+{"\cgRed Keycard", "\ckYellow Keycard", "\chBlue Keycard", "\cgRed Skull", "\ckYellow Skull", "\chBlue Skull", "\chBlue Prism Key", "\cqGreen Prism Key", "\ckYellow Prism Key", "\cgRed Card", "\ckYellow Card", "\chBlue Card", "\cgRed Flem Key", "\ckYellow Flem Key", "\chBlue Flem Key", "\cuAxe Key", "\cfCastle Key", "\csCave Key", "\cuDungeon Key", "\cdEmerald Key", "\cgFire Key", "\ceHorn Key", "\cbRusted Key", "\cuSilver Key", "\cmSteel Key", "\cpSwamp Key"}};
+//0, 1, 2: Doom R/Y/B Keycard. - \cg, \ck, \ch
+//3, 4, 5: Doom R/Y/B Skull. - \cg, \ck, \ch
+//6, 7, 8: Heretic B/G/Y Prism Key. - \ch, \cq, \ck
+//9, 10, 11: Chex Quest R/Y/B Keycard. - \cg, \ck, \ch
+//12, 13, 14: Chex Quest R/Y/B Flem Key. - \cg, \ck, \ch
+//15: Axe Key - \cu (Grey)
+//16: Castle Key - \cf (Gold)
+//17: Cave Key - \cs (Brown)
+//18: Dungeon Key - \cu (Grey)
+//19: Emerald Key - \cd (Light Green)
+//20: Fire Key - \cg (Red)
+//21: Horn Key - \ce (Beige)
+//22: Rusted Key - \cb (Very light off-white)
+//23: Silver Key - \cu (Grey)
+//24: Steel Key - \cm (Black)
+//25: Swamp Key - \cp (Drab green-brown)
+
+////////////////////
+// SHARED KEYS
+// (by Synert)
+/////////////////
+
+// Give keys as needed, for people joining the game.
+
+script "SamsaraKeyShare" ENTER //901
+{
+    if (!(IsSinglePlayer() || IsCoop())) { terminate; }
+
+    while (1)
+    {
+        for (int a = 0; a < 26; a++)
+        {
+            if (keys[0][a] == 1)
+            {
+                GiveInventory(keys[1][a], 1);
+            }
+        }
+        delay(10);
+    }
+}
+
+script "SamsaraKeyBroadcast" (int a) { // Picked up a key, broadcast that shit to the whole world! --902
+    if(keys[0][a] == 0 && isCoop() && !isSinglePlayer()) {
+        Log(n:0,s:"\c* has picked up the ",s:keys[2][a],s:"\c*."); // Let the server admins know.
+        HudMessageBold(n:0,s:"\c* has picked up the ",s:keys[2][a],s:"\c*.";HUDMSG_FADEOUT, 900, CR_GOLD, 0.5, 0.1, 3.0, 0.5);
+    }
+    keys[0][a] = 1;
+	
+	if(CheckInventory("HalfLifeClass") && GetCvar("sams_cl_heromusic"))
+		ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 1, 0, 0);
+}
+
+//======================================================================================================================
+//													Kill Count
+//======================================================================================================================
+
+//Replace this script and inject code into it for other tcs when actors die. Override 1 is for base samsara monsters. Override 2 is shrunk actors to get their parent.
+Script "Samsara_KillCount" (int override)
+{
+	if(!(ClassifyActor(0) & ACTOR_MONSTER))
+		terminate;
+		
+	int HasXDeath; 
+	int isBoss = CheckFlag(0,"BOSS");
+	
+	if(GetPlayerAccountName(0) == 0)
+		HasXDeath = CheckActorState(0,"XDeath",1);
+	else
+		HasXDeath = 1;
+		
+	if(SpawnForced("StrongHoldLoaded",0,0,0,0))
+		ACS_NamedExecuteWithResult("Stronghold_KillCount",0,0,0,0);	
+		
+	int noblood = CheckFlag(0,"NOBLOOD");
+	int health;
+	int currentHealth = GetActorProperty(0, APROP_Health);	
+	int healthtokens = CheckInventory("ShrunkMasterHealthTokens");
+
+	if(healthtokens == 0)
+		health = GetActorProperty(0, APROP_SpawnHealth);	
+	else
+		health = healthtokens;
+	
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int z = GetActorZ(0);
+	
+	//eww
+	if(ThingCountName("SamsaraMixerCompendiumToken",0) > 0)
+	{
+		ACS_NamedExecuteAlways("Samsara_PinataHandler",0,health,GetActorProperty(0,APROP_Radius)>>16,GetActorProperty(0,APROP_Height)>>16);
+	}
+	
+	SetActivatorToTarget(0);
+	
+	if(override != 1)
+		GiveInventory("KillCount", 1);
+		
+	if(CheckInventory("Hexen2Class"))
+	{
+		int chance = (0.05+((CheckInventory("Hexen2Level")-4)*0.03));
+		if(chance > 0.2)
+			chance = 0.2;
+					
+		GiveInventory("Hexen2Experience", FixedMul((health*2.5)>>16,(1.0+(0.05*CheckInventory("Hexen2Wisdom")))));
+		if(random(0.0,1.0) <= chance && !noblood)
+			SpawnForced("Hexen2SoulSphere",x,y,z,0,0);
+	}
+	
+	if(CheckInventory("StrifeClass") && !CheckInventory("BlackBirdTauntCooldown"))
+	{
+		if(isBoss)
+			GiveInventory("BlackBirdBossKill",1);
+		else if(HasXDeath && currentHealth < -health && random(0,20) <= 3)
+		{
+			GiveInventory("BlackBirdXDeath",1);
+		}
+	}
+}
+
+//======================================================================================================================
+//													Bot Alt Class
+//======================================================================================================================
+
+Script "Samsara_BotAltClassHandler" (int playernum)
+{
+	str playername;
+	switch(PlayerClass(playernum))
+	{
+		case 0:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Doom 64 Guy") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_doom64",1);
+			}
+			break;
+		case 3:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"B.J. Blazkowicz (Lost)") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_wolfmode",1);
+			}
+			if(StrCmp(playername,"B.J. Blazkowicz (Totenkopf)") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_wolfmode",2);
+			}
+			break;
+		case 4:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Daedolon") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_hexclass",1);
+			}
+			if(StrCmp(playername,"Baratus") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_hexclass",2);
+			}
+			break;
+		case 5:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-5);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Duke Nukem (Beach)") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_dkclab",1);
+			}
+			break;
+		case 8:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-8);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Taradino Cassatt") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_rottmode",1);
+			}
+			if(StrCmp(playername,"Thi Barrett") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_rottmode",2);
+			}
+			if(StrCmp(playername,"Lorelei Ni") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_rottmode",3);
+			}
+			if(StrCmp(playername,"Doug Wendt") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_rottmode",4);
+			}
+			break;
+		case 9:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Blake Stone (Planet Strike)") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_bsaog",1);
+			}
+			break;
+		case 16:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Tobias Locke") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_ipogmode",1);
+			}
+			if(StrCmp(playername,"Xith") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_ipogmode",2);
+			}
+			if(StrCmp(playername,"Specimen 7") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_ipogmode",3);
+			}
+			if(StrCmp(playername,"Theola Nom") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_ipogmode",4);
+			}
+			break;
+		case 19:
+			playername = GetUserCvarString(playernum,"name");
+			playername = StrRight(playername,strlen(playername)-2);
+			playername = StrLeft(playername,strlen(playername)-2);
+			if(StrCmp(playername,"Shephard") == 0)
+			{	
+				SetUserCvar(playernum,"sams_cl_shephardmode",1);
+			}
+			break;
+		case 27:
+			while(GetActorProperty(0,APROP_Health) > 0)
+			{
+				int randomweapon = random(0,5);
+				switch(randomweapon)
+				{
+					case 0:
+						SetWeapon("Catacomb_WavesQuickSpell");
+						break;
+					case 1:
+						SetWeapon("Catacomb_XTerminatorsQuickSpell");
+						break;
+					case 2:
+						SetWeapon("Catacomb_BurstsQuickSpell");
+						break;
+					case 3:
+						SetWeapon("Catacomb_ZappersQuickSpell");
+						break;
+					case 4:
+						SetWeapon("Catacomb_NukesQuickSpell");
+						break;
+					case 5:
+						SetWeapon("Catacomb_BoltsQuickSpell");
+						break;
+				}
+				Delay(17);
+			}
+			break;
+	}
+}
+
+//======================================================================================================================
+//													Lasers
+//======================================================================================================================
+
+Script "Samsara_Laser" (int type, int space, int height) clientside
+{
+	int t, i, k = 0, l, angle, pitch, x, y, z, tx, ty, tz, vx, vy, vz, mag, magI, horz;
+	str segment;
+	switch(type)
+	{
+		case 1:
+			segment = "Hexen2ForceCubeMissileSegment1";
+			break;
+		case 2:
+			segment = "Hexen2ForceCubeMissileSegment2";
+			break;
+		case 3:
+			segment = "Hexen2ForceCubeMissileSegment3";
+			break;
+		case 4:
+			segment = "Hexen2ForceCubeMissileSegment4";
+			break;
+		case 5:
+			segment = "Hexen2ForceCubeMissileSegment5";
+			break;
+		case 6:
+			i = space;
+			segment = "Hexen2TempestStaffPoweredLightningSegment";	
+			break;
+		case 7:
+			segment = "Hexen2FamineBeamSegment";
+			break;
+		case 8:
+			segment = "TentacleProjectileSegment";
+			break;
+		case 9:
+			horz = -11;
+			i = 28;
+			segment = "LaserProjectileSegment";
+			break;
+		case 10:
+			horz = -2;
+			i = 16;
+			segment = "LaserProjectileSegment";
+			break;
+		case 11:
+			horz = 2;
+			i = 16;
+			segment = "LaserProjectileSegment";
+			break;
+		case 12:
+			i = 16;
+			segment = "TentacleProjectileSegment";
+			break;
+		case 13:
+			horz = 24;
+			i = 64;
+			segment = "WidowBeamProjectileSegment";
+			break;
+		case 14:
+			i = space;
+			segment = "LGBeam";
+			break;
+		case 15:
+			segment = "Hexen2MedusaGazeSegment1";
+			break;			
+	}
+	
+
+	int newtid = UniqueTid();
+
+	tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0);
+	
+	SetActivatorToTarget(0);	
+	
+	int xoff = sin(GetActorAngle(0)) * horz;
+	int yoff = cos(GetActorAngle(0)) * horz;
+		
+    x = GetActorX(0) + xoff;
+	y = GetActorY(0) + yoff;
+	z = GetActorZ(0) + height*1.0;
+	
+	int vectorx = tx - x;
+	int vectory = ty - y;
+	int vectorz = tz - z;
+	angle = VectorAngle(vectorx, vectory);
+	
+	int length = magnitudeTwo(vectorx>>16,vectory>>16);
+	pitch = VectorAngle(length<<16, vectorz);
+
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+    for (i = i; i < magI; i += space)
+    {
+        SpawnForced(segment, x+(vx*i), y+(vy*i), z+(vz*i), newtid);
+		SetActorPitch(newtid, pitch);
+		SetActorAngle(newtid, angle);
+		if(i % 1500 == 0)
+			Delay(1);
+    }
+}
+
+//======================================================================================================================
+//													Inventory Reset
+//======================================================================================================================
+
+Script "Samsara_ResetInventory" (void)
+{
+	int pln = PlayerNumber();
+	ClearInventory();
+	GiveInventory("Clip", 50);
+	TakeInventory("GotWeapon0", 999);
+	TakeInventory("GotWeapon1", 999);
+	TakeInventory("GotWeapon2", 999);
+	TakeInventory("GotWeapon3", 999);
+	TakeInventory("GotWeapon4", 999);
+	TakeInventory("GotWeapon5", 999);
+	TakeInventory("GotWeapon6", 999);
+	TakeInventory("GotWeapon7", 999);
+	switch(PlayerClass(pln))
+	{
+		case 0:
+			TakeInventory(" Chaingun ", 999);
+			TakeInventory(" Chainsaw ", 999);
+			TakeInventory(" Railgun ", 999);
+			
+			GiveInventory(" Pistol ", 1);
+			GiveInventory(" Fist ", 1);
+			GiveInventory("DoomguyClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(" Pistol ");
+			break;
+		case 1:
+			TakeInventory("Super Bootspork", 999);
+			TakeInventory("Rapid Zorcher", 999);
+			TakeInventory("Gigazorcher 2100", 999);
+			
+			GiveInventory("Mini-Zorcher", 1);
+			GiveInventory(" Bootspoon ", 1);
+			GiveInventory("ChexClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Mini-Zorcher");
+			break;
+		case 2:
+			TakeInventory("Gauntlets of the Necromancer", 999);
+			TakeInventory("Dragon Claw", 999);
+			TakeInventory("Grim Ballista", 999);
+			TakeInventory("PermaRemoteBomb", 999);
+			TakeInventory("PermaTimeBomb", 999);
+			
+			GiveInventory("Elven Wand", 1);
+			GiveInventory(" Staff ", 1);
+			GiveInventory("CorvusClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("PermaRemoteBomb", 1);
+			GiveInventory("PermaTimeBomb", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Elven Wand");
+			break;
+		case 3:
+			TakeInventory("BJSuperKnife", 999);
+			TakeInventory("  Chaingun  ", 999);
+			TakeInventory("Mauser Rifle", 999);
+			
+			GiveInventory("Luger", 1);
+			GiveInventory("Knife", 1);
+			GiveInventory("WolfenClass", 1);
+			GiveInventory("CanWolfMovement", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Luger");
+			break;
+		case 4:
+			TakeInventory("PortFlechette", 999);
+			TakeInventory("PortMysticAmbit", 999);
+			TakeInventory("Serpent Staff", 999);
+			TakeInventory("Bloodscourge", 999);
+			TakeInventory("Hammer of Retribution", 999);
+			TakeInventory("Frost Shards", 999);
+			TakeInventory("Timon's Axe", 999);
+				
+			GiveInventory("Sapphire Wand", 1);
+			GiveInventory("Mace of Contrition", 1);
+			GiveInventory("HexenClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Sapphire Wand");
+			break;
+		case 5:
+			TakeInventory("Pipebombs", 999);
+			TakeInventory("Chaingun Cannon", 999);
+			TakeInventory("Golden Desert Eagle", 999);
+			TakeInventory("DukePortJetpack", 999);
+			TakeInventory("DukePetjack", 999);
+			TakeInventory("DukePortNiVi", 999);
+			TakeInventory("DukeNightVision", 999);
+			TakeInventory("  Shotgun  ", 999);
+			TakeInventory("Explosive Shotgun", 999);
+			TakeInventory("Chaingun Cannon", 999);
+			TakeInventory("RPG", 999);
+			TakeInventory("Freezethrower", 999);
+			TakeInventory("Devastator", 999);
+			
+			GiveInventory("Glock 17", 1);
+			GiveInventory("Mighty Boot", 1);
+			GiveInventory("DukeClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Glock 17");
+			
+			if (!CheckInventory("DukeBallgag"))
+			{
+				LocalAmbientSound("duke/mpdeath",127);
+				GiveInventory("DukeTauntCooldown",5);
+				ACS_NamedExecuteAlways("DukeTauntCooldown",0,0);
+			}
+			break;
+		case 6:
+			TakeInventory("KKV-7 SMG Flechette", 999);
+			TakeInventory("MA-75B Assault Rifle", 999);
+			TakeInventory("SPNKR-25 Auto Cannon", 999);
+			TakeInventory("CanDualPistols", 999);
+			TakeInventory("CanDualShotties", 999);
+			TakeInventory("WSTE-M5 Combat Shotgun", 999);
+			TakeInventory("Fusion Pistol", 999);
+			TakeInventory("SPNKR-XP SSM Launcher", 999);
+			TakeInventory("TOZT-7 Napalm Unit", 999);
+			TakeInventory("ONI-71 Wave Motion Cannon", 999);
+			TakeInventory("Alien Weapon", 999);
+			TakeInventory(" Alien Weapon ", 999);
+			TakeInventory(".44 Magnum Mega Class A1", 999);
+
+			GiveInventory("OverMax", 200);
+			GiveInventory("OverOverMax", 300);
+			GiveInventory(".44 Magnum Mega Class A1", 1);
+			GiveInventory("Steel Knuckles", 1);
+			GiveInventory("RocketAmmo", 10);
+			GiveInventory("Shell", 20);
+			GiveInventory("Cell", 50);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("MarathonClass", 1);
+			GiveInventory("MagnumBullet", 100);
+			GiveInventory("MagnumBulletRight", 100);
+			GiveInventory("RifleBullet", 500);
+			GiveInventory("SmgBullet", 500);
+			GiveInventory("FusionBullet", 500);
+			GiveInventory("GrenadeInClip", 500);
+			GiveInventory("WMCAmmo", 500);
+			GiveInventory("MortarAmmo", 500);
+			GiveInventory("NapalmInTank", 500);
+			GiveInventory("SpankerAmmo", 2);
+			GiveInventory("KnifeAmmo", 2);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(".44 Magnum Mega Class A1");
+			break;
+		case 7:
+			TakeInventory("Laser Cannon", 999);
+			TakeInventory("Nailgun", 999);
+			TakeInventory("QuadDamageItem", 999);
+			TakeInventory("Thunderbolt", 999);
+			TakeInventory("Rocket Powered Impaler", 999);
+			TakeInventory("Double Shotgun", 999);
+			TakeInventory("Grenade Launcher", 999);
+			TakeInventory("  Rocket Launcher  ", 999);
+			TakeInventory("Super Nailgun", 999);	
+			TakeInventory("Clip", 50);
+			
+			GiveInventory("QuakeClass", 1);
+			GiveInventory("Single Shotgun", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("Shell", 25);
+			GiveInventory("Axe", 1);
+			SetWeapon("Single Shotgun");
+			break;
+		case 8:
+			TakeInventory("HeatSeeker", 999);
+			TakeInventory("Double Pistols", 999);
+			TakeInventory("Bazooka", 999);
+			TakeInventory("MP40", 999);
+			TakeInventory("Firebomb", 999);
+			TakeInventory("DrunkMissiles", 999);
+			TakeInventory("FlameWall", 999);
+			TakeInventory("Split Missile", 999);
+			TakeInventory("Excalibat", 999);
+			TakeInventory("DarkStaff", 999);
+			TakeInventory("God Hand", 999);
+			TakeInventory("Doggie", 999);
+			TakeInventory("Clip", 50);
+			
+			GiveInventory("RottClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("RPistol", 1);
+			GiveInventory("RottKnife", 1);
+			GiveInventory("DisplayMenu", 1);
+			GiveInventory("PlayMusic", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("RPistol");
+			break;
+		case 9:
+			TakeInventory("BlakeRefill", 999);
+			TakeInventory("BlakeSuperAutoCharge", 999);
+			TakeInventory("Slow Fire Protector", 999);
+			TakeInventory("Rapid Assault Rifle", 999);
+			TakeInventory("Dual Neutron Disruptor", 999);
+			TakeInventory("Plasma Discharge Unit", 999);
+			TakeInventory("Gatling Fusion Devastator", 999);
+			TakeInventory("Anti-Plasma Cannon", 999);
+			TakeInventory("BlakeShield", 999);
+			TakeInventory("Advanced Auto Charge Pistol", 999);
+			
+			GiveInventory("BlakeClass", 1);
+			GiveInventory("Auto Charge Pistol", 1);
+			GiveInventory("CanWolfMovement", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Auto Charge Pistol");
+			break;
+		case 10:
+			TakeInventory("Dynamite", 999);
+			TakeInventory("Flaregun", 999);
+			TakeInventory("Sawedoff", 999);
+			TakeInventory("Tommygun", 999);
+			TakeInventory("NapalmLauncher", 999);
+			TakeInventory("TeslaCannon", 999);
+			TakeInventory("LifeLeech", 999);
+			TakeInventory("GunsAkimboP", 999);
+			TakeInventory("GunsAkimboItem", 999);
+			TakeInventory("VoodooDoll", 999);
+			TakeInventory("SprayCan", 999);
+			TakeInventory("Flaregun2", 999);
+			
+			GiveInventory("CalebClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("Pitchfork", 1);
+			GiveInventory("   Revolver   ", 1);
+			SetWeapon("   Revolver   ");
+			break;
+		case 11:
+			TakeInventory(" Sigil ", 999);
+			TakeInventory("StrifeSigilPiece", 999);
+			TakeInventory("StrifeBeaconItem5", 999);
+			TakeInventory("  Crossbow  ", 999);
+			TakeInventory("Mini Missile Launcher", 999);
+			TakeInventory("Assault Gun", 999);
+			TakeInventory(" Grenade Launcher ", 999);
+			TakeInventory("Flame Thrower", 999);
+			TakeInventory(" Mauler ", 999);
+			TakeInventory("  Sigil  ", 999);
+			
+			GiveInventory("OverMax", 200);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("StrifeClass", 1);
+			GiveInventory("Punch Dagger", 1);
+			GiveInventory("   Pistol   ", 1);
+			SetWeapon("   Pistol   ");	
+			break;
+		case 12:
+			TakeInventory(" Arachnicator ", 999);
+			TakeInventory("  Sonic Shock  ", 999);
+			TakeInventory("Pellet Bomb", 999);
+			TakeInventory("  Dart Cannon  ", 999);
+			TakeInventory("    Missile Launcher    ", 999);
+			TakeInventory("Napalm Charge", 999);
+			TakeInventory(" Plasma Ball ", 999);
+			TakeInventory(" Eradicator Enhancement Chip ", 999);
+			TakeInventory(" EvilBuddy ", 999);
+			
+			GiveInventory("EradClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("  Claw  ", 1);
+			GiveInventory("  Ripper Disc  ", 1);
+			SetWeapon("  Ripper Disc  ");
+			break;
+		case 13:
+			TakeInventory("M24CAW", 999);
+			TakeInventory("M343Vulcan", 999);
+			TakeInventory("AssaultShotgun", 999);
+			TakeInventory("AlienDualBlaster", 999);
+			TakeInventory("AlienPlasmaRifle", 999);
+			TakeInventory("AlienAssaultCannon", 999);
+			TakeInventory("AlienDisintegrator", 999);
+			TakeInventory("SuperVulcan", 999);
+
+			GiveInventory("Taser", 1);
+			GiveInventory("CanWolfMovement", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("C7Class", 1);
+			SetWeapon("Taser");
+			break;
+		case 14:
+			TakeInventory("DirtShark", 999);
+			TakeInventory("ACR Combat Laser", 999);
+			TakeInventory("ACR ADD-ON", 999);
+			TakeInventory("Cyclops Particle Accelerator", 999);
+			TakeInventory("RMR Grenade Launcher", 999);
+			TakeInventory("RMR Railgun", 999);
+			TakeInventory(" RMR Plasma Cannon ", 999);
+			TakeInventory("Subestron Arm", 999);
+			TakeInventory("Estron Ball", 999);
+			
+			GiveInventory(" Laser Pistol ", 1);
+			GiveInventory("RMRClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(" Laser Pistol ");
+			break;
+		case 15:
+			TakeInventory("Thermal Detonator", 999);
+			TakeInventory("Stormtrooper Rifle", 999);
+			TakeInventory("Fusion Cutter", 999);
+			TakeInventory("Imperial Repeater", 999);
+			TakeInventory("Mortar Gun", 999);
+			TakeInventory("Concussion Rifle", 999);
+			TakeInventory("Assault Cannon", 999);
+			TakeInventory("DFSuperCharge", 999);
+			TakeInventory("Stun Gauntlets", 999);
+			TakeInventory("Czerka Adventurer", 999);
+			
+			GiveInventory("  Fist_2x5  ", 1);
+			GiveInventory("Bryar Pistol", 1);
+			GiveInventory("KatarnClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);			
+			SetWeapon("Bryar Pistol");	
+			break;
+		case 16:
+			TakeInventory(" Toxic Mutant Gun ", 999);
+			TakeInventory(" Plasma Shotgun ", 999);
+			TakeInventory(" Aldus Flamethrower ", 999);
+			TakeInventory(" Fast Chaingun ", 999);
+			TakeInventory(" Fast Rocket Launcher ", 999);
+			TakeInventory(" Laser Cannon ", 999);
+			TakeInventory(" Super Plasma Annihilator ", 999);
+			TakeInventory(" Lizard Crossbow ", 999);
+			TakeInventory("PGSuperTazer", 999);
+			TakeInventory("PGUltraTazer", 999);
+			TakeInventory("IPOGGrenadeItem", 999);
+			TakeInventory("IPOGTimeBombItem", 999);
+			TakeInventory("IPOGProximityMineItem", 999);
+			TakeInventory("IPOGCloneItem", 999);
+			
+			GiveInventory("POGreedClass", 1);
+			GiveInventory(" Tazer ", 1);
+			GiveInventory(" Aldus Pistol ", 1);
+			GiveInventory("OverMax", 200);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(" Aldus Pistol ");
+			break;
+		case 17:
+			TakeInventory(" 18mm Auto ", 999);
+			TakeInventory(" Phase Rifle ", 999);
+			TakeInventory(" AM Blaster ", 999);
+			TakeInventory("Phase Repeater", 999);
+			TakeInventory(" Lock-on Cannon ", 999);
+			TakeInventory(" AM Cyclone ", 999);
+			TakeInventory(" Disruptor Zodiac ", 999);
+			TakeInventory(" Disruptor Plasmalance ", 999);
+			TakeInventory("DisruptorPSIEnergy", 999);
+			TakeInventory("DisruptorPSICooldown", 999);
+		
+			GiveInventory(" 18mm Semi ", 1);
+			GiveInventory("Disruptor Fist", 1);
+			GiveInventory("DisruptorClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("DisruptorDrain", 1);
+			GiveInventory("DisruptorHealPSI", 1);
+			GiveInventory("DisruptorPSIEnergy", 10);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(" 18mm Semi ");
+			break;
+		case 18:
+			TakeInventory("WTShieldTrigger", 999);
+			TakeInventory("WTShieldUsed", 999);
+			TakeInventory("WTWeaponActive", 999);
+			TakeInventory("WTShieldDisable", 999);
+			TakeInventory("WTShieldCounter", 999);
+			TakeInventory("WTSpellCounter", 999);
+			TakeInventory("WTCastingSpell", 999);
+			TakeInventory("WTHalberdHold", 999);
+			TakeInventory("WTBowUpgrade", 999);
+			TakeInventory("WTSwordUpgrade", 999);
+			TakeInventory("WTFistActive", 999);
+			TakeInventory("WTFistAttack", 999);
+			
+			GiveInventory("Bow and Arrows", 1);
+			GiveInventory("Witchaven_Fists", 1);
+			GiveInventory("WitchavenClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("GrondovalStarterArmor", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Bow and Arrows");
+			break;
+		case 19:
+			TakeInventory("HalfLifeMusicPlayingToken", 1);
+			TakeInventory("HalfLifeOpposingForceSet", 1);
+			TakeInventory("HLHEVIsTalking", 1);
+			TakeInventory("HLHEVPickupID", 1);
+			TakeInventory("HLHEVDamageType", 1);
+			TakeInventory("HLSpeedTokens", 1);
+			
+			GiveInventory("9mm Pistol", 1);
+			GiveInventory("Crowbar", 1);
+			GiveInventory("HalfLifeClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("Clip", 30);
+			GiveInventory("Shell", 15);
+			GiveInventory("RocketAmmo", 5);	
+			GiveInventory("Flashlightammo", 4200);
+			SetWeapon("9mm Pistol");
+			break;
+		case 20:
+			GiveInventory("SWKatana", 1);
+			GiveInventory("SWFists", 1);
+			GiveInventory("SWShuriken", 1);
+			GiveInventory("GuardMode1", 1);
+			GiveInventory("SWClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("SWKatana");
+			break;
+		case 21:
+			GiveInventory("CMLaserPistol", 1);
+			GiveInventory("MagicFist", 1);
+			GiveInventory("CMClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("usingmagicnull", 1);
+			GiveInventory("OverMax", 200);
+			GiveInventory("MagicMode0", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("CMLaserPistol");
+			break;
+		case 22:
+			GiveInventory("PSMagnum", 1);
+			GiveInventory("PSMachete", 1);
+			GiveInventory("JonClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("PSMagnum");
+			break;
+		case 23:
+			GiveInventory(" .454 Casull Pistol ", 1);
+			GiveInventory(" RR Crowbar ", 1);
+			GiveInventory("RRClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon(" .454 Casull Pistol ");
+			break;
+		case 24:
+			TakeInventory("Q2Silencer", 999);
+			TakeInventory("Q2EnvironmentSuit", 999);
+			TakeInventory("Q2Invulnerability", 999);
+			TakeInventory("Q2QuadDamage", 999);
+			TakeInventory("Q2DualFireDamage", 999);
+			TakeInventory("Q2DoubleDamage", 999);
+			
+			GiveInventory("Q2Blaster", 1);
+			GiveInventory("BittermanClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Q2Blaster");
+			break;
+		case 25:
+			TakeInventory("Hexen2Level", 0x7FFFFFFF);
+			TakeInventory("Hexen2Experience", 0x7FFFFFFF);
+			TakeInventory("Hexen2Intelligence", 0x7FFFFFFF);
+			TakeInventory("Hexen2Wisdom", 0x7FFFFFFF);
+			TakeInventory("Hexen2Dexterity", 0x7FFFFFFF);
+			TakeInventory("Hexen2Strength", 0x7FFFFFFF);
+			TakeInventory("Hexen2BlueManaAdd", 0x7FFFFFFF);
+			TakeInventory("Hexen2GreenManaAdd", 0x7FFFFFFF);
+			TakeInventory("Hexen2HealthAdd", 0x7FFFFFFF);
+			//TakeInventory("Hexen2Started", 1);
+			
+			GiveInventory("Hexen2BloodFire", 1);
+			GiveInventory("Hexen2Sickle", 1);
+			GiveInventory("Hexen2Class", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Q2Blaster");
+			break;
+		case 26:
+			GiveInventory("BondClass", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			GiveInventory("Goldeneye_PP7Silenced", 1);
+			GiveInventory("Goldeneye_Slapper", 1);
+			GiveInventory("Goldeneye_PP7Magazine", 7);
+			GiveInventory("Goldeneye_PP7DualMagazine" ,7);
+			GiveInventory("Goldeneye_KF7Magazine", 30);
+			GiveInventory("Goldeneye_KF7DualMagazine", 30);
+			GiveInventory("Goldeneye_AutoShotgunMagazine", 5);
+			GiveInventory("Goldeneye_AutoShotgunDualMagazine", 5);
+			GiveInventory("Goldeneye_AR33Magazine", 30);
+			GiveInventory("Goldeneye_AR33DualMagazine", 30);
+			GiveInventory("Goldeneye_RocketLauncherMagazine", 1);
+			GiveInventory("Goldeneye_RocketLauncherDualMagazine", 1);
+			GiveInventory("Goldeneye_RCP90Magazine", 80);
+			GiveInventory("Goldeneye_RCP90DualMagazine", 80);
+			GiveInventory("Goldeneye_GoldenGunMagazine", 1);
+			GiveInventory("Goldeneye_GoldenGunDualMagazine", 1);
+			GiveInventory("Goldeneye_SniperMagazine", 8);
+			GiveInventory("Goldeneye_SniperDualMagazine", 8);
+			GiveInventory("Goldeneye_D5KMagazine", 80);
+			GiveInventory("Goldeneye_D5KDualMagazine", 80);
+			GiveInventory("Goldeneye_ThrowingKnivesMagazine", 1);
+			GiveInventory("Goldeneye_ThrowingKnivesDualMagazine", 1);
+			SetWeapon("Goldeneye_PP7Silenced");
+			break;
+		case 27:
+			TakeInventory("Catacomb_SmallHealthPotion", 999);
+			TakeInventory("Catacomb_LargeHealthPotion", 999);
+			TakeInventory("Catacomb_Waves", 999);
+			TakeInventory("Catacomb_XTerminators", 999);
+			TakeInventory("Catacomb_Bursts", 999);
+			TakeInventory("Catacomb_Zappers", 999);
+			TakeInventory("Catacomb_Nukes", 999);
+			TakeInventory("Catacomb_Bolts", 999);
+			TakeInventory("Catacomb_Hourglass", 999);
+			TakeInventory("Catacomb_HourglassCooldown", 999);	
+		
+			GiveInventory("Catacomb3D_MagicMissile", 1);
+			GiveInventory("CatacombClass", 1);
+			GiveInventory("CanWolfMovement", 1);
+			GiveInventory("IsSamsaraClass", 1);
+			GiveInventory("TauntButton", 1);
+			SetWeapon("Catacomb3D_MagicMissile");
+			break;
+	}
+}
+
+//======================================================================================================================
+//							Map Inventory - For weapons to advanced for generic pickup code
+//======================================================================================================================
+
+Script "Samsara_MapInventory" (int item, int dropped)
+{
+	int weaponStay = GetCvar("sv_weaponstay");
+	int maxDistance = 80;
+	int invokerX = GetActorX(0)>>16;
+	int invokerY = GetActorY(0)>>16;
+	int invokerZ = GetActorZ(0)>>16;
+	int inventoryX, inventoryY, inventoryZ, result;
+	
+	int displaymode;
+    if (GetCVar("sams_runninginzdoom") == 1)
+    {
+        displaymode = GetCVar("sams_zd_pickupmode");
+    } else {
+        displaymode = GetUserCVar(ConsolePlayerNumber(), "sams_cl_pickupmode");
+    }
+	
+	switch(item)
+	{
+		case 0:
+			if(!CheckInventory("Totenkopf_IHaveMauser"))
+			{
+				GiveInventory("Totenkopf_MauserPickedUpX",invokerX+65536);
+				GiveInventory("Totenkopf_MauserPickedUpY",invokerY+65536);
+				GiveInventory("Totenkopf_MauserPickedUpZ",invokerZ+65536);
+				GiveInventory("Samsara_ModeWeaponChange",1);
+				GiveInventory("Totenkopf_IHaveMauser",1);
+				GiveInventory("Clip",5);
+				FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Totenkopf_IHaveDualMausers"))
+			{
+				inventoryX = CheckInventory("Totenkopf_MauserPickedUpX")-65536;
+				inventoryY = CheckInventory("Totenkopf_MauserPickedUpY")-65536;
+				inventoryZ = CheckInventory("Totenkopf_MauserPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Totenkopf_MauserPickedUpX",131072);
+					TakeInventory("Totenkopf_MauserPickedUpY",131072);
+					TakeInventory("Totenkopf_MauserPickedUpZ",131072);
+					GiveInventory("Totenkopf_MauserPickedUpX",invokerX+65536);
+					GiveInventory("Totenkopf_MauserPickedUpY",invokerY+65536);
+					GiveInventory("Totenkopf_MauserPickedUpZ",invokerZ+65536);
+					GiveInventory("Totenkopf_IHaveDualMausers",1);
+					GiveInventory("Samsara_ModeWeaponChange",1);
+					GiveInventory("Clip",5);
+					if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Clip") < GetAmmoCapacity("Clip")) { result = 1; }
+			else if(dropped && CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = -100; }
+			break;
+		case 1:
+			if(!CheckInventory("  Chaingun  "))
+			{
+				GiveInventory("Totenkopf_MP40PickedUpX",invokerX+65536);
+				GiveInventory("Totenkopf_MP40PickedUpY",invokerY+65536);
+				GiveInventory("Totenkopf_MP40PickedUpZ",invokerZ+65536);
+				GiveInventory("Samsara_ModeWeaponChange",1);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Totenkopf_IHaveDualMP40s"))
+			{
+				inventoryX = CheckInventory("Totenkopf_MP40PickedUpX")-65536;
+				inventoryY = CheckInventory("Totenkopf_MP40PickedUpY")-65536;
+				inventoryZ = CheckInventory("Totenkopf_MP40PickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Totenkopf_MP40PickedUpX",131072);
+					TakeInventory("Totenkopf_MP40PickedUpY",131072);
+					TakeInventory("Totenkopf_MP40PickedUpZ",131072);
+					GiveInventory("Totenkopf_MP40PickedUpX",invokerX+65536);
+					GiveInventory("Totenkopf_MP40PickedUpY",invokerY+65536);
+					GiveInventory("Totenkopf_MP40PickedUpZ",invokerZ+65536);
+					GiveInventory("Totenkopf_IHaveDualMP40s",1);
+					GiveInventory("Samsara_ModeWeaponChange",1);
+					GiveInventory("Clip",16);
+					if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = 1;
+				}
+			}
+			else if(dropped)
+				result = 1;
+			break;
+		case 2:
+			if(dropped == 1 && CheckInventory("Shell") < GetAmmoCapacity("Shell"))
+			{
+				GiveInventory("Samsara_ModeWeaponChange", 1);
+				GiveInventory("Totenkopf_IHaveSTG44", 1);
+				GiveInventory("Shell",30);
+				if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon"); 
+				FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+				ACS_NamedExecuteWithResult("Samsara_MapInventoryLogger",2);
+				result = 1;
+			}
+			else if(CheckInventory("Totenkopf_IHaveSTG44") && CheckInventory("Shell") >= GetAmmoCapacity("Shell"))
+			{
+				result = 0;
+			}
+			else if(dropped == 0)
+			{
+				if(weaponStay == 0 || !CheckInventory("Totenkopf_IHaveSTG44"))
+				{
+					GiveInventory("Totenkopf_IHaveSTG44", 1);
+					GiveInventory("Samsara_ModeWeaponChange", 1);
+					GiveInventory("Shell",30);
+					if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon"); 
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					ACS_NamedExecuteWithResult("Samsara_MapInventoryLogger",2);
+					result = !weaponStay;
+				}
+				else result = 0;
+			}
+			break;
+		case 3: 
+			if(!CheckInventory("Assault Shotgun")) { result = 1; }	
+			else if(CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,13);
+				GiveInventory("Shell",8);
+			}
+			break;
+		case 4:
+			if(!CheckInventory(".357 Python")) { result = 1; }	
+			else if(CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,12);
+				GiveInventory("Shell",6);
+			}
+			break;
+		case 5:
+			if(!CheckInventory("MP5")) { result = 1; }	
+			else if(CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,14);
+				GiveInventory("Clip",50);
+				GiveInventory("RocketAmmo",3);
+			}
+			break;
+		case 6:
+			if(!CheckInventory(" RPG ")) { result = 1; }	
+			else if(CheckInventory("RocketAmmo") >= GetAmmoCapacity("RocketAmmo")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,15);
+				GiveInventory("RocketAmmo",10);
+			}
+			break;
+		case 7:
+			if(!CheckInventory("Gauss Cannon")) { result = 1; }	
+			else if(CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,16);
+				GiveInventory("Cell",30);
+			}
+			break;
+		case 8:
+			weaponStay = GetCvar("sams_permault");
+			if(!CheckInventory("E.G.O.N.")) { result = 1; }	
+			else if(CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = 0; }
+			else if(dropped == 1 || weaponStay == 0) { result = 1; }
+			else { result = 0; }
+			
+			if(result == 1)
+			{
+				ACS_NamedExecuteAlways("HL2685",0,17);
+				GiveInventory("Cell",70);
+			}
+			break;
+		case 9:
+			if(!CheckInventory("Goldeneye_ThrowingKnives"))
+			{
+				GiveInventory("Goldeneye_KnifePickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_KnifePickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_KnifePickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_ThrowingKnivesDualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_KnifePickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_KnifePickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_KnifePickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_KnifePickedUpX",131072);
+					TakeInventory("Goldeneye_KnifePickedUpY",131072);
+					TakeInventory("Goldeneye_KnifePickedUpZ",131072);
+					GiveInventory("Goldeneye_KnifePickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_KnifePickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_KnifePickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_ThrowingKnivesDualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Goldeneye_ThrowingKnivesAmmo") < GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo")) { result = 1; }
+			else if(dropped && CheckInventory("Goldeneye_ThrowingKnivesAmmo") >= GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo")) { result = -100; }
+			break;
+		case 10:
+			if(!CheckInventory("Goldeneye_KF7Soviet"))
+			{
+				GiveInventory("Goldeneye_KF7SovietPickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_KF7SovietPickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_KF7SovietPickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_KF7DualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_KF7SovietPickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_KF7SovietPickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_KF7SovietPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_KF7SovietPickedUpX",131072);
+					TakeInventory("Goldeneye_KF7SovietPickedUpY",131072);
+					TakeInventory("Goldeneye_KF7SovietPickedUpZ",131072);
+					GiveInventory("Goldeneye_KF7SovietPickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_KF7SovietPickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_KF7SovietPickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_KF7DualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Clip") < GetAmmoCapacity("Clip")) { result = 1; }
+			else if(dropped && CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = -100; }
+			break;
+		case 11:
+			if(!CheckInventory("Goldeneye_AutoShotgun"))
+			{
+				GiveInventory("Goldeneye_AutoShotgunPickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_AutoShotgunPickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_AutoShotgunPickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_AutoShotgunDualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_AutoShotgunPickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_AutoShotgunPickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_AutoShotgunPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_AutoShotgunPickedUpX",131072);
+					TakeInventory("Goldeneye_AutoShotgunPickedUpY",131072);
+					TakeInventory("Goldeneye_AutoShotgunPickedUpZ",131072);
+					GiveInventory("Goldeneye_AutoShotgunPickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_AutoShotgunPickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_AutoShotgunPickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_AutoShotgunDualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Shell") < GetAmmoCapacity("Shell")) { result = 1; }
+			else if(dropped && CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = -100; }
+			break;
+		case 12:
+			if(!CheckInventory("Goldeneye_AR33"))
+			{
+				GiveInventory("Goldeneye_AR33PickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_AR33PickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_AR33PickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_AR33DualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_AR33PickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_AR33PickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_AR33PickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_AR33PickedUpX",131072);
+					TakeInventory("Goldeneye_AR33PickedUpY",131072);
+					TakeInventory("Goldeneye_AR33PickedUpZ",131072);
+					GiveInventory("Goldeneye_AR33PickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_AR33PickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_AR33PickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_AR33DualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Clip") < GetAmmoCapacity("Clip")) { result = 1; }
+			else if(dropped && CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = -100; }
+			break;
+		case 13:
+			if(!CheckInventory("Goldeneye_RocketLauncher"))
+			{
+				GiveInventory("Goldeneye_RocketLauncherPickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_RocketLauncherPickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_RocketLauncherPickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_RocketLauncherDualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_RocketLauncherPickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_RocketLauncherPickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_RocketLauncherPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_RocketLauncherPickedUpX",131072);
+					TakeInventory("Goldeneye_RocketLauncherPickedUpY",131072);
+					TakeInventory("Goldeneye_RocketLauncherPickedUpZ",131072);
+					GiveInventory("Goldeneye_RocketLauncherPickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_RocketLauncherPickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_RocketLauncherPickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_RocketLauncherDualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("RocketAmmo") < GetAmmoCapacity("RocketAmmo")) { result = 1; }
+			else if(dropped && CheckInventory("RocketAmmo") >= GetAmmoCapacity("RocketAmmo")) { result = -100; }
+			break;
+		case 14:
+			if(!CheckInventory("Goldeneye_RCP90"))
+			{
+				GiveInventory("Goldeneye_RCP90PickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_RCP90PickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_RCP90PickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_RCP90DualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_RCP90PickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_RCP90PickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_RCP90PickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_RCP90PickedUpX",131072);
+					TakeInventory("Goldeneye_RCP90PickedUpY",131072);
+					TakeInventory("Goldeneye_RCP90PickedUpZ",131072);
+					GiveInventory("Goldeneye_RCP90PickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_RCP90PickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_RCP90PickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_RCP90DualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Cell") < GetAmmoCapacity("Cell")) { result = 1; }
+			else if(dropped && CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = -100; }
+			break;
+		case 15:
+			weaponStay = GetCvar("sams_permault");
+			if(!CheckInventory("Goldeneye_Moonraker"))
+			{
+				GiveInventory("Goldeneye_GoldenGun",1);
+				GiveInventory("Goldeneye_LaserPickedUpX",invokerX+65536);
+				GiveInventory("Goldeneye_LaserPickedUpY",invokerY+65536);
+				GiveInventory("Goldeneye_LaserPickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("Goldeneye_LaserDualToken"))
+			{
+				inventoryX = CheckInventory("Goldeneye_LaserPickedUpX")-65536;
+				inventoryY = CheckInventory("Goldeneye_LaserPickedUpY")-65536;
+				inventoryZ = CheckInventory("Goldeneye_LaserPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("Goldeneye_LaserPickedUpX",131072);
+					TakeInventory("Goldeneye_LaserPickedUpY",131072);
+					TakeInventory("Goldeneye_LaserPickedUpZ",131072);
+					GiveInventory("Goldeneye_LaserPickedUpX",invokerX+65536);
+					GiveInventory("Goldeneye_LaserPickedUpY",invokerY+65536);
+					GiveInventory("Goldeneye_LaserPickedUpZ",invokerZ+65536);
+					GiveInventory("Goldeneye_LaserDualToken",1);
+					GiveInventory("Goldeneye_GoldenGunDualToken",1);
+					PlaySound(0,"Goldeneye/Weaponup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Cell") < GetAmmoCapacity("Cell")) { result = 1; }
+			else if(dropped && CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = -100; }
+			break;
+		case 16:
+			if(!CheckInventory("WSTE-M5 Combat Shotgun"))
+			{
+				GiveInventory("MarathonShotgunPickedUpX",invokerX+65536);
+				GiveInventory("MarathonShotgunPickedUpY",invokerY+65536);
+				GiveInventory("MarathonShotgunPickedUpZ",invokerZ+65536);
+				result = 1-!weaponStay;
+			}
+			else if(!CheckInventory("CanDualShotties"))
+			{
+				inventoryX = CheckInventory("MarathonShotgunPickedUpX")-65536;
+				inventoryY = CheckInventory("MarathonShotgunPickedUpY")-65536;
+				inventoryZ = CheckInventory("MarathonShotgunPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("MarathonShotgunPickedUpX",131072);
+					TakeInventory("MarathonShotgunPickedUpY",131072);
+					TakeInventory("MarathonShotgunPickedUpZ",131072);
+					GiveInventory("MarathonShotgunPickedUpX",invokerX+65536);
+					GiveInventory("MarathonShotgunPickedUpY",invokerY+65536);
+					GiveInventory("MarathonShotgunPickedUpZ",invokerZ+65536);
+					GiveInventory("CanDualShotties",1);
+					PlaySound(0,"marathon/itemget");
+					FadeRange(0,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Shell") < GetAmmoCapacity("Shell")) { result = 1; }
+			else if(dropped && CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = -100; }
+			break;
+		case 17:
+			if(!CheckInventory("SWUzi"))
+			{
+				GiveInventory("SWUziPickedUpX",invokerX+65536);
+				GiveInventory("SWUziPickedUpY",invokerY+65536);
+				GiveInventory("SWUziPickedUpZ",invokerZ+65536);
+				GiveInventory("UziAmountCheck",1);
+				result = 1-!weaponStay;
+			}
+			else if(CheckInventory("UziAmountCheck") < 2)
+			{
+				inventoryX = CheckInventory("SWUziPickedUpX")-65536;
+				inventoryY = CheckInventory("SWUziPickedUpY")-65536;
+				inventoryZ = CheckInventory("SWUziPickedUpZ")-65536;
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				{
+					TakeInventory("SWUziPickedUpX",131072);
+					TakeInventory("SWUziPickedUpY",131072);
+					TakeInventory("SWUziPickedUpZ",131072);
+					GiveInventory("SWUziPickedUpX",invokerX+65536);
+					GiveInventory("SWUziPickedUpY",invokerY+65536);
+					GiveInventory("SWUziPickedUpZ",invokerZ+65536);
+					GiveInventory("UziAmountCheck",1);
+					PlaySound(0,"Item/SWpickup");
+					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
+					result = !(!dropped && !weaponStay);
+				}
+			}
+			else if(dropped && CheckInventory("Clip") < GetAmmoCapacity("Clip")) { result = 1; }
+			else if(dropped && CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = -100; }
+			break;
+	}
+	SetResultValue(result);
+	//PrintBold(s:"Distance X: ",d:abs(invokerX - inventoryX),s:", Distance Y: ",d:abs(invokerY - inventoryY),s:", Distance Z: ",d:abs(invokerZ - inventoryZ));
+}
+
+Script "Samsara_MapInventoryLogger" (int message) clientside
+{
+	str logmsg;
+	switch(message)
+	{
+		default: break;
+		case 2: logmsg = "STG44 Assault Rifle"; break;
+	}
+	Log(s:msgColors[GetCVar("msg0color")], s:logmsg);
+}
+
+//======================================================================================================================
+//											Spawn Slots that respawn in the map
+//======================================================================================================================
+
+Script "Samsara_SpawnSlot" (int slot, int toss)
+{
+	int newTid = UniqueTid();
+	str slotweapon;
+	switch(slot)
+	{
+		case 1: slotweapon = "SamsaraSlotOnePickup"; break;
+		case 2: slotweapon = "SamsaraSlotTwoPickup"; break;
+		case 3: slotweapon = "SamsaraSlotThreePickup"; break;
+		case 4: slotweapon = "SamsaraSlotFourPickup"; break;
+		case 5: slotweapon = "SamsaraSlotFivePickup"; break;
+		case 6: slotweapon = "SamsaraSlotSixPickup"; break;
+		case 7: slotweapon = "SamsaraSlotSevenPickup"; break;
+	}
+	SpawnSpotFacingForced(slotweapon,0,newTid);
+	SetActorProperty(newTid,APROP_Dropped,0);
+	Thing_ChangeTid(newTid,0);
+}
+
+//======================================================================================================================
+//													Player Shrinker
+//======================================================================================================================
+
+Script "Samsara_PlayerShrinker" (int condition)
+{
+	if(!condition)
+	{	
+		if(CheckInventory("ShrunkPlayer"))
+			terminate;
+			
+		int shrinktimer;
+		int activatorstid = ActivatorTid();
+		int usertid = UniqueTid();
+		int dummytid = UniqueTid();
+		int ScaleX = GetActorProperty(0,APROP_ScaleX);
+		int ScaleY = GetActorProperty(0,APROP_ScaleY);
+		int shrunkenscalex = FixedMul(ScaleX,0.2);
+		int shrunkenscaley = FixedMul(ScaleY,0.2);
+		int viewheight = GetActorProperty(0,APROP_ViewHeight);
+		GiveInventory("ShrunkPlayer",1);	
+		SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+		for(int a = 0; a < 10; a++)
+		{
+			SetActorProperty(0,APROP_ViewHeight,FixedMul(viewheight,1.0-(a*0.08)));
+			Delay(2);
+		}
+		Delay(1);
+		SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+		int pln = PlayerNumber();
+		
+		//Translation helper, because the flag isn't valid
+		SpawnSpotForced("TranslationDummy",0,dummytid,0);
+		Thing_SetTranslation(dummytid, -1);
+		Thing_ChangeTid(0, usertid);
+		SetActivator(dummytid, AAPTR_Default);
+		MorphActor(usertid,strparam(s:PlayerActors[PlayerClass(pln)],s:"_Shrink"),"Zombieman3",525,MRF_FULLHEALTH|MRF_UNDOBYTOMEOFPOWER|MRF_LOSEACTUALWEAPON|MRF_NEWTIDBEHAVIOUR,"ShrinkFlash","ShrinkFlash");
+		Thing_SetTranslation(usertid, -1);
+		SetActivator(usertid, AAPTR_Default);
+		Thing_ChangeTid(usertid, activatorstid);
+		Thing_Remove(dummytid);
+		
+		SetActorProperty(0,APROP_ScaleX,shrunkenscalex);
+		SetActorProperty(0,APROP_ScaleY,shrunkenscaley);
+		
+		while(shrinktimer <= 420)
+		{
+			if((ClassifyActor(0) & ACTOR_DEAD))
+				terminate;
+			
+			Delay(1);
+			
+			shrinktimer++;
+		}
+		TakeInventory("ShrunkPlayer",1);
+		int newtid = UniqueTid();
+		if(!Spawn(PlayerActors[PlayerClass(pln)],GetActorX(0),GetActorY(0),GetActorZ(0),newtid))
+		{
+			Thing_Damage2(0,500000000000,"Explosive");
+		}
+		else
+		{
+			Thing_Remove(newtid);
+		}
+		if((ClassifyActor(0) & ACTOR_DEAD))
+			terminate;
+			
+		SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+		for(a = 0; a < 10; a++)
+		{
+			SetActorProperty(0,APROP_ScaleX,shrunkenscalex+(FixedMul(ScaleX,0.1)*a));
+			SetActorProperty(0,APROP_ScaleY,shrunkenscaley+(FixedMul(ScaleY,0.1)*a));
+			SetActorProperty(0,APROP_ViewHeight,FixedMul(viewheight,0.28+(a*0.08)));
+			Delay(2);
+		}
+		UnMorphActor(0,1);
+		SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+		SetActorProperty(0,APROP_ViewHeight,viewheight);
+		SetActorProperty(0,APROP_ScaleX,ScaleX);
+		SetActorProperty(0,APROP_ScaleY,ScaleY);
+	}
+	else
+	{
+		SetResultValue(ClassifyActor(0) & ACTOR_PLAYER);
+	}
+}
+
+//======================================================================================================================
+//								Cvar GZDoom checker - Somewhat redundant over IsThisZandro
+//======================================================================================================================
+
+Script "Samsara_GZDoomChecker" (void)
+{
+	if(GetCvar("sams_runninginzdoom"))
+		SetResultValue(1);
+	
+	else
+		SetResultValue(0);
+}
+
+//======================================================================================================================
+//												Taunt Button for GZDoom
+//======================================================================================================================
+
+Script "TauntButton" (void) NET
+{
+	if(!GetCVar("sams_runninginzdoom") && GetCVar("sams_runninginzandro"))
+		Print(s:"Zandronum detected, use traditional taunt bind instead");
+	
+	else
+		UseInventory("TauntButton");
+}
+
+//======================================================================================================================
+//											Projectile Ripper Predictor
+//======================================================================================================================
+
+Script "Samsara_ProjectilePredictor" (int type)
+{
+	str typeactor;
+	int speedx = GetActorVelX(0);
+	int speedy = GetActorVelY(0);
+	int speedz = GetActorVelZ(0);
+	int divideamount = FixedDiv(GetActorProperty(0,APROP_Speed),GetActorProperty(0,APROP_Radius))>>16;
+	int modifier = 1.0/divideamount;
+	int currentmultiplier;
+	int newactivator = UniqueTid();
+	Thing_ChangeTid(0,newactivator);
+	SetActivator(0,AAPTR_Target);
+	int player = ActivatorTid();
+	int newplayer = UniqueTid();
+	Thing_ChangeTid(0,newplayer);
+	
+	int newtid1 = UniqueTid();
+	int newtid2 = UniqueTid();
+	int newtid3 = UniqueTid();
+	
+	switch(type)
+	{
+		case 1:
+			typeactor = "DisruptorGP_12_Explosion";
+			break;
+		case 2:
+			typeactor = "Fwalling_Explosion";
+			break;
+		case 3:
+			typeactor = "RMR-RedPlasma_Explosion";
+			break;
+		case 4:
+			typeactor = "Ksphere_Rott_Explosion";
+			break;
+		case 5:
+			typeactor = "Goldeneye_MoonrakerRay_Explosion";
+			break;
+	}
+	SpawnForced(typeactor,GetActorX(newactivator),GetActorY(newactivator),GetActorZ(newactivator),newtid3);
+	SetActivator(newtid3,AAPTR_Default);
+	SetPointer(AAPTR_Target,newplayer);
+	Thing_ChangeTid(newtid3,0);
+	SetActivator(newplayer,AAPTR_Default);
+	for(int a = 1; a < divideamount; a++)
+	{
+		currentmultiplier = a * modifier;
+		SpawnForced(typeactor,GetActorX(newactivator) + FixedMul(speedx,currentmultiplier),GetActorY(newactivator) + FixedMul(speedy,currentmultiplier), GetActorZ(newactivator) + FixedMul(speedz,currentmultiplier),newtid1);
+		SpawnForced(typeactor,GetActorX(newactivator) - FixedMul(speedx,currentmultiplier),GetActorY(newactivator) - FixedMul(speedy,currentmultiplier), GetActorZ(newactivator) - FixedMul(speedz,currentmultiplier),newtid2);
+		SetActivator(newtid1,AAPTR_Default);
+		SetPointer(AAPTR_Target,newplayer);
+		SetActivator(newtid2,AAPTR_Default);
+		SetPointer(AAPTR_Target,newplayer);
+		SetActivator(newplayer,AAPTR_Default);
+		Thing_ChangeTid(newtid1,0);
+		Thing_ChangeTid(newtid2,0);
+		
+		if(ClassifyActor(0) & ACTOR_WORLD)
+			terminate;
+	}
+}
+
+//======================================================================================================================
+//														Other
+//======================================================================================================================
+Script "Samsara_PlayerFreezeTranslation" (void)
+{
+	//SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+	CreateTranslation(7680, 0:255=%[0.078,0.062,0.140]:[1.16,1.16,1.348]);
+	Thing_SetTranslation(0,7680);
+}
+
+Script "ExtraDeathFX" (int mode) // Samsara Extra Death Special Effects -- 2530
+{
+	Switch(mode)
+	{
+		Case 1:
+			SetActorProperty(0, APROP_RenderStyle, STYLE_TRANSLUCENTSTENCIL);
+			SetActorProperty(0, APROP_StencilColor, 0x000000);
+			break;
+		Case 2:
+			SetActorProperty(0, APROP_RenderStyle, STYLE_OptFuzzy);
+			ThrustThingZ(0,5,0,0);
+			break;
+	}
+}
