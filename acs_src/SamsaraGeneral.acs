@@ -1279,15 +1279,14 @@ Script "Samsara_MapInventory" (int item, int dropped)
 				GiveInventory("Samsara_ModeWeaponChange",1);
 				GiveInventory("Totenkopf_IHaveMauser",1);
 				GiveInventory("Clip",5);
-				FadeRange(255,255,0,0.25,0,0,0,0,0.25);
-				result = 1-!weaponStay;
+				result = 1;
 			}
 			else if(!CheckInventory("Totenkopf_IHaveDualMausers"))
 			{
 				inventoryX = CheckInventory("Totenkopf_MauserPickedUpX")-65536;
 				inventoryY = CheckInventory("Totenkopf_MauserPickedUpY")-65536;
 				inventoryZ = CheckInventory("Totenkopf_MauserPickedUpZ")-65536;
-				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped)
 				{
 					TakeInventory("Totenkopf_MauserPickedUpX",131072);
 					TakeInventory("Totenkopf_MauserPickedUpY",131072);
@@ -1298,29 +1297,37 @@ Script "Samsara_MapInventory" (int item, int dropped)
 					GiveInventory("Totenkopf_IHaveDualMausers",1);
 					GiveInventory("Samsara_ModeWeaponChange",1);
 					GiveInventory("Clip",5);
-					if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon");
-					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
-					result = !(!dropped && !weaponStay);
+					result = 1;
 				}
 			}
-			else if(dropped && CheckInventory("Clip") < GetAmmoCapacity("Clip")) { result = 1; }
-			else if(dropped && CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = -100; }
+			else if(CheckInventory("Clip") < GetAmmoCapacity("Clip")) { if((!weaponStay || dropped)) { GiveInventory("Clip",5); result = 1; }}
 			break;
 		case 1:
+			if(CheckInventory("Shell") < GetAmmoCapacity("Shell")) { if((!weaponStay || dropped)) { GiveInventory("Shell",5); result = 1; }}
+			break;
+		case 2:
+			if(!CheckInventory("Totenkopf_IHaveSTG44"))
+			{
+				GiveInventory("Totenkopf_IHaveSTG44", 1);
+				GiveInventory("Samsara_ModeWeaponChange",1);
+			}
+			if(CheckInventory("Shell") < GetAmmoCapacity("Shell")) { if((!weaponStay || dropped)) { GiveInventory("Shell",30); result = 1; }}
+			break;
+		case 3:
 			if(!CheckInventory("  Chaingun  "))
 			{
 				GiveInventory("Totenkopf_MP40PickedUpX",invokerX+65536);
 				GiveInventory("Totenkopf_MP40PickedUpY",invokerY+65536);
 				GiveInventory("Totenkopf_MP40PickedUpZ",invokerZ+65536);
 				GiveInventory("Samsara_ModeWeaponChange",1);
-				result = 1-!weaponStay;
+				result = 1;
 			}
 			else if(!CheckInventory("Totenkopf_IHaveDualMP40s"))
 			{
 				inventoryX = CheckInventory("Totenkopf_MP40PickedUpX")-65536;
 				inventoryY = CheckInventory("Totenkopf_MP40PickedUpY")-65536;
 				inventoryZ = CheckInventory("Totenkopf_MP40PickedUpZ")-65536;
-				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped)
 				{
 					TakeInventory("Totenkopf_MP40PickedUpX",131072);
 					TakeInventory("Totenkopf_MP40PickedUpY",131072);
@@ -1331,57 +1338,29 @@ Script "Samsara_MapInventory" (int item, int dropped)
 					GiveInventory("Totenkopf_IHaveDualMP40s",1);
 					GiveInventory("Samsara_ModeWeaponChange",1);
 					GiveInventory("Clip",16);
-					if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon");
-					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
 					result = 1;
 				}
 			}
-			else if(dropped)
-				result = 1;
+			else if(CheckInventory("Clip") < GetAmmoCapacity("Clip")) { if((!weaponStay || dropped)) { result = 1; }}
 			break;
-		case 2:
-			if(dropped == 1 && CheckInventory("Shell") < GetAmmoCapacity("Shell"))
+		case 4:
+			if(!CheckInventory("HornetGun")) { result = 1; }	
+			
+			if(result == 1)
 			{
-				GiveInventory("Samsara_ModeWeaponChange", 1);
-				GiveInventory("Totenkopf_IHaveSTG44", 1);
-				GiveInventory("Shell",30);
-				if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon"); 
-				FadeRange(255,255,0,0.25,0,0,0,0,0.25);
-				ACS_NamedExecuteWithResult("Samsara_MapInventoryLogger",2);
-				result = 1;
+				ACS_NamedExecuteAlways("HL2685",0,11);
 			}
-			else if(CheckInventory("Totenkopf_IHaveSTG44") && CheckInventory("Shell") >= GetAmmoCapacity("Shell"))
-			{
-				result = 0;
-			}
-			else if(dropped == 0)
-			{
-				if(weaponStay == 0 || !CheckInventory("Totenkopf_IHaveSTG44"))
-				{
-					GiveInventory("Totenkopf_IHaveSTG44", 1);
-					GiveInventory("Samsara_ModeWeaponChange", 1);
-					GiveInventory("Shell",30);
-					if(CheckInventory("WolfenClassMode")==2) PlaySound(0,"Totenkopf/getweapon"); 
-					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
-					ACS_NamedExecuteWithResult("Samsara_MapInventoryLogger",2);
-					result = !weaponStay;
-				}
-				else result = 0;
-			}
-			break;
-		case 3: 
+			break;	
+		case 5: 
 			if(!CheckInventory("Assault Shotgun")) { result = 1; }	
-			else if(CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = 0; }
-			else if(dropped == 1 || weaponStay == 0) { result = 1; }
-			else { result = 0; }
+			else if(CheckInventory("Shell") < GetAmmoCapacity("Shell")) { if((!weaponStay || dropped)) { result = 1; }}
 			
 			if(result == 1)
 			{
 				ACS_NamedExecuteAlways("HL2685",0,13);
-				GiveInventory("Shell",8);
 			}
 			break;
-		case 4:
+		case 6:
 			if(!CheckInventory(".357 Python")) { result = 1; }	
 			else if(CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = 0; }
 			else if(dropped == 1 || weaponStay == 0) { result = 1; }
@@ -1393,7 +1372,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 				GiveInventory("Shell",6);
 			}
 			break;
-		case 5:
+		case 7:
 			if(!CheckInventory("MP5")) { result = 1; }	
 			else if(CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = 0; }
 			else if(dropped == 1 || weaponStay == 0) { result = 1; }
@@ -1406,7 +1385,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 				GiveInventory("RocketAmmo",3);
 			}
 			break;
-		case 6:
+		case 8:
 			if(!CheckInventory(" RPG ")) { result = 1; }	
 			else if(CheckInventory("RocketAmmo") >= GetAmmoCapacity("RocketAmmo")) { result = 0; }
 			else if(dropped == 1 || weaponStay == 0) { result = 1; }
@@ -1418,7 +1397,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 				GiveInventory("RocketAmmo",10);
 			}
 			break;
-		case 7:
+		case 9:
 			if(!CheckInventory("Gauss Cannon")) { result = 1; }	
 			else if(CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = 0; }
 			else if(dropped == 1 || weaponStay == 0) { result = 1; }
@@ -1430,7 +1409,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 				GiveInventory("Cell",30);
 			}
 			break;
-		case 8:
+		case 10:
 			weaponStay = GetCvar("sams_permault");
 			if(!CheckInventory("E.G.O.N.")) { result = 1; }	
 			else if(CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = 0; }
@@ -1443,7 +1422,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 				GiveInventory("Cell",70);
 			}
 			break;
-		case 9:
+		case 11:
 			if(!CheckInventory("Goldeneye_ThrowingKnives"))
 			{
 				GiveInventory("Goldeneye_KnifePickedUpX",invokerX+65536);
@@ -1473,7 +1452,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			else if(dropped && CheckInventory("Goldeneye_ThrowingKnivesAmmo") < GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo")) { result = 1; }
 			else if(dropped && CheckInventory("Goldeneye_ThrowingKnivesAmmo") >= GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo")) { result = -100; }
 			break;
-		case 10:
+		case 12:
 			if(!CheckInventory("Goldeneye_KF7Soviet"))
 			{
 				GiveInventory("Goldeneye_KF7SovietPickedUpX",invokerX+65536);
@@ -1503,7 +1482,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			else if(dropped && CheckInventory("Clip") < GetAmmoCapacity("Clip")) { result = 1; }
 			else if(dropped && CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = -100; }
 			break;
-		case 11:
+		case 13:
 			if(!CheckInventory("Goldeneye_AutoShotgun"))
 			{
 				GiveInventory("Goldeneye_AutoShotgunPickedUpX",invokerX+65536);
@@ -1533,7 +1512,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			else if(dropped && CheckInventory("Shell") < GetAmmoCapacity("Shell")) { result = 1; }
 			else if(dropped && CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = -100; }
 			break;
-		case 12:
+		case 14:
 			if(!CheckInventory("Goldeneye_AR33"))
 			{
 				GiveInventory("Goldeneye_AR33PickedUpX",invokerX+65536);
@@ -1563,7 +1542,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			else if(dropped && CheckInventory("Clip") < GetAmmoCapacity("Clip")) { result = 1; }
 			else if(dropped && CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = -100; }
 			break;
-		case 13:
+		case 15:
 			if(!CheckInventory("Goldeneye_RocketLauncher"))
 			{
 				GiveInventory("Goldeneye_RocketLauncherPickedUpX",invokerX+65536);
@@ -1593,7 +1572,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			else if(dropped && CheckInventory("RocketAmmo") < GetAmmoCapacity("RocketAmmo")) { result = 1; }
 			else if(dropped && CheckInventory("RocketAmmo") >= GetAmmoCapacity("RocketAmmo")) { result = -100; }
 			break;
-		case 14:
+		case 16:
 			if(!CheckInventory("Goldeneye_RCP90"))
 			{
 				GiveInventory("Goldeneye_RCP90PickedUpX",invokerX+65536);
@@ -1623,7 +1602,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			else if(dropped && CheckInventory("Cell") < GetAmmoCapacity("Cell")) { result = 1; }
 			else if(dropped && CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = -100; }
 			break;
-		case 15:
+		case 17:
 			weaponStay = GetCvar("sams_permault");
 			if(!CheckInventory("Goldeneye_Moonraker"))
 			{
@@ -1656,20 +1635,21 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			else if(dropped && CheckInventory("Cell") < GetAmmoCapacity("Cell")) { result = 1; }
 			else if(dropped && CheckInventory("Cell") >= GetAmmoCapacity("Cell")) { result = -100; }
 			break;
-		case 16:
+		case 18: GiveInventory("CanDualPistols",1); break;	
+		case 19:
 			if(!CheckInventory("WSTE-M5 Combat Shotgun"))
 			{
 				GiveInventory("MarathonShotgunPickedUpX",invokerX+65536);
 				GiveInventory("MarathonShotgunPickedUpY",invokerY+65536);
 				GiveInventory("MarathonShotgunPickedUpZ",invokerZ+65536);
-				result = 1-!weaponStay;
+				result = 1;
 			}
 			else if(!CheckInventory("CanDualShotties"))
 			{
 				inventoryX = CheckInventory("MarathonShotgunPickedUpX")-65536;
 				inventoryY = CheckInventory("MarathonShotgunPickedUpY")-65536;
 				inventoryZ = CheckInventory("MarathonShotgunPickedUpZ")-65536;
-				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped)
 				{
 					TakeInventory("MarathonShotgunPickedUpX",131072);
 					TakeInventory("MarathonShotgunPickedUpY",131072);
@@ -1678,28 +1658,26 @@ Script "Samsara_MapInventory" (int item, int dropped)
 					GiveInventory("MarathonShotgunPickedUpY",invokerY+65536);
 					GiveInventory("MarathonShotgunPickedUpZ",invokerZ+65536);
 					GiveInventory("CanDualShotties",1);
-					PlaySound(0,"marathon/itemget");
-					FadeRange(0,255,0,0.25,0,0,0,0,0.25);
-					result = !(!dropped && !weaponStay);
+					GiveInventory("Shell",8);
+					result = 1;
 				}
 			}
-			else if(dropped && CheckInventory("Shell") < GetAmmoCapacity("Shell")) { result = 1; }
-			else if(dropped && CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = -100; }
+			if(CheckInventory("Shell") < GetAmmoCapacity("Shell")) { if((!weaponStay || dropped)) { GiveInventory("Shell",8); result = 1; }}
 			break;
-		case 17:
+		case 20:
 			if(!CheckInventory("SWUzi"))
 			{
 				GiveInventory("SWUziPickedUpX",invokerX+65536);
 				GiveInventory("SWUziPickedUpY",invokerY+65536);
 				GiveInventory("SWUziPickedUpZ",invokerZ+65536);
-				result = 1-!weaponStay;
+				result = 1;
 			}
 			else if(!CheckInventory("UziAmountCheck"))
 			{
 				inventoryX = CheckInventory("SWUziPickedUpX")-65536;
 				inventoryY = CheckInventory("SWUziPickedUpY")-65536;
 				inventoryZ = CheckInventory("SWUziPickedUpZ")-65536;
-				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
+				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped)
 				{				
 					TakeInventory("SWUziPickedUpX",131072);
 					TakeInventory("SWUziPickedUpY",131072);
@@ -1708,13 +1686,52 @@ Script "Samsara_MapInventory" (int item, int dropped)
 					GiveInventory("SWUziPickedUpY",invokerY+65536);
 					GiveInventory("SWUziPickedUpZ",invokerZ+65536);
 					GiveInventory("UziAmountCheck",1);
-					PlaySound(0,"Item/SWpickup");
-					FadeRange(255,255,0,0.25,0,0,0,0,0.25);
-					result = !(!dropped && !weaponStay);
+					GiveInventory("Clip",50);
+					result = 1;
 				}
 			}
-			else if(dropped && CheckInventory("Clip") < GetAmmoCapacity("Clip")) { result = 1; }
-			else if(dropped && CheckInventory("Clip") >= GetAmmoCapacity("Clip")) { result = -100; }
+			else if(CheckInventory("Clip") < GetAmmoCapacity("Clip")) { if((!weaponStay || dropped)) { GiveInventory("Clip",50); result = 1; }}
+			break;
+		case 21:
+			if(!CheckInventory("Doom64_IHaveUnmaker"))
+			{
+				GiveInventory("Doom64_IHaveUnmaker", 1);
+				GiveInventory("Samsara_ModeWeaponChange",1);
+				result = 1;
+			}
+			break;
+		case 22:
+			if(CheckInventory("QuakeQuadTimer") <= 0)
+			{
+				if (isLMS())
+				{
+					if (GetCvar("sams_permaquad") == 1)
+					{ GiveInventory("QuadDamageItem", 1); }
+				}
+				else
+				{
+					GiveQuad(1050);
+		
+					if (GetCvar("sams_permaquad") == 1)//if (isCoop() || isSinglePlayer())
+					{ GiveInventory("QuadDamageItem", 1); }
+				}
+				
+				result = 1;
+			}
+			break;
+		case 23:
+			if(!CheckInventory("Subestron Arm"))
+			{
+				GiveInventory("Subestron Arm", 1);
+				result = 1;
+			}
+			break;
+		case 24:
+			if(!CheckInventory("SWNuke"))
+			{
+				GiveInventory("SWNuke", 1);
+				result = 1;
+			}
 			break;
 	}
 	SetResultValue(result);
