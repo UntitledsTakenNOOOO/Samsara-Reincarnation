@@ -1687,21 +1687,21 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			else if(dropped && CheckInventory("Shell") >= GetAmmoCapacity("Shell")) { result = -100; }
 			break;
 		case 17:
+			PrintBold(d:ACS_NamedExecuteWithResult("Samsara_MapInventory",17,1) + ACS_NamedExecuteWithResult("SamsaraGiveWeapon", 4, 1));
 			if(!CheckInventory("SWUzi"))
 			{
 				GiveInventory("SWUziPickedUpX",invokerX+65536);
 				GiveInventory("SWUziPickedUpY",invokerY+65536);
 				GiveInventory("SWUziPickedUpZ",invokerZ+65536);
-				GiveInventory("UziAmountCheck",1);
 				result = 1-!weaponStay;
 			}
-			else if(CheckInventory("UziAmountCheck") < 2)
+			else if(!CheckInventory("UziAmountCheck"))
 			{
 				inventoryX = CheckInventory("SWUziPickedUpX")-65536;
 				inventoryY = CheckInventory("SWUziPickedUpY")-65536;
 				inventoryZ = CheckInventory("SWUziPickedUpZ")-65536;
 				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped == 1)
-				{
+				{				
 					TakeInventory("SWUziPickedUpX",131072);
 					TakeInventory("SWUziPickedUpY",131072);
 					TakeInventory("SWUziPickedUpZ",131072);
@@ -1936,8 +1936,62 @@ Script "Samsara_ProjectilePredictor" (int type)
 }
 
 //======================================================================================================================
+//					Resonate. Don't know what the hell this is, but I found it in marathon's acs
+//======================================================================================================================
+script "SamsaraResonate" (int which, int frequency) clientside //608
+{
+    if (which < 0 || which >= RESCOUNT) { Log(s:"\caERROR\c- (minor): Attempted to resonate with invalid index (", d:which, s:")"); terminate; }
+
+    int pln = PlayerNumber();
+    int locktime = Timer();
+
+    int item = ResonantItems[which][0];
+    int low  = ResonantItems[which][1];
+    int high = ResonantItems[which][2];
+
+    if (frequency == 0) { Log(s:"\caERROR\c-: Attempted to resonate item \"", s:item, s:"\" with frequency of 0"); terminate; }
+    frequency = abs(frequency);
+
+    int resPosition     = random(low, high);
+    int resNextPos      = resPosition;
+    int resAmplitude    = 0;
+    int resIndex        = 0;
+    int resTimer;
+    int resonance;
+
+    ResonantTimes[pln][which] = locktime;
+
+    while (ResonantTimes[pln][which] == locktime)
+    {
+        if (abs(resPosition - resNextPos) <= 2) { resPosition = resNextPos; }
+        else { resPosition += (resNextPos - resPosition) / 3; }
+
+        if (resAmplitude == 0) { resTimer = 0; }
+
+        if (resTimer == 0)
+        {
+            resAmplitude += random(1.0, 20.0);
+            resTimer = random(1, 70);
+            resNextPos = random(low, high);
+        }
+
+        resonance = FixedMul(resAmplitude, sin(itof(resIndex) / frequency)) + itof(resPosition);
+        resAmplitude = max(0, resAmplitude - 0.5);
+
+        TakeInventory(item, 0x7FFFFFFF);
+        GiveInventory(item, ftoi(resonance));
+
+        Delay(1);
+        resTimer--;
+        resIndex++;
+        resIndex %= (frequency * 100);
+    }
+}
+
+//======================================================================================================================
 //														Other
 //======================================================================================================================
+
 Script "Samsara_PlayerFreezeTranslation" (void)
 {
 	//SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);

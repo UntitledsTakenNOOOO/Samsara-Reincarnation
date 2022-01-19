@@ -1,0 +1,172 @@
+#define WTSPELLAMOUNT 6
+#define WTAMMOAMOUNT 4
+int WitchavenSpellCost[WTSPELLAMOUNT+1][WTAMMOAMOUNT] =
+{
+	{0,		0,		0,		0}, 	//nl
+	{20,	1,		0,		0}, 	//sc
+	{0,		0,		0,		20}, 	//vn
+	{0,		0,		3,		40}, 	//fz
+	{10,	3,		0,		5}, 	//ar
+	{20,	0,		1,		0}, 	//fr
+	{25,	10,		5,		150}, 	//nk
+};
+//scroll graphics:
+int WitchavenSpellScroll[WTSPELLAMOUNT+1][2] =
+{
+	{"null spell",			"HEADA0"},
+	{"scare spell", 		"WSP6A0"},
+	{"night vision spell", 	"WSP6B0"},
+	{"freeze spell", 		"WSP6C0"}, 
+	{"magic arrow spell",   "WSP6D0"},
+	{"Fireball spell",		"WSP6E0"}, 
+	{"Nuke spell",			"WSP6F0"}, 
+};
+//spell description
+int WitchavenSpellInfo[WTSPELLAMOUNT+1] =
+{
+	"???", //null
+	"Scare your enemies for 45 seconds!", //scare
+	"Be able to see in the dark for 120 seconds!", //vision
+	"Try to freeze everyone around you!\nHint: Small radius", //freeze
+	"Shoot 10 magical arrows!\nHint: Arrows pierce armor", //arrow
+	"Shoot a fire ball to burn your enemies!\nHint: Splash damage", //fire
+	"Try to instakill everyone around you!\nHint: Large radius", //nuke
+};
+
+#define WTSTRINGAMOUNT 13
+#define WT_X 180
+#define WT_Y 185
+int WitchavenStrings[WTSTRINGAMOUNT][3] =
+{
+	{"Short Sword",		WT_X,WT_Y},
+	{"Bow and arrows",	WT_X,WT_Y},
+	{"Onyx Ring",		WT_X,WT_Y},
+	{"Battle Axe",		WT_X,WT_Y},
+	{"Pike axe",		WT_X,WT_Y},
+	{"Ice Halberd",		WT_X,WT_Y},
+	{"Mace",			WT_X,WT_Y},
+	{"Spellbook",		WT_X,WT_Y},
+	{"Two-Hand Sword",	WT_X,WT_Y},
+	{"Health potion",	WT_X,WT_Y},
+	{"Shield",			WT_X,WT_Y},
+	{"Shield useless",	WT_X,WT_Y},
+	{"Health critical",	WT_X,WT_Y},
+};
+
+#define WTCLIPAMOUNT 7
+int WitchavenClips[WTCLIPAMOUNT] =
+{
+	"WTSlotIClip",
+	"WTSlotIIClip",
+	"WTSlotIIIClip",
+	"WTSlotIVClip",
+	"WTSlotVClip",
+	"WTSlotVIClip",
+	"WTSlotVIIClip",
+};
+
+
+script "SamsaraWitchaven" (int which, int arg1, int arg2) //707
+{
+	int i, j, k, x;
+	switch(which)
+	{
+	case 0:
+		break;
+	case 1:
+		if(CheckInventory("WTHealthPhial") > 0)
+		{	TakeInventory("WTHealthPhial",1);
+			SpawnProjectile(0,"WTHealthPhial",GetActorAngle(0) >> 8, 40, 10, 1, 0);}
+		break;
+	case 2:
+		SetActorProperty(0,APROP_HEALTH, GetActorProperty(0,APROP_HEALTH) - 1);
+		break;
+	case 3:
+		GiveInventory("WTSpellCounter",1);
+		if(CheckInventory("WTSpellCounter") > 6)
+		{	TakeInventory("WTSpellCounter",999);
+			GiveInventory("WTSpellCounter",1);
+		}
+		i = CheckInventory("WTSpellCounter");
+		SetHUDSize(1240,1024,1);
+		SetFont(WitchavenSpellScroll[i][1]);
+		HudMessage(s:"A";HUDMSG_PLAIN,554,CR_UNTRANSLATED,330.0,205.0,8.0);
+		SetFont("WTFFONT");
+		HudMessage(s:WitchavenSpellScroll[i][0];HUDMSG_PLAIN,559,CR_UNTRANSLATED,330.0,275.0,8.0);
+		HudMessage(s:"* Usage: Ammo 1: ",d:WitchavenSpellCost[i][0],s:" | Ammo 2: ",d:WitchavenSpellCost[i][1],s:" | Ammo 3: ",d:WitchavenSpellCost[i][2],s:" | Ammo 4: ",d:WitchavenSpellCost[i][3],
+					s:"\n* Info: ",s:WitchavenSpellInfo[i];HUDMSG_PLAIN,558,CR_UNTRANSLATED,710.0,205.0,8.0);
+		break;
+	case 4:
+		SetFont("WTFFONT");
+		SetHudSize(1240,1024,1);
+		HudMessage(s:WitchavenStrings[arg1][0];HUDMSG_PLAIN,556,CR_UNTRANSLATED,WitchavenStrings[arg1][1] << 16,WitchavenStrings[arg1][2] << 16,3.0);
+		break;
+	case 5:
+		i = CheckInventory("Clip");
+		j = CheckInventory("Shell");
+		k = CheckInventory("RocketAmmo");
+		x = CheckInventory("Cell");
+		
+		if(i >= WitchavenSpellCost[arg1][0]
+		&& j >= WitchavenSpellCost[arg1][1]
+		&& k >= WitchavenSpellCost[arg1][2]
+		&& x >= WitchavenSpellCost[arg1][3])
+		{	SetResultValue(1);
+			if(!GetCvar("sv_infiniteammo"))
+			{
+				TakeInventory("Clip",WitchavenSpellCost[arg1][0]);
+				TakeInventory("Shell",WitchavenSpellCost[arg1][1]);
+				TakeInventory("RocketAmmo",WitchavenSpellCost[arg1][2]);
+				TakeInventory("Cell",WitchavenSpellCost[arg1][3]);}
+			}
+		else
+		{	SetResultValue(0);}
+		break;
+	default:
+		break;
+	}
+}
+
+script "SamsaraWTAutoHealer" (void) //708
+{
+	while(GetActorProperty(0,APROP_HEALTH) > 0)
+	{
+		if(GetActorProperty(0,APROP_HEALTH) < 25
+		&& GetActorProperty(0,APROP_HEALTH) > 0)
+		{
+			if(CheckInventory("WTHealthPhial"))
+			{
+				SetActorProperty(0,APROP_HEALTH, GetActorProperty(0,APROP_HEALTH) + 25);
+				TakeInventory("WTHealthPhial",1);
+				ActivatorSound("gplayer/drink",127);
+			}
+			else
+			{
+				SetFont("WTFFONT");
+				SetHudSize(1240,1024,1);
+				HudMessage(s:WitchavenStrings[12][0];HUDMSG_PLAIN,556,CR_UNTRANSLATED,WitchavenStrings[12][1] << 16,WitchavenStrings[12][2] << 16,0.5);
+			}
+		}
+		Delay(2);
+	}
+}
+
+script "SamsaraWTClip" (void) //709
+{
+	int i = 0;
+	
+	while(GetActorProperty(0,APROP_HEALTH) > 0)
+	{
+		for(i = 0; i < WTCLIPAMOUNT; i++)
+		{
+			if(CheckInventory(WitchavenClips[i]) > 0)
+			{
+				SetFont("WTFFONT");
+				SetHudSize(1240,1024,1);
+				HudMessage(s:"Melee mode active";HUDMSG_PLAIN,560,CR_UNTRANSLATED,180.0,215.0,0.1);
+				break;
+			}
+		}
+		Delay(2);
+	}
+}
