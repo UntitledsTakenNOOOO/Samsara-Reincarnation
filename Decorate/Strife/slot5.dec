@@ -6,6 +6,14 @@ Actor WhitePhosGrenade : Ammo
 	Inventory.Icon "AMSML0"
 }	
 
+Actor StrifeGasGrenadeAmmo : Ammo
+{
+	Inventory.MaxAmount 10
+	Ammo.BackPackAmount 0
+	Ammo.BackPackMaxAmount 20
+	Inventory.Icon "AMSML0"
+}
+
 actor " Grenade Launcher " : StrifeGrenadeLauncher
 {
   Weapon.Kickback 100
@@ -30,18 +38,22 @@ actor " Grenade Launcher " : StrifeGrenadeLauncher
     SGRL A -1
     Stop
   Ready:
+	GRN1 A 0 A_JumpIfInventory("GrenadeMode",2,"ReadyGas")
 	GRN1 A 0 A_JumpIfInventory("GrenadeMode",1,"ReadyPhos")
     GRN1 A 1 A_WeaponReady
     Loop
   Deselect:
+	GRN1 A 0 A_JumpIfInventory("GrenadeMode",2,"DeselectGas")
     GRN1 A 0 A_JumpIfInventory("GrenadeMode",1,"DeselectPhos")
     GRN1 A 1 A_Lower
     Loop
   Select:
+	GRN1 A 0 A_JumpIfInventory("GrenadeMode",2,"SelectGas")
 	GRN1 A 0 A_JumpIfInventory("GrenadeMode",1,"SelectPhos")
     GRN1 A 1 A_Raise
     Loop
   Fire:
+	GRN1 A 0 A_JumpIfInventory("GrenadeMode",2,"FireGas")
 	GRN1 A 0 A_JumpIfInventory("GrenadeMode",1,"FirePhos")
     TNT1 A 0 A_JumpIfInventory("RocketAmmo", 1, "FireHE")
 	Goto Ready
@@ -60,6 +72,7 @@ actor " Grenade Launcher " : StrifeGrenadeLauncher
     GRN1 A 0 A_ReFire
     Goto Ready
   AltFire:
+	GRN1 A 0 A_JumpIfInventory("GrenadeMode",2,"AltFireGas")
 	GRN1 A 0 A_JumpIfInventory("GrenadeMode",1,"AltFirePhos")
     GRN1 AAAAAAAAAAAA 1 A_Lower
     GRN1 A 0 A_GiveInventory("GrenadeMode",1)
@@ -67,7 +80,12 @@ actor " Grenade Launcher " : StrifeGrenadeLauncher
 	Goto Ready
   AltFirePhos:
     GRN2 AAAAAAAAAAAA 1 A_Lower
-    GRN2 A 0 A_TakeInventory("GrenadeMode",1)
+    GRN2 A 0 A_GiveInventory("GrenadeMode",1)
+	GRN3 AAAAAAAAAAAA 1 A_Raise
+	Goto Ready
+  AltFireGas:
+    GRN3 AAAAAAAAAAAA 1 A_Lower
+    GRN3 A 0 A_TakeInventory("GrenadeMode",2)
 	GRN1 AAAAAAAAAAAA 1 A_Raise
 	Goto Ready
   SpreadFire:
@@ -236,6 +254,123 @@ actor " Grenade Launcher " : StrifeGrenadeLauncher
     Goto LightDone
   Flash4:
     GRN2 E 5 Bright A_Light2
+    Goto LightDone
+  ReadyGas:
+    GRN3 A 1 A_WeaponReady
+    Loop
+  DeselectGas:
+    GRN3 A 1 A_Lower
+    Loop
+  SelectGas:
+    GRN3 A 1 A_Raise
+    Loop
+  FireGas:
+	TNT1 A 0 A_JumpIfInventory("StrifeGasGrenadeAmmo", 1, 2)
+	TNT1 A 0 A_Jump(255, "AltFireGas")
+    TNT1 A 0 A_AlertMonsters
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",9,8)
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",8,"AltFireGas")	
+//  GRN3 A 0 A_JumpIfInventory("RocketAmmo",7,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",6,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",4,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",2,"AltFireGas")
+	GRN3 A 0 A_TakeInventory("StrifeGasGrenadeAmmo",1,TIF_NOTAKEINFINITE)
+	GRN3 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFireGas")
+	//GRN3 A 0 A_JumpIfInventory("RuneSpread", 0, "SpreadFireGas")
+    GRN3 A 5 A_FireGrenade("StrifeGasGrenade", -90, "Flash5")
+    GRN3 B 10
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",9,8)
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",8,"AltFireGas")
+//  GRN3 A 0 A_JumpIfInventory("RocketAmmo",7,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",6,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",4,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFireGas")
+	GRN3 B 0 A_JumpIfInventory("StrifeGasGrenadeAmmo", 1, 2)
+	GRN3 B 0 A_Jump(255, "AltFireGas")
+	GRN3 B 0 A_TakeInventory("StrifeGasGrenadeAmmo",1,TIF_NOTAKEINFINITE)
+    GRN3 A 5 A_FireGrenade("StrifeGasGrenade", 90, "Flash6")
+    GRN3 C 10
+    GRN3 A 0 A_ReFire
+    Goto Ready
+  SpreadFireGas:
+    GRN3 A 0 A_FireGrenade("StrifeGasGrenade", -0, "Flash5")
+	GRN3 A 0 A_GiveInventory("RocketAmmo", 1)
+	GRN3 A 0 A_FireGrenade("StrifeGasGrenade", -180, "Flash5")
+	GRN3 A 0 A_GiveInventory("RocketAmmo", 1)
+    GRN3 A 5 A_FireGrenade("StrifeGasGrenade", -90, "Flash5")
+    GRN3 B 10
+    GRN3 A 0 A_JumpIfInventory("RocketAmmo",9,8)
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",8,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",7,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",6,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",4,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",2,"AltFireGas")
+	GRN3 B 0 A_JumpIfNoAmmo(8)
+	GRN3 B 0 A_TakeInventory("RocketAmmo",7)
+	GRN3 A 0 A_FireGrenade("StrifeGasGrenade", 0, "Flash6")
+	GRN3 A 0 A_GiveInventory("RocketAmmo", 1)
+	GRN3 A 0 A_FireGrenade("StrifeGasGrenade", 180, "Flash6")
+	GRN3 A 0 A_GiveInventory("RocketAmmo", 1)
+    GRN3 A 5 A_FireGrenade("StrifeGasGrenade", 90, "Flash6")
+    GRN3 C 10
+    GRN3 A 0 A_ReFire
+	Goto Ready
+  CoopFireGas:
+    //GRN3 A 0 A_JumpIfInventory("RuneSpread", 0, "CoopSpreadFireGas")
+	GRN3 B 0 A_JumpIfInventory("StrifeGasGrenadeAmmo", 1, 2)
+	GRN3 B 0 A_Jump(255, "AltFireGas")
+	GRN3 A 0 A_TakeInventory("StrifeGasGrenadeAmmo",1,TIF_NOTAKEINFINITE)
+	GRN3 A 5 A_FireGrenade("StrifeGasGrenade2", -90, "Flash5")
+    GRN3 B 10
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",8,7)
+//  GRN3 A 0 A_JumpIfInventory("RocketAmmo",7,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",6,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",4,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFireGas")
+//	GRN3 A 0 A_JumpIfInventory("RocketAmmo",2,"AltFireGas")
+	GRN3 B 0 A_JumpIfInventory("StrifeGasGrenadeAmmo", 1, 2)
+	GRN3 B 0 A_Jump(255, "AltFireGas")
+	GRN3 B 0 A_TakeInventory("StrifeGasGrenadeAmmo",1,TIF_NOTAKEINFINITE)
+    GRN3 A 5 A_FireGrenade("StrifeGasGrenade2", 90, "Flash6")
+    GRN3 C 10
+    GRN3 A 0 A_ReFire
+    Goto Ready
+  CoopSpreadFireGas:
+    GRN3 A 0 A_FireGrenade("StrifeGasGrenade2", -0, "Flash5")
+	GRN3 A 0 A_GiveInventory("RocketAmmo", 1)
+	GRN3 A 0 A_FireGrenade("StrifeGasGrenade2", -180, "Flash5")
+	GRN3 A 0 A_GiveInventory("RocketAmmo", 1)
+    GRN3 A 5 A_FireGrenade("StrifeGasGrenade2", -90, "Flash5")
+    GRN3 B 10
+    GRN3 A 0 A_JumpIfInventory("RocketAmmo",9,8)
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",8,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",7,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",6,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",4,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFireGas")
+	GRN3 A 0 A_JumpIfInventory("RocketAmmo",2,"AltFireGas")
+	GRN3 B 0 A_JumpIfNoAmmo(8)
+	GRN3 B 0 A_TakeInventory("StrifeGasGrenadeAmmo",1)
+	GRN3 A 0 A_FireGrenade("StrifeGasGrenade2", 0, "Flash6")
+	GRN3 A 0 A_GiveInventory("RocketAmmo", 1)
+	GRN3 A 0 A_FireGrenade("StrifeGasGrenade2", 180, "Flash6")
+	GRN3 A 0 A_GiveInventory("RocketAmmo", 1)
+    GRN3 A 5 A_FireGrenade("StrifeGasGrenade2", 90, "Flash6")
+    GRN3 C 10
+    GRN3 A 0 A_ReFire
+	Goto Ready
+  Flash5:
+    GRN3 D 5 Bright A_Light1
+    Goto LightDone
+  Flash6:
+    GRN3 E 5 Bright A_Light2
     Goto LightDone
   }
 }
@@ -490,4 +625,137 @@ actor CoopPhosFire2 : CoopPhosFire
   }
 }
 
-actor GrenadeMode : Inventory { -INVBAR +INVENTORY.UNDROPPABLE inventory.maxamount 1 }
+actor StrifeGasGrenade
+{
+  Speed 15
+  Radius 13
+  Height 13
+  Mass 20
+  Damage (random(1,4)*1)
+  ReactionTime 40
+  Projectile
+  +FRIENDLY
+  -NOGRAVITY
+  +BOUNCEONACTORS
+  +EXPLODEONWATER
+  +WINDTHRUST
+  +FORCEXYBILLBOARD  
+  BounceType "Doom"
+  MaxStepHeight 4
+  BounceFactor 0.5
+  BounceCount 2
+  DamageType "StrifeExplosive"
+  SeeSound "strife/grenadeshoot"
+  DeathSound "strife/grenadebang"
+  Obituary "%k \cimade\c- %o \citake an acid trip."
+  
+  States
+  {
+  Spawn:
+    GASG AB 3 A_Countdown
+    Loop
+  Death:
+    GASC AAAA 2 A_CustomMissile("StrifeGasCloud",0,0,0,CMF_TRACKOWNER|CMF_AIMDIRECTION)
+    Stop
+  }
+}
+
+actor StrifeGasGrenade2 : StrifeGasGrenade
+{ 
+  +THRUSPECIES
+  Species "Player"
+  +DONTHARMCLASS
+  +DONTHARMSPECIES
+  +MTHRUSPECIES
+  States
+  {
+  Death:
+    GASC AAAA 2 A_CustomMissile("CoopStrifeGasCloud",0,0,0,CMF_TRACKOWNER|CMF_AIMDIRECTION)
+    Stop
+  }
+}
+
+
+actor StrifeGasCloud
+{
+  Obituary "%k \cimade\c- %o \citake an acid trip."
+  DamageType "Poison"
+  Renderstyle Translucent
+  Speed 2
+  Height 2
+  Radius 1
+  Projectile
+  +THRUACTORS
+  -EXTREMEDEATH
+  +NOEXTREMEDEATH
+  +FORCERADIUSDMG
+  +MOVEWITHSECTOR  
+  -NOGRAVITY
+  states
+  {
+  Spawn:
+	TNT1 A 0 NoDelay A_Die
+  Death:
+	GASC A 0
+	GASC A 0 ThrustThing(random(0,256),8,0,0)
+	GASC A 5
+	GASC B 0 A_Stop
+	GASC BCD 5
+	GASC A 0 A_PlaySound("strife/gascloud", CHAN_VOICE)
+    GASC E 5 A_Explode (16, 128)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
+    GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_Explode (16, 128)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+	GASC E 5 A_Explode (16, 128)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
+    GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_Explode (16, 128)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC E 5 A_Explode (16, 128)
+	GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
+    GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_Explode (16, 128)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+	GASC E 5 A_Explode (16, 128)
+	GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
+    GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_Explode (16, 128)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+	GASC E 5 A_Explode (16, 128)
+    GASC DCBA 5
+    Stop
+  }
+}
+
+Actor StrifeGasGreen : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_SetBlend("OliveDrab",0.25,105)
+			Stop
+	}
+}
+
+actor CoopStrifeGasCloud : StrifeGasCloud
+{
+  Obituary "%o killed %hself."
+  DamageType "PhosFireCoop"
+  Species "Player"
+  +FRIENDLY
+  -EXTREMEDEATH
+  +NOEXTREMEDEATH
+  +MOVEWITHSECTOR
+  +FORCERADIUSDMG  
+  +THRUSPECIES
+  +DONTHARMCLASS
+  +DONTHARMSPECIES
+  +MTHRUSPECIES
+}
+
+actor GrenadeMode : Inventory { -INVBAR +INVENTORY.UNDROPPABLE inventory.maxamount 2 }
