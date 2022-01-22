@@ -679,7 +679,7 @@ actor StrifeGasGrenade2 : StrifeGasGrenade
 actor StrifeGasCloud
 {
   Obituary "%k \cimade\c- %o \citake an acid trip."
-  DamageType "Poison"
+  DamageType "PoisonBolt"
   Renderstyle Translucent
   Speed 2
   Height 2
@@ -689,9 +689,9 @@ actor StrifeGasCloud
   -EXTREMEDEATH
   +NOEXTREMEDEATH
   +FORCERADIUSDMG
+  +NODAMAGETHRUST
   +MOVEWITHSECTOR  
   -NOGRAVITY
-  +NODAMAGETHRUST
   states
   {
   Spawn:
@@ -704,34 +704,74 @@ actor StrifeGasCloud
 	GASC BCD 5
 	GASC A 0 A_PlaySound("strife/gascloud", CHAN_VOICE)
     GASC E 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
     GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
     GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
     GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
     GASC G 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
     GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
 	GASC E 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
     GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
     GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
     GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
     GASC G 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
     GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
     GASC E 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
 	GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
     GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
     GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
     GASC G 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
     GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
 	GASC E 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
 	GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
     GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
     GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
     GASC G 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
     GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
 	GASC E 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
     GASC DCBA 5
     Stop
   }
 }
+
+Actor StrifePoisonProjectile : FastProjectile
+{
+	Projectile
+	Speed 64
+	Damage (0)
+	Height 4
+	Radius 2
+	PoisonDamage 8, 8, 16
+	DamageType "PoisonBolt"
+	Obituary "%k \cimade\c- %o \citake an acid trip."
+	+NOEXTREMEDEATH
+	+NODAMAGETHRUST
+	-BLOODSPLATTER
+	+BLOODLESSIMPACT
+	+NODAMAGETHRUST
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 1 
+			Stop
+		Crash:
+		Death:
+		XDeath:
+			TNT1 A 1
+			Stop
+	}
+}
+
+Actor StrifePoisonProjectile_2 : StrifePoisonProjectile { Species "Player" +THRUSPECIES +MTHRUSPECIES }
 
 Actor StrifeGasGreen : Trigger
 {
@@ -742,6 +782,8 @@ Actor StrifeGasGreen : Trigger
 			Stop
 	}
 }
+
+Actor BlankPuffPoison : BlankPuff { DamageType "PoisonBolt" PoisonDamage 8, 8, 16 +BLOODLESSIMPACT }
 
 actor CoopStrifeGasCloud : StrifeGasCloud
 {
@@ -757,6 +799,52 @@ actor CoopStrifeGasCloud : StrifeGasCloud
   +DONTHARMCLASS
   +DONTHARMSPECIES
   +MTHRUSPECIES
+  states
+  {
+  Death:
+	GASC A 0
+	GASC A 0 ThrustThing(random(0,256),8,0,0)
+	GASC A 5
+	GASC B 0 A_Stop
+	GASC BCD 5
+	GASC A 0 A_PlaySound("strife/gascloud", CHAN_VOICE)
+    GASC E 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile_2", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
+    GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile_2", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+	GASC E 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile_2", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
+    GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile_2", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC E 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile_2", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
+	GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
+    GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile_2", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+	GASC E 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile_2", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
+	GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_PlaySound("strife/gascloud", CHAN_VOICE)
+    GASC H 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+    GASC G 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile_2", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
+    GASC F 5 A_RadiusGive("StrifeGasGreen",128,RGF_PLAYERS,1)
+	GASC E 5 A_Explode (16, 128)
+	TNT1 AAAAAAAAAAA 0 A_CustomMissile("StrifePoisonProjectile_2", 32, 0, Random(0,359), CMF_AIMOFFSET|CMF_TRACKOWNER)
+    GASC DCBA 5
+    Stop
+  }  
 }
 
 actor GrenadeMode : Inventory { -INVBAR +INVENTORY.UNDROPPABLE inventory.maxamount 2 }
