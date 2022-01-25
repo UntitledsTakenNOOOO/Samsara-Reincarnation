@@ -8,7 +8,7 @@ Actor SWRipperHeart : Weapon
     Weapon.BobRangeY 0.95
     Weapon.BobSpeed 1.1		
 	Weapon.AmmoGive 5
-	Weapon.AmmoUse 1
+	Weapon.AmmoUse 0
 	inventory.pickupmessage "You got a Ripper's Heart!"
 	Radius 16
 	Tag "Ripper's Heart"	
@@ -44,17 +44,16 @@ Actor SWRipperHeart : Weapon
 			HART S 1 A_WeaponReady(WRF_NOBOB | WRF_NOFIRE)
 			HRT2 A 0 A_PlaySound("Weapons/HeartSqueeze")
 			HRT2 BC 1 A_WeaponReady(WRF_NOBOB | WRF_NOFIRE)
-			TNT1 A 0 A_SpawnItem("LoWangClone", 64, 0, 0, 1)
+			TNT1 A 0 ACS_NamedExecuteWithResult("SWCloneCreate")
 			HRT2 D 1 A_SpawnItem("LoWangCloneFog", 64, 8)
 			TNT1 AAAA 0 A_SpawnItemEx("SWBlood", 4, 0, 8, random(-4,4), random(-4,4), random(4,8), SXF_CLIENTSIDE)
-			TNT1 A 0 ACS_NamedExecuteAlways("SWCloneTID", 0)
 			TNT1 A 0 A_GiveInventory("HasWang", 1)
 			TNT1 A 0 A_Jump(128, 2)
 			TNT1 A 0 A_PlaySound("Wang/TwoWangs")
 			HRT2 EFGHIJKLMNOPQRSTUV 1 A_WeaponReady(WRF_NOBOB | WRF_NOFIRE)
 		Goto Ready
 		RemoveWang:
-			TNT1 A 0 ACS_NamedExecuteAlways("SWCloneRemove", 0)
+			TNT1 A 0 A_KillChildren
 			TNT1 A 0 A_TakeInventory("HasWang", 1)
 		Goto FireCont
 		IntroTaunt:
@@ -136,8 +135,8 @@ ACTOR LoWangClone
   States
   {
   Spawn:
-    TNT1 A 0
-	TNT1 A 0 Thing_ChangeTID(0,3000)
+	TNT1 A 0 NoDelay A_CopyFriendliness(AAPTR_Master)
+	TNT1 A 0 A_TakeInventory("HeartAmmo",1,0,AAPTR_Master)
   SpawnLoop:
 	TNT1 A 0 A_JumpIfInventory("ActiveCount", 45, "DeathX")
     SPL1 A 10 A_Look

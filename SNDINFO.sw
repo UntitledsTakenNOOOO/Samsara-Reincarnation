@@ -376,3 +376,15 @@ LoWang/Secret1	SPKEY1
 LoWang/Secret2	SPKEY2
 SW_SECRET4		Sounds/ShadowWarrior/Player/SW_SECRET4
 SW_SECRET5		Sounds/ShadowWarrior/Player/SW_SECRET5
+
+$Random LoWang/Flirt { LoWang/Flirt1 LoWang/Flirt2 LoWang/Flirt3 LoWang/Flirt4 LoWang/Flirt5 LoWang/Flirt6 LoWang/Flirt7 LoWang/Flirt8 LoWang/Flirt9 LoWang/Flirt10 }
+LoWang/Flirt1 "Sounds/ShadowWarrior/Player/SPWAIT28.ogg"
+LoWang/Flirt2 "Sounds/ShadowWarrior/Player/SPWAIT31.ogg"
+LoWang/Flirt3 "Sounds/ShadowWarrior/Player/SPWAIT27.ogg"
+LoWang/Flirt4 "Sounds/ShadowWarrior/Player/SPWAIT15.ogg"
+LoWang/Flirt5 "Sounds/ShadowWarrior/Player/SPWAIT14.ogg"
+LoWang/Flirt6 "Sounds/ShadowWarrior/Player/SPWAIT08.ogg"
+LoWang/Flirt7 "Sounds/ShadowWarrior/Player/SPWAIT07.ogg"
+LoWang/Flirt8 "Sounds/ShadowWarrior/Player/SPTNT54.wav"
+LoWang/Flirt9 "Sounds/ShadowWarrior/Player/SPTNT47.ogg"
+LoWang/Flirt10 "Sounds/ShadowWarrior/Player/SPTNT08.ogg"
