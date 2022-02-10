@@ -150,7 +150,7 @@ SW/Taunt14	SPWAIT06
 SW/Taunt15 	SPWAIT08
 SW/Taunt16	SPWAIT14
 SW/Taunt17  SPWAIT11
-//SW/Taunt18	JG2078
+SW/Taunt18	JG2078
 SW/Taunt19	JG3059
 SW/Taunt20	JG3047
 SW/Taunt21	JG6053
@@ -169,7 +169,7 @@ SW/Taunt33  SPTNT08
 SW/Taunt44	JG44052
 $Random LoWang/Taunt { LoWang/BossW SW/KillTauntF OlWang/BossB LoWang/BossV SW/Taunt17 SW/GibTauntF SW/Taunt19 SW/Taunt26 SW/Taunt27 SW/Taunt29 SW/Taunt30 
 					   SW/Taunt16 SW/Taunt15 SW/Taunt14 SW/Taunt13 SW/Taunt1 SW/Taunt2 SW/Taunt3 SW/Taunt4 SW/Taunt25 SW/Taunt28 SW/Taunt31	SW/Taunt33
-					   SW/Taunt5 SW/Taunt6 SW/Taunt7 SW/Taunt8 SW/Taunt9 SW/Taunt11 SW/Taunt12 SW/Taunt21 SW/Taunt22 SW/Taunt24 SW/Taunt32 SW/Taunt44 }
+					   SW/Taunt5 SW/Taunt6 SW/Taunt7 SW/Taunt8 SW/Taunt9 SW/Taunt11 SW/Taunt12 SW/Taunt18 SW/Taunt21 SW/Taunt22 SW/Taunt24 SW/Taunt32 SW/Taunt44 }
 
 SWPAIN1 SWPAIN07
 SWPAIN2 SWPAIN22
