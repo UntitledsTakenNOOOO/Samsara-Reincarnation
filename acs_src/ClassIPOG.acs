@@ -34,3 +34,30 @@ Script "GreedScript" (void) //704
     Delay(1);
   }
 }
+
+str IPoGClones[5] = { "MoomanClone", "CyborgClone", "LizardClone", "SpecimenClone", "DominatrixClone" };
+str IPoGModeNames[2] = { "Comp", "Coop" };
+
+Script "GreedClone" (void)
+{
+	int activator = ActivatorTid();
+	int pTid = UniqueTid();
+	int cloneTid = UniqueTid();
+	str mode = IPoGModeNames[isCoop()||isSinglePlayer()];
+	Thing_ChangeTid(0,pTid);
+	if(Spawn(strparam(s:IPoGClones[CheckInventory("IPoGMode")],s:mode),GetActorX(0),GetActorY(0),GetActorZ(0),cloneTid))
+	{
+		if(!GetCvar("sv_infiniteinventory"))
+		{
+			TakeInventory("IPOGCloneItem",1);
+			GiveInventory("IPOGCloneToken",1);
+		}
+	}
+	Thing_SetTranslation(cloneTid,-1);
+	SetActivator(cloneTid,AAPTR_Default);
+	SetPointer(AAPTR_Master,pTid);
+	Thing_ChangeTid(pTid,activator);
+	Thing_ChangeTid(cloneTid,0);
+	
+	
+}
