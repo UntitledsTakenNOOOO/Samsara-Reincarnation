@@ -14,49 +14,18 @@ actor "Guns Akimbo" : CustomInventory
     PSTR B -1
     stop
   Pickup:
-	TNT1 A 0 A_JumpIfInventory("AkimboStay", 1, "PickupItem")
+	TNT1 A 0 ACS_NamedExecuteWithResult("CalebAkimboCooldown")
+	TNT1 A 0 A_GiveInventory ("BloodGunsAkimboCooldown", 120)
     TNT1 A 0 A_GiveInventory ("GunsAkimboP")
     stop 
-  PickupItem:
-	TNT1 A 0 A_JumpIfInventory("GunsAkimboItem", 1, "TakeCooldown")
-    TNT1 A 0 A_GiveInventory ("GunsAkimboItem")
-    stop 	
-  TakeCooldown:
-	TNT1 A 0 A_TakeInventory("BloodGunsAkimboCooldown", 60)
-	Stop
   }
 }
 
-actor GunsAkimboItem : CustomInventory
-{
-  inventory.icon "AKIMC0"
-  inventory.maxamount 1
-  +INVENTORY.INVBAR
-   Inventory.RestrictedTo "Caleb"
-  states
-  {   
-   Spawn:
-    PSTR B -1
-    stop  
-  Use:
-	TNT1 A 0 A_JumpIfInventory("BloodGunsAkimboCooldown", 1, "UseFail")
-	TNT1 A 1
-	TNT1 A 0 A_GiveInventory ("GunsAkimboP")
-	TNT1 A 0 ACS_NamedExecuteAlways("CalebAkimboCooldown", 0)
-	TNT1 A 0 A_GiveInventory ("BloodGunsAkimboCooldown", 200)
-	Fail
-  UseFail:
-	TNT1 A 1
-	TNT1 A 0 A_Print("Guns Akimbo hasn't cooled down yet.")
-	fail	
-  }
-}
-
-actor GunsAkimboP : PowerDamage { DamageFactor "Normal", 1.0 PowerUp.Duration -60 }
+actor GunsAkimboP : Boolean { Inventory.MaxAmount 1 Inventory.InterHubAmount 1 }
 
 actor AkimboStay : Boolean { }
 
-actor BloodGunsAkimboCooldown : Inventory { Inventory.MaxAmount 200 }
+actor BloodGunsAkimboCooldown : Inventory { Inventory.MaxAmount 120 }
 
 actor VoodooDoll : Weapon
 {
