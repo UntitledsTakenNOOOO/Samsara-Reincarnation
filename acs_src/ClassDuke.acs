@@ -10,12 +10,10 @@ Script "Samsara_Shrinker" (int use, int value)
 			target = UniqueTID();
 			Thing_ChangeTID(0, target);
 			SetActivator(0, AAPTR_Master);
-			int originalhealth = GetActorProperty(0, APROP_Health);
-			int spawnhealth = GetActorProperty(0, APROP_SpawnHealth);
+			int health = GetActorProperty(0, APROP_Health);
 			SetActivator(target);
 			Thing_ChangeTID(target, oldTID);
 			GiveInventory("ShrunkToken", 1);
-			GiveInventory("ShrunkMasterHealthTokens", spawnhealth);
 			SetActorProperty(0, APROP_Health, 1);
 			for(int c = 0; c < 385; c++)
 			{
@@ -26,7 +24,7 @@ Script "Samsara_Shrinker" (int use, int value)
 				if(c == 384)
 				{
 					TakeInventory("ShrunkToken", 1);
-					GiveInventory("ShrunkHealthTokens", spawnhealth - originalhealth);
+					GiveInventory("ShrunkHealthTokens", health);
 					SetActorState(0, "Grow", true);
 					terminate;
 				}
@@ -36,17 +34,17 @@ Script "Samsara_Shrinker" (int use, int value)
 	}
 	else if(use == 2)
 	{
-		//if(strright(GetActorClass(0),7) == "_Shrink") { SetResultValue(0); terminate; }
+		//if(strright(GetActorClass(0),7) == "_Shrink") { SetResultValue(0); terminate; }	
 		activator = ActivatorTid();
 		newActivatorTid = UniqueTid();
 		int oldMonsterTid = UniqueTid();
 		Thing_ChangeTid(0,newActivatorTid);
 		SetActivator(0,AAPTR_Master);
+		SetActorProperty(newActivatorTid,APROP_Health,CheckInventory("ShrunkHealthTokens"));
 		SetActivator(0,AAPTR_Master);
-		SetActorProperty(newActivatorTid,APROP_Health,GetActorProperty(0,APROP_Health));
 		Thing_ChangeTid(0,oldMonsterTid);
 		SetActivator(0,AAPTR_Master);
-		Thing_Remove(oldMonsterTid);
+		GiveActorInventory(oldMonsterTid,"RemoveMe",1);
 		SetPointerExt(AAPTR_Master,0,newActivatorTid);
 		SetActivator(newActivatorTid,AAPTR_Default);
 		Thing_ChangeTid(newActivatorTid,activator);
