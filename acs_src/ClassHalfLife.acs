@@ -300,7 +300,7 @@ script "getLaserCoords" (int x, int y, int z) {
 	laserZ = Z;
 }
 
-script "HL2677" (void) net Clientside //2677
+script "HL2677" (void) net //2677
 {
 	if(CheckInventory("HalfLifeClass") == true && GetActorProperty(0,APROP_Health) > 0)// just for safety purposes
 	{
@@ -314,6 +314,7 @@ script "HL2677" (void) net Clientside //2677
 			else
 			{
 				GiveInventory("flashlightinventory", 1);
+				ACS_NamedExecuteWithResult("HLFlashLightLoop",0,0,0);
 			}
 		}
 		else
@@ -329,6 +330,15 @@ script "HL2677" (void) net Clientside //2677
 				GiveInventory("flashlightinventory", 1);
 			}
 		}
+	}
+}
+
+Script "HLFlashLightLoop" (void)
+{
+	while(CheckInventory("flashlightinventory"))
+	{
+		GiveInventory("HLFlashLightWeapon",1);
+		Delay(1);
 	}
 }
 
@@ -813,7 +823,10 @@ script "Freeman_HEV_Enter" ENTER clientside//hev suit
 					{
 						if(CheckInventory("FlashLightAmmo") == 0)
 						{
-							ACS_NamedExecuteAlways("HL2677",0,0,0,0);
+							if(GetCVar("sams_runninginzdoom"))
+								ACS_NamedExecuteAlways("HL2677",0,0,0,0);
+							else
+								NamedRequestScriptPuke("HL2677",0,0,0,0);
 						}
 						TakeInventory("FlashLightAmmo", 1);
 							
@@ -833,13 +846,6 @@ script "Freeman_HEV_Enter" ENTER clientside//hev suit
 							SetHudSize(0,0,0);
 							SetFont("SMALLFONT");
 						}
-							
-							if(!GetCVar("sams_runninginzdoom") || GetCVar("sams_runninginzandro"))
-								NamedRequestScriptPuke("HL2683",0,0,0);
-							
-							else
-								LineAttack(0, GetActorAngle(0), GetActorPitch(0), 0, "HLFlashLight", "none", 2048.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL, 0);
-						
 					}
 					else
 					{
@@ -1088,11 +1094,6 @@ Script "HL_HUD_Pickups" (void)
 		SetHUDSize(0,0,0);		
 	}
 }	
-
-Script "HL2683" (void) NET //2683
-{
-	LineAttack(0, GetActorAngle(0), GetActorPitch(0), 0, "HLFlashLight", "none", 2048.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL, 0);
-}
 
 Script "Freeman_HoldAlt" (void)
 {
