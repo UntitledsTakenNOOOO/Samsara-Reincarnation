@@ -719,15 +719,16 @@ str HeroInformation[CLASSCOUNT][MAXMODES][25][3] =
 };
 
 //[CLASSCOUNT] is hero index, [MAXMODES] is the modes, [20] is max slots, [5] is the amount of separate pieces of information
-str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][5] = 
+//After the slot, each 5 values represent values for different attacks.																																																																																																																																									Type:	Min:	Max:	DPS:	Pellets:	Type:	Min:	Max:	DPS:	Pellets:	Type:	Min:	Max:	DPS:	Pellets:	Type:	Min:	Max:	DPS:	Pellets:
+str ClassWeaponInfo[CLASSCOUNT][MAXMODES][20][25] = 
 {
 	{
 		{
-			{ "Fist", "Your iron-clad knuckles are a little better than nothing", "", " Fist ", "f" },
-			{ "Pistol", "The Pistol is the only weapon you start out with. But you'll use anything in a pinch, no matter how pathetic it may feel.", "WPSTA0", " Pistol ", "p" },
-			{ "Chainsaw", "The Chainsaw cuts the baddies like standing timber, but you have to get close.", "WSAWA0", " Chainsaw ", "1" },
-			{ "Shotgun", "Shotguns deliver a heavy punch at close range and a generous pelting from a distance.", "WSHTA0", " Shotgun ", "2" },
-			{ "Super Shotgun", "Combat Shotguns are double-barreled, sawed-off killing sticks. These gats are the ultimate in pellet warfare. Beware, two barrels not only deliver more fire power, but take more time to reload.", "WSSGA0", "Super Shotgun", "3" },
+			{ "Fist", "Your iron-clad knuckles are a little better than nothing", "", " Fist ", "f", 																																																																																																																																	"Normal",	"10", 	"50", 	"130",	"1" },
+			{ "Pistol", "The Pistol is the only weapon you start out with. But you'll use anything in a pinch, no matter how pathetic it may feel.", "WPSTA0", " Pistol ", "p", 																																																																																																														"Normal",	"12", 	"16", 	"32",	"1" },
+			{ "Chainsaw", "The Chainsaw cuts the baddies like standing timber, but you have to get close.", "WSAWA0", " Chainsaw ", "1", 																																																																																																																								"Normal",	"10", 	"20", 	"170",	"1" },
+			{ "Shotgun", "Shotguns deliver a heavy punch at close range and a generous pelting from a distance.", "WSHTA0", " Shotgun ", "2", 																																																																																																																							"Normal",	"7", 	"21", 	"147", 	"7" },
+			{ "Super Shotgun", "Combat Shotguns are double-barreled, sawed-off killing sticks. These gats are the ultimate in pellet warfare. Beware, two barrels not only deliver more fire power, but take more time to reload.", "WSSGA0", "Super Shotgun", "3", 																																																																																									"Normal",	"5", 	"15",	"225",	"20" },
 			{ "Chaingun", "Chainguns direct heavy firepower into your opponent, making him do the chaingun cha-cha.", "WCGNA0", " Chaingun ", "4" },
 			{ "Rocket Launcher", "Rocket Launchers deliver an explosive rocket that can turn several baddies inside-out.", "WDRLA0", "Rocket Launcher", "5" },
 			{ "Plasma Rifle", "Plasma Rifles shoot multiple rounds of plasma energy frying some demon butt!", "WPLSA0", "Plasma Rifle", "6" },
@@ -2184,7 +2185,7 @@ Script "Samsara_Compendium_Initiate" (void) Net
 Script "Samsara_Compendium" (void) Net Clientside
 {
 	int idstart = 100;
-	int cursorx, cursory, offsety, offsetx, menuindex, lastmenuindex, a, menutab, lastmenutab, menuitem, lastmenuitem, scrollcounter, scrolltimer, index, scalex, scaley, hitpoints, newtid, listyposition, listindex, condition, listclick, monsterskin, altskin, prevskin, monsteraccess;
+	int cursorx, cursory, offsety, offsetx, menuindex, lastmenuindex, a, menutab, lastmenutab, menuitem, lastmenuitem, scrollcounter, scrolltimer, index, scalex, scaley, hitpoints, newtid, listyposition, listindex, condition, listclick, monsterskin, altskin, prevskin, monsteraccess, drawnProps;
 	str seesound, activesound, painsound, deathsound, description;
 	int hudboundsx = 1440;
 	int hudboundsy = 972;
@@ -2256,11 +2257,24 @@ Script "Samsara_Compendium" (void) Net Clientside
 				HudMessage(s:"Credits"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15987, CR_WHITE, (FixedMul(hudcenterx,0.967)<<16)+0.2, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
 				if(buttons & (BT_USE|BT_ATTACK))
 						menuindex = hoverindex;
+						
+				HudMessage(s:"Settings Info"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15989, CR_BLACK, (FixedMul(hudcenterx,0.875)<<16)+0.2, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
+			}
+			else if(cursorx < (FixedMul(hudboundsx,0.85)) && cursorx > (FixedMul(hudboundsx,0.775)) && cursory < (FixedMul(hudboundsy,0.9875)) && cursory > (FixedMul(hudboundsy,0.967)))
+			{
+				hoverindex = CLASSCOUNT+2;
+				if(hoverindex != lasthover && hoverindex != 0)	{ lasthover = hoverindex; LocalAmbientSound("Compendium/Hover",104); }	
+				HudMessage(s:"Settings Info"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15989, CR_WHITE, (FixedMul(hudcenterx,0.875)<<16)+0.2, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
+				if(buttons & (BT_USE|BT_ATTACK))
+						menuindex = hoverindex;
+						
+				HudMessage(s:"Credits"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15987, CR_BLACK, (FixedMul(hudcenterx,0.967)<<16)+0.2, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
 			}
 			else
 			{
 				if(lasthover > CLASSCOUNT) { hoverindex = 0; lasthover = 0; }
 				HudMessage(s:"Credits"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15987, CR_BLACK, (FixedMul(hudcenterx,0.967)<<16)+0.2, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
+				HudMessage(s:"Settings Info"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15989, CR_BLACK, (FixedMul(hudcenterx,0.875)<<16)+0.2, (FixedMul(hudcentery,0.955)<<16)+0.1, 0.1);
 			}
 			
 			SetHudSize(hudboundsx,hudboundsy,true);
@@ -2326,6 +2340,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 					altskin = 0;
 					listyposition = 0;
 					menutab = 1;
+					drawnProps = 0;
 					menuitem = 1;
 					listindex = 1;
 					removemessages(16180,16189);
@@ -2334,6 +2349,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 				{
 					LocalAmbientSound("marathon/shieldhit",88);
 					listyposition = 0;
+					drawnProps = 0;
 					menuitem = 1;
 					listindex = 1;
 					removemessages(16170,16175);
@@ -2341,9 +2357,14 @@ Script "Samsara_Compendium" (void) Net Clientside
 				if(altskin != prevskin)
 				{
 					listyposition = 0;
+					drawnProps = 0;
 					menuitem = 1;
 					listindex = 1;
 				}
+				if(lastmenuitem != menuitem)
+				{
+					drawnProps = 0;
+				}		
 					
 				SelectionColors[0] = ClassInfo[menuindex-1][altskin][25];
 				SelectionColors[1] = ClassInfo[menuindex-1][altskin][26];
@@ -2709,12 +2730,12 @@ Script "Samsara_Compendium" (void) Net Clientside
 							if(StrLen(HeroInformation[menuindex-1][altskin][a][0]) == 0) { menuitem = a; listindex = menuitem; break; }	
 						}	
 					}	
-					else { listindex = 1; listyposition = 0; }			
+					else { listindex = 1; listyposition = 0; }		
 					menuitem = listindex;	
 				}
 			}
 			else if(menutab == 2)
-			{
+			{		
 				SetFont(ClassInfo[(menuindex-1)][altskin][15]);
 				//SetHudSize(hudcenterx,hudcentery,true);
 				fontscaledx = FixedMul(hudcenterx,ClassFontScales[menuindex-1][1]);
@@ -2735,12 +2756,47 @@ Script "Samsara_Compendium" (void) Net Clientside
 					SetFont(ClassWeaponInfo[menuindex-1][altskin][menuitem-1][2]);
 					HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16016, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.855)<<16)+0.1, (FixedMul(hudcentery,0.31)<<16)+0.1, 0);
 				}
-				
-				SetHudClipRect(FixedMul(hudcenterx,0.775),FixedMul(hudcentery,0.5),FixedMul(hudcenterx,0.175),FixedMul(hudcentery,0.45),FixedMul(hudcenterx,0.15));
-				SetFont("CMPWEPFT");
-				HudMessage(s:ClassWeaponInfo[menuindex-1][altskin][menuitem-1][4]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16160, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.865)<<16), (FixedMul(hudcentery,0.5)<<16)+0.1, 0);	
-				SetHudClipRect(0,0,0,0,0);
-				SetHudSize(hudcenterx,hudcentery,true);
+					
+				if(!drawnProps)
+				{
+					drawnProps = 1;
+					int minDamage = AToI(ClassWeaponInfo[menuindex-1][altskin][menuitem-1][6]);
+					int maxDamage = AToI(ClassWeaponInfo[menuindex-1][altskin][menuitem-1][7]);
+					int pellets = AToI(ClassWeaponInfo[menuindex-1][altskin][menuitem-1][9]);
+					if(pellets <= 0) { pellets = 1; };
+					SetHudSize(fontscaledx,fontscaledy,true);
+					SetFont(ClassInfo[(menuindex-1)][altskin][15]);
+					HudMessage(s:"Attack Type:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16153, CR_UNTRANSLATED, (FixedMul(fontscaledx,0.865)<<16), (FixedMul(fontscaledy,0.475)<<16)+0.1, 0);
+					HudMessage(s:"\n",s:ClassWeaponInfo[menuindex-1][altskin][menuitem-1][5]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16152, CR_UNTRANSLATED, (FixedMul(fontscaledx,0.865)<<16), (FixedMul(fontscaledy,0.475)<<16)+0.1, 0);
+					HudMessage(s:"Raw Damage:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16159, CR_UNTRANSLATED, (FixedMul(fontscaledx,0.865)<<16), (FixedMul(fontscaledy,0.55)<<16)+0.1, 0);
+					if(pellets > 1)
+					{
+						if(minDamage != maxDamage)
+							HudMessage(s:"\n",d:minDamage,s:"-",d:maxDamage,s:" *(",d:pellets,s:")"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16158, CR_UNTRANSLATED, (FixedMul(fontscaledx,0.865)<<16), (FixedMul(fontscaledy,0.55)<<16)+0.1, 0);
+						else
+							HudMessage(s:"\n",d:maxDamage,s:" *(",d:pellets,s:")"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16158, CR_UNTRANSLATED, (FixedMul(fontscaledx,0.865)<<16), (FixedMul(fontscaledy,0.55)<<16)+0.1, 0);
+					}
+					else
+					{
+						if(minDamage != maxDamage)
+							HudMessage(s:"\n",d:minDamage,s:"-",d:maxDamage; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16158, CR_UNTRANSLATED, (FixedMul(fontscaledx,0.865)<<16), (FixedMul(fontscaledy,0.55)<<16)+0.1, 0);
+						else
+							HudMessage(s:"\n",d:maxDamage; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16158, CR_UNTRANSLATED, (FixedMul(fontscaledx,0.865)<<16), (FixedMul(fontscaledy,0.55)<<16)+0.1, 0);
+					}
+						
+					HudMessage(s:"Max DPS:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16157, CR_UNTRANSLATED, (FixedMul(fontscaledx,0.865)<<16), (FixedMul(fontscaledy,0.625)<<16)+0.1, 0);
+					HudMessage(s:"\n",d:AToI(ClassWeaponInfo[menuindex-1][altskin][menuitem-1][8]); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16156, CR_UNTRANSLATED, (FixedMul(fontscaledx,0.865)<<16), (FixedMul(fontscaledy,0.625)<<16)+0.1, 0);
+					
+					HudMessage(s:"Attacks/Sec:"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16155, CR_UNTRANSLATED, (FixedMul(fontscaledx,0.865)<<16), (FixedMul(fontscaledy,0.7)<<16)+0.1, 0);
+					HudMessage(s:"\n",f:FixedDiv(AToI(ClassWeaponInfo[menuindex-1][altskin][menuitem-1][8]),maxDamage)/pellets; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16154, CR_UNTRANSLATED, (FixedMul(fontscaledx,0.865)<<16), (FixedMul(fontscaledy,0.7)<<16)+0.1, 0);
+					
+					SetHudSize(hudcenterx,hudcentery,true);
+					SetHudClipRect(FixedMul(hudcenterx,0.775),FixedMul(hudcentery,0.5),FixedMul(hudcenterx,0.175),FixedMul(hudcentery,0.45),FixedMul(hudcenterx,0.15));
+					SetFont("CMPWEPFT");
+					HudMessage(s:ClassWeaponInfo[menuindex-1][altskin][menuitem-1][4]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16160, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.865)<<16), (FixedMul(hudcentery,0.825)<<16)+0.1, 0);	
+					SetHudClipRect(0,0,0,0,0);
+					SetHudSize(hudcenterx,hudcentery,true);
+				}
 				
 				if(abs(forwardmove) > 8 && buttons != oldbuttons)
 				{
@@ -2764,7 +2820,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 							if(StrLen(ClassWeaponInfo[menuindex-1][altskin][a][0]) == 0) { menuitem = a; listindex = menuitem; break; }
 						}
 					}
-					else { listindex = 1; listyposition = 0; }		
+					else { listindex = 1; listyposition = 0; }	
 					menuitem = listindex;
 				}
 			}
@@ -2905,7 +2961,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 							if(StrLen(MonsterInfo[menuindex-1][monsteraccess][a][0]) == 0) { menuitem = a; listindex = menuitem; break; }
 						}
 					}
-					else { listindex = 1; listyposition = 0; }		
+					else { listindex = 1; listyposition = 0; }
 					menuitem = listindex;
 				}
 			}
