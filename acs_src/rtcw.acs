@@ -462,7 +462,7 @@ Script "RTCW_Enter" enter
 		
 		steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
 		Delay(1);
-		
+		TakeInventory("RTCW_TeslaSoundToken",1);
 		//Drastically reduced cooldown
 		if(!(buttons & BT_ATTACK) || CheckInventory("RTCW_VenomCooling") || CheckInventory("RTCW_StenCooling"))
 		{
@@ -976,6 +976,37 @@ Script "RTCW_HandleLean" (void)
 	}
 }
 
+Script "RTCW_TeslaAim" (int xory)
+{
+	int amplitude = 30;
+	int newTid = UniqueTid();
+	int randOff = -random(-amplitude,amplitude);
+	int a = randOff*182;
+	int lookAngle;
+	int attacked;
+	if(xory) { lookAngle = (CheckInventory("RTCW_TeslaLookAngle") - amplitude) * 182; }
+	for(a = a; a <= amplitude*182; a+=128)
+	{
+		int oldTid = PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_RETURNTID);
+		if(PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_FORCETID))
+		{
+			if(ClassifyActor(newTid) & ACTOR_ALIVE)
+			{
+				attacked = 1;
+				LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),20,"RTCW_TeslaZap","RTCWTesla",1024.0);
+				Thing_ChangeTid(newTid,oldTid);
+				TakeInventory("RTCW_TeslaLookAngle",255);
+				GiveInventory("RTCW_TeslaLookAngle",a/182 + amplitude);
+				break;
+			}
+			Thing_ChangeTid(newTid,oldTid);
+			continue;
+		}
+	}
+	//if(!attacked && xory ) { LineAttack(0,GetActorAngle(0)+(randOff*!xory)+lookAngle,GetActorPitch(0)+(randOff*xory),20,"RTCW_TeslaZap","RTCWTesla",1024.0); }
+	SetResultValue(randOff*!attacked);
+}
+
 Script "RTCW_TeslaArc" (int space, int height, int user) clientside
 {
 	int t, i, angle, pitch, x, y, z, tx, ty, tz, vx, vy, vz, mag, magI, horz, pitchoffset,angleoffset;
@@ -990,7 +1021,7 @@ Script "RTCW_TeslaArc" (int space, int height, int user) clientside
 		case 3: bendinessX = random(4,45)*randSign(); bendinessY = random(4,45)*randSign(); segment = "RTCW_TeslaSegment"; break;
 		case 4: bendinessX = random(4,8)*randSign(); bendinessY = random(4,8)*randSign(); segment = "RTCW_TeslaSegment"; i = 32; horz = 8; break;
 	}
-	
+		
 	tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0);
 	
 	SetActivatorToTarget(0);	
@@ -1020,9 +1051,14 @@ Script "RTCW_TeslaArc" (int space, int height, int user) clientside
 	int segments = (magI - abs(i)) / space;
 	int bendscale = random(1,segments / 2);
 	int bendcounter;
+	int segnum = 1;
 	for (i = i; i < magI; i += space)
 	{
-		SpawnForced(segment, x+segmentx, y+segmenty, z+segmentz, newtid);
+		SpawnForced(strparam(s:segment,d:segnum), x+segmentx, y+segmenty, z+segmentz, newtid);
+		if(segnum < 4)
+			segnum++;
+		else
+			segnum = 1;
 
 		if(bendcounter <= bendscale)
 		{
@@ -1046,7 +1082,7 @@ Script "RTCW_TeslaArc" (int space, int height, int user) clientside
 		segmentx += FixedMul(cos(angle+angleoffset)*space,cos(pitch+pitchoffset));
 		segmenty += FixedMul(sin(angle+angleoffset)*space,cos(pitch+pitchoffset));
 		segmentz += sin(pitch+pitchoffset)*space;
-			
+
 		Thing_ChangeTid(newtid,0);
 		bendcounter++;
 	}
@@ -1301,10 +1337,10 @@ Script "RTCW_BulletDamage" (int damage)
 		
 		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
 		{	
-			if(monsterHealth - (damage*2) <= 0)
+			if(monsterHealth - (damage*3) <= 0)
 				PlaySound(0,"RTCW/HeadShot",CHAN_ITEM,1.0,0,ATTN_NORM);
 				
-			SetResultValue(damage*2);
+			SetResultValue(damage*3);
 		}
 		else
 			SetResultValue(damage);
@@ -1326,10 +1362,10 @@ Script "RTCW_BulletDamage" (int damage)
 			}
 			if(StrLeft(GetActorClass(0),4)=="RTCW")
 				GiveInventory("RTCW_RemoveHat",1);
-			if(!CheckInventory("NoHeadShots") && monsterHealth - (damage*2) <= 0)
+			if(!CheckInventory("NoHeadShots") && monsterHealth - (damage*3) <= 0)
 				PlaySound(0,"RTCW/HeadShot",CHAN_ITEM,1.0,0,ATTN_NORM);
 				
-			SetResultValue(damage*2);
+			SetResultValue(damage*3);
 		}
 		else
 			SetResultValue(damage);
