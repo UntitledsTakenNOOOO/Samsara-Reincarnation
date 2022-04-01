@@ -978,33 +978,53 @@ Script "RTCW_HandleLean" (void)
 
 Script "RTCW_TeslaAim" (int xory)
 {
-	int amplitude = 30;
+	int amplitude = 90;
 	int newTid = UniqueTid();
 	int randOff = -random(-amplitude,amplitude);
-	int a = randOff*182;
+	int a = -randOff*182;
 	int lookAngle;
 	int attacked;
 	if(xory) { lookAngle = (CheckInventory("RTCW_TeslaLookAngle") - amplitude) * 182; }
-	for(a = a; a <= amplitude*182; a+=128)
+	if(CheckInventory("RTCW_TeslaLook") < 5)
 	{
-		int oldTid = PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_RETURNTID);
-		if(PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_FORCETID))
+		for(a = a; a <= amplitude*182; a+=128)
 		{
-			if(ClassifyActor(newTid) & ACTOR_ALIVE)
+			int oldTid = PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_RETURNTID);
+			if(PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_FORCETID))
 			{
-				attacked = 1;
-				LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),20,"RTCW_TeslaZap","RTCWTesla",1024.0);
+				if(ClassifyActor(newTid) & ACTOR_ALIVE)
+				{
+					attacked = 1;
+					GiveInventory("RTCW_TeslaLook",1);
+					LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1,"RTCW_TeslaZap","RTCWTesla",1024.0);
+					Thing_ChangeTid(newTid,oldTid);
+					TakeInventory("RTCW_TeslaLookAngle",255);
+					GiveInventory("RTCW_TeslaLookAngle",a/182 + amplitude);
+					break;
+				}
 				Thing_ChangeTid(newTid,oldTid);
-				TakeInventory("RTCW_TeslaLookAngle",255);
-				GiveInventory("RTCW_TeslaLookAngle",a/182 + amplitude);
-				break;
+				continue;
 			}
-			Thing_ChangeTid(newTid,oldTid);
-			continue;
 		}
 	}
-	//if(!attacked && xory ) { LineAttack(0,GetActorAngle(0)+(randOff*!xory)+lookAngle,GetActorPitch(0)+(randOff*xory),20,"RTCW_TeslaZap","RTCWTesla",1024.0); }
-	SetResultValue(randOff*!attacked);
+	SetResultValue((randOff*!attacked)/(1+(CheckInventory("RTCW_TeslaLookAttempts")<=32)*2));
+}
+
+Script "RTCW_TeslaResistance" (void)
+{
+	if(!SetActivator(0,AAPTR_Tracer) || CheckInventory("RTCW_TeslaMultiplierToken"))
+		terminate;
+	for(int a = 0; a < 8; a++)
+	{
+		if(!CheckInventory(strparam(s:"RTCW_TeslaMultiplier",d:a+1)))
+		{
+			GiveInventory(strparam(s:"RTCW_TeslaMultiplier",d:a+1),1);
+			GiveInventory("RTCW_TeslaMultiplierToken",17);
+			break;
+		}
+	}
+	Delay(17);
+	TakeInventory("RTCW_TeslaMultiplierToken",17);
 }
 
 Script "RTCW_TeslaArc" (int space, int height, int user) clientside
@@ -1015,7 +1035,7 @@ Script "RTCW_TeslaArc" (int space, int height, int user) clientside
 	
 	switch(user)
 	{
-		case 0: bendinessX = random(4,16)*randSign(); bendinessY = random(4,16)*randSign(); segment = "RTCW_TeslaSegment"; horz = 8; i = 32; break;
+		case 0: bendinessX = random(4,8)*randSign(); bendinessY = random(4,8)*randSign(); segment = "RTCW_TeslaSegment"; horz = 8; i = 32; break;
 		case 1: bendinessX = random(4,8)*randSign(); bendinessY = random(4,8)*randSign(); segment = "RTCW_TeslaSegment"; i = 40; horz = 18; break;
 		case 2: bendinessX = random(8,16)*randSign(); bendinessY = random(48,56)*randSign(); segment = "RTCW_LoperTeslaSegment"; break;
 		case 3: bendinessX = random(4,45)*randSign(); bendinessY = random(4,45)*randSign(); segment = "RTCW_TeslaSegment"; break;
