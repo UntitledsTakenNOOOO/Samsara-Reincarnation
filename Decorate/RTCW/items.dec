@@ -1,0 +1,145 @@
+Actor RTCW_MealAmount : Inventory { +INVENTORY.UNDROPPABLE Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
+Actor RTCW_ColdMeal : CustomInventory
+{
+	Inventory.PickupMessage "Cold Meal"
+	Inventory.PickupSound "RTCW/ColdMeal"
+	Inventory.MaxAmount 0
+	+LOOKALLAROUND
+	States
+	{
+		Spawn:
+			RW00 A 0
+			RW00 A 0 A_JumpIfInventory("RTCW_MealAmount",1,"Spawn2")
+			RW00 A 1 A_Look
+			Loop
+		Spawn2:
+			RW00 B 1 A_Look
+			Loop
+		See:
+			"####" "#" 1 A_JumpIfCloser(24,"Eat")
+			Loop
+		Eat:
+			"####" "#" 0 ACS_NamedExecuteWithResult("RTCW_Decorate",9,1)
+			"####" "#" 1
+			Goto Spawn
+	}
+}
+
+Actor RTCW_ColdMealEmpty
+{
+	Height 2
+	Radius 2
+	+THRUACTORS
+	+MOVEWITHSECTOR
+	States
+	{
+		Spawn:
+			RW00 A 100
+			RW00 AAAAAAAA 1 A_Fadeout(0.1)
+			Stop
+	}
+}
+
+Actor RTCW_HotMeal : CustomInventory
+{
+	Inventory.PickupMessage "Hot Meal"
+	Inventory.PickupSound "RTCW/HotMeal"
+	Inventory.MaxAmount 0
+	+LOOKALLAROUND
+	States
+	{
+		Spawn:
+			RW00 A 0
+			RW00 A 0 A_SpawnItemEx("RTCW_SmokeSmall",0,0,4,frandom(-0.1,0.1),frandom(-0.1,0.1),frandom(0.1,0.25))
+			RW00 A 0 A_JumpIfInventory("RTCW_MealAmount",1,"Spawn2")
+			RW00 AAAAA 1 A_Look
+			Loop
+		Spawn2:
+			RW00 B 0 A_SpawnItemEx("RTCW_SmokeSmall",0,0,4,frandom(-0.1,0.1),frandom(-0.1,0.1),frandom(0.1,0.25))
+			RW00 BBBBB 1 A_Look
+			Loop
+		See:
+			"####" "#" 0 A_SpawnItemEx("RTCW_SmokeSmall",0,0,4,frandom(-0.1,0.1),frandom(-0.1,0.1),frandom(0.1,0.25))
+			"####" "#####" 1 A_JumpIfCloser(24,"Eat")
+			Loop
+		Eat:
+			"####" "#" 0 ACS_NamedExecuteWithResult("RTCW_Decorate",9,2)
+			"####" "#" 1
+			Goto Spawn
+	}
+}
+
+Actor RTCW_HotMealEmpty : RTCW_ColdMealEmpty {}
+
+ACTOR RTCW_HealthSmall : Health
+{
+	Inventory.Amount 5
+	Inventory.PickupMessage "Small Health"
+	Inventory.PickupSound "RTCW/Medkit"
+	States
+	{
+		Spawn:
+			RW00 A -1
+			Stop
+	}
+}
+
+ACTOR RTCW_HealthMedium : RTCW_HealthSmall
+{
+	Inventory.Amount 15
+	Inventory.PickupMessage "Med Health"
+}
+
+ACTOR RTCW_HealthLarge : RTCW_HealthSmall
+{
+	Inventory.Amount 30
+	Inventory.PickupMessage "Large Health"
+}
+
+ACTOR RTCW_ArmorHead : BasicArmorBonus
+{
+	Inventory.PickupMessage "Armored Helmet"
+	Inventory.PickupSound "RTCW/Helmet"
+	Armor.MaxSaveAmount 100
+	Armor.SavePercent 66.667
+	Armor.SaveAmount 25
+	-INVENTORY.ALWAYSPICKUP
+	States
+	{
+		Spawn:
+			RW00 A 5
+			Loop
+	}
+}
+
+ACTOR RTCW_ArmorBody : RTCW_ArmorHead
+{
+	Inventory.PickupMessage "Flak Jacket"
+	Inventory.PickupSound "RTCW/FlakJacket"
+	Armor.SaveAmount 75
+	-INVENTORY.ALWAYSPICKUP
+}
+
+Actor RTCW_Stamina : CustomInventory
+{
+	Inventory.PickupMessage "Stamina"
+	Inventory.PickupSound "RTCW/Stamina"
+	States
+	{
+		Spawn:
+			RW00 A -1
+			Stop
+		Pickup:
+			TNT1 A 0 A_GiveInventory("RTCW_StaminaUpgrade",1)
+			TNT1 A 0 A_GiveInventory("RTCW_StaminaHealth",100)
+			Stop
+	}
+}
+
+Actor RTCW_StaminaHealth : Health { Inventory.Amount 1 }
+
+ACTOR RTCW_StaminaUpgrade : MaxHealth
+{
+	Inventory.Amount 5
+	Inventory.MaxAmount 200
+}

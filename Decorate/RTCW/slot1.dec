@@ -1,0 +1,268 @@
+//Was 6 damage, now 18
+Actor RTCW_Grenade : RTCW_Weapon
+{
+	Weapon.SlotNumber 1
+	Weapon.SlotPriority 0 
+	Weapon.SelectionOrder 2000
+	Weapon.AmmoUse 1
+	Weapon.AmmoType "RocketAmmo"
+	Weapon.AmmoGive 5
+	Obituary "%o was killed (gren - gm) by %k."
+	Inventory.Pickupmessage "Grenade"
+	Inventory.PickupSound "RTCW/WeaponPickup"
+	Tag "Grenade"
+	+WEAPON.NOALERT
+	States
+	{
+		Spawn:
+			RW98 A -1
+			Stop
+		Deselect:
+			RW00 V 0 A_PlaySound("RTCW/Change",CHAN_7)
+			RW00 GHIJK 2
+			Goto Super::Deselect
+		DeselectNoAmmo:
+			TNT1 A 1
+			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
+			Goto Super::Deselect
+		Ready:
+			RW00 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+			Goto DeselectNoAmmo
+			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW00 A 0 A_GiveInventory("RTCW_WeaponToken",6)
+			RW00 LMNO 2
+		ReadyLoop:
+			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+			RW00 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+			Loop
+		Fire:
+			RW00 B 0 A_PlaySound("RTCW/Grenade/Pulse4",CHAN_WEAPON)
+			RW00 BC 3
+		GrenadeHold:
+			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"ReleaseGrenade")
+			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeFuse",0,"GrenadeTimerUp")
+			RW00 C 1 A_GiveInventory("RTCW_GrenadeFuse",1)
+			RW00 C 0 A_Refire("GrenadeHold")
+			Goto ReleaseGrenade
+		GrenadeTimerUp:
+			RW00 C 0 A_TakeInventory("RTCW_GrenadeFuse",35)
+			RW00 C 0 A_GiveInventory("RTCW_GrenadeTimer",1)
+			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeTimer",1,2)
+			RW00 C 0 A_PlaySound("RTCW/Grenade/Pulse3",CHAN_WEAPON)
+			Goto GrenadeHold
+			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeTimer",2,2)
+			RW00 C 0 A_PlaySound("RTCW/Grenade/Pulse2",CHAN_WEAPON)
+			Goto GrenadeHold
+			RW00 C 0 A_PlaySound("RTCW/Grenade/Pulse1",CHAN_WEAPON)
+			Goto GrenadeHold
+		ReleaseGrenade:
+			RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
+			RW00 B 0 A_PlaySound("RTCW/Grenade/Throw",CHAN_VOICE)
+			RW00 B 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"DetonateHand")
+			RW00 B 3 A_FireCustomMissile("RTCW_GrenadeProjectile",0,1,8,4)
+			RW00 C 0 A_TakeInventory("RTCW_GrenadeFuse",35)
+			RW00 C 0 A_TakeInventory("RTCW_GrenadeTimer",4)
+			TNT1 A 35
+			Goto Ready
+		DetonateHand:
+			RW00 CCCC 0 A_SpawnItemEx("RTCW_PanzerfaustSmokeExplosion",0,0,0,frandom(-0.5,0.5),frandom(-0.5,0.5),1)
+			RW00 CCCC 0 A_SpawnItemEx("RTCW_ExplosionSmokeDebris")
+			RW00 C 0 A_PlaySound("RTCW/Panzerfaust/Explode",CHAN_5)
+			RW00 C 0 A_Quake(3,15,0,128)
+			RW00 C 0 A_Explode(240,120,XF_HURTSOURCE,1,0)
+			RW00 C 0 A_SpawnItemEx("RTCW_PanzerfaustRocketExplosion")
+			RW00 C 0 A_TakeInventory("RTCW_GrenadeFuse",35)
+			RW00 C 0 A_TakeInventory("RTCW_GrenadeTimer",4)
+			Goto Ready
+		Kicking:
+			TNT1 A 0 A_Gunflash("KickingFoot")
+		KickingDelay:
+			RW00 A 18
+			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
+			Goto ReadyLoop
+		KickingFoot:
+			RW99 ABCD 2
+			RW99 E 0 A_FireCustomMissile("RTCW_KickProjectile",0,0,0,-8)
+			RW99 EFGHI 2
+			Stop
+	}
+}
+
+Actor RTCW_GrenadeProjectile
+{
+	Height 10
+	Radius 5
+	Damage (6)
+	Speed 12
+	Projectile
+	Gravity 0.5
+	BounceCount 5
+	BounceType "Hexen"
+	DamageType "RTCWExplosive"
+	BounceSound "RTCW/Grenade/Bounce"
+	+USEBOUNCESTATE
+	+ALLOWBOUNCEONACTORS
+	+BOUNCEONACTORS
+	+SKYEXPLODE
+	-NOGRAVITY
+	States
+	{
+		Spawn:
+			RW00 A 0 NoDelay A_GiveInventory("RTCW_GrenadeTimer",CallACS("RTCW_Decorate",7))
+			RW00 A 0 ThrustThingZ(0,20,0,1)
+		SpawnLoop:
+			RW00 AAAAAAAAAAAAAAAAAAAAAAAA 1
+			RW00 A 0 A_GiveInventory("RTCW_GrenadeTimer",1)
+			RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"Detonate")
+			Goto SpawnLoop
+		Bounce:
+			RW00 A 0 A_ChangeFlag("USEBOUNCESTATE",0)
+			RW00 AAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("RTCW_GrenadeTrailSmoke")
+			RW00 A 0 A_GiveInventory("RTCW_GrenadeTimer",1)
+			RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"Detonate")
+			Goto Bounce
+		OnFloor:
+			RW00 B 0 A_GiveInventory("RTCW_GrenadeTimer",1)
+			RW00 B 17 A_JumpIfInventory("RTCW_GrenadeTimer",0,"Detonate")
+			Loop
+		Crash:
+		Death:
+		XDeath:
+			RW00 A 0 A_Stop
+			RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,1)
+			Goto OnFloor
+		Detonate:
+			RW00 AAAA 0 A_SpawnItemEx("RTCW_PanzerfaustSmokeExplosion",0,0,0,frandom(-0.5,0.5),frandom(-0.5,0.5),1)
+			RW00 AAAA 0 A_SpawnItemEx("RTCW_ExplosionSmokeDebris")
+			RW00 A 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1,AAPTR_Target)
+			RW00 A 0 A_Explode(200,150,XF_HURTSOURCE,1,0)
+			RW00 A 0 A_SpawnItemEx("RTCW_PanzerfaustRocketExplosion")
+			Stop
+	}
+}
+
+Actor RTCW_GrenadeTrailSmoke
+{
+	Radius 1
+	Height 1
+	Alpha 0.2
+	Scale 0.1
+	RenderStyle Shaded
+	+NOINTERACTION
+	+CLIENTSIDEONLY
+	+FORCEXYBILLBOARD
+	States
+	{
+		Spawn:
+			RW05 ABCDEFGHIJKLMNOPQRSTUVWX 2
+			Stop
+	}
+}
+
+Actor RTCW_Pineapple : RTCW_Grenade
+{
+	Weapon.SlotPriority 1
+	Weapon.SelectionOrder 1900
+	Obituary "%o was killed (gren - am) by %k."
+	Inventory.Pickupmessage "Mk2 Grenade"
+	Inventory.PickupSound "RTCW/WeaponPickup"
+	Tag "Mk2 Grenade"
+	States
+	{
+		Spawn:
+			RW98 A -1
+			Stop
+		Ready:
+			RW00 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+			Goto DeselectNoAmmo
+			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW00 A 0 A_GiveInventory("RTCW_WeaponToken",7)
+			RW00 LMNO 2
+		ReadyLoop:
+			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+			RW00 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+			Loop
+		Fire:
+			RW00 B 0 A_PlaySound("RTCW/Grenade/Pulse4",CHAN_WEAPON)
+			RW00 BC 3
+		GrenadeHold:
+			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"ReleaseGrenade")
+			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeFuse",0,"GrenadeTimerUp")
+			RW00 C 1 A_GiveInventory("RTCW_GrenadeFuse",1)
+			RW00 C 0 A_Refire("GrenadeHold")
+			Goto ReleaseGrenade
+		GrenadeTimerUp:
+			RW00 C 0 A_TakeInventory("RTCW_GrenadeFuse",35)
+			RW00 C 0 A_GiveInventory("RTCW_GrenadeTimer",1)
+			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeTimer",1,2)
+			RW00 C 0 A_PlaySound("RTCW/Grenade/Pulse3",CHAN_WEAPON)
+			Goto GrenadeHold
+			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeTimer",2,2)
+			RW00 C 0 A_PlaySound("RTCW/Grenade/Pulse2",CHAN_WEAPON)
+			Goto GrenadeHold
+			RW00 C 0 A_PlaySound("RTCW/Grenade/Pulse1",CHAN_WEAPON)
+			Goto GrenadeHold
+		ReleaseGrenade:
+			RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
+			RW00 B 0 A_PlaySound("RTCW/Grenade/Throw",CHAN_VOICE)
+			RW00 B 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"DetonateHand")
+			RW00 B 3 A_FireCustomMissile("RTCW_PineappleProjectile",0,1,8,4)
+			RW00 C 0 A_TakeInventory("RTCW_GrenadeFuse",35)
+			RW00 C 0 A_TakeInventory("RTCW_GrenadeTimer",4)
+			TNT1 A 35
+			Goto Ready
+		DetonateHand:
+			RW00 CCCC 0 A_SpawnItemEx("RTCW_PanzerfaustSmokeExplosion",0,0,0,frandom(-0.5,0.5),frandom(-0.5,0.5),1)
+			RW00 CCCC 0 A_SpawnItemEx("RTCW_ExplosionSmokeDebris")
+			RW00 C 0 A_PlaySound("RTCW/Panzerfaust/Explode",CHAN_5)
+			RW00 C 0 A_Quake(3,15,0,128)
+			RW00 C 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1,AAPTR_Target)
+			RW00 C 0 A_Explode(200,300,XF_HURTSOURCE,1,0)
+			RW00 C 0 A_SpawnItemEx("RTCW_PanzerfaustRocketExplosion")
+			RW00 C 0 A_TakeInventory("RTCW_GrenadeFuse",35)
+			RW00 C 0 A_TakeInventory("RTCW_GrenadeTimer",4)
+			Goto Ready
+	}
+}
+
+Actor RTCW_PineappleProjectile : RTCW_GrenadeProjectile
+{
+	Speed 10
+	States
+	{
+		Spawn:
+			RW00 A 0 NoDelay A_GiveInventory("RTCW_GrenadeTimer",CallACS("RTCW_Decorate",7))
+			RW00 A 0 ThrustThingZ(0,20,0,1)
+		SpawnLoop:
+			RW00 AAAAAAAAAAAAAAAAAAAAAAAA 1
+			RW00 A 0 A_GiveInventory("RTCW_GrenadeTimer",1)
+			RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"Detonate")
+			Goto SpawnLoop
+		Bounce:
+			RW00 A 0 A_ChangeFlag("USEBOUNCESTATE",0)
+			RW00 AAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("RTCW_GrenadeTrailSmoke")
+			RW00 A 0 A_GiveInventory("RTCW_GrenadeTimer",1)
+			RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"Detonate")
+			Goto Bounce
+		OnFloor:
+			RW00 B 0 A_GiveInventory("RTCW_GrenadeTimer",1)
+			RW00 B 17 A_JumpIfInventory("RTCW_GrenadeTimer",0,"Detonate")
+			Loop
+		Crash:
+		Death:
+		XDeath:
+			RW00 A 0 A_Stop
+			RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,1)
+			Goto OnFloor
+		Detonate:
+			RW00 AAAA 0 A_SpawnItemEx("RTCW_PanzerfaustSmokeExplosion",0,0,0,frandom(-0.5,0.5),frandom(-0.5,0.5),1)
+			RW00 AAAA 0 A_SpawnItemEx("RTCW_ExplosionSmokeDebris")
+			RW00 A 0 A_Explode(375,120,XF_HURTSOURCE,1,0) // 80 is too small
+			RW00 A 0 A_SpawnItemEx("RTCW_PanzerfaustRocketExplosion")
+			TNT1 A 15
+			Stop
+	}
+}
+
+Actor RTCW_GrenadeTimer : Inventory { +INVENTORY.UNDROPPABLE Inventory.MaxAmount 4 Inventory.InterHubAmount 0  }
+Actor RTCW_GrenadeFuse : Inventory { +INVENTORY.UNDROPPABLE Inventory.MaxAmount 35 Inventory.InterHubAmount 0  }

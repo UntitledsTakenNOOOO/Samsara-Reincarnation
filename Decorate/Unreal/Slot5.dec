@@ -1,0 +1,679 @@
+Actor URocketsLoaded : Inventory { Inventory.MaxAmount 6	Inventory.InterHubAmount 0 +Inventory.UNDROPPABLE  -INVBAR }
+Actor Unreal_TargetLocked : Boolean { }
+Actor Unreal_TargetLost : Boolean { }
+Actor Unreal_EightballLockTimer : Inventory { Inventory.MaxAmount 21 +Inventory.UNDROPPABLE -INVBAR }
+Actor Unreal_RepeatCount : Inventory { Inventory.MaxAmount 4	Inventory.InterHubAmount 0 +Inventory.UNDROPPABLE  -INVBAR }
+
+Actor Unreal_EightBall : UnrealWeapon
+{
+	Weapon.SlotNumber 5
+	Weapon.SelectionOrder 1700
+	Weapon.AmmoType1 RocketAmmo
+	Weapon.AmmoUse1 1
+	Weapon.AmmoType2 RocketAmmo
+	Weapon.AmmoUse2 1
+	Weapon.AmmoGive 6
+	+WEAPON.NOALERT
+	+WEAPON.AMMO_OPTIONAL
+	+WEAPON.ALT_AMMO_OPTIONAL
+	Weapon.UpSound "Unreal/Eightball/Select"
+	Tag "Eightball Gun"
+	Inventory.PickupMessage "You got the Eightball gun"
+	Obituary "%o was smacked down multiple times by %k's Eightball."
+	States
+	{
+		Spawn:
+			UN00 A 10 BRIGHT
+			UN00 A 10
+			Loop
+		Select:
+			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Raise
+			TNT1 A 1 A_Raise
+			loop			
+		Ready:
+			UN01 A 0 A_GiveInventory("Unreal_EightBallSelected",1)
+			UN01 A 2 A_GiveInventory("URocketsLoaded", 1)
+			UN01 BCDEFGH 2
+			Goto WIdle
+		WIdle:
+			UN03 A 0 A_GunFlash("IdleFlash",GFF_NOEXTCHANGE)
+			UN03 A 2 A_WeaponReady
+			Loop
+		IdleFlash:
+			TNT1 A 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			Stop
+		Deselect:
+			UN02 A 0 A_TakeInventory("Unreal_EightBallSelected",1)
+			UN02 A 2 A_TakeInventory("URocketsLoaded", 6)
+			UN02 A 0 A_TakeInventory("Unreal_TargetLocked", 6)
+			UN02 A 0 A_TakeInventory("Unreal_EightballLockTimer", 999)
+			UN02 BCDE 2
+			Goto InstantDeselect
+		InstantDeselect:
+			TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+			TNT1 A 1 A_Lower
+			Wait						
+		Fire:
+			UN04 A 0 A_JumpIfInventory("RocketAmmo", 1, 1)
+			Goto WIdle
+			UN04 A 6
+			UN04 A 0 A_Refire
+			Goto Release
+		Hold:	
+			UN04 A 0 A_JumpIfInventory("RocketAmmo", 1, 1)
+			Goto Release	
+			UN04 A 0 A_JumpIfInventory("URocketsLoaded", 6, "Release")
+			UN04 A 0 A_JumpIfInventory("Unreal_Combo", 1, "ComboHold")
+			UN04 A 0 //A_GunFlash("LoadFlash",GFF_NOEXTCHANGE)
+			UN04 ABC 2 
+			UN04 D 2 A_PlaySound("Unreal/Eightball/Load", CHAN_WEAPON)
+			UN04 E 2 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
+			UN04 F 2 A_GiveInventory("URocketsLoaded", 1)
+			UN04 G 2 	
+			UN04 H 2 A_PlaySound("Unreal/Eightball/Barrel", CHAN_BODY, 0.5)
+			UN04 IJK 2
+			UN04 L 2 A_Refire
+			Goto Release		
+		Release:	
+			UN05 A 0 ACS_NamedExecuteWithResult("Unreal_Recoil")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 6, "Release6")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 5, "Release5")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 4, "Release4")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 3, "Release3")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 2, "Release2")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 1, "Release1")
+			Goto Release1
+		Release1:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 7, 7)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 D 2
+			Goto FireEnd		
+		Release2:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 7, 7)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", -7, 0, -7, 0)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 D 2
+			Goto FireEnd		
+		Release3:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 7, 7)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", -7, 0, -7, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 7, 0, 7, 0)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 D 2
+			Goto FireEnd			
+		Release4:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 7, 7)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", -7, 0, -7, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 7, 0, 7, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", -14, 0, -14, 0)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 D 2
+			Goto FireEnd		
+		Release5:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 7, 7)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", -7, 0, -7, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 7, 0, 7, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", -14, 0, -14, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 14, 0, 14, 0)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 D 2
+			Goto FireEnd		
+		Release6:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 7, 7)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", -7, 0, -7, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 7, 0, 7, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", -14, 0, -14, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 14, 0, 14, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, -7,-7)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 D 2
+			Goto FireEnd
+		FireEnd:
+			UN04 D 2 
+			UN04 E 2 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
+			UN04 F 2 A_GiveInventory("URocketsLoaded", 1)
+			UN04 G 2 	
+			UN04 H 2 
+			UN04 I 2
+			UN04 J 2
+			UN04 K 2
+			UN04 L 2
+			Goto WIdle	
+		LoadFlash:
+			TNT1 A 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			TNT1 B 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			TNT1 C 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			TNT1 D 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			TNT1 E 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			TNT1 F 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			TNT1 G 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			TNT1 H 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			TNT1 I 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			TNT1 J 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			TNT1 K 2 A_FireBullets(1,1,1,0, "Unreal_EightballTargeterPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			Stop		
+		AltFire:
+			UN04 A 0 A_JumpIfInventory("RocketAmmo", 1, 1)
+			Goto WIdle
+			UN04 A 6
+			UN04 A 0 A_Refire
+			Goto ReleaseGren
+		AltHold:	
+			UN04 A 0 A_JumpIfInventory("RocketAmmo", 1, 1)
+			Goto ReleaseGren			
+			UN04 A 0 A_JumpIfInventory("URocketsLoaded", 6, "ReleaseGren")
+			UN04 ABC 2
+			UN04 D 2 A_PlaySound("Unreal/Eightball/Load", CHAN_WEAPON)
+			UN04 E 2 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
+			UN04 F 2 A_GiveInventory("URocketsLoaded", 1)
+			UN04 G 2 	
+			UN04 H 2 A_PlaySound("Unreal/Eightball/Barrel", CHAN_BODY, 0.5)
+			UN04 IJ 2
+			UN04 K 1 A_Refire
+			Goto ReleaseGren				
+		ReleaseGren:	
+			UN05 A 0 ACS_NamedExecuteWithResult("Unreal_Recoil")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 6, "ReleaseGren6")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 5, "ReleaseGren5")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 4, "ReleaseGren4")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 3, "ReleaseGren3")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 2, "ReleaseGren2")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 1, "ReleaseGren1")
+			Goto FireEnd
+		ReleaseGren1:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 0, 0, 0, 8, 15)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/Altfire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd
+		ReleaseGren2:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 0, 0, 0, 8, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", -4, 0, -4, 4, 15)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/Altfire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd		
+		ReleaseGren3:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 0, 0, 0, 8, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", -4, 0, -4, 4, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 4, 0, 4, -4, 15)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/Altfire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd			
+		ReleaseGren4:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 0, 0, 0, 8, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", -4, 0, -4, 4, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 4, 0, 4, 4, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", -4, 0, -4, 0, 15)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/Altfire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd		
+		ReleaseGren5:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 0, 0, 0, 8, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", -4, 0, -4, 4, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 4, 0, 4, 4, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", -4, 0, -4, 0, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 4, 0, 4, 0, 15)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/Altfire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd		
+		ReleaseGren6:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 0, 0, 0, 8, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", -4, 0, -4, 4, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 4, 0, 4, 4, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", -4, 0, -4, 0, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 4, 0, 4, 0, 15)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballGrenade", 0, 0, 0, -4, 15)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/Altfire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd		
+		ComboHold:
+			UN04 A 0 A_JumpIfInventory("RocketAmmo", 1, 1)
+			Goto ReleaseCombo			
+			UN04 A 0 A_JumpIfInventory("URocketsLoaded", 6, "ReleaseCombo")
+			UN04 A 0 A_GunFlash("LoadFlash")
+			UN04 ABC 2
+			UN04 D 2 A_PlaySound("Unreal/Eightball/Load", CHAN_WEAPON)
+			UN04 E 2 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
+			UN04 F 2 A_GiveInventory("URocketsLoaded", 1)
+			UN04 G 2	
+			UN04 H 2 A_PlaySound("Unreal/Eightball/Barrel", CHAN_BODY, 0.5)
+			UN04 IJK 2
+			UN04 L 1 A_Refire("ComboHold")
+			Goto ReleaseCombo	 
+		ReleaseCombo:
+			UN05 A 0 ACS_NamedExecuteWithResult("Unreal_Recoil")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 6, "ReleaseCombo6")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 5, "ReleaseCombo5")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 4, "ReleaseCombo4")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 3, "ReleaseCombo3")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 2, "ReleaseCombo2")
+			UN05 A 0 A_JumpIfInventory("URocketsLoaded", 1, "ReleaseCombo1")
+			Goto WIdle
+		ReleaseCombo1:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 8)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd
+		ReleaseCombo2:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 8)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, -4, 4)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd		
+		ReleaseCombo3:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 8)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, -4, 4)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 4, -4)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd			
+		ReleaseCombo4:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 8)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, -4, 4)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 4, 4)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, -4, 0)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd		
+		ReleaseCombo5:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 8)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, -4, 4)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 4, 4)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, -4, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 4, 0)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd		
+		ReleaseCombo6:	
+			UN05 A 3 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, 8)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, -4, 4)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 4, 4)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, -4, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 4, 0)
+			UN05 B 0 BRIGHT A_FireCustomMissile("Unreal_EightballRocket", 0, 0, 0, -4)
+			UN05 B 0 A_PlaySound("Unreal/Eightball/fire", CHAN_WEAPON)
+			UN05 B 2 A_AlertMonsters
+			UN05 C 2 A_TakeInventory("URocketsLoaded", 6)
+			UN05 C 2
+			Goto FireEnd					
+	}
+}	
+
+Actor Unreal_EightballRocket
+{
+	Projectile
+	Speed 18
+	Radius 4
+	Height 4
+	Damage (85)
+	+FORCERADIUSDMG
+	DeathSound "Unreal/Flak/Explode2"
+	ActiveSound "Unreal/Rocket/Fly"
+	DamageType "UnrealExplosive"
+	States
+	{
+		Spawn:
+			UN00 A 0 A_LoopActiveSound
+			UN00 A 0 A_JumpIfInTargetInventory("Unreal_TargetLocked", 1, "SpawnLocked")
+			UN00 AB 2
+		SpawnLoop:
+			UN00 C 0 A_SpawnItemEx("UnrealSmoke",-32*cos(pitch)-32*sin(-pitch),0,32*sin(-pitch)-32*cos(pitch),0,0,0)
+			UN00 C 1 A_SpawnItemEx("UnrealSmoke",-64*cos(pitch)-32*sin(-pitch),0,64*sin(-pitch)-32*cos(pitch),0,0,0)
+			Loop
+		SpawnLocked:
+			UN00 A 2 ACS_NamedExecuteAlways("rocketFollow",0,0,0,0)
+			UN00 B 2		
+			Goto SpawnLoop
+		Death:	
+			//TNT1 A 0 A_TakeFromTarget("Unreal_TargetLocked", 999)
+			TNT1 A 0 A_Explode(85, 200)
+			TNT1 A 0 A_SpawnItemEX("Unreal_EightballExplosiveEffect", 0,0,0,0,0,0,0, SXF_NOCHECKPOSITION)
+			TNT1 A 5
+			Stop
+	}
+}			
+
+Actor Unreal_EightballGrenade
+{
+	Projectile
+	-NOGRAVITY
+	+BOUNCEONWALLS
+	+BOUNCEONCEILINGS
+	+BOUNCEONFLOORS
+	+FORCERADIUSDMG
+	BounceCount 3
+	BounceType Grenade
+	Speed 12
+	Gravity 0.33
+	Damage (100)
+	Radius 4
+	Height 4
+//	DeathSound "Unreal/Flak/Explode2"	
+	BounceSound "Unreal/Grenade/Bounce"
+	DamageType "UnrealExplosive"
+	Var Int User_Angle;
+	States
+	{
+		Spawn:
+			TNT1 A 0 NoDelay A_Jump(128,3)
+			TNT1 A 0 A_SetUserVar(User_Angle,Random(1,6))
+			UN00 A 0 ThrustThingZ(0,11,0,1)
+			Goto SpawnLoop
+			TNT1 A 0 A_SetUserVar(User_Angle,Random(-6,-1))	
+			UN00 A 0 ThrustThingZ(0,11,0,1)
+		SpawnLoop:
+			TNT1 A 0 A_SetAngle(Angle+User_Angle)
+			UN00 A 0 A_SetPitch(Pitch-15)
+			UN00 A 1 A_SpawnItemEx("UnrealSmoke",0,0,0,0,0,0)
+			Loop
+		Death:
+			TNT1 A 0 A_PlaySound("Unreal/Flak/Explode2", CHAN_WEAPON)
+			TNT1 A 0 A_Explode(100, 200)
+			TNT1 A 0 A_SpawnItemEX("Unreal_EightballExplosiveEffect", 0,0,0,0,0,0,0, SXF_NOCHECKPOSITION)
+			TNT1 A 5
+			Stop	
+	}
+}			
+
+Actor Unreal_EightballTargeterPuff
+{
+	Scale 0.5
+	+BLOODLESSIMPACT
+	+NOBLOCKMAP
+    +NOGRAVITY
+	-SKYEXPLODE
+	+FORCEXYBILLBOARD
+	+CLIENTSIDEONLY
+	+ALWAYSPUFF
+    +PUFFONACTORS
+	+PUFFGETSOWNER
+    +DONTSPLASH
+	+FIXMAPTHINGPOS
+	+FORCEXYBILLBOARD
+	renderstyle add
+	alpha 1.0
+	Mass 0
+    Radius 1
+    Height 1
+	states
+	{
+	Spawn:
+	XDeath:	
+	Melee:
+		TNT1 A 0 
+		TNT1 A 0 A_GiveToTarget("Unreal_EightballLockTimer", 1)
+		TNT1 A 0 A_JumpIfInTargetInventory("Unreal_EightballLockTimer", 0, "LockON")
+		TNT1 A 1
+		Stop
+	Crash:
+		TNT1 A 0
+		TNT1 A 0 //A_TakeFromTarget("Unreal_TargetLocked", 999)
+		TNT1 A 0 A_TakeFromTarget("Unreal_EightballLockTimer", 2)
+		TNT1 A 1 A_JumpIfInTargetInventory("Unreal_EightballLockTimer", 1, 1)
+		Goto LoseLock	
+		TNT1 A 1
+		Stop
+	LockOn:
+		TNT1 A 0
+		TNT1 A 0 A_JumpIfInTargetInventory("Unreal_TargetLocked", 1, 2)
+		TNT1 A 0 A_GiveToTarget("Unreal_LockOnSound", 1)
+		TNT1 A 0 A_GiveToTarget("Unreal_TargetLocked", 1)
+		TNT1 A 0 A_TakeFromTarget("Unreal_TargetLost", 999)
+		TNT1 A 0 A_SpawnItemEx("Unreal_SeekerActor",0,0,0,0,0,0,0, SXF_NOCHECKPOSITION|SXF_TRANSFERPOINTERS) //A_GiveInventory("Unreal_MarkedForDeath", 24, AAPTR_TRACER)
+		TNT1 A 1
+		Stop
+	LoseLock:
+		TNT1 A 0
+		TNT1 A 0 A_JumpIfInTargetInventory("Unreal_TargetLost", 1, 2)
+		TNT1 A 0 A_GiveToTarget("Unreal_LockOffSound", 1)
+		TNT1 A 0 A_GiveToTarget("Unreal_TargetLost", 1)
+		TNT1 A 0 A_TakeFromTarget("Unreal_TargetLocked", 999)
+		TNT1 A 1
+		Stop
+	}
+}
+
+Actor Unreal_LockOnSound : CustomInventory
+{
+	-COUNTITEM
+	+INVENTORY.ALWAYSPICKUP
+	+INVENTORY.AUTOACTIVATE
+	Inventory.MaxAmount 1
+	Inventory.PickupMessage ""
+	Inventory.PickupSound ""
+	States
+	{
+		Pickup:
+			TNT1 A 0
+			TNT1 A 0
+		Use:
+			TNT1 A 0
+			TNT1 A 0 ACS_NamedExecuteAlways("Unreal_EightballReticle", 0)
+			TNT1 A 0 A_PlaySound("Unreal/Eightball/LockOn", CHAN_BODY, 1.0)
+			TNT1 A 1
+			Stop
+	}
+}
+
+Actor Unreal_LockOffSound : CustomInventory
+{
+	-COUNTITEM
+	+INVENTORY.ALWAYSPICKUP
+	+INVENTORY.AUTOACTIVATE
+	Inventory.MaxAmount 1
+	Inventory.PickupMessage ""
+	Inventory.PickupSound ""
+	States
+	{
+		Pickup:
+			TNT1 A 0
+			TNT1 A 0
+		Use:
+			TNT1 A 0
+			TNT1 A 0 A_PlaySound("Unreal/Eightball/LockOff", CHAN_BODY, 1.0)
+			TNT1 A 1
+			Stop
+	}
+}
+
+Actor Unreal_SeekerActor {
+	-NOGRAVITY
+	-FLOAT
+	+NOCLIP
+	+NOBLOCKMAP
+	+NODAMAGETHRUST
+	+BLOODLESSIMPACT
+	+SEEKERMISSILE
+	+PAINLESS
+	Projectile
+	Speed 1
+	Damage (0)
+	Mass 300
+	Scale 0.6
+	Radius 0
+	height 0
+	States {
+        Spawn:
+			//TNT1 A 0 A_JumpIfInventory("Unreal_RepeatCount", 0, "End")
+			TNT1 A 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 A 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 B 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 B 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 C 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 C 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 D 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 D 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 E 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 E 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 F 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 F 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 G 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 G 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 H 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 H 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 I 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 I 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 J 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 J 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 K 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 K 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 L 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 L 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 M 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 M 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 N 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 N 1 Bright A_Fire(30) //A_Warp(AAPTR_TRACER, 5, 0, 32, 0, WARPF_ABSOLUTEPOSITION|WARPF_NOCHECKPOSITION)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)		
+			TNT1 A 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 A 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 B 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 B 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 C 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 C 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 D 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 D 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 E 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 E 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 F 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 F 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 G 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 G 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 H 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 H 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 I 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 I 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 J 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 J 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)	
+			TNT1 A 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 A 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 B 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 B 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 C 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 C 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 D 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 D 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 E 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 E 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 F 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 F 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 G 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 G 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 H 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 H 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 I 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 I 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 J 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 J 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 K 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 K 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 L 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 L 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 M 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 M 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 N 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 N 1 Bright A_Fire(30) //A_Warp(AAPTR_TRACER, 5, 0, 32, 0, WARPF_ABSOLUTEPOSITION|WARPF_NOCHECKPOSITION)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)		
+			TNT1 A 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 A 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 B 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 B 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 C 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 C 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 D 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 D 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 E 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 E 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 F 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 F 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 G 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 G 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 H 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 H 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 I 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 I 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)
+			TNT1 J 0 Bright A_SeekerMissile(90,90,3,256)
+			TNT1 J 1 Bright A_Fire(30)
+			TNT1 A 0 Bright ACS_NamedExecute("getLaserCoords",0,x,y,z)			
+			//TNT1 A 0 A_GiveInventory("Unreal_RepeatCount", 1)
+			TNT1 A 5
+			Stop
+			}
+}			
