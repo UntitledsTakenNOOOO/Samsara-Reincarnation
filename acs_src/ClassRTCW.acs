@@ -458,7 +458,7 @@ Script "RTCW_Enter" enter
 		
 		steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
 		Delay(1);
-		
+		TakeInventory("RTCW_TeslaSoundToken",1);
 		//Drastically reduced cooldown
 		if(!(buttons & BT_ATTACK) || CheckInventory("RTCW_VenomCooling") || CheckInventory("RTCW_StenCooling"))
 		{
@@ -765,7 +765,7 @@ Script "RTCW_PlayerController" (void)
 			}
 		}
 		//Shooting
-	/* if(!GZDoom)
+		if(!GZDoom)
 		{
 			if(CheckInventory("RTCW_FiringToken") && weapon != 0)
 			{
@@ -778,7 +778,7 @@ Script "RTCW_PlayerController" (void)
 				}
 				TakeInventory("RTCW_FiringToken",1);
 			}
-		}*/
+		}
 		if(crouching != crouchOld)
 		{
 			clearSpawn = 1;
@@ -974,33 +974,36 @@ Script "RTCW_HandleLean" (void)
 
 Script "RTCW_TeslaAim" (int xory)
 {
-	int amplitude = 30;
+	int amplitude = 90;
 	int newTid = UniqueTid();
 	int randOff = -random(-amplitude,amplitude);
-	int a = randOff*182;
+	int a = -randOff*182;
 	int lookAngle;
 	int attacked;
 	if(xory) { lookAngle = (CheckInventory("RTCW_TeslaLookAngle") - amplitude) * 182; }
-	for(a = a; a <= amplitude*182; a+=128)
+	if(CheckInventory("RTCW_TeslaLook") < 5)
 	{
-		int oldTid = PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_RETURNTID);
-		if(PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_FORCETID))
+		for(a = a; a <= amplitude*182; a+=128)
 		{
-			if(ClassifyActor(newTid) & ACTOR_ALIVE)
+			int oldTid = PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_RETURNTID);
+			if(PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_FORCETID))
 			{
-				attacked = 1;
-				LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),20,"RTCW_TeslaZap","RTCWTesla",1024.0);
+				if(ClassifyActor(newTid) & ACTOR_ALIVE)
+				{
+					attacked = 1;
+					GiveInventory("RTCW_TeslaLook",1);
+					LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),20,"RTCW_TeslaZap","RTCWTesla",1024.0);
+					Thing_ChangeTid(newTid,oldTid);
+					TakeInventory("RTCW_TeslaLookAngle",255);
+					GiveInventory("RTCW_TeslaLookAngle",a/182 + amplitude);
+					break;
+				}
 				Thing_ChangeTid(newTid,oldTid);
-				TakeInventory("RTCW_TeslaLookAngle",255);
-				GiveInventory("RTCW_TeslaLookAngle",a/182 + amplitude);
-				break;
+				continue;
 			}
-			Thing_ChangeTid(newTid,oldTid);
-			continue;
 		}
 	}
-	//if(!attacked && xory ) { LineAttack(0,GetActorAngle(0)+(randOff*!xory)+lookAngle,GetActorPitch(0)+(randOff*xory),20,"RTCW_TeslaZap","RTCWTesla",1024.0); }
-	SetResultValue(randOff*!attacked);
+	SetResultValue((randOff*!attacked)/(1+(CheckInventory("RTCW_TeslaLookAttempts")<=32)*2));
 }
 
 Script "RTCW_TeslaArc" (int space, int height, int user) clientside
@@ -1011,7 +1014,7 @@ Script "RTCW_TeslaArc" (int space, int height, int user) clientside
 	
 	switch(user)
 	{
-		case 0: bendinessX = random(4,16)*randSign(); bendinessY = random(4,16)*randSign(); segment = "RTCW_TeslaSegment"; horz = 8; i = 32; break;
+		case 0: bendinessX = random(4,8)*randSign(); bendinessY = random(4,8)*randSign(); segment = "RTCW_TeslaSegment"; horz = 8; i = 32; break;
 		case 1: bendinessX = random(4,8)*randSign(); bendinessY = random(4,8)*randSign(); segment = "RTCW_TeslaSegment"; i = 40; horz = 18; break;
 		case 2: bendinessX = random(8,16)*randSign(); bendinessY = random(48,56)*randSign(); segment = "RTCW_LoperTeslaSegment"; break;
 		case 3: bendinessX = random(4,45)*randSign(); bendinessY = random(4,45)*randSign(); segment = "RTCW_TeslaSegment"; break;
@@ -1083,6 +1086,98 @@ Script "RTCW_TeslaArc" (int space, int height, int user) clientside
 		bendcounter++;
 	}
 	SpawnForced("RTCW_TeslaLight", x+segmentx, y+segmenty, z+segmentz, 0);
+}
+
+Script "RTCW_FlamethrowerStreamRotate" (int space, int height, int user)// clientside
+{
+	int t, i, angle, pitch, x, y, z, tx, ty, tz, vx, vy, vz, mag, magI, horz, pitchoffset,angleoffset,relativeAngle,relativePitch;
+	int segmentx, segmenty, segmentz, bendcounter;
+	str segment = "RTCW_FlameStreamSegment";
+	switch(user)
+	{
+		case 0: horz = 8; i = 32; break;
+		case 1: horz = 8; i = 32; break;
+		case 2: horz = 9; i = 16; break;
+	}
+	
+	tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0);
+	SetActivatorToTarget(0);
+	
+	int xoff = (horz * sin(GetActorAngle(0))) - FixedMul(-i * cos(GetActorAngle(0)),cos(GetActorPitch(0))) + (random(-2,2) * sin(GetActorPitch(0)));
+	int yoff = (horz * cos(GetActorAngle(0))) + FixedMul(-i * sin(GetActorAngle(0)),cos(GetActorPitch(0))) + (random(-2,2) * sin(GetActorPitch(0)));
+	
+	//PrintBold(s:"X Coordinate: ", f:xoff, s:", Y Coordinate: ", f:yoff);
+		
+    x = GetActorX(0) + xoff;
+	y = GetActorY(0) - yoff;
+	z = GetActorZ(0) + (height * 1.0) + (-i * sin(GetActorPitch(0)));
+	
+	int vectorx = tx - x;
+	int vectory = ty - y;
+	int vectorz = tz - z;
+	angle = VectorAngle(vectorx, vectory);
+	relativeAngle = angle - GetActorAngle(0);
+	if(relativeAngle > 0.5)
+		relativeAngle -= 1.0;
+	else if(relativeAngle < -0.5)
+		relativeAngle += 1.0;
+	
+	int length = VectorLength(vectorx,vectory);
+	pitch = VectorAngle(length, vectorz);
+	if(user == 0)
+		relativePitch = pitch + GetActorPitch(0);
+	else
+		relativePitch = pitch - GetActorPitch(0);
+	if(relativePitch > 0.5)
+		relativePitch -= 1.0;
+	if(relativePitch < -0.5)
+		relativePitch += 1.0;
+						
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+	
+	int newtid = UniqueTid();
+	int damageTid = UniqueTid();
+	int segments = (magI - abs(i)) / space;
+	for (i = i; i < magI; i += space)
+	{
+		if(segments > 0)
+		{
+			angleOffset += 4*relativeAngle/segments;
+			pitchOffset += 4*relativePitch/segments;
+		}
+		SpawnForced(strparam(s:segment,d:1+(bendcounter/3)), x+segmentx, y+segmenty, z+segmentz, newtid);
+		
+		if(bendcounter/3 < 1)
+			SpawnForced("RTCW_FlameStreamSegmentBlue", x+segmentx, y+segmenty, z+segmentz, newtid);
+		else if(bendcounter/3 == 8)
+		{
+			SpawnForced("RTCW_FlamethrowerEndPointHarmless", x+segmentx, y+segmenty, z+segmentz, damageTid);
+		}
+
+		SetActorAngle(newtid, angle+angleoffset);
+		SetActorPitch(newtid, pitch+pitchoffset);
+			
+		segmentx += FixedMul(cos(angle+angleoffset)*space,cos(pitch+pitchoffset));
+		segmenty += FixedMul(sin(angle+angleoffset)*space,cos(pitch+pitchoffset));
+		segmentz += sin(pitch+pitchoffset)*space;
+			
+		Thing_ChangeTid(newtid,0);
+		bendcounter++;
+	}
+	if(segments > 0)
+	{
+		segmentx += FixedMul(cos(angle+angleoffset)*space,cos(pitch+pitchoffset));
+		segmenty += FixedMul(sin(angle+angleoffset)*space,cos(pitch+pitchoffset));
+		segmentz += sin(pitch+pitchoffset)*space;
+		SpawnForced("RTCW_FlamethrowerEndPoint", x+segmentx, y+segmenty, z+segmentz, damageTid);
+	}
+	else
+	{
+		SpawnForced("RTCW_FlamethrowerEndPoint", tx, ty, tz, damageTid);
+	}
+	SetPointerExt(AAPTR_Target,0,damagetid);
 }
 
 Script "RTCW_EnemyBurn" (void)
@@ -1241,10 +1336,10 @@ Script "RTCW_BulletDamage" (int damage)
 		
 		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
 		{	
-			if(monsterHealth - (damage*2) <= 0)
+			if(monsterHealth - (damage*3) <= 0)
 				PlaySound(0,"RTCW/HeadShot",CHAN_ITEM,1.0,0,ATTN_NORM);
 				
-			SetResultValue(damage*2);
+			SetResultValue(damage*3);
 		}
 		else
 			SetResultValue(damage);
@@ -1266,10 +1361,10 @@ Script "RTCW_BulletDamage" (int damage)
 			}
 			if(StrLeft(GetActorClass(0),4)=="RTCW")
 				GiveInventory("RTCW_RemoveHat",1);
-			if(!CheckInventory("NoHeadShots") && monsterHealth - (damage*2) <= 0)
+			if(!CheckInventory("NoHeadShots") && monsterHealth - (damage*3) <= 0)
 				PlaySound(0,"RTCW/HeadShot",CHAN_ITEM,1.0,0,ATTN_NORM);
 				
-			SetResultValue(damage*2);
+			SetResultValue(damage*3);
 		}
 		else
 			SetResultValue(damage);
