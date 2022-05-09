@@ -2163,7 +2163,46 @@ str CompendiumCredits = "\cmLead Developer\n\cjShiny Metagross
 \nWolf Skevos Jones (For the Castle Totenkopf SDL mod for Wolfenstein 3D), as well as being an inspiration to develop mods
 ";
 
-// I don't see the need to congest the regular hero arrays with double the length for one hero, so I will bite a bullet and make a separate one
+str CVarOptionsandInfo[3][64][2] =
+{
+	{
+		{ "BJ Movement", "This option controls how Wolfestein 3D engine players move. The options are:\n\n\cjModern: \cmMoves like other heroes.\n\n\cjClassic: \cmMoves like they do in their own engine." },
+		{ "Doom Balance", "This option determines Doomguy's behavior, whether you prefer vanilla or rebalanced. It also influences whether the animations are smooth or not." },
+		{ "Weapon HUD Bar", "This option toggles whether to display the extended weapon bar at the top of the screen when using status bar huds." },
+		{ "Pickup Sprites", "This option influences the graphics used for pickups. The options are:\n\n\cjOld-style: \cmThese are just boxes with numbers in them. Setting it to this will only display weapon slot numbers for the pickups.\n\n\cjClass: \cmThis displays the actual pickup by the class. This is what you'd see in the source game.\n\n\cjHybrid: \cmDisplays the actual weapon pickup along with the weapon slot numbers." },
+		{ "Pickup Messages", "This option toggles whether to display the pickup messages for weapons." },
+		{ "Extra Pickup Messages", "This option toggles whether to display new silly pickup messages for each weapon." },
+		{ "Character Talk", "This option toggles whether characters that talk a bunch are able to speak or not." },
+		{ "Weapon Recoil", "This option toggles whether the player should be able to experience weapon recoil, particularly with classes like Freeman." },
+		{ "Freeman HEV Talk", "This option toggles whether Freeman's HEV or Shepherd's PCV should talk or otherwise make a bunch of noises." },
+		{ "Christmas Mode: Snow", "Warning!: Having this enabled is not cheap on performance. Only use this option on smaller outdoors maps.\n\nThis option toggles whether snow should be display with Christmas mode." },
+		{ "Christmas Mode: Music", "This option toggles whether players should be able to hear christmas music with the hero soundtrack. This option only does anything with christmas mode enabled." },
+		{ "Leonard: Alcohol & Gut", "This option toggles whether Leonard is able to use the alcohol and gut system, which changes his gameplay." },
+		{ "Leonard: Inventory Health", "This option toggles whether Leonard is able to use inventory health items like cow pies and beer." },
+		{ "Goldeneye: Weapon Sway", "This option toggles whether Bond's weapons are able to sway. This also makes Bond's bullets aim straight ahead." },
+		{ "Compendium Text Scroll Speed", "This option controls the speed of the text scrolling in the compendium." },
+		{ "Violence Level", "This option switches between various types of Blood. Your options are:\n\n\cjNashgore: \cmNash's old gore mod. This is milder than some of the other modes, and has actual blood spots.\n\n\cjBrutal: \cmDisplays Brutal Doom inspired Blood. This is based off of relatively ancient versions of Brutal Doom.\n\n\cjNightmare: \cmThe source is unknown, but it does have some unique gibs. Not necessarily as violent as the other modes.\n\n\cjHappy Fun: \cmConfetti mode. Makes enemies bleed sparkles and confetti.\n\n\cjBolognese: \cmMakes gibs styled like Sgt Mark IV's bolognese gib system." },
+		{ "Gib Persistance", "This option makes blood from violence levels stay permanently. Recommended to keep this off." },
+		{ "Hero Music", "This option controls what music soundtrack will play for the player. The options are:\n\n\cjOff: \cmUses the default map track.\n\n\cjClass: \cmUses the soundtrack from the hero you are playing as.\n\n\cjGame-Override: \cmUses the soundtrack from a selected game." },
+		{ "Hero Game Music Override", "This option controls the music that is played when Hero Music is set to \"Game-Override\"." },
+		{ "Blood Music", "This option simply toggles whether you prefer CD or MIDI music for Blood." },
+		{ "Hexen 2 Music", "This option simply toggles whether you prefer CD or MIDI music for Hexen 2." },
+		{ "Doom 64", "This option toggles between regular Doom Guy and Doom 64 Guy. You can also change the class using the \"Change Alt Class\" key." },
+		{ "Wolfenstein 3D: Alternate Classes", "This option switches between classic Wolfenstein 3D, Spear of Destiny, and Castle Totenkopf SDL Blazkowicz. You can also change the class using the \"Change Alt Class\" key." },
+		{ "Hexen 1 Class", "This option switches between playing as Parias, Baratus, and Daedalon. You can also change the class using the \"Change Alt Class\" key." },
+		{ "Duke: Life's a Beach", "This option toggles between regular Duke Nukem 3D and Duke Nukem Life's a Beach cosmetic mode. You can also change the class using the \"Change Alt Class\" key." },
+		{ "Rise of the Triad: Characters", "This option switches between each member of the H.U.N.T. You can also change the class using the \"Change Alt Class\" key." },
+		{ "Blake Stone: Aliens of Gold", "This option toggles between Aliens of Gold and Planet Strike cosmetic modes. You can also change the class using the \"Change Alt Class\" key." },
+		{ "In Pursuit of Greed: Characters", "This option switches between each of the In Pursuit of Greed player classes. You can also change the class using the \"Change Alt Class\" key." },
+		{ "Half Life: Opposing Force", "This option toggles between playing as Gordon Freeman or Adrian Shepherd. You can also change the class using the \"Change Alt Class\" key." },
+	},
+	{
+		{ "Jump Height", "This option controls how high the player can jump. Your options are:\n\n\cjGrounded: \cmYou pretty much can't jump at all.\n\n\cjHigh gravity: \cmYou jump very little, but will fall quickly.\n\n\cjStrife: \cmYour jump height is similar to Strife's.\n\n\cjDefault: \cmDefault jumping height.\n\n\cjHexen: \cmYou jump at a similar height as Hexen.\n\n\cjDuke: You jump rather high, like in Duke.\n\n\cjRocket Jumping: \cmYou jump as if you gave yourself a rocket jump.\n\n\cjJump Boots: \cmYou jump similar to how you would with High Jump.\n\n\cjFull Retard: \cmjump height is unreasonably tall." },
+	},
+	{
+		
+	}
+};
 
 int drawclouds = 0;
 
@@ -3116,6 +3155,200 @@ Script "Samsara_Compendium" (void) Net Clientside
 			SetHudClipRect(0,0,0,0,0);
 		
 			scrollmaxcounter = 128+(2+StrLen(CompendiumCredits)/4); //little buffer for it complete properly
+			scrolltimer++;
+			if(scrolltimer%scrollstep==0) { scrollcounter--; }
+			if(scrolltimer == scrollstep) scrolltimer = 1;
+			if(scrollcounter < -scrollmaxcounter)
+				scrollcounter = scrollmax;
+		}
+		else if(menuindex == CLASSCOUNT+2)
+		{
+			revolutions = maxrevolutions;
+			rot = 0;
+			scrollmax = 448;
+			drawclouds = 1;
+			ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,0);
+			
+			if(lastmenuindex != menuindex)
+			{		
+				LocalAmbientSound("marathon/shieldhit",88);
+				removemessages(15987,16189);
+				scrollcounter = 448;
+				scrolltimer = 0;
+				lastmenuindex = menuindex;
+				previewopened = false;
+				listyposition = 0;
+				drawnProps = 0;
+				menuitem = 0;
+				lastmenuitem = 0;
+				menutab = 1;
+				lastmenutab = 1;
+				listindex = 0;
+				scrollcounter = 368;
+				
+				SetFont("CMPSDOOM");
+				SetHudClipRect(0,0,0,0,0);
+				SetHudSize(hudcenterx,hudcentery,true);
+				HudMessage(s:"Back: ",k:"+altattack"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 15988, CR_BLACK, (FixedMul(hudcenterx,0.033)<<16)+0.1, (FixedMul(hudcentery,0.955)<<16)+0.1, 0);
+				SetHudSize(hudboundsx,hudboundsy,true);
+			}
+			if(lastmenutab != menutab)
+			{
+				LocalAmbientSound("marathon/shieldhit",88);
+				listyposition = 0;
+				drawnProps = 0;
+				menuitem = 0;
+				lastmenuitem = 0;
+				listindex = 0;
+				removemessages(16170,16175);
+				scrollcounter = 368;
+				lastmenutab = menutab;
+			}
+			if(lastmenuitem != menuitem)
+			{
+				drawnProps = 0;
+				scrollcounter = 368;
+				lastmenuitem = menuitem;
+			}	
+			if (buttons & (BT_ALTATTACK))
+				menuindex = 0;
+				
+			//Draw tabs
+				
+			SetHudSize(hudcenterx,hudcentery,true);
+			
+			if(menutab!=1)
+				SetFont("CMPCORC2");
+			else
+				SetFont("CMPCORC1");
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16025, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.05)<<16)+0.1, FixedMul(hudcentery,0.143)*1.0, 0, 0.9);
+			
+			if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
+			{		
+				if(((cursorx < (FixedMul(hudcenterx,0.1325)+32) && cursorx > (FixedMul(hudcenterx,0.1325)-32)) && (cursory < FixedMul(hudcentery,0.275)+32 && cursory > FixedMul(hudcentery,0.275)-32)))
+					menutab = 1;
+			}
+			
+			if(menutab!=2)
+				SetFont("CMPCORS2");
+			else
+				SetFont("CMPCORS1");
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16026, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.0935)<<16)+0.1, FixedMul(hudcentery,0.143)*1.0, 0, 0.9);
+			
+			if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
+			{		
+				if(((cursorx < (FixedMul(hudcenterx,0.225)+32) && cursorx > (FixedMul(hudcenterx,0.225)-32)) && (cursory < FixedMul(hudcentery,0.275)+32 && cursory > FixedMul(hudcentery,0.275)-32)))
+					menutab = 2;
+			}
+	
+			if(ThingCountName("SamsaraMixerCompendiumToken",0) > 0)
+			{
+				if(menutab!=3)
+					SetFont("CMPMIXR2");
+				else
+					SetFont("CMPMIXR1");	
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16027, CR_UNTRANSLATED, (FixedMul(hudcenterx,0.1375)<<16)+0.1, FixedMul(hudcentery,0.143)*1.0, 0, 0.9);
+				
+				if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
+				{		
+					if(((cursorx < (FixedMul(hudcenterx,0.3175)+32) && cursorx > (FixedMul(hudcenterx,0.3175)-32)) && (cursory < FixedMul(hudcentery,0.275)+32 && cursory > FixedMul(hudcentery,0.275)-32)))
+						menutab = 3;
+				}
+			}
+			
+			//Draw content boxes
+			SetHudSize(hudboundsx,hudboundsy,true);
+			SetFont("SAMCMPB4");
+			SetHudClipRect(FixedMul(hudboundsx,0.25),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.7),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.675));
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16175, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+			SetHudClipRect(FixedMul(hudboundsx,0.049),FixedMul(hudboundsy,0.175),FixedMul(hudboundsx,0.1755),FixedMul(hudboundsy,0.775),FixedMul(hudboundsx,0.115));
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16174, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+			HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16173, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+			HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 16172, CR_UNTRANSLATED, 2.0, 2.0, 0, 0.75);
+			SetHudClipRect(0,0,0,0,0);
+			
+			//Draw list of items
+			fontscaledx = FixedMul(hudcenterx,1.0);
+			fontscaledy = FixedMul(hudcentery,1.0);
+			SetHudSize(fontscaledx,fontscaledy,true);
+			SetHudClipRect(FixedMul(fontscaledx,0.05),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.1755),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.2));
+			SetFont("SMALLFONT");
+			index = 0;
+			for(a = 0; a < 64; a++)
+			{
+				if(StrLen(CVarOptionsandInfo[menutab-1][a][0]) != 0)
+				{	
+					HudMessage(s:CVarOptionsandInfo[menutab-1][a][0]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING, 16030+index, SelectionColors[(menuitem==index)], (FixedMul(fontscaledx*2,0.0685)<<16)+0.4, FixedMul(fontscaledy*2,0.105+(0.025*(index-listyposition)))<<16, 0);
+					if (buttons & (BT_USE|BT_ATTACK) || buttons & (BT_ALTATTACK))
+					{
+						if((cursorx < FixedMul(hudboundsx,0.22) && cursorx > FixedMul(hudboundsx,0.05)) && (cursory < FixedMul(hudboundsy,0.215+(0.05*(index-listyposition)))+24 && cursory > FixedMul(hudboundsy,0.215+(0.05*(index-listyposition)))-24) && (cursory > FixedMul(hudboundsy,0.215) && cursory < FixedMul(hudboundsy,0.95)) && listclick < 1)
+						{
+							menuitem = a;
+							listindex = menuitem;
+
+							//condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) >= FixedMul(hudboundsy,0.95));
+							condition = (cursory >= FixedMul(hudboundsy,0.9));
+							if(condition) { listclick = 4; listyposition+=condition; }
+							else
+							{
+								//condition = (FixedMul(hudboundsy*2,0.1+(0.025*(index-listyposition))) <= FixedMul(hudboundsy,0.175));
+								condition = (cursory >= FixedMul(hudboundsy,0.175));
+								if(condition) 
+								{
+									listclick = 4; 
+									listyposition-=condition; 
+									if(listyposition < 0)
+										listyposition = 0;
+								}
+							}
+						}
+					}
+					index++;
+				}
+				else { removemessages(16030+a,16030+64); break; }
+			}
+			listclick--;
+			SetHudClipRect(0,0,0,0,0);
+			SetHudSize(hudboundsx,hudboundsy,true);
+			if(abs(forwardmove) > 8 && buttons != oldbuttons)
+			{
+				if(StrLen(CVarOptionsandInfo[menutab-1][menuitem-sign(forwardmove)][0]) != 0) 
+				{ 
+					listindex-=sign(forwardmove); 
+					condition = (FixedMul(hudboundsy*2,0.15+(0.025*(listindex-listyposition))) > FixedMul(hudboundsy,0.95));
+					if(condition && sign(forwardmove) < 0)
+						listyposition+=condition;
+					else if (sign(forwardmove) > 0 && listyposition > 0)
+						listyposition--;
+				}
+				else if(listindex == 0 && sign(forwardmove) > 0)
+				{
+					for(a = 0; a < 64; a++)
+					{
+						condition = (FixedMul(hudboundsy*2,0.15+(0.025*a)) > FixedMul(hudboundsy,0.95));
+						if(condition)
+							listyposition+=condition;
+								
+						if(StrLen(CVarOptionsandInfo[menutab-1][a+1][0]) == 0) { menuitem = a; listindex = menuitem; break; }
+					}
+				}
+				else { listindex = 0; listyposition = 0; }	
+				menuitem = listindex;
+			}
+			
+			//Draw description of items
+			fontscaledx = FixedMul(hudcenterx,1.0);
+			fontscaledy = FixedMul(hudcentery,1.0);
+			SetHudClipRect(FixedMul(fontscaledx,0.25),FixedMul(fontscaledy,0.175),FixedMul(fontscaledx,0.7),FixedMul(fontscaledy,0.775),FixedMul(fontscaledx,0.675));
+				
+			SetFont("SMALLFONT");
+			SetHudSize(fontscaledx,fontscaledy,true);
+			description = CVarOptionsandInfo[menutab-1][menuitem][1];
+			HudMessage(s:description; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 16015, CR_BLACK, (FixedMul(fontscaledx,0.26)<<16)+0.1, floorwhole(scrollcounter*1.0)+(88*1.0)+0.1, 0);
+			SetHudClipRect(0,0,0,0,0);
+			SetHudSize(hudboundsx,hudboundsy,true);
+			
+			scrollmaxcounter = 128+(2+StrLen(CVarOptionsandInfo[menutab-1][a][1])/4); //little buffer for it complete properly
 			scrolltimer++;
 			if(scrolltimer%scrollstep==0) { scrollcounter--; }
 			if(scrolltimer == scrollstep) scrolltimer = 1;
