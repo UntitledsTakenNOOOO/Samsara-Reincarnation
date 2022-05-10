@@ -1,6 +1,7 @@
 actor SamsaraBloodyHellBlood : Blood replaces Blood
 {
     Game Doom
+	+PUFFGETSOWNER
     States
     {
     Spawn:
@@ -37,8 +38,13 @@ actor SamsaraBloodyHellBlood : Blood replaces Blood
 		BSPX HHHHHHH 1 A_FadeOut(0.1)
 		Stop
 	SpawnComic:
+		TNT1 A 0 A_CheckFlag("CORPSE",6,AAPTR_Target)
+		TNT1 A 0 A_JumpIfInTargetInventory("SamsaraComicEffectLimiter",1,5)
+		TNT1 A 0 A_GiveToTarget("SamsaraComicEffectLimiter",1)
 		TNT1 A 0 A_SpawnItemEx("SamsaraComicEffect",0,0,0,frandom(-1.0,1.0),frandom(-1.0,1.0),frandom(0.5,1.5))
-		TNT1 A 0
+		TNT1 A 3
+		TNT1 A 0 A_TakeFromTarget("SamsaraComicEffectLimiter",1)
+		TNT1 A 1
 		Stop
     }
 }
@@ -52,6 +58,7 @@ actor SamsaraBloodyHellBlood2 : BloodSplatter replaces BloodSplatter
 		TNT1 A 0
 		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraClientDecorate",12) == 4, "SpawnBolognese")
 		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraClientDecorate",12) == 2, "SpawnBrutal")
+		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraClientDecorate",12) == -2, "SpawnComic")
 		Goto SpawnNormal
 	SpawnNormal:
         TNT1 A 0
@@ -72,6 +79,15 @@ actor SamsaraBloodyHellBlood2 : BloodSplatter replaces BloodSplatter
 		BSPX ABCDEFG 1
 		BSPX HHHHHHH 1 A_FadeOut(0.1)
         Stop
+	SpawnComic:
+		TNT1 A 0 A_CheckFlag("CORPSE",6,AAPTR_Target)
+		TNT1 A 0 A_JumpIfInTargetInventory("SamsaraComicEffectLimiter",1,5)
+		TNT1 A 0 A_GiveToTarget("SamsaraComicEffectLimiter",1)
+		TNT1 A 0 A_SpawnItemEx("SamsaraComicEffect",0,0,0,frandom(-1.0,1.0),frandom(-1.0,1.0),frandom(0.5,1.5))
+		TNT1 A 3
+		TNT1 A 0 A_TakeFromTarget("SamsaraComicEffectLimiter",1)
+		TNT1 A 1
+		Stop
     }
 }
 
@@ -100,6 +116,7 @@ actor Switchable_FlyingBlood
         TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraClientDecorate",12) == 2, "SpawnBrutal")
         TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraClientDecorate",12) == 1, "SpawnNashgore")
         TNT1 A 1 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraClientDecorate",12) == -1, "SpawnHappy")
+		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraClientDecorate",12) == -2, "SpawnComic")
         stop
     SpawnNashgore:
         TNT1 A 0
@@ -148,6 +165,15 @@ actor Switchable_FlyingBlood
         TNT1 A 0
 		TNT1 A 0 A_ChangeFlag("THRUACTORS", false)
 		stop
+	SpawnComic:
+		TNT1 A 0 A_CheckFlag("CORPSE",6,AAPTR_Target)
+		TNT1 A 0 A_JumpIfInTargetInventory("SamsaraComicEffectLimiter",1,5)
+		TNT1 A 0 A_GiveToTarget("SamsaraComicEffectLimiter",1)
+		TNT1 A 0 A_SpawnItemEx("SamsaraComicEffect",0,0,0,frandom(-1.0,1.0),frandom(-1.0,1.0),frandom(0.5,1.5))
+		TNT1 A 3
+		TNT1 A 0 A_TakeFromTarget("SamsaraComicEffectLimiter",1)
+		TNT1 A 1
+		Stop
     Crash:
         TNT1 A 0
         TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraClientDecorate",12) == 4, "CrashBolognese")
@@ -218,4 +244,172 @@ actor GenericGoreActor
     -SOLID
     +CLIENTSIDEONLY
     +FORCEXYBILLBOARD
+}
+
+Actor UniversalBloodyHellGoreDeathEffect {
+	+CLIENTSIDEONLY
+	-SOLID
+	+NOCLIP
+	States {
+		Spawn:
+			TNT1 A 5 NoDelay ACS_NamedExecuteAlways("SamsaraClientDecorate",0,11)
+			TNT1 A 0			
+			TNT1 A 5
+			TNT1 A 0			
+			TNT1 A 5 A_FadeOut
+			Stop
+	    DeathBrutal:
+			TNT1 A 0
+			TNT1 AA 0 A_SpawnItemEx("RedMistTrail",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(300,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAA 0 A_SpawnItemEx("BrutalTinyBone",random(-5,5),random(-5,5),random(12,40),random(-200,200)/100.00,random(-200,200)/100.00,random(300,800)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAA 0 A_SpawnItemEx("BrutalChunkTinier",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(300,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAA 0 A_SpawnItemEx("BrutalChunkTiny",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(300,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("RedMistIntenseTrail",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(300,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AA 0 A_SpawnItemEx("Switchable_FlyingBlood",random(-10,10),random(-10,10),random(12,40),random(-350,350)/100.00,random(-350,350)/100.00,random(300,700)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("BrutalOnlineSound2",0,0,0,0,0,0,0,160)
+			Goto Spawn+2		
+		DeathHappyfun:
+			TNT1 A 0
+			TNT1 AAAAA 0 A_SpawnItemEx("RainbowSparkleSound",random(-10,10),random(-10,10),random(32,40),0,0,0,0,32)
+			TNT1 AAAA 0 A_SpawnItemEx("WhiteSpark",0,0,random(32,40),random(-60,60)/20.0,random(-60,60)/20.0,random(-40,40)/20.0,random(-180,180),32)
+			TNT1 A 0 A_SpawnItemEx("RainbowSparkHuge",0,0,random(32,40),random(-60,60)/20.0,random(-60,60)/20.0,random(-40,40)/20.0,random(-180,180),32)
+			TNT1 AAAAAA 0 A_SpawnItemEx("RainbowSpark",0,0,random(32,40),random(-60,60)/20.0,random(-60,60)/20.0,random(-40,40)/20.0,random(-180,180),32)
+			TNT1 AAA 0 A_SpawnItemEx("RainbowSparkTiny",random(-5,5),random(-5,5),random(25,30),random(-80,80)/10.00,random(-80,80)/10.0,random(-3,3),random(-180,180),160)
+			Goto Spawn+2
+		DeathNightmare1:
+		DeathNightmare4:
+			TNT1 AA 0 A_SpawnItemEx("Switchable_FlyingBlood",random(-10,10),random(-10,10),random(12,40),random(-350,350)/100.00,random(-350,350)/100.00,random(300,700)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			Goto Spawn+2
+		DeathNightmare2:
+		DeathNightmare5:
+			TNT1 AA 0 A_SpawnItemEx("Switchable_FlyingBlood",random(-10,10),random(-10,10),random(12,40),random(-350,350)/100.00,random(-350,350)/100.00,random(300,700)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			Goto Spawn+2
+		DeathNightmare3:
+		DeathNightmare6:
+			TNT1 AA 0 A_SpawnItemEx("Switchable_FlyingBlood",random(-10,10),random(-10,10),random(12,40),random(-350,350)/100.00,random(-350,350)/100.00,random(300,700)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			Goto Spawn+2
+		DeathBolognese:
+			TNT1 A 0
+			//TNT1 A 0 A_SpawnItemEx("Bolognese_GrowingBloodPool",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION)
+			Goto Spawn+2
+		DeathComic:
+			TNT1 A 0 A_SpawnItemEx("SamsaraComicEffect",0,0,32,0,0,frandom(0.5,1.0))
+			Goto Spawn+2
+	}
+}	
+
+Actor UniversalBloodyHellGoreXDeathEffect {
+	+CLIENTSIDEONLY
+	-SOLID
+	+NOCLIP
+	States {
+		Spawn:
+			TNT1 A 5 NoDelay ACS_NamedExecuteAlways("SamsaraClientDecorate",0,10)
+			TNT1 A 0			
+			TNT1 A 0
+			TNT1 A 0			
+			TNT1 A 5 A_FadeOut
+			Stop
+		XDeathNightmare1:
+			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Switchable_FlyingBlood",random(-10,10),random(-10,10),random(12,40),random(-700,700)/100.00,random(-700,700)/100.00,random(600,1400)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareArm",random(-10,10),random(-10,10),random(12,40),random(-500,500)/100.00,random(-500,500)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareImpChunk",random(-10,10),random(-10,10),random(12,40),random(-500,500)/100.00,random(-500,500)/100.00,random(400,1000)/100.00,random(-180,180),160,128)
+			TNT1 AA 0 A_SpawnItemEx("NightmareEye2",random(-10,10),random(-10,10),random(42,50),random(-300,300)/100.00,random(-300,300)/100.00,random(500,1100)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareSkull",random(-10,10),random(-10,10),random(42,50),random(-200,200)/100.00,random(-200,200)/100.00,random(500,1100)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan1",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan2",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan3",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan4",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan5",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan6",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan7",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan8",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareHip",random(-10,10),random(-10,10),random(12,20),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0
+			TNT1 A 0 A_SpawnItemEx("NightmareGibExplosionSmall1",0,0,0,0,0,0,0,160)
+			Goto Spawn+3
+		XDeathNightmare2:
+			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Switchable_FlyingBlood",random(-10,10),random(-10,10),random(12,40),random(-700,700)/100.00,random(-700,700)/100.00,random(600,1400)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareArm",random(-10,10),random(-10,10),random(12,40),random(-500,500)/100.00,random(-500,500)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareImpChunk",random(-10,10),random(-10,10),random(12,40),random(-500,500)/100.00,random(-500,500)/100.00,random(400,1000)/100.00,random(-180,180),160,128)
+			TNT1 AA 0 A_SpawnItemEx("NightmareEye",random(-10,10),random(-10,10),random(42,50),random(-300,300)/100.00,random(-300,300)/100.00,random(500,1100)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareSkull",random(-10,10),random(-10,10),random(42,50),random(-200,200)/100.00,random(-200,200)/100.00,random(500,1100)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareChunk1",random(-10,10),random(-10,10),random(42,50),random(-200,200)/100.00,random(-200,200)/100.00,random(500,1100)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareChunk2",random(-10,10),random(-10,10),random(42,50),random(-200,200)/100.00,random(-200,200)/100.00,random(500,1100)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareChunk3",random(-10,10),random(-10,10),random(42,50),random(-200,200)/100.00,random(-200,200)/100.00,random(500,1100)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareChunk4",random(-10,10),random(-10,10),random(42,50),random(-200,200)/100.00,random(-200,200)/100.00,random(500,1100)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan1",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan2",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan3",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan4",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan5",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan6",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan7",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareOrgan8",random(-10,10),random(-10,10),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0 A_SpawnItemEx("NightmareHip",random(-10,10),random(-10,10),random(12,20),random(-400,400)/100.00,random(-400,400)/100.00,random(400,1000)/100.00,random(-180,180),160,192)
+			TNT1 A 0
+			TNT1 A 0 A_SpawnItemEx("NightmareGibExplosionSmall1",0,0,0,0,0,0,0,160)
+			Goto Spawn+3
+		XDeathNashgore:
+			TNT1 A 0
+			TNT1 A 0 A_SpawnItemEx("NashGore_Gib9",0,0,0,random(-350,350)/100.00,random(-350,350)/100.00,random(500,1000)/100.00,random(-180,180),33|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("NashGore_Gib10",0,0,0,random(-350,350)/100.00,random(-350,350)/100.00,random(500,1000)/100.00,random(-180,180),33|SXF_TRANSFERTRANSLATION)
+			TNT1 AA 0 A_SpawnItemEx("NashGore_Gib11",0,0,0,random(-350,350)/100.00,random(-350,350)/100.00,random(500,1000)/100.00,random(-180,180),33|SXF_TRANSFERTRANSLATION)
+			TNT1 AA 0 A_SpawnItemEx("NashGore_GibGenerator",0,0,0,0,0,0,0,33|SXF_TRANSFERTRANSLATION)
+			TNT1 AA 0 A_SpawnItemEx("NashGore_GibGenerator",0,0,0,0,0,0,0,33|SXF_TRANSFERTRANSLATION)
+			TNT1 AA 0 A_SpawnItemEx("NashGore_GibGenerator",0,0,0,0,0,0,0,33|SXF_TRANSFERTRANSLATION)
+			TNT1 AA 0 A_SpawnItemEx("NashGore_GibGenerator",0,0,0,0,0,0,0,33|SXF_TRANSFERTRANSLATION)
+			Goto Spawn+3
+		XDeathBrutal:
+			TNT1 A 0
+			TNT1 A 0 A_SpawnItemEx("BrutalChunkBouncy1",random(-10,10),random(-10,10),random(12,40),random(-700,700)/100.00,random(-700,700)/100.00,random(600,1400)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("BrutalChunkBouncy2",random(-10,10),random(-10,10),random(12,40),random(-700,700)/100.00,random(-700,700)/100.00,random(600,1400)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("BrutalChunkBouncy3",random(-10,10),random(-10,10),random(12,40),random(-700,700)/100.00,random(-700,700)/100.00,random(600,1400)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("BrutalBrownOrgan",random(-10,10),random(-10,10),random(12,40),random(-700,700)/100.00,random(-700,700)/100.00,random(600,1400)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("BrutalRedOrgan",random(-10,10),random(-10,10),random(12,40),random(-700,700)/100.00,random(-700,700)/100.00,random(600,1400)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAAA 0 A_SpawnItemEx("BrutalChunk",random(-10,10),random(-10,10),random(12,40),random(-500,500)/100.00,random(-500,500)/100.00,random(300,1000)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AA 0 A_SpawnItemEx("BrutalChunkHuge",random(-10,10),random(-10,10),random(12,40),random(-700,700)/100.00,random(-700,700)/100.00,random(600,1400)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("BrutalSkull",0,0,56,random(-700,700)/100.00,random(-700,700)/100.00,random(600,1400)/100.00,random(-180,180),160)
+			TNT1 AAAAAA 0 A_SpawnItemEx("BrutalTinyBone",random(-5,5),random(-5,5),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(300,800)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAAA 0 A_SpawnItemEx("BrutalTinyBouncyBone",random(-5,5),random(-5,5),random(12,40),random(-400,400)/100.00,random(-400,400)/100.00,random(300,800)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAAAAAAAAA 0 A_SpawnItemEx("RedMist",random(-10,10),random(-10,10),random(12,40),random(-800,800)/100.00,random(-800,800)/100.00,random(600,1200)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAAAAAAAAA 0 A_SpawnItemEx("BrutalChunkTiny",random(-10,10),random(-10,10),random(12,40),random(-800,800)/100.00,random(-800,800)/100.00,random(600,1200)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAAAA 0 A_SpawnItemEx("RedMistIntense",random(-10,10),random(-10,10),random(12,40),random(-800,800)/100.00,random(-800,800)/100.00,random(600,1200)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAAAAAAAAAAAAAA 0 A_SpawnItemEx("Switchable_FlyingBlood",random(-10,10),random(-10,10),random(12,40),random(-700,700)/100.00,random(-700,700)/100.00,random(600,1400)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("BrutalOnlineSound",0,0,0,0,0,0,0,160)
+			Goto Spawn+3
+		XDeathBolognese:
+			TNT1 A 0
+			//TNT1 AAAAAAAAAAAA 0 A_SpawnItemEx("Bolognese_WallBlood",0,0,40,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAA 0 A_SpawnItemEx("Bolognese_FlyingBlood",0,0,55,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAA 0 A_SpawnItemEx("Bolognese_XDeath2",0,0,42,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAA 0 A_SpawnItemEx("Bolognese_XDeath3",0,0,42,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("Bolognese_XDeath4",0,0,42,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AA 0 A_SpawnItemEx("Bolognese_GibEyeball",0,0,42,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAA 0 A_SpawnItemEx("Bolognese_SmallBrainPiece",0,0,42,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("Bolognese_XDeath5",0,0,42,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AA 0 A_SpawnItemEx("Bolognese_XDeath6",0,0,42,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAA 0 A_SpawnItemEx("Bolognese_Guts",0,0,32,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("Bolognese_BloodMistExtraBig",0,0,10,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("Bolognese_BloodMistExtraBig",0,0,30,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AA 0 A_SpawnItemEx("Bolognese_BloodMistExtraBig",0,0,40,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 AAAAA 0 A_SpawnItemEx("Bolognese_BloodmistSpray",0,0,30,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("Bolognese_GrowingBloodPool",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION)
+			TNT1 AAA 0 A_SpawnItemEx("Bolognese_SuperGoreMist",0,0,32,random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160|SXF_TRANSFERTRANSLATION)
+			TNT1 A 0 A_SpawnItemEx("Bolognese_OnlineSound2",0,0,0,0,0,0,0,160)
+			Goto Spawn+3
+		XDeathHappyfun:
+			TNT1 A 0
+			TNT1 AAA 0 A_SpawnItemEx("RainbowSparkleSound",random(-10,10),random(-10,10),random(32,40),0,0,0,0,32)
+			TNT1 AAAA 0 A_SpawnItemEx("WhiteSpark",0,0,random(32,40),random(-60,60)/20.0,random(-60,60)/20.0,random(-40,40)/20.0,random(-180,180),32)
+			TNT1 AAAAA 0 A_SpawnItemEx("RainbowSparkHuge",0,0,random(32,40),random(-60,60)/20.0,random(-60,60)/20.0,random(-40,40)/20.0,random(-180,180),32)
+			TNT1 AAAAAAA 0 A_SpawnItemEx("RainbowSpark",0,0,random(32,40),random(-60,60)/20.0,random(-60,60)/20.0,random(-40,40)/20.0,random(-180,180),32)
+			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("RainbowSparkTiny",random(-5,5),random(-5,5),random(25,30),random(-80,80)/10.00,random(-80,80)/10.0,random(-3,3),random(-180,180),160)
+			TNT1 AAAA 0 A_SpawnItemEx("FancyWhiteSmoke",random(-10,10),random(-10,10),random(-10,-10),random(-200,200)/100.00,random(-200,200)/100.00,random(200,600)/100.00,random(-180,180),160)
+			TNT1 A 0 A_SpawnItemEx("HappyOnlineSound",0,0,0,0,0,0,0,160)
+			Goto Spawn+3
+		XDeathComic:
+			TNT1 A 0 A_SpawnItemEx("SamsaraComicEffectBig",0,0,32,0,0,frandom(0.5,1.0))
+			Goto Spawn+3
+	}
 }
