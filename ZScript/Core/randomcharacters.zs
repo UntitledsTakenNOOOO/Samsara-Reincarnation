@@ -44,6 +44,7 @@ Class DetermineValidSpawnZS : Actor
 		Height 52;
 		Radius 32;
 		+CORPSE
+		+SOLID
 	}
 	States
 	{
