@@ -1,12 +1,16 @@
 int activetokenselectors[CLASSCOUNT];
+int pickrandos = 0;
 
-Script "DetermineValidSpawn" open
+Script "DetermineValidSpawn" (void)
 {
 	for(int a = 512; a <= 0.5; a+=1024)
 	{
 		for(int b = 512; b <= 0.5; b+=1024)
 		{
-			SpawnForced("DetermineValidCell",a*1.0,b*1.0,0,0);
+			if(GetCVar("sams_zscriptready") == 1)
+				SpawnForced("DetermineValidCellZS",a*1.0,b*1.0,0,0);
+			else
+				SpawnForced("DetermineValidCell",a*1.0,b*1.0,0,0);
 			if(b > 0)
 				b = -b - 1024;
 			else
@@ -29,7 +33,10 @@ script "CellDoneScanning" (void)
 			if(random(0,1000) <= (pow(GetCvar("sams_randomcharacters"),2)/10))
 			{	
 				SpawnForced("DetermineValidSpawnTestObject",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),0,newtid);
-				Spawn("DetermineValidSpawn",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
+				if(GetCVar("sams_zscriptready") == 1)
+					Spawn("DetermineValidSpawnZS",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
+				else
+					Spawn("DetermineValidSpawn",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
 			}
 		}
 	}
@@ -38,9 +45,9 @@ script "CellDoneScanning" (void)
 script "IsThisSpawnSpotorCell" (int type)
 {
 	if(type == 0)
-		SetResultValue(CheckActorClass(0,"DetermineValidCell"));
+		SetResultValue(GetActorClass(0)=="DetermineValidCell");
 	else
-		SetResultValue(CheckActorClass(0,"DetermineValidSpawn"));
+		SetResultValue(GetActorClass(0)=="DetermineValidSpawn");
 }
 
 script "HeroOnMap" Open
@@ -61,6 +68,8 @@ script "HeroOnMap" Open
 				if(PlayerClass(p) == b)
 				{
 					activetokenselectors[b] = 1;
+					if(b == 5 || b == 10 || b == 11 || b == 14 || b == 19 || b == 23 || b == 24 || b == 25)
+						pickrandos = 1;
 				}
 			}
 		}
@@ -69,6 +78,9 @@ script "HeroOnMap" Open
 			clients += 1;
 		}
 	}
+	
+	if(pickrandos == true)
+		ACS_NamedExecuteWithResult("DetermineValidSpawn",0,0,0,0);
 }
 
 Script "Samsara2689" (void)  //2689
@@ -85,7 +97,7 @@ Script "Samsara2689" (void)  //2689
 				default:
 					break;
 				case 5:
-					SpawnSpotFacing("Duke3DBabe", 0, 0);
+					Spawn("Duke3DBabe",GetActorX(0),GetActorY(0),GetActorZ(0),0);
 					break;
 				case 10:
 					b = random(0, 10);		
