@@ -1,11 +1,11 @@
 Actor DetermineValidCell
 {
-	+CORPSE
+	+VULNERABLE
 	States
 	{
 		Spawn:
-			TNT1 A 0 NoDelay A_RadiusGive("DetermineValidCellBroadcast",1024,RGF_PLAYERS|RGF_MONSTERS|RGF_OBJECTS|RGF_NOSIGHT)
-			TNT1 A 2
+			TNT1 A 0 NoDelay A_RadiusGive("DetermineValidCellBroadcast",1024,RGF_PLAYERS|RGF_MONSTERS|RGF_OBJECTS|RGF_NOSIGHT|RGF_CUBE)
+			TNT1 A 3
 			Stop
 	}
 }
@@ -15,7 +15,7 @@ Actor DetermineValidCellBroadcast : Trigger
 	States
 	{
 		Pickup:	
-			TNT1 A 0 A_RadiusGive("IsValidCellBroadcast",1024,RGF_CORPSES|RGF_NOSIGHT)
+			TNT1 A 0 A_RadiusGive("IsValidCellBroadcast",1024,RGF_OBJECTS|RGF_NOSIGHT|RGF_CUBE)
 			Stop
 	}
 }
@@ -35,14 +35,14 @@ Actor IsValidCellBroadcast : Trigger
 
 Actor DetermineValidSpawn
 {
-	+CORPSE
 	Height 52
 	Radius 32
+	+VULNERABLE
 	States
 	{
 		Spawn:
-			TNT1 A 0 NoDelay A_RadiusGive("DetermineValidSpawnBroadcast",1024,RGF_PLAYERS|RGF_MONSTERS|RGF_OBJECTS)
-			TNT1 A 2
+			TNT1 A 0 NoDelay A_RadiusGive("DetermineValidSpawnBroadcast",1024,RGF_PLAYERS|RGF_MONSTERS|RGF_CUBE)
+			TNT1 A 3
 			Stop
 	}
 }
@@ -52,7 +52,7 @@ Actor DetermineValidSpawnBroadcast : Trigger
 	States
 	{
 		Pickup:	
-			TNT1 A 0 A_RadiusGive("IsValidSpawnBroadcast",1024,RGF_CORPSES)
+			TNT1 A 0 A_RadiusGive("IsValidSpawnBroadcast",1024,RGF_OBJECTS|RGF_CUBE)
 			Stop
 	}
 }
@@ -64,17 +64,22 @@ Actor IsValidSpawnBroadcast : Trigger
 		Pickup:
 			TNT1 A 0 A_JumpIf(CallACS("IsThisSpawnSpotorCell",1)==1,1)
 			fail
+			TNT1 A 0 A_JumpIfInventory("ValidSpawnToken",1,"Failure")
+			TNT1 A 0 A_GiveInventory("ValidSpawnToken",1)
 			TNT1 A 0 ACS_NamedExecuteWithResult("Samsara2689")
-			TNT1 A 0 Thing_Remove(0)
 			Stop
+		Failure:
+			TNT1 A 0
+			fail
 	}
 }
+
+Actor ValidSpawnToken : Inventory { Inventory.MaxAmount 1 }
 
 Actor DetermineValidSpawnTestObject
 {
 	Height 52
 	Radius 32
-	+SOLID
 	States
 	{
 		Spawn:
