@@ -741,7 +741,32 @@ str HL_HUD_WeaponBarGraphics[10][5] =
 	{"Crowbar", "HWMSLOT", "OPFWMB", "HWMSLOT0", "OPFWM0"}
 };
 
-script "Freeman_HEV_Enter" ENTER clientside//hev suit
+script "Freeman_Loop" Enter
+{
+	int longJumpDelay = 0;
+	ACS_NamedExecuteWithResult("Freeman_HEV_Enter",0,0,0,0);
+	
+	while(CheckInventory("HalfLifeClass"))
+	{
+		if(!CheckInventory("HalfLifeOpposingForce"))
+		{
+			if(CheckInventory("HLCanLongJump"))
+			{	
+				int playerInput = GetPlayerInput(-1,INPUT_BUTTONS);
+				
+				if((playerInput & BT_JUMP && playerInput & BT_CROUCH) && longJumpDelay <= 0 && (GetActorZ(0) - GetActorFloorZ(0) < 32.0))
+				{
+					ThrustThing(GetActorAngle(0)>>8,48,0,0);
+					longJumpDelay = 35;
+				}
+			}
+		}
+		Delay(1);
+		longJumpDelay--;
+	}
+}
+
+script "Freeman_HEV_Enter" (void) clientside//hev suit
 {
 	int a, b, c, d, e, suitcharge;
 	int armormod;
