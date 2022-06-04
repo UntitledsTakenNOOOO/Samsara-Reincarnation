@@ -1787,3 +1787,106 @@ Script "HalfLifeWeaponGivingItems" (int weapon)
 			break;
 	}
 }
+
+script "HLBarnacleTether" (int organic) //2679
+{
+    int t, i, k = 0, l, angle, pitch;
+    int x, y, z;
+    int vx, vy, vz, mag, magI;
+    str particle;
+	particle = "HLOPBarnacleTongue";
+	int tx = GetActorX(0); int ty = GetActorY(0); int tz = GetActorZ(0);
+	int tongueTid = 28000+PlayerNumber();
+	
+	int startingTid = UniqueTid();
+	Thing_ChangeTid(0,startingTid);
+   
+	SetActivator(0,AAPTR_Tracer);
+	
+	int monsterMass = GetActorProperty(0,APROP_Mass);
+	
+	SetActivator(startingTid,AAPTR_Target);
+ 
+    angle = GetActorAngle(0) - 0.1;
+    pitch = GetActorPitch(0);
+   
+    if(angle < 0)
+        angle += 1.0;
+       
+    x = GetActorX(0) + cos(angle) * ftoi(10 * cos(pitch));
+    y = GetActorY(0) + sin(angle) * ftoi(10 * cos(pitch));
+   
+    if(pitch <= 0.0)
+		z = GetActorZ(0) + GetActorViewHeight(0)-(GetActorProperty(0,APROP_AttackZOffset)/2) + 10 * (1.0 - cos(pitch));	
+	else
+		z = GetActorZ(0) + GetActorViewHeight(0)-(GetActorProperty(0,APROP_AttackZOffset)/2) - 10 * (1.0 - cos(pitch));
+       
+ 
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+ 
+    for (i = 0; i < magI; i += 16)
+    {
+		if(CheckInventory("HLOPBarnacleKillTether"))
+			break;
+        SpawnForced(particle, x+(vx*i), y+(vy*i), z+(vz*i),tongueTid);
+		SetActorAngle(tongueTid, angle+0.1);
+		SetActorPitch(tongueTid, -pitch);
+		Delay(2);
+	}
+	
+	Thing_Remove(tongueTid);
+	
+	if(organic)
+	{
+		while(!CheckInventory("HLOPBarnacleKillTether"))
+		{
+			SetActivator(startingTid,AAPTR_Tracer);
+			if(ClassifyActor(0) & ACTOR_DEAD)
+				break;
+			
+			tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0)+(GetActorProperty(0,APROP_Height)/2);
+			
+			SetActivator(startingTid,AAPTR_Target);
+		
+			angle = VectorAngle(vx,vy);
+			pitch = GetActorPitch(VectorAngle(magnitudeTwo_f(vx,vy),vz));
+		
+			x = GetActorX(0) + cos(angle) * ftoi(10 * cos(pitch));
+			y = GetActorY(0) + sin(angle) * ftoi(10 * cos(pitch));
+		   
+			if(pitch <= 0.0)
+				z = GetActorZ(0) + GetActorViewHeight(0)-(GetActorProperty(0,APROP_AttackZOffset)/2) + 10 * (1.0 - cos(pitch));	
+			else
+				z = GetActorZ(0) + GetActorViewHeight(0)-(GetActorProperty(0,APROP_AttackZOffset)/2) - 10 * (1.0 - cos(pitch));
+			   
+		 
+			vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+			vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+			magI = ftoi(mag);
+			
+			for (i = 0; i < magI; i += 16)
+			{
+				SpawnForced(particle, x+(vx*i), y+(vy*i), z+(vz*i),tongueTid);
+				SetActorAngle(tongueTid, angle);
+				SetActorPitch(tongueTid, -pitch);
+			}
+			
+			ThrustThing((angle+0.1)>>8,1,0,0);
+			if(pitch > 0)
+				ThrustThingZ(0,1,1,0);
+			else if(pitch < 0)
+				ThrustThingZ(0,1,0,0);
+			
+			Delay(2);
+			
+			Thing_Remove(tongueTid);
+		}
+	}
+	
+	Thing_Remove(startingTid);
+	Thing_Remove(tongueTid);
+	GiveInventory("HLOPBarnacleReleaseTether",1);
+	TakeInventory("HLOPBarnacleKillTether",1);
+}

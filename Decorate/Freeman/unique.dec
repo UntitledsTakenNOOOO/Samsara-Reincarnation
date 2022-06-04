@@ -1104,6 +1104,9 @@ Actor HLM40A1PuffZoomedCoop : HLBulletPuffCoop {
 	}		
 }
 
+Actor HLOPBarnacleReleaseTether : HLBoolean {}
+Actor HLOPBarnacleKillTether : HLBoolean {}
+
 Actor HLOPBarnacle : HLWeapon
 {
 	Weapon.Slotnumber 0
@@ -1139,6 +1142,7 @@ Actor HLOPBarnacle : HLWeapon
 			TNT1 A 1 A_Raise
 			loop
 		Deselect:
+			TNT1 A 0 A_TakeInventory("HLOPBarnacleReleaseTether",1)
 			TNT1 A 0 A_TakeInventory("freeman_uniqueselected",1)
 			Goto DeselectLoop
 		DeselectLoop:		
@@ -1151,6 +1155,8 @@ Actor HLOPBarnacle : HLWeapon
 			HL23 A 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
 			goto WIdle
 		WIdle:
+			HL00 A 0 A_TakeInventory("HLOPBarnacleKillTether",1)
+			HL00 A 0 A_TakeInventory("HLOPBarnacleReleaseTether",1)
 			HL00 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]" 2 A_WeaponReady
 			HL01 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]" 2 A_WeaponReady
 			HL02 ABCDEFGHIJKL 2 A_WeaponReady
@@ -1175,27 +1181,30 @@ Actor HLOPBarnacle : HLWeapon
 			HL1F ABCDEFGHIJK 2 A_WeaponReady
 			goto WIdle	
 		Fire:
+			HL12 A 0 A_TakeInventory("HLOPBarnacleReleaseTether",1)
 			HL12 A 0 A_PlaySound("halflife/barnacle/fire",CHAN_WEAPON)
 			HL12 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]" 1
-			HL13 A 1
+			HL13 A 1 A_FireCustomMissile("HLOPBarnacleTether",0,0,8)
 			HL14 A 0 A_Refire("Pull")
 			Goto FireRelease
 		Pull:
 			HL14 A 0 A_PlaySound("halflife/barnacle/pull",CHAN_WEAPON)
 			HL14 ABC 2
-			HL14 D 0 A_Refire(1)	Goto FireRelease
+			HL14 D 0 A_JumpIfInventory("HLOPBarnacleReleaseTether",1,"FireRelease")		HL14 D 0 A_Refire(1)	Goto FireRelease
 			HL14 DEF 2
-			HL14 G 0 A_Refire(1)	Goto FireRelease
+			HL14 G 0 A_JumpIfInventory("HLOPBarnacleReleaseTether",1,"FireRelease")		HL14 G 0 A_Refire(1)	Goto FireRelease
 			HL14 GHI 2
-			HL14 J 0 A_Refire(1)	Goto FireRelease
+			HL14 J 0 A_JumpIfInventory("HLOPBarnacleReleaseTether",1,"FireRelease")		HL14 J 0 A_Refire(1)	Goto FireRelease
 			HL14 JKL 2
-			HL14 M 0 A_Refire(1)	Goto FireRelease
+			HL14 M 0 A_JumpIfInventory("HLOPBarnacleReleaseTether",1,"FireRelease")		HL14 M 0 A_Refire(1)	Goto FireRelease
 			HL14 MNO 2
-			HL14 P 0 A_Refire(1)	Goto FireRelease
+			HL14 P 0 A_JumpIfInventory("HLOPBarnacleReleaseTether",1,"FireRelease")		HL14 P 0 A_Refire(1)	Goto FireRelease
 			HL14 PQ 2
-			HL14 A 0 A_Refire("Pull")
+			HL14 A 0 A_JumpIfInventory("HLOPBarnacleReleaseTether",1,"FireRelease")		HL14 A 0 A_Refire("Pull")
 			Goto FireRelease
 		FireRelease:
+			HL10 A 0 A_TakeInventory("HLOPBarnacleReleaseTether",1)
+			HL10 A 0 A_GiveInventory("HLOPBarnacleKillTether",1)
 			HL10 A 0 A_StopSound(CHAN_WEAPON)
 			HL10 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]" 1
 			HL11 A 1
@@ -1209,5 +1218,43 @@ Actor HLOPBarnacle : HLWeapon
 			HL19 A 1 A_RailWait	HL1A A 1 A_RailWait	HL1B A 1 A_RailWait	HL1C A 1 A_RailWait	HL1D A 1 A_RailWait
 			HL1E A 1 A_RailWait	HL1F A 1 A_RailWait	HL20 A 1 A_RailWait	HL21 A 1 A_RailWait	HL22 A 1 A_RailWait
 			Stop
+	}
+}
+
+Actor HLOPBarnacleTether
+{
+	Height 8
+	Radius 4
+	Speed 256
+	Scale 100.0
+	Damage (0)
+	Projectile
+	+HITTRACER
+	States
+	{
+		Spawn:
+			TNT1 A 2
+		Death:
+			TNT1 A 0 ACS_NamedExecuteWithResult("HLBarnacleTether")
+			TNT1 A -1
+			wait
+		XDeath:
+			TNT1 A 0 ACS_NamedExecuteWithResult("HLBarnacleTether",1)
+			TNT1 A -1
+			wait
+	}
+}
+
+Actor HLOPBarnacleTongue
+{
+	Height 8
+	Radius 4
+	Scale 100.0
+	+NOGRAVITY
+	States
+	{
+		Spawn:
+			HL00 A 1
+			Loop
 	}
 }
