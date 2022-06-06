@@ -701,10 +701,10 @@ int HL_HUD_HealthArmorKillValues[6][2] = {
 // weapon, ammotype1, ammotype2, primaryammo, secondaryammo, hlammofont1, hlammofont2, opammofont1, opammofont2, secondarynomagazine
 str HL_HUD_AmmoStrings[10][10] = 
 {
-	{ "9mm Pistol", "HL9mmCounter", "HL9mmCounter", "Clip", "Clip", "HPKUP1", "OPFAMM01", "HPKUP1", "OPFAMM01", "" }, 
+	{ "9mm Pistol", "HL9mmCounter", "HL9mmCounter", "-1", "-1", "HPKUP1", "OPFAMM01", "HPKUP1", "OPFAMM01", "" }, 
 	{ "Hornetgun", "HornetGunAmmo", "ShockRoachAmmo", "HornetGunAmmo", "ShockRoachAmmo", "HPKUP8", "OPFAMM08", "HPKUP8", "OPFAMM08", "" }, 
-	{ ".357 Python", "HLPythonCounter", "HLDeagleCounter", "Shell", "Shell", "HPKUP2", "OPFAMM02", "HPKUP2", "OPFAMM02", "" }, 
 	{ "Assault Shotgun", "HLShotgunCounter", "HLShotgunCounter", "Shell", "Shell", "HPKUP4", "OPFAMM04", "HPKUP4", "OPFAMM04", "" }, 
+	{ ".357 Python", "HLPythonCounter", "HLDeagleCounter", "Shell", "Shell", "HPKUP2", "OPFAMM02", "HPKUP2", "OPFAMM02", "" }, 
 	{ "MP5", "HLMP5Counter", "HLMP5Counter", "Clip", "Clip", "HPKUP1", "OPFAMM01", "HPKUP3", "OPFAMM03", "RocketAmmo" }, 
 	{ " RPG ", "HLRPGCounter", "HLSporeCounter", "RocketAmmo", "RocketAmmo", "HPKUP6", "OPFAMM05", "HPKUP6", "OPFAMM05", "" }, 
 	{ "Gauss Cannon", "Cell", "HLSawCounter", "Cell", "Cell", "HPKUP7", "OPFAMM07", "HPKUP7", "OPFAMM07", "" }, 
@@ -717,11 +717,11 @@ str HL_HUD_AmmoInts[10][9] =
 {
 	{ 17, 17, 6, 6, 30, 30, 0, 0 },
 	{ 8, 10, 3, 4, 3, 4, 0, 0, 0 },
-	{ 6, 7, 3, 3, 10, 10, 0, 0, 0 },
 	{ 8, 8, 3, 3, 10, 10, 0, 0, 0 },
+	{ 6, 7, 3, 3, 10, 10, 0, 0, 0 },
 	{ 50, 50, 16, 16, 30, 30, 5, 0, 1 },
-	{ 1, 5, 1, 2, 5, 5, 0, 0, 0 },
-	{ 0, 50, 40, 21, 40, 40, 0, 0, 0 },
+	{ 1, 10, 1, 2, 5, 5, 0, 0, 0 },
+	{ 0, 100, 40, 21, 40, 40, 0, 0, 0 },
 	{ 0, 0, 40, 40, 40, 40, 0, 0, 0 },
 	{ 5, 5, 2, 2, 10, 10, 0, 0, 0 },
 	{ 5, 0, 2, 5, 2, 5, 0, 1, 1 }
@@ -872,6 +872,7 @@ script "Freeman_HEV_Enter" (void) clientside//hev suit
 								NamedRequestScriptPuke("HL2677",0,0,0,0);
 						}
 						TakeInventory("FlashLightAmmo", 1);
+                        SetInventory("SamsaraFlashLightAmmoDisplay", CheckInventory("FlashLightAmmo") / 35);
 							
 						if(CheckInventory("FlashLightAmmo") > 840)
 						{
@@ -904,6 +905,7 @@ script "Freeman_HEV_Enter" (void) clientside//hev suit
 						HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,17459,0,180.0,200.0,0.2,0.66);
 						GiveInventory("HLPCVNightVision", 1);
 						TakeInventory("FlashLightAmmo", 1);
+                        SetInventory("SamsaraFlashLightAmmoDisplay", CheckInventory("FlashLightAmmo") / 35);
 					}
 				}
 			}
@@ -922,6 +924,7 @@ script "Freeman_HEV_Enter" (void) clientside//hev suit
 				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,17459,0,180.0,200.0,0.2,0.66);
 				
 				GiveInventory("FlashLightAmmo", 2);
+                SetInventory("SamsaraFlashLightAmmoDisplay", CheckInventory("FlashLightAmmo") / 35);
 				TakeInventory("HLPCVNightVision", 65536);
 			}
 			
@@ -952,7 +955,7 @@ script "Freeman_HEV_Enter" (void) clientside//hev suit
 				SetFont("SMALLFONT");
 			}
 			
-			if(GetCVAR("screenblocks") == 11)
+			if(GetCVAR("screenblocks") == 11 && CheckInventory("SamsaraUsingNewFullscreenHUD"))
 			{
 				SetHudSize(640,480, 0);
 				int ArmorAmount = CheckInventory("BasicArmor");
@@ -1003,33 +1006,62 @@ script "Freeman_HEV_Enter" (void) clientside//hev suit
 						if(CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]) > 0 || HL_HUD_AmmoInts[d][7] == 0)
 						{
 							//Magazine
-							if(strcmp(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")], HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) != 0)
+							if((strcmp(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")], HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) != 0))
 							{
-								if(CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]) < HL_HUD_AmmoInts[d][2+CheckInventory("HalfLifeOpposingForce")])
-								{	
-									SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 620.2, 460.2, 0.033, 0.5+0.2);
-								}
-								else
-								{
-									SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 620.2, 460.2, 0.033, 0.5+0.2);
-								}
-							}
+                                if (!strcmp(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")], "-1") && !CheckInventory("PistolModeOn"))
+                                {
+								    if(CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]) < HL_HUD_AmmoInts[d][2+CheckInventory("HalfLifeOpposingForce")])
+								    {	
+									    SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 700.2, 460.2, 0.033, 0.5+0.2);
+								    }
+								    else
+								    {
+    								    SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 700.2, 460.2, 0.033, 0.5+0.2);
+								    }
+                                } else {
+								    if(CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]) < HL_HUD_AmmoInts[d][2+CheckInventory("HalfLifeOpposingForce")])
+								    {	
+									    SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 620.2, 460.2, 0.033, 0.5+0.2);
+								    }
+								    else
+								    {
+    								    SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 620.2, 460.2, 0.033, 0.5+0.2);
+								    }
+                                }
+                            }
 							
 							//Ammo divider
-							if(strcmp(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")], HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) != 0)
+							if((strcmp(HL_HUD_AmmoStrings[d][1+CheckInventory("HalfLifeOpposingForce")], HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) != 0))
 							{
-								SetFont(HL_HUD_Bars[CheckInventory("HalfLifeOpposingForce")]); HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 630.0, 460.2, 0.033, 0.5+0.2);
+                                if (!strcmp(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")], "-1") && !CheckInventory("PistolModeOn")) {} // do nothing
+								else { SetFont(HL_HUD_Bars[CheckInventory("HalfLifeOpposingForce")]); HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 630.0, 460.2, 0.033, 0.5+0.2); }
 							}
 							
 							//Ammo Total
-							if(CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) < HL_HUD_AmmoInts[d][4+CheckInventory("HalfLifeOpposingForce")])
-							{				
-								SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 700.2, 460.2, 0.033, 0.5+0.2);
-							}
-							else
-							{
-								SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 700.2, 460.2, 0.033, 0.5+0.2);
-							}
+                            if (!strcmp(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")], "-1"))
+                            {
+                                if (CheckInventory("PistolModeOn"))
+                                {
+							        if(CheckInventory("Clip") < HL_HUD_AmmoInts[d][4+CheckInventory("HalfLifeOpposingForce")])
+							        {				
+							    	    SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory("Clip"); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 700.2, 460.2, 0.033, 0.5+0.2);
+							        }
+							        else
+							        {
+    								    SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory("Clip"); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 700.2, 460.2, 0.033, 0.5+0.2);
+							        }
+                                }
+                            } else {
+							    if(CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]) < HL_HUD_AmmoInts[d][4+CheckInventory("HalfLifeOpposingForce")])
+							    {				
+							    	SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+4], 700.2, 460.2, 0.033, 0.5+0.2);
+							    }
+							    else
+							    {
+    								SetFont(HL_HUD_Numbers[CheckInventory("HalfLifeOpposingForce")]); HudMessage(d: CheckInventory(HL_HUD_AmmoStrings[d][3+CheckInventory("HalfLifeOpposingForce")]); HUDMSG_PLAIN|HUDMSG_COLORSTRING|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, HL_HUD_Colors[CheckInventory("HalfLifeOpposingForce")+2], 700.2, 460.2, 0.033, 0.5+0.2);
+							    }
+                            }
+
 							//Ammo Graphic
 							SetFont(HL_HUD_AmmoStrings[d][5+CheckInventory("HalfLifeOpposingForce")]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 0, 0, 720.2, 450.2, 0.033, 0.5+0.2);
 							
@@ -1109,7 +1141,7 @@ str HLDamageIndicators[2][13] = {
 
 Script "HL_HUD_DMGTypes" (void)
 {
-    if(CheckInventory("HalfLifeClass"))
+    if(CheckInventory("HalfLifeClass") && GetCVAR("screenblocks") == 11 && CheckInventory("SamsaraUsingNewFullscreenHUD"))
     {
 		SetHUDSize(640, 480, 1);
 		for(int a = 1; a < 13; a++)
@@ -1131,7 +1163,7 @@ str HLPickupIDsNew[2][10] =
 
 Script "HL_HUD_Pickups" (int cause)
 {
-	if(CheckInventory("HalfLifeClass"))
+	if(CheckInventory("HalfLifeClass") && GetCVAR("screenblocks") == 11 && CheckInventory("SamsaraUsingNewFullscreenHUD"))
 	{
 		SetHUDSize(640, 480, 1);
 		SetFont(HLPickupIDsNew[CheckInventory("HalfLifeOpposingForce")][cause]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_FADEINOUT, 23781, 0, 720.2, 400.2, 0.333,1.0,3.0);
@@ -1367,13 +1399,13 @@ script "HL2685" (int cause) clientside //2685
 	{
 		TakeInventory("HLHEVDamageType", 255);
 		GiveInventory("HLHEVDamageType", cause+1);
-		ACS_NamedExecuteAlways("HL_HUD_DMGTypes", 0, 0, 0, 0);
+		ACS_NamedExecuteWithResult("HL_HUD_DMGTypes");
 	}
 	else
 	{
 		TakeInventory("HLHEVPickupID", 255);
 		GiveInventory("HLHEVPickupID", cause-11);
-		ACS_NamedExecuteAlways("HL_HUD_Pickups", 0, cause-11, 0, 0);	
+		ACS_NamedExecuteWithResult("HL_HUD_Pickups", cause-11);
 		ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 2, 0, 0);	
 	}
 }
