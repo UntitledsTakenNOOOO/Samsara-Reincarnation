@@ -678,9 +678,9 @@ str armorstrings[40] = {"HEV/Armor5","HEV/Armor10","HEV/Armor15","HEV/Armor20","
 "PCV/Fuzz","PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz",
 "PCV/Fuzz"};
 
-str pickupstrings[24] = {"","HEV/Hornet","HEV/Magnum","HEV/Shotgun","HEV/SMG","HEV/RPG",
-"HEV/Gauss","HEV/Egon","HEV/Crossbow","","PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip",
-"PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip"};
+str pickupstrings[20] = {"HEV/Hornet","HEV/Magnum","HEV/Shotgun","HEV/SMG","HEV/RPG",
+"HEV/Gauss","HEV/Egon","HEV/Crossbow","","HEV/Longjump","PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip",
+"PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip"};
 
 str HL_HUD_Colors[6] = { "HEVBlue", "HEVBlue", "HEVYellow", "PCVGreen", "HEVRed", "HEVRed"  }; //HLUpper, OPUpper, HLNormal, OPNormal, HLLower, OPLower
 str HL_HUD_HealthArmorGraphics[6] = { "HLHEALTB", "OPFHLTHB", "HLHEALTH", "OPFHLTH0", "HHEALTHR", "OPFHLTHR"  }; //HLHigh, OPHigh, HLMed, OPMEd, HLLow, OPLow
@@ -744,24 +744,42 @@ str HL_HUD_WeaponBarGraphics[7][5] = // 10
 script "Freeman_Loop" Enter
 {
 	int longJumpDelay = 0;
+	int longJumpCharges = 0;
+	int longJumpChargeFade = 0;
 	ACS_NamedExecuteWithResult("Freeman_HEV_Enter",0,0,0,0);
 	
 	while(CheckInventory("HalfLifeClass"))
 	{
 		if(!CheckInventory("HalfLifeOpposingForce"))
 		{
-			if(CheckInventory("HLCanLongJump"))
+			if(CheckInventory("HLOPHasBarnacleLongJump"))
 			{	
 				int playerInput = GetPlayerInput(-1,INPUT_BUTTONS);
+				int oldPlayerInput  = GetPlayerInput(-1,INPUT_OLDBUTTONS);
+				int moveDirection = GetPlayerInput(-1,INPUT_FORWARDMOVE);
 				
-				if((playerInput & BT_JUMP && playerInput & BT_CROUCH) && longJumpDelay <= 0 && (GetActorZ(0) - GetActorFloorZ(0) < 32.0))
+				longJumpCharges += playerInput & BT_JUMP && !(oldPlayerInput & BT_JUMP);
+				
+				if(moveDirection > 0 && longJumpCharges >= 2 && longJumpDelay <= 0 && (GetActorZ(0) - GetActorFloorZ(0) < 32.0))
 				{
-					ThrustThing(GetActorAngle(0)>>8,48,0,0);
+					longJumpChargeFade = 0;
+					longJumpCharges = 0;
+					ACS_NamedExecuteWithResult("HLLongJumpSlowedThrust",20,5);
+					
 					longJumpDelay = 35;
 				}
 			}
 		}
 		Delay(1);
+		if(longJumpCharges > 0)
+		{
+			if(longJumpChargeFade >= 17)
+			{
+				longJumpChargeFade = 0;
+				longJumpCharges = 0;
+			}
+		}
+		longJumpChargeFade++;
 		longJumpDelay--;
 	}
 }
@@ -831,7 +849,7 @@ script "Freeman_HEV_Enter" (void) clientside//hev suit
 					{
 						GiveInventory("HLHEVIsTalking", 1);
 						ACS_NamedExecuteAlways("HLHEVTalk",0,3,0,0);
-						LocalAmbientSound(pickupstrings[CheckInventory("HLHEVPickupID")+(12*CheckInventory("HalfLifeOpposingForce"))],127);
+						LocalAmbientSound(pickupstrings[CheckInventory("HLHEVPickupID")+(10*CheckInventory("HalfLifeOpposingForce"))],127);
 					}
 					TakeInventory("HLHEVPickupID", 255);
 				}	
@@ -1105,24 +1123,18 @@ Script "HL_HUD_DMGTypes" (void)
 	}
 }
 
-str HLPickupIDsNew[2][11] = 
+str HLPickupIDsNew[2][10] = 
 {
-	{ "", "HPKUP20H", "HPKUP12H", "HPKUP14H", "HPKUP13H", "HPKUP17H", "HPKUP18H", "HPKUP19H", "HPKUP16H", "HPKUP15H", "" },
-	{ "", "OPFSLT01", "OPFSLT02", "OPFSLT03", "OPFSLT04", "OPFSLT05", "OPFSLT06", "OPFSLT07", "OPFSLT08", "OPFSLT09", "" }
+	{ "HPKUP20H", "HPKUP12H", "HPKUP14H", "HPKUP13H", "HPKUP17H", "HPKUP18H", "HPKUP19H", "HPKUP16H", "HPKUP15H", "HPKUP10H" },
+	{ "OPFSLT01", "OPFSLT02", "OPFSLT03", "OPFSLT04", "OPFSLT05", "OPFSLT06", "OPFSLT07", "OPFSLT08", "OPFSLT09", "OPFSLT00" }
 };
 
-Script "HL_HUD_Pickups" (void)
+Script "HL_HUD_Pickups" (int cause)
 {
 	if(CheckInventory("HalfLifeClass"))
 	{
 		SetHUDSize(640, 480, 1);
-		for(int a = 1; a < 11; a++)
-		{
-			if(CheckInventory("HLHEVPickupID") == a && StrCmp(HLPickupIDsNew[CheckInventory("HalfLifeOpposingForce")][a], "") != 0)
-			{
-				SetFont(HLPickupIDsNew[CheckInventory("HalfLifeOpposingForce")][a]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_FADEINOUT, 23781, 0, 720.2, 400.2, 0.333,1.0,3.0);
-			}
-		}
+		SetFont(HLPickupIDsNew[CheckInventory("HalfLifeOpposingForce")][cause]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_FADEINOUT, 23781, 0, 720.2, 400.2, 0.333,1.0,3.0);
 		SetHUDSize(0,0,0);		
 	}
 }	
@@ -1360,8 +1372,8 @@ script "HL2685" (int cause) clientside //2685
 	else
 	{
 		TakeInventory("HLHEVPickupID", 255);
-		GiveInventory("HLHEVPickupID", cause-10);
-		ACS_NamedExecuteAlways("HL_HUD_Pickups", 0, 0, 0, 0);	
+		GiveInventory("HLHEVPickupID", cause-11);
+		ACS_NamedExecuteAlways("HL_HUD_Pickups", 0, cause-11, 0, 0);	
 		ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 2, 0, 0);	
 	}
 }
@@ -1866,7 +1878,7 @@ script "HLBarnacleTether" (int query, int organic) //2679
 				SetActivator(startingTid,AAPTR_Tracer);
 				ACS_NamedExecuteWithResult("HLBarnacleMonsterBlocker",0,0,0,0);
 				
-				if(ClassifyActor(0) & ACTOR_DEAD || !(ClassifyActor(0) & ACTOR_MONSTER))
+				if(!(ClassifyActor(0) & ACTOR_ALIVE))
 				{
 					SetActivator(startingTid,AAPTR_Target);
 					Thing_Remove(tongueTid);
@@ -1912,12 +1924,8 @@ script "HLBarnacleTether" (int query, int organic) //2679
 					SetActivator(startingTid,AAPTR_Tracer);
 				}
 				
-				ThrustThing(angle>>8,1,0,0);
-								
-				if(vectorz > 0)
-					ThrustThingZ(0,vectorz/24.0,0,0);
-				else if(vectorz < 0)
-					ThrustThingZ(0,vectorz/24.0,1,0);
+				ThrustThing(angle>>8,1,0,0);							
+				ThrustThingZ(0,sign(vectorz)*4,0,0);
 					
 				if(monsterIsSmall)
 					SetActivator(startingTid,AAPTR_Target);
@@ -1943,4 +1951,21 @@ Script "HLBarnacleMonsterBlocker" (void)
 	GiveInventory("HLOPBarnacleBlockRemover",1);
 	Delay(2);
 	TakeInventory("HLOPBarnacleBlockRemover",1);
+}
+
+Script "HLLongJumpSlowedThrust" (int maxThrust, int speed)
+{
+	int thrustAngle = GetActorAngle(0)>>8;
+	int thrustCounter = 1;
+	SetPlayerProperty(0,1,PROP_FROZEN);
+	Thing_Stop(0);
+	ACS_NamedExecuteWithResult("HalfLifeRecoil",6);
+	for(int a = 0; a < maxThrust; a+= speed)
+	{
+		ThrustThing(thrustAngle,maxThrust/(2*thrustCounter),0,0);
+		ThrustThingZ(0,(maxThrust/(2*thrustCounter))*3,0,0);
+		thrustCounter++;
+		Delay(2);
+	}
+	SetPlayerProperty(0,0,PROP_FROZEN);
 }
