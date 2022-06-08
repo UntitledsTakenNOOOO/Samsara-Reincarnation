@@ -27,8 +27,8 @@ actor "SPNKR-XP SSM Launcher" : Weapon// replaces RocketLauncher
 
       Ready:
         RCKT A 1 A_WeaponReady
-        TNT1 A 0 A_JumpIfNoAmmo("Reload")
-        LOOP
+        TNT1 A 0 A_JumpIfInventory("SpankerAmmo",1,"Ready")
+        goto Reload
 
       Deselect:
         RCKT A 0 A_JumpIfInventory("SpankerVerticalShit",7,"Deselect7")
@@ -113,7 +113,9 @@ actor "SPNKR-XP SSM Launcher" : Weapon// replaces RocketLauncher
         //TNT1 A 0 A_TakeInventory("UsingMarathonInstagib",1)
 
         TNT1 A 0 A_GiveInventory("UsingSpanker",1)
-        TNT1 A 0 A_JumpIfNoAmmo("ReloadSelect")
+        TNT1 A 0 A_JumpIfInventory("SpankerAmmo",1,"Select0")
+        goto ReloadSelect
+
       Select0:
         RCKT A 0 A_GiveInventory("SpankerVerticalShit",1)
         RCKT A 1 Offset(0,136) // 35
@@ -207,15 +209,16 @@ actor "SPNKR-XP SSM Launcher" : Weapon// replaces RocketLauncher
         LOOP
 
       Fire:
-        TNT1 A 0 A_JumpIf(waterlevel == 3, "NothingFire")
-        RCKT A 1
-        TNT1 A 0 A_JumpIfNoAmmo("Reload")
+        TNT1 A 0 A_JumpIfInventory("SpankerAmmo",1,1)
+        goto Reload
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"NothingFire")
+        RCKT A 1 A_AlertMonsters
+        TNT1 A 0 A_PlaySound("marathon/rocket/fire")
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"CoopFire")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
-        TNT1 A 0 A_AlertMonsters//,0,0,0,0)
-        TNT1 A 0 A_Recoil(7)
         TNT1 A 0 A_FireCustomMissile("LauncherRocket",0,1,-1,10)
-        TNT1 A 0 A_PlaySound("marathon/rocket/fire")
+      FireContinue:
+        TNT1 A 0 A_Recoil(7)
         RCKT A 3 Offset(-4,29) Bright
         TNT1 A 0 A_Light2
         RCKT A 3 Offset(-4,26) Bright
@@ -231,23 +234,8 @@ actor "SPNKR-XP SSM Launcher" : Weapon// replaces RocketLauncher
         Goto Ready
 
       CoopFire:
-        TNT1 A 0 A_AlertMonsters//,0,0,0,0)
-        TNT1 A 0 A_Recoil(7)
         TNT1 A 0 A_FireCustomMissile("LauncherRocketCoop",0,1,-1,10)
-        TNT1 A 0 A_PlaySound("marathon/rocket/fire")
-        RCKT A 3 Offset(-4,29) Bright
-        TNT1 A 0 A_Light2
-        RCKT A 3 Offset(-4,26) Bright
-        TNT1 A 0 A_Light1
-        RCKT A 3 Offset(-4,23) Bright
-        TNT1 A 0 A_Light0
-        RCKT A 4 Offset(-4,21) Bright
-        RCKT A 1 Offset(-4,23) Bright
-        RCKT A 1 Offset(-4,26) Bright
-        RCKT A 1 Offset(-4,29) Bright
-        RCKT A 6 Offset(-4,32)
-        TNT1 A 0 A_Refire
-        Goto Ready
+        goto FireContinue
 
       NothingFire:
         TNT1 A 0

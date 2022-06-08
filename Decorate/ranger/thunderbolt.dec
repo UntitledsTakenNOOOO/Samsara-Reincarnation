@@ -78,7 +78,7 @@ actor "Thunderbolt": InstantSwitchWeapon
 
       Hold:
         TNT1 A 0 A_JumpIfNoAmmo("DeselectShit")
-		QLTG A 0 A_JumpIf(waterlevel > 1, "Discharge")
+		QLTG A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",2,"Discharge")
         QLTG A 0 A_GunFlash
         TNT1 A 0 A_JumpIfInventory("QuadDamagePower", 1, 2)
         TNT1 A 0 A_StopSound(7)
@@ -178,20 +178,21 @@ actor "Thunderbolt": InstantSwitchWeapon
 		PLS2 A 0 A_PlaySound("quakeweps/quadfire", 3)
 		Goto PlasmaPreFire2
 	  PlasmaPreFire2:
-		PLS2 A 0 A_JumpIf(waterlevel > 1, "Discharge")
-		Goto PlasmaStandardFire
+		PLS2 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",2,"Discharge")
+        TNT1 A 0 A_JumpIfInventory("QuakeInvisTimer", 1, "PlasmaStandardFire")
+        TNT1 A 0 A_AlertMonsters
 	  PlasmaStandardFire:
 		PLS2 A 0 A_PlaySound("Plasmacell/Fire")
-		PLS2 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopPlasmaStandarFire")
-		PLS2 A 3 Bright A_FireCustomMissile("PlasmaCellBall")//A_SpawnItemEX("PlasmaCellBall",cos(pitch)*32,0,40-(sin(pitch)*32),cos(pitch)*24,0,-sin(pitch)*24,0,SXF_SETMASTER|SXF_NOCHECKPOSITION,0,tid)
+		PLS2 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopPlasmaStandardFire")
+		PLS2 A 3 Bright A_FireCustomMissile("PlasmaCellBall",0,0)//A_SpawnItemEX("PlasmaCellBall",cos(pitch)*32,0,40-(sin(pitch)*32),cos(pitch)*24,0,-sin(pitch)*24,0,SXF_SETMASTER|SXF_NOCHECKPOSITION,0,tid)
 		PLS2 BCDA 3 Bright
 		Goto PlasmaPostFire
 	  PlasmaPostFire:
 		PLS2 A 13
 		PLS2 A 3 A_ReFire("PlasmaFire")
 		Goto Ready
-	  CoopPlasmaStandarFire:
-		PLS2 A 3 Bright A_FireCustomMissile("PlasmaCellBall_Coop")//A_SpawnItemEX("PlasmaCellBall_Coop",cos(pitch)*32,0,40-(sin(pitch)*32),cos(pitch)*24,0,-sin(pitch)*24,0,SXF_SETMASTER|SXF_NOCHECKPOSITION,0,tid)
+	  CoopPlasmaStandardFire:
+		PLS2 A 3 Bright A_FireCustomMissile("PlasmaCellBall_Coop",0,0)//A_SpawnItemEX("PlasmaCellBall_Coop",cos(pitch)*32,0,40-(sin(pitch)*32),cos(pitch)*24,0,-sin(pitch)*24,0,SXF_SETMASTER|SXF_NOCHECKPOSITION,0,tid)
 		PLS2 BCDA 3 Bright
 		Goto PlasmaPostFire
 		
@@ -202,11 +203,11 @@ actor "Thunderbolt": InstantSwitchWeapon
         TNT1 A 0 A_AlertMonsters
         QLTG A 0 A_PlaySound("quakeweps/lightningdischarge", 6, 1, 0, ATTN_NONE)
 		TNT1 A 0 A_JumpIfInventory("UsingDoEAmmo",1,"Discharge2")
-        QLTG A 1 A_FireCustomMissile("LGDischarge")
+        QLTG A 1 A_FireCustomMissile("LGDischarge",0,0)
         goto Ready  // you're probably dead now
 
 	  Discharge2:
-	    PLS2 A 1 A_FireCustomMissile("LGDischarge")
+	    PLS2 A 1 A_FireCustomMissile("LGPlasmaDischarge",0,0)
         goto Ready
 
       Flash:
@@ -345,6 +346,7 @@ ACTOR LGBeamProjectile : FastProjectile
 	//+MTHRUSPECIES
 	//+THRUSPECIES
 	+BLOODLESSIMPACT
+    +NOTIMEFREEZE
 	Height 8
 	Radius 4
 	DamageType "QuakeElectric"
@@ -427,6 +429,7 @@ actor LGBeam
 	+NOINTERACTION
 	+NOBLOCKMAP
 	+CLIENTSIDEONLY
+    +NOTIMEFREEZE
 	Height 1
 	Radius 1
 //	DamageType "QuakeElectric"
@@ -464,6 +467,7 @@ actor LGPuff: BulletPuff
     +BLOODLESSIMPACT
     //+FORCERADIUSDMG
     +NODAMAGETHRUST
+    +NOTIMEFREEZE
     VSpeed 0
     Scale 0.2
     RenderStyle Add
@@ -625,4 +629,17 @@ ACTOR PlasmaDebris
 		TNT1 A 5
 		Stop
 	}
+}
+
+actor LGPlasmaDischarge : LGDischarge
+{
+    States
+    {
+      Spawn:
+        TNT1 A 1
+        TNT1 A 0 A_Explode(18 * (ACS_NamedExecuteWithResult("SamsaraDecorate", 5, 1)), 4096, 0) // currently unsure of how damage is calculated, but this should suffice for now
+        TNT1 A 0 A_Explode(17 * (ACS_NamedExecuteWithResult("SamsaraDecorate", 5, 1)), 4096)
+        TNT1 A 0 A_TakeFromTarget("PlasmaCell")
+        stop
+    }
 }
