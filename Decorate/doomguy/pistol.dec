@@ -10,10 +10,10 @@ actor " Pistol " : Weapon// : Pistol  doom 64 pistol fires slightly faster, othe
     +WEAPON.WIMPY_WEAPON
     +INVENTORY.UNDROPPABLE
     DamageType Pistol
+	Tag "Pistol"
     Inventory.Pickupmessage "i eat you"
     Obituary "$SAMSARA_DOOMGUY_OB_PISTOL"
 	Inventory.RestrictedTo "DoomguyPlayer"
-	Tag "Pistol"
     States
     {
       Ready:
@@ -55,30 +55,37 @@ actor " Pistol " : Weapon// : Pistol  doom 64 pistol fires slightly faster, othe
         goto FireAnim
 		
       CoopFire:
+        TNT1 A 0
         TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
         TNT1 A 0 A_FireBullets (5.6, 0, 1, Random(6,8)*2, "DoomBulletPuff2_Coop", FBF_NORANDOM)
         Goto FireAnim		
-
+		
+      CoopFireVanilla:
+        TNT1 A 0
+        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
+        TNT1 A 0 A_FireBullets (5.6, 0, 1, 5, "DoomBulletPuff2_Coop")
+        Goto FireAnim		
+		
 	  Fire64:	
 		TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaFire64")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire64")
-        TNT1 A 0 A_FireBullets (5.6, 0, 1, Random(5,7)*2, "Doom64BulletPuff2", FBF_NORANDOM)
+        TNT1 A 0 A_FireBullets (5.6, 0, 1, Random(7,11)*2, "Doom64BulletPuff2", FBF_NORANDOM) // Doom64 pistol is based on a Desert Eagle, so more damage than PC Doom
         TNT1 A 0 A_PlayWeaponSound("doom64guy/pistol")
         goto Animation64	
 		
 	  VanillaFire64:
         TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire64Vanilla")
-        TNT1 A 0 A_FireBullets (5.6, 0, 1, 5, "Doom64BulletPuff2")
+        TNT1 A 0 A_FireBullets (5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff2", FBF_NORANDOM)
         TNT1 A 0 A_PlayWeaponSound("doom64guy/pistol")
         goto Animation64	  
 		
       CoopFire64:
-        TNT1 A 0 A_FireBullets (5.6, 0, 1, Random(5,7)*2, "Doom64BulletPuff2_Coop", FBF_NORANDOM)
+        TNT1 A 0 A_FireBullets (5.6, 0, 1, Random(7,11)*2, "Doom64BulletPuff2_Coop", FBF_NORANDOM)
         TNT1 A 0 A_PlayWeaponSound("doom64guy/pistol")
         goto Animation64		
         
       CoopFire64Vanilla:
-        TNT1 A 0 A_FireBullets (5.6, 0, 1, 5, "Doom64BulletPuff2_Coop")
+        TNT1 A 0 A_FireBullets (5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff2_Coop", FBF_NORANDOM)
         TNT1 A 0 A_PlayWeaponSound("doom64guy/pistol")
         goto Animation64		
 		
@@ -99,7 +106,7 @@ actor " Pistol " : Weapon// : Pistol  doom 64 pistol fires slightly faster, othe
         TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"TakePistolAmmo")
       FireAnim2:
         TNT1 A 0 A_GunFlash
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed", 1, "RageAnim")
+        TNT1 A 0 A_JumpIfInventory("RuneDoubleFiringSpeed", 1, "RageAnim")
         DPIS B 2 bright
         DPIS C 1 bright
         DPIS CEEDDBB 1
@@ -107,10 +114,19 @@ actor " Pistol " : Weapon// : Pistol  doom 64 pistol fires slightly faster, othe
         Goto Ready
 		
       Animation64:		
+		64PS B 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaAnim64")
+        64PS B 4 BRIGHT A_GunFlash("Flash64")
+        64PS CD 3
+		64PS E 3
+        64PS F 3 A_ReFire
+		64PS B 1
+        Goto Ready	
+		
+	  VanillaAnim64:
         64PS B 4 BRIGHT A_GunFlash("Flash64")
         64PS C 9
         64PS B 3 A_ReFire
-        Goto Ready		
+        Goto Ready	  
 
       RageAnim:
         DPIS BC 1 bright
@@ -122,26 +138,14 @@ actor " Pistol " : Weapon// : Pistol  doom 64 pistol fires slightly faster, othe
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFireVanilla")
 		TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
 		TNT1 A 0 A_FireBullets (5.6, 0, 1, 5, "DoomBulletPuff2")
-      VanillaAnim:
-        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"TakePistolAmmoVanilla")
-      VanillaAnim2:
         DPIS F 6 BRIGHT A_GunFlash
         DPIS G 4
         DPIS H 5 A_ReFire
         Goto Ready
-
-      CoopFireVanilla:
-		TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-		TNT1 A 0 A_FireBullets (5.6, 0, 1, 5, "DoomBulletPuff2_Coop")
-        goto VanillaAnim
-
+        
       TakePistolAmmo:
         TNT1 A 0 A_TakeInventory("Clip",1)
         goto FireAnim2
-
-      TakePistolAmmoVanilla:
-        TNT1 A 0 A_TakeInventory("Clip",1)
-        goto VanillaAnim2
 
       Hold:
         TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"CheckForAmmoHold")
@@ -155,6 +159,7 @@ actor " Pistol " : Weapon// : Pistol  doom 64 pistol fires slightly faster, othe
         Goto FireAnim
 
       CoopHold:
+        TNT1 A 0
         TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
         TNT1 A 0 A_FireBullets (5.6, 0, -1, Random(6,8)*2, "DoomBulletPuff2_Coop", FBF_NORANDOM)
         Goto FireAnim

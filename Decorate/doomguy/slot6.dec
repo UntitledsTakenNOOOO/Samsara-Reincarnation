@@ -2,8 +2,8 @@ actor "Plasma Rifle" : PlasmaRifle // Doom 64 PR fires much slower, but the proj
 {
     Weapon.SlotNumber 6
     +INVENTORY.UNDROPPABLE
-	Inventory.RestrictedTo "DoomguyPlayer"
 	Tag "Plasma Rifle"
+	Inventory.RestrictedTo "DoomguyPlayer"
     States
     {
       Ready:
@@ -61,10 +61,18 @@ actor "Plasma Rifle" : PlasmaRifle // Doom 64 PR fires much slower, but the proj
 		
       Fire64:
         TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire64")
+		TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "Fire64Vanilla")
+        64PR A 0 A_GunFlash("Flash64")
+        64PR I 2 A_FireCustomMissile("Doom64PlasmaBall")
+		64PR J 2
+        TNT1 A 0 A_Refire
+        goto 64Cooldown
+		
+	  Fire64Vanilla:
         64PR A 0 A_GunFlash("Flash64")
         64PR A 5 A_FireCustomMissile("Doom64PlasmaBall")
         TNT1 A 0 A_Refire
-        goto ReadyLoop64		
+        goto ReadyLoop64	  
 
       CoopFire:
         DPLS A 0 A_GunFlash
@@ -85,15 +93,23 @@ actor "Plasma Rifle" : PlasmaRifle // Doom 64 PR fires much slower, but the proj
         goto FireEnd
 		
       CoopFire64:
+		TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "CoopFire64Vanilla")
+        64PR A 0 A_GunFlash("Flash64")
+        64PR I 2 A_FireCustomMissile("Doom64PlasmaBall2")
+		64PR J 2
+        TNT1 A 0 A_Refire
+        goto 64Cooldown	
+		
+	  CoopFire64Vanilla:
         64PR A 0 A_GunFlash("Flash64")
         64PR A 5 A_FireCustomMissile("Doom64PlasmaBall2")
         TNT1 A 0 A_Refire
-        goto ReadyLoop64		
+        goto ReadyLoop64		  
      
       FireEnd:
         TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaCooldown")
         DPLS A 1
-        DPLS D 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed", 1, "RageEnd")
+        DPLS D 0 A_JumpIfInventory("RuneDoubleFiringSpeed", 1, "RageEnd")
         DPLS DEF 1
         DPLS GF 3
         DPLS EDCB 2
@@ -109,6 +125,10 @@ actor "Plasma Rifle" : PlasmaRifle // Doom 64 PR fires much slower, but the proj
       VanillaCooldown:
         DPLS H 20
         goto Ready
+		
+	  64Cooldown:
+		64PR EFGH 5
+		Goto ReadyLoop64
 	
 	  Flash:
 		TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaFlash")
@@ -126,6 +146,9 @@ actor "Plasma Rifle" : PlasmaRifle // Doom 64 PR fires much slower, but the proj
         goto Lightdone		
 		
       Flash64:
+		TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, 2)
+		TNT1 A 4 BRIGHT
+		goto Lightdone
         64RF A 4 Bright
         goto Lightdone		
 
@@ -162,6 +185,7 @@ actor Doom64PlasmaBall : PlasmaBall
     Decal Doom64PlasmaScorch
     RenderStyle Normal
     Alpha 1
+	Speed 32
     Scale 0.75
     +BLOODLESSIMPACT
     SeeSound "doom64guy/plasmaf"
