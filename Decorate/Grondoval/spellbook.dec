@@ -1,0 +1,360 @@
+Actor WTSpellCounter : WTCounter {}
+Actor WTCastingSpell : WTBoolean {}
+Actor "Spellbook" : WTWeapon
+{
+	Weapon.Slotnumber 0
+	Weapon.BobStyle Alpha
+	Weapon.BobRangeX 0.2
+	Weapon.BobRangeY 0.6
+	Weapon.BobSpeed 0.8	
+	Weapon.SelectionOrder 1001
+	+WEAPON.NOALERT
+	+FLOATBOB
+    Inventory.PickupSound "gtwo/megapickup"
+    Inventory.PickupMessage "You got the spell book of wisdom!"
+	Tag "Spell Book"	
+	Inventory.RestrictedTo "GrondovalPlayer"	
+	states
+	{
+	Spawn:
+		PWHF A -1 bright
+		stop
+	Pickup:
+		TNT1 A 0
+		TNT1 A 0 A_GiveInventory("Clip",30)
+		TNT1 A 0 A_GiveInventory("Shell",15)
+		TNT1 A 0 A_GiveInventory("RocketAmmo",5)
+		TNT1 A 1 A_GiveInventory("Cell",30)
+		stop
+	Select:
+		TNT1 A 0 A_TakeInventory("WTWeaponActive",1)
+		TNT1 A 0 A_GiveInventory("WTFistActive",1)
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
+		TNT1 A 1 A_Raise
+		goto Select+1
+	Deselect:
+		TNT1 A 0 A_TakeInventory("WTFistActive",1)
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+		TNT1 A 1 A_Lower
+		goto Deselect+1
+	Ready:
+		TNT1 A 0 A_GunFlash
+	WIdle:
+		WW00 A 0 A_TakeInventory("WTFistAttack",1)
+		WW00 A 1 A_WeaponReady
+		loop
+		
+	Fire:
+		WW00 A 0 A_GiveInventory("WTCastingSpell",1)
+		WW00 A 0 A_GiveInventory("WTFistAttack",1)
+		WW00 A 0 A_JumpIfInventory("WTSpellCounter",7,"CastNukeSpell")
+		WW00 A 0 A_JumpIfInventory("WTSpellCounter",6,"CastFireSpell")
+		WW00 A 0 A_JumpIfInventory("WTSpellCounter",5,"CastFlySpell")
+		WW00 A 0 A_JumpIfInventory("WTSpellCounter",4,"CastArrowSpell")
+		WW00 A 0 A_JumpIfInventory("WTSpellCounter",3,"CastFreezeSpell")
+		WW00 A 0 A_JumpIfInventory("WTSpellCounter",2,"CastVisionSpell")
+		WW00 A 0 A_JumpIfInventory("WTSpellCounter",1,"CastScareSpell")
+		WW00 A 0 A_TakeInventory("WTCastingSpell",1)
+		WW00 A 0 A_TakeInventory("WTFistAttack",1)
+		WW00 A 8 A_Print(" Please select a spell first! ")
+		goto WIdle
+		
+	AltFire:
+		WW00 A 12 ACS_NamedExecuteAlways("SamsaraWitchaven",0,3) //Gives Counter and prints spell info
+		goto WIdle
+		
+	CastFail:
+		WW00 A 0 A_TakeInventory("WTCastingSpell",1)
+		WW00 A 0 A_TakeInventory("WTFistAttack",1)
+		WW00 A 24 A_Print(" You dont have enough ammo to cast this spell! ")
+		goto WIdle
+		
+	CastNukeSpell:
+		WW62 A 1 bright A_JumpIf(ACS_NamedExecuteWithResult("SamsaraWitchaven",5,7) == 0,"CastFail") //Checks if enough ammo. If yes, take the required ammo
+		WW62 ABCDEFGIH 4 bright 
+		WW62 JKLM 2 bright 
+		TNT1 A 0 A_AlertMonsters
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CastNukeSpellCoop")
+		WW62 N 0 A_PlayWeaponSound("gspell/success")
+		WW62 N 2 bright A_FireCustomMissile("WTSpellNukeBomb",0,0,0,0)
+		WW62 O 2
+		goto CastDone
+	CastNukeSpellCoop:
+		WW62 N 0 A_PlayWeaponSound("gspell/success")
+		WW62 N 2 bright A_FireCustomMissile("WTSpellNukeBomb_2",0,0,0,0)
+		WW62 O 2
+		goto CastDone
+	
+	CastFireSpell:
+		WW62 A 1 bright A_JumpIf(ACS_NamedExecuteWithResult("SamsaraWitchaven",5,6) == 0,"CastFail") //Checks if enough ammo. If yes, take the required ammo
+		WW62 ABCDEFGIH 4 bright 
+		WW62 JKLM 2 bright 
+		TNT1 A 0 A_AlertMonsters		
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CastFireSpellCoop")		
+		WW62 N 0 A_PlayWeaponSound("gspell/success")
+		WW62 N 0 A_PlaySoundEx("gspell/fire","voice",0,0) //Extra sound
+		WW62 N 2 A_FireCustomMissile("WTSpellFireBall",0,0,0,6)
+		WW62 O 2
+		goto CastDone
+	CastFireSpellCoop:
+		WW62 N 0 A_PlayWeaponSound("gspell/success")
+		WW62 N 0 A_PlaySoundEx("gspell/fire","voice",0,0) //Extra sound
+		WW62 N 2 A_FireCustomMissile("WTSpellFireBall_2",0,0,0,6)
+		WW62 O 2
+		goto CastDone
+		
+	CastFlySpell:
+		WW65 A 1 bright A_JumpIf(ACS_NamedExecuteWithResult("SamsaraWitchaven",5,5) == 0,"CastFail") //Checks if enough ammo. If yes, take the required ammo		
+		WW65 ABCDEFG 4 bright 		
+		WW65 H 0 A_PlayWeaponSound("gspell/success")	
+		WW65 H 4 bright A_GiveInventory("WTSpellFly",1)
+		WW65 IJ 4 bright 
+		goto CastDone
+	
+	CastArrowSpell:
+		WW62 A 1 bright A_JumpIf(ACS_NamedExecuteWithResult("SamsaraWitchaven",5,4) == 0,"CastFail") //Checks if enough ammo. If yes, take the required ammo
+		WW62 ABCDEFGIH 4 bright 
+		WW62 JKLM 2 bright 
+		TNT1 A 0 A_AlertMonsters		
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CastArrowSpellCoop")				
+		WW62 N 0 A_PlayWeaponSound("gspell/success")
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow",3,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow",-3,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow",6,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow",-6,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow",9,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow",-9,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow",12,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow",-12,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow",15,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow",-15,0,0,6)
+		WW62 N 2
+		WW62 O 2
+		goto CastDone
+	CastArrowSpellCoop:
+		WW62 N 0 A_PlayWeaponSound("gspell/success")
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow_2",3,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow_2",-3,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow_2",6,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow_2",-6,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow_2",9,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow_2",-9,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow_2",12,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow_2",-12,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow_2",15,0,0,6)
+		WW62 N 0 A_FireCustomMissile("WTSpellArrow_2",-15,0,0,6)
+		WW62 N 2
+		WW62 O 2
+		goto CastDone
+
+		
+	CastFreezeSpell:
+		WW63 A 1 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraWitchaven",5,3) == 0,"CastFail") //Checks if enough ammo. If yes, take the required ammo
+		WW63 ABCD 4
+		WW63 EFGHIJ 3
+		TNT1 A 0 A_AlertMonsters		
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CastFreezeSpellCoop")						
+		WW63 K 0 A_PlayWeaponSound("gspell/success")
+		WW63 K 3 A_FireCustomMissile("WTSpellIceBomb",0,0,0,0)
+		WW63 L 3
+		goto CastDone
+	CastFreezeSpellCoop:
+		WW63 K 0 A_PlayWeaponSound("gspell/success")
+		WW63 K 3 A_FireCustomMissile("WTSpellIceBomb_2",0,0,0,0)
+		WW63 L 3
+		goto CastDone
+		
+	CastVisionSpell:
+		WW64 A 1 bright A_JumpIf(ACS_NamedExecuteWithResult("SamsaraWitchaven",5,2) == 0,"CastFail") //Checks if enough ammo. If yes, take the required ammo
+		WW64 ABCDEFG 4 bright 
+		WW64 H 4 bright A_GiveInventory("PowerTorch",1)
+		WW64 IJ 4 bright 
+		goto CastDone
+		
+	CastScareSpell:
+		WW65 A 1 bright A_JumpIf(ACS_NamedExecuteWithResult("SamsaraWitchaven",5,1) == 0,"CastFail") //Checks if enough ammo. If yes, take the required ammo		
+		WW65 ABCDEFG 4 bright 		
+		TNT1 A 0 A_AlertMonsters		
+		WW65 H 4 bright A_GiveInventory("WTSpellScreamer",1)
+		WW65 IJ 4 bright 
+		goto CastDone
+	
+	CastDone:
+		WW00 A 0 A_TakeInventory("WTFistAttack",1)
+		WW00 A 0 A_TakeInventory("WTCastingSpell",1)
+		WW00 A 36
+		goto WIdle
+		
+	// Shows left fist only if not attacking and not being dead
+	Flash:
+	LShow:
+		WW01 A 0 A_JumpIfInventory("WTFistActive",1,1)
+		stop
+		WW01 A 0 A_JumpIfHealthLower(1,"LWait")
+		WW01 A 0 A_JumpIfInventory("WTFistAttack",1,"LWait")
+		WW01 A 1
+		loop
+	LWait:
+		TNT1 A 1
+		goto LShow
+	}
+}
+
+Actor WTSpellNukeBomb
+{
+	PROJECTILE
+	+FORCERADIUSDMG
+	+NOEXTREMEDEATH
+	+NODAMAGETHRUST 
+	+CANNOTPUSH
+	Height 1
+	Radius 1
+	Damage (0)
+	Speed 1
+	DamageType "Nuke"
+	Obituary "$SAMSARA_WITCHAVEN_OB_SLOT_VI_NUKE"
+	States
+	{
+	Spawn:
+		TNT1 A 1
+	Death:
+		TNT1 A 1 A_Explode(10000/2,750,0) //Rest in peace
+		stop
+	}
+}
+
+Actor WTSpellNukeBomb_2 : WTSpellNukeBomb
+{ 
+	Species "Player" 
+	+THRUSPECIES 
+	+DONTHARMCLASS 
+	+DONTHARMSPECIES 
+	+MTHRUSPECIES 
+	States
+	{
+	Death:
+		TNT1 A 1 A_Explode(10000/2,750+random(0,(random(250,550))),0) //Rest in piss
+		stop
+	}
+}
+
+Actor WTSpellFireBall : FastProjectile
+{
+	PROJECTILE
+  //+FORCERADIUSDMG
+	+PIERCEARMOR
+	+FIREDAMAGE
+	Height 9
+	Radius 6
+	Speed 40
+	DamageType "WTRangedFire"
+	Damage (35)
+	Deathsound "gspell/fire"
+	Obituary "$SAMSARA_WITCHAVEN_OB_SLOT_VI_FIRE"
+	states
+	{
+	Spawn:
+		WP61 ABCD 4 bright A_Explode(10,94,1) //The ball explodes constantly, HURTS SHOOTER!
+		goto Spawn+1
+	Death:
+		WP61 E 0 A_ChangeFlag("FORCERADIUSDMG",1)
+		WP61 EEEEE 0 A_SpawnItemEx("WTSpellFireBallSmall",random(-5,5),random(-5,5),random(-5,5),random(-1,1),random(-1,1),random(-1,1),SXF_CLIENTSIDE)
+		WP61 EEEEE 0 A_SpawnItemEx("WTSpellFireSmoke",random(-5,5),random(-5,5),random(-5,5),random(-1,1),random(-1,1),random(-1,1),SXF_CLIENTSIDE)
+		WP61 EEEEEE 1 bright A_Explode(127/Random(2,1),275,1)
+		TNT1 AAAAAAAAAAA 1 A_Explode(80/Random(2,1),160,1)
+		TNT1 A 0 A_ChangeFlag(FORCERADIUSDMG,1)	//Usefull for bossing		
+		TNT1 AA 1 A_Explode(80/Random(2,1),160,1)
+		stop
+	}
+}
+
+Actor WTSpellFireBall_2 : WTSpellFireBall { Species "Player" +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES }
+
+Actor WTSpellFireBallSmall
+{
+	+NOGRAVITY
+	-SOLID
+	+NOINTERACTION
+	+NOBLOCKMAP
+	+ALLOWCLIENTSPAWN
+	+CLIENTSIDEONLY
+	renderstyle translucent
+	alpha 1.0
+	vspeed 1
+	states
+	{
+	Spawn:
+		WP61 AAAABBBBCCCCDDDDAAAABBBB 1 bright A_FadeOut(0.01)
+		stop
+	}
+}
+
+Actor WTSpellFireSmoke
+{
+	+NOGRAVITY
+	-SOLID
+	+NOINTERACTION
+	+NOBLOCKMAP
+	+ALLOWCLIENTSPAWN
+	+CLIENTSIDEONLY
+	renderstyle translucent
+	alpha 1.0
+	vspeed 1
+	states
+	{
+	Spawn:
+		WP61 FGHI 4 bright A_FadeOut(0.1)
+		loop
+	}
+}
+
+Actor WTSpellArrow
+{
+	PROJECTILE
+	+FORCEPAIN
+	+PIERCEARMOR
+	Height 8
+	Radius 5
+	DamageType "WTRanged"
+	Damage ((random(47,66)+Random(Random(4,15),0))*random(2,1))
+	Speed 48
+	Obituary "$SAMSARA_WITCHAVEN_OB_SLOT_VI_ARROW"
+	scale 0.65
+	States
+	{
+	Spawn:
+		WP60 A 8 bright
+		WP60 B 8 bright
+		goto Spawn+1
+	Death:
+		WP60 CDEFG 5 bright
+		stop
+	}
+}
+		
+Actor WTSpellArrow_2 : WTSpellArrow { Species "Player" +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES }
+
+Actor WTSpellIceBomb
+{
+	PROJECTILE
+	+FORCERADIUSDMG
+	+BLOODLESSIMPACT
+	Height 1
+	Radius 1
+	Damage (0)
+	Speed 1
+	DamageType "Ice"
+	Obituary "$SAMSARA_WITCHAVEN_OB_SLOT_VI_ICE"
+	States
+	{
+	Spawn:
+		TNT1 A 1
+	Death:
+		TNT1 A 1 A_Explode(250,650,0,0,1)
+		stop
+	}
+}
+
+Actor WTSpellIceBomb_2 : WTSpellIceBomb { Species "Player" +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES +NODAMAGETHRUST +CANNOTPUSH }
+Actor WTSpellScreamer : PowerFrightener { Powerup.Duration -45 }
+Actor WTSpellFly : PowerFlight { Powerup.Duration -30 }
