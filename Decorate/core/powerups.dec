@@ -52,8 +52,8 @@ actor PartialInvisibility : CustomInventory replaces BlurSphere
 		TNT1 A 1 A_GiveInventory("PowerTranslucency")
 		stop
 	  PickupWitchaven:
-		TNT1 A 0 A_PlaySound("gpickup/invis")
-		TNT1 A 1 A_GiveInventory("BlurSphere")
+		TNT1 A 0 A_PlaySound("gpickup/phial")
+		TNT1 A 1 A_GiveInventory("WTInvisibilityPhial")
 		stop	
 	  PickupJon:
 		TNT1 A 0 A_PlaySound("Jon/FancyItemPick")
@@ -438,6 +438,38 @@ actor QuakePentagram: PowerFakeInvulnerable
     Powerup.Color "FF 20 00", 0.15
 }
 
+actor WTInvisibilityPhial : CustomInventory
+{
+	Tag "Invisibility Potion"
+    inventory.maxamount 10
+	inventory.interhubamount 10
+    inventory.icon "WIN0F0"
+    inventory.usesound "gplayer/drink"
+	inventory.pickupmessage "You got an invisibility potion!"
+	inventory.pickupsound "gpickup/phial"
+	Inventory.RestrictedTo "GrondovalPlayer"
+	+INVENTORY.KEEPDEPLETED
+	+INVENTORY.INVBAR
+	-PICKUP
+	scale 0.5
+	states
+	{
+		Spawn:
+			WIN0 E 12
+			WIN0 E 0 A_ChangeFlag("PICKUP",1)
+			WIN0 E -1 bright
+			stop
+		Use:
+			WIN0 E 0 A_GiveInventory("WTInvisibility",1)
+			stop
+		FailPotion:
+			WIN0 E 0
+			fail
+	}
+}
+
+actor WTInvisibility : PowerInvisibility { Powerup.Duration -30 }
+
 actor QuakePentTimer: Counter { inventory.interhubamount 0 }
 
 actor InvulnTrail
@@ -483,7 +515,8 @@ Actor BioSuit : CustomInventory replaces RadSuit
 			TNT1 A 0 A_JumpIfInventory("Hexen2Class", 1, "PickupHexen2")
 	        TNT1 A 0 A_JumpIfInventory("Doom64GuyClass", 1, "PickupDoom64")
 			TNT1 A 0 A_JumpIfInventory("KatarnClass",1,"PickupKatarn")
-			TNT1 A 1 A_JumpIfInventory("BittermanClass",1,"PickupBitterman")
+			TNT1 A 0 A_JumpIfInventory("WitchavenClass",1,"PickupWitchaven")
+			TNT1 A 0 A_JumpIfInventory("BittermanClass",1,"PickupBitterman")
 			TNT1 A 0 A_PlaySound("antisterileget", CHAN_ITEM)
 			TNT1 A 0 A_GiveInventory("BioSuitPowerup")
 			Stop
@@ -506,6 +539,11 @@ Actor BioSuit : CustomInventory replaces RadSuit
 	  PickupKatarn:
 			TNT1 A 0 A_PlaySound("antisterileget", CHAN_ITEM)
 			TNT1 A 0 A_GiveInventory("BioSuitPowerupKatarn")
+			stop
+	  PickupWitchaven:
+			TNT1 A 0 A_PlaySound("gpickup/phial")		
+			TNT1 A 0 A_GiveInventory("WTFireProofPhial")
+			TNT1 A 0 A_GiveInventory("BioSuitPowerup")
 			stop
 	  PickupBitterman:
 			TNT1 A 0 A_PlaySound("Q2Misc/Pickup")
@@ -565,6 +603,59 @@ actor PortEnviSuit : PowerupGiver
 		MASK A -1
 		Stop
 	}
+}
+
+actor WTFireProofPhial : CustomInventory
+{
+	Tag "Fire Immunity Potion"
+    inventory.maxamount 10
+	inventory.interhubamount 10
+    inventory.icon "WIN0D0"
+    inventory.usesound "gplayer/drink"
+	inventory.pickupmessage "You got a fire immunity potion!"
+	inventory.pickupsound "gpickup/phial"
+	Inventory.RestrictedTo "GrondovalPlayer"
+	+INVENTORY.KEEPDEPLETED
+	+INVENTORY.INVBAR
+	-PICKUP
+	scale 0.5
+	states
+	{
+		Spawn:
+			WIN0 C 12
+			WIN0 C 0 A_ChangeFlag("PICKUP",1)
+			WIN0 C -1 bright
+			stop
+		Use:
+			WIN0 C 0 A_GiveInventory("WTFireProof",1)
+			stop
+		FailPotion:
+			WIN0 C 0
+			fail
+	}
+}
+
+actor WTFireProof : PowerProtection 
+{ 
+	Powerup.Duration -30 
+	Powerup.Color "OrangeRed", 0.25
+	DamageFactor "Fire", 0.0
+	DamageFactor "TotenkopfFire", 0.0
+	DamageFactor "PhosFireCoop", 0.0
+	DamageFactor "PGFire", 0.0
+	DamageFactor "HexGreenFire", 0.0
+	DamageFactor "QuakeFire", 0.0
+	DamageFactor "WTRangedFire", 0.0
+	DamageFactor "FireExplosive", 0.0
+	DamageFactor "WolfenFlamethrower", 0.0
+	DamageFactor "MarathonPlasma", 0.0
+	DamageFactor "RottFire", 0.0
+	DamageFactor "Hexen2Fire", 0.0
+	DamageFactor "SWFlame", 0.0
+    DamageFactor "SWFlame2", 0.0
+    DamageFactor "SWFlame2Coop", 0.0
+	DamageFactor "SWFlame3", 0.0
+	DamageFactor "PSFire", 0.0
 }
 
 actor Visor : CustomInventory replaces Infrared
