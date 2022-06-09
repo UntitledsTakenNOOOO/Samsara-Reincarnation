@@ -1,5 +1,7 @@
 actor UsingSMG: Boolean {}
 
+actor SMGClicked: Counter {}
+
 actor "KKV-7 SMG Flechette" : Weapon// replaces SuperShotgun
 {
     Weapon.BobRangeX 0
@@ -56,6 +58,7 @@ actor "KKV-7 SMG Flechette" : Weapon// replaces SuperShotgun
         goto Ready2
 
       Deselect:
+        TNT1 A 0 A_TakeInventory("SMGClicked")
         TNT1 A 0 A_TakeInventory("MarathonCasingSound")
         TNT1 A 0 A_Lower
         HSMG A 1 A_Lower
@@ -79,13 +82,15 @@ actor "KKV-7 SMG Flechette" : Weapon// replaces SuperShotgun
         //TNT1 A 0 A_TakeInventory("UsingMarathonInstagib",1)
 
         TNT1 A 0 A_GiveInventory("UsingSMG",1)
+        TNT1 A 0 A_TakeInventory("SMGClicked")
+        TNT1 A 0 A_TakeInventory("MarathonCasingSound")
         TNT1 A 0 A_Raise
         HSMG A 1 A_Raise
         LOOP
 
       Fire:
         TNT1 A 0 A_JumpIfInventory("SmgBullet",1,1)
-        goto DryFire
+        goto DryFireCheck
         TNT1 A 0 A_AlertMonsters
         TNT1 A 0 A_GiveInventory("MarathonCasingSound")
         TNT1 A 0 A_PlayWeaponSound("marathon/smg/fire")
@@ -112,10 +117,14 @@ actor "KKV-7 SMG Flechette" : Weapon// replaces SuperShotgun
         TNT1 AA 0 A_FireCustomMissile("MarathonSMGBulletCoop",random(-10,10)/10.0,1,0,0,0,random(-10,10)/10.0)
         goto FireContinue
 
-      DryFire:
+      DryFireCheck:
         TNT1 A 0 A_TakeInventory("MarathonCasingSound")
         TNT1 A 0 A_JumpIfInventory("Clip",1,"ReloadAnim")
-        HSMG A 3 A_PlaySound("marathon/rifle/dryfire")
+      DryFire:
+        TNT1 A 0 A_TakeInventory("MarathonCasingSound")
+        TNT1 A 0 A_JumpIfInventory("SMGClicked",1,"Ready")
+        TNT1 A 0 A_GiveInventory("SMGClicked",3)
+        TNT1 A 0 A_PlaySound("marathon/rifle/dryfire")
         goto Ready
     }
 }
