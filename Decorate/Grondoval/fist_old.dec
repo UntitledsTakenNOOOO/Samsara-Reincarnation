@@ -1,14 +1,20 @@
+Actor WTSwordUpgrade : WTBoolean {}
+
 Actor WTFistActive : WTBoolean {}
 Actor WTFistAttack : WTBoolean {}
-Actor "  Fists9  " : WTWeapon
+Actor Witchaven_Fists : WTWeapon
 {
 	Weapon.Slotnumber 0
 	Weapon.SelectionOrder 4000
+	Weapon.BobStyle Alpha
+	Weapon.BobRangeX 0.2
+	Weapon.BobRangeY 0.6
+	Weapon.BobSpeed 0.8	
 	+WEAPON.MELEEWEAPON
 	+WEAPON.NOALERT
 	+WEAPON.WIMPY_WEAPON
 	+INVENTORY.UNDROPPABLE
-	
+	Tag "Ye Fists!"
 	States
 	{
 	Spawn:
@@ -28,7 +34,7 @@ Actor "  Fists9  " : WTWeapon
 		TNT1 A 0 A_GunFlash
 	WIdle:
 		WW00 A 0 A_TakeInventory("WTFistAttack",1)
-		WW00 A 0 A_JumpIfHealthLower(1,"WGrondovalIsKill")
+		WW00 A 0 //A_JumpIfHealthLower(1,"WGrondovalIsKill")
 		WW00 A 1 A_WeaponReady
 		loop
 		
@@ -54,7 +60,7 @@ Actor "  Fists9  " : WTWeapon
 		WW00 BCDE 2 A_JumpIfHealthLower(1,"WGrondovalIsKill")
 		WW00 A 0 A_PlayWeaponSound("gfist/swing")
 		WW00 F 4 A_FireCustomMissile("WTFistProjectile",0,0,0,8)
-		WW00 EDCBA 3 A_JumpIfHealthLower(1,"WGrondovalIsKill")
+		WW00 EDCBA 3 //A_JumpIfHealthLower(1,"WGrondovalIsKill")
 		goto WIdle
 		
 	// Left fist
@@ -63,7 +69,7 @@ Actor "  Fists9  " : WTWeapon
 		WW01 BCDE 2 A_JumpIfHealthLower(1,"WGrondovalIsKill")
 		WW01 A 0 A_PlayWeaponSound("gfist/swing")
 		WW01 F 4 A_FireCustomMissile("WTFistProjectile",0,0,0,8)
-		WW01 EDCBA 3 A_JumpIfHealthLower(1,"WGrondovalIsKill")
+		WW01 EDCBA 3 //A_JumpIfHealthLower(1,"WGrondovalIsKill")
 		goto WIdle
 		
 	// Shows left fist only if not attacking and not being dead
@@ -83,8 +89,8 @@ Actor "  Fists9  " : WTWeapon
 
 Actor WTFistProjectile : WTMeleeProjectile
 {
-	Speed 35
-	Damage (random(12,18))
+	Speed 64
+	Damage (random(10,15)) // 3 to 15? ew, nah
 	Obituary "$SAMSARA_WITCHAVEN_OB_FISTS"
 	States
 	{
@@ -96,6 +102,7 @@ Actor WTFistProjectile : WTMeleeProjectile
 		TNT1 A 1 A_GiveToTarget("WTFistsHurt",1)
 		stop
 	XDeath:
+		TNT1 A 0 A_GiveInventory("WTGoreSpawner",1,AAPTR_TRACER)
 		TNT1 A 1 A_PlaySoundEx("gfist/hit","body",0,0)
 		stop
 	}
@@ -116,4 +123,36 @@ Actor WTFistsHurt : WTACSTrigger
 		TNT1 A 1 A_Explode((1),7,1)//ACS_NamedExecuteAlways("SamsaraWitchaven",0,2) //Drains 1 HP
 		stop
 	}
+}
+
+Actor WTDaggerProjectile : WTMeleeProjectile
+{
+	Speed 64
+	+FORCEPAIN
+	Damage (random(30,45)) // all damage values, except the fireballs, icicles, arrows, and magic spells, are there Witch 1 values *3. Enchantments do double what the normal attacks do.
+	Obituary "$SAMSARA_WITCHAVEN_OB_FISTS"
+}
+
+Actor WTDaggerProjectileWeak : WTMeleeProjectile
+{
+	Speed 64
+	+FORCEPAIN
+	Damage (random(15,24))
+	Obituary "$SAMSARA_WITCHAVEN_OB_FISTS"
+}
+
+Actor WTMegaDaggerProjectile : WTMegaMeleeProjectile
+{
+	Speed 64
+	+FORCEPAIN
+	Damage (random(60,90))
+	Obituary "$SAMSARA_WITCHAVEN_OB_FISTS"
+}
+
+Actor WTMegaDaggerProjectileWeak : WTMegaMeleeProjectile
+{
+	Speed 64
+	+FORCEPAIN
+	Damage (random(30,48))
+	Obituary "$SAMSARA_WITCHAVEN_OB_FISTS"
 }
