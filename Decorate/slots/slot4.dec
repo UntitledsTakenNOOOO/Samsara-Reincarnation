@@ -176,6 +176,48 @@ actor SamsaraSlotFourDrop: SamsaraSlotFourPickup
   }
 }
 
+actor SamsaraSlotFourPickupStanding: SamsaraSlotFourPickup
+{
+    ConversationID 189
+    States
+    {
+      IWasDropped:
+        TNT1 A 0 A_SpawnItemEx("SamsaraSlotFourDropStanding", 0,0,0, momx,momy,momz, 0, SXF_ABSOLUTEMOMENTUM)
+        stop
+
+		Strifeguy:		SGRF B 35 A_ChangeFlag("FLOATBOB", 0)   goto SpawnLoop
+    }
+}
+
+actor SamsaraSlotFourDropStanding: SamsaraSlotFourPickupStanding
+{
+  States
+  {
+    Spawn:
+      TNT1 A 0
+      goto SpawnLoop
+    Pickup:
+	  TNT1 A 0 A_JumpIfInventory("DoomGuyClass", 1, "CheckDoom")	 
+	  TNT1 A 0 A_JumpIfInventory("StrifeClass", 1, "CheckStrife")
+	  TNT1 A 0 A_JumpIf((ACS_NamedExecuteWithResult("SamsaraGiveWeapon", 4, 1) & 1) == 1, "PickupSuccess")
+      goto PickupFailure
+	CheckDoom:
+	  TNT1 A 0 A_GiveInventory("DGHasChaingun",1)
+	  TNT1 A 0 A_JumpIf((ACS_NamedExecuteWithResult("SamsaraGiveWeapon", 4, 1) & 1) == 1, "PickupSuccess")
+      goto PickupFailure
+	CheckStrife:
+	  TNT1 A 0 A_JumpIfInventory("StrifeGuyInStrife", 1, "StrifeCheck")
+	  TNT1 A 0 A_JumpIfInventory("GotWeapon4", 1, "StrifeCheck")
+	  TNT1 A 0 A_GiveInventory("StrifeSigilPiece",1)
+	  TNT1 A 0 A_GiveInventory(" Sigil ", 1)
+	  TNT1 A 0 A_TakeInventory("StrifeSigilPiecePreferred",5)
+	  TNT1 A 0 A_GiveInventory("StrifeSigilPiecePreferred", CallACS("StrifeSigilPreferred"))
+	StrifeCheck:	
+      TNT1 A 0 A_JumpIf((ACS_NamedExecuteWithResult("SamsaraGiveWeapon", 4, 1) & 1) == 1, "PickupSuccess")
+      goto PickupFailure 
+  }
+}
+
 actor SamsaraMinigunReplace : SamsaraSlotFourPickup replaces Minigun 
 {
 	States
@@ -200,7 +242,7 @@ actor SamsaraMinigunReplace : SamsaraSlotFourPickup replaces Minigun
 actor SamsaraSlotFour_Hexen:   RandomSpawner replaces CWeapStaff { DropItem "SamsaraSlotFourPickup" }
 actor SamsaraSlotFour_Heretic: RandomSpawner replaces Blaster { DropItem "SamsaraSlotFourPickup" }
 actor SamsaraSlotFour_Strife1: RandomSpawner replaces AssaultGun { DropItem "SamsaraSlotFourPickup" }
-actor SamsaraSlotFour_Strife2: RandomSpawner replaces AssaultGunStanding { DropItem "SamsaraSlotFourPickup" }
+actor SamsaraSlotFour_Strife2: RandomSpawner replaces AssaultGunStanding { DropItem "SamsaraSlotFourPickupStanding" }
 actor SamsaraSlotFour_Chex replaces RapidZorcher 
 {
 	States
