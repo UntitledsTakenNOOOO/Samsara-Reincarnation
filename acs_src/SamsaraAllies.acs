@@ -1,12 +1,37 @@
 int activetokenselectors[CLASSCOUNT];
 int pickrandos = 0;
 
-#define MISC_MAX_GAME_TYPES 9
-
-str miscCharGameTypesStr[9] =
-		{	"samsara_misccharspawn_duke3d", "samsara_misccharspawn_blood", "samsara_misccharspawn_strife", "samsara_misccharspawn_rmr", 
-			"samsara_misccharspawn_halflife", "samsara_misccharspawn_sw", "samsara_misccharspawn_rr", "samsara_misccharspawn_quake2", 
-			"samsara_misccharspawn_hexen2" };
+str miscCharGameTypesStr[CLASSCOUNT] =
+{	
+	"", 
+	"", 
+	"", 
+	"", 
+	"",
+	"samsara_misccharspawn_duke3d", 
+	"",
+	"",
+	"",
+	"",
+	"samsara_misccharspawn_blood", 
+	"samsara_misccharspawn_strife",
+	"",
+	"",
+	"samsara_misccharspawn_rmr", 
+	"",
+	"",
+	"",
+	"",
+	"samsara_misccharspawn_halflife", 
+	"samsara_misccharspawn_sw", 
+	"",
+	"",
+	"samsara_misccharspawn_rr", 
+	"samsara_misccharspawn_quake2", 
+	"samsara_misccharspawn_hexen2",
+	"",
+	""
+};
 			
 
 Script "DetermineValidSpawn" (void)
@@ -78,11 +103,16 @@ script "HeroOnMap" Open
 		{
 			for(int b = 0; b < CLASSCOUNT; b++)
 			{
-				if(PlayerClass(p) == b)
+				if(PlayerClass(p) == b && !setBasedSpawns)
 				{
 					activetokenselectors[b] = 1;
-					if(b == 5 || b == 10 || b == 11 || b == 14 || b == 19 || b == 20 || b == 23 || b == 24 || b == 25 || setBasedSpawns == 1 )
+					if(b == 5 || b == 10 || b == 11 || b == 14 || b == 19 || b == 20 || b == 23 || b == 24 || b == 25)
 						pickrandos = 1;
+				}
+				else if(GetCvar(miscCharGameTypesStr[b]) == 1 && setBasedSpawns)
+				{
+					activetokenselectors[b] = 1;
+					pickrandos = 1;
 				}
 			}
 		}
@@ -99,169 +129,81 @@ script "HeroOnMap" Open
 Script "Samsara2689" (void)  //2689
 {
 	int randomAngle = random(0,256);
+	int randomPick = random(0,256);
 	SetActorAngle(0,randomAngle<<8);
 	ThrustThing(randomAngle,random(16,32),0,0);
 	Delay(1);
 	
-	switch(GetCvar("samsara_misccharacterspawnmode"))
+	while(true)
 	{
-		case 0:
-			while(true)
-			{
-				int a, b;
-				
-				if(activetokenselectors[a] == true)
-				{
-					switch(a)
-					{
-						default:
-							break;
-						case 5:
-							SpawnSpotFacing("Duke3DBabe", 0, 0);
-							break;
-						case 10:
-							if(random(0,2) <= 1)
-								SpawnSpotFacing("BloodInnocentMime", 0, 0);	
-							else
-								SpawnSpotFacing("BloodInnocentMoron", 0, 0);
-							break;
-						case 11:
-							SpawnSpotFacing("StrifePeasant", 0, 0);	
-							break;
-						case 14:
-							if(random(0,2) <= 1)
-								SpawnSpotFacing("RMRLDFGuard", 0, 0);
-							else
-								SpawnSpotFacing("RMRLDFMilitia", 0, 0);
-							break;
-						case 19:
-							if(random(0,2) <= 1)
-								SpawnSpotFacing("HLScientist", 0, 0);
-							else
-								SpawnSpotFacing("HLSecurityGuard", 0, 0);
-							break;
-						case 20:
-							if(random(0,2) == 0 && onLiquid(0) == 1)
-								SpawnSpotFacing("SW_WashGirl", 0, 0);
-							else if(random(0,9)<=3)
-								SpawnSpotFacing("SW_MechanicGirl", 0, 0);
-							else if(random(0,9)<=3)
-								SpawnSpotFacing("SW_CarGirl", 0, 0);
-							else if(random(0,9)<=3)
-								SpawnSpotFacing("SW_MoonGirl", 0, 0);
-							else
-								SpawnSpotFacing("SWPruneGirlSpawner", 0, 0);
-							break;
-						case 23:
-							if(random(0,1) == 1)
-								SpawnSpotFacing("RedneckRampage_Chicken", 0, 0);
-							else if(random(0,1) == 1)
-								SpawnSpotFacing("RedneckRampage_Pig", 0, 0);
-							else if(random(0,1) == 1)
-								SpawnSpotFacing("RedneckRampage_Cow", 0, 0);
-							else
-								SpawnSpotFacing("RRBanjoConcert", 0, 0);
-							break;
-						case 24:
-							SpawnSpotFacing("Q2Insane", 0, 0);
-							break;
-						case 25:
-							SpawnSpotFacing("Hexen2_Sheep", 0, 0);
-							break;
-					}
-					Thing_Remove(0);
-					terminate;
-				}
-				else
-					a = random(0,CLASSCOUNT);
-				}
-			break;
-		case 1:
+		int a, b;
+		
+		if(activetokenselectors[a] == true)
 		{
-			int maxSetsEnabled = 0;
-			int activeSets = 0;
-			int pickFromSets[MISC_MAX_GAME_TYPES]; 
-			int amountOfGameTypes[MISC_MAX_GAME_TYPES];
-			int bitindex, miscCharacterA, miscCharacterB, miscCharacterP;
-			int setselect;
-			
-			for(miscCharacterB = 0; miscCharacterB < MISC_MAX_GAME_TYPES; miscCharacterB++)
+			switch(a)
 			{
-				if(GetCvar(miscCharGameTypesStr[miscCharacterB]))
-				{
-					bitindex = pow(2,miscCharacterB);
-					if(!(activesets & bitindex))
-					{
-						activesets += bitindex;
-						pickFromSets[maxSetsEnabled] = miscCharacterB;
-						maxSetsEnabled++;
-					}
-					
-					if(PlayerClass(miscCharacterP) == b && PlayerInGame(miscCharacterP))
-					{
-					switch(miscCharacterB)
-					{
-						default: break;
-						case 0:
-							SpawnSpotFacing("Duke3DBabe", 0, 0);
-							break;
-						case 1:
-							if(random(0,2) <= 1)
-								SpawnSpotFacing("BloodInnocentMime", 0, 0);	
-							else
-								SpawnSpotFacing("BloodInnocentMoron", 0, 0);
-							break;
-						case 2:
-							SpawnSpotFacing("StrifePeasant", 0, 0);	
-							break;
-						case 3:
-							if(random(0,2) <= 1)
-								SpawnSpotFacing("RMRLDFGuard", 0, 0);
-							else
-								SpawnSpotFacing("RMRLDFMilitia", 0, 0);
-							break;
-						case 4:
-							if(random(0,2) <= 1)
-								SpawnSpotFacing("HLScientist", 0, 0);
-							else
-								SpawnSpotFacing("HLSecurityGuard", 0, 0);
-							break;
-						case 5:
-							if(random(0,2) == 0 && onLiquid(0) == 1)
-								SpawnSpotFacing("SW_WashGirl", 0, 0);
-							else if(random(0,9)<=3)
-								SpawnSpotFacing("SW_MechanicGirl", 0, 0);
-							else if(random(0,9)<=3)
-								SpawnSpotFacing("SW_CarGirl", 0, 0);
-							else if(random(0,9)<=3)
-								SpawnSpotFacing("SW_MoonGirl", 0, 0);
-							else
-								SpawnSpotFacing("SWPruneGirlSpawner", 0, 0);
-							break;
-						case 6:
-							if(random(0,1) == 1)
-								SpawnSpotFacing("RedneckRampage_Chicken", 0, 0);
-							else if(random(0,1) == 1)
-								SpawnSpotFacing("RedneckRampage_Pig", 0, 0);
-							else if(random(0,1) == 1)
-								SpawnSpotFacing("RedneckRampage_Cow", 0, 0);
-							else
-								SpawnSpotFacing("RRBanjoConcert", 0, 0);
-							break;
-						case 7:
-							SpawnSpotFacing("Q2Insane", 0, 0);
-							break;
-						case 8:
-							SpawnSpotFacing("Hexen2_Sheep", 0, 0);
-							break;
-					}
-					}
-					Thing_Remove(0);
-					terminate;
-				}
+				default:
+					break;
+				case 5:
+					SpawnSpotFacing("Duke3DBabe", 0, 0);
+					break;
+				case 10:
+					if(random(0,2) <= 1)
+						SpawnSpotFacing("BloodInnocentMime", 0, 0);	
+					else
+						SpawnSpotFacing("BloodInnocentMoron", 0, 0);
+					break;
+				case 11:
+					SpawnSpotFacing("StrifePeasant", 0, 0);	
+					break;
+				case 14:
+					if(random(0,2) <= 1)
+						SpawnSpotFacing("RMRLDFGuard", 0, 0);
+					else
+						SpawnSpotFacing("RMRLDFMilitia", 0, 0);
+					break;
+				case 19:
+					if(random(0,2) <= 1)
+						SpawnSpotFacing("HLScientist", 0, 0);
+					else
+						SpawnSpotFacing("HLSecurityGuard", 0, 0);
+					break;
+				case 20:
+					if(random(0,2) == 0 && onLiquid(0) == 1)
+						SpawnSpotFacing("SW_WashGirl", 0, 0);
+					else if(randompick<=24)
+						SpawnSpotFacing("SW_MechanicGirl", 0, 0);
+					else if(randompick<=48)
+						SpawnSpotFacing("SW_CarGirl", 0, 0);
+					else if(randompick<=72)
+						SpawnSpotFacing("SW_MoonGirl", 0, 0);
+					else if(randompick<=160)
+						SpawnSpotFacing("SW_Rabbit", 0, 0);
+					else
+						SpawnSpotFacing("SWPruneGirlSpawner", 0, 0);
+					break;
+				case 23:
+					if(random(0,1) == 1)
+						SpawnSpotFacing("RedneckRampage_Chicken", 0, 0);
+					else if(random(0,1) == 1)
+						SpawnSpotFacing("RedneckRampage_Pig", 0, 0);
+					else if(random(0,1) == 1)
+						SpawnSpotFacing("RedneckRampage_Cow", 0, 0);
+					else
+						SpawnSpotFacing("RRBanjoConcert", 0, 0);
+					break;
+				case 24:
+					SpawnSpotFacing("Q2Insane", 0, 0);
+					break;
+				case 25:
+					SpawnSpotFacing("Hexen2_Sheep", 0, 0);
+					break;
 			}
+			Thing_Remove(0);
+			terminate;
 		}
-		break;
+		else
+			a = random(0,CLASSCOUNT);
 	}
 }
 

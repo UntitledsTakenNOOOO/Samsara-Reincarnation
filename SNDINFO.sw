@@ -436,3 +436,9 @@ LoWang/Eww4		SPBOSS02
 LoWang/Eww5		SPBOSS03
 LoWang/Eww6		SPBOSS04
 LoWang/Eww7		SPBOSS05
+
+$random	sw/rabbit/die	{ sw/rabbit/die1 sw/rabbit/die2 sw/rabbit/die3 }
+sw/rabbit/die1		"Sounds/ShadowWarrior/Randoms/SW_RABDIE1.wav"
+sw/rabbit/die2		"Sounds/ShadowWarrior/Randoms/SW_RABDIE2.wav"
+sw/rabbit/die3		"Sounds/ShadowWarrior/Randoms/SW_RABDIE3.wav"
+sw/rabbit/screw		"Sounds/ShadowWarrior/Randoms/SW_RABATK1.wav"

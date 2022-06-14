@@ -414,3 +414,52 @@ Script "SW_FireRocketLauncher" (int mode)
 	}
 	SetResultValue(1);
 }
+
+Script "SW_RabbitGrowUp" (int female)
+{
+	if(female == 1)
+		GiveInventory("SWRabbitFemale",1);
+
+	int rabbitgrowthcounter = 0;
+	int growth = 0;
+	while(ClassifyActor(0) & ACTOR_ALIVE)
+	{
+		if(growth >= 64 && rabbitgrowthcounter < 60 && GetActorClass(0) != "SW_RabbitFemaleMature")
+		{
+			growth = 0;
+			rabbitgrowthcounter++;
+			SetActorProperty(0,APROP_ScaleX,0.25+(0.01*rabbitgrowthcounter));
+			SetActorProperty(0,APROP_ScaleY,0.25+(0.01*rabbitgrowthcounter));
+		}
+		if(rabbitgrowthcounter >= 60)
+			GiveInventory("SWRabbitMature",1);
+		if(GetActorClass(0) == "SW_RabbitMale" && CheckInventory("SWRabbitMature") && !CheckInventory("SWRabbitScrewing"))
+		{
+			GiveInventory("SWRabbitScrew",1);
+		}
+		Delay(1);
+		growth++;
+	}
+}
+
+Script "SW_RabbitScrew" (void)
+{	
+	if(CheckInventory("SWRabbitScrewing") || GetActorClass(0) != "SW_RabbitMale")
+		terminate;
+		
+	GiveInventory("SWRabbitScrewing",1);
+	int rabbitX = GetActorX(0);
+	int rabbitY = GetActorY(0);
+	int rabbitZ = GetActorZ(0);
+	int rabbitAngle = GetActorAngle(0);
+	int femaleTid = UniqueTid();
+	
+	SpawnForced("SW_RabbitFemaleMature",rabbitX+(cos(rabbitAngle)*12),rabbitY+(sin(rabbitAngle)*12),rabbitZ,femaleTid);
+	SetActorAngle(femaleTid,rabbitAngle);
+	SetActorState(0,"Screw",1);
+	SetActorState(femaleTid,"Screw",1);
+	
+	Delay(35*random(10,15));
+	if(ClassifyActor(femaleTid) & ACTOR_ALIVE)
+		GiveActorInventory(femaleTid,"SWRabbitBirth",1);
+}
