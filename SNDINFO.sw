@@ -420,3 +420,19 @@ sw/cargirl/talk1		"Sounds/ShadowWarrior/Randoms/SW_LANI049.wav"
 sw/cargirl/talk2		"Sounds/ShadowWarrior/Randoms/SW_LANI051.wav"
 sw/cargirl/talk3		"Sounds/ShadowWarrior/Randoms/SW_LANI052.wav"
 sw/cargirl/talk4		"Sounds/ShadowWarrior/Randoms/SW_LANI054.wav"
+
+$random sw/moongirl/talk { sw/moongirl/talk1 sw/moongirl/talk2 sw/moongirl/talk3 }
+sw/moongirl/talk1		"Sounds/ShadowWarrior/Randoms/SW_LANI063.wav"
+sw/moongirl/talk2		"Sounds/ShadowWarrior/Randoms/SW_LANI065.wav"
+sw/moongirl/talk3		"Sounds/ShadowWarrior/Randoms/SW_LANI066.wav"
+
+sw/moongirl/gift		"Sounds/ShadowWarrior/Randoms/SW_LANI060.wav"
+
+$Random	LoWang/Eww { LoWang/Eww1 LoWang/Eww2 LoWang/Eww3 LoWang/Eww4 LoWang/Eww5 LoWang/Eww6 LoWang/Eww7 }
+LoWang/Eww1		JG45067
+LoWang/Eww2		SPBOSS00
+LoWang/Eww3		SPBOSS01
+LoWang/Eww4		SPBOSS02
+LoWang/Eww5		SPBOSS03
+LoWang/Eww6		SPBOSS04
+LoWang/Eww7		SPBOSS05
