@@ -777,3 +777,77 @@ Script "RottExcalibatThrow" (void)
 	ThrustThingZ(0,random(32,64),0,1);
 	ThrustThing(angle>>8,random(32,64),0,0);
 }
+
+Script "RoTTBladeGenerate" (void)
+{
+	int myPosX = GetActorX(0);
+	int myPosY = GetActorY(0);
+	int myPosZ = GetActorZ(0);
+	int bladeTid = UniqueTid();
+	int bladeTid2 = UniqueTid();
+	int bladeAngle = 0.25*random(1,4);
+	int bladedistance = 48;
+	int bladesCanFill = 0;
+	int bladeDirection = 1-(2*random(0,1));
+	int querydist = 0;
+	ACS_NamedExecuteWithResult("RoTTBladeMove",bladeDirection);
+	SetActorAngle(0,bladeAngle);;
+	for(int a = 1; a <=4; a++)
+	{	
+		if(random(0,4) > 3)
+			break;
+			
+		if(Spawn("RoTTBlades2", myPosX + (cos(bladeAngle)*bladedistance*a), myPosY + (sin(bladeAngle)*bladedistance*a), myPosZ, bladeTid2))
+		{
+			SetPointerExt(AAPTR_Master,0,bladeTid2);
+			SetActivator(bladeTid2);
+			Thing_ChangeTid(bladeTid2,0);
+			if(onLiquid(0) > 0)
+			{
+				Thing_Remove(bladeTid2);
+				break;
+			}
+			while(Warp(0,8.0,0,0,0,WARPF_TESTONLY) && querydist <= 64)
+			{
+				querydist++;
+				if(Warp(0,bladedistance*1.0,0,0,0,WARPF_TESTONLY) || Warp(0,-bladedistance*1.0,0,0,0,WARPF_TESTONLY))
+				{
+					bladesCanFill = 1;
+					break;
+				}
+			}
+			querydist = 0;
+			while(Warp(0,-8.0,0,0,0,WARPF_TESTONLY) && querydist <= 64)
+			{
+				querydist++;
+				if(Warp(0,bladedistance*1.0,0,0,0,WARPF_TESTONLY) || Warp(0,-bladedistance*1.0,0,0,0,WARPF_TESTONLY))
+				{
+					bladesCanFill = 1;
+					break;
+				}
+			}
+			if(bladesCanFill == 0)
+				Thing_Remove(0);
+			else if(random(0,2) == 1)
+				ACS_NamedExecuteWithResult("RoTTBladeMove",bladeDirection);
+		}
+		
+		if(a > 0)
+			a = -a - 1;
+		else
+			a = -a;
+	}
+	Thing_ChangeTid(bladeTid,0);
+}
+
+Script "RoTTBladeMove" (int dir)
+{
+	Delay(15);
+	while(ClassifyActor(0) > 1)
+	{
+		if(!Warp(0,dir*4.0,0,0,0,WARPF_INTERPOLATE))
+			dir*=-1;
+			
+		Delay(1);
+	}
+}

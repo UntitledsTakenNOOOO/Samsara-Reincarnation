@@ -11,7 +11,7 @@ str miscCharGameTypesStr[CLASSCOUNT] =
 	"samsara_misccharspawn_duke3d", 
 	"",
 	"",
-	"",
+	"samsara_misccharspawn_rott",
 	"",
 	"samsara_misccharspawn_blood", 
 	"samsara_misccharspawn_strife",
@@ -106,7 +106,7 @@ script "HeroOnMap" Open
 				if(PlayerClass(p) == b && !setBasedSpawns)
 				{
 					activetokenselectors[b] = 1;
-					if(b == 5 || b == 10 || b == 11 || b == 14 || b == 19 || b == 20 || b == 22 || b == 23 || b == 24 || b == 25)
+					if(b == 5 || b == 8 || b == 10 || b == 11 || b == 14 || b == 19 || b == 20 || b == 22 || b == 23 || b == 24 || b == 25)
 						pickrandos = 1;
 				}
 				else if(GetCvar(miscCharGameTypesStr[b]) == 1 && setBasedSpawns)
@@ -128,13 +128,18 @@ script "HeroOnMap" Open
 
 Script "Samsara2689" (void)  //2689
 {
+	int myPosX = GetActorX(0);
+	int myPosY = GetActorY(0);
+	int myPosZ = GetActorZ(0);
 	int randomAngle = random(0,256);
 	int randomPick = random(0,256);
 	SetActorAngle(0,randomAngle<<8);
 	ThrustThing(randomAngle,random(16,32),0,0);
 	Delay(1);
-	
-	while(true)
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0,myTid);
+	int maxAttempts = 0;
+	while(maxAttempts <= 100)
 	{
 		int a, b;
 		
@@ -146,6 +151,19 @@ Script "Samsara2689" (void)  //2689
 					break;
 				case 5:
 					SpawnSpotFacing("Duke3DBabe", 0, 0);
+					break;
+				case 8:
+					if(onLiquid(0) > 0)
+					{
+						a = random(0,CLASSCOUNT);
+						continue;
+					}
+					else if(randompick <= 96)
+						Spawn("RoTTBlades", myPosX, myPosY, myPosZ, 0);
+					else if(randompick <= 188)
+						Spawn("RoTTFireJet", myPosX, myPosY, myPosZ, 0);
+					else if(randompick <= 256)
+						Spawn("RoTTUpSpikes", myPosX, myPosY, myPosZ, 0);
 					break;
 				case 10:
 					if(random(0,2) <= 1)
@@ -212,6 +230,8 @@ Script "Samsara2689" (void)  //2689
 		}
 		else
 			a = random(0,CLASSCOUNT);
+		
+		maxAttempts++;
 	}
 }
 
