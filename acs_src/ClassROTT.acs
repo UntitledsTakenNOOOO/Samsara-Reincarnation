@@ -785,6 +785,7 @@ Script "RoTTBladeGenerate" (void)
 	int myPosZ = GetActorZ(0);
 	int bladeTid = UniqueTid();
 	int bladeTid2 = UniqueTid();
+	int roomTid = UniqueTid();
 	int bladeAngle = 0.25*random(1,4);
 	int bladedistance = 48;
 	int bladesCanFill = 0;
@@ -797,39 +798,43 @@ Script "RoTTBladeGenerate" (void)
 		if(random(0,4) > 3)
 			break;
 			
-		if(Spawn("RoTTBlades2", myPosX + (cos(bladeAngle)*bladedistance*a), myPosY + (sin(bladeAngle)*bladedistance*a), myPosZ, bladeTid2))
+		if(Spawn("RoTTBladesRoomChecker", myPosX + (cos(bladeAngle)*(bladedistance+16.0)*a), myPosY + (sin(bladeAngle)*(bladedistance+16.0)*a), myPosZ, roomTid))
 		{
-			SetPointerExt(AAPTR_Master,0,bladeTid2);
-			SetActivator(bladeTid2);
-			Thing_ChangeTid(bladeTid2,0);
-			if(onLiquid(0) > 0)
+			Thing_Remove(roomTid);
+			if(Spawn("RoTTBlades2", myPosX + (cos(bladeAngle)*bladedistance*a), myPosY + (sin(bladeAngle)*bladedistance*a), myPosZ, bladeTid2))
 			{
-				Thing_Remove(bladeTid2);
-				break;
-			}
-			while(Warp(0,8.0,0,0,0,WARPF_TESTONLY) && querydist <= 64)
-			{
-				querydist++;
-				if(Warp(0,bladedistance*1.0,0,0,0,WARPF_TESTONLY) || Warp(0,-bladedistance*1.0,0,0,0,WARPF_TESTONLY))
+				SetPointerExt(AAPTR_Master,0,bladeTid2);
+				SetActivator(bladeTid2);
+				Thing_ChangeTid(bladeTid2,0);
+				if(onLiquid(0) > 0)
 				{
-					bladesCanFill = 1;
+					Thing_Remove(bladeTid2);
 					break;
 				}
-			}
-			querydist = 0;
-			while(Warp(0,-8.0,0,0,0,WARPF_TESTONLY) && querydist <= 64)
-			{
-				querydist++;
-				if(Warp(0,bladedistance*1.0,0,0,0,WARPF_TESTONLY) || Warp(0,-bladedistance*1.0,0,0,0,WARPF_TESTONLY))
+				while(Warp(0,8.0,0,0,0,WARPF_TESTONLY) && querydist <= 64)
 				{
-					bladesCanFill = 1;
-					break;
+					querydist++;
+					if(Warp(0,bladedistance*1.0,0,0,0,WARPF_TESTONLY) || Warp(0,-bladedistance*1.0,0,0,0,WARPF_TESTONLY))
+					{
+						bladesCanFill = 1;
+						break;
+					}
 				}
+				querydist = 0;
+				while(Warp(0,-8.0,0,0,0,WARPF_TESTONLY) && querydist <= 64)
+				{
+					querydist++;
+					if(Warp(0,bladedistance*1.0,0,0,0,WARPF_TESTONLY) || Warp(0,-bladedistance*1.0,0,0,0,WARPF_TESTONLY))
+					{
+						bladesCanFill = 1;
+						break;
+					}
+				}
+				if(bladesCanFill == 0)
+					Thing_Remove(0);
+				else if(random(0,2) == 1)
+					ACS_NamedExecuteWithResult("RoTTBladeMove",bladeDirection);
 			}
-			if(bladesCanFill == 0)
-				Thing_Remove(0);
-			else if(random(0,2) == 1)
-				ACS_NamedExecuteWithResult("RoTTBladeMove",bladeDirection);
 		}
 		
 		if(a > 0)
