@@ -1195,7 +1195,22 @@ Script "Samsara_KillCount" (int override)
 	//eww
 	if(ThingCountName("SamsaraMixerCompendiumToken",0) > 0)
 	{
-		ACS_NamedExecuteAlways("Samsara_PinataHandler",0,health,GetActorProperty(0,APROP_Radius)>>16,GetActorProperty(0,APROP_Height)>>16);
+		if(!GetCvar("samsara_merrychristmas"))
+			ACS_NamedExecuteAlways("Samsara_PinataHandler",0,health,GetActorProperty(0,APROP_Radius)>>16,GetActorProperty(0,APROP_Height)>>16);
+		else
+		{
+			int presentTid = UniqueTid();
+			int presentScale = 0.25 + ((health >= 200) * 0.175) + ((health >= 1000) * 0.175) + ((health >= 2500) * 0.175) + ((health >= 5000) * 0.175);
+			SpawnForced("XmasGift",x,y,z,presentTid);
+			ThrustThing(random(0,256),random(1,2),0,presentTid);
+			ThrustThingZ(presentTid,random(4,8),0,0);
+			SetActorProperty(presentTid,APROP_Health,health);
+			SetActorProperty(presentTid,APROP_Accuracy,GetActorProperty(0,APROP_Radius)>>16);
+			SetActorProperty(presentTid,APROP_Score,GetActorProperty(0,APROP_Height)>>16);
+			SetActorProperty(presentTid,APROP_ScaleX,presentScale);
+			SetActorProperty(presentTid,APROP_ScaleY,presentScale);
+			Thing_ChangeTid(presentTid,0);
+		}
 	}
 	
 	SetActivatorToTarget(0);
