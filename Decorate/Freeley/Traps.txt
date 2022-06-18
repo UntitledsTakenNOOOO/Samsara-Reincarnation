@@ -45,6 +45,51 @@ ACTOR RoTTBlades
 	}
 }
 
+Actor RoTTBladesTester
+{
+	Height 2
+	Radius 1
+	States
+	{
+		Spawn:
+			TNT1 A 5
+			stop
+	}
+}
+
+Actor RoTTIsBladeTrap : Boolean {}
+Actor RoTTBladesTurnAround : Boolean {}
+
+Actor RoTTBladesBlockTrigger : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_CheckLOF("TurnAround",CLOFF_JUMP_ON_MISS|CLOFF_ALLOWNULL,44,0,0,0,51)
+			TNT1 A 0 A_CheckLOF("TurnAround",CLOFF_JUMP_ON_MISS|CLOFF_ALLOWNULL,44,0,0,0,1)
+			TNT1 A 0 A_RadiusGive("RoTTBladesBlockTriggerStatic",48,RGF_MONSTERS|RGF_NOSIGHT,1)
+			stop
+		TurnAround:
+			TNT1 A 0 A_GiveInventory("RoTTBladesTurnAround",1)
+			stop
+	}
+}
+
+Actor RoTTBladesBlockTriggerStatic : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_JumpIfInventory("RoTTIsBladeTrap",1,1)
+			Goto Failure
+			TNT1 A 0 A_RadiusGive("RoTTBladesTurnAround",48,RGF_MONSTERS|RGF_NOSIGHT,1)
+			stop
+		Failure:
+			TNT1 A 0
+			stop
+	}
+}
+
 ACTOR RoTTBlades2 : RoTTBlades
 {
    States

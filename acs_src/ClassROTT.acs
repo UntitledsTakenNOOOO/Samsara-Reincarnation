@@ -839,8 +839,9 @@ Script "RoTTBladeGenerate" (void)
 				}
 				if(bladesCanFill == 0)
 					Thing_Remove(0);
-				else if(random(0,2) == 1)
+				else
 					ACS_NamedExecuteWithResult("RoTTBladeMove",bladeDirection);
+					
 			}
 		}
 		
@@ -854,6 +855,7 @@ Script "RoTTBladeGenerate" (void)
 
 Script "RoTTBladeMove" (int dir)
 {
+	GiveInventory("RoTTIsBladeTrap",1);
 	int oldtid = PickActor(0, GetActorPitch(0), 0, 2048.0, 0, MF_PICKUP, ML_BLOCKING, PICKAF_RETURNTID);
 	int newtid = UniqueTid();
 	if(PickActor(0, GetActorAngle(0), GetActorPitch(0), 2048.0, newtid, MF_PICKUP, ML_BLOCKING, PICKAF_FORCETID))
@@ -866,11 +868,29 @@ Script "RoTTBladeMove" (int dir)
 		Thing_ChangeTid(newtid, oldtid);
 		terminate;
 	}
+	if(random(0,4)==3)
+	{
+		Thing_ChangeTid(newtid, oldtid);
+		terminate;
+	}
 	Delay(15);
 	while(ClassifyActor(0) > 1)
 	{
-		if(!Warp(0,dir*4.0,0,0,0,WARPF_INTERPOLATE))
+		if(CheckInventory("RoTTBladesTurnAround"))
+		{
 			dir*=-1;
+			TakeInventory("RoTTBladesTurnAround",1);
+		}
+		
+		Warp(0,dir*4.0,0,0,0,WARPF_INTERPOLATE|WARPF_NOCHECKPOSITION);
+		
+		int checkerTid = UniqueTid();
+		
+		SpawnForced("RoTTBladesTester",GetActorX(0)+(cos(GetActorAngle(0))*8),GetActorY(0)+(sin(GetActorAngle(0))*8),GetActorZ(0),checkerTid);
+		if(GetActorFloorZ(checkerTid) != GetActorFloorZ(0))
+			GiveInventory("RoTTBladesTurnAround",1);
+		else
+			GiveInventory("RoTTBladesBlockTrigger",1);
 			
 		Delay(1);
 	}
