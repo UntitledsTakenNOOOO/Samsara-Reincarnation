@@ -78,15 +78,20 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
         break;
 
       case 8:
-        result = defaultCVar("samsara_cl_expparticles", 0);
-        if (!result) { result = 100; }
+        if (GetCVar("samsara_runninginzdoom")) { result = GetCVar("samsara_zd_expparticles"); }
+        else { result = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_expparticles"); }
 
-        result = max(0, result);
+        if (result == 0) { result = 100; } // default
 
-        result *= max(arg1, 1);
-        result /= max(arg2, 1);
+        if (result > 0)
+        {
+            result = max(0, result);
 
-        GiveInventory("QuakeExplosionCounter", result);
+            result *= max(arg1, 1);
+            result /= max(arg2, 1);
+
+            GiveInventory("QuakeExplosionCounter", result);
+        }
         break;
 
       case 9:
@@ -412,21 +417,27 @@ script "SamsaraClientDecorate" (int which, int a1, int a2) clientside //212 -- S
         break;
 
       case 4:
-        while (1)
-        {
-            if (defaultCVar("samsara_cl_noadditivepickups", 0))
+        // [tv50] can't use while, otherwise the cpln isn't acquired I guess?
+        // [tv50] in any case, it won't work. at least, not to my knowledge
+
+        //while (true)
+        //{
+            bool cvarenabled = false;
+
+            if (GetCVar("samsara_runninginzdoom")) { cvarenabled = GetCVar("samsara_zd_noadditivepickups"); }
+            else { cvarenabled = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_noadditivepickups"); }
+
+            if (cvarenabled)
             {
                 SetActorProperty(0, APROP_RenderStyle, STYLE_Normal);
                 SetActorProperty(0, APROP_Alpha, itof(a1)/100);
-            }
-            else
-            {
+            } else {
                 SetActorProperty(0, APROP_RenderStyle, STYLE_Add);
                 SetActorProperty(0, APROP_Alpha, itof(a2)/100);
             }
 
-            Delay(35);
-        }
+            //Delay(35);
+        //}
         break;
         
       case 5:
@@ -1533,6 +1544,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("DGHasBFG10K", 999);
 			TakeInventory("Doom64_IHaveUnmaker", 999);
 			TakeInventory("Doom64UnmakerArtifact", 999);
+            SetInventory("Doom64StartingUnmakerArtifactsGiven", 0);
 			
 			GiveInventory(" Pistol ", 1);
 			GiveInventory(" Fist ", 1);
