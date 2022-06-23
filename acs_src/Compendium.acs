@@ -2109,12 +2109,13 @@ str MonsterInfo[CLASSCOUNT][MAXMODES][64][31] =
 };
 
 str CompendiumCredits = "\cmLead Developer\n\cjShiny Metagross
-\n\n\cmExecutive Developers\cj\nMagnolia\nShadowlink223
-\n\n\cmDevelopers\cj\nCubebert\nNorwegianLoki
-\n\n\cmAssistant Developers\cj\nRadioactiveTurtle\nLtMajorDude\nZircon\ntehvappy50
+\n\n\cmExecutive Developers\cj\nMagnolia\nShadowlink223\nCubebert
+\n\n\cmCommunity Manager\cj\nMeleemario
+\n\n\cmDevelopers\cj\nNorwegianLoki
+\n\n\cmAssistant Developers\cj\ntehvappy50\nRadiocaster\nLtMajorDude\nZircon
 \n\n\cmLead Beta Tester\cj\nPangoro
-\n\n\cmBeta Testers\cj\nFlynn Taggart\nNecron 99\nLaserPope\nLaggy Blazko\nCubebert\nRadioactiveTurtle\nCrazyboy88\nLuisDHR19971\nNautilus
-\n\n\cmDiscord Managment\cj\nMeleemario\nLuisDHR19971\nZircon\nPangoro
+\n\n\cmBeta Testers\cj\nFlynn Taggart\nNecron 99\nLaserPope\nLaggy Blazko\nCubebert\nRadiocaster\nKing Makron\nCrazyboy88\nLuisDHR19971\nNautilus\nKaminsky/AKMDM\nPowerful_Hoe\nAura\nDoom_Reaper\nAbsolute TruthSeeker
+\n\n\cmDiscord Managment\cj\nLuisDHR19971\nZircon\nPangoro\nRadiocaster\nKing Makron
 \n\n\cmFormer Developers\cj\nJesh\nDynamo\nHiragamer98\nIvanDobrovski
 \n\n\cmAdditional Credits\cj
 \nTerminusEst13 for creating Samsara
@@ -2140,6 +2141,8 @@ str CompendiumCredits = "\cmLead Developer\n\cjShiny Metagross
 \n\n\cmSpecial Thanks\cj
 \nHiragamer for his amazing work on HUDs and every art related stuff
 \nZircon for coming up with tipbox and some Hexen 2 ideas
+\nKaminsky for providing technical services to the creation of this mod
+\nPowerful_Hoe for providing a multiplayer service and group for testing online features (and being beautiful and nice!)
 \nWatermelon for teaching Jesh ACS
 \nFlynn Taggart for coming up with ideas and being a good artist
 \nJack Freeman for services for the mod and creating the original Bond class
@@ -2287,7 +2290,7 @@ Script "Samsara_Compendium_Initiate" (void) Net
 		if(!CheckInventory("CompendiumOpened"))
 		{
 			GiveInventory("CompendiumOpened",1);
-			int execute = ACS_NamedExecuteWithResult("Samsara_Compendium");
+			int execute = ACS_NamedExecuteWithResult("Samsara_Compendium",PlayerNumber());
 			SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
 		}
 		else
@@ -2298,8 +2301,11 @@ Script "Samsara_Compendium_Initiate" (void) Net
 	}
 }
 
-Script "Samsara_Compendium" (void) Net Clientside
+Script "Samsara_Compendium" (int playerNum) Net Clientside
 {
+	if(playerNum != ConsolePlayerNumber())
+		terminate;
+		
 	int idstart = 100;
 	int cursorx, cursory, offsety, offsetx, menuindex, lastmenuindex, a, menutab, lastmenutab, menuitem, lastmenuitem, scrollcounter, scrolltimer, index, scalex, scaley, hitpoints, newtid, listyposition, listindex, condition, listclick, monsterskin, altskin, prevskin, monsteraccess, drawnProps, attackType;
 	str seesound, activesound, painsound, deathsound, description;
@@ -2360,7 +2366,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 		{
 			scrollmax = 400;
 			drawclouds = 1;
-			ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,0);
+			ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,playerNum);
 			SetFont("CMPSDOOM");
 			SetHudClipRect(0,0,0,0,0);
 			SetHudSize(hudcenterx,hudcentery,true);
@@ -3197,7 +3203,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 			rot = 0;
 			scrollmax = 448;
 			drawclouds = 1;
-			ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,0);
+			ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,playerNum);
 				
 			if(lastmenuindex != menuindex)
 			{		
@@ -3241,7 +3247,7 @@ Script "Samsara_Compendium" (void) Net Clientside
 			rot = 0;
 			scrollmax = 448;
 			drawclouds = 1;
-			ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,0);
+			ACS_NamedExecuteAlways("CompendiumCloudGenerator",0,1440,972,playerNum);
 			
 			if(lastmenuindex != menuindex)
 			{		
@@ -3439,8 +3445,11 @@ Script "Samsara_Compendium" (void) Net Clientside
 str CloudImages[4] = { "CMPCLD01", "CMPCLD02", "CMPCLD03", "CMPCLD04" };
 int CloudMessageIDs[10] = {};
 
-Script "CompendiumCloudGenerator" (int hudboundsx, int hudboundsy) clientside
+Script "CompendiumCloudGenerator" (int hudboundsx, int hudboundsy, int playerNum) clientside
 {
+	if(playerNum != ConsolePlayerNumber())
+		terminate;
+		
 	if(random(0,17) != 0)
 		terminate;
 	

@@ -17,6 +17,7 @@ Actor "Sacred Manacle" : Weapon
 	Obituary "%k makes a pancake out of %o."
 	+FLOATBOB
 	+Weapon.NoAlert
+	+WEAPON.NOAUTOAIM
 	Inventory.RestrictedTo "PSPlayer"
     Tag "Sacred Manacle"
 	States
@@ -329,6 +330,19 @@ Actor PSCloudStrike_3 : PSCloudStrike
 	}
 }	
 
+Actor PSManacleBoltSeeker : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_Jump(224,3)
+			TNT1 A 0 A_SeekerMissile(5,10,SMF_LOOK,256,8)
+			TNT1 A 0 A_FaceTracer
+			TNT1 A 0
+			Stop
+	}
+}
+
 Actor PSManacleBolt
 {
 	Height 16
@@ -337,6 +351,7 @@ Actor PSManacleBolt
 	Projectile
 	DamageType "PSRAPower"  
 	Damage (75)
+	MaxTargetRange 8
 	+SEEKERMISSILE
 	+SCREENSEEKER
 	States
@@ -345,29 +360,37 @@ Actor PSManacleBolt
 			TNT1 A 0
 			TNT1 A 1 ACS_NamedExecuteWithResult("PSManacleBoltPitch")
 		SpawnLoop:
-			//TNT1 A 0 A_GiveInventory("PSManacleBoltHitSomething",1)
-			//TNT1 A 0 A_JumpIfInventory("PSManacleBoltHitSomethingPositive",1,"KillBolt")
+			//TNT1 A 0 A_GiveInventory("PSManacleBoltHitSomething2",1)
+			//TNT1 A 0 A_JumpIfInventory("PSManacleBoltHitSomethingPositive",1,"Death")
 			TNT1 A 0 A_SpawnItemEx("PSManacleBoltTrail",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH)
-			TNT1 A 0 A_SetAngle(angle+random(-3,3))
-			TNT1 A 0 A_SetPitch(pitch+random(-3,3))
-			TNT1 A 0 A_Jump(224,3)
-			TNT1 A 0 A_SeekerMissile(5,10,SMF_LOOK,256,8)
-			TNT1 A 0 A_FaceTracer
-			TNT1 A 0 A_Warp(AAPTR_Default,20*cos(pitch),0,20*sin(pitch),0,WARPF_INTERPOLATE,1)
+			TNT1 A 0 A_Warp(AAPTR_Default,20*cos(pitch),0,20*sin(pitch),0,WARPF_WARPINTERPOLATION,1)
 			Goto Death
-			TNT1 A 1
+			TNT1 A 1 	
 			Loop
-		KillBolt:
-			TNT1 A 0 A_Die
-			TNT1 A 1
-			wait
 		Death:
 			TNT1 A 1
 			Stop
 	}
 }
 
-Actor PSManacleBoltDM : PSManacleBolt { Damage (40) }
+Actor PSManacleBoltDM : PSManacleBolt 
+{
+	Damage (40) 
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 1 ACS_NamedExecuteWithResult("PSManacleBoltPitch")
+		SpawnLoop:
+			//TNT1 A 0 A_GiveInventory("PSManacleBoltHitSomething2",1)
+			//TNT1 A 0 A_JumpIfInventory("PSManacleBoltHitSomethingPositive",1,"Death")
+			TNT1 A 0 A_SpawnItemEx("PSManacleBoltTrail",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH)
+			TNT1 A 0 A_Warp(AAPTR_Default,20*cos(pitch),0,20*sin(pitch),0,WARPF_WARPINTERPOLATION,1)
+			Goto Death
+			TNT1 A 1 	
+			Loop
+	}
+}
 
 Actor PSManacleBoltCoop : PSManacleBolt 
 { 
@@ -384,14 +407,9 @@ Actor PSManacleBoltCoop : PSManacleBolt
 			TNT1 A 1 ACS_NamedExecuteWithResult("PSManacleBoltPitch")
 		SpawnLoop:
 			//TNT1 A 0 A_GiveInventory("PSManacleBoltHitSomething2",1)
-			//TNT1 A 0 A_JumpIfInventory("PSManacleBoltHitSomethingPositive",1,"KillBolt")
+			//TNT1 A 0 A_JumpIfInventory("PSManacleBoltHitSomethingPositive",1,"Death")
 			TNT1 A 0 A_SpawnItemEx("PSManacleBoltTrail",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH)
-			TNT1 A 0 A_SetAngle(angle+random(-3,3))
-			TNT1 A 0 A_SetPitch(pitch+random(-3,3))
-			TNT1 A 0 A_Jump(224,3)
-			TNT1 A 0 A_SeekerMissile(5,10,SMF_LOOK,256,8)
-			TNT1 A 0 A_FaceTracer
-			TNT1 A 0 A_Warp(AAPTR_Default,20*cos(pitch),0,20*sin(pitch),0,WARPF_INTERPOLATE,1)
+			TNT1 A 0 A_Warp(AAPTR_Default,20*cos(pitch),0,20*sin(pitch),0,WARPF_WARPINTERPOLATION,1)
 			Goto Death
 			TNT1 A 1
 			Loop
@@ -403,6 +421,8 @@ Actor PSManacleBoltTrail
 	Height 16
 	Radius 8
 	+NOGRAVITY
+	+CLIENTSIDEONLY
+	+NOINTERACTION
 	States
 	{
 		Spawn:
