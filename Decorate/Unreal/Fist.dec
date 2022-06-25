@@ -1,0 +1,578 @@
+Actor UDispChargePower : Ammo { +Inventory.IgnoreSkill Inventory.MaxAmount 15 Ammo.BackPackAmount 0 Ammo.BackPackMaxAmount 8 Inventory.Amount 0 }
+
+Actor UDPistolUpgrade : Inventory 
+{ 
+	+INVENTORY.UNDROPPABLE 
+	Inventory.InterHubAmount 4
+	Inventory.MaxAmount 4 
+	Inventory.Amount 1
+	Radius 28
+	Height 8
+	Inventory.PickupMessage "You got the Dispersion Pistol Powerup"
+	Inventory.PickupSound "Unreal/WeaponPickup"
+	Tag "Dispersion Pistol Powerup"
+	States
+	{
+		Spawn:
+			UN00 ABCDEFGHIJ 2 BRIGHT
+			UN00 ABCDEFGHIJ 2
+			Loop
+	}
+}
+
+Actor UDPistolUpgradePreferred : UDPistolUpgrade { Inventory.InterHubAmount 4 }
+Actor UnrealDoUpgradeRevert : Boolean { Inventory.InterHubAmount 1 }
+Actor UnrealRevertDirection : Boolean { Inventory.InterHubAmount 1 }
+Actor EquippedUpgrade1 : Boolean { Inventory.InterHubAmount 1 }
+Actor EquippedUpgrade2 : Boolean { Inventory.InterHubAmount 1 }
+Actor EquippedUpgrade3 : Boolean { Inventory.InterHubAmount 1 }
+Actor EquippedUpgrade4 : Boolean { Inventory.InterHubAmount 1 }
+Actor DPistolAmmo : Ammo { Inventory.MaxAmount 50 Ammo.BackPackAmount 100 Ammo.BackPackMaxAmount 50 Inventory.Amount 0 }
+
+Actor Unreal_DispersionPistol : UnrealWeapon
+{
+	Weapon.SelectionOrder 2000
+	Weapon.SlotNumber 0
+	Weapon.SlotPriority 1
+	Weapon.AmmoUse 0
+	Weapon.AmmoGive 50
+	Weapon.AmmoType1 "DPistolAmmo"
+	Weapon.UpSound "Unreal/DPistol/Pickup"
+	-THRUGHOST
+	+WEAPON.AMMO_OPTIONAL
+	+WEAPON.NOALERT
+	Tag "Dispersion Pistol"
+	Inventory.PickupMessage "You got the Dispersion Pistol"
+	Inventory.PickupSound "Unreal/WeaponPickup"
+	Obituary "%o was killed by %k's Dispersion Pistol.  What a loser!"
+	States
+	{
+	Spawn:
+		UN05 A -1
+		Stop
+	Select:
+        TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Raise
+        TNT1 A 1 A_Raise
+        loop		
+	Ready:	
+		TNT1 A 1 A_GiveInventory("Unreal_DPistolSelected",1)
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 4, "ReadyUpgrade4")
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 3, "ReadyUpgrade3")
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 2, "ReadyUpgrade2")
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 1, "ReadyUpgrade1")
+		UN00 ABCD 6 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+//		UN00 E 4 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		Goto IdleNoUpgrades
+	ReadyUpgrade1:
+		UN01 A 0 A_JumpIfInventory("EquippedUpgrade1", 1, 1)
+		Goto Ready+5
+		UN01 KLMN 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		UN01 O 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		Goto IdleUpgrade1
+	ReadyUpgrade2:
+		UN02 A 0 A_JumpIfInventory("EquippedUpgrade2", 1, 1)
+		Goto ReadyUpgrade1
+		UN02 JKLM 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		UN02 N 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		Goto IdleUpgrade2
+	ReadyUpgrade3:
+		UN03 A 0 A_JumpIfInventory("EquippedUpgrade3", 1, 1)
+		Goto ReadyUpgrade2
+		UN03 JKLM 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		UN03 N 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		Goto IdleUpgrade3
+	ReadyUpgrade4:
+		UN04 A 0 A_JumpIfInventory("EquippedUpgrade4", 1, 1)
+		Goto ReadyUpgrade3
+		UN04 KLMN 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		UN04 O 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		Goto IdleUpgrade4
+	Deselect:
+		UN00 A 0 A_TakeInventory("Unreal_DPistolSelected",1)
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 4, "DeSelectUpgrade4")
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 3, "DeSelectUpgrade3")
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 2, "DeSelectUpgrade2")
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 1, "DeSelectUpgrade1")
+		UN00 KLMN 2 
+//		UN00 O 2
+		TNT1 A 1 A_Lower
+		Goto InstantDeselect
+	DeSelectUpgrade1:
+		UN01 VWXY 2 //A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		TNT1 A 1 A_Lower
+		Goto InstantDeselect
+	DeSelectUpgrade2:
+		UN02 UVWX 2 //A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		TNT1 A 1 A_Lower
+		Goto InstantDeselect		
+	DeSelectUpgrade3:
+		UN03 UVWX 2 //A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		TNT1 A 1 A_Lower
+		Goto InstantDeselect	
+	DeSelectUpgrade4:
+		UN04 VWXY 2 //A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		TNT1 A 1 A_Lower
+		Goto InstantDeselect	
+	IdleNoUpgrades:	
+		UN00 J 0 A_JumpIfInventory("UnrealDoUpgradeRevert",1,"StartRevert")
+		UN00 J 0 A_JumpIfInventory("UDPistolUpgradePreferred",1,1)
+		Goto IdleNoUpgrades+6
+		UN00 J 0 A_JumpIfInventory("UDPistolUpgrade", 4, "IdleUpgrade4")
+		UN00 J 0 A_JumpIfInventory("UDPistolUpgrade", 3, "IdleUpgrade3")
+		UN00 J 0 A_JumpIfInventory("UDPistolUpgrade", 2, "IdleUpgrade2")
+		UN00 J 0 A_JumpIfInventory("UDPistolUpgrade", 1, "IdleUpgrade1")
+		UN00 J 3 A_WeaponReady
+		Loop
+	IdleUpgrade1:
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred",1,"IdleLoop1")
+		TNT1 A 0 A_TakeInventory("UDPistolUpgradePreferred",4)
+		TNT1 A 0 A_GiveInventory("UDPistolUpgradePreferred",1)
+		TNT1 A 0 A_GiveInventory("UnrealRevertDirection",1)
+		TNT1 A 0 A_TakeInventory("UnrealDoUpgradeRevert",1)
+		TNT1 A 0 A_GiveInventory("EquippedUpgrade1",1)
+		UN00 O 0 A_PlaySound("Unreal/DPistol/Upgrade1", CHAN_WEAPON)
+		UN00 O 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN01 A 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+	    UN01 B 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN01 C 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN01 D 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN01 E 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		//UN01 F 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN01 G 0 A_JumpIfInventory("EquippedUpgrade2",1,2)
+		UN01 G 0 A_JumpIfInventory("UDPistolUpgrade",2,"IdleUpgrade2")
+	IdleLoop1:	
+		UN01 G 0 A_JumpIfInventory("UnrealDoUpgradeRevert",1,"StartRevert")
+		UN01 G 0 A_JumpIfInventory("UDPistolUpgradePreferred",2,1)
+		Goto IdleLoop1+5
+		UN01 G 0 A_JumpIfInventory("UDPistolUpgrade", 4, "IdleUpgrade4")
+		UN01 G 0 A_JumpIfInventory("UDPistolUpgrade", 3, "IdleUpgrade3")
+		UN01 G 0 A_JumpIfInventory("UDPistolUpgrade", 2, "IdleUpgrade2")
+		UN01 GHI 3 A_WeaponReady
+		Loop
+	IdleUpgrade2:
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 1, 1)
+		Goto IdleUpgrade1
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred",2,"IdleLoop2")
+		TNT1 A 0 A_TakeInventory("UDPistolUpgradePreferred",4)
+		TNT1 A 0 A_GiveInventory("UDPistolUpgradePreferred",2)
+		TNT1 A 0 A_GiveInventory("UnrealRevertDirection",1)
+		TNT1 A 0 A_TakeInventory("UnrealDoUpgradeRevert",1)
+		TNT1 A 0 A_GiveInventory("EquippedUpgrade2",1)
+		UN01 Z 0 A_PlaySound("Unreal/DPistol/Upgrade2", CHAN_WEAPON)
+		UN01 Z 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 A 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 B 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 C 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 D 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 E 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 F 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 G 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 H 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		//UN02 I 3 A_WeaponReady
+		UN02 S 0 A_JumpIfInventory("EquippedUpgrade3",1,2)
+		UN02 S 0 A_JumpIfInventory("UDPistolUpgrade",3,"IdleUpgrade3")
+	IdleLoop2:	
+		UN02 S 0 A_JumpIfInventory("UnrealDoUpgradeRevert",1,"StartRevert")
+		UN02 S 0 A_JumpIfInventory("UDPistolUpgradePreferred",3,1)
+		Goto IdleLoop2+4
+		UN02 S 0 A_JumpIfInventory("UDPistolUpgrade", 4, "IdleUpgrade4")
+		UN02 S 0 A_JumpIfInventory("UDPistolUpgrade", 3, "IdleUpgrade3")
+		UN02 S 3 A_WeaponReady
+		Loop
+	IdleUpgrade3:
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 2, 1)
+		Goto IdleUpgrade2
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred",3,"IdleLoop3")
+		TNT1 A 0 A_TakeInventory("UDPistolUpgradePreferred",4)
+		TNT1 A 0 A_GiveInventory("UDPistolUpgradePreferred",3)
+		TNT1 A 0 A_GiveInventory("UnrealRevertDirection",1)
+		TNT1 A 0 A_TakeInventory("UnrealDoUpgradeRevert",1)
+		TNT1 A 0 A_GiveInventory("EquippedUpgrade3",1)
+		UN02 Y 0 A_PlaySound("Unreal/DPistol/Upgrade3", CHAN_WEAPON)
+		UN02 Y 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 A 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 B 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 C 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 D 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 E 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 F 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 G 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		//UN03 H 8 A_WeaponReady
+		//UN03 I 10 A_WeaponReady
+		UN03 S 0 A_JumpIfInventory("EquippedUpgrade4",1,2)
+		UN03 S 0 A_JumpIfInventory("UDPistolUpgrade",4,"IdleUpgrade4")
+	IdleLoop3:	
+		UN03 S 0 A_JumpIfInventory("UnrealDoUpgradeRevert",1,"StartRevert")
+		UN03 S 0 A_JumpIfInventory("UDPistolUpgradePreferred",4,1)
+		Goto IdleLoop3+3
+		UN03 S 0 A_JumpIfInventory("UDPistolUpgrade", 4, "IdleUpgrade4")	
+		UN03 S 3 A_WeaponReady
+		Loop
+	IdleUpgrade4:
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 3, 1)
+		Goto IdleUpgrade3
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred",4,"IdleLoop4")
+		TNT1 A 0 A_GiveInventory("UDPistolUpgradePreferred",4)
+		TNT1 A 0 A_TakeInventory("UnrealRevertDirection",1)
+		TNT1 A 0 A_TakeInventory("UnrealDoUpgradeRevert",1)
+		TNT1 A 0 A_GiveInventory("EquippedUpgrade4",1)
+		UN03 Y 0 A_PlaySound("Unreal/DPistol/Upgrade4", CHAN_WEAPON)
+		UN03 Y 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 A 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 B 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 C 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 D 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 E 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 F 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 G 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 H 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		//UN04 I 6 A_WeaponReady
+		//UN04 J 3 A_WeaponReady
+	IdleLoop4:
+		UN04 T 0 A_JumpIfInventory("UnrealDoUpgradeRevert",1,"StartRevert")
+		UN04 T 3 A_WeaponReady
+		Loop
+	Fire:
+		UN00 A 0 ACS_NamedExecuteWithResult("Unreal_Recoil")
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 4, "FireUpgrade4")
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 3, "FireUpgrade3")
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 2, "FireUpgrade2")
+		UN00 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 1, "FireUpgrade1")
+		UN00 F 5 A_FireCustomMissile("UDispersionBallLevel1", 0, 0, 16)
+		UN00 G 0 A_JumpIfInventory("UDispChargePower", 1, 2)
+		UN00 G 0 A_TakeInventory("DPistolAmmo", 1, TIF_NOTAKEINFINITE) 
+		UN00 G 0 A_PlaySound("Unreal/DPistol/Fire", CHAN_WEAPON)
+		UN00 G 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN00 H 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN00 I 0 A_TakeInventory("UDispChargePower", 15)
+		UN00 I 2 A_Refire
+		Goto IdleNoUpgrades
+	FireUpgrade1:
+		UN01 Q 5 A_FireCustomMissile("UDispersionBallLevel2", 0, 0, 16)
+		UN01 R 0 A_JumpIfInventory("UDispChargePower", 1, 2)
+		UN01 R 0 A_TakeInventory("DPistolAmmo", 2, TIF_NOTAKEINFINITE) 
+		UN01 R 0 A_PlaySound("Unreal/DPistol/Fire", CHAN_WEAPON)
+		UN01 S 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN01 T 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN01 T 0 A_TakeInventory("UDispChargePower", 15)
+		UN01 T 3 A_Refire
+		Goto IdleLoop1
+	FireUpgrade2:
+		UN02 P 5 A_FireCustomMissile("UDispersionBallLevel3", 0, 0, 16)
+		UN02 Q 0 A_JumpIfInventory("UDispChargePower", 1, 2)
+		UN02 Q 0 A_TakeInventory("DPistolAmmo", 4, TIF_NOTAKEINFINITE) 
+		UN02 Q 0 A_PlaySound("Unreal/DPistol/Fire", CHAN_WEAPON)
+		UN02 Q 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 R 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 S 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 S 0 A_TakeInventory("UDispChargePower", 15)
+		Goto IdleLoop2
+	FireUpgrade3:
+		UN03 P 7 A_FireCustomMissile("UDispersionBallLevel4", 0, 0, 16)
+		UN03 Q 0 A_JumpIfInventory("UDispChargePower", 1, 2)
+		UN03 Q 0 A_TakeInventory("DPistolAmmo", 5, TIF_NOTAKEINFINITE) 
+		UN03 Q 0 A_PlaySound("Unreal/DPistol/Fire", CHAN_WEAPON)
+		UN03 Q 7 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 Q 7 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 R 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 S 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 S 0 A_TakeInventory("UDispChargePower", 15)
+		Goto IdleLoop3
+	FireUpgrade4:
+		UN04 Q 7 A_FireCustomMissile("UDispersionBallLevel5", 0, 0, 16)
+		UN04 R 0 A_JumpIfInventory("UDispChargePower", 1, 2)
+		UN04 R 0 A_TakeInventory("DPistolAmmo", 6, TIF_NOTAKEINFINITE) 
+		UN04 R 0 A_PlaySound("Unreal/DPistol/Fire", CHAN_WEAPON)
+		UN04 R 7 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 S 7 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 S 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 S 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 S 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 S 0 A_TakeInventory("UDispChargePower", 15)
+		Goto IdleLoop4
+	AltFire:
+		TNT1 A 0 A_PlaySound("Unreal/DPistol/Charge", CHAN_WEAPON)
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 4, "AltHoldUpgrade4")
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 3, "AltHoldUpgrade3")
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 2, "AltHoldUpgrade2")
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred", 1, "AltHoldUpgrade1")	
+	AltHolding: //Because AltHold isn't suitable for what we're trying to do
+		UN00 J 0 A_JumpIfInventory("UDispChargePower", 7, "Release")
+		UN00 J 0 A_GiveInventory("UDispChargePower", 1)
+		UN00 J 0 A_TakeInventory("DPistolAmmo", 1, TIF_NOTAKEINFINITE)
+		UN00 J 12
+		UN00 J 0 A_Refire("AltHolding")
+		Goto Release
+	AltHoldUpgrade1:	
+		UN01 G 0 A_JumpIfInventory("UDispChargePower", 9, "Release")
+		UN01 G 0 A_GiveInventory("UDispChargePower", 1)
+		UN01 G 0 A_TakeInventory("DPistolAmmo", 1, TIF_NOTAKEINFINITE)
+		UN01 G 12
+		UN01 G 0 A_Refire("AltHoldUpgrade1")
+		Goto Release
+	AltHoldUpgrade2:	
+		UN02 S 0 A_JumpIfInventory("UDispChargePower", 11, "Release")
+		UN02 S 0 A_GiveInventory("UDispChargePower", 1)
+		UN02 S 0 A_TakeInventory("DPistolAmmo", 1, TIF_NOTAKEINFINITE)
+		UN02 S 12
+		UN02 S 0 A_Refire("AltHoldUpgrade2")
+		Goto Release
+	AltHoldUpgrade3:	
+		UN03 S 0 A_JumpIfInventory("UDispChargePower", 13, "Release")
+		UN03 S 0 A_GiveInventory("UDispChargePower", 1)
+		UN03 S 0 A_TakeInventory("DPistolAmmo", 1, TIF_NOTAKEINFINITE)
+		UN03 S 12
+		UN03 S 0 A_Refire("AltHoldUpgrade3")
+		Goto Release
+	AltHoldUpgrade4:	
+		UN04 T 0 A_JumpIfInventory("UDispChargePower", 15, "Release")
+		UN04 T 0 A_GiveInventory("UDispChargePower", 1)
+		UN04 T 0 A_TakeInventory("DPistolAmmo", 1, TIF_NOTAKEINFINITE)
+		UN04 T 12
+		UN04 T 0 A_Refire("AltHoldUpgrade4")
+		Goto Release		
+	Release:
+		UN00 F 0 ACS_NamedExecuteWithResult("Unreal_Recoil")
+		UN00 F 0 A_StopSound(CHAN_WEAPON)
+		Goto Fire
+	StartRevert:
+		UN00 J 0 A_JumpIfInventory("UDPistolUpgradePreferred", 4, "RevertUpgrade4")
+		UN00 J 0 A_JumpIfInventory("UDPistolUpgradePreferred", 3, "RevertUpgrade3")
+		UN00 J 0 A_JumpIfInventory("UDPistolUpgradePreferred", 2, "RevertUpgrade2")
+		UN00 J 0 A_JumpIfInventory("UDPistolUpgradePreferred", 1, "RevertUpgrade1")
+		UN00 J 0 A_JumpIfInventory("UDPistolUpgrade", 1, "IdleUpgrade1")
+		UN00 J 1
+		Goto IdleNoUpgrades
+	RevertUpgrade1:
+		TNT1 A 0 A_JumpIfInventory("UnrealRevertDirection",1,1)
+		Goto RevertUpgrade1+2
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgrade",2,"IdleUpgrade2")
+		Goto RevertUpgrade1+2
+		UN01 E 0 A_TakeInventory("UnrealDoUpgradeRevert",1)
+		UN01 E 0 A_TakeInventory("UDPistolUpgradePreferred",4)
+		UN01 E 0 A_GiveInventory("UnrealRevertDirection",1)
+		UN01 E 0 A_PlaySound("Unreal/DPistol/Upgrade1/Reverse", CHAN_WEAPON)
+		UN01 D 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+	    UN01 C 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN01 B 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN01 A 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN00 O 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		Goto IdleNoUpgrades
+	RevertUpgrade2:
+		TNT1 A 0 A_JumpIfInventory("UnrealRevertDirection",1,1)
+		Goto RevertUpgrade2+2
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgrade",3,"IdleUpgrade3")
+		Goto RevertUpgrade2+2
+		UN02 H 0 A_TakeInventory("UnrealDoUpgradeRevert",1)
+		UN02 H 0 A_TakeInventory("UDPistolUpgradePreferred",4)
+		UN02 H 0 A_GiveInventory("UDPistolUpgradePreferred",1)
+		UN02 H 0 A_TakeInventory("UnrealRevertDirection",1)
+		UN02 H 0 A_PlaySound("Unreal/DPistol/Upgrade2/Reverse", CHAN_WEAPON)
+		UN02 H 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 G 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 F 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 E 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 D 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 C 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 B 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 A 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN01 Z 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		//UN02 I 3 A_WeaponReady
+		Goto IdleLoop1
+	RevertUpgrade3:
+		TNT1 A 0 A_JumpIfInventory("UnrealRevertDirection",1,1)
+		Goto RevertUpgrade3+2
+		TNT1 A 0 A_JumpIfInventory("UDPistolUpgrade",4,"IdleUpgrade4")
+		Goto RevertUpgrade3+2
+		UN03 G 0 A_TakeInventory("UnrealDoUpgradeRevert",1)
+		UN03 G 0 A_TakeInventory("UDPistolUpgradePreferred",4)
+		UN03 G 0 A_GiveInventory("UDPistolUpgradePreferred",2)
+		UN03 G 0 A_TakeInventory("UnrealRevertDirection",1)
+		UN03 G 0 A_PlaySound("Unreal/DPistol/Upgrade3/Reverse", CHAN_WEAPON)
+		UN03 G 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 F 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 E 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 D 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 C 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 B 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 A 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN02 Y 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		//UN02 I 3 A_WeaponReady
+		Goto IdleLoop2
+	RevertUpgrade4:
+		UN04 H 0 A_TakeInventory("UnrealDoUpgradeRevert",1)
+		UN04 H 0 A_TakeInventory("UDPistolUpgradePreferred",4)
+		UN04 H 0 A_GiveInventory("UDPistolUpgradePreferred",3)
+		UN04 H 0 A_TakeInventory("UnrealRevertDirection",1)
+		UN04 H 0 A_PlaySound("Unreal/DPistol/Upgrade4/Reverse", CHAN_WEAPON)
+		UN04 H 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 G 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 F 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 E 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 D 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 C 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 B 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN04 A 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		UN03 Y 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		Goto IdleLoop3
+	}
+}		
+
+Actor UDispersionBallLevel1 
+{
+	Damage (15)
+	Alpha 0.9
+	RenderStyle Add
+	Projectile
+	Radius 6
+	Height 3
+	Mass 20
+	+HITTRACER
+	+FORCERADIUSDMG
+	Obituary "%o was killed by %k's Dispersion Pistol.  What a loser!"	
+	Speed 26
+	DeathSound "Unreal/DPistol/ProjDie"
+	DamageType "UnrealPlasma"
+	States
+	{
+	Spawn:
+		UN00 A 0
+		UN00 A 0 A_GiveInventory("UDispChargePower",CallACS("Unreal_TransferCharge",1))
+		UN00 A 0 A_PlaySound("Unreal/DPistol/ProjThink", CHAN_BODY, 0.5)
+		UN00 ABCDEFGH 2 
+		Loop
+	XDeath:	
+		TNT1 A 0 A_JumpIf(CallACS("Unreal_BloodGenerator_Offsets")==1,1)
+		TNT1 A 1 Bright
+		TNT1 A 0 A_GiveInventory("UnrealBloodyPuffGenerator",1,AAPTR_TRACER)	
+	Crash:		
+	Death:
+		TNT1 A 0 A_Explode(CallACS("Unreal_TransferCharge")*15, 150, !XF_HURTSOURCE)
+		TNT1 A 1 A_SpawnItemEx("UnrealPlasmaSplashB", 0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		Stop			
+	}
+}	
+
+Actor UDispersionBallLevel2 : UDispersionBallLevel1
+{
+	Damage (25)
+	States
+	{
+	XDeath:	
+		TNT1 A 0 A_JumpIf(CallACS("Unreal_BloodGenerator_Offsets")==1,1)
+		TNT1 A 1 Bright
+		TNT1 A 0 A_GiveInventory("UnrealBloodyPuffGenerator",1,AAPTR_TRACER)	
+	Crash:		
+	Death:
+		TNT1 A 0 A_Explode(CallACS("Unreal_TransferCharge")*25, 150, !XF_HURTSOURCE)
+		TNT1 A 1 A_SpawnItemEx("UnrealPlasmaSplashY", 0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		Stop	
+		}
+}	
+
+Actor UDispersionBallLevel3 : UDispersionBallLevel1
+{
+	Damage (40)
+	States
+	{
+	XDeath:	
+		TNT1 A 0 A_JumpIf(CallACS("Unreal_BloodGenerator_Offsets")==1,1)
+		TNT1 A 1 Bright
+		TNT1 A 0 A_GiveInventory("UnrealBloodyPuffGenerator",1,AAPTR_TRACER)	
+	Crash:	
+	Death:
+		TNT1 A 0 A_Explode(CallACS("Unreal_TransferCharge")*40, 150, !XF_HURTSOURCE)
+		TNT1 A 1 A_SpawnItemEx("UnrealPlasmaSplashG", 0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		Stop			
+	}
+}	
+
+Actor UDispersionBallLevel4 : UDispersionBallLevel1
+{
+	Damage (55)
+	States
+	{
+	XDeath:	
+		TNT1 A 0 A_JumpIf(CallACS("Unreal_BloodGenerator_Offsets")==1,1)
+		TNT1 A 1 Bright
+		TNT1 A 0 A_GiveInventory("UnrealBloodyPuffGenerator",1,AAPTR_TRACER)	
+	Crash:	
+	Death:
+		TNT1 A 0 A_Explode(CallACS("Unreal_TransferCharge")*55, 150, !XF_HURTSOURCE)
+		TNT1 A 1 A_SpawnItemEx("UnrealPlasmaSplashO", 0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		Stop	
+	}
+}
+
+Actor UDispersionBallLevel5 : UDispersionBallLevel4	
+{ 	
+	Damage (75) 
+	States
+	{
+	XDeath:	
+		TNT1 A 0 A_JumpIf(CallACS("Unreal_BloodGenerator_Offsets")==1,1)
+		TNT1 A 1 Bright
+		TNT1 A 0 A_GiveInventory("UnrealBloodyPuffGenerator",1,AAPTR_TRACER)	
+	Crash:	
+	Death:
+		TNT1 A 0 A_Explode(CallACS("Unreal_TransferCharge")*75, 150, !XF_HURTSOURCE)
+		TNT1 A 1 A_SpawnItemEx("UnrealPlasmaSplashR", 0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		Stop			
+	}	
+}
+
+Actor UnrealPlasmaSplashB
+{
+	+CLIENTSIDEONLY
+	+NOINTERACTION
+	+FORCEXYBILLBOARD
+	RenderStyle Add
+	Alpha 0.8
+	Scale 0.8
+	States
+	{
+	Spawn:
+		UN00 ABCDEFGHIJ 3 BRIGHT
+		Stop
+		}
+}
+
+Actor UnrealPlasmaSplashY : UnrealPlasmaSplashB
+{
+	States
+	{
+	Spawn:
+		UN01 ABCDEFGHIJ 3 BRIGHT
+		Stop	
+		}
+}	
+
+Actor UnrealPlasmaSplashG : UnrealPlasmaSplashB
+{
+	States
+	{
+	Spawn:
+		UN02 ABCDEFGHIJ 3 BRIGHT
+		Stop	
+		}
+}	
+
+Actor UnrealPlasmaSplashO : UnrealPlasmaSplashB
+{
+	States
+	{
+	Spawn:
+		UN24 ABCDEFGHIJ 3 BRIGHT
+		Stop	
+		}
+}				
+
+Actor UnrealPlasmaSplashR : UnrealPlasmaSplashB
+{
+	States
+	{
+	Spawn:
+		UN03 ABCDEFGHIJ 3 BRIGHT
+		Stop	
+		}
+}		
