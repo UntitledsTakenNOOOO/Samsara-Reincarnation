@@ -607,7 +607,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         GiveInventory("CoopModeOn", 1);
         SetActorState(0, "CoOpModeOn");
     }
-	
+
+    if (isTeamGame()) { SetInventory("SamsaraCurrentTeam", GetPlayerInfo(pln, PLAYERINFO_TEAM) + 1); }
+
     pcount = PlayerCount();
     
     while (!endloop && ServerEnterTimes[pln] == startTime)
@@ -698,10 +700,16 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				
         if (GetCvar("samsara_permakimbo") == 1) { GiveInventory("AkimboStay", 1); }
         else { TakeInventory("AkimboStay", 0x7FFFFFFF); }			
-		
-		if (GetUserCvar(pln,"samsara_cl_teamtext")) { GiveInventory("SamsaraTeamTextActivated", 1); }
-        else { TakeInventory("SamsaraTeamTextActivated", 0x7FFFFFFF); }
-				
+
+        if (GetUserCvar(pln,"samsara_cl_teamtext") && isTeamGame())
+        {
+            SetInventory("SamsaraTeamTextActivated", 1);
+            SetInventory("SamsaraCurrentTeamIndicator", GetPlayerInfo(pln, PLAYERINFO_TEAM) + 1);
+        } else {
+            SetInventory("SamsaraTeamTextActivated", 0);
+            SetInventory("SamsaraCurrentTeamIndicator", 0);
+        }
+
 		switch (samsaraClassNum())
 		{
 			case CLASS_DOOM:
@@ -1212,8 +1220,6 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		HandleAmmoCapacities();
         HandleBans();
         HandleBuffCVars(respawning);
-		
-		if (isTeamGame()) { HandleTeamColorsForHud(); }
         
         TakeInventory("WeaponGetYaaaay",  1);
         TakeInventory("WeaponGetYaaaay2", 1);
