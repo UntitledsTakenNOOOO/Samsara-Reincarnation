@@ -37,6 +37,7 @@ actor "Phoenix Rod" : Weapon
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
         TNT1 A 0 A_StopSound(CHAN_WEAPON)
         TNT1 A 0 A_ClearRefire
+		TNT1 A 0 A_JumpIfInventory("PowerLesserTome", 1, "FireTomedLesser")
         TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"FireTomed")
         PHNX B 5 BRIGHT
         PHNX C 0 A_Recoil(4)
@@ -102,6 +103,15 @@ actor "Phoenix Rod" : Weapon
         PHNX B 4 A_Refire
         TNT1 A 0 A_ClearRefire
         Goto Ready
+
+      FireTomedLesser:  
+		PHNX B 4 BRIGHT
+        PHNX C 0 A_Recoil(4)
+        PHNX C 0 A_FireCustomMissile("PheonixBlastFX")
+        PHNX C 6 BRIGHT
+        PHNX DB 4
+        PHNX B 0 A_Refire
+        Goto Ready		
     }
 }
 
@@ -136,3 +146,28 @@ actor PhoenixPuff2 : PhoenixPuff replaces PhoenixPuff
     DECAL PhoenixThrowerScorch
     +CLIENTSIDEONLY
 }
+
+Actor PheonixBlastFX : VolcanoBlast
+{
+	Damage 12
+	Gravity 0.525
+	DamageType "FireExplosive"
+	SeeSound "weapons/phoenixshoot"
+	Speed 20
+	Scale 1.2
+	Radius 10
+	Height 10
+	States
+	{
+		Spawn:
+			VFBL AB 4 A_SpawnItemEx("PheonixPuff", 0, 0, 0, 0)
+			Loop
+		Death:
+			FBMB F 4 BRight A_Explode(50, 50, 1)
+			TNT1 AAAA 0 A_SpawnItemEX("VolcanoTBlast22", 0,0,0,0.7,0.7, Random(0,2), Random(0,360), SXF_TRANSFERPOINTERS)
+			FBMB GHIJK 4 Bright
+			Stop
+	}		
+}	
+
+Actor VolcanoTBlast22 : VolcanoTBlast { Scale 1.2 Damage 3 }
