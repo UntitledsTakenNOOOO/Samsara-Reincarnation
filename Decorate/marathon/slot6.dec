@@ -23,98 +23,161 @@ actor "TOZT-7 Napalm Unit" : Weapon// replaces BFG9000
     {
       Spawn:
         THRW A -1
-        STOP
+        stop
 
       Ready:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",0,"ReadyModernReloadable")
+      ReadyNonReloadable:
         FLMT A 1 A_WeaponReady
+      ReadyAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyAmmoCheckReloadable")
+        goto Ready
+
+      ReadyModernReloadable:
+        TNT1 A 0 A_JumpIfInventory("NapalmInTank",0,"ReadyNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+        goto ReadyNonReloadable
+        FLMT A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+        goto ReadyAmmoCheck
+
+      ReadyAmmoCheckReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Ready")
         TNT1 A 0 A_JumpIfInventory("NapalmInTank",1,"Ready")
-        goto Reload
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,"Reload")
+        goto Ready
 
       Deselect:
         FLMT A 1 A_Lower
-        LOOP
+        loop
 
       Select: // 30 tics in Marathon to ready
-        TNT1 A 0 A_TakeInventory("UsingFists",1)
-        TNT1 A 0 A_TakeInventory("UsingPistols",1)
-        TNT1 A 0 A_TakeInventory("UsingDualPistols",1)
-        TNT1 A 0 A_TakeInventory("UsingSMG",1)
-        TNT1 A 0 A_TakeInventory("UsingPacifier",1)
-        TNT1 A 0 A_TakeInventory("UsingShotguns",1)
-        TNT1 A 0 A_TakeInventory("UsingDualShotguns",1)
-        TNT1 A 0 A_TakeInventory("UsingFusionPistol",1)
-        TNT1 A 0 A_TakeInventory("UsingAssaultRifle",1)
-        TNT1 A 0 A_TakeInventory("UsingSpanker",1)
-        //TNT1 A 0 A_TakeInventory("UsingToasty",1)
-        TNT1 A 0 A_TakeInventory("UsingWMC",1)
-        TNT1 A 0 A_TakeInventory("UsingAlienWeapon",1)
-        TNT1 A 0 A_TakeInventory("UsingAlienWeapon2",1)
-        //TNT1 A 0 A_TakeInventory("UsingMarathonInstagib",1)
+        TNT1 A 0 A_TakeInventory("UsingFists")
+        TNT1 A 0 A_TakeInventory("UsingPistols")
+        TNT1 A 0 A_TakeInventory("UsingDualPistols")
+        TNT1 A 0 A_TakeInventory("UsingSMG")
+        TNT1 A 0 A_TakeInventory("UsingPacifier")
+        TNT1 A 0 A_TakeInventory("UsingShotguns")
+        TNT1 A 0 A_TakeInventory("UsingDualShotguns")
+        TNT1 A 0 A_TakeInventory("UsingFusionPistol")
+        TNT1 A 0 A_TakeInventory("UsingAssaultRifle")
+        TNT1 A 0 A_TakeInventory("UsingSpanker")
+        //TNT1 A 0 A_TakeInventory("UsingToasty")
+        TNT1 A 0 A_TakeInventory("UsingWMC")
+        TNT1 A 0 A_TakeInventory("UsingAlienWeapon")
+        TNT1 A 0 A_TakeInventory("UsingAlienWeapon2")
+        //TNT1 A 0 A_TakeInventory("UsingMarathonInstagib")
 
-        TNT1 A 0 A_GiveInventory("UsingToasty",1)
-        TNT1 A 0 A_JumpIfInventory("NapalmInTank",1,"Select2")
-        goto Reload2
-
+        TNT1 A 0 A_GiveInventory("UsingToasty")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"SelectReloadAmmoCheck")
       Select2:
         FLMT A 1 A_Raise
-        LOOP
+        loop
+
+      SelectReloadAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Select2")
+        TNT1 A 0 A_JumpIfInventory("NapalmInTank",1,"Select2")
+      SelectReloadAmmo:
+        TNT1 A 0 A_JumpIfInventory("NapalmInTank",0,"Select2")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+        goto Select2
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_TakeInventory("Cell",1)
+        TNT1 A 0 A_GiveInventory("NapalmInTank")
+        loop
 
       Fire:
-        TNT1 A 0 A_JumpIfInventory("NapalmInTank",1,1)
-        goto Reload
-        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"NothingFire")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireReloadable")
+      FireNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireActual")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,"FireActual")
+        goto Ready
+
+      FireReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireActual")
+        TNT1 A 0 A_JumpIfInventory("NapalmInTank",1,"FireActual")
+      FireReloadableDryCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,"Reload")
+        goto Ready
+
+      FireActual:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Ready")
         TNT1 A 0 A_AlertMonsters
-        TNT1 A 0 A_PlaySound("marathon/flamethrower/fire")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
-        TNT1 A 0 A_FireCustomMissile("MaraFlameShot",0,1,0,3)
-      FireContinue:
-        FLMT B 1 Bright A_Recoil(0.1)
+        TNT1 A 0 A_GiveInventory("SamsaraMarathonFlamethrowerAttackHandler")
+      FireFinish:
+        FLMT B 1 Bright
         TNT1 A 0 A_ReFire
         goto Ready
 
-      CoopFire:
-        TNT1 A 0 A_FireCustomMissile("MaraFlameShot2",0,1,0,3)
-        goto FireContinue
-
-      NothingFire:
-        TNT1 A 0
-        goto Ready
-
       Reload:
-        TNT1 A 0 A_JumpIfInventory("Cell",1,1)
-        goto Ready
-        FLMT A 0 Offset(0,32)
-        FLMT A 1 Offset(0,35)
-        FLMT A 1 Offset(0,40)
-        FLMT A 1 Offset(0,45)
+        FLMT A 1 Offset(0,38)
+        FLMT A 1 Offset(0,44)
         FLMT A 1 Offset(0,50)
-        FLMT A 1 Offset(0,55)
-        FLMT A 1 Offset(0,60)
-        FLMT A 1 Offset(0,65)
-        FLMT A 1 Offset(0,70)
-        FLMT A 1 Offset(0,75)
-        FLMT A 1 Offset(0,80) // 10
-        FLMT A 1 Offset(0,85)
-        FLMT A 1 Offset(0,90)
-        FLMT A 1 Offset(0,95)
-        FLMT A 1 Offset(0,100)
-        FLMT A 1 Offset(0,105)
+        FLMT A 1 Offset(0,56)
+        FLMT A 1 Offset(0,62)
+        FLMT A 1 Offset(0,68)
+        FLMT A 1 Offset(0,74)
+        FLMT A 1 Offset(0,80)
+        FLMT A 1 Offset(0,86)
+        FLMT A 1 Offset(0,92)
+        FLMT A 1 Offset(0,98)
+        FLMT A 1 Offset(0,104)
         FLMT A 1 Offset(0,110)
-        FLMT A 1 Offset(0,115)
-        FLMT A 1 Offset(0,120)
-        FLMT A 1 Offset(0,125)
-        FLMT A 1 Offset(0,130) // 20
-        FLMT A 1 Offset(0,135)
-        FLMT A 1 Offset(0,140)
-        FLMT A 17
-
-      Reload2:
-        TNT1 A 0 A_JumpIfInventory("NapalmInTank",0,"Select2")
-        TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+        FLMT A 1 Offset(0,116)
+        FLMT A 1 Offset(0,122)
+        FLMT A 18 Offset(0,128)
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"SelectReloadAmmo")
         goto Select2
-        TNT1 A 0 A_TakeInventory("Cell",1)
-        TNT1 A 0 A_GiveInventory("NapalmInTank",1)
-        loop
+    }
+}
+
+actor SamsaraMarathonFlamethrowerAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+      PickupCheckAmmoNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,"PickupTakeAmmoNonReloadable")
+        stop
+
+      PickupCheckAmmoReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("NapalmInTank",1,"PickupTakeAmmoReloadable")
+        stop
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("marathon/flamethrower/fire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("MaraFlameShot",0,false,0,3)
+      PickupFinish:
+        TNT1 A 0 A_Recoil(0.1)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("MaraFlameShot2",0,false,0,3)
+        goto PickupFinish
+
+      // Ammo taking stuff
+      PickupTakeAmmoNonReloadable:
+        TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("NapalmInTank",1)
+        goto PickupAttack
     }
 }
 
@@ -132,7 +195,6 @@ actor MaraFlameShot
     Damage (random(6,10))
     DamageType Fire
     Scale 0.85
-    DeathSound ""
     Projectile
     Obituary "$SAMSARA_MARATHON_OB_SLOT6"
     +RANDOMIZE
