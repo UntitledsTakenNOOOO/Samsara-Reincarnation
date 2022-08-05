@@ -45,6 +45,8 @@ actor SamsaraSlotSix_ROTWB replaces PewpRifle
 	}
 }
 
+actor SamsaraUniquePickup_ROTWB : RandomSpawner replaces BlackShoesItem { DropItem "SamsaraUniquePickup" }
+
 Actor SamsaraHealPack0_ROTWB : HereticStuffDump replaces FoodNomNom { }
 Actor SamsaraHealPack0_ROTWB2 : HereticStuffDump replaces FoodNomNom2 { }
 Actor SamsaraHealPack0_ROTWB3 : HereticStuffDump replaces LowResFoodNomNom { }
@@ -61,7 +63,7 @@ Actor SamsaraAmmo2Small_ROTWB : Ammo2Small replaces ShellNew { }
 Actor SamsaraAmmo2Small_ROTWB2 : Ammo2Small replaces LowResShellNew { }
 Actor SamsaraAmmo3Small_ROTWB : Ammo3Small replaces RocketAmmoNew { }
 Actor SamsaraAmmo3Small_ROTWB2 : Ammo3Small replaces RocketAmmoNew2 { }
-Actor SamsaraAmmo3Big_ROTWB : Ammo1Big replaces RocketAmmoNew4 { }
+Actor SamsaraAmmo3Big_ROTWB : Ammo3Big replaces RocketAmmoNew4 { }
 Actor SamsaraAmmo4Small_ROTWB : Ammo4Small replaces PewpPack { }
 
 // The Monsters
@@ -2026,7 +2028,9 @@ ACTOR DropBarrel_Samsara replaces DropBarrel
         BARR ABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCD 3 A_CheckFloor("Bumms")
 		Stop
     Bumms:
-        TFOG A 1 A_Explode(45, 160, 0)
+		TNT1 A 0 A_SetDamageType("Explosive")
+	DeathContinue:
+		TFOG A 1 A_Explode(45, 160, 0)
         TFOG A 3 BRIGHT A_Scream
 		TFOG A 0
         TFOG B 3 BRIGHT Radius_Quake(4,10,0,20,0)
@@ -2035,6 +2039,14 @@ ACTOR DropBarrel_Samsara replaces DropBarrel
 		TFOG EFG 3
 		TFOG H 3
 		Stop
+	Death.ZorchPistol:
+	Death.Zorch:
+	Death.ZorchKamikaze:
+	Death.PhasingZorch:
+	Death.ZorchSpectral:
+		TNT1 A 0 A_SetDamageType("Zorch")
+		TNT1 A 0 A_ChangeFlag("BLOODLESSIMPACT",true)
+		goto DeathContinue
 	}
 }
 
@@ -2064,6 +2076,8 @@ ACTOR BoomBarrelCorpse_Samsara replaces BoomBarrelCorpse
 		BARR B -1
 		Wait
 	Death:
+		TNT1 A 0 A_SetDamageType("Explosive")
+	DeathContinue:
 		TFOG A 4 BRIGHT A_Scream
 		TFOG A 0 Radius_Quake(1,10,0,10,0)
         TFOG B 4 BRIGHT A_Explode
@@ -2072,6 +2086,14 @@ ACTOR BoomBarrelCorpse_Samsara replaces BoomBarrelCorpse
 		TFOG EFG 4
 		TFOG H 4 A_BarrelDestroy
 		Stop
+	Death.ZorchPistol:
+	Death.Zorch:
+	Death.ZorchKamikaze:
+	Death.PhasingZorch:
+	Death.ZorchSpectral:
+		TNT1 A 0 A_SetDamageType("Zorch")
+		TNT1 A 0 A_ChangeFlag("BLOODLESSIMPACT",true)
+		goto DeathContinue
 	}
 }
 
@@ -2394,6 +2416,434 @@ ACTOR HantelThrow_Samsara : Inventory
         CLIP BB 10
 		CLIP A -1
 		Stop
+	}
+}
+
+ACTOR RoboCat_Samsara : SamsaraMonsterRoboticLarge replaces RoboCat
+{
+	Health 300
+	Speed 16
+	Radius 32
+	Height 64
+    Scale 1
+	Mass 500
+    PainChance 150
+    MeleeRange 150
+	PainSound "LEGSHIT"
+    +NOBLOOD
+	Monster
+	+FLOORCLIP +FASTER +FASTMELEE
+    +LOOKALLAROUND
+    +DONTGIB
+    +NOTDMATCH
+    +NOICEDEATH
+    SeeSound "RAWR"
+	AttackSound "SWOOSH"
+	DeathSound "GROUND"
+	Tag "Robot Kitty"
+	Obituary "You were killed by a robot kitty!"
+	States
+	{
+	Spawn:
+		ROBO A 10 A_Look
+		Loop
+	See:
+		ROBO BB 4 A_Chase
+        ROBO BB 0 A_PlaySound("ROBST1")
+        ROBO AD 4 A_Chase
+        ROBO CC 4 A_Chase
+        ROBO BB 0 A_PlaySound("ROBST2")
+        ROBO AD 4 A_Chase
+        Loop
+    Pain:
+        ROBO D 0 A_CustomMissile ("RoboCatCog", 60, 0, random(0,360), 2, 24)
+        ROBO I 4 A_Pain
+        Goto See
+	Pain.MightyBoot:
+        TNT1 A 0 A_ChangeFlag("NOPAIN",1)
+        TNT1 A 0 A_PlaySoundEx("duke/kickhit","body",0,0)
+        ROBO I 2 A_FaceTarget
+        TNT1 A 0 A_Recoil(14)
+        ROBO I 16 A_Pain
+        Goto See
+	Melee:
+        TNT1 A 0 A_ChangeFlag("NOPAIN",0)
+		ROBO D 3 A_FaceTarget
+        ROBY A 3 A_Recoil (-10)
+        ROBY B 3
+        ROBY C 3 A_SkelFist
+        ROBY D 3 A_FaceTarget
+		Goto See
+    Death:
+		TNT1 A 0 A_JumpIfHealthLower(-25, "ActuallyDead")
+		ROBO DA 3
+        ROBO I 3
+        ROBO F 3
+		ROBO G 3
+        ROBO G 0 Radius_Quake(1,10,0,10,0)
+        ROBO G 0 A_NoBlocking
+        ROBO H 3
+        ROBO E 3 
+		ROBO E 100   /////leuchtet mit Augen
+        ROBO Y 2 A_PlaySound("INTDO3")
+        ROBO E 2
+        ROBO Y 2
+        ROBO E 2
+        ROBO Y 2
+        ROBO E 100
+        ROBO Y 2 A_PlaySound("INTDO3")
+        ROBO E 2
+        ROBO Y 2
+        ROBO E 2
+        ROBO Y 2
+        ROBO E 50
+        ROBO HEGFIBADA 3
+        ROBO F 0 A_SpawnItemEx("Robocat_Samsara",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+        Stop
+	ActuallyDead:
+		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		ROBO D 0 A_SpawnItemEx ("SaucerCatExplosion",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+        ROBO G 0 A_NoBlocking
+        ROBO D 0 A_Quake(6,15,0,400)
+        ROBO D 0 A_CustomMissile ("RoboCatHead_Samsara", 80, 0, random(0,360), 2, 24)
+        ROBO D 0 A_CustomMissile ("RoboCatArm_Samsara", 60, 0, random(0,360), 2, 24)
+        ROBO D 0 A_CustomMissile ("RoboCatLeg_Samsara", 30, 0, random(0,360), 2, 24)
+        ROBO OPN 3
+        ROBO N -1
+		Stop
+	}
+}
+
+actor RoboCatHead_Samsara
+{
+    +DOOMBOUNCE
+    PROJECTILE
+    -NOGRAVITY
+    //-NOBLOCKMAP
+    -NOTELEPORT
+    -SOLID
+    Radius 2
+    Damage 0
+    bouncefactor 0.4
+    Speed 5
+    States
+    {
+    Spawn:
+        ROBO A 0
+        ROBO A 0 ThrustThingZ (0, 45, 0, 1)
+        goto See
+
+    See:
+        ROBO J 5
+        ROBO K 5 ThrustThingZ(0,6,1,1) 
+        ROBO LM 5
+        loop
+    Death:
+        ROBO A 0 A_ChangeFlag(NOBLOCKMAP, 0)
+        ROBO A 0 A_Jump (64,2)
+        ROBO A 0 A_Jump (128,2)
+        ROBO K -1
+        Stop
+        ROBO K -1
+        Stop
+    }
+}
+
+actor RoboCatArm_Samsara
+{
+    +DOOMBOUNCE
+    PROJECTILE
+    -NOGRAVITY
+    //-NOBLOCKMAP
+    -NOTELEPORT
+    -SOLID
+    Radius 2
+    Damage 0
+    bouncefactor 0.1
+    Speed 5
+    Scale 1.3
+    States
+    {
+    Spawn:
+        ROBO A 0
+        ROBO A 0 ThrustThingZ (0, 20, 0, 1)
+        goto See
+    Alt:
+    	ROBO R 0
+    	Stop 
+    See:
+        ROBO Q 5
+        ROBO R 5 ThrustThingZ(0,6,1,1) 
+        ROBO ST 5
+        loop
+    Death:
+        ROBO A 0 A_ChangeFlag(NOBLOCKMAP, 0)
+        ROBO A 0 A_Jump (64,2)
+        ROBO A 0 A_Jump (128,2)
+        ROBO R -1
+        Stop
+        ROBO R -1
+        Stop
+    }
+}
+
+actor RoboCatLeg_Samsara
+{
+    +DOOMBOUNCE
+    PROJECTILE
+    -NOGRAVITY
+    //-NOBLOCKMAP
+    -NOTELEPORT
+    -SOLID
+    Radius 2
+    Damage 0
+    bouncefactor 0.1
+    Speed 5
+    Scale 1.2
+    States
+    {
+    Spawn:
+        ROBO A 0
+        ROBO A 0 ThrustThingZ (0, 20, 0, 1)
+        goto See
+    Alt:
+    	ROBO R 0
+    	Stop 
+    See:
+        ROBO U 5
+        ROBO V 5 ThrustThingZ(0,6,1,1) 
+        ROBO WX 5
+        loop
+    Death:
+        ROBO A 0 A_ChangeFlag(NOBLOCKMAP, 0)
+        ROBO A 0 A_Jump (64,2)
+        ROBO A 0 A_Jump (128,2)
+        ROBO V -1
+        Stop
+        ROBO V -1
+        Stop
+    }
+}
+
+actor RoboCatCog_Samsara
+{
+    +DOOMBOUNCE
+    PROJECTILE
+    -NOGRAVITY
+    //-NOBLOCKMAP
+    -NOTELEPORT
+    -SOLID
+    Radius 2
+    Damage 0
+    bouncefactor 0.1
+    Speed 5
+    Scale 0.7
+    States
+    {
+    Spawn:
+        ROBO A 0
+        ROBO A 0 ThrustThingZ (0, 20, 0, 1)
+        goto See
+    Alt:
+    	ROBO R 0
+    	Stop 
+    See:
+        ROBO Z 5
+        ROBO Z 5 ThrustThingZ(0,6,1,1) 
+        ROBO Z 5
+        loop
+    Death:
+        ROBO A 0 A_ChangeFlag(NOBLOCKMAP, 0)
+        ROBO A 0 A_Jump (64,2)
+        ROBO A 0 A_Jump (128,2)
+        ROBO Z 1
+        Stop
+        ROBO Z 1
+        Stop
+    }
+}
+
+ACTOR ShotgunCatPirate_Samsara : SamsaraMonsterBeastMediumTotalGib replaces ShotgunCatPirate
+{
+	Game Doom
+	Health 15
+    Damage 1
+	Radius 20
+	Height 56
+	Mass 20
+    Speed 10
+    Scale 0.8
+	PainChance 170
+	Monster
+	+FLOORCLIP
+    +LOOKALLAROUND
+    +DONTGIB
+    SeeSound "CATSIGHT"
+	AttackSound "shotguy/attack"
+	PainSound "CATPAIN"
+	DeathSound "CATDIE"
+    DropItem "SamsaraAmmo1Small_ROTWB", 125, 5
+	Obituary "You were perforated by the bullets of the shotgun cat!"
+	States
+	{
+	Spawn:
+		PPIR A 10 A_Look
+		Loop
+	See:
+		PPIR BB 3 A_Chase
+        PPIR BB 0 A_PlaySound("PASPLAN3")
+        PPIR DD 3 A_Chase
+        PPIR DD 0 A_PlaySound("PASPLAN4")
+        PPIR CC 3 A_Chase
+        PPIR CC 0 A_PlaySound("PASPLAN3")
+        PPIR DD 3 A_Chase
+        PPIR DD 0 A_PlaySound("PASPLAN4")
+		Loop
+	Missile:
+		TNT1 A 0 A_ChangeFlag("NOPAIN",0)
+		PPIR E 10 A_FaceTarget
+		PPIR F 10 A_CustomBulletAttack( 5, 0, 1, 3, "BulletPuff")
+		PPIR E 10
+		Goto See
+	Pain:
+		PPIR G 2 A_Pain
+		PPIR G 2
+		Goto See
+	Pain.MightyBoot:
+        TNT1 A 0 A_ChangeFlag("NOPAIN",1)
+        TNT1 A 0 A_PlaySoundEx("duke/kickhit","body",0,0)
+        PPIR G 2 A_FaceTarget
+        TNT1 A 0 A_Recoil(14)
+        PPIR G 16 A_Pain
+        Goto See
+	Death:
+		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+ 		PPIR I 4 A_Scream
+		PPIR J 4 A_NoBlocking
+        PPIR K 4
+		PPIR L 4
+        PPIR M 4
+		PPIR H -1
+		Stop
+	Death.PainkillerStake:
+		TNT1 A 0 ACS_NamedExecuteAlways("Painkiller_MonsterKill")
+		TNT1 A 0 A_JumpIf(CallACS("Painkiller_IsItGibbed")==1,"PainkillerGib")
+		TNT1 A 0 A_GiveInventory("Painkiller_RunStake",1)
+		TNT1 A 0 A_Scream
+		TNT1 A 0 A_NoBlocking
+		TNT1 A 0 A_FaceTarget
+	StakeDeath:
+		PPIR G 2
+		Loop
+    Raise:
+        PPIR A 0
+		"####" "#" 0 A_JumpIfInventory("EnemyZorched",1,"ZorchRaise")
+        PPIR H 1
+        PPIR M 4
+        PPIR L 4
+        PPIR K 4
+        PPIR J 4
+        PPIR I 4
+        Goto See
+	ZorchRaise:
+		"####" "#" 1 A_UnsetShootable
+		"####" "#" 1 A_SpawnItem("SpawnFire2")
+		"####" "#" 0 A_PlaySound("archvile/resummon")
+		"####" "#" 1 A_TakeInventory("EnemyZorched",1)
+		"####" "#" 0 A_SetTranslucent(0.1,0)
+		"####" "#" 3 A_SetTranslucent(0.2,0)
+		"####" "#" 3 A_SetTranslucent(0.3,0)
+		"####" "#" 3 A_SetTranslucent(0.4,0)
+		"####" "#" 3 A_SetTranslucent(0.5,0)
+		"####" "#" 3 A_SetTranslucent(0.6,0)
+		"####" "#" 3 A_SetTranslucent(0.7,0)
+		"####" "#" 3 A_SetTranslucent(0.8,0)
+		"####" "#" 3 A_SetTranslucent(0.9,0)
+		"####" "#" 3 A_SetTranslucent(1,0)
+		"####" "#" 1 A_SetShootable
+		Goto See
+    }
+}
+
+ACTOR ChaingunCatBigPirate_Samsara : SamsaraMonsterBeastLargeTotalGib replaces ChaingunCatBigPirate
+{
+	Game Doom
+	Health 350
+	Radius 40
+	Height 56
+	Mass 200
+	Speed 15
+    Scale 1
+	PainChance 0
+	Monster
+	+FLOORCLIP
+    +LOOKALLAROUND
+    +DONTGIB
+	SeeSound "CuteNukemRandom"
+	PainSound "PUNCH8"
+	DeathSound "CUTENUK4"
+	AttackSound "chainguy/attack"
+    DropItem "SamsaraAmmo2Small_ROTWB", 125, 2
+	Tag "Pirate Cute Nukem"
+	Obituary "You were killed by the chaingun cat!"
+	States
+	{
+	Spawn:
+		PHAB A 10 A_Look
+		Loop
+	See:
+		PHAB BB 3 A_Chase
+        PHAB DD 3 A_Chase
+        PHAB CC 3 A_Chase
+        PHAB DD 3 A_Chase
+        Loop
+	Missile:
+		TNT1 A 0 A_ChangeFlag("NOPAIN",0)
+		PHAB E 10 A_FaceTarget
+		PHAB FG 4 BRIGHT A_CPosAttack
+		PHAB F 1 A_CPosRefire
+		Goto Missile+2
+	Pain:
+		CPOS G 0
+		Goto See
+	Death:
+		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		PHAB H 3 A_Scream
+        PHAB I 4 A_NoBlocking
+        PHAB J 3
+        PHAB K 3
+        PHAB L 0 Radius_Quake(1,10,0,10,0)
+		PHAB L -1
+	    Stop
+	Raise:
+        PHAB A 0
+		"####" "#" 0 A_JumpIfInventory("EnemyZorched",1,"ZorchRaise")
+		CPOS H 1
+        CPOS M 4
+		CPOS L 4
+        CPOS K 4
+        CPOS J 4
+        CPOS I 4
+		Goto See
+	ZorchRaise:
+		"####" "#" 1 A_UnsetShootable
+		"####" "#" 1 A_SpawnItem("SpawnFire2")
+		"####" "#" 0 A_PlaySound("archvile/resummon")
+		"####" "#" 1 A_TakeInventory("EnemyZorched",1)
+		"####" "#" 0 A_SetTranslucent(0.1,0)
+		"####" "#" 3 A_SetTranslucent(0.2,0)
+		"####" "#" 3 A_SetTranslucent(0.3,0)
+		"####" "#" 3 A_SetTranslucent(0.4,0)
+		"####" "#" 3 A_SetTranslucent(0.5,0)
+		"####" "#" 3 A_SetTranslucent(0.6,0)
+		"####" "#" 3 A_SetTranslucent(0.7,0)
+		"####" "#" 3 A_SetTranslucent(0.8,0)
+		"####" "#" 3 A_SetTranslucent(0.9,0)
+		"####" "#" 3 A_SetTranslucent(1,0)
+		"####" "#" 1 A_SetShootable
+		Goto See
 	}
 }
 
@@ -3473,8 +3923,83 @@ ACTOR Boss2Easy_Samsara : SamsaraMonsterBeastHuge replaces Boss2Easy
 	}
 }
 
+ACTOR FinalBossEasy_Samsara replaces FinalBossEasy
+{
+	Radius 32
+	Height 192
+    Scale 3.5
+	Mass 9999
+    PainChance 250
+    Health 1000
+    Monster
+    +FLOORCLIP
+	Tag "Cat Leader"
+	States
+	{
+	Spawn:
+		FINC ACDC 7
+        Loop
+    Pain:
+        FINC B 3
+        Goto Spawn
+    Death:
+        FINC A -1
+        Stop
+	}
+}
+
+ACTOR FinalBossMedium_Samsara replaces FinalBossMedium
+{
+	Radius 32
+	Height 192
+    Scale 3.5
+	Mass 9999
+    PainChance 250
+    Health 2000
+    Monster
+    +FLOORCLIP 
+	Tag "Cat Leader"
+	States
+	{
+	Spawn:
+		FINC ACDC 7
+        Loop
+    Pain:
+        FINC B 3
+        Goto Spawn
+    Death:
+        FINC A -1
+        Stop
+	}
+}
+
+ACTOR FinalBossHard_Samsara replaces FinalBossHard
+{
+	Radius 32
+	Height 192
+    Scale 3.5
+	Mass 9999
+    PainChance 250
+    Health 2500
+    Monster
+    +FLOORCLIP 
+	Tag "Cat Leader"
+	States
+	{
+	Spawn:
+		FINC ACDC 7
+        Loop
+    Pain:
+        FINC B 3
+        Goto Spawn
+    Death:
+        FINC A -1
+        Stop
+	}
+}
+
 // The Decorations
-actor WallBoom_Samsara replaces WallBoom
+actor WallBoom_Samsara replaces WallBoom	// Apparently needed in order to prevent invisible blood demons from spawning
 {
 	Scale 1.2
 	+FLOORCLIP
@@ -3487,5 +4012,48 @@ actor WallBoom_Samsara replaces WallBoom
 	Spawn:
 		FIRE ABCDEFG 3 
 		stop
+	}
+}
+
+ACTOR BoomBarrel_Samsara replaces BoomBarrel
+{
+	Game Doom
+	Health 5
+	Radius 10
+    Scale 0.80
+    Height 56
+	+SOLID
+	+SHOOTABLE
+	+NOBLOOD
+	+ACTIVATEMCROSS
+	+DONTGIB
+	+NOICEDEATH
+	+OLDRADIUSDMG
+	DeathSound "world/barrelx"
+	Obituary "$OB_BARREL"
+	States
+	{
+	Spawn:
+		BARR A -1
+		Loop
+	Death:
+		TNT1 A 0 A_SetDamageType("Explosive")
+	DeathContinue:
+		TFOG A 4 BRIGHT A_Scream
+		TFOG A 0 Radius_Quake(1,10,0,10,0)
+        TFOG B 4 BRIGHT A_Explode
+		TFOG C 4
+		TFOG D 4
+		TFOG EFG 4
+		TFOG H 4 A_BarrelDestroy
+		Stop
+	Death.ZorchPistol:
+	Death.Zorch:
+	Death.ZorchKamikaze:
+	Death.PhasingZorch:
+	Death.ZorchSpectral:
+		TNT1 A 0 A_SetDamageType("Zorch")
+		TNT1 A 0 A_ChangeFlag("BLOODLESSIMPACT",true)
+		goto DeathContinue
 	}
 }
