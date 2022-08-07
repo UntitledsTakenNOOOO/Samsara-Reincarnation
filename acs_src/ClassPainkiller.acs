@@ -71,6 +71,8 @@ Script "Painkiller_Loop" Enter
 	if(!CheckInventory("PainkillerClass"))
 		terminate;
 		
+	ACS_NamedExecuteWithResult("Painkiller_BlackTarotRestore");
+		
 	//int musicvolume = GetCVAR("SND_MusicVolume");
 	int pln = PlayerNumber();
 	int lastsilver1, lastsilver2;
@@ -181,10 +183,7 @@ Script "Painkiller_Loop" Enter
 		lastsilver2 = CheckInventory("Painkiller_SilverSlot2");
 		Delay(1);
 		TakeInventory("Painkiller_Combo", 1);
-			
-		if(CheckWeapon("Painkiller_DemonMorph"))
-			GiveInventory("Painkiller_DemonMorph_Player",1);
-		
+
 		//Footstep code
 		int speedx, speedy, lasttimer, velocity, movement;	
 		speedx = GetActorVelX(0);
@@ -1044,14 +1043,15 @@ Script "Painkiller_StartDemonMorph" (int duration)
 	SetWeapon("Painkiller_DemonMorph");
 	//PlaySound(0,"Painkiller/DemonMorph/Loop",CHAN_5|CHAN_NOPAUSE,1.0,true,ATTN_NORM);
 	Delay(duration);
-	TakeInventory("PainkillerDemonMorphSlower",999);
+	/*TakeInventory("PainkillerDemonMorphSlower",999);
 	TakeInventory("PainkillerDemonMorphTimerFreezer",999);
 	TakeInventory("PainkillerDemonMorphScreen",999);
 	TakeInventory("PainkillerDemonMorphScreen2",999);
-	StopSound(0,CHAN_5);
+	StopSound(0,CHAN_5|CHAN_NOPAUSE);
 	TakeInventory("PainkillerDemonMorphScreen",999);
-	PlaySound(0,"Painkiller/DemonMorph/Stop",CHAN_6|CHAN_NOPAUSE,1.0,0,ATTN_NORM);
-	TakeInventory("Painkiller_DemonMorph", 1);
+	PlaySound(0,"Painkiller/DemonMorph/Stop",CHAN_5|CHAN_NOPAUSE,1.0,0,ATTN_NORM);
+	TakeInventory("Painkiller_DemonMorph", 1);*/
+	GiveInventory("Painkiller_DemonMorphRemove",1);
 }
 
 Script "Painkiller_ItemRemoval" Unloading
@@ -1095,6 +1095,56 @@ Script "Painkiller_GiveTarotCard" (int silverorgold)
 		{
 			randnum = random(0,PainkillerGoldTarotCards-1);
 			GiveInventory(Painkiller_Gold_CardGraphics[randnum][4],1);
+		}
+	}
+}
+
+Script "Painkiller_RestoreTarots" Respawn
+{
+	ACS_NamedExecuteWithResult("Painkiller_BlackTarotRestore");
+}
+
+Script "Painkiller_BlackTarotRestore" (void)
+{
+	int player = PlayerNumber();
+	if(isCoop() || isSinglePlayer() || isInvasion())
+		terminate;
+		
+	for(int silver = 0; silver < 14; silver++)
+	{
+		GiveInventory(Painkiller_Silver_CardGraphics[silver][4],1);
+	}
+	for(int gold = 0; gold < 17; gold++)
+	{
+		GiveInventory(Painkiller_Gold_CardGraphics[gold][4],1);
+	}
+		
+	for(int i = 0; i < 32; i++)
+	{
+		if(GetCvar("samsara_mp_silverSlot1") == i)
+		{
+			TakeInventory("Painkiller_SilverSlot1",32);
+			GiveInventory("Painkiller_SilverSlot1",i);
+		}
+		if(GetCvar("samsara_mp_silverSlot2") == i)
+		{
+			TakeInventory("Painkiller_SilverSlot2",32);
+			GiveInventory("Painkiller_SilverSlot2",i);
+		}
+		if(GetCvar("samsara_mp_goldSlot1") == i)
+		{
+			TakeInventory("Painkiller_GoldSlot1",32);
+			GiveInventory("Painkiller_GoldSlot1",i);
+		}
+		if(GetCvar("samsara_mp_goldSlot2") == i)
+		{
+			TakeInventory("Painkiller_GoldSlot2",32);
+			GiveInventory("Painkiller_GoldSlot2",i);
+		}
+		if(GetCvar("samsara_mp_goldSlot3") == i)
+		{
+			TakeInventory("Painkiller_GoldSlot3",32);
+			GiveInventory("Painkiller_GoldSlot3",i);
 		}
 	}
 }
@@ -1165,6 +1215,7 @@ Script "Painkiller_BlackTarotUI" (void)
 						if(!(buttons & (BT_USE|BT_ATTACK)))
 						{
 							LocalAmbientSound("Painkiller/TarotBoard/MoveCard",255);
+							SetUserCvar(PlayerNumber(),"samsara_mp_silverSlot1",0);
 							TakeInventory("Painkiller_SilverSlot1",32);
 							holdqueue = 0;
 							holddelay = standardholddelay;
@@ -1190,6 +1241,7 @@ Script "Painkiller_BlackTarotUI" (void)
 						if(!(buttons & (BT_USE|BT_ATTACK)))
 						{
 							LocalAmbientSound("Painkiller/TarotBoard/MoveCard",255);
+							SetUserCvar(PlayerNumber(),"samsara_mp_silverSlot2",0);
 							TakeInventory("Painkiller_SilverSlot2",32);
 							holdqueue = 0;
 							holddelay = standardholddelay;
@@ -1223,6 +1275,7 @@ Script "Painkiller_BlackTarotUI" (void)
 				{
 					TakeInventory("Painkiller_SilverSlot1",32);
 					GiveInventory("Painkiller_SilverSlot1",holding);
+					SetUserCvar(PlayerNumber(),"samsara_mp_silverSlot1",holding);
 					LocalAmbientSound("Painkiller/TarotBoard/SilverPlace",255);
 					holddelay = standardholddelay;
 					holding = 0;
@@ -1230,7 +1283,7 @@ Script "Painkiller_BlackTarotUI" (void)
 				else if((holding-1) < PainkillerSilverTarotCards && holddelay <= 0 && cursorx < FixedMul(hudboundsx,0.375) && (cursorx > (FixedMul(hudboundsx,0.2375))) && (cursory < FixedMul(hudboundsy,0.53) && cursory > FixedMul(hudboundsy,0.3)))
 				{
 					TakeInventory("Painkiller_SilverSlot2",32);
-					GiveInventory("Painkiller_SilverSlot2",holding);
+					SetUserCvar(PlayerNumber(),"samsara_mp_silverSlot2",holding);
 					LocalAmbientSound("Painkiller/TarotBoard/SilverPlace",255);
 					holddelay = standardholddelay;
 					holding = 0;
@@ -1311,6 +1364,7 @@ Script "Painkiller_BlackTarotUI" (void)
 						holdqueue = 1;
 						if(!(buttons & (BT_USE|BT_ATTACK)))
 						{
+							SetUserCvar(PlayerNumber(),"samsara_mp_goldSlot1",0);
 							LocalAmbientSound("Painkiller/TarotBoard/MoveCard",255);
 							TakeInventory("Painkiller_GoldSlot1",32);
 							holdqueue = 0;
@@ -1336,6 +1390,7 @@ Script "Painkiller_BlackTarotUI" (void)
 						holdqueue = 1;
 						if(!(buttons & (BT_USE|BT_ATTACK)))
 						{
+							SetUserCvar(PlayerNumber(),"samsara_mp_goldSlot2",0);
 							LocalAmbientSound("Painkiller/TarotBoard/MoveCard",255);
 							TakeInventory("Painkiller_GoldSlot2",32);
 							holdqueue = 0;
@@ -1361,6 +1416,7 @@ Script "Painkiller_BlackTarotUI" (void)
 						holdqueue = 1;
 						if(!(buttons & (BT_USE|BT_ATTACK)))
 						{
+							SetUserCvar(PlayerNumber(),"samsara_mp_goldSlot3",0);
 							LocalAmbientSound("Painkiller/TarotBoard/MoveCard",255);
 							TakeInventory("Painkiller_GoldSlot3",32);
 							holdqueue = 0;
@@ -1396,6 +1452,7 @@ Script "Painkiller_BlackTarotUI" (void)
 				{
 					TakeInventory("Painkiller_GoldSlot1",32);
 					GiveInventory("Painkiller_GoldSlot1",holding-a);
+					SetUserCvar(PlayerNumber(),"samsara_mp_goldSlot1",holding-a);
 					LocalAmbientSound("Painkiller/TarotBoard/GoldPlace",255);
 					holddelay = standardholddelay;
 					holding = 0;
@@ -1404,6 +1461,7 @@ Script "Painkiller_BlackTarotUI" (void)
 				{
 					TakeInventory("Painkiller_GoldSlot2",32);
 					GiveInventory("Painkiller_GoldSlot2",holding-a);
+					SetUserCvar(PlayerNumber(),"samsara_mp_goldSlot2",holding-a);
 					LocalAmbientSound("Painkiller/TarotBoard/GoldPlace",255);
 					holddelay = standardholddelay;
 					holding = 0;
@@ -1412,6 +1470,7 @@ Script "Painkiller_BlackTarotUI" (void)
 				{
 					TakeInventory("Painkiller_GoldSlot3",32);
 					GiveInventory("Painkiller_GoldSlot3",holding-a);
+					SetUserCvar(PlayerNumber(),"samsara_mp_goldSlot3",holding-a);
 					LocalAmbientSound("Painkiller/TarotBoard/GoldPlace",255);
 					holddelay = standardholddelay;
 					holding = 0;
@@ -1481,17 +1540,21 @@ Script "Painkiller_BlackTarotUI" (void)
 Script "Painkiller_GoldTarot_Activate" (void) net
 {
 	int gameMode = !(isCoop() || isInvasion() || isSinglePlayer()) ? 1 : 3;
-	if(CheckInventory("Painkiller_GoldSlot1") == 0 && CheckInventory("Painkiller_GoldSlot2") == 0 && CheckInventory("Painkiller_GoldSlot3") == 0)
+	if(CheckInventory("Painkiller_GoldActive") || CheckInventory("Painkiller_GoldSlot1") == 0 && CheckInventory("Painkiller_GoldSlot2") == 0 && CheckInventory("Painkiller_GoldSlot3") == 0 || CheckWeapon("Painkiller_DemonMorph") || !CheckInventory("Painkiller_TarotMPUses"))
 		terminate;
 				
-	if(CheckWeapon("Painkiller_DemonMorph"))
-		terminate;
-		
 	if(CheckInventory("Painkiller_TarotUsage") >= gameMode)
 	{
 		if(!(CheckInventory("Painkiller_TarotUsage") < 3*gameMode && CheckInventory("Painkiller_Mercy_Power")) && !(CheckInventory("Painkiller_TarotUsage") < 2*gameMode && CheckInventory("Painkiller_Forgiveness_Power")))
 			terminate;
 	}
+	
+	if(gameMode == 1)
+	{
+		TakeInventory("Painkiller_TarotMPUses",1);
+		TakeInventory("Painkiller_Tarot_GoldGiver",65536);
+	}
+	
 	//TakeInventory("Painkiller_TarotLevel",99999);
 	//GiveInventory("Painkiller_TarotLevel",levelnum);
 	GiveInventory("Painkiller_TarotUsage",1);
@@ -1660,10 +1723,11 @@ Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 				SetWeapon("Painkiller_DemonMorph");
 				Delay(5);
 			}
-			TakeInventory("Painkiller_DemonMorph",1);
-			TakeInventory("PainkillerDemonMorphSlower",1);
-			TakeInventory("PainkillerDemonMorphTimerFreezer",1);
-			TakeInventory("PainkillerDemonMorphScreen",1);
+			GiveInventory("Painkiller_DemonMorphRemove",1);
+			//TakeInventory("Painkiller_DemonMorph",1);
+			//TakeInventory("PainkillerDemonMorphSlower",1);
+			//TakeInventory("PainkillerDemonMorphTimerFreezer",1);
+			//TakeInventory("PainkillerDemonMorphScreen",1);
 			break;
 		case 14:
 			while(CheckInventory("Painkiller_GoldActive"))
