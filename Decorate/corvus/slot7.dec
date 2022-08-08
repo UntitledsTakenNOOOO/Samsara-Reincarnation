@@ -1,14 +1,15 @@
 actor DSparilStaff : Weapon
 {
 	Weapon.ammouse 5
-	Weapon.ammogive 30
+	Weapon.ammogive 60
 	Weapon.ammotype "Cell"
 	Weapon.SlotNumber 7
 	Weapon.SlotPriority 2
 	Inventory.pickupmessage "staff of d'sparil"
 	Obituary "%o was no match for %k"
 	Inventory.RestrictedTo "CorvusPlayer"
-    Tag "Staff of D'Sparil"
+    Tag "Staff of D'Sparil (Lightning Mode)"
+    +NOALERT
 	States
 	{
 	Ready:
@@ -21,12 +22,13 @@ actor DSparilStaff : Weapon
 		DSPS A 1 A_Lower
 		loop
 	Fire:
+        TNT1 A 0 A_AlertMonsters
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
         TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"FireTomed")
 		TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"FireTomed")
 		DSPS A 4
 		DSPS A 4 A_PlayWeaponSound("dsparil/attack")
-		NULL A 0 A_GunFlash
+		TNT1 A 0 A_GunFlash
 		DSPS B 4 bright
 		DSPS C 4 bright A_FireCustomMissile("Sorcerer2FX4")
 		DSPS B 4 bright
@@ -37,23 +39,26 @@ actor DSparilStaff : Weapon
 	FireTomed:
 	    DSPS A 8
 		DSPS A 4 A_PlayWeaponSound("DSparil/Attack")
-		NULL A 0 A_GunFlash
+		TNT1 A 0 A_GunFlash
 		DSPS B 4 bright
-		//NULL A 0 A_FireCustomMissile("Sorcerer2FX5",25)
-		//NULL A 0 A_FireCustomMissile("Sorcerer2FX5",-25)
+		//TNT1 A 0 A_FireCustomMissile("Sorcerer2FX5",25)
+		//TNT1 A 0 A_FireCustomMissile("Sorcerer2FX5",-25)
 	FireTomedLoop:
 		TNT1 A 0 A_PlayWeaponSound("dsparil/zap")
-		NULL A 0 A_FireCustomMissile("DSparilStaff_LightningHelix",0,0,2,4)
-		NULL A 0 A_FireCustomMissile("DSparilStaff_LightningHelix2",0,0,-2,4)
+		TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix",0,0,2,4)
+		TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix2",0,0,-2,4)
 		TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
 		DSPS B 2 bright 
-		TNT1 A 0 A_Refire("FireTomedLoop")
+		TNT1 A 0 A_ReFire(1)
+        goto FireTomedFinish
+        TNT1 A 0 A_AlertMonsters
+        loop
 	FireTomedFinish:
 		DSPS B 0 A_PlayWeaponSound("DSparil/Attack")
 		DSPS B 4 bright
 		DSPS B 4
 		DSPS A 8
-		DSPS A 4 bright A_ReFire
+		DSPS A 4 A_ReFire
 		goto ready
 
     CoopFire:
@@ -61,7 +66,7 @@ actor DSparilStaff : Weapon
 		TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"CoopFireTomed")
 		DSPS A 4
 		DSPS A 4 A_PlayWeaponSound("dsparil/attack")
-		NULL A 0 A_GunFlash
+		TNT1 A 0 A_GunFlash
 		DSPS B 4 bright
 		DSPS C 4 bright A_FireCustomMissile("Sorcerer2FX4_Coop")
 		DSPS B 4 bright
@@ -73,32 +78,34 @@ actor DSparilStaff : Weapon
     CoopFireTomed: // Don't really see the point of this but it's here if needed
         DSPS A 10
 		DSPS A 4 A_PlayWeaponSound("DSparil/Attack")
-		NULL A 0 A_GunFlash
+		TNT1 A 0 A_GunFlash
 		DSPS B 4 bright
 	CoopFireTomedLoop:
 		TNT1 A 0 A_PlayWeaponSound("dsparil/zap")
-		NULL A 0 A_FireCustomMissile("DSparilStaff_LightningHelix_Coop",0,0,2,4)
-		NULL A 0 A_FireCustomMissile("DSparilStaff_LightningHelix2_Coop",0,0,-2,4)
+		TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix_Coop",0,0,2,4)
+		TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix2_Coop",0,0,-2,4)
 		TNT1 A 0 A_TakeInventory("Cell",1)
 		DSPS B 2 bright 
-		TNT1 A 0 A_Refire("CoopFireTomedLoop")
+		TNT1 A 0 A_ReFire(1)
+        goto CoopFireTomedFinish
+        TNT1 A 0 A_AlertMonsters
+        loop
 	CoopFireTomedFinish:
 		DSPS B 0 A_PlayWeaponSound("DSparil/Attack")
 		DSPS B 4 bright
 		DSPS B 4
 		DSPS A 8
-		DSPS A 4 bright A_ReFire
+		DSPS A 4 A_ReFire
 		goto ready
 		
 	AltFire:
-		DSPS A 4
 		TNT1 A 0 A_SelectWeapon("DSparilStaffMinion")
-		Goto Ready
-		
+		goto Ready
+
 	Flash:
-		NULL A 4 A_Light1
-		NULL A 4 A_Light2
-		NULL A 4 A_Light1
+		TNT1 A 4 A_Light1
+		TNT1 A 4 A_Light2
+		TNT1 A 4 A_Light1
 		Goto LightDone
 	Spawn:
 		DSTF A -1
@@ -108,19 +115,22 @@ actor DSparilStaff : Weapon
 
 actor DSparilStaffMinion : DSparilStaff
 {
+    Weapon.AmmoGive 0
 	Weapon.SlotPriority 1
+    Tag "Staff of D'Sparil (Summon Mode)"
 	States
 	{
 		Fire:
+            TNT1 A 0 A_AlertMonsters
 			TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"FireTomed")
 			TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"FireTomed")
 			DSPS A 8
 			DSPS A 4 A_PlayWeaponSound("DSparil/Attack")
-			NULL A 0 A_GunFlash
+			TNT1 A 0 A_GunFlash
 			DSPS D 4 bright
 			DSPS D 4 bright
-			NULL A 0 A_FireCustomMissile("Sorcerer2FX5",25)
-			NULL A 0 A_FireCustomMissile("Sorcerer2FX5",-25)
+			TNT1 A 0 A_FireCustomMissile("Sorcerer2FX5",25)
+			TNT1 A 0 A_FireCustomMissile("Sorcerer2FX5",-25)
 			DSPS E 4 bright 
 			DSPS D 4 bright
 			DSPS D 4
@@ -131,11 +141,11 @@ actor DSparilStaffMinion : DSparilStaff
 		FireTomed:
 			DSPS A 8
 			DSPS A 4 A_PlayWeaponSound("DSparil/Attack")
-			NULL A 0 A_GunFlash
+			TNT1 A 0 A_GunFlash
 			DSPS D 4 bright
 			DSPS D 4 bright
-			NULL A 0 A_FireCustomMissile("IronLichSpawner",25)
-			NULL A 0 A_FireCustomMissile("IronLichSpawner",-25)
+			TNT1 A 0 A_FireCustomMissile("IronLichSpawner",25)
+			TNT1 A 0 A_FireCustomMissile("IronLichSpawner",-25)
 			DSPS E 4 bright 
 			DSPS D 4 bright
 			DSPS D 4
@@ -144,9 +154,8 @@ actor DSparilStaffMinion : DSparilStaff
 			goto ready
 		
 		AltFire:
-			DSPS A 4
 			TNT1 A 0 A_SelectWeapon("DSparilStaff")
-			Goto Ready
+			goto Ready
 	}
 }
 
@@ -247,8 +256,8 @@ actor Sorcerer2FX5
 		FX11 ABABABAB 5 bright
 		goto Summon
 	Summon:
-		NULL A 0 A_SpawnItemEx("HereticDiscipleSpawnFog",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		NULL A 0 A_SpawnItemEx("FWizard",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		TNT1 A 0 A_SpawnItemEx("HereticDiscipleSpawnFog",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		TNT1 A 0 A_SpawnItemEx("FWizard",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
 		stop
 	Death:
 		FX11 CDEFG 5 BRIGHT
@@ -270,8 +279,8 @@ actor IronLichSpawner
 		FX11 ABABABAB 5 bright
 		goto Summon
 	Summon:
-		NULL A 0 A_SpawnItemEx("HereticDiscipleSpawnFog",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		NULL A 0 A_SpawnItemEx("FIronLich")
+		TNT1 A 0 A_SpawnItemEx("HereticDiscipleSpawnFog",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		TNT1 A 0 A_SpawnItemEx("FIronLich")
 		stop
 	Death:
 		FX11 CDEFG 5 BRIGHT
