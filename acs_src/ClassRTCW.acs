@@ -423,6 +423,13 @@ Script "RTCW_Decorate" (int value, int arg1, int arg2, int arg3)
 			SetFont("RTCWKNIF");
 			HudMessage(s:"A"; HUDMSG_FADEOUT|HUDMSG_ALPHA, 1200, CR_UNTRANSLATED, 640.0, 768.0, 0.1, 0.67, 1.0);
 			break;
+		case 45: //Flamethrower burn visuals
+			SetActivator(0,AAPTR_Tracer);
+			if(arg1 == 0)
+				SetResultValue(GetActorProperty(0,APROP_Radius)>>16);
+			else
+				SetResultValue(GetActorProperty(0,APROP_Height)>>16);
+			break;
 		case 100:
 			SetActivator(0,AAPTR_Target);
 			PrintBold(s:GetActorClass(0));
@@ -1096,6 +1103,46 @@ Script "RTCW_TeslaArcing" (int tx, int ty, int tz, int user) clientside
 		bendcounter++;
 	}
 	SpawnForced("RTCW_TeslaLight", x+segmentx, y+segmenty, z+segmentz, 0);
+}
+
+Script "RTCW_FlamethrowerTracer" (void)
+{
+	int myOldTid = ActivatorTid();
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0, myTid);
+
+	SetActivator(0,AAPTR_Tracer);
+
+	if((!(ClassifyActor(0) & ACTOR_ALIVE) && !(ClassifyActor(0) & ACTOR_MONSTER || ClassifyActor(0) & ACTOR_PLAYER)))
+		terminate;
+	
+	if(!CheckInventory("RTCW_FlamethrowerHitTarget") && !CheckInventory("RTCW_FlamethrowerBurnt"))
+	{
+		GiveInventory("RTCW_FlamethrowerHitTarget",1);
+		GiveInventory("RTCW_FlamethrowerIgnition",1);
+		
+		if(CheckInventory("RTCW_FlamethrowerIgnition") >= 50 && !CheckInventory("RTCW_FlamethrowerBurnt"))
+		{
+			GiveInventory("RTCW_FlamethrowerBurnt",1);
+			int burnerTid = UniqueTid();
+			SpawnForced("RTCW_FlamethrowerBurner",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid);
+			SetActivator(myTid,AAPTR_Target);
+			SetPointerExt(AAPTR_Target,0,burnerTid);
+			SetActivator(myTid,AAPTR_Tracer);
+			SetPointerExt(AAPTR_Tracer,0,burnerTid);
+			Thing_ChangeTid(myTid, myOldTid);
+			terminate;
+		}
+			
+		Thing_ChangeTid(myTid, myOldTid);
+		Delay(1);
+		TakeInventory("RTCW_FlamethrowerHitTarget",1);
+		
+		Delay(105);
+		TakeInventory("RTCW_FlamethrowerIgnition",1);
+	}
+	else
+		Thing_ChangeTid(myTid, myOldTid);
 }
 
 Script "RTCW_FlamethrowerStreamRotate" (int space, int height, int user)// clientside
