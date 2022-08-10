@@ -2,6 +2,7 @@ Actor Painkiller_TatorCard : Inventory { Inventory.MaxAmount 1 }
 Actor Painkiller_TarotLevel : Inventory { Inventory.MaxAmount 99999 }
 Actor Painkiller_TarotUsage : Inventory { Inventory.MaxAmount 9 Inventory.InterHubAmount 0 }
 Actor Painkiller_TarotMPUses : Inventory { Inventory.MaxAmount 3 Inventory.InterHubAmount 0 }
+Actor Painkiller_TarotLastPickupTime : Inventory { Inventory.MaxAmount 2147483647 Inventory.InterHubAmount 0 }
 
 Actor Painkiller_SoulCatcher : Painkiller_TatorCard {}
 Actor Painkiller_SoulKeeper : Painkiller_TatorCard {}
@@ -49,15 +50,14 @@ Actor Painkiller_Tarot_SilverGiver : CustomInventory
 			Stop
 		Pickup:
 			TNT1 A 0 ACS_NamedExecuteWithResult("Painkiller_GiveTarotCard",1,0,0,0)
-			TNT1 A 1
 			Stop
 	}
 }
 
 Actor Painkiller_Tarot_GoldGiver : CustomInventory
 {
-	-INVBAR
 	+COUNTITEM
+	-INVBAR
 	+INVENTORY.ALWAYSPICKUP
 	Inventory.Icon "CLIPA0"
 	Inventory.PickupMessage "Random Gold Tarot Card Given"
@@ -68,10 +68,16 @@ Actor Painkiller_Tarot_GoldGiver : CustomInventory
 			BFUG A -1
 			Stop
 		Pickup:
+			TNT1 A 0 A_JumpIfInventory("DMModeOn",1,"PickupMP")
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupMP")
+			Goto PickupSinglePlayer
+		PickupMP:
 			TNT1 A 0 A_JumpIfInventory("Painkiller_TarotMPUses",0,"PickupFail")
 			TNT1 A 0 A_GiveInventory("Painkiller_TarotMPUses",3)
 			TNT1 A 0 ACS_NamedExecuteWithResult("Painkiller_GiveTarotCard",0,0,0,0)
-			TNT1 A 1
+			Stop
+		PickupSinglePlayer:
+			TNT1 A 0 ACS_NamedExecuteWithResult("Painkiller_GiveTarotCard",0,0,0,0)
 			Stop
 		PickupFail:
 			TNT1 A 0
