@@ -26,7 +26,7 @@ actor LifeLeech : Weapon
 		Ready:
 		  TNT1 A 0 A_TakeInventory("UsingPitchfork", 1)
 		  TNT1 A 0 A_JumpIfInventory("CalebReady",1,"IntroTaunt")
-		  TNT1 A 0 A_JumpIfInventory("CalebWaiting",525,"WaitingTaunt")
+		  TNT1 A 0 A_JumpIfInventory("CalebWaiting",60,"WaitingTaunt")	
 		  LLST A 1 A_WeaponReady
 		  Goto Ready+1
 		Select:
@@ -235,16 +235,21 @@ actor LifeLeech : Weapon
 			TNT1 A 0 ACS_NamedExecuteAlways("CalebTauntCooldown", 0)
 		Goto Ready
 		WaitingTaunt:
+			TNT1 A 0 A_JumpIfInventory("CalebIdleBallgag",1,"IdleBallgagStuff")
 			TNT1 A 0 A_JumpIfInventory("CalebBallgag",1,2)
 			TNT1 A 0 A_PlaySoundEx("Caleb/Bored", "SoundSlot7", 0, 0)
 			TNT1 A 0 A_TakeInventory("CalebWaiting", 525)
 			TNT1 A 0 A_GiveInventory("CalebTauntCooldown",5)
 			TNT1 A 0 ACS_NamedExecuteAlways("CalebTauntCooldown", 0)
-		Goto Ready			 
+		Goto Ready		
+		IdleBallgagStuff:
+			TNT1 A 0 A_TakeInventory("CalebWaiting",525)
+		goto Ready		
 	}
 }
 
 Actor StopFromPickingTurrets_ : Inventory { inventory.maxamount 1 }
+Actor LifeLeechMarkedForDeath : Inventory { inventory.maxamount 1 }
 
 Actor LifeLeechSentrySpawner
 {
@@ -401,8 +406,17 @@ Actor LifeLeechTurret
 			TNT1 A 0 A_JumpIf(1 == ACS_NamedExecuteWithResult("CalebCoopCheck", 0), "SpawnThru")
 		SpawnLoop:	
 			TNT1 A 0 A_ChangeFlag("NOTARGET", 0)
-			LLSP AAAAA 10 A_Look
-			Loop
+			LLSP A 0 ACS_NamedExecuteWithResult("CalebLifeLeechTurretMarkForDeath")
+			LLSP A 10 A_Look
+			LLSP A 0 ACS_NamedExecuteWithResult("CalebLifeLeechTurretMarkForDeath")
+			LLSP A 10 A_Look
+			LLSP A 0 ACS_NamedExecuteWithResult("CalebLifeLeechTurretMarkForDeath")
+			LLSP A 10 A_Look
+			LLSP A 0 ACS_NamedExecuteWithResult("CalebLifeLeechTurretMarkForDeath")
+			LLSP A 10 A_Look
+			LLSP A 0 ACS_NamedExecuteWithResult("CalebLifeLeechTurretMarkForDeath")
+			LLSP A 10 A_Look
+			Loop		
 		SpawnThru:
 			TNT1 A 0 A_ChangeFlag("MTHRUSPECIES", 1)
 		Goto SpawnLoop
@@ -410,6 +424,7 @@ Actor LifeLeechTurret
 			TNT1 A 0 A_ChangeFlag("INVULNERABLE", 0)
 		Goto SpawnLoop		
 		See:
+			LLSP A 0 ACS_NamedExecuteWithResult("CalebLifeLeechTurretMarkForDeath")
 			LLSP A 15 A_JumpIfTargetInLOS("Missile")
 			LLSP A 5 A_ClearTarget
 		Goto SpawnLoop

@@ -46,7 +46,7 @@ Script "RTCW_Decorate" (int value, int arg1, int arg2, int arg3)
 			break;
 		case 5:
 			SetActivator(0,AAPTR_Master);
-			SetActorState(0,"RTCWXDeath",1);
+			SetActorState(0,"RTCWXDeath2",1);
 			break;
 		case 6:
 			Thing_ChangeTid(0,newtid);
@@ -422,6 +422,13 @@ Script "RTCW_Decorate" (int value, int arg1, int arg2, int arg3)
 			SetHudSize(1280,960,1);
 			SetFont("RTCWKNIF");
 			HudMessage(s:"A"; HUDMSG_FADEOUT|HUDMSG_ALPHA, 1200, CR_UNTRANSLATED, 640.0, 768.0, 0.1, 0.67, 1.0);
+			break;
+		case 45: //Flamethrower burn visuals
+			SetActivator(0,AAPTR_Tracer);
+			if(arg1 == 0)
+				SetResultValue(GetActorProperty(0,APROP_Radius)>>16);
+			else
+				SetResultValue(GetActorProperty(0,APROP_Height)>>16);
 			break;
 		case 100:
 			SetActivator(0,AAPTR_Target);
@@ -809,13 +816,16 @@ Script "RTCW_PlayerController" (void)
 
 Script "RTCW_PlayerVelocity" (void)
 {
-	int velocity = magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0));
-	if(velocity == 0)
-		velocity = 1;
-	int result = 8192/velocity;
-	if(result>6)
-		result = 6;
-	SetResultValue(result);
+    int velocity = magnitudeTwo_f(GetActorVelX(0), GetActorVelY(0));
+
+    if (velocity == 0) { velocity = 1; }
+
+    int result = 8192 / velocity;
+
+    if (result < 1) { result = 1; }
+    else if (result > 6) { result = 6; }
+
+    SetResultValue(result);
 }
 
 Script "RTCW_OverHeat" (void) clientside
@@ -1006,28 +1016,35 @@ Script "RTCW_TeslaAim" (int xory)
 	SetResultValue((randOff*!attacked)/(1+(CheckInventory("RTCW_TeslaLookAttempts")<=32)*2));
 }
 
-Script "RTCW_TeslaArc" (int space, int height, int user) clientside
+Script "RTCW_TeslaArc" (int user)
 {
-	int t, i, angle, pitch, x, y, z, tx, ty, tz, vx, vy, vz, mag, magI, horz, pitchoffset,angleoffset;
+	int tx = GetActorX(0); 
+	int ty = GetActorY(0); 
+	int tz = GetActorZ(0);
+	
+	SetActivatorToTarget(0);
+	
+	ACS_NamedExecuteWithResult("RTCW_TeslaArcing", tx, ty, tz, user);
+}
+
+Script "RTCW_TeslaArcing" (int tx, int ty, int tz, int user) clientside
+{
+	int t, i, angle, pitch, x, y, z, vx, vy, vz, mag, magI, horz, pitchoffset,angleoffset, space, height;
 	int segmentx, segmenty, segmentz, bendinessX, bendinessy;
 	str segment;
 	
 	switch(user)
 	{
-		case 0: bendinessX = random(4,8)*randSign(); bendinessY = random(4,8)*randSign(); segment = "RTCW_TeslaSegment"; horz = 8; i = 32; break;
-		case 1: bendinessX = random(4,8)*randSign(); bendinessY = random(4,8)*randSign(); segment = "RTCW_TeslaSegment"; i = 40; horz = 18; break;
-		case 2: bendinessX = random(8,16)*randSign(); bendinessY = random(48,56)*randSign(); segment = "RTCW_LoperTeslaSegment"; break;
-		case 3: bendinessX = random(4,45)*randSign(); bendinessY = random(4,45)*randSign(); segment = "RTCW_TeslaSegment"; break;
-		case 4: bendinessX = random(4,8)*randSign(); bendinessY = random(4,8)*randSign(); segment = "RTCW_TeslaSegment"; i = 32; horz = 8; break;
+		case 0: bendinessX = random(4,8)*randSign(); bendinessY = random(4,8)*randSign(); segment = "RTCW_TeslaSegment"; horz = 8; i = 32; space = 36; height = 36; break;
+		case 1: bendinessX = random(4,8)*randSign(); bendinessY = random(4,8)*randSign(); segment = "RTCW_TeslaSegment"; i = 40; horz = 18; space = 36; height = 36; break;
+		case 2: bendinessX = random(8,16)*randSign(); bendinessY = random(48,56)*randSign(); segment = "RTCW_LoperTeslaSegment"; space = 36; height = 36; break;
+		case 3: bendinessX = random(4,45)*randSign(); bendinessY = random(4,45)*randSign(); segment = "RTCW_TeslaSegment"; space = 36; height = 36; break;
+		case 4: bendinessX = random(4,8)*randSign(); bendinessY = random(4,8)*randSign(); segment = "RTCW_TeslaSegment"; i = 32; horz = 8; space = 36; height = 36; break;
 	}
-		
-	tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0);
-	
-	SetActivatorToTarget(0);	
 		
 	int xoff = (horz * sin(GetActorAngle(0))) - FixedMul(-i * cos(GetActorAngle(0)),cos(GetActorPitch(0))) + (random(-2,2) * sin(GetActorPitch(0)));
 	int yoff = (horz * cos(GetActorAngle(0))) + FixedMul(-i * sin(GetActorAngle(0)),cos(GetActorPitch(0))) + (random(-2,2) * sin(GetActorPitch(0)));
-	
+		
 	//PrintBold(s:"X Coordinate: ", f:xoff, s:", Y Coordinate: ", f:yoff);
 		
     x = GetActorX(0) + xoff;
@@ -1054,7 +1071,7 @@ Script "RTCW_TeslaArc" (int space, int height, int user) clientside
 	for (i = i; i < magI; i += space)
 	{
 		SpawnForced(strparam(s:segment,d:segnum), x+segmentx, y+segmenty, z+segmentz, newtid);
-		if(segnum < 4)
+		if(segnum < 16)
 			segnum++;
 		else
 			segnum = 1;
@@ -1086,6 +1103,46 @@ Script "RTCW_TeslaArc" (int space, int height, int user) clientside
 		bendcounter++;
 	}
 	SpawnForced("RTCW_TeslaLight", x+segmentx, y+segmenty, z+segmentz, 0);
+}
+
+Script "RTCW_FlamethrowerTracer" (void)
+{
+	int myOldTid = ActivatorTid();
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0, myTid);
+
+	SetActivator(0,AAPTR_Tracer);
+
+	if((!(ClassifyActor(0) & ACTOR_ALIVE) && !(ClassifyActor(0) & ACTOR_MONSTER || ClassifyActor(0) & ACTOR_PLAYER)))
+		terminate;
+	
+	if(!CheckInventory("RTCW_FlamethrowerHitTarget") && !CheckInventory("RTCW_FlamethrowerBurnt"))
+	{
+		GiveInventory("RTCW_FlamethrowerHitTarget",1);
+		GiveInventory("RTCW_FlamethrowerIgnition",1);
+		
+		if(CheckInventory("RTCW_FlamethrowerIgnition") >= 50 && !CheckInventory("RTCW_FlamethrowerBurnt"))
+		{
+			GiveInventory("RTCW_FlamethrowerBurnt",1);
+			int burnerTid = UniqueTid();
+			SpawnForced("RTCW_FlamethrowerBurner",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid);
+			SetActivator(myTid,AAPTR_Target);
+			SetPointerExt(AAPTR_Target,0,burnerTid);
+			SetActivator(myTid,AAPTR_Tracer);
+			SetPointerExt(AAPTR_Tracer,0,burnerTid);
+			Thing_ChangeTid(myTid, myOldTid);
+			terminate;
+		}
+			
+		Thing_ChangeTid(myTid, myOldTid);
+		Delay(1);
+		TakeInventory("RTCW_FlamethrowerHitTarget",1);
+		
+		Delay(105);
+		TakeInventory("RTCW_FlamethrowerIgnition",1);
+	}
+	else
+		Thing_ChangeTid(myTid, myOldTid);
 }
 
 Script "RTCW_FlamethrowerStreamRotate" (int space, int height, int user)// clientside
@@ -1349,7 +1406,7 @@ Script "RTCW_BulletDamage" (int damage)
 		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.75))
 		{
 			int result;
-			if(SpawnForced("SamsaraMixerCompendiumToken",0,0,0,0))
+			if(GetCvar("samsara_mixerloaded"))
 				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
 			else
 				result = 0;
@@ -1549,7 +1606,7 @@ Script "RTCW_EnemyPartsPicker" (int model, int type)
 	int activator = ActivatorTID();
 	int a, randomHat, randomGear, randomGun, randomBody, randomHead, SFMHead = random(1,3);
 	Thing_ChangeTID(0, newtid);
-	SetActivator(0,AAPTR_Player1);
+	//SetActivator(0,AAPTR_Player1);
 	switch(model)
 	{
 		default:
@@ -4632,7 +4689,7 @@ Script "RTCW_Infantry" (void)
 {
 	int steptimer = timer();
 	int doStep, velocity, oldX, oldY, oldZ, oldAngle, oldAlpha, deadTimer;
-	Delay(2);
+	Delay(15);
 	while(1)
 	{
 		if(GetActorX(0) != oldX || GetActorY(0) != oldY || GetActorZ(0) != oldZ || GetActorAngle(0) != oldAngle)
@@ -4677,7 +4734,7 @@ Script "RTCW_Zombie" (void)
 {
 	int steptimer = timer();
 	int doStep, velocity, oldX, oldY, oldZ, oldAngle, oldAlpha, deadTimer;
-	Delay(2);
+	Delay(15);
 	while(1)
 	{
 		TakeInventory("RTCW_SpiritChargeDelay",1);
@@ -4715,7 +4772,7 @@ Script "RTCW_Drone" (void)
 {
 	int steptimer = timer();
 	int doStep, velocity, oldX, oldY, oldZ, oldAngle, oldAlpha;
-	Delay(2);
+	Delay(15);
 	while(ClassifyActor(0) & ACTOR_ALIVE)
 	{
 		if(GetActorX(0) != oldX || GetActorY(0) != oldY || GetActorZ(0) != oldZ || GetActorAngle(0) != oldAngle)
@@ -4737,7 +4794,7 @@ Script "RTCW_Loper" (void)
 {
 	int steptimer = timer();
 	int doStep, velocity, oldX, oldY, oldZ, oldAngle, oldAlpha, deadTimer;
-	Delay(2);
+	Delay(15);
 	while(1)
 	{
 		
@@ -4775,7 +4832,7 @@ Script "RTCW_Beast" (void)
 {
 	int steptimer = timer();
 	int doStep, velocity, oldX, oldY, oldZ, oldAngle, oldAlpha, deadTimer;
-	Delay(2);
+	Delay(15);
 	while(1)
 	{
 		TakeInventory("RTCW_SpiritChargeDelay",1);
@@ -4805,6 +4862,7 @@ Script "RTCW_SuperSoldier" (int proto)
 		supersoldierdam1parts += 2<<a;
 		supersoldierdam2parts += 2<<a;
 	}
+	Delay(15);
 	while(1)
 	{
 		if(GetActorX(0) != oldX || GetActorY(0) != oldY || GetActorZ(0) != oldZ || GetActorAngle(0) != oldAngle)

@@ -123,11 +123,12 @@ Actor Q2BloodParticle : Q2BulletPuffParticle
 Actor Q2Blood : Blood
 {
 	-ALLOWPARTICLES
+	+PUFFGETSOWNER
 	States
 	{
 	Spawn:
 		TNT1 AAA 0
-		TNT1 A 0 A_SpawnItemEx("Switchable_FlyingBlood",0,0,0,random(-350,350)/100.00,random(-350,350)/100.00,random(500,1000)/100.00,random(-180,180),33)		
+		TNT1 A 0 A_SpawnItemEx("Switchable_FlyingBlood",0,0,0,random(-350,350)/100.00,random(-350,350)/100.00,random(500,1000)/100.00,random(-180,180),33|SXF_TRANSFERPOINTERS)		
 		TNT1 AAAAAAAAAAAAA 0 A_SpawnItemEx(Q2BloodParticle,FRandom(0,12),0,FRandom(-8,15),FRandom(0,0.5),0,FRandom(-1,-0.1),Random(1,360),SXF_TRANSFERTRANSLATION)
 		TNT1 A 1
 		Stop
@@ -500,7 +501,7 @@ Actor Q2Invulnerability : PowerupGiver
 }
 Actor Q2CellPickup : Ammo4Small
 {
-	Inventory.PickupMessage "Cells"
+	Inventory.PickupMessage "Cells (50 rounds of Ammo 4)"
 	+INVENTORY.NEVERRESPAWN 
 	States
 	{
@@ -509,28 +510,23 @@ Actor Q2CellPickup : Ammo4Small
 		Stop
 	Pickup:
   		TNT1 A 0 A_JumpIfInventory("RottClass", 0, "PickupRott")	  
-        TNT1 A 0 A_JumpIfInventory("Cell", 0, "PickupFail")
         TNT1 A 0 A_JumpIfInventory("MarathonClass", 0, "PickupMarathon")
 		TNT1 A 0 A_JumpIfInventory("WitchavenClass", 0, "PickupWitchaven")	
-		TNT1 A 0 A_JumpIfInventory("CatacombClass", 0, "PickupCatacomb")	
+		TNT1 A 0 A_JumpIfInventory("CatacombClass", 0, "PickupCatacomb")
+        TNT1 A 0 A_JumpIfInventory("Cell", 0, "PickupFail")
         TNT1 A 0 A_GiveInventory("Cell", 50)
         stop
 	  PickupRott:
 		TNT1 A 0 A_JumpIfInventory("DMissiles", 0, "Check1")
-		TNT1 A 0 A_JumpIfInventory("FWMissiles", 0, "Check2")
-		TNT1 A 0 A_JumpIfInventory("SMissiles", 0, "Check3")
       RottSafe:
 	    TNT1 A 0 A_GiveInventory("DMissiles", 8)	 
 		TNT1 A 0 A_GiveInventory("SMissiles", 5)
 		TNT1 A 0 A_GiveInventory("FWMissiles", 2)
 	    Stop
 	  Check1:
-		TNT1 A 0 A_JumpIfInventory("FWMissiles", 0, "PickupFail")
+		TNT1 A 0 A_JumpIfInventory("FWMissiles", 0, "Check2")
 		Goto RottSafe
 	  Check2:
-		TNT1 A 0 A_JumpIfInventory("DMissiles", 0, "PickupFail")
-	    Goto RottSafe
-	  Check3:
 		TNT1 A 0 A_JumpIfInventory("SMissiles", 0, "PickupFail")
 	    Goto RottSafe
 	  PickupWitchaven:
@@ -540,12 +536,17 @@ Actor Q2CellPickup : Ammo4Small
 	  PickupCatacomb:
 		TNT1 A 0 A_GiveInventory("Catacomb_Bolts", Random(2,5))
 		TNT1 A 0
-        stop			
+        stop
+      PickupMarathon:
+        TNT1 A 0 A_JumpIfInventory("Cell", 0, "PickupFail")
+        TNT1 A 0 A_SetBlend("Green", 0.3, 3)
+        TNT1 A 1 A_GiveInventory("Cell", 50)
+        stop
 	}
 }
 Actor Q2SlugPickup : Ammo4Big
 {
-	Inventory.PickupMessage "Cells"
+	Inventory.PickupMessage "Cells (100 rounds of Ammo 4)"
 	+INVENTORY.NEVERRESPAWN 
 	States
 	{
@@ -557,7 +558,7 @@ Actor Q2SlugPickup : Ammo4Big
 	
 Actor Q2ShellPickup : Ammo2Small
 {
-	Inventory.PickupMessage "Shells"
+	Inventory.PickupMessage "Shells (10 rounds of Ammo 2)"
 	+INVENTORY.NEVERRESPAWN 
 	States
 	{
@@ -584,29 +585,36 @@ Actor Q2ShellPickup : Ammo2Small
         TNT1 A 0 A_GiveInventory("Shell", 15)
         stop
 	  PickupSW:
-		TNT1 A 0 A_JumpIfInventory("Shell", 0, "Check1")
-		TNT1 A 0 A_JumpIfInventory("RocketAmmo", 0, "Check2")
-      SWSafe:
+		TNT1 A 0 A_JumpIfInventory("Shell", 0, "PickupSWRockets")
+		TNT1 A 0 A_JumpIfInventory("RocketAmmo", 0, "PickupSWShells")
 	    TNT1 A 0 A_GiveInventory("Shell", 10)	  
 		TNT1 A 0 A_Jump(234,1)
+        stop
 		TNT1 A 0 A_GiveInventory("RocketAmmo", 1)
 	    Stop
+      PickupSWShells:
+        TNT1 A 0 A_JumpIfInventory("Shell",0,"PickupFail")
+        TNT1 A 0 A_GiveInventory("Shell",10)
+        stop
+      PickupSWRockets: // ignores chance
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",0,"PickupFail")
+        TNT1 A 0 A_GiveInventory("RocketAmmo",1)
+        stop
 	  PickupCatacomb:
 		TNT1 A 0 A_GiveInventory("Catacomb_Xterminators", 4)
 		TNT1 A 0 A_GiveInventory("Catacomb_Bursts", Random(0,2))
 		TNT1 A 0
-        stop			
-	  Check1:
-		TNT1 A 0 A_JumpIfInventory("Shell", 0, "PickupFail")
-		Goto SWSafe
-	  Check2:
-		TNT1 A 0 A_JumpIfInventory("RocketAmmo", 0, "PickupFail")
-	    Goto SWSafe		
+        stop
+      PickupMarathon:
+        TNT1 A 0 A_JumpIfInventory("Shell", 0, "PickupFail")
+        TNT1 A 0 A_SetBlend("Green", 0.3, 3)
+        TNT1 A 1 A_GiveInventory("Shell", 10)
+        stop
 	}
 }
 actor Q2BulletsPickup : Ammo1Small
 {
-    Inventory.PickupMessage "Bullets"
+    Inventory.PickupMessage "Bullets (50 rounds of Ammo 1)"
 	+INVENTORY.NEVERRESPAWN 
 	States
     {
@@ -615,15 +623,13 @@ actor Q2BulletsPickup : Ammo1Small
 		Stop
 	  Pickup:
         TNT1 A 0 A_JumpIfInventory("MarathonClass", 0, "PickupMarathon")
-		TNT1 A 0 A_JumpIfInventory("WitchavenClass", 0, "PickupWitchaven")	
   		TNT1 A 0 A_JumpIfInventory("RottClass", 0, "PickupRott")
 		TNT1 A 0 A_JumpIfInventory("RRClass", 0, "PickupLeonard")
+		TNT1 A 0 A_JumpIfInventory("WitchavenClass", 0, "PickupWitchaven")
 		TNT1 A 0 A_JumpIfInventory("BittermanClass", 0, "PickupBitterman")
 		TNT1 A 0 A_JumpIfInventory("CatacombClass", 0, "PickupCatacomb")	
-		TNT1 A 0 A_GiveInventory("Clip", 50)
-		TNT1 A 0 A_JumpIfInventory("QuakeModeOn",1,2)
         TNT1 A 0 A_JumpIfInventory("QuakeClass", 0, "PickupQuake")
-		TNT1 A 0
+		TNT1 A 0 A_GiveInventory("Clip", 50)
         stop
 	  PickupRott:
 		TNT1 A 0 A_JumpIfInventory("HSMissiles", 0, "PickupFail")
@@ -652,17 +658,32 @@ actor Q2BulletsPickup : Ammo1Small
 		TNT1 A 0 A_GiveInventory("Q2Flechettes", 30)
 		stop
 	  PickupCatacomb:
-		TNT1 A 0 A_JumpIfInventory("Catacomb_Waves", 0, 2)
+		TNT1 A 0 A_JumpIfInventory("Catacomb_Waves", 0, "PickupCatacomb1")
+		TNT1 A 0 A_JumpIfInventory("Catacomb_Zappers", 0, "PickupCatacomb2")
 		TNT1 A 0 A_GiveInventory("Catacomb_Waves", Random(0,3))
-		TNT1 A 0 A_JumpIfInventory("Catacomb_Zappers", 0, "PickupFail")
 		TNT1 A 0 A_GiveInventory("Catacomb_Zappers", Random(4,5))
 		TNT1 A 0
-        stop			
+        stop
+	  PickupCatacomb1:
+		TNT1 A 0 A_JumpIfInventory("Catacomb_Zappers", 0, "PickupFail")
+		TNT1 A 0 A_GiveInventory("Catacomb_Zappers", Random(0,3))
+		TNT1 A 0
+		stop
+	  PickupCatacomb2:
+		TNT1 A 0 A_JumpIfInventory("Catacomb_Waves", 0, "PickupFail")
+		TNT1 A 0 A_GiveInventory("Catacomb_Waves", Random(4,5))
+		TNT1 A 0
+		stop
+      PickupMarathon:
+        TNT1 A 0 A_JumpIfInventory("Clip", 0, "PickupFail")
+        TNT1 A 0 A_SetBlend("Green", 0.3, 3)
+        TNT1 A 1 A_GiveInventory("Clip", 50)
+        stop
     }
 }
 Actor Q2RocketsPickup : Ammo3Small
 {
-	Inventory.PickupMessage "Rockets"
+	Inventory.PickupMessage "Rockets (8 rounds of Ammo 3)"
 	+INVENTORY.NEVERRESPAWN 
 	States
 	{
@@ -688,17 +709,25 @@ Actor Q2RocketsPickup : Ammo3Small
         TNT1 A 0 A_GiveInventory("RocketAmmo", 10)
         stop	
 	  PickupSW:
-        TNT1 A 0 A_JumpIfInventory("RocketAmmo", 0, "PickupFail")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo", 0, 1)
+        goto PickupSWSuccess
+        TNT1 A 0 A_JumpIfInventory("HeatSeekerCharge",0,"PickupFail")
+      PickupSWSuccess:
         TNT1 A 0 A_GiveInventory("RocketAmmo", 7)
-		TNT1 A 0 A_Jump(225,3)
-		TNT1 A 0 A_Jump(82,2)		
-		TNT1 A 0 A_JumpIfInventory("HeatSeekerCharge", 0, "PickupFail")
+		TNT1 A 0 A_Jump(225,2)
+		TNT1 A 0 A_Jump(82,1)
+        stop
         TNT1 A 0 A_GiveInventory("HeatSeekerCharge", 1)		
         stop	  	
 	  PickupCatacomb:
 		TNT1 A 0 A_GiveInventory("Catacomb_Nukes", Random(4,8))
 		TNT1 A 0
-        stop			
+        stop
+      PickupMarathon:
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo", 0, "PickupFail")
+        TNT1 A 0 A_SetBlend("Green", 0.3, 3)
+        TNT1 A 1 A_GiveInventory("RocketAmmo", 8)
+        stop
 	}
 }
 

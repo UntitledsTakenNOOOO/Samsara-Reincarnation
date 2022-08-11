@@ -1,22 +1,56 @@
-Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
+Actor Catacomb_BurstsQuickSpell : Catacomb3D_QuickSpell
 {
 	+DONTBOB
 	Tag "Bursts"
 	Weapon.SlotNumber 3
 	Weapon.SelectionOrder 2900
-	Weapon.AmmoType "Catacomb_Bursts"
-    Weapon.AmmoUse 1
-    Weapon.AmmoGive 4
+	Weapon.AmmoType1 "Catacomb_Bursts"
+    Weapon.AmmoUse1 1
+    Weapon.AmmoGive1 4
+	Weapon.AmmoType2 "Catacomb_Bursts"
+    Weapon.AmmoUse2 1
 	Inventory.PickUpSound "Catacomb/ItemGet2"
 	Inventory.PickupMessage "Zappers!"
 	+INVENTORY.UNDROPPABLE	
 	+WEAPON.NO_AUTO_SWITCH
+	+NOALERT
 	Inventory.RestrictedTo "PettonEverhail"
 	States
 	{
 		Ready:
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_FireRing", 1, 5)	
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_SpreadShot", 1, 5)		
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_RapidFire", 1, 5)
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_BounceShot", 1, 5)
+			CT00 B 3 BRIGHT A_PlaySound("Catacomb/ItemGet3", CHAN_WEAPON)
+			Goto ReadyLoop
+			CT00 D 4 BRIGHT A_PlaySound("Catacomb/ItemGet3", CHAN_WEAPON)
+			Goto ReadyLoop
+			CT00 F 3 BRIGHT A_PlaySound("Catacomb/ItemGet3", CHAN_WEAPON)
+			Goto ReadyLoop	
+			CT00 H 3 BRIGHT A_PlaySound("Catacomb/ItemGet3", CHAN_WEAPON)
+			Goto ReadyLoop			
+			CT00 J 3 BRIGHT A_PlaySound("Catacomb/ItemGet3", CHAN_WEAPON)
+			Goto ReadyLoop			
+		ReadyLoop:	
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_FireRing", 1, 5)	
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_SpreadShot", 1, 5)		
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_RapidFire", 1, 5)
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_BounceShot", 1, 5)		
+			CT00 A 1 A_WeaponReady
+			Loop
+			CT00 C 1 A_WeaponReady
+			Loop		
+			CT00 E 1 A_WeaponReady
+			Loop	
+			CT00 G 1 A_WeaponReady
+			Loop	
+			CT00 I 1 A_WeaponReady
+			Loop
 		Fire:
-		Altfire:
+			TNT1 A 0 A_JumpIfInventory("Catacomb_WeaponMode",1,1)
+			Goto Super::Fire
+		Release:
 			TNT1 A 0 A_JumpIfInventory("Catacomb_Bursts", 1, 1)
 			Goto SwitchWeapon
 			TNT1 A 0 A_AlertMonsters
@@ -34,7 +68,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 A 2
 			CT00 A 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 A 5
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		Burst2X:
 			CT00 A 2
 			CT00 B 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile2X", 0, 0, -8, 0)
@@ -42,7 +76,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 A 2
 			CT00 A 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 A 5
-			Goto SwitchWeapon
+			Goto FireEnd
 		Burst3X:	
 			CT00 A 2
 			CT00 B 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile3X", 0, 0, -8, 0)
@@ -50,7 +84,30 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 A 2
 			CT00 A 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 A 5
-			Goto SwitchWeapon	
+			Goto FireEnd	
+		FireNormal:
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_SpreadShot", 1, "BurstSpread")
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_BounceShot", 1, "BurstsBounce")
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_RapidFire", 1, "BurstsFast")
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_FireRing", 1, "BurstFireball")			
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFireNormal")
+			CT00 A 2			
+			CT00 B 0 BRIGHT A_TakeInventory("Catacomb_Bursts", 1, TIF_NOTAKEINFINITE)		
+			CT00 B 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile", 0, 0, -8, 0)
+			CT00 B 4 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile", 0, 1, 8, 0)
+			CT00 A 5
+			CT00 A 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
+			CT00 A 15
+			Goto ReadyLoop		
+		CoopFireNormal:
+			CT00 A 2
+			CT00 B 0 BRIGHT A_TakeInventory("Catacomb_Bursts", 1, TIF_NOTAKEINFINITE)
+			CT00 B 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile", 0, 0, -8, 0)
+			CT00 B 4 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile", 0, 1, 8, 0)
+			CT00 A 5
+			CT00 A 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
+			CT00 A 15
+			Goto ReadyLoop			
 		BurstsCoop:
 			TNT1 A 0 A_JumpIfInventory("Catacomb3D_ChargeTime", 20, "Burst3XCoop")
 			TNT1 A 0 A_JumpIfInventory("Catacomb3D_ChargeTime", 10, "Burst2XCoop")			
@@ -60,7 +117,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 A 2
 			CT00 A 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 A 5
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		Burst2XCoop:
 			CT00 A 2
 			CT00 B 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile2XCoop", 0, 0, -8, 0)
@@ -68,7 +125,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 A 2
 			CT00 A 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 A 5
-			Goto SwitchWeapon
+			Goto FireEnd
 		Burst3XCoop:	
 			CT00 A 2
 			CT00 B 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile3XCoop", 0, 0, -8, 0)
@@ -76,7 +133,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 A 2
 			CT00 A 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 A 5
-			Goto SwitchWeapon			
+			Goto FireEnd			
 		BurstFireBall:
 			TNT1 A 0 A_AlertMonsters
 			TNT1 A 0 A_PlaySound("Catacomb/Shards", CHAN_WEAPON)	
@@ -89,7 +146,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 C 2
 			CT00 C 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 C 5
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstFire2X:
 			CT00 C 2
 			CT00 D 0 BRIGHT A_FireCustomMissile("Catacomb_BurstFireballProjectile2X", 0, 0, -8, 0)
@@ -97,7 +154,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 C 2
 			CT00 C 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 C 5
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstFire3X:
 			CT00 C 2
 			CT00 D 0 BRIGHT A_FireCustomMissile("Catacomb_BurstFireballProjectile3X", 0, 0, -8, 0)
@@ -105,7 +162,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 C 2
 			CT00 C 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 C 5 
-			Goto SwitchWeapon		
+			Goto FireEnd		
 		BurstFireballCoop:
 			TNT1 A 0 A_JumpIfInventory("Catacomb3D_ChargeTime", 20, "BurstFire3XCoop")
 			TNT1 A 0 A_JumpIfInventory("Catacomb3D_ChargeTime", 10, "BurstFire2XCoop")			
@@ -115,7 +172,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 C 2
 			CT00 C 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 C 5
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstFire2XCoop:
 			CT00 C 2
 			CT00 D 0 BRIGHT A_FireCustomMissile("Catacomb_BurstFireballProjectile2XCoop", 0, 0, -8, 0)
@@ -123,7 +180,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 C 2
 			CT00 C 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 C 5
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstFire3XCoop:
 			CT00 C 2
 			CT00 D 0 BRIGHT A_FireCustomMissile("Catacomb_BurstFireballProjectile3XCoop", 0, 0, -8, 0)
@@ -131,7 +188,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 C 2
 			CT00 C 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 C 5 
-			Goto SwitchWeapon			
+			Goto FireEnd			
 		BurstSpread:
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "BurstSpreadCoop")
 			TNT1 A 0 A_JumpIfInventory("Catacomb3D_ChargeTime", 20, "BurstSpread3X")
@@ -146,7 +203,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 E 2
 			CT00 E 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 E 5 
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstSpread2X:
 			CT00 E 2
 			CT00 F 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile2X", 0, 0, 8, 0)
@@ -158,7 +215,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 E 2
 			CT00 E 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 E 5 
-			Goto SwitchWeapon		
+			Goto FireEnd		
 		BurstSpread3X:
 			CT00 E 2
 			CT00 F 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile3X", 0, 0, 8, 0)
@@ -170,7 +227,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 E 2
 			CT00 E 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 E 5 
-			Goto SwitchWeapon
+			Goto FireEnd
 		BurstSpreadCoop:
 			TNT1 A 0 A_JumpIfInventory("Catacomb3D_ChargeTime", 20, "BurstSpread3XCoop")
 			TNT1 A 0 A_JumpIfInventory("Catacomb3D_ChargeTime", 10, "BurstSpread2XCoop")		
@@ -184,7 +241,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 E 2
 			CT00 E 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 E 5 
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstSpread2XCoop:
 			CT00 E 2
 			CT00 F 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile2XCoop", 0, 0, 8, 0)
@@ -196,7 +253,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 E 2
 			CT00 E 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 E 5 
-			Goto SwitchWeapon		
+			Goto FireEnd		
 		BurstSpread3XCoop:
 			CT00 E 2
 			CT00 F 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile3XCoop", 0, 0, 8, 0)
@@ -208,7 +265,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 E 2
 			CT00 E 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 E 5 
-			Goto SwitchWeapon		
+			Goto FireEnd		
 		BurstsBounce:
 			TNT1 A 0 A_AlertMonsters
 			TNT1 A 0 A_PlaySound("Catacomb/Shards", CHAN_WEAPON)		
@@ -221,7 +278,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 I 2
 			CT00 I 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 I 5 
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstBounce2X:
 			CT00 I 2
 			CT00 J 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectileBounce2X", 0, 0, -8, 0)
@@ -229,7 +286,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 I 2
 			CT00 I 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 I 5 
-			Goto SwitchWeapon		
+			Goto FireEnd		
 		BurstBounce3X:
 			CT00 I 2
 			CT00 J 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectileBounce3X", 0, 0, -8, 0)
@@ -237,7 +294,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 I 2
 			CT00 I 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 I 5 
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstBounceCoop:
 			TNT1 A 0 A_JumpIfInventory("Catacomb3D_ChargeTime", 20, "BurstBounce3XCoop")
 			TNT1 A 0 A_JumpIfInventory("Catacomb3D_ChargeTime", 10, "BurstBounce2XCoop")			
@@ -247,7 +304,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 I 2
 			CT00 I 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 I 5 
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstBounce2XCoop:
 			CT00 I 2
 			CT00 J 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectileBounce2XCoop", 0, 0, -8, 0)
@@ -255,7 +312,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 I 2
 			CT00 I 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 I 5 
-			Goto SwitchWeapon		
+			Goto FireEnd		
 		BurstBounce3XCoop:
 			CT00 I 2
 			CT00 J 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectileBounce3XCoop", 0, 0, -8, 0)
@@ -263,7 +320,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 I 2
 			CT00 I 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 I 5 
-			Goto SwitchWeapon			
+			Goto FireEnd			
 		BurstsFast:
 			TNT1 A 0 A_AlertMonsters
 			TNT1 A 0 A_PlaySound("Catacomb/Shards", CHAN_WEAPON)	
@@ -276,7 +333,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 G 2
 			CT00 G 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 G 5 
-			Goto SwitchWeapon		
+			Goto FireEnd		
 		BurstFast2X:
 			CT00 G 2
 			CT00 H 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile2X", 0, 0, -8, 0)
@@ -284,7 +341,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 G 2
 			CT00 G 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 G 5
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstFast3X:
 			CT00 G 2
 			CT00 H 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile3X", 0, 0, -8, 0)
@@ -292,7 +349,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 G 2
 			CT00 G 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 G 5 
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstFastCoop:
 			TNT1 A 0 A_JumpIfInventory("Catacomb3D_ChargeTime", 20, "BurstFast3XCoop")
 			TNT1 A 0 A_JumpIfInventory("Catacomb3D_ChargeTime", 10, "BurstFast2XCoop")			
@@ -302,7 +359,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 G 2
 			CT00 G 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 G 5 
-			Goto SwitchWeapon		
+			Goto FireEnd		
 		BurstFast2XCoop:
 			CT00 G 2
 			CT00 H 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile2XCoop", 0, 0, -8, 0)
@@ -310,7 +367,7 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 G 2
 			CT00 G 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 G 5
-			Goto SwitchWeapon	
+			Goto FireEnd	
 		BurstFast3XCoop:
 			CT00 G 2
 			CT00 H 0 BRIGHT A_FireCustomMissile("Catacomb_BurstMissileProjectile3XCoop", 0, 0, -8, 0)
@@ -318,7 +375,22 @@ Actor Catacomb_BurstsQuickSpell : InstantSwitchWeapon
 			CT00 G 2
 			CT00 G 0 A_TakeInventory("Catacomb3D_ChargeTime", 999)
 			CT00 G 5 
-			Goto SwitchWeapon			
+			Goto FireEnd	
+		FireEnd:
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_FireRing", 1, 5)	
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_SpreadShot", 1, 5)		
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_RapidFire", 1, 5)
+			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_BounceShot", 1, 5)			
+			CT00 A 13
+			Goto ReadyLoop
+			CT00 C 13
+			Goto ReadyLoop	
+			CT00 E 13
+			Goto ReadyLoop			
+			CT00 G 13
+			Goto ReadyLoop	
+			CT00 I 13
+			Goto ReadyLoop				
 		SwitchWeapon:
 			TNT1 A 0 A_JumpIfInventory("Catacomb_Bursts", 1, 1)
 			Goto TakeWeapon
@@ -338,7 +410,7 @@ Actor Catacomb_Bursts : Ammo
 	Inventory.MaxAmount 99
 	Inventory.Amount 2
 	Inventory.InterHubAmount 99
-    Inventory.Icon "CT01L0"
+    Inventory.Icon "AMSMO0"
     Inventory.PickupSound "Catacomb/ItemGet2"
     Inventory.PickupMessage "You got the Bursts!"	
 	Tag "Burst"

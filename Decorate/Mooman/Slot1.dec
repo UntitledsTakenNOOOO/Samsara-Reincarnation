@@ -1,51 +1,40 @@
-Actor " Toxic Mutant Gun " : Weapon
+// Grenade - the name says it all :P
+actor IPOGGrenadeItem : CustomInventory
 {
-	Weapon.Slotnumber 1
-	Weapon.SelectionOrder 2501
-	Weapon.BobStyle Inverse
-	Weapon.BobSpeed 0.58
-	Weapon.BobRangeX 1.1
-	Weapon.BobRangeY 0.1	
-	Inventory.Pickupmessage "You got the Specimen 7's Toxic Mutant Gun!"
-	Inventory.Pickupsound "greed/pickup"
-	Weapon.AmmoType "Cell"
-    Weapon.AmmoUse 1
-    Weapon.AmmoGive 25
-	scale 0.65
-	Obituary "$SAMSARA_GREED_OB_SLOT_I"
-    Inventory.RestrictedTo "POGreedPlayer"	 		
-	states
-	{
-	Spawn:
-		GW80 Z -1
+    +FLOATBOB
+	-INVBAR
+    Inventory.Amount 1
+    Inventory.MaxAmount 1
+	+INVENTORY.HUBPOWER
+    +INVENTORY.UNDROPPABLE
+	Inventory.InterhubAmount 1
+    Inventory.Icon "IGREZ0"
+    Inventory.PickupSound "greed/pickup"
+    Inventory.PickupMessage "You can now use grenades (Altfire: Uses Ammo 3)!"
+	Inventory.RestrictedTo "POGreedPlayer"	
+	Tag "Grenade"
+    States
+    {
+      
+	  Spawn:
+        IGRE X 1 Bright
+        Loop
+	 Pickup:
+		TNT1 A 0 A_JumpIfInventory("IPOGGrenadeToken",0,"Failure")
+		TNT1 A 0 A_GiveInventory("RocketAmmo", 5)	
+		TNT1 A 0 A_GiveInventory("IPOGGrenadeToken", 1)
 		stop
-	Ready:
-		GW80 A 1 A_WeaponReady
-		loop
-	Select:
-		TNT1 AAA 0 A_Raise
-		GW80 A 1 A_Raise
-		Loop
-	Deselect:
-		TNT1 AAA 0 A_Lower
-		GW80 A 1 A_Lower
-		Loop
-	Fire:
-		GW80 C 2 bright A_PlayWeaponSound("greed/mutant")
-		GW80 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
-		GW80 D 3 bright A_FireCustomMissile("PGPoisonBall",0,1,0,0)
-		GW80 C 3 bright
-		GW80 B 3 bright
-		GW80 A 4 A_Refire
-		Goto Ready
-	CoopFire:
-		GW80 D 3 bright A_FireCustomMissile("PGPoisonBallCoop",0,1,0,0)
-		GW80 C 3 bright
-		GW80 B 3 bright
-		GW80 A 4 A_Refire
-		Goto Ready
-	}
+	 Failure:
+		TNT1 A 0
+		fail
+	  Use:
+		TNT1 A 0 A_PrintBold("How you do that?")
+		fail
+    }
 }
+
+Actor IPOGGrenadeToken : Boolean {}
+actor IPOGGrenadeCooldown : Counter { Inventory.MaxAmount 1 }
 
 Actor PGPoisonBall
 {
@@ -79,6 +68,7 @@ Actor PGPoisonBall
 	}
 }
 
+
 Actor PGPoisonBallPuff
 {
 	+CLIENTSIDEONLY
@@ -99,3 +89,32 @@ Actor PGPoisonBallPuff
 }
 
 Actor PGPoisonBallCoop : PGPoisonBall { +THRUSPECIES Species "Player" }
+
+Actor IPOGGrenadeThrower : CustomInventory
+{
+	-COUNTITEM
+	+INVENTORY.ALWAYSPICKUP
+	Inventory.PickupMessage ""
+	Inventory.PickupSound ""
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_JumpIfInventory("IPOGGrenadeCooldown", 1, "Failure")
+			TNT1 A 0 A_JumpIfInventory("RocketAmmo", 1, 1)
+			Goto Failure
+			TNT1 A 0 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"UseCoop")
+			TNT1 A 0 A_FireCustomMissile("IPOGGrenade", 0, 0)
+			TNT1 A 0 A_GiveInventory("IPOGGrenadeCooldown", 1)
+			TNT1 A 0 ACS_NamedExecuteAlways("IPOGGrenadeCooldown", 0)
+			Fail
+		UseCoop:
+			TNT1 A 0 A_FireCustomMissile("IPOGGrenadeCoop", 0, 0)
+			TNT1 A 0 A_GiveInventory("IPOGGrenadeCooldown", 1)
+			TNT1 A 0 ACS_NamedExecuteAlways("IPOGGrenadeCooldown", 0)
+			Fail		
+		Failure:
+			TNT1 A 0
+			Fail	
+		}
+}

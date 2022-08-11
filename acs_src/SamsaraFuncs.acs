@@ -1,3 +1,7 @@
+#define BLOOD_MEDIUM 1
+#define BLOOD_SMALL 2
+#define BLOOD_SPRAY 3
+
 function int GiveClassWeapon(int class, int slot, int ammoMode)
 {
     return _giveclassweapon(class, slot, ammoMode, 0, 0);
@@ -41,7 +45,7 @@ function int _giveclassweapon(int class, int slot, int ammoMode, int dropped, in
 
         if ((success && array_pickupswitch[PlayerNumber()] && !hasWep &&
                 (array_pickupswitch[PlayerNumber()] >= 2 || slot > ClassWeaponSlot())
-            || PlayerIsBot(PlayerNumber())) && class != 27)
+            || PlayerIsBot(PlayerNumber())))
             
         {
             SetWeapon(ClassWeapons[class][slot][S_WEP]);
@@ -118,23 +122,25 @@ function void GiveClassUnique(int class, int which)
 function void ApplyLMS(void)
 {
     int classNum = samsaraClassNum();
-    int lmsLevel = middle(0, GetCVar("sams_lmslife"), LMSMODES-1);
+    int lmsLevel = middle(0, GetCVar("samsara_lmslife"), LMSMODES-1);
     int i;
 
     if (classNum == -1) { return; }
     
 	SetActorProperty(0, APROP_Health, getMaxHealth());
     GiveInventory("Backpack", 1);
+	
+	HandleAmmoCapacities();
 
     for (i = 0; i < SLOT_BFG9000; i++) { GiveClassWeapon(classNum, i, 1); }
 
 
-    if (StrLen(LMSItems[classNum])) { GiveInventory(LMSItems[classNum], 1); }
-    if (GetCVar("sams_lmsult")) { GiveClassWeapon(classNum, SLOT_BFG9000, 1); }
+    //if (StrLen(LMSItems[classNum])) { GiveInventory(LMSItems[classNum], 1); }
+    if (GetCVar("samsara_lmsult")) { GiveClassWeapon(classNum, SLOT_BFG9000, 1); }
 
-    i = (GetCVar("sams_lmslife") + 1) * PlayerCount();
+    i = (GetCVar("samsara_lmslife") + 1) * PlayerCount();
 
-    GiveInventory("Clip",       GetAmmoCapacity("Clip")         - CheckInventory("Clip"));
+	GiveInventory("Clip",       GetAmmoCapacity("Clip")         - CheckInventory("Clip"));
     GiveInventory("Shell",      GetAmmoCapacity("Shell")        - CheckInventory("Shell"));
     GiveInventory("RocketAmmo", GetAmmoCapacity("RocketAmmo")   - CheckInventory("RocketAmmo"));
     GiveInventory("Cell",       GetAmmoCapacity("Cell")         - CheckInventory("Cell"));
@@ -143,6 +149,109 @@ function void ApplyLMS(void)
     TakeInventory("MultiRocketAmmo", 0x7FFFFFFF);
     GiveInventory("LavaNails",       ftoi(2.5 * i));
     GiveInventory("MultiRocketAmmo", ftoi(0.5 * i));
+	
+	// Some classes need hard hacks in order to correctly work with LMS rules
+	// It's ugly, but a necessity for this feature
+	
+	// Doomguy
+	if (CheckInventory("DoomguyClass")) {
+		GiveInventory("DGHasChaingun", 1);
+		GiveInventory("DGHasRocketLauncher", 1);
+		GiveInventory("DGHasPlasmaRifle", 1);
+		
+		if (GetCVar("samsara_lmsult")) {
+			GiveInventory("DGHasBFG9000", 1);
+		}
+	}
+	
+	// Blazkowicz
+	if (CheckInventory("WolfenClass")) {
+		GiveInventory("Totenkopf_IHaveMauser", 1);
+		GiveInventory("Wolfen_IHaveSlot2", 1);
+		GiveInventory("Totenkopf_IHaveSTG44", 1);
+		GiveInventory("Totenkopf_IHaveDualMausers", 1);
+		GiveInventory("Totenkopf_IHaveDualMP40s", 1);
+	}
+	
+	// Security Officer
+	if (CheckInventory("MarathonClass")) {
+		GiveInventory("CanDualPistols", 1);
+		GiveInventory("CanDualShotties", 1);
+	}
+	
+	// Ranger
+	if (CheckInventory("QuakeClass")) {
+		GiveInventory("LavaNails", GetAmmoCapacity("LavaNails") - CheckInventory("LavaNails"));
+		GiveInventory("MultiRocketAmmo", GetAmmoCapacity("MultiRocketAmmo") - CheckInventory("MultiRocketAmmo"));
+		
+		if (GetCVar("samsara_lmsult")) {
+			GiveInventory("PlasmaCell", GetAmmoCapacity("PlasmaCell") - CheckInventory("PlasmaCell"));
+		}
+	}
+	
+	// Strifeguy
+	if (CheckInventory("StrifeClass")) {
+		GiveInventory(" Sigil ", 1);
+		GiveInventory("StrifeSigilPiece", 4);
+		GiveInventory("StrifeSigilPiecePreferred", 4);
+		
+		if (GetCVar("samsara_lmsult")) {
+			GiveInventory("StrifeSigilPiece", 1);
+			GiveInventory("StrifeSigilPiecePreferred", 1);
+		}
+	}
+	
+	// Jack
+	if (CheckInventory("DisruptorClass")) {
+		GiveInventory("DisruptorHiFreq", GetAmmoCapacity("DisruptorHiFreq") - CheckInventory("DisruptorHiFreq"));
+		GiveInventory("DisruptorBinaryLockOn", GetAmmoCapacity("DisruptorBinaryLockOn") - CheckInventory("DisruptorBinaryLockOn"));
+		
+		if (GetCVar("samsara_lmsult")) {
+			GiveInventory(" Disruptor Plasmalance ", 1);
+		}
+	}
+	
+	// LDF Commando
+	if (CheckInventory("RMRClass")) {
+		if (GetCVar("samsara_lmsult")) {
+			GiveInventory("Subestron Arm", 1);
+		}
+	}
+	
+	// Lo Wang
+	if (CheckInventory("SWClass")) {
+		GiveInventory("UziAmountCheck", 1);
+		
+		if (GetCVar("samsara_lmsult")) {
+			GiveInventory("GotNuke", 1);
+		}
+	}
+	
+	// Bond
+	if (CheckInventory("BondClass")) {
+		GiveInventory("Goldeneye_ThrowingKnivesDualToken", 1);
+		GiveInventory("Goldeneye_KF7DualToken", 1);
+		GiveInventory("Goldeneye_AutoShotgunDualToken", 1);
+		GiveInventory("Goldeneye_AR33DualToken", 1);
+		GiveInventory("Goldeneye_RocketLauncherDualToken", 1);
+		GiveInventory("Goldeneye_RCP90DualToken", 1);
+		
+		if (GetCVar("samsara_lmsult")) {
+			GiveInventory("Goldeneye_LaserDualToken", 1);
+			GiveInventory("Goldeneye_GoldenGun", 1);
+			GiveInventory("Goldeneye_GoldenGunToken", 1);
+			GiveInventory("Goldeneye_GoldenGunDualToken", 1);
+			GiveInventory("Goldeneye_GoldenGunRounds", GetAmmoCapacity("Goldeneye_GoldenGunRounds") - CheckInventory("Goldeneye_GoldenGunRounds"));
+		}
+	}
+	
+	// Daniel Garner
+	if (CheckInventory("PainkillerClass")) {
+		GiveInventory("Painkiller_FreezerAmmo", GetAmmoCapacity("Painkiller_FreezerAmmo") - CheckInventory("Painkiller_FreezerAmmo"));
+		GiveInventory("Painkiller_FlamerAmmo", GetAmmoCapacity("Painkiller_FlamerAmmo") - CheckInventory("Painkiller_FlamerAmmo"));
+		GiveInventory("Painkiller_HeaterAmmo", GetAmmoCapacity("Painkiller_HeaterAmmo") - CheckInventory("Painkiller_HeaterAmmo"));
+		GiveInventory("Painkiller_ElectroAmmo", GetAmmoCapacity("Painkiller_ElectroAmmo") - CheckInventory("Painkiller_ElectroAmmo"));
+	}
 
     if (lmsLevel > 0)
     {
@@ -180,10 +289,10 @@ function int itemToSlot(int i)
 function int SamsaraClientVars(void)
 {
     int switchOnPickup  = !!GetCVar("switchonpickup");
-    int weaponBar       = !!GetCVar("sams_cl_weaponhud");
-    int ballgag         = !!GetCVar("sams_cl_ballgag");
-    int classicAnims    = !!GetCVar("sams_cl_vanilladoom");
-    int wolfmove        = !!GetCVar("sams_cl_wolfmove");
+    int weaponBar       = !!GetCVar("samsara_cl_weaponhud");
+    int ballgag         = !!GetCVar("samsara_cl_ballgag");
+    int classicAnims    = !!GetCVar("samsara_cl_vanilladoom");
+    int wolfmove        = !!GetCVar("samsara_cl_wolfmove");
 
     return (switchOnPickup << 4) + (weaponBar << 3) + (ballgag << 2) + (classicAnims << 1) + wolfmove;
 }
@@ -358,8 +467,9 @@ function int GiveQuad(int toAdd)
     int quadcount = QUAD_THRESHOLD - CheckInventory("QuakeQuadTimer");
     GiveInventory("QuakeQuadTimer", quadcount);
     GiveInventory("QuakeQuadTimer", toAdd);
+    SetInventory("SamsaraQuadDamageCooldownDisplay", CheckInventory("QuakeQuadTimer") / 35 + 1);
 
-    if (GetCVar("sams_permault"))
+    if (GetCVar("samsara_permault"))
     {
         GiveInventory("DoNotQuad", 1);   // nasty hack
     }
@@ -371,7 +481,7 @@ function int GiveQuad(int toAdd)
 
 function int HandleUniqueSpawn(int respawning)
 {
-    int cs = GetCVar("sams_uniquestart");
+    int cs = GetCVar("samsara_uniquestart");
     int classnum = samsaraClassNum();
     int i;
 
@@ -399,7 +509,7 @@ function int HandleUniqueSpawn(int respawning)
 
 function int HandleChainsawSpawn(int respawning)
 {
-    int cs = GetCVar("sams_chainsawstart");
+    int cs = GetCVar("samsara_chainsawstart");
     int classnum = samsaraClassNum();
     int ammomode = 3;
 
@@ -425,7 +535,7 @@ function void SetArmorMode(void)
 {
     if (ArmorMode < 0)
     {
-        ArmorMode = middle(0, GetCVar("sams_armormode"), ARMORMODES-1);
+        ArmorMode = middle(0, GetCVar("samsara_armormode"), ARMORMODES-1);
     }
 }
 
@@ -453,7 +563,7 @@ function void SetArmorMode(void)
 
 function int HandleInstagib(int turnedOff)
 {
-	if(GetPlayerAccountName(0) == 0)
+	if(GetTimeProperty(0, 5, true) == 0) // TM_YEAR = 5
 		return 0;
 		
     int cs = GetCvar("instagib");
@@ -544,4 +654,90 @@ function int HandleBuffCVars(int respawning)
     }*/
 
     return 1;
+}
+
+function void HandleAmmoCapacities(void)
+{
+	int maxClip = GetCvar("samsara_max_clip");
+	int maxShell = GetCvar("samsara_max_shell");
+	int maxRocket = GetCvar("samsara_max_rockets");
+	int maxCell = GetCvar("samsara_max_cell");
+	int hasBackPack = CheckInventory("Backpack")+CheckInventory("AmmoSatchel")+CheckInventory("BagOfHolding")+CheckInventory("Zorchpack")+1;
+		
+	if(!CheckInventory("Hexen2Class"))
+	{
+		SetAmmoCapacity("Clip",maxClip*hasBackPack);
+		SetAmmoCapacity("Shell",maxShell*hasBackPack);
+		SetAmmoCapacity("RocketAmmo",maxRocket*hasBackPack);
+		SetAmmoCapacity("Cell",maxCell*hasBackPack);
+	}
+	else
+	{
+		SetAmmoCapacity("Clip",((maxClip*5)/4)*hasBackPack + CheckInventory("Hexen2BlueManaAdd"));
+		SetAmmoCapacity("Cell",((maxCell*5)/6)*hasBackPack + CheckInventory("Hexen2GreenManaAdd"));
+	}
+		
+	//Blazko Ammo
+	SetAmmoCapacity("Totenkopf_FlameThrowerFuel",((maxCell*hasBackPack)/3)*2);
+	
+	//Duke Ammo
+	SetAmmoCapacity("ShrinkerAmmo",(maxCell*hasBackPack)/10);
+	SetAmmoCapacity("ExpanderAmmo",(maxCell*hasBackPack)/3);
+	
+	//Ranger Ammo
+	SetAmmoCapacity("LavaNails",((maxClip*hasBackPack)/4)*3);
+	SetAmmoCapacity("MultiRocketAmmo",((maxRocket*hasBackPack)/5)*2);
+	SetAmmoCapacity("PlasmaCell",(maxCell*hasBackPack)/12);
+		
+	//RoTT Ammo
+	SetAmmoCapacity("HSMissiles",(maxClip*hasBackPack)/4);
+	SetAmmoCapacity("RoTTMissiles",(maxShell*hasBackPack)/2);
+	SetAmmoCapacity("SMissiles",(maxCell*hasBackPack)/3);
+	SetAmmoCapacity("FBMissiles",(maxRocket*hasBackPack)/2);
+	SetAmmoCapacity("FWMissiles",(maxCell*hasBackPack)/30);
+	SetAmmoCapacity("DMissiles",(maxCell*hasBackPack)/5);
+	SetAmmoCapacity("BMissiles",(maxCell)/30);
+	SetAmmoCapacity("DSEnergy",(maxCell)/30);
+	
+	//Strife Ammo
+	SetAmmoCapacity("StrifePoisonAmmo",(maxShell*hasBackPack)/2);
+	SetAmmoCapacity("WhitePhosGrenade",(maxRocket*hasBackPack)/5);
+	SetAmmoCapacity("StrifeGasGrenadeAmmo",(maxRocket*hasBackPack)/5);
+		
+	//Caleb Ammo
+	SetAmmoCapacity("SprayCanAmmo",((maxCell*hasBackPack)/48)*48);
+	
+	//Disruptor Ammo
+	SetAmmoCapacity("DisruptorHiFreq",((maxClip*hasBackPack)/4)*3);
+	SetAmmoCapacity("DisruptorBinaryLockOn",((maxRocket*hasBackPack)/5)*2);
+	SetAmmoCapacity("DisruptorPSIEnergy",((maxCell*hasBackPack)*2)/3);
+		
+	//C7 Ammo
+	SetAmmoCapacity("C7ProxyMineAmmo",(maxRocket*hasBackPack*3)/5);
+		
+	//RR Ammo
+	SetAmmoCapacity("MotoGunAmmo",(maxClip*hasBackPack*3)/2);
+	SetAmmoCapacity("ChickenAmmo",(maxRocket*hasBackPack/5)*2);
+		
+	//Q2 Ammo
+	SetAmmoCapacity("Q2Flechettes",(maxClip*hasBackPack));
+		
+	//GE Ammo
+	SetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo",(maxShell*hasBackPack)/8);
+	SetAmmoCapacity("Goldeneye_GoldenGunRounds",(maxCell*hasBackPack)/30);
+}
+
+function str GetBloodStateModifier(str state, int bloodSize)
+{
+	switch (bloodSize)
+	{
+		case BLOOD_MEDIUM:
+			return StrParam(s:state, s:"Medium");
+		case BLOOD_SMALL:
+			return StrParam(s:state, s:"Small");
+		case BLOOD_SPRAY:
+			return StrParam(s:state, s:"Spray");
+	}
+
+	return state;
 }

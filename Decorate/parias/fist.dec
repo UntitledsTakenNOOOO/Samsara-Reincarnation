@@ -11,6 +11,7 @@ actor "Mace of Contrition" : CWeapMace
     +INVENTORY.UNDROPPABLE
     Obituary "$SAMSARA_HEXEN_OB_FIST"
 	Inventory.RestrictedTo "HexenPlayer"
+    Tag "Mace of Contrition"
     States
     {
       Select:
@@ -48,17 +49,30 @@ actor "Mace of Contrition" : CWeapMace
 	  ReadyFighter:
 		FPCH A 1 A_WeaponReady
 		Goto Ready
-        
+
       Fire:
-		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "FireFighter")
-		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "SelectMage")
+        TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "FireFighter")
+        TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "SelectMage")
+      FireCleric:
         CMCE B 2 Offset (60, 20)
         CMCE B 1 Offset (30, 33)
         CMCE B 2 Offset (8, 45)
-        CMCE C 1 Offset (8, 45)
-        CMCE D 1 Offset (8, 45)
-        CMCE E 1 Offset (8, 45)
-        CMCE E 1 Offset (-11, 58) A_CMaceAttack
+        CMCE CDE 1 Offset (8, 45)
+        TNT1 A 0 A_JumpIfCloser(129,"MacePuffClericMonster")
+      MacePuffClericNull:
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+        TNT1 A 0 A_CustomPunch(random(25,40),1,CPF_PULLIN,"HammerPuff",64)
+        Goto MaceClericExit
+        TNT1 A 0 A_CustomPunch(random(25,40),1,CPF_PULLIN,"HammerPuffCoop",64)
+        Goto MaceClericExit
+      MacePuffClericMonster:
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+        TNT1 A 0 A_CustomPunch(random(25,40),1,CPF_PULLIN,"HammerPuff",128)
+        Goto MaceClericExit
+        TNT1 A 0 A_CustomPunch(random(25,40),1,CPF_PULLIN,"HammerPuffCoop",128)
+        Goto MaceClericExit
+      MaceClericExit:
+        CMCE E 1 Offset (-11, 58)
         CMCE F 1 Offset (8, 45)
         CMCE F 2 Offset (-8, 74)
         CMCE F 1 Offset (-20, 96)
@@ -70,47 +84,61 @@ actor "Mace of Contrition" : CWeapMace
         CMCE A 2 Offset (8, 50)
         CMCE A 1 Offset (8, 45)
         Goto Ready
-		
-	  FireFighter:
-		FPCH B 5 Offset(5, 40)
-		FPCH C 4 Offset(5, 40)
-		TNT1 A 0 A_JumpIfCloser(129,2)
-		TNT1 A 0 A_TakeInventory("Hexen_Fist_HitCounter",3)
-		Goto FireFighter+4
-		TNT1 A 0 A_JumpIfInventory("Hexen_Fist_HitCounter",2,"FireFighter2")
-		TNT1 A 0 A_JumpIfCloser(129,"PunchPuffMonster")
-	  PunchPuffNull:
-		FPCH D 0 A_CustomPunch(random(40,55),1,CPF_PULLIN,"Hexen_Baratus_PunchPuff",64)
-		Goto PunchPuffNull+2
-	  PunchPuffMonster:
-	    FPCH D 0 A_CustomPunch(random(40,55),1,CPF_PULLIN,"Hexen_Baratus_PunchPuffMonster",128)
-		FPCH D 4 Offset(5, 40) 
-		FPCH C 4 Offset(5, 40)
-		TNT1 A 0 A_JumpIfInventory("Hexen_Fist_Missed",1,1)
-		Goto PunchExit
-		TNT1 A 0 A_TakeInventory("Hexen_Fist_HitCounter",3)
-	  PunchExit:
-		FPCH B 5 Offset(5, 40) A_ReFire
-		Goto Ready
-	  FireFighter2:
-		TNT1 A 0 A_JumpIfCloser(129,"PunchPuffMonster2")
-	  PunchPuffNull2:
-		TNT1 A 0 A_CustomPunch(random(80,110),1,CPF_PULLIN,"Hexen_Baratus_PunchPuff",64)
-		Goto PunchPuffNull2+2
-	  PunchPuffMonster2:
-		TNT1 A 0 A_CustomPunch(random(80,110),1,CPF_PULLIN,"Hexen_Baratus_HammerPuffMonster",128)
-		TNT1 A 0 A_TakeInventory("Hexen_Fist_HitCounter",3)
-		TNT1 A 0 A_TakeInventory("Hexen_Fist_Missed",1)
-		TNT1 A 0 A_PlaySound("FighterGrunt",CHAN_VOICE)
-		FPCH DE 4 Offset(5, 40)
-		FPCH E 1 Offset(15, 50)
-		FPCH E 1 Offset(25, 60)
-		FPCH E 1 Offset(35, 70)
-		FPCH E 1 Offset(45, 80)
-		FPCH E 1 Offset(55, 90)
-		FPCH E 1 Offset(65, 90)
-		FPCH E 10 Offset(0, 150)
-		Goto Ready
+
+      FireFighter:
+        FPCH B 5 Offset(5, 40)
+        FPCH C 4 Offset(5, 40)
+        TNT1 A 0 A_JumpIfCloser(129,2)
+        TNT1 A 0 A_TakeInventory("Hexen_Fist_HitCounter",3)
+        TNT1 A 0 A_JumpIfInventory("Hexen_Fist_HitCounter",2,"FireFighter2")
+        TNT1 A 0 A_JumpIfCloser(129,"PunchPuffFighterMonster")
+      PunchPuffFighterNull:
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+        TNT1 A 0 A_CustomPunch(random(40,55),1,CPF_PULLIN,"Hexen_Baratus_PunchPuff",64)
+        Goto PunchPuffFighterMonsterEnd
+        TNT1 A 0 A_CustomPunch(random(40,55),1,CPF_PULLIN,"Hexen_Baratus_PunchPuffCoop",64)
+        Goto PunchPuffFighterMonsterEnd
+      PunchPuffFighterMonster:
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+        TNT1 A 0 A_CustomPunch(random(40,55),1,CPF_PULLIN,"Hexen_Baratus_PunchPuffMonster",128)
+        Goto PunchPuffFighterMonsterEnd
+        TNT1 A 0 A_CustomPunch(random(40,55),1,CPF_PULLIN,"Hexen_Baratus_PunchPuffMonsterCoop",128)
+        Goto PunchPuffFighterMonsterEnd
+      PunchPuffFighterMonsterEnd:
+        FPCH DC 4 Offset(5, 40) 
+        TNT1 A 0 A_JumpIfInventory("Hexen_Fist_Missed",1,1)
+        Goto PunchFighterExit
+        TNT1 A 0 A_TakeInventory("Hexen_Fist_HitCounter",3)
+      PunchFighterExit:
+        FPCH B 5 Offset(5, 40) A_ReFire
+        Goto Ready
+      FireFighter2:
+        TNT1 A 0 A_JumpIfCloser(129,"PunchPuffFighterMonster2")
+      PunchPuffFighterNull2:
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+        TNT1 A 0 A_CustomPunch(random(80,110),1,CPF_PULLIN,"Hexen_Baratus_PunchPuff",64)
+        Goto PunchPuffFighterMonster2End
+        TNT1 A 0 A_CustomPunch(random(80,110),1,CPF_PULLIN,"Hexen_Baratus_PunchPuffCoop",64)
+        Goto PunchPuffFighterMonster2End
+      PunchPuffFighterMonster2:
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+        TNT1 A 0 A_CustomPunch(random(80,110),1,CPF_PULLIN,"Hexen_Baratus_HammerPuffMonster",128)
+        Goto PunchPuffFighterMonster2End
+        TNT1 A 0 A_CustomPunch(random(80,110),1,CPF_PULLIN,"Hexen_Baratus_HammerPuffMonsterCoop",128)
+        Goto PunchPuffFighterMonster2End
+      PunchPuffFighterMonster2End:
+        TNT1 A 0 A_TakeInventory("Hexen_Fist_HitCounter",3)
+        TNT1 A 0 A_TakeInventory("Hexen_Fist_Missed",1)
+        TNT1 A 0 A_PlaySound("FighterGrunt",CHAN_VOICE)
+        FPCH DE 4 Offset(5, 40)
+        FPCH E 1 Offset(15, 50)
+        FPCH E 1 Offset(25, 60)
+        FPCH E 1 Offset(35, 70)
+        FPCH E 1 Offset(45, 80)
+        FPCH E 1 Offset(55, 90)
+        FPCH E 1 Offset(65, 100)
+        FPCH E 10 Offset(0, 150)
+        Goto Ready
     }
 }
 
@@ -177,6 +205,12 @@ Actor Hexen_Baratus_HammerPuffMonster : Hexen_Baratus_PunchPuffMonster
 	ActiveSound "FighterHammerMiss"
 }
 
+Actor HammerPuffCoop : HammerPuff { Species "Player" +THRUSPECIES +MTHRUSPECIES }
+Actor Hexen_Baratus_PunchPuffCoop : Hexen_Baratus_PunchPuff { Species "Player" +THRUSPECIES +MTHRUSPECIES }
+Actor Hexen_Baratus_PunchPuffMonsterCoop : Hexen_Baratus_PunchPuffMonster { Species "Player" +THRUSPECIES +MTHRUSPECIES }
+Actor Hexen_Baratus_HammerPuffCoop : Hexen_Baratus_HammerPuff { Species "Player" +THRUSPECIES +MTHRUSPECIES }
+Actor Hexen_Baratus_HammerPuffMonsterCoop : Hexen_Baratus_HammerPuffMonster { Species "Player" +THRUSPECIES +MTHRUSPECIES }
+
 actor "Spiked Gauntlet" : FWeapFist
 {
     Weapon.SelectionOrder 3400
@@ -189,6 +223,7 @@ actor "Spiked Gauntlet" : FWeapFist
     Inventory.PickupMessage "You got the Spiked Gauntlet of Baratus!"
     Inventory.PickupSound "hexen/weaponget"
     Obituary "$SAMSARA_HEXEN_OB_PUNCHDRUNKB"
+    Tag "Spiked Gauntlet"
     States
     {
       Select:
@@ -233,7 +268,7 @@ actor "Spiked Gauntlet" : FWeapFist
         FPCH E 1 Offset(35, 70)
         FPCH E 1 Offset(45, 80)
         FPCH E 1 Offset(55, 90)
-        FPCH E 1 Offset(65, 90)
+        FPCH E 1 Offset(65, 100)
         FPCH E 10 Offset(0, 150)
         Goto Ready
         
@@ -245,7 +280,7 @@ actor "Spiked Gauntlet" : FWeapFist
         FPCH E 1 Offset(35, 70)
         FPCH E 1 Offset(45, 80)
         FPCH E 1 Offset(55, 90)
-        FPCH E 1 Offset(65, 90)
+        FPCH E 1 Offset(65, 100)
         FPCH E 10 Offset(0, 150)
         Goto Ready
     }

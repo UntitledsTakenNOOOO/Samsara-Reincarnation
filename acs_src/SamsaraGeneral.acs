@@ -47,8 +47,9 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 
       case 5:
         SetActivatorToTarget(0);
-        result = CheckInventory("Cell");
-        if (arg1) { TakeInventory("Cell", result); }
+
+        if (arg1) { result = CheckInventory("PlasmaCell"); }
+        else { result = CheckInventory("Cell"); }
         break;
 
       case 6:
@@ -64,28 +65,33 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
         {
             if (isLMS())
             {
-                if (GetCvar("sams_permaquad") == 1)
+                if (GetCvar("samsara_permaquad") == 1)
                 { GiveInventory("QuadDamageItem", 1); }
                 break;
             }
 
             GiveQuad(arg1);
 
-            if (GetCvar("sams_permaquad") == 1)//if (isCoop() || isSinglePlayer())
+            if (GetCvar("samsara_permaquad") == 1)//if (isCoop() || isSinglePlayer())
             { GiveInventory("QuadDamageItem", 1); }
         }
         break;
 
       case 8:
-        result = defaultCVar("sams_cl_expparticles", 0);
-        if (!result) { result = 100; }
+        if (GetCVar("samsara_runninginzdoom")) { result = GetCVar("samsara_zd_expparticles"); }
+        else { result = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_expparticles"); }
 
-        result = max(0, result);
+        if (result == 0) { result = 100; } // default
 
-        result *= max(arg1, 1);
-        result /= max(arg2, 1);
+        if (result > 0)
+        {
+            result = max(0, result);
 
-        GiveInventory("QuakeExplosionCounter", result);
+            result *= max(arg1, 1);
+            result /= max(arg2, 1);
+
+            GiveInventory("QuakeExplosionCounter", result);
+        }
         break;
 
       case 9:
@@ -109,24 +115,23 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
         break;
         
       case 16:
-        if (GameType () != GAME_SINGLE_PLAYER)
-        {
-            SetHudSize(400, 300, 0);
-            Hudmessage(l:"DUKEDEADMESSAGE";
-            HUDMSG_PLAIN,1024,CR_LIGHTBLUE,200.4,9.1,1.75);
-            delay(15);
+        SetHudSize(400, 300, 0);
 
-            if (!CheckInventory("DukeBallgag"))
-            {
-                LocalAmbientSound("duke/mpdeath",127);
-                GiveInventory("DukeTauntCooldown",5);
-                ACS_NamedExecuteAlways("DukeTauntCooldown",0,0);
-            }
+        if (IsSinglePlayer() && !GetCVar("sv_singleplayerrespawn")) { HudMessage(l:"DUKEDEADMESSAGERESTART"; HUDMSG_PLAIN, 1024, CR_LIGHTBLUE, 200.4, 9.1, 1.75); }
+        else { HudMessage(l:"DUKEDEADMESSAGERESPAWN"; HUDMSG_PLAIN, 1024, CR_LIGHTBLUE, 200.4, 9.1, 1.75); }
+
+        Delay(15);
+
+        if (!CheckInventory("DukeBallgag"))
+        {
+            LocalAmbientSound("duke/mpdeath", 127);
+            GiveInventory("DukeTauntCooldown", 5);
+            ACS_NamedExecuteAlways("DukeTauntCooldown", 0);
         }
         break;
 
       case 17:
-        if (arg1) { result = GetCVar("sams_permault"); }
+        if (arg1) { result = GetCVar("samsara_permault"); }
         else { result = GetCVar("sv_weaponstay"); }
         break;
 
@@ -216,7 +221,7 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
         break;
 
       case 22:
-        result = GetCVar("sams_nohealthcap");
+        result = GetCVar("samsara_nohealthcap");
         break;
 
       case 23:
@@ -226,7 +231,7 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
         break;
 
       case 24:
-        result = GetCVar("sams_noult");
+        result = GetCVar("samsara_noult");
         break;
 
       case 25:
@@ -248,11 +253,11 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 	    break;
 
       case 27:
-        result = GetCVar("sams_nounique");
+        result = GetCVar("samsara_nounique");
         break;
 
       case 28:
-        result = GetCVar("sams_noinvuln");
+        result = GetCVar("samsara_noinvuln");
         break;
 
       case 29:
@@ -260,31 +265,31 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
         break;
 
       case 30:
-		if (GetCVar("sams_runninginzdoom") == 1)
+		if (GetCVar("samsara_runninginzdoom") == 1)
 		{
-			result = GetCVar("sams_zd_bloodyhell");
+			result = GetCVar("samsara_zd_bloodyhell");
 			//log(s:"ZDoom ",i:result);
 		} else {
-			result = GetCVar("sams_cl_bloodyhell");
+			result = GetCVar("samsara_cl_bloodyhell");
 			//log(s:"Zandro ",i:result);
 		}
         break;
 
       case 31:
-        if (GetCVar("sams_runninginzdoom") == 1)
+        if (GetCVar("samsara_runninginzdoom") == 1)
 		{
-			result = GetCVar("sams_zd_bloodypersistent");
+			result = GetCVar("samsara_zd_bloodypersistent");
 		} else {
-			result = GetCVar("sams_cl_bloodypersistent");
+			result = GetCVar("samsara_cl_bloodypersistent");
 		}
         break;
 
       case 32:
-        result = GetCVar("sams_nohealth");
+        result = GetCVar("samsara_nohealth");
         break;
 
       case 33:
-        result = GetCVar("sams_vanillaquake");
+        result = GetCVar("samsara_vanillaquake");
         break;
 		
 		case 34:
@@ -302,7 +307,7 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 		
 	  case 36: //we're kinda stuck with this, for now
 		if(arg1 == 1)
-			result = GetCVar("sams_microwavepop");
+			result = GetCVar("samsara_microwavepop");
 			
 		else
 			{
@@ -315,23 +320,22 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 		break;
 		
 	  case 37:
-        if (GameType () != GAME_SINGLE_PLAYER)
-        {
-            SetHudSize(400, 300, 0);
-            Hudmessage(s:"Mash activator key to kill again!"; HUDMSG_PLAIN,1024,CR_WHITE,200.4,9.1,1.75);
-            delay(15);
+        SetHudSize(400, 300, 0);
 
-            if (!CheckInventory("LeonardBallgag"))
-            {
-                LocalAmbientSound("leonard/mpdeath",127);
-                GiveInventory("LeonardTauntCooldown",5);
-                ACS_NamedExecuteAlways("LeonardTauntCooldown",0,0);
-            }
+        HudMessage(l:"LEONARDDEADMESSAGE"; HUDMSG_PLAIN, 1024, CR_WHITE, 200.4, 9.1, 1.75);
+
+        Delay(15);
+
+        if (!CheckInventory("LeonardBallgag"))
+        {
+            LocalAmbientSound("leonard/mpdeath", 127);
+            GiveInventory("LeonardTauntCooldown", 5);
+            ACS_NamedExecuteAlways("LeonardTauntCooldown", 0);
         }
         break;
 		
 	  case 38:
-		if(GetCvar("sams_notimefreeze"))
+		if(GetCvar("samsara_notimefreeze"))
 		{
 			GiveInventory("InvulnPowerup",1);
 		}
@@ -359,6 +363,38 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 		break;
 	  case 41:
 		Thing_ChangeTid(0,UniqueTid());
+		break;
+
+	  case 42:
+        if (arg1)
+        {
+            if (MapArmors[0] == -1) { CheckMapArmors(); }
+            SetArmorMode();
+
+            if (MapArmors[ARMOR_YELLOW] == 1) { i = 1; }
+            else { i = 0; }
+
+            result = i;
+        } else {
+            SetArmorMode();
+
+            result = ArmorMode;
+        }
+		break;
+	  case 43:
+		result = onLiquid(0);
+		break;
+
+      case 44:
+        result = GetCVar("samsara_cl_berserkswitch");
+        break;
+
+      case 45:
+        result = GetCVar("samsara_runninginzandro") && GetCVar("samsara_banmorphovum");
+        break;
+		
+	  case 46:
+		result = SinglePlayer();
 		break;
     }
     
@@ -391,21 +427,27 @@ script "SamsaraClientDecorate" (int which, int a1, int a2) clientside //212 -- S
         break;
 
       case 4:
-        while (1)
-        {
-            if (defaultCVar("sams_cl_noadditivepickups", 0))
+        // [tv50] can't use while, otherwise the cpln isn't acquired I guess?
+        // [tv50] in any case, it won't work. at least, not to my knowledge
+
+        //while (true)
+        //{
+            bool cvarenabled = false;
+
+            if (GetCVar("samsara_runninginzdoom")) { cvarenabled = GetCVar("samsara_zd_noadditivepickups"); }
+            else { cvarenabled = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_noadditivepickups"); }
+
+            if (cvarenabled)
             {
                 SetActorProperty(0, APROP_RenderStyle, STYLE_Normal);
                 SetActorProperty(0, APROP_Alpha, itof(a1)/100);
-            }
-            else
-            {
+            } else {
                 SetActorProperty(0, APROP_RenderStyle, STYLE_Add);
                 SetActorProperty(0, APROP_Alpha, itof(a2)/100);
             }
 
-            Delay(35);
-        }
+            //Delay(35);
+        //}
         break;
         
       case 5:
@@ -432,79 +474,126 @@ script "SamsaraClientDecorate" (int which, int a1, int a2) clientside //212 -- S
         break;
 		
     case 10:
-        if (GetCVar("sams_runninginzdoom") == 1)
+        if (GetCVar("samsara_runninginzdoom") == 1)
 		{
-			if(GetCvar("sams_zd_bloodyhell") == -1) { SetActorState(0,"XDeathHappyfun"); }
-			if(GetCvar("sams_zd_bloodyhell") == 1) { SetActorState(0,"XDeathNashgore"); }
-			if(GetCvar("sams_zd_bloodyhell") == 2) { SetActorState(0,"XDeathBrutal"); }
-			if(GetCvar("sams_zd_bloodyhell") == 3) { xdeathresult = random(1,2);	
+			if(GetCvar("samsara_zd_bloodyhell") == -2) { SetActorState(0,"XDeathComic"); }	
+			else if(GetCvar("samsara_zd_bloodyhell") == -1) { SetActorState(0,"XDeathHappyfun"); }
+			else if(GetCvar("samsara_zd_bloodyhell") == 1) { SetActorState(0,"XDeathNashgore"); }
+			else if(GetCvar("samsara_zd_bloodyhell") == 2) { SetActorState(0,"XDeathBrutal"); }
+			else if(GetCvar("samsara_zd_bloodyhell") == 3) { xdeathresult = random(1,2);	
 			if(xdeathresult==1) { SetActorState(0,"XDeathNightmare1"); }
-			if(xdeathresult==2) { SetActorState(0,"XDeathNightmare2"); } }	
+			else if(xdeathresult==2) { SetActorState(0,"XDeathNightmare2"); } } 
+			else if(GetCvar("samsara_zd_bloodyhell") == 4) { SetActorState(0,"XDeathBolognese"); }	
 		} else {
-			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == -1) { SetActorState(0,"XDeathHappyfun"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 1) { SetActorState(0,"XDeathNashgore"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 2) { SetActorState(0,"XDeathBrutal"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 3) { xdeathresult = random(1,2);
+			if(GetUserCvar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == -2) { SetActorState(0,"XDeathComic"); }	
+			else if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == -1) { SetActorState(0,"XDeathHappyfun"); }
+			else if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 1) { SetActorState(0,"XDeathNashgore"); }
+			else if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 2) { SetActorState(0,"XDeathBrutal"); }
+			else if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 3) { xdeathresult = random(1,2);
 			if(xdeathresult==1) { SetActorState(0,"XDeathNightmare1"); }
-			if(xdeathresult==2) { SetActorState(0,"XDeathNightmare2"); } }
+			else if(xdeathresult==2) { SetActorState(0,"XDeathNightmare2"); } } 
+			else if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 4) { SetActorState(0,"XDeathBolognese"); }
 		}
         break;
 		
     case 11:
-	    if (GetCVar("sams_runninginzdoom") == 1)
+	    if (GetCVar("samsara_runninginzdoom") == 1)
 		{
-			if(GetCvar("sams_zd_bloodyhell") == -1) { SetActorState(0,"DeathHappyfun"); }
-			if(GetCvar("sams_zd_bloodyhell") == 1) { SetActorState(0,"DeathNashgore"); }
-			if(GetCvar("sams_zd_bloodyhell") == 2) { SetActorState(0,"DeathBrutal"); }
-			if(GetCvar("sams_zd_bloodyhell") == 3) { deathresult = random(1,6);
+			if(GetCvar("samsara_zd_bloodyhell") == -2) { SetActorState(0,"DeathComic"); }
+			else if(GetCvar("samsara_zd_bloodyhell") == -1) { SetActorState(0,"DeathHappyfun"); }
+			else if(GetCvar("samsara_zd_bloodyhell") == 1) { SetActorState(0,"DeathNashgore"); }
+			else if(GetCvar("samsara_zd_bloodyhell") == 2) { SetActorState(0,"DeathBrutal"); }
+			else if(GetCvar("samsara_zd_bloodyhell") == 3) { deathresult = random(1,6);
 			if(deathresult==1) { SetActorState(0,"DeathNightmare1"); }
-			if(deathresult==2) { SetActorState(0,"DeathNightmare2"); }
-			if(deathresult==3) { SetActorState(0,"DeathNightmare3"); }
-			if(deathresult==4) { SetActorState(0,"DeathNightmare4"); }
-			if(deathresult==5) { SetActorState(0,"DeathNightmare5"); }
-			if(deathresult==6) { SetActorState(0,"DeathNightmare6"); } }
+			else if(deathresult==2) { SetActorState(0,"DeathNightmare2"); }
+			else if(deathresult==3) { SetActorState(0,"DeathNightmare3"); }
+			else if(deathresult==4) { SetActorState(0,"DeathNightmare4"); }
+			else if(deathresult==5) { SetActorState(0,"DeathNightmare5"); }
+			else if(deathresult==6) { SetActorState(0,"DeathNightmare6"); } } 
+			else if(GetCvar("samsara_zd_bloodyhell") == 4) { SetActorState(0,"DeathBolognese"); }
 			break;
 		} else {
-			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == -1) { SetActorState(0,"DeathHappyfun"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 1) { SetActorState(0,"DeathNashgore"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 2) { SetActorState(0,"DeathBrutal"); }
-			if(GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell") == 3) { deathresult = random(1,6);
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == -2) { SetActorState(0,"DeathComic"); }
+			else if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == -1) { SetActorState(0,"DeathHappyfun"); }
+			else if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 1) { SetActorState(0,"DeathNashgore"); }
+			else if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 2) { SetActorState(0,"DeathBrutal"); }
+			else if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 3) { deathresult = random(1,6);
 			if(deathresult==1) { SetActorState(0,"DeathNightmare1"); }
-			if(deathresult==2) { SetActorState(0,"DeathNightmare2"); }
-			if(deathresult==3) { SetActorState(0,"DeathNightmare3"); }
-			if(deathresult==4) { SetActorState(0,"DeathNightmare4"); }
-			if(deathresult==5) { SetActorState(0,"DeathNightmare5"); }
-			if(deathresult==6) { SetActorState(0,"DeathNightmare6"); } }
+			else if(deathresult==2) { SetActorState(0,"DeathNightmare2"); }
+			else if(deathresult==3) { SetActorState(0,"DeathNightmare3"); }
+			else if(deathresult==4) { SetActorState(0,"DeathNightmare4"); }
+			else if(deathresult==5) { SetActorState(0,"DeathNightmare5"); }
+			else if(deathresult==6) { SetActorState(0,"DeathNightmare6"); } } 
+			else if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 4) { SetActorState(0,"DeathBolognese"); }
 			break;
 		}
         break;
 		
 	case 12:
-	    if (GetCVar("sams_runninginzdoom") == 1)
+		int bloodyHellCVar;
+
+		//Many players won't use this option, so it's best to check default to cut back on if statements
+	    if (GetCVar("samsara_runninginzdoom") == 1)
 		{
-			result = GetCVar("sams_zd_bloodyhell");
+			bloodyHellCVar = GetCVar("samsara_zd_bloodyhell");
+			
+			if(bloodyHellCVar == 0) { SetActorState(0,GetBloodStateModifier("SpawnNormal", a1)); }
+			else if(bloodyHellCVar == -2 ) { SetActorState(0,"SpawnComic"); }
+			else if(bloodyHellCVar == -1) { SetActorState(0,GetBloodStateModifier("SpawnHappyfun", a1)); }
+			else if(bloodyHellCVar == 1 && !CheckActorClass(0,"Switchable_FlyingBlood_NonViolent")) { SetActorState(0,GetBloodStateModifier("SpawnNashgore", a1)); }
+			else if(bloodyHellCVar == 2 && !CheckActorClass(0,"Switchable_FlyingBlood_NonViolent")) { SetActorState(0,"SpawnBrutal"); }
+			else if(bloodyHellCVar == 3 && !CheckActorClass(0,"Switchable_FlyingBlood_NonViolent")) { SetActorState(0,GetBloodStateModifier("SpawnNightmare", a1)); }
+			else if(bloodyHellCVar == 4 && !CheckActorClass(0,"Switchable_FlyingBlood_NonViolent")) { SetActorState(0,"SpawnBolognese"); }
+			else if(!CheckActorClass(0,"Switchable_FlyingBlood_NonViolent")) { SetActorState(0,GetBloodStateModifier("SpawnNormal", a1)); }
 		} else {
-			result = GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodyhell");
+			bloodyHellCVar = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell");
+
+			if(bloodyHellCVar == 0) { SetActorState(0,GetBloodStateModifier("SpawnNormal", a1)); }
+			else if(bloodyHellCVar == -2) { SetActorState(0,"SpawnComic"); }
+			else if(bloodyHellCVar == -1) { SetActorState(0,GetBloodStateModifier("SpawnHappyfun", a1)); }
+			else if(bloodyHellCVar == 1 && !CheckActorClass(0,"Switchable_FlyingBlood_NonViolent")) { SetActorState(0,GetBloodStateModifier("SpawnNashgore", a1)); }
+			else if(bloodyHellCVar == 2 && !CheckActorClass(0,"Switchable_FlyingBlood_NonViolent")) { SetActorState(0,"SpawnBrutal"); }
+			else if(bloodyHellCVar == 3 && !CheckActorClass(0,"Switchable_FlyingBlood_NonViolent")) { SetActorState(0,GetBloodStateModifier("SpawnNightmare", a1)); }
+			else if(bloodyHellCVar == 4 && !CheckActorClass(0,"Switchable_FlyingBlood_NonViolent")) { SetActorState(0,"SpawnBolognese"); }
+			else if(!CheckActorClass(0,"Switchable_FlyingBlood_NonViolent")) { SetActorState(0,GetBloodStateModifier("SpawnNormal", a1)); }
 		}
         break;
 	
 	case 13:
-	    if (GetCVar("sams_runninginzdoom") == 1)
+	    if (GetCVar("samsara_runninginzdoom") == 1)
 		{
-			result = GetCVar("sams_zd_bloodypersistent");
+			result = GetCVar("samsara_zd_bloodypersistent");
 		} else {
-			result = GetUserCVar(ConsolePlayerNumber(), "sams_cl_bloodypersistent");
+			result = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodypersistent");
 		}
         break;
 	
 	case 14:
-		if (GetCVar("sams_runninginzdoom") == 1)
-			result = GetCVar("sams_cl_dkclab");
+		if (GetCVar("samsara_runninginzdoom") == 1)
+			result = GetCVar("samsara_cl_dkclab");
 			
 		else
-			result = GetUserCVar(ConsolePlayerNumber(), "sams_cl_dkclab");
+			result = GetUserCVar(ConsolePlayerNumber(), "samsara_cl_dkclab");
 			
 		break;
+	case 15:
+	    if (GetCVar("samsara_runninginzdoom") == 1)
+		{
+			if(GetCvar("samsara_zd_bloodyhell") == -2) { SetActorState(0,"CrashComic"); }
+			if(GetCvar("samsara_zd_bloodyhell") == -1) { SetActorState(0,"CrashHappyfun"); }
+			if(GetCvar("samsara_zd_bloodyhell") == 1) { SetActorState(0,"CrashNashgore"); }
+			if(GetCvar("samsara_zd_bloodyhell") == 2) { SetActorState(0,"CrashBrutal"); }
+			if(GetCvar("samsara_zd_bloodyhell") == 3) { SetActorState(0,"CrashNightmare"); }
+			if(GetCvar("samsara_zd_bloodyhell") == 4) { SetActorState(0,"CrashBolognese"); }
+		} else {
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == -2) { SetActorState(0,"CrashComic"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == -1) { SetActorState(0,"CrashHappy"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 1) { SetActorState(0,"CrashNashgore"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 2) { SetActorState(0,"CrashBrutal"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 3) { SetActorState(0,"CrashNightmare"); }
+			if(GetUserCVar(ConsolePlayerNumber(), "samsara_cl_bloodyhell") == 4) { SetActorState(0,"CrashBolognese"); }
+		}
+        break;
     }
     
     SetResultValue(result);
@@ -523,214 +612,380 @@ Script "Samsara_WeaponHotkeys" (int mode)
 
 // Until Zandronum doesn't crash with the old keybindings in KEYCONF, this will be required, I'm afraid
 
-Str modestringsdefault[2] = { "Off", "On" };
-Str modestringswolf[3] = { "Classic", "Lost Missons", "Totenkopf SDL" };
-Str modestringshexen[3] = { "Parias", "Daedolon", "Baratus" };
-Str modestringsrott[5] = { "Ian Paul Freeley", "Taradino Cassatt", "Thi Barrett", "Lorelei Ni", "Doug Wendt" };
-Str modestringsipog[5] = { "Aldus Kaden", "Tobias Locke", "Xith", "Specimen 7", "Theola Nom" };
-str heromusicmodes[3] = { "Off", "Class", "Game" };
-str pickupmodes[3] = { "Old-Style", "Hybrid", "Class" };
-
-Script "Samsara_Keybinds_Clientside" (int button) net clientside
+script "Samsara_Keybinds" (int button) NET
 {
-	int mode;
-	Switch(button)
-	{
-		Case 1:
-			SetUserCvar(PlayerNumber(),"sams_cl_vanilladoom", !GetUserCvar(PlayerNumber(),"sams_cl_vanilladoom"));
-			
-			mode = GetUserCvar(PlayerNumber(),"sams_cl_vanilladoom");
-			Log(s:"\cgVanilla Doom Animations ", s:"\ck", s:modestringsdefault[mode]);
-			break;
-			
-		Case 3:
-			SetUserCvar(PlayerNumber(),"sams_cl_ballgag", !GetUserCvar(PlayerNumber(),"sams_cl_ballgag"));
-			
-			mode = GetUserCvar(PlayerNumber(),"sams_cl_ballgag");
-			Log(s:"\cgCharacters can talk ", s:"\ck", s:modestringsdefault[mode]);
-			break;
-			
-		Case 5:
-			SetUserCvar(PlayerNumber(),"sams_cl_moremessages", !GetUserCvar(PlayerNumber(),"sams_cl_moremessages"));
-			
-			mode = GetUserCvar(PlayerNumber(),"sams_cl_moremessages");
-			Log(s:"\cgAlternate messages: ", s:"\ck", s:modestringsdefault[mode]);
-			break;
-			
-		Case 6:
-			SetUserCvar(PlayerNumber(),"sams_cl_printpickup", !GetUserCvar(PlayerNumber(),"sams_cl_printpickup"));
-			
-			mode = GetUserCvar(PlayerNumber(),"sams_cl_printpickup");
-			Log(s:"\cgPrint pickup messages: ", s:"\ck", s:modestringsdefault[mode]);
-			break;
-			
-		Case 7:
-			SetUserCvar(PlayerNumber(),"sams_cl_norecoil", !GetUserCvar(PlayerNumber(),"sams_cl_norecoil"));
-			
-			mode = GetUserCvar(PlayerNumber(),"sams_cl_norecoil");
-			Log(s:"\cgRanger Recoil: ", s:"\ck", s:modestringsdefault[mode]);
-			break;
-			
-		Case 8:
-			if(GetUserCvar(PlayerNumber(),"sams_cl_heromusic") == 2)
-				SetUserCvar(PlayerNumber(),"sams_cl_heromusic", 0);
-			else
-				SetUserCvar(PlayerNumber(),"sams_cl_heromusic", GetUserCvar(PlayerNumber(),"sams_cl_heromusic")+1);
-			
-			If(GetCvar("sams_cl_heromusic") == false)
-			{
-				StopSound(0, CHAN_VOICE);
-				LocalSetMusic("*",0);
-			}
-			else 
-				ACS_NamedExecuteWithResult("SamsaraOST_Enter",0,0,0,0);	
-				
-			mode = GetUserCvar(PlayerNumber(),"sams_cl_heromusic");
-			Log(s:"\cgHero Music: ", s:"\ck", s:heromusicmodes[mode]);
-			break;
-			
-		Case 9:
-			if(GetUserCvar(PlayerNumber(),"sams_cl_pickupmode") < 2)
-				SetUserCvar(PlayerNumber(),"sams_cl_pickupmode", GetUserCvar(PlayerNumber(),"sams_cl_pickupmode")+1);
-					
-			else
-				SetUserCvar(PlayerNumber(),"sams_cl_pickupmode", 0);
-				
-			mode = GetUserCvar(PlayerNumber(),"sams_cl_pickupmode");
-			Log(s:"\cgPickup Mode: ", s:"\ck", s:heromusicmodes[mode]);
-			break;
-	}
+    int pln = PlayerNumber(); // ensure only the activator gets the messages
+    int cpln = ConsolePlayerNumber();
+
+    int cvarsetting = 0;
+    int mode = 0;
+    int arg2 = -1;
+
+    switch (button)
+    {
+      case 1:
+        SetCVar("samsara_cl_vanilladoom", !GetCVar("samsara_cl_vanilladoom"));
+        mode = GetCVar("samsara_cl_vanilladoom");
+        break;
+
+      case 2:
+        SetCVar("samsara_cl_wolfmove", !GetCVar("samsara_cl_wolfmove"));
+        mode = GetCVar("samsara_cl_wolfmove");
+        break;
+
+      case 3:
+        SetCVar("samsara_cl_ballgag", !GetCVar("samsara_cl_ballgag"));
+        mode = GetCVar("samsara_cl_ballgag");
+        break;
+
+      case 4:
+        SetCVar("samsara_cl_weaponhud", !GetCVar("samsara_cl_weaponhud"));
+        mode = GetCVar("samsara_cl_weaponhud");
+        break;
+
+      case 5:
+        SetCVar("samsara_cl_moremessages", !GetCVar("samsara_cl_moremessages"));
+        mode = GetCVar("samsara_cl_moremessages");
+        break;
+
+      case 6:
+        SetCVar("samsara_cl_printpickup", !GetCVar("samsara_cl_printpickup"));
+        mode = GetCVar("samsara_cl_printpickup");
+        break;
+
+      case 7:
+        SetCVar("samsara_cl_norecoil", !GetCVar("samsara_cl_norecoil"));
+        mode = GetCVar("samsara_cl_norecoil");
+        break;
+
+      case 8:
+        if (GetCVar("samsara_cl_heromusic") >= 2) { cvarsetting = 0; }
+        else { cvarsetting = GetCVar("samsara_cl_heromusic") + 1; }
+
+        SetCVar("samsara_cl_heromusic", cvarsetting);
+
+        if (GetCVar("samsara_cl_heromusic") <= 0)
+        {
+            StopSound(0, CHAN_VOICE);
+            LocalSetMusic("*");
+        }
+
+        // SamsaraOST_Enter should already be handled
+
+        mode = GetCVar("samsara_cl_heromusic");
+        break;
+
+      case 9:
+        if (GetCVar("samsara_cl_pickupmode") >= 2) { cvarsetting = 0; }
+        else { cvarsetting = GetCVar("samsara_cl_pickupmode") + 1; }
+
+        SetCVar("samsara_cl_pickupmode", cvarsetting);
+
+        mode = GetCVar("samsara_cl_pickupmode");
+        break;
+
+      case 10:
+        if (PlayerIsSpectator(pln) > 0) { break; }
+
+        switch (samsaraClassNum())
+        {
+          case CLASS_DOOM:
+            SetCVar("samsara_cl_doom64", !GetCVar("samsara_cl_doom64"));
+            mode = GetCVar("samsara_cl_doom64");
+            arg2 = CLASS_DOOM;
+            break;
+
+          case CLASS_WOLFEN:
+            if (GetCVar("samsara_cl_wolfmode") >= 2) { cvarsetting = 0; }
+            else { cvarsetting = GetCVar("samsara_cl_wolfmode") + 1; }
+
+            SetCVar("samsara_cl_wolfmode", cvarsetting);
+            mode = GetCVar("samsara_cl_wolfmode");
+            arg2 = CLASS_WOLFEN;
+            break;
+
+          case CLASS_HEXEN:
+            if (GetCVar("samsara_cl_hexclass") >= 2) { cvarsetting = 0; }
+            else { cvarsetting = GetCVar("samsara_cl_hexclass") + 1; }
+
+            SetCVar("samsara_cl_hexclass", cvarsetting);
+            mode = GetCVar("samsara_cl_hexclass");
+            arg2 = CLASS_HEXEN;
+            break;
+
+          case CLASS_DUKE:
+            SetCVar("samsara_cl_dkclab", !GetCVar("samsara_cl_dkclab"));
+            mode = GetCVar("samsara_cl_dkclab");
+            arg2 = CLASS_DUKE;
+            break;
+
+          case CLASS_ROTT:
+            if (GetCVar("samsara_cl_rottmode") >= 4) { cvarsetting = 0; }
+            else { cvarsetting = GetCVar("samsara_cl_rottmode") + 1; }
+
+            SetCVar("samsara_cl_rottmode", cvarsetting);
+            mode = GetCVar("samsara_cl_rottmode");
+            arg2 = CLASS_ROTT;
+            break;
+
+          case CLASS_BLAKE:
+            SetCVar("samsara_cl_bsaog", !GetCVar("samsara_cl_bsaog"));
+            mode = GetCVar("samsara_cl_bsaog");
+            arg2 = CLASS_BLAKE;
+            break;
+
+          case CLASS_POGREED:
+            if (GetCVar("samsara_cl_ipogmode") >= 4) { cvarsetting = 0; }
+            else { cvarsetting = GetCVar("samsara_cl_ipogmode") + 1; }
+
+            SetCVar("samsara_cl_ipogmode", cvarsetting);
+            mode = GetCVar("samsara_cl_ipogmode");
+            arg2 = CLASS_POGREED;
+            break;
+
+          case CLASS_HALFLIFE:
+            SetCVar("samsara_cl_shephardmode", !GetCVar("samsara_cl_shephardmode"));
+
+            if (CheckInventory("flashlightinventory")) { ACS_NamedExecuteWithResult("HL2677"); }
+
+            mode = GetCVar("samsara_cl_shephardmode");
+            arg2 = CLASS_HALFLIFE;
+            break;
+
+          default:
+            break;
+        }
+        break;
+    }
+
+    ACS_NamedExecuteWithResult("Samsara_Keybinds_Messages", button, mode, arg2);
 }
 
-Script "Samsara_Keybinds" (int button) net
+script "Samsara_Keybinds_Messages" (int button, int mode, int arg2) CLIENTSIDE
 {
-	int mode;
-	Switch(button)
-	{
-		Case 2:
-			SetUserCvar(PlayerNumber(),"sams_cl_wolfmove", !GetUserCvar(PlayerNumber(),"sams_cl_wolfmove"));
-			
-			mode = GetUserCvar(PlayerNumber(),"sams_cl_wolfmove");
-			Log(s:"\cgWolfenstein Character Movement ", s:"\ck", s:modestringsdefault[mode]);
-			break;
+    int pln = PlayerNumber(); // ensure only the activator gets the messages
+    int cpln = ConsolePlayerNumber();
 
-		Case 4:
-			SetUserCvar(PlayerNumber(),"sams_cl_weaponhud", !GetUserCvar(PlayerNumber(),"sams_cl_weaponhud"));
-			
-			mode = GetUserCvar(PlayerNumber(),"sams_cl_weaponhud");
-			Log(s:"\cgWeapon bar ", s:"\ck", s:modestringsdefault[mode]);
-			break;
-			
-		Case 10:
-			SetUserCvar(PlayerNumber(),"sams_cl_rottbar", !GetUserCvar(PlayerNumber(),"sams_cl_rottbar"));
-			
-			mode = GetUserCvar(PlayerNumber(),"sams_cl_pickupmode");
-			Log(s:"\cgRott Bar: ", s:"\ck", s:modestringsdefault[mode]);
-			break;
-	}
-}
+    str modestring = "Default";
 
-Script "Samsara_ChangeAltClass" (void) net
-{
-	int mode;
-	int pln = PlayerNumber();
-	switch(PlayerClass(pln))
-	{
-		case 0:
-			mode = !GetUserCvar(pln,"sams_cl_doom64");
-			SetUserCvar(pln,"sams_cl_doom64",mode);
-			break;
-		case 3:
-			mode = GetUserCvar(PlayerNumber(),"sams_cl_wolfmode");
-			if(mode == 2)
-				mode = 0;
-			else
-				mode++;
-				
-			SetUserCvar(PlayerNumber(),"sams_cl_wolfmode",mode);
-			break;
-		case 4:
-			mode = GetUserCvar(pln,"sams_cl_hexclass");
-			if(mode == 2)
-				mode = 0;
-			else
-				mode++;
-				
-			SetUserCvar(pln,"sams_cl_hexclass",mode);
-			break;
-		case 5:
-			mode = !GetUserCvar(pln,"sams_cl_dkclab");
-			SetUserCvar(pln,"sams_cl_dkclab",mode);
-			break;
-		case 8:
-			mode = GetUserCvar(pln,"sams_cl_rottmode");
-			if(mode == 4)
-				mode = 0;
-			else
-				mode++;
-				
-			SetUserCvar(pln,"sams_cl_rottmode",mode);
-			break;
-		case 9:
-			mode = !GetUserCvar(pln,"sams_cl_bsaog");
-			SetUserCvar(pln,"sams_cl_bsaog",mode);
-			break;
-		case 16:
-			mode = GetUserCvar(pln,"sams_cl_ipogmode");
-			if(mode == 4)
-				mode = 0;
-			else
-				mode++;
-			SetUserCvar(pln,"sams_cl_ipogmode",mode);
-			break;
-		case 19:
-			mode = !GetUserCvar(pln,"sams_cl_shephardmode");
-			SetUserCvar(pln,"sams_cl_shephardmode",mode);
-			break;
-	}
-	ACS_NamedExecuteWithResult("Samsara_LogClass",PlayerClass(pln),mode);
-}
+    switch (button)
+    {
+      case 1:
+        if (mode >= 1) { modestring = "Vanilla"; }
+        else { modestring = "Improved"; }
 
-//Sigh
-Script "Samsara_LogClass" (int type, int mode) clientside
-{
-	switch(type)
-	{
-		case 0:
-			SetUserCvar(PlayerNumber(),"sams_cl_doom64",mode);
-			Log(s:"\cgDoom 64 Mode: ", s:"\ck", s:modestringsdefault[mode]);
-			break;
-		case 3:		
-			SetUserCvar(PlayerNumber(),"sams_cl_wolfmode",mode);
-			Log(s:"\cgWolfenstein 3D Mode: ", s:"\ck", s:modestringswolf[mode]);
-			break;
-		case 4:
-			SetUserCvar(PlayerNumber(),"sams_cl_hexclass",mode);
-			Log(s:"\cgHexen Class: ", s:"\ck", s:modestringshexen[mode]);
-			break;
-		case 5:
-			SetUserCvar(PlayerNumber(),"sams_cl_dkclab",mode);
-			Log(s:"\cgDuke Nukem Life's a Beach: ", s:"\ck", s:modestringsdefault[mode]);
-			break;
-		case 8:
-			SetUserCvar(PlayerNumber(),"sams_cl_rottmode",mode);
-			Log(s:"\cgH.U.N.T. Team Member: ", s:"\ck", s:modestringsrott[mode]);
-			break;
-		case 9:
-			SetUserCvar(PlayerNumber(),"sams_cl_bsaog",mode);
-			Log(s:"\cgBlake Stone Aliens of Gold: ", s:"\ck", s:modestringsdefault[mode]);
-			break;
-		case 16:
-			SetUserCvar(PlayerNumber(),"sams_cl_ipogmode",mode);
-			Log(s:"\cgA.V.C. Team Member: ", s:"\ck", s:modestringsipog[mode]);
-			break;
-		case 19:
-			SetUserCvar(PlayerNumber(),"sams_cl_shephardmode",mode);
-			if(CheckInventory("flashlightinventory") == true)
-				ACS_NamedExecuteWithResult("HL2677",0,0,0,0);
-			Log(s:"\cgHalf Life Opposing Force: ", s:"\ck", s:modestringsdefault[mode]);
-			break;
-	}
+        if (pln == cpln)
+        {
+            SetCVar("samsara_cl_vanilladoom", mode);
+            Log(s:"\cgDoom Animations & Balance: ", s:"\ck", s:modestring);
+        }
+        break;
+
+      case 2:
+        if (mode >= 1) { modestring = "On"; }
+        else { modestring = "Off"; }
+
+        if (pln == cpln)
+        {
+            SetCVar("samsara_cl_wolfmove", mode);
+            Log(s:"\cgWolfenstein Style Movement: ", s:"\ck", s:modestring);
+        }
+        break;
+
+      case 3:
+        if (mode >= 1) { modestring = "Off"; }
+        else { modestring = "On"; }
+
+        if (pln == cpln)
+        {
+            SetCVar("samsara_cl_ballgag", mode);
+            Log(s:"\cgCharacter Talk: ", s:"\ck", s:modestring);
+        }
+        break;
+
+      case 4:
+        if (mode >= 1) { modestring = "On"; }
+        else { modestring = "Off"; }
+
+        if (pln == cpln)
+        {
+            SetCVar("samsara_cl_weaponhud", mode);
+            Log(s:"\cgWeapon HUD Bar: ", s:"\ck", s:modestring);
+        }
+        break;
+
+      case 5:
+        if (mode >= 1) { modestring = "On"; }
+        else { modestring = "Off"; }
+
+        if (pln == cpln)
+        {
+            SetCVar("samsara_cl_moremessages", mode);
+            Log(s:"\cgExtra Pickup Messages: ", s:"\ck", s:modestring);
+        }
+        break;
+
+      case 6:
+        if (mode >= 1) { modestring = "Print"; }
+        else { modestring = "Log"; }
+
+        if (pln == cpln)
+        {
+            SetCVar("samsara_cl_printpickup", mode);
+            Log(s:"\cgPickup Message Mode: ", s:"\ck", s:modestring);
+        }
+        break;
+
+      case 7:
+        if (mode >= 1) { modestring = "Off"; }
+        else { modestring = "On"; }
+
+        if (pln == cpln)
+        {
+            SetCVar("samsara_cl_norecoil", mode);
+            Log(s:"\cgWeapon Recoil: ", s:"\ck", s:modestring);
+        }
+        break;
+
+      case 8:
+        if (mode >= 2) { modestring = "Game Override"; }
+        else if (mode == 1) { modestring = "Class"; }
+        else { modestring = "Off"; }
+
+        if (pln == cpln)
+        {
+            SetCVar("samsara_cl_heromusic", mode);
+            Log(s:"\cgHero Music: ", s:"\ck", s:modestring);
+        }
+        break;
+
+      case 9:
+        if (mode >= 2) { modestring = "Class"; }
+        else if (mode == 1) { modestring = "Hybrid"; }
+        else { modestring = "Old-Style"; }
+
+        if (pln == cpln)
+        {
+            SetCVar("samsara_cl_pickupmode", mode);
+            Log(s:"\cgPickup Graphics: ", s:"\ck", s:modestring);
+        }
+        break;
+
+      case 10:
+        if (PlayerIsSpectator(pln) > 0)
+        {
+            if (pln == cpln) { Log(s:"This cannot be used while spectating."); }
+            terminate;
+        }
+
+        switch (arg2)
+        {
+          case CLASS_DOOM:
+            if (mode >= 1) { modestring = "Doom 64 Guy"; }
+            else { modestring = "Doomguy"; }
+
+            if (pln == cpln)
+            {
+                SetCVar("samsara_cl_doom64", mode);
+                Log(s:"\cgDoom Character: ", s:"\ck", s:modestring);
+            }
+            break;
+
+          case CLASS_WOLFEN:
+            if (mode >= 2) { modestring = "B.J. Blazkowicz (Castle Totenkopf SDL)"; }
+            else if (mode == 1) { modestring = "B.J. Blazkowicz (Lost Missions)"; }
+            else { modestring = "B.J. Blazkowicz (Original)"; }
+
+            if (pln == cpln)
+            {
+                SetCVar("samsara_cl_wolfmode", mode);
+                Log(s:"\cgWolfenstein 3D Character: ", s:"\ck", s:modestring);
+            }
+            break;
+
+          case CLASS_HEXEN:
+            if (mode >= 2) { modestring = "Baratus"; }
+            else if (mode == 1) { modestring = "Daedolon"; }
+            else { modestring = "Parias"; }
+
+            if (pln == cpln)
+            {
+                SetCVar("samsara_cl_hexclass", mode);
+                Log(s:"\cgHexen 1 Character: ", s:"\ck", s:modestring);
+            }
+            break;
+
+          case CLASS_DUKE:
+            if (mode >= 1) { modestring = "Life's a Beach"; }
+            else { modestring = "Original"; }
+
+            if (pln == cpln)
+            {
+                SetCVar("samsara_cl_dkclab", mode);
+                Log(s:"\cgDuke Nukem 3D Skins: ", s:"\ck", s:modestring);
+            }
+            break;
+
+          case CLASS_ROTT:
+            if (mode >= 4) { modestring = "Doug Wendt"; }
+            else if (mode == 3) { modestring = "Lorelei Ni"; }
+            else if (mode == 2) { modestring = "Thi Barrett"; }
+            else if (mode == 1) { modestring = "Taradino Cassatt"; }
+            else { modestring = "Ian Paul Freeley"; }
+
+            if (pln == cpln)
+            {
+                SetCVar("samsara_cl_rottmode", mode);
+                Log(s:"\cgROTT: H.U.N.T. Team Member: ", s:"\ck", s:modestring);
+            }
+            break;
+
+          case CLASS_BLAKE:
+            if (mode >= 1) { modestring = "Aliens of Gold"; }
+            else { modestring = "Planet Strike"; }
+
+            if (pln == cpln)
+            {
+                SetCVar("samsara_cl_bsaog", mode);
+                Log(s:"\cgBlake Stone Weapon Skins: ", s:"\ck", s:modestring);
+            }
+            break;
+
+          case CLASS_POGREED:
+            if (mode >= 4) { modestring = "Theola Nom"; }
+            else if (mode == 3) { modestring = "Specimen 7"; }
+            else if (mode == 2) { modestring = "Xith"; }
+            else if (mode == 1) { modestring = "Tobias Locke"; }
+            else { modestring = "Aldus Kaden"; }
+
+            if (pln == cpln)
+            {
+                SetCVar("samsara_cl_ipogmode", mode);
+                Log(s:"\cgIPOG: A.V.C. Team Member: ", s:"\ck", s:modestring);
+            }
+            break;
+
+          case CLASS_HALFLIFE:
+            if (mode >= 1) { modestring = "Adrian Shephard"; }
+            else { modestring = "Gordon Freeman"; }
+
+            if (pln == cpln)
+            {
+                SetCVar("samsara_cl_shephardmode", mode);
+                Log(s:"\cgHalf-Life Character: ", s:"\ck", s:modestring);
+            }
+            break;
+
+          default:
+            if (pln == cpln) { Log(s:"This character has no alternative modes."); }
+            terminate;
+        }
+        break;
+
+      default:
+        if (pln == cpln) { Log(s:"Invalid setting."); }
+        terminate;
+    }
 }
 
 //For our unique keys to be consolidated
@@ -740,7 +995,7 @@ Script "Samsara_UniqueKeys" (int key) net
 	switch(PlayerClass(pln))
 	{
 		case 10:
-			if(GetCvar("sams_permakimbo"))
+			if(GetCvar("samsara_permakimbo"))
 			{
 				if(CheckInventory("GunsAkimboP"))
 					TakeInventory("GunsAkimboP",1);
@@ -750,12 +1005,13 @@ Script "Samsara_UniqueKeys" (int key) net
 			break;
 		case 19:
 			ACS_NamedExecuteWithResult("HL2677",0,0,0);
+			break;
 			if(key == 0)
 				ACS_NamedExecuteWithResult("HL2677",0,0,0);
 			break;
 		case 23:
-		if(key == 0)
-		{
+			if(key == 0)
+			{
 				if(((timer() > CheckInventory("LeonardPissTimer") + 10500) || CheckInventory("LeonardPissTimer") == 0) && GetActorProperty(0,APROP_Health) > 0)
 				{
 					TakeInventory("LeonardPissTimer",2147483647);
@@ -767,7 +1023,7 @@ Script "Samsara_UniqueKeys" (int key) net
 						
 					Playsound(0,"Leonard/Pee",CHAN_6,1.0,0,ATTN_NORM);
 				}
-			}	
+			}
 			break;
 		case 26:
 			ACS_NamedExecuteWithResult("BondActivateWatch",0,0,0);
@@ -797,7 +1053,7 @@ Script "Samsara_UniqueKeys" (int key) net
 
 script "SamsaraGetSettings" (void) net //676 -- SAMSARA_GETSETTINGS
 {
-    int lmsLevel = middle(0, GetCVar("sams_lmslife"), LMSMODES-1);
+    int lmsLevel = middle(0, GetCVar("samsara_lmslife"), LMSMODES-1);
     int lmsHP, lmsArmor;
     int lmsUlt, lmsUnique;
     int ultStay, highLow;
@@ -805,16 +1061,16 @@ script "SamsaraGetSettings" (void) net //676 -- SAMSARA_GETSETTINGS
     if (lmsLevel) { lmsHP    = 100*lmsLevel; lmsArmor = 100*lmsLevel; }
     else { lmsHP = 100; lmsArmor = 0; }
 
-    if (GetCVar("sams_lmsunique")) { lmsUnique = "\cdwith"; }
+    if (GetCVar("samsara_lmsunique")) { lmsUnique = "\cdwith"; }
     else { lmsUnique = "\cgwithout"; }
 
-    if (GetCVar("sams_lmsult")) { lmsUlt = "\cdwith"; }
+    if (GetCVar("samsara_lmsult")) { lmsUlt = "\cdwith"; }
     else { lmsUlt = "\cgwithout"; }
 
-    if (GetCVar("sams_permault")) { ultStay = "\cdstay"; }
+    if (GetCVar("samsara_permault")) { ultStay = "\cdstay"; }
     else { ultStay = "\cado not stay"; }
 
-    if (GetCVar("sams_jumpmod") < 0) { highLow = "\calower"; }
+    if (GetCVar("samsara_jumpmod") < 0) { highLow = "\calower"; }
     else { highLow = "\cfhigher"; }
 
     SetHudSize(640, 480, 1);
@@ -836,9 +1092,9 @@ script "SamsaraGetSettings" (void) net //676 -- SAMSARA_GETSETTINGS
             HUDMSG_FADEOUT, 6762, CR_WHITE, 50.1, 96.0, 3.0, 1.0);
     }
 
-    if (GetCVar("sams_jumpmod"))
+    if (GetCVar("samsara_jumpmod"))
     {
-        HudMessage(s:"You jump \cn", d:abs(GetCVar("sams_jumpmod")), s:"\c- units ", s:highLow, s:"\c- than normal";
+        HudMessage(s:"You jump \cn", d:abs(GetCVar("samsara_jumpmod")), s:"\c- units ", s:highLow, s:"\c- than normal";
                 HUDMSG_FADEOUT, 6763, CR_WHITE, 50.1, 112.0, 3.0, 1.0);
     }
     else
@@ -848,18 +1104,18 @@ script "SamsaraGetSettings" (void) net //676 -- SAMSARA_GETSETTINGS
     }
 
 
-    if (GetCVar("sams_banjetpack"))
+    if (GetCVar("samsara_banjetpack"))
     {
-        HudMessage(s:"Duke's and Rebel Moon Commando's jetpack is \cgBANNED.";
+        HudMessage(s:"Duke's Jetpack, Rebel Moon Commando's jetpack, Freeman's longjump, and Adrian's barnacle are \cgBANNED.";
                 HUDMSG_FADEOUT, 6764, CR_WHITE, 50.1, 128.0, 3.0, 1.0);
     }
     else
     {
-        HudMessage(s:"Duke's and Rebel Moon Commando's jetpack is \cdALLOWED.";
+        HudMessage(s:"Duke's Jetpack, Rebel Moon Commando's jetpack, Freeman's longjump, and Adrian's barnacle are \cdALLOWED.";
                 HUDMSG_FADEOUT, 6764, CR_WHITE, 50.1, 128.0, 3.0, 1.0);
     }
 
-    if (GetCVar("sams_banwolfmove"))
+    if (GetCVar("samsara_banwolfmove"))
     {
         HudMessage(s:"Wolfenstein movement is \cgBANNED.";
                 HUDMSG_FADEOUT, 6765, CR_WHITE, 50.1, 144.0, 3.0, 1.0);
@@ -870,7 +1126,7 @@ script "SamsaraGetSettings" (void) net //676 -- SAMSARA_GETSETTINGS
                 HUDMSG_FADEOUT, 6765, CR_WHITE, 50.1, 144.0, 3.0, 1.0);
     }
 
-    if (GetCVar("sams_nocustomgravity"))
+    if (GetCVar("samsara_nocustomgravity"))
     {
         HudMessage(s:"Custom gravities are \cadisabled.";
                 HUDMSG_FADEOUT, 6766, CR_WHITE, 50.1, 160.0, 3.0, 1.0);
@@ -881,13 +1137,13 @@ script "SamsaraGetSettings" (void) net //676 -- SAMSARA_GETSETTINGS
                 HUDMSG_FADEOUT, 6766, CR_WHITE, 50.1, 160.0, 3.0, 1.0);
     }
 
-    HudMessage(s:"Party mode is ", s:cond(GetCVar("sams_peoplediewhentheyarekilled"), "\cdON.", "\caOFF."), s:"\c- (", d:GetCVar("sams_peoplediewhentheyarekilled"), s:")";
+    HudMessage(s:"Party mode is ", s:cond(GetCVar("samsara_peoplediewhentheyarekilled"), "\cdON.", "\caOFF."), s:"\c- (", d:GetCVar("samsara_peoplediewhentheyarekilled"), s:")";
             HUDMSG_FADEOUT, 6767, CR_WHITE, 50.1, 176.0, 3.0, 1.0);
 
-    HudMessage(s:"Limitless health is ", s:cond(GetCVar("sams_nohealthcap"), "\cdON.", "\caOFF.");
+    HudMessage(s:"Limitless health is ", s:cond(GetCVar("samsara_nohealthcap"), "\cdON.", "\caOFF.");
             HUDMSG_FADEOUT, 6769, CR_WHITE, 50.1, 208.0, 3.0, 1.0);
 
-    HudMessage(s:"Chainsaw/unique start: \ca", d:GetCVar("sams_chainsawstart"), s:"\c- / \cn", d:GetCvar("sams_uniquestart");
+    HudMessage(s:"Chainsaw/unique start: \ca", d:GetCVar("samsara_chainsawstart"), s:"\c- / \cn", d:GetCvar("samsara_uniquestart");
             HUDMSG_FADEOUT, 6770, CR_WHITE, 50.1, 224.0, 3.0, 1.0);
 }
 
@@ -946,7 +1202,7 @@ script "SamsaraKeyBroadcast" (int a) { // Picked up a key, broadcast that shit t
     }
     keys[0][a] = 1;
 	
-	if(CheckInventory("HalfLifeClass") && GetCvar("sams_cl_heromusic"))
+	if(CheckInventory("HalfLifeClass") && GetCvar("samsara_cl_heromusic"))
 		ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 1, 0, 0);
 }
 
@@ -963,7 +1219,7 @@ Script "Samsara_KillCount" (int override)
 	int HasXDeath; 
 	int isBoss = CheckFlag(0,"BOSS");
 	
-	if(GetPlayerAccountName(0) == 0)
+	if(GetTimeProperty(0, 5, true) == 0) // TM_YEAR = 5
 		HasXDeath = CheckActorState(0,"XDeath",1);
 	else
 		HasXDeath = 1;
@@ -986,9 +1242,24 @@ Script "Samsara_KillCount" (int override)
 	int z = GetActorZ(0);
 	
 	//eww
-	if(ThingCountName("SamsaraMixerCompendiumToken",0) > 0)
+	if(GetCvar("samsara_mixerloaded"))
 	{
-		ACS_NamedExecuteAlways("Samsara_PinataHandler",0,health,GetActorProperty(0,APROP_Radius)>>16,GetActorProperty(0,APROP_Height)>>16);
+		if(!GetCvar("samsara_merrychristmas"))
+			ACS_NamedExecuteAlways("Samsara_PinataHandler",0,health,GetActorProperty(0,APROP_Radius)>>16,GetActorProperty(0,APROP_Height)>>16);
+		else
+		{
+			int presentTid = UniqueTid();
+			int presentScale = 0.25 + ((health >= 200) * 0.175) + ((health >= 1000) * 0.175) + ((health >= 2500) * 0.175) + ((health >= 5000) * 0.175);
+			SpawnForced("XmasGift",x,y,z,presentTid);
+			ThrustThing(random(0,256),random(1,2),0,presentTid);
+			ThrustThingZ(presentTid,random(4,8),0,0);
+			SetActorProperty(presentTid,APROP_Health,health);
+			SetActorProperty(presentTid,APROP_Accuracy,GetActorProperty(0,APROP_Radius)>>16);
+			SetActorProperty(presentTid,APROP_Score,GetActorProperty(0,APROP_Height)>>16);
+			SetActorProperty(presentTid,APROP_ScaleX,presentScale);
+			SetActorProperty(presentTid,APROP_ScaleY,presentScale);
+			Thing_ChangeTid(presentTid,0);
+		}
 	}
 	
 	SetActivatorToTarget(0);
@@ -1002,10 +1273,13 @@ Script "Samsara_KillCount" (int override)
 		if(chance > 0.2)
 			chance = 0.2;
 					
-		GiveInventory("Hexen2Experience", FixedMul((health*2.5)>>16,(1.0+(0.05*CheckInventory("Hexen2Wisdom")))));
+		GiveInventory("Hexen2Experience", FixedMul((health*2.5)>>16,(1.0+(0.05*CheckInventory("Hexen2Wisdom"))))*(1+(PlayerCount()/4)));
 		if(random(0.0,1.0) <= chance && !noblood)
 			SpawnForced("Hexen2SoulSphere",x,y,z,0,0);
 	}
+	
+	if(CheckInventory("WitchavenClass"))
+		GiveInventory("WTExperience", health*(1+(PlayerCount()/4)));	
 	
 	if(CheckInventory("StrifeClass") && !CheckInventory("BlackBirdTauntCooldown"))
 	{
@@ -1033,7 +1307,7 @@ Script "Samsara_BotAltClassHandler" (int playernum)
 			playername = StrLeft(playername,strlen(playername)-2);
 			if(StrCmp(playername,"Doom 64 Guy") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_doom64",1);
+				SetUserCvar(playernum,"samsara_cl_doom64",1);
 			}
 			break;
 		case 3:
@@ -1042,11 +1316,11 @@ Script "Samsara_BotAltClassHandler" (int playernum)
 			playername = StrLeft(playername,strlen(playername)-2);
 			if(StrCmp(playername,"B.J. Blazkowicz (Lost)") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_wolfmode",1);
+				SetUserCvar(playernum,"samsara_cl_wolfmode",1);
 			}
 			if(StrCmp(playername,"B.J. Blazkowicz (Totenkopf)") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_wolfmode",2);
+				SetUserCvar(playernum,"samsara_cl_wolfmode",2);
 			}
 			break;
 		case 4:
@@ -1055,11 +1329,11 @@ Script "Samsara_BotAltClassHandler" (int playernum)
 			playername = StrLeft(playername,strlen(playername)-2);
 			if(StrCmp(playername,"Daedolon") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_hexclass",1);
+				SetUserCvar(playernum,"samsara_cl_hexclass",1);
 			}
 			if(StrCmp(playername,"Baratus") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_hexclass",2);
+				SetUserCvar(playernum,"samsara_cl_hexclass",2);
 			}
 			break;
 		case 5:
@@ -1068,7 +1342,7 @@ Script "Samsara_BotAltClassHandler" (int playernum)
 			playername = StrLeft(playername,strlen(playername)-2);
 			if(StrCmp(playername,"Duke Nukem (Beach)") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_dkclab",1);
+				SetUserCvar(playernum,"samsara_cl_dkclab",1);
 			}
 			break;
 		case 8:
@@ -1077,19 +1351,19 @@ Script "Samsara_BotAltClassHandler" (int playernum)
 			playername = StrLeft(playername,strlen(playername)-2);
 			if(StrCmp(playername,"Taradino Cassatt") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_rottmode",1);
+				SetUserCvar(playernum,"samsara_cl_rottmode",1);
 			}
 			if(StrCmp(playername,"Thi Barrett") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_rottmode",2);
+				SetUserCvar(playernum,"samsara_cl_rottmode",2);
 			}
 			if(StrCmp(playername,"Lorelei Ni") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_rottmode",3);
+				SetUserCvar(playernum,"samsara_cl_rottmode",3);
 			}
 			if(StrCmp(playername,"Doug Wendt") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_rottmode",4);
+				SetUserCvar(playernum,"samsara_cl_rottmode",4);
 			}
 			break;
 		case 9:
@@ -1098,7 +1372,7 @@ Script "Samsara_BotAltClassHandler" (int playernum)
 			playername = StrLeft(playername,strlen(playername)-2);
 			if(StrCmp(playername,"Blake Stone (Planet Strike)") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_bsaog",1);
+				SetUserCvar(playernum,"samsara_cl_bsaog",1);
 			}
 			break;
 		case 16:
@@ -1107,19 +1381,19 @@ Script "Samsara_BotAltClassHandler" (int playernum)
 			playername = StrLeft(playername,strlen(playername)-2);
 			if(StrCmp(playername,"Tobias Locke") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_ipogmode",1);
+				SetUserCvar(playernum,"samsara_cl_ipogmode",1);
 			}
 			if(StrCmp(playername,"Xith") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_ipogmode",2);
+				SetUserCvar(playernum,"samsara_cl_ipogmode",2);
 			}
 			if(StrCmp(playername,"Specimen 7") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_ipogmode",3);
+				SetUserCvar(playernum,"samsara_cl_ipogmode",3);
 			}
 			if(StrCmp(playername,"Theola Nom") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_ipogmode",4);
+				SetUserCvar(playernum,"samsara_cl_ipogmode",4);
 			}
 			break;
 		case 19:
@@ -1128,7 +1402,7 @@ Script "Samsara_BotAltClassHandler" (int playernum)
 			playername = StrLeft(playername,strlen(playername)-2);
 			if(StrCmp(playername,"Shephard") == 0)
 			{	
-				SetUserCvar(playernum,"sams_cl_shephardmode",1);
+				SetUserCvar(playernum,"samsara_cl_shephardmode",1);
 			}
 			break;
 		case 27:
@@ -1282,12 +1556,33 @@ Script "Samsara_ResetInventory" (void)
 	TakeInventory("GotWeapon5", 999);
 	TakeInventory("GotWeapon6", 999);
 	TakeInventory("GotWeapon7", 999);
+	TakeInventory("KillCountBar", 999);
+	TakeInventory("AllyCellPhone", 999);
 	switch(PlayerClass(pln))
 	{
 		case 0:
-			TakeInventory(" Chaingun ", 999);
 			TakeInventory(" Chainsaw ", 999);
-			TakeInventory(" Railgun ", 999);
+			TakeInventory(" Shotgun ", 999);
+			TakeInventory("Super Shotgun", 999);
+			TakeInventory(" Chaingun ", 999);
+			TakeInventory("Rocket Launcher", 999);
+			TakeInventory("Plasma Rifle", 999);
+			TakeInventory("B.F.G. 9000", 999);
+			TakeInventory(" Minigun ", 999);
+			TakeInventory( " GrenadeLauncher ", 999);
+			TakeInventory(" RailGun ", 999);
+			TakeInventory(" BFG10K ", 999);
+			TakeInventory("DGHasChaingun", 999);
+			TakeInventory("DGHasMinigun", 999);
+			TakeInventory("DGHasRocketLauncher", 999);
+			TakeInventory("DGHasGrenadeLauncher", 999);
+			TakeInventory("DGHasPlasmaRifle", 999);
+			TakeInventory("DGHasRailGun", 999);
+			TakeInventory("DGHasBFG9000", 999);
+			TakeInventory("DGHasBFG10K", 999);
+			TakeInventory("Doom64_IHaveUnmaker", 999);
+			TakeInventory("Doom64UnmakerArtifact", 999);
+            SetInventory("Doom64StartingUnmakerArtifactsGiven", 0);
 			
 			GiveInventory(" Pistol ", 1);
 			GiveInventory(" Fist ", 1);
@@ -1298,7 +1593,12 @@ Script "Samsara_ResetInventory" (void)
 			break;
 		case 1:
 			TakeInventory("Super Bootspork", 999);
+			TakeInventory("Large Zorcher", 999);
+			TakeInventory("Super Large Zorcher", 999);
 			TakeInventory("Rapid Zorcher", 999);
+			TakeInventory("Zorch Propulsor", 999);
+			TakeInventory("Phasing Zorcher", 999);
+			TakeInventory("LAZ Device", 999);
 			TakeInventory("Gigazorcher 2100", 999);
 			
 			GiveInventory("Mini-Zorcher", 1);
@@ -1314,6 +1614,13 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Grim Ballista", 999);
 			TakeInventory("PermaRemoteBomb", 999);
 			TakeInventory("PermaTimeBomb", 999);
+			TakeInventory("PortQuartzFlask", 999);
+			TakeInventory("PortSuperHealth", 999);
+			TakeInventory("CorvusMegasphere", 999);
+			TakeInventory("PortGhostly", 999);
+			TakeInventory("PortRingInvuln", 999);
+			TakeInventory("PortTorch", 999);
+			TakeInventory("PortTome", 999);
 			
 			GiveInventory("Elven Wand", 1);
 			GiveInventory(" Staff ", 1);
@@ -1326,8 +1633,20 @@ Script "Samsara_ResetInventory" (void)
 			break;
 		case 3:
 			TakeInventory("BJSuperKnife", 999);
+			TakeInventory("Totenkopf_PistolDual", 999);
+			TakeInventory("Totenkopf_Mauser", 999);
+			TakeInventory("Totenkopf_MauserDual", 999);
+			TakeInventory("Machine Gun", 999);
+			TakeInventory("Totenkopf_STG44", 999);
 			TakeInventory("  Chaingun  ", 999);
+			TakeInventory("Totenkopf_MP40Dual", 999);
+			TakeInventory("Spear of Destiny", 999);
 			TakeInventory("Mauser Rifle", 999);
+			TakeInventory("WolfExtraLife", 999);
+			TakeInventory("TotenkopfHealingOrbHealer", 999);
+			TakeInventory("TotenkopfHasHealingOrb", 999);
+			TakeInventory("TotenkopfPowerArmorPickup", 999);
+			TakeInventory("TotenkopfHasPowerArmor", 999);
 			
 			GiveInventory("Luger", 1);
 			GiveInventory("Knife", 1);
@@ -1339,12 +1658,18 @@ Script "Samsara_ResetInventory" (void)
 			break;
 		case 4:
 			TakeInventory("PortFlechette", 999);
+			TakeInventory("PortQuartzFlask2", 999);
+			TakeInventory("PortSuperHealth2", 999);
 			TakeInventory("PortMysticAmbit", 999);
 			TakeInventory("Serpent Staff", 999);
 			TakeInventory("Bloodscourge", 999);
 			TakeInventory("Hammer of Retribution", 999);
 			TakeInventory("Frost Shards", 999);
 			TakeInventory("Timon's Axe", 999);
+			TakeInventory("PortGhostly2", 999);
+			TakeInventory("PortIconDefender", 999);
+			TakeInventory("PortTorch2", 999);
+			TakeInventory("PortKraterOfMight", 999);
 				
 			GiveInventory("Sapphire Wand", 1);
 			GiveInventory("Mace of Contrition", 1);
@@ -1359,14 +1684,16 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Golden Desert Eagle", 999);
 			TakeInventory("DukePortJetpack", 999);
 			TakeInventory("DukePetjack", 999);
+			TakeInventory("DukeBootserk", 999);
 			TakeInventory("DukePortNiVi", 999);
 			TakeInventory("DukeNightVision", 999);
+            TakeInventory("ItemHoloDuke", 999);
 			TakeInventory("  Shotgun  ", 999);
 			TakeInventory("Explosive Shotgun", 999);
 			TakeInventory("Chaingun Cannon", 999);
 			TakeInventory("RPG", 999);
 			TakeInventory("Freezethrower", 999);
-			TakeInventory("Devastator", 999);
+			TakeInventory("Devastator Weapon", 999);
 			
 			GiveInventory("Glock 17", 1);
 			GiveInventory("Mighty Boot", 1);
@@ -1396,9 +1723,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Alien Weapon", 999);
 			TakeInventory(" Alien Weapon ", 999);
 			TakeInventory(".44 Magnum Mega Class A1", 999);
-
-			GiveInventory("OverMax", 200);
-			GiveInventory("OverOverMax", 300);
+			
 			GiveInventory(".44 Magnum Mega Class A1", 1);
 			GiveInventory("Steel Knuckles", 1);
 			GiveInventory("RocketAmmo", 10);
@@ -1406,15 +1731,17 @@ Script "Samsara_ResetInventory" (void)
 			GiveInventory("Cell", 50);
 			GiveInventory("IsSamsaraClass", 1);
 			GiveInventory("MarathonClass", 1);
-			GiveInventory("MagnumBullet", 100);
-			GiveInventory("MagnumBulletRight", 100);
-			GiveInventory("RifleBullet", 500);
-			GiveInventory("SmgBullet", 500);
-			GiveInventory("FusionBullet", 500);
-			GiveInventory("GrenadeInClip", 500);
-			GiveInventory("WMCAmmo", 500);
-			GiveInventory("MortarAmmo", 500);
-			GiveInventory("NapalmInTank", 500);
+			GiveInventory("MagnumBullet", 8);
+			GiveInventory("MagnumBulletRight", 8);
+            GiveInventory("WastemShell", 2);
+            GiveInventory("WastemShellRight", 2);
+			GiveInventory("RifleBullet", 52);
+			GiveInventory("SmgBullet", 32);
+			GiveInventory("FusionBullet", 20);
+			GiveInventory("GrenadeInClip", 7);
+			GiveInventory("WMCAmmo", 8);
+			GiveInventory("MortarAmmo", 3);
+			GiveInventory("NapalmInTank", 210);
 			GiveInventory("SpankerAmmo", 2);
 			GiveInventory("KnifeAmmo", 2);
 			GiveInventory("TauntButton", 1);
@@ -1496,12 +1823,12 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("VoodooDoll", 999);
 			TakeInventory("SprayCan", 999);
 			TakeInventory("Flaregun2", 999);
-			
+
 			GiveInventory("CalebClass", 1);
 			GiveInventory("IsSamsaraClass", 1);
 			GiveInventory("TauntButton", 1);
-			GiveInventory("Pitchfork", 1);
 			GiveInventory("   Revolver   ", 1);
+			GiveInventory("Pitchfork", 1);
 			SetWeapon("   Revolver   ");
 			break;
 		case 11:
@@ -1515,8 +1842,14 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Flame Thrower", 999);
 			TakeInventory(" Mauler ", 999);
 			TakeInventory("  Sigil  ", 999);
+			TakeInventory("StrifeSigilPiecePreferred",999);
+			TakeInventory("StrifePortMedikit",999);
+			TakeInventory("StrifeStimpack2",999);
+			TakeInventory("StrifeSurgeryKit2",999);
+			TakeInventory("PortShadowArmor",999);
+			TakeInventory("PortEnviSuit",999);
+			TakeInventory("StrifeguyStartingUpgradesHasBeenGiven", 999);
 			
-			GiveInventory("OverMax", 200);
 			GiveInventory("IsSamsaraClass", 1);
 			GiveInventory("TauntButton", 1);
 			GiveInventory("StrifeClass", 1);
@@ -1569,6 +1902,8 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory(" RMR Plasma Cannon ", 999);
 			TakeInventory("Subestron Arm", 999);
 			TakeInventory("Estron Ball", 999);
+			TakeInventory("RMROxygenRecycler", 999);
+			TakeInventory("RMRJetPack", 999);
 			
 			GiveInventory(" Laser Pistol ", 1);
 			GiveInventory("RMRClass", 1);
@@ -1590,6 +1925,7 @@ Script "Samsara_ResetInventory" (void)
 			
 			GiveInventory("  Fist_2x5  ", 1);
 			GiveInventory("Bryar Pistol", 1);
+			GiveInventory("KatarnStarterShield",1);
 			GiveInventory("KatarnClass", 1);
 			GiveInventory("IsSamsaraClass", 1);
 			GiveInventory("TauntButton", 1);			
@@ -1614,7 +1950,6 @@ Script "Samsara_ResetInventory" (void)
 			GiveInventory("POGreedClass", 1);
 			GiveInventory(" Tazer ", 1);
 			GiveInventory(" Aldus Pistol ", 1);
-			GiveInventory("OverMax", 200);
 			GiveInventory("IsSamsaraClass", 1);
 			GiveInventory("TauntButton", 1);
 			SetWeapon(" Aldus Pistol ");
@@ -1630,6 +1965,8 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory(" Disruptor Plasmalance ", 999);
 			TakeInventory("DisruptorPSIEnergy", 999);
 			TakeInventory("DisruptorPSICooldown", 999);
+			TakeInventory("DisruptorEnergyBall", 999);
+			TakeInventory("DisruptorTeraBall", 999);
 		
 			GiveInventory(" 18mm Semi ", 1);
 			GiveInventory("Disruptor Fist", 1);
@@ -1654,9 +1991,21 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("WTSwordUpgrade", 999);
 			TakeInventory("WTFistActive", 999);
 			TakeInventory("WTFistAttack", 999);
+			TakeInventory("Pike Axe", 999);
+			TakeInventory("Battle Axe", 999);
+			TakeInventory("Ice Halberd", 999);
+			TakeInventory("Fire Mace", 999);
+			TakeInventory("Frozen Two-Hand Sword", 999);
+			TakeInventory("Spellbook", 999);
+			TakeInventory("WTHealthPhial", 999);
+			TakeInventory("WTInvisibilityPhial", 999);
+			TakeInventory("WTFireProofPhial", 999);
+			TakeInventory("WTLevel", 999);
+            SetInventory("WTExperience", 0);
+            SetInventory("WTLevelHUD", 1);
 			
 			GiveInventory("Bow and Arrows", 1);
-			GiveInventory("Witchaven_Fists", 1);
+			GiveInventory("Witchaven_Dagger", 1);
 			GiveInventory("WitchavenClass", 1);
 			GiveInventory("IsSamsaraClass", 1);
 			GiveInventory("GrondovalStarterArmor", 1);
@@ -1670,6 +2019,21 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("HLHEVPickupID", 1);
 			TakeInventory("HLHEVDamageType", 1);
 			TakeInventory("HLSpeedTokens", 1);
+			TakeInventory("Hornetgun", 1);
+			TakeInventory("Assault Shotgun", 1);
+			TakeInventory(".357 Python", 1);
+			TakeInventory("MP5", 1);
+			TakeInventory(" RPG ", 1);
+			TakeInventory("laserdeactive", 1);
+			TakeInventory("Gauss Cannon", 1);
+			TakeInventory("E.G.O.N.", 1);
+			TakeInventory("HL Squeaks", 1);
+			TakeInventory("HL Crossbow", 1);
+			TakeInventory("HLOPHasBarnacleLongJump", 1);
+			TakeInventory("HLOPBarnacleKillTether", 1);
+			TakeInventory("HLOPBarnacleReleaseTether", 1);
+			TakeInventory("HLOPBarnacleLatchedTether", 1);
+			TakeInventory("HLOPBarnacle", 1);
 			
 			GiveInventory("9mm Pistol", 1);
 			GiveInventory("Crowbar", 1);
@@ -1679,31 +2043,48 @@ Script "Samsara_ResetInventory" (void)
 			GiveInventory("Clip", 30);
 			GiveInventory("Shell", 15);
 			GiveInventory("RocketAmmo", 5);	
-			GiveInventory("Flashlightammo", 4200);
+			GiveInventory("FlashLightAmmo", 4200);
+            SetInventory("SamsaraFlashLightAmmoDisplay", CheckInventory("FlashLightAmmo") / 35);
+			GiveInventory("HLPythonCounter", 6);
+			GiveInventory("HLDeagleCounter", 7);
+			GiveInventory("HLShotgunCounter", 8);
+			GiveInventory("HLmp5Counter", 50);
+			GiveInventory("HL9mmCounter", 17);
+			GiveInventory("HLRPGCounter", 1);
+			GiveInventory("HLSporeCounter", 10);
+			GiveInventory("HLSAWCounter", 100);
 			SetWeapon("9mm Pistol");
 			break;
 		case 20:
+			TakeInventory("SWGasGrenade", 1);
+			TakeInventory("HeatSeekingCard", 1);
+
+			GiveInventory("SWShuriken", 1);
 			GiveInventory("SWKatana", 1);
 			GiveInventory("SWFists", 1);
-			GiveInventory("SWShuriken", 1);
 			GiveInventory("GuardMode1", 1);
 			GiveInventory("SWClass", 1);
 			GiveInventory("IsSamsaraClass", 1);
 			GiveInventory("TauntButton", 1);
-			SetWeapon("SWKatana");
+			SetWeapon("SWShuriken");
 			break;
 		case 21:
+			TakeInventory("CybermageMedkit", 1);
+			
 			GiveInventory("CMLaserPistol", 1);
 			GiveInventory("MagicFist", 1);
 			GiveInventory("CMClass", 1);
 			GiveInventory("IsSamsaraClass", 1);
 			GiveInventory("usingmagicnull", 1);
-			GiveInventory("OverMax", 200);
 			GiveInventory("MagicMode0", 1);
 			GiveInventory("TauntButton", 1);
 			SetWeapon("CMLaserPistol");
 			break;
 		case 22:
+			TakeInventory("EyeOfSiaItem_EX",999);
+			TakeInventory("DivineScarab_Ex",999);
+			TakeInventory("LighterofGumercindo_EX",999);	
+			
 			GiveInventory("PSMagnum", 1);
 			GiveInventory("PSMachete", 1);
 			GiveInventory("JonClass", 1);
@@ -1712,6 +2093,12 @@ Script "Samsara_ResetInventory" (void)
 			SetWeapon("PSMagnum");
 			break;
 		case 23:
+			TakeInventory("RRCowPie",999);
+			TakeInventory("RRBubbaBeer",999);
+			TakeInventory("RRCheapasswhiskey",999);
+			TakeInventory("RRDrunkAmount",999);
+			TakeInventory("RRFoodAmount",999);
+			
 			GiveInventory(" .454 Casull Pistol ", 1);
 			GiveInventory(" RR Crowbar ", 1);
 			GiveInventory("RRClass", 1);
@@ -1743,16 +2130,34 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Hexen2BlueManaAdd", 0x7FFFFFFF);
 			TakeInventory("Hexen2GreenManaAdd", 0x7FFFFFFF);
 			TakeInventory("Hexen2HealthAdd", 0x7FFFFFFF);
+			TakeInventory("PortQuartzFlask3", 999);
+			TakeInventory("PortSuperHealth3", 999);
+			TakeInventory("PortGhostly2", 999);
+			TakeInventory("PortIconDefender2", 999);
+			TakeInventory("PortTorch3", 999);
+			TakeInventory("PortKraterOfMight2", 999);
+			TakeInventory("Hexen2TomeOfPower", 999);
+			TakeInventory("Hexen2ForceCube", 999);
 			//TakeInventory("Hexen2Started", 1);
 			
+			GiveInventory("Hexen2Level", 1);
+			GiveInventory("Hexen2Intelligence", 9);
+			GiveInventory("Hexen2Wisdom", 11);
+			GiveInventory("Hexen2Dexterity", 9);
+			GiveInventory("Hexen2Strength", 11);
 			GiveInventory("Hexen2BloodFire", 1);
 			GiveInventory("Hexen2Sickle", 1);
 			GiveInventory("Hexen2Class", 1);
 			GiveInventory("IsSamsaraClass", 1);
 			GiveInventory("TauntButton", 1);
-			SetWeapon("Q2Blaster");
+			SetWeapon("Hexen2BloodFire");
 			break;
 		case 26:
+			TakeInventory("Goldeneye_GoldenGun", 999);
+			TakeInventory("Goldeneye_TimedMines", 999);
+			TakeInventory("Goldeneye_ProximityMines", 999);
+			TakeInventory("Goldeneye_RemoteMines", 999);
+			
 			GiveInventory("BondClass", 1);
 			GiveInventory("IsSamsaraClass", 1);
 			GiveInventory("TauntButton", 1);
@@ -1846,6 +2251,7 @@ Script "Samsara_FillInventory" (void)
 			GiveInventory("PortRingInvuln",16);
 			GiveInventory("CorvusMegasphere",16);
 			TakeInventory("TomeOfPowerCooldown",65536);
+			TakeInventory("LesserTomeCooldown",65536);
 			break;
 		case 3:
 			GiveInventory("TotenkopfSecretCounter",30);
@@ -1869,12 +2275,18 @@ Script "Samsara_FillInventory" (void)
 			GiveInventory("PortTorch2",16);
 			GiveInventory("PortIconDefender",16);
 			break;
+		case 5:
+            GiveInventory("DukePortNivi", 1);
+            GiveInventory("DukeVisionFuel", 100);
+            GiveInventory("ItemHoloDuke", 3);
+            break;
 		case 6:
 			GiveInventory("CanDualPistols",1);
 			GiveInventory("CanDualShotties",1);
 			break;
 		case 7:
-			TakeInventory("QuakeQuadTimer",65536);
+			SetInventory("QuakeQuadTimer", 0);
+            SetInventory("SamsaraQuadDamageCooldownDisplay", 0);
 			GiveInventory("QuadDamageItem", 1);
 			if(!isLMS()) { GiveQuad(1050); }
 			break;
@@ -1906,7 +2318,11 @@ Script "Samsara_FillInventory" (void)
 			GiveInventory("DisruptorTeraBall",1);
 			break;
 		case 18:
-			GiveInventory("WTHealthPhial",9);
+			GiveInventory("WTHealthPhial",10);
+			GiveInventory("WTInvisibilityPhial",10);
+			GiveInventory("WTFireProofPhial",10);
+			GiveInventory("WTStrengthPhial",10);
+			GiveInventory("WTExperience",60000);
 			break;
 		case 19:
 			GiveInventory("flashlightammo",4200);
@@ -2289,7 +2705,7 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			}
 			break;
 		case 18:
-			weaponStay = GetCvar("sams_permault");
+			weaponStay = GetCvar("samsara_permault");
 			if(!CheckInventory("Goldeneye_Moonraker"))
 			{
 				GiveInventory("Goldeneye_GoldenGun",1);
@@ -2377,14 +2793,14 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			{
 				if (isLMS())
 				{
-					if (GetCvar("sams_permaquad") == 1)
+					if (GetCvar("samsara_permaquad") == 1)
 					{ GiveInventory("QuadDamageItem", 1); }
 				}
 				else
 				{
 					GiveQuad(1050);
 		
-					if (GetCvar("sams_permaquad") == 1)//if (isCoop() || isSinglePlayer())
+					if (GetCvar("samsara_permaquad") == 1)//if (isCoop() || isSinglePlayer())
 					{ GiveInventory("QuadDamageItem", 1); }
 				}
 				
@@ -2479,6 +2895,18 @@ Script "Samsara_MapInventory" (int item, int dropped)
 				result = 1;
 			}
 			else if(CheckInventory("Cell") < GetAmmoCapacity("Cell")) { if((!weaponStay || dropped)) { GiveInventory("Cell",40); result = 1; }}
+			break;
+		case 34:
+			weaponStay = GetCvar("samsara_permault");
+			if(timer() - 2100 >= CheckInventory("Painkiller_TarotLastPickupTime"))
+			{
+				TakeInventory("Painkiller_TarotLastPickupTime",2147483647);
+				GiveInventory("Painkiller_TarotLastPickupTime",timer());
+				result = 1;
+			}
+			else if(!weaponStay || dropped)
+				result = 1;
+			
 			break;
 	}
 	SetResultValue(result);
@@ -2613,7 +3041,7 @@ Script "Samsara_PlayerShrinker" (int condition)
 
 Script "Samsara_GZDoomChecker" (void)
 {
-	if(GetCvar("sams_runninginzdoom"))
+	if(GetCvar("samsara_runninginzdoom"))
 		SetResultValue(1);
 	
 	else
@@ -2626,7 +3054,7 @@ Script "Samsara_GZDoomChecker" (void)
 
 Script "TauntButton" (void) NET
 {
-	if(!GetCVar("sams_runninginzdoom") && GetCVar("sams_runninginzandro"))
+	if(!GetCVar("samsara_runninginzdoom") && GetCVar("samsara_runninginzandro"))
 		Print(s:"Zandronum detected, use traditional taunt bind instead");
 	
 	else
@@ -2777,7 +3205,7 @@ Script "ExtraDeathFX" (int mode) // Samsara Extra Death Special Effects -- 2530
 	}
 }
 
-str itemTypeCvars[3] = { "sams_replace_computermap", "sams_replace_lightamplifier", "sams_replace_blursphere" };
+str itemTypeCvars[3] = { "samsara_replace_computermap", "samsara_replace_lightamplifier", "samsara_replace_blursphere" };
 str itemReplacementNames[22] = { "Medikit", "Soulsphere", "GreenArmor", "BlueArmor", "Megasphere", "Clipbox", "Shellbox",
 "RocketBox", "CellPack", "Backpack", "AllMap", "Berserk", "BlurSphere", "InvulnerabilitySphere", "Infrared", "Chainsaw",
 "Shotgun", "SuperShotgun", "Chaingun", "RocketLauncher", "PlasmaRifle", "BFG9000" };
@@ -2795,4 +3223,23 @@ Script "Samsara_SwitchableObject" (int type)
 		Thing_Remove(0);
 		Thing_ChangeTid(itemTid,0);
 	}
+}
+
+Script "SamsaraBossDeathToggler" (void)
+{
+	if(GetCvar("samsara_mixerloaded"))
+		GiveInventory("Samsara_KillMaster", 1);
+	else
+		GiveInventory("Samsara_BossDeath", 1);
+}
+
+script "SamsaraBerserkFistSwitchHack" (void) { SetWeapon(" Fist "); } // A_SelectWeapon somehow doesn't work for whatever reason
+
+script "SamsaraForcePlayerAttackState" (int flash)
+{
+    if (!isDead(0))
+    {
+        if (flash) { SetActorState(0, "Melee"); }
+        else { SetActorState(0, "Missile"); }
+    }
 }

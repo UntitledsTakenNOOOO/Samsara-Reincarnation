@@ -15,6 +15,7 @@ actor "Frost Shards" : MWeapFrost
     +BLOODSPLATTER
     -ICEDAMAGE
     +INVENTORY.UNDROPPABLE
+    Tag "Crusader's Longbow"
     States
     {
       Spawn:
@@ -218,21 +219,29 @@ actor "Frost Shards" : MWeapFrost
 		H101 F 4 
 		H101 G 3
 		H101 H 2 A_PlayWeaponSound("FighterHammerMiss")
-		H101 I 2 A_FireCustomMissile("Hexen_FSpearFX1",0,0,8,16)
-		H101 JKLM 2 
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"FireFighterCoop")
+		TNT1 A 0 A_FireCustomMissile("Hexen_FSpearFX1",0,0,8,16)
+      FireFighterFinish:
+		H101 IJKLM 2 
 		TNT1 A 16
 		H101 A 3 Offset(0,92)
 		H101 A 3 Offset(0,72)
 		H101 A 3 Offset(0,52)
 		Goto Ready
+      FireFighterCoop:
+		TNT1 A 0 A_FireCustomMissile("Hexen_FSpearFX1Coop",0,0,8,16)
+        goto FireFighterFinish
+
 	  FireFighterGlow:
 		H101 N 4 
 		H101 O 4 
 		H101 P 3 
 		H101 Q 2 A_PlayWeaponSound("FighterHammerMiss")
 		TNT1 A 0 A_TakeInventory("Clip",3,TIF_NOTAKEINFINITE)
-		H101 I 2 A_FireCustomMissile("Hexen_FSpearFX2",0,0,8,16)
-		H101 JKLM 2 
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"FireFighterGlowCoop")
+		TNT1 A 0 A_FireCustomMissile("Hexen_FSpearFX2",0,0,8,16)
+      FireFighterGlowFinish:
+		H101 IJKLM 2 
 		TNT1 A 16
 		H101 A 0 A_JumpIfInventory("Clip", 3, 4)
 		H101 A 3 Offset(0,92)
@@ -242,13 +251,22 @@ actor "Frost Shards" : MWeapFrost
 		H101 A 3 Offset(0,92)
 		H101 D 3 Offset(0,72)
 		H101 C 3 Offset(0,52)
-		Goto Ready	
+		Goto Ready
+      FireFighterGlowCoop:
+		TNT1 A 0 A_FireCustomMissile("Hexen_FSpearFX2Coop",0,0,8,16)
+        goto FireFighterGlowFinish
 		
 	  FighterMelee:
 		H101 A 0 A_JumpIfInventory("Clip", 3, "FighterMeleeGlow")
 		H101 A 2 Offset(-32,34)
 		H101 A 2 Offset(-64,38)
-		H101 A 2 Offset(-96,42) A_CustomPunch(random(24,48),1,1,"AxePuff2",128)
+		H101 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+		H101 A 0 A_CustomPunch(random(24,48),1,1,"AxePuff2",128)
+		Goto FighterMeleeEnd
+		H101 A 0 A_CustomPunch(random(24,48),1,1,"AxePuff2Coop",128)
+		Goto FighterMeleeEnd
+	  FighterMeleeEnd:
+		H101 A 2 Offset(-96,42)
 		H101 A 2 Offset(-64,38)
 		H101 A 2 Offset(-32,34)
 		H101 A 8 Offset(0,32)
@@ -258,7 +276,13 @@ actor "Frost Shards" : MWeapFrost
 		H101 B 2 Bright Offset(-32,34)
 		H101 B 2 Bright Offset(-64,38)
 		H101 B 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
-		H101 B 2 Bright Offset(-96,42) A_CustomPunch(random(48,96),1,1,"SpearPuffGlow",128)
+		H101 B 0 A_JumpIfInventory("CoopModeOn",1,2)
+		H101 B 0 A_CustomPunch(random(48,96),1,1,"SpearPuffGlow",128)
+		Goto FighterMeleeGlowEnd
+		H101 B 0 A_CustomPunch(random(48,96),1,1,"SpearPuffGlowCoop",128)
+		Goto FighterMeleeGlowEnd
+	  FighterMeleeGlowEnd:
+		H101 B 2 Bright Offset(-96,42)
 		H101 B 2 Bright Offset(-64,38)
 		H101 B 2 Bright Offset(-32,34)
 		H101 B 8 Bright Offset(0,32)
@@ -293,6 +317,12 @@ ACTOR Hexen_FSpearFX1
 	}
 }
 
+actor Hexen_FSpearFX1Coop : Hexen_FSpearFX1
+{
+    Species "Player"
+    +THRUSPECIES
+}
+
 ACTOR Hexen_FSpearFX2
 {
 	Speed 90
@@ -313,6 +343,18 @@ ACTOR Hexen_FSpearFX2
 			TNT1 AAAAAAAAA 0 A_SpawnItemEx("Hexen_FSpearFX5",0,0,2,frandom(-4,4),frandom(-4,4),random(-2,6),0,SXF_NOCHECKPOSITION)
 			Stop
 	}
+}
+
+actor Hexen_FSpearFX2Coop : Hexen_FSpearFX2
+{
+    Species "Player"
+    +THRUSPECIES
+    States
+    {
+      Death:
+        TNT1 AAAAAAAAA 0 A_SpawnItemEx("Hexen_FSpearFX5Coop",0,0,2,frandom(-4,4),frandom(-4,4),random(-2,6),0,SXF_NOCHECKPOSITION)
+        stop
+    }
 }
 
 ACTOR Hexen_FSpearFX3
@@ -383,6 +425,12 @@ ACTOR Hexen_FSpearFX5
 			H123 G 1 Bright 
 			Stop
 	}
+}
+
+actor Hexen_FSpearFX5Coop : Hexen_FSpearFX5
+{
+    Species "Player"
+    +THRUSPECIES
 }
 
 actor FrostMissileMelee2 : FastProjectile
@@ -468,6 +516,7 @@ actor FrostMissile2 : FrostMissile replaces FrostMissile
     Species "Player"
 }
 
+actor FrostMissile2_1 : FrostMissileDM { +THRUSPECIES Species "Player" }
 Actor FrostMissile2_2 : FrostMissileDM2 { +THRUSPECIES Species "Player" }
 Actor FrostMissile2_3 : FrostMissileDM3 { +THRUSPECIES Species "Player" }
 Actor FrostMissile2_4 : FrostMissileDM4 { +THRUSPECIES Species "Player" }
@@ -491,12 +540,15 @@ actor SpearPuffGlow : AxePuffGlow
          TNT1 A 1
          TNT1 A 1 A_TakeFromTarget("Clip",3,TIF_NOTAKEINFINITE)
          H101 TUVWXYZ 4 Bright
-         goto Spawn
+         Goto Spawn
     Crash:
-         FHFX STUVW 4
+         FHFX S 4 A_SetTranslucent(0.6, 0)
+         FHFX TUVW 4
          stop
     }
 }
+
+actor SpearPuffGlowCoop : SpearPuffGlow { Species "Player" +THRUSPECIES +MTHRUSPECIES }
 
 Actor HexenShockArrow 
 {

@@ -15,19 +15,19 @@ actor PartialInvisibility : CustomInventory replaces BlurSphere
     {
       Spawn:
         NVSI A 0 NoDelay ACS_NamedExecuteWithResult("Samsara_SwitchableObject",2)
-        NVSI A -1 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 75)
-        stop
+        NVSI A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 75)
+        wait
       Pickup:
 		TNT1 A 1 A_JumpIfInventory("StrifeClass",1,"PickupStrife")
 		TNT1 A 0 ACS_NamedExecute("InvisPickupMessage")
 		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)	  
         TNT1 A 1 A_JumpIfInventory("MarathonClass",1,"PickupMarathon")
         TNT1 A 1 A_JumpIfInventory("HexenClass",1,"PickupHexen")
-		TNT1 A 1 A_JumpIfInventory("Hexen2Class",1,"PickupHexen2")
         TNT1 A 1 A_JumpIfInventory("CorvusClass",1,"PickupHeretic")
+        TNT1 A 1 A_JumpIfInventory("DukeClass",1,"PickupDuke")
         TNT1 A 1 A_JumpIfInventory("QuakeClass",1,"PickupQuake")
-        TNT1 A 1 A_JumpIfInventory("Doom64GuyClass",1,"PickupDoom64")		
-		TNT1 A 1 A_JumpIfInventory("KatarnClass",1,"PickupKatarn")		
+        TNT1 A 1 A_JumpIfInventory("DoomguyClass",1,"PickupDoomguy")
+		//TNT1 A 1 A_JumpIfInventory("KatarnClass",1,"PickupKatarn")
 		TNT1 A 1 A_JumpIfInventory("WitchavenClass",1,"PickupWitchaven")
 		TNT1 A 1 A_JumpIfInventory("HalfLifeClass",1,"PickupHalfLife")
 		TNT1 A 1 A_JumpIfInventory("JonClass",1,"PickupJon")	
@@ -37,6 +37,14 @@ actor PartialInvisibility : CustomInventory replaces BlurSphere
         TNT1 A 0 A_PlaySound("invisibilityget")
         TNT1 A 1 A_GiveInventory("BlurSphere")
         stop
+      PickupDoomguy:
+        TNT1 A 0 A_PlaySound("invisibilityget")
+        TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"PickupDoom64")
+        TNT1 A 0 A_GiveInventory("BlurSphere")
+        stop
+	  PickupDoom64:
+        TNT1 A 1 A_GiveInventory("PowerTranslucency")
+        stop
 	  PickupStrife:
 		TNT1 A 0 ACS_NamedExecute("InvisPickupMessage")
 		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)	
@@ -44,17 +52,13 @@ actor PartialInvisibility : CustomInventory replaces BlurSphere
         TNT1 A 0 A_PlaySound("strife/itemget")
         TNT1 A 1 A_GiveInventory("PortShadowArmor")
         stop		
-	  PickupDoom64:
-        TNT1 A 0 A_PlaySound("invisibilityget")
-        TNT1 A 1 A_GiveInventory("PowerTranslucency")
-        stop	  
-      PickupKatarn:
+      /*PickupKatarn:
 		TNT1 A 0 A_PlaySound("invisibilityget")
 		TNT1 A 1 A_GiveInventory("PowerTranslucency")
-		stop
+		stop*/
 	  PickupWitchaven:
-		TNT1 A 0 A_PlaySound("gpickup/invis")
-		TNT1 A 1 A_GiveInventory("BlurSphere")
+		TNT1 A 0 A_PlaySound("gpickup/phial")
+		TNT1 A 1 A_GiveInventory("WTInvisibilityPhial")
 		stop	
 	  PickupJon:
 		TNT1 A 0 A_PlaySound("Jon/FancyItemPick")
@@ -104,10 +108,6 @@ actor PartialInvisibility : CustomInventory replaces BlurSphere
         TNT1 A 0 A_PlaySound("invisibilityget")
         TNT1 A 1 A_GiveInventory("PowerTranslucency")
         stop
-	  PickupHexen2:
-        TNT1 A 0 A_PlaySound("invisibilityget")
-        TNT1 A 1 A_GiveInventory("PowerGhost")
-        stop
 	  PickupGoldeneye:
         TNT1 A 0 A_PlaySound("invisibilityget")
         TNT1 A 1 A_GiveInventory("PowerTranslucency")
@@ -143,13 +143,13 @@ actor PortShadowArmor : PowerupGiver
 	+INVENTORY.UNDROPPABLE
 	RenderStyle Translucent
 	Inventory.MaxAmount 2
-	Powerup.Type "Invisibility"
-	Tag "Shadow Armor"
+	Powerup.Type Shadow
 	Inventory.Icon "I_SHDO"
 	Inventory.UseSound "strife/itempickup"
 	Inventory.PickupSound "strife/itemget"
 	Inventory.PickupMessage "Picked up the Shadow Armor."
 	Inventory.RestrictedTo "StrifeguyPlayer"  
+	Tag "Shadow Armor"
 	States
 	{
 	Spawn:
@@ -168,7 +168,7 @@ actor EyeOfSiaItem_EX : PowerupGiver
 	Inventory.UseSound "Jon/itemuse"
 	Inventory.PickupMessage "You found the Eye Of Sia!"
 	Inventory.RestrictedTo "PSPlayer"
-	Tag "Eye Of Sia"
+	Tag "Eye of Sia"
 }
 
 actor InvulnPowerup : CustomInventory replaces InvulnerabilitySphere
@@ -187,22 +187,32 @@ actor InvulnPowerup : CustomInventory replaces InvulnerabilitySphere
       Spawn:
         NVLN A 0 
         TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate",28,0,0) == 1, "NoInvuln")
-        NVLN A -1 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
-        stop
+        NVLN A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
+        wait
       Pickup:
         TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupHexen")
 		TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupHexen2")
         TNT1 A 1 A_JumpIfInventory("CorvusClass",1,"PickupHeretic")
+        TNT1 A 1 A_JumpIfInventory("DukeClass",1,"PickupDuke")
         TNT1 A 0 A_JumpIfInventory("QuakeClass",1,"PickupQuake")
 		TNT1 A 0 A_JumpIfInventory("RottClass", 1, "PickupRott")	  
-        TNT1 A 1 A_JumpIfInventory("Doom64GuyClass",1,"PickupDoom64")	
-		TNT1 A 1 A_JumpIfInventory("KatarnClass",1,"PickupKatarn")		
+        TNT1 A 1 A_JumpIfInventory("DoomguyClass",1,"PickupDoomguy")	
+		//TNT1 A 1 A_JumpIfInventory("KatarnClass",1,"PickupKatarn")		
 		TNT1 A 1 A_JumpIfInventory("WitchavenClass",1,"PickupWitchaven")
 		TNT1 A 0 A_JumpIfInventory("JonClass", 1, "PickupJon")		
 		TNT1 A 0 A_JumpIfInventory("POGreedClass", 1, "PickupIPOG")
 		TNT1 A 1 A_JumpIfInventory("BittermanClass",1,"PickupBitterman")
+		TNT1 A 0 A_JumpIfInventory("CatacombClass", 1, "PickupCatacomb")
         TNT1 A 0 A_PlaySound("invulnget")
         TNT1 A 1 A_GiveInventory("PowerFakeInvulnerable")
+        stop
+      PickupDoomguy:
+        TNT1 A 0 A_PlaySound("invulnget")
+        TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"PickupDoom64")
+        TNT1 A 1 A_GiveInventory("PowerFakeInvulnerable")
+        stop
+      PickupDoom64:
+        TNT1 A 1 A_GiveInventory("PowerFakeInvulnerable64")
         stop
 	  PickupRott:
 		TNT1 A 0 A_JumpIfInventory("DogProtection", 1, "PickupFail")
@@ -221,14 +231,10 @@ actor InvulnPowerup : CustomInventory replaces InvulnerabilitySphere
 		TNT1 A 0 A_GiveInventory("DogMode")
 		TNT1 A 0 A_Selectweapon("Doggie")
 		Stop
-      PickupDoom64:
-        TNT1 A 0 A_PlaySound("invulnget")
-        TNT1 A 1 A_GiveInventory("PowerFakeInvulnerable64")
-        stop
-	  PickupKatarn:
+	  /*PickupKatarn:
 		TNT1 A 0 A_PlaySound("invulnget")
 		TNT1 A 1 A_GiveInventory("PowerFakeInvulnerableKatarn")
-		stop		
+		stop*/
 	  PickupWitchaven:
 		TNT1 A 0 A_PlaySound("gpickup/invul")
 		TNT1 A 1 A_GiveInventory("PowerFakeInvulnerable")
@@ -266,13 +272,17 @@ actor InvulnPowerup : CustomInventory replaces InvulnerabilitySphere
 	  PickupDuke:
 		TNT1 A 0 A_PlaySound("invulnget")
         TNT1 A 1 A_GiveInventory("PowerFakeInvulnerableDuke")
-		TNT1 A 0 A_TakeInventory("DukeTauntCooldown", 9999)
-		TNT1 A 0 A_StopSound(7)
         TNT1 A 0 A_JumpIfInventory("DukeBallgag", 1, "PickupStop")
-        TNT1 A 0 A_GiveInventory("DukeTauntCooldown", 15)
+		TNT1 A 0 A_TakeInventory("DukeTauntCooldown")
+		TNT1 A 0 A_StopSound(CHAN_7)
+        TNT1 A 0 A_GiveInventory("DukeTauntCooldown", 5) // was 15 despite the max being 5
 		TNT1 A 0 ACS_NamedExecuteAlways("DukeTauntCooldown")
         TNT1 A 0 A_PlaySoundEx("duke/invuln", "soundslot7", 0, 0)
         stop
+	  PickupCatacomb:
+		TNT1 A 0 A_PlaySound("Catacomb/Hourglass", CHAN_ITEM)
+		TNT1 A 1 A_GiveInventory("Catacomb_Hourglass", 1)
+		Stop
       PickupFail:
         NVLN A 1 BRIGHT
         fail
@@ -296,8 +306,8 @@ Actor DivineScarab_Ex : PowerupGiver
     Inventory.UseSound "Jon/itemuse"
     Inventory.PickupMessage "You found a Divine Scarab!"
 	Inventory.RestrictedTo "PSPlayer"
-	Tag "Divine Scarab"
     Powerup.Type FakeInvulnerable
+	Tag "Divine Scarab"
 	States
 	{
 		Spawn:
@@ -368,6 +378,7 @@ ACTOR PowerFakeInvulnerable : PowerProtection
   DamageFactor "Kamikaze", 1.0
   DamageFactor "ZorchKamikaze", 1.0
   DamageFactor "Suicide", 1.0
+  DamageFactor "NotSuicide", 0.0		// Used for monsters with suicide attacks
   DamageFactor "Telefrag", 1.0
 
   DamageFactor "PunchDagger", 0.0
@@ -422,10 +433,7 @@ ACTOR PowerFakeInvulnerable : PowerProtection
   DamageFactor "HLBullet", 0.0  
 }
 
-ACTOR PowerFakeInvulnerableDuke : PowerFakeInvulnerable
-{
-  Powerup.Color GoldMap
-}
+actor PowerFakeInvulnerableDuke : PowerFakeInvulnerable { Powerup.Color GoldMap }
 
 actor QuakePentagram: PowerFakeInvulnerable
 {
@@ -433,7 +441,39 @@ actor QuakePentagram: PowerFakeInvulnerable
     Powerup.Color "FF 20 00", 0.15
 }
 
-actor QuakePentTimer: Counter {}
+actor WTInvisibilityPhial : CustomInventory
+{
+	Tag "Invisibility Potion"
+    inventory.maxamount 10
+	inventory.interhubamount 10
+    inventory.icon "WIN0F0"
+    inventory.usesound "gplayer/drink"
+	inventory.pickupmessage "You got an invisibility potion!"
+	inventory.pickupsound "gpickup/phial"
+	Inventory.RestrictedTo "GrondovalPlayer"
+	//+INVENTORY.KEEPDEPLETED
+	+INVENTORY.INVBAR
+	-PICKUP
+	scale 0.5
+	states
+	{
+		Spawn:
+			WIN0 E 12
+			WIN0 E 0 A_ChangeFlag("PICKUP",1)
+			WIN0 E -1 bright
+			stop
+		Use:
+			WIN0 E 0 A_GiveInventory("WTInvisibility",1)
+			stop
+		FailPotion:
+			WIN0 E 0
+			fail
+	}
+}
+
+actor WTInvisibility : PowerInvisibility { Powerup.Duration -30 }
+
+actor QuakePentTimer: Counter { inventory.interhubamount 0 }
 
 actor InvulnTrail
 {
@@ -460,30 +500,37 @@ Actor BioSuit : CustomInventory replaces RadSuit
 {
     RenderStyle Add
     Alpha 0.95
-    +CountItem
     +FLOATBOB
     +INVENTORY.PICKUPFLASH
     +Inventory.AlwaysPickup
     +Inventory.AutoActivate
-    +COUNTITEM
 	Inventory.PickupMessage "$SAMSARA_POWERUP_RADSUIT"
 	Inventory.PickupSound "nosoundforyoubitch"
 	States
 	{
 	  Spawn:
 			RDST A 0 BRIGHT
-			RDST A -1 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
-			stop
+			RDST A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
+			wait
 	  Pickup:
 			TNT1 A 0 A_JumpIfInventory("RottClass", 1, "PickupRott")
 	        TNT1 A 1 A_JumpIfInventory("StrifeClass", 1, "PickupStrife")
 			TNT1 A 0 A_JumpIfInventory("Hexen2Class", 1, "PickupHexen2")
-	        TNT1 A 0 A_JumpIfInventory("Doom64GuyClass", 1, "PickupDoom64")
+	        TNT1 A 0 A_JumpIfInventory("DoomguyClass", 1, "PickupDoomguy")
 			TNT1 A 0 A_JumpIfInventory("KatarnClass",1,"PickupKatarn")
-			TNT1 A 1 A_JumpIfInventory("BittermanClass",1,"PickupBitterman")
+			TNT1 A 0 A_JumpIfInventory("WitchavenClass",1,"PickupWitchaven")
+			TNT1 A 0 A_JumpIfInventory("BittermanClass",1,"PickupBitterman")
 			TNT1 A 0 A_PlaySound("antisterileget", CHAN_ITEM)
 			TNT1 A 0 A_GiveInventory("BioSuitPowerup")
 			Stop
+      PickupDoomguy:
+			TNT1 A 0 A_PlaySound("antisterileget", CHAN_ITEM)
+            TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"PickupDoom64")
+			TNT1 A 0 A_GiveInventory("BioSuitPowerup")
+			Stop
+      PickupDoom64:
+			TNT1 A 0 A_GiveInventory("BioSuitPowerup64")
+			stop
 	  PickupRott:
 			TNT1 A 0 A_PlaySound("gen/asbestos")
 			TNT1 A 0 A_GiveInventory("AsbestosArmor", 1)
@@ -496,13 +543,14 @@ Actor BioSuit : CustomInventory replaces RadSuit
 			TNT1 A 0 A_PlaySound("strife/itemget")
 			TNT1 A 1 A_GiveInventory("PortEnviSuit")
 			stop
-      PickupDoom64:
-			TNT1 A 0 A_PlaySound("antisterileget", CHAN_ITEM)
-			TNT1 A 0 A_GiveInventory("BioSuitPowerup64")
-			stop
 	  PickupKatarn:
 			TNT1 A 0 A_PlaySound("antisterileget", CHAN_ITEM)
 			TNT1 A 0 A_GiveInventory("BioSuitPowerupKatarn")
+			stop
+	  PickupWitchaven:
+			TNT1 A 0 A_PlaySound("gpickup/phial")		
+			TNT1 A 0 A_GiveInventory("WTFireProofPhial")
+			TNT1 A 0 A_GiveInventory("BioSuitPowerup")
 			stop
 	  PickupBitterman:
 			TNT1 A 0 A_PlaySound("Q2Misc/Pickup")
@@ -550,18 +598,71 @@ actor PortEnviSuit : PowerupGiver
 	+INVENTORY.UNDROPPABLE
 	Inventory.MaxAmount 5
 	Powerup.Type "IronFeet"
-	Tag "Environmental Suit"
 	Inventory.Icon "I_GASM"
 	Inventory.UseSound "strife/itempickup"
 	Inventory.PickupSound "strife/itemget"
 	Inventory.PickupMessage "You picked up the Environmental Suit."
 	Inventory.RestrictedTo "StrifeguyPlayer"  
+	Tag "Environmental Suit"
 	States
 	{
 	Spawn:
 		MASK A -1
 		Stop
 	}
+}
+
+actor WTFireProofPhial : CustomInventory
+{
+	Tag "Fire Immunity Potion"
+    inventory.maxamount 10
+	inventory.interhubamount 10
+    inventory.icon "WIN0D0"
+    inventory.usesound "gplayer/drink"
+	inventory.pickupmessage "You got a fire immunity potion!"
+	inventory.pickupsound "gpickup/phial"
+	Inventory.RestrictedTo "GrondovalPlayer"
+	//+INVENTORY.KEEPDEPLETED
+	+INVENTORY.INVBAR
+	-PICKUP
+	scale 0.5
+	states
+	{
+		Spawn:
+			WIN0 C 12
+			WIN0 C 0 A_ChangeFlag("PICKUP",1)
+			WIN0 C -1 bright
+			stop
+		Use:
+			WIN0 C 0 A_GiveInventory("WTFireProof",1)
+			stop
+		FailPotion:
+			WIN0 C 0
+			fail
+	}
+}
+
+actor WTFireProof : PowerProtection 
+{ 
+	Powerup.Duration -30 
+	Powerup.Color "OrangeRed", 0.25
+	DamageFactor "Fire", 0.0
+	DamageFactor "TotenkopfFire", 0.0
+	DamageFactor "PhosFireCoop", 0.0
+	DamageFactor "PGFire", 0.0
+	DamageFactor "HexGreenFire", 0.0
+	DamageFactor "QuakeFire", 0.0
+	DamageFactor "WTRangedFire", 0.0
+	DamageFactor "FireExplosive", 0.0
+	DamageFactor "WolfenFlamethrower", 0.0
+	DamageFactor "MarathonPlasma", 0.0
+	DamageFactor "RottFire", 0.0
+	DamageFactor "Hexen2Fire", 0.0
+	DamageFactor "SWFlame", 0.0
+    DamageFactor "SWFlame2", 0.0
+    DamageFactor "SWFlame2Coop", 0.0
+	DamageFactor "SWFlame3", 0.0
+	DamageFactor "PSFire", 0.0
 }
 
 actor Visor : CustomInventory replaces Infrared
@@ -576,12 +677,10 @@ actor Visor : CustomInventory replaces Infrared
     {
       Spawn:
         VISR A 0 NoDelay ACS_NamedExecuteWithResult("Samsara_SwitchableObject",1)
-        VISR A 0 ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 85)
-        goto Spawn2
-      Spawn2:	  
-        VISR A 20 Bright //A_SpawnItemEx("VisorTrail", 0, 0, 2.5, 0, 0, 0, 0, 128)
+      Spawn2:
+        VISR A 20 Bright ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 85) //A_SpawnItemEx("VisorTrail", 0, 0, 2.5, 0, 0, 0, 0, 128)
         VISR A 20
-        loop		
+        loop
       Pickup:
         TNT1 A 0 A_JumpIfInventory("MarathonClass",1,"PickupMarathon")
         TNT1 A 0 A_JumpIfInventory("DukeClass",1,"PickupDuke")
@@ -640,7 +739,7 @@ actor Visor : CustomInventory replaces Infrared
     }
 }
 
-actor MarathonInfrared : PowerLightAmp {	Powerup.Color GreenMap	}
+actor MarathonInfrared : PowerLightAmp { Powerup.Color BlueMap }
 
 actor VisorTrail
 {
@@ -670,8 +769,8 @@ Actor LighterofGumercindo_EX : PowerupGiver
     Inventory.UseSound "Jon/itemuse"
     Inventory.PickupMessage "You picked up a Lighter of Gumercindo!"
 	Inventory.RestrictedTo "PSPlayer"
-	Tag "Lighter of Gumercindo"
     Powerup.Type Torch
+	Tag "Lighter of Gumercindo"
 	States
 	{
 		Spawn:

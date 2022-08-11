@@ -7,13 +7,14 @@ actor " Staff " : Weapon
     +NOALERT
     +STAFF2_KICKBACK
     +INVENTORY.UNDROPPABLE
-    +THRUGHOST
     Obituary "$SAMSARA_CORVUS_OB_FIST"
 	Inventory.RestrictedTo "CorvusPlayer"
+    Tag "Staff"
     States
     {
       Ready:
         TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"Ready2")
+		TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"Ready2")
         STFF A 1 A_WeaponReady
         Loop
 
@@ -27,6 +28,7 @@ actor " Staff " : Weapon
 
       Deselect:
         TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"Deselect2")
+		TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"Deselect2")
         STFF A 1 A_Lower
         Loop
 
@@ -36,6 +38,7 @@ actor " Staff " : Weapon
 
       Select:
         TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"Select2")
+		TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"Select2")
         STFF A 1 A_Raise
         Loop
 
@@ -45,14 +48,27 @@ actor " Staff " : Weapon
 
       Fire:
         TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"FireTomed")
+		TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"FireTomed")
         STFF B 6
+        STFF C 0 A_JumpIfInventory("CoopModeOn",1,2)
         STFF C 8 A_CustomPunch(random(5,20),1,0,"StaffPuff3")//A_StaffAttack(random[StaffAttack](5, 20), "StaffPuff")
+        Goto FireEnd
+        STFF C 8 A_CustomPunch(random(5,20),1,0,"StaffPuff3Coop")
+        Goto FireEnd
+
+      FireEnd:
         STFF B 8 A_ReFire
         Goto Ready
 
       FireTomed:
         STFF G 6
+        STFF H 0 A_JumpIfInventory("CoopModeOn",1,2)
         STFF H 8 A_CustomPunch(random(60,120),1,0,"StaffPuff4")//A_StaffAttack(random[StaffAttack](18, 81), "StaffPuff2")
+        Goto FireTomedEnd
+        STFF H 8 A_CustomPunch(random(60,120),1,0,"StaffPuff4Coop")
+        Goto FireTomedEnd
+        
+      FireTomedEnd:
         STFF G 8 A_ReFire
         Goto Ready2
     }
@@ -74,6 +90,8 @@ actor StaffPuff3 : StaffPuff
     }
 }
 
+actor StaffPuff3Coop : StaffPuff3 { Species "Player" +THRUSPECIES +MTHRUSPECIES }
+
 actor StaffPuff4 : StaffPuff2
 {
     DamageType "Pistol"
@@ -88,3 +106,5 @@ actor StaffPuff4 : StaffPuff2
         Stop
     }
 }
+
+actor StaffPuff4Coop : StaffPuff4 { Species "Player" +THRUSPECIES +MTHRUSPECIES }

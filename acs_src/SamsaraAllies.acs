@@ -1,12 +1,98 @@
-int misccharacterclasses = 8;
-int checkclassindices[8] = {19,23,5,11,24,10,25,14};
-int activetokenselectors[8];
+int activetokenselectors[CLASSCOUNT];
+int pickrandos = 0;
+
+str miscCharGameTypesStr[CLASSCOUNT] =
+{	
+	"", 
+	"", 
+	"", 
+	"", 
+	"",
+	"samsara_misccharspawn_duke3d", 
+	"",
+	"",
+	"samsara_misccharspawn_rott",
+	"",
+	"samsara_misccharspawn_blood", 
+	"samsara_misccharspawn_strife",
+	"",
+	"",
+	"samsara_misccharspawn_rmr", 
+	"",
+	"",
+	"",
+	"",
+	"samsara_misccharspawn_halflife", 
+	"samsara_misccharspawn_sw", 
+	"",
+	"samsara_misccharspawn_ps", 
+	"samsara_misccharspawn_rr", 
+	"samsara_misccharspawn_quake2", 
+	"samsara_misccharspawn_hexen2",
+	"",
+	""
+};
+			
+
+Script "DetermineValidSpawn" (void)
+{
+	for(int a = 512; a <= 0.5; a+=1024)
+	{
+		for(int b = 512; b <= 0.5; b+=1024)
+		{
+			if(GetCVar("samsara_zscriptready") == 1)
+				SpawnForced("DetermineValidCellZS",a*1.0,b*1.0,0,0);
+			else
+				SpawnForced("DetermineValidCell",a*1.0,b*1.0,0,0);
+			if(b > 0)
+				b = -b - 1024;
+			else
+				b = -b;			
+		}
+		if(a > 0)
+			a = -a - 1024;
+		else
+			a = -a;	
+	}	
+}
+
+script "CellDoneScanning" (void)
+{
+	int newtid = UniqueTid();
+	for(int a = -512; a < 512; a+=64)
+	{
+		for(int b = -512; b < 512; b+=64)
+		{
+			if(random(1,1500) <= (GetCvar("samsara_randomcharacters")*GetCvar("samsara_randomcharacters"))/10)
+			{	
+				SpawnForced("DetermineValidSpawnTestObject",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),0,newtid);
+				if(GetCVar("samsara_zscriptready") == 1)
+					Spawn("DetermineValidSpawnZS",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
+				else
+					Spawn("DetermineValidSpawn",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
+			}
+		}
+	}
+}
+
+script "IsThisSpawnSpotorCell" (int type)
+{
+	if(type == 0)
+		SetResultValue(GetActorClass(0)=="DetermineValidCell");
+	else
+		SetResultValue(GetActorClass(0)=="DetermineValidSpawn");
+}
 
 script "HeroOnMap" Open
 {
+	//Because single player only means offline, we must check for individual game modes that must be excluded, unfortunately
+	if(isLMS() || isDeathMatch() || isInvasion() || isInvasion() || isFreeForAll() || isTeamGame() || (GameType () == GAME_TITLE_MAP)) { terminate; }
+
 	int clients = PlayerCount();
 	int playervalue;
-	for(int a = 0; a < misccharacterclasses; a++)
+	int setBasedSpawns = GetCvar("samsara_misccharacterspawnmode");
+	
+	for(int a = 0; a < CLASSCOUNT; a++)
 	{
 		activetokenselectors[a] = 0;
 	}
@@ -15,11 +101,18 @@ script "HeroOnMap" Open
 	{	
 		if(PlayerInGame(p) == true)
 		{
-			for(int b = 0; b < misccharacterclasses; b++)
+			for(int b = 0; b < CLASSCOUNT; b++)
 			{
-				if(PlayerClass(p) == checkclassindices[b])
+				if(PlayerClass(p) == b && !setBasedSpawns)
 				{
 					activetokenselectors[b] = 1;
+					if(b == 5 || b == 8 || b == 10 || b == 11 || b == 14 || b == 19 || b == 20 || b == 22 || b == 23 || b == 24 || b == 25)
+						pickrandos = 1;
+				}
+				else if(GetCvar(miscCharGameTypesStr[b]) == 1 && setBasedSpawns)
+				{
+					activetokenselectors[b] = 1;
+					pickrandos = 1;
 				}
 			}
 		}
@@ -28,156 +121,128 @@ script "HeroOnMap" Open
 			clients += 1;
 		}
 	}
+	
+	if(pickrandos == true)
+		ACS_NamedExecuteWithResult("DetermineValidSpawn",0,0,0,0);
 }
 
-int HealthBonusMapCount = 0;
-int ArmorBonusMapCount = 0;
-int HealthBonusScriptCount = 0;
-int ArmorBonusScriptCount = 0;
-
-Script "Samsara2689" (int mode)  //2689
+Script "Samsara2689" (void)  //2689
 {
-	int any;
-	int spawnchance = random(0,100);
-	SetResultValue(0);
-	Switch(mode)
-	{	
-		Case 1:
-			HealthBonusScriptCount++;
-			if(HealthBonusScriptCount > HealthBonusMapCount) { SetResultValue(0); terminate; }
-					
-			break;
-		Case 2:
-			ArmorBonusScriptCount++;
-			if(ArmorBonusScriptCount > ArmorBonusMapCount) { SetResultValue(0); terminate; }
-				
-			break;
-	}
-
-	if(spawnchance > GetCvar("sams_misccharacters") || GetCvar("sams_misccharacters") == 0)
-	{
-		terminate;
-	}
-	
-	for(int pre = 0; pre < misccharacterclasses; pre++)
-	{
-		if(activetokenselectors[pre] == 1)
-		{
-			any = true;
-			break;
-		}
-	}
-	
-	if(any == false)
-	{
-		terminate;
-	}
-
-	while(true)
+	int myPosX = GetActorX(0);
+	int myPosY = GetActorY(0);
+	int myPosZ = GetActorZ(0);
+	int randomAngle = random(0,256);
+	int randomPick = random(0,256);
+	SetActorAngle(0,randomAngle<<8);
+	ThrustThing(randomAngle,random(16,32),0,0);
+	Delay(1);
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0,myTid);
+	int maxAttempts = 0;
+	while(maxAttempts <= 100)
 	{
 		int a, b;
 		
 		if(activetokenselectors[a] == true)
 		{
-			if(a == 0)
-			{	
-				Switch(mode)
-				{	
-					Case 1:
+			switch(a)
+			{
+				default:
+					break;
+				case 5:
+					SpawnSpotFacing("Duke3DBabe", 0, 0);
+					break;
+				case 8:
+					if(onLiquid(0) > 0)
+					{
+						a = random(0,CLASSCOUNT);
+						continue;
+					}
+					else if(randompick <= 96)
+						Spawn("RoTTBlades", myPosX, myPosY, myPosZ, 0);
+					else if(randompick <= 188)
+						Spawn("RoTTFireJet", myPosX, myPosY, myPosZ, 0);
+					else if(randompick <= 256)
+						Spawn("RoTTUpSpikes", myPosX, myPosY, myPosZ, 0);
+					break;
+				case 10:
+					if(random(0,2) <= 1)
+						SpawnSpotFacing("BloodInnocentMime", 0, 0);	
+					else
+						SpawnSpotFacing("BloodInnocentMoron", 0, 0);
+					break;
+				case 11:
+					SpawnSpotFacing("StrifePeasant", 0, 0);	
+					break;
+				case 14:
+					if(random(0,2) <= 1)
+						SpawnSpotFacing("RMRLDFGuard", 0, 0);
+					else
+						SpawnSpotFacing("RMRLDFMilitia", 0, 0);
+					break;
+				case 19:
+					if(random(0,2) <= 1)
 						SpawnSpotFacing("HLScientist", 0, 0);
-						break;
-					Case 2:
+					else
 						SpawnSpotFacing("HLSecurityGuard", 0, 0);
-						break;
-				}
-				terminate;
-			}
-			else if(a == 1)
-			{
-				SetResultValue(0);
-				b = random(0, 11);
-				if(b < 5)
-				{
-					SpawnSpotFacing("RedneckRampage_Chicken", 0, 0);
 					break;
-				}
-				else if(b < 8)
-				{
-					SpawnSpotFacing("RedneckRampage_Pig", 0, 0);
+				case 20:
+					if(random(0,2) == 0 && onLiquid(0) == 1)
+						SpawnSpotFacing("SW_WashGirl", 0, 0);
+					else if(randompick<=24)
+						SpawnSpotFacing("SW_MechanicGirl", 0, 0);
+					else if(randompick<=48)
+						SpawnSpotFacing("SW_CarGirl", 0, 0);
+					else if(randompick<=72)
+						SpawnSpotFacing("SW_MoonGirl", 0, 0);
+					else if(randompick<=160)
+						SpawnSpotFacing("SW_Rabbit", 0, 0);
+					else
+						SpawnSpotFacing("SWPruneGirlSpawner", 0, 0);
 					break;
-				}
-				else if(b <= 10)
-				{
-					SpawnSpotFacing("RedneckRampage_Cow", 0, 0);
+				case 22:
+					if(randompick<=128)
+						SpawnSpotFacing("AnubisWarriorReinc", 0, 0);
+					else if(random(0,1) == 1)
+						SpawnSpotFacing("PSHaremGirl1", 0, 0);
+					else if(random(0,1) == 1)
+						SpawnSpotFacing("PSHaremGirl2", 0, 0);
+					else if(random(0,1) == 1)
+						SpawnSpotFacing("PSHaremGirl3", 0, 0);
+					else if(random(0,1) == 1)
+						SpawnSpotFacing("PSHaremGirl4", 0, 0);
+					else if(random(0,1) == 1)
+						SpawnSpotFacing("PSHaremGirl5", 0, 0);
+					else if(random(0,1) == 1)
+						SpawnSpotFacing("PSHaremGirl6", 0, 0);
+					else
+						SpawnSpotFacing("PSHaremGirl7", 0, 0);
 					break;
-				}
-				else
-				{
-					SpawnSpotFacing("RRBanjoConcert", 0, 0);
+				case 23:
+					if(random(0,1) == 1)
+						SpawnSpotFacing("RedneckRampage_Chicken", 0, 0);
+					else if(random(0,1) == 1)
+						SpawnSpotFacing("RedneckRampage_Pig", 0, 0);
+					else if(random(0,1) == 1)
+						SpawnSpotFacing("RedneckRampage_Cow", 0, 0);
+					else
+						SpawnSpotFacing("RRBanjoConcert", 0, 0);
 					break;
-				}	
-				terminate;
+				case 24:
+					SpawnSpotFacing("Q2Insane", 0, 0);
+					break;
+				case 25:
+					SpawnSpotFacing("Hexen2_Sheep", 0, 0);
+					break;
 			}
-			else if(a == 2)
-			{
-				SetResultValue(0);
-				SpawnSpotFacing("Duke3DBabe", 0, 0);
-				terminate;
-			}
-			else if(a == 3)
-			{
-				SetResultValue(0);
-				SpawnSpotFacing("StrifePeasant", 0, 0);		
-				terminate;
-			}
-			else if(a == 4)
-			{
-				SetResultValue(0);
-				SpawnSpotFacing("Q2Insane", 0, 0);
-				terminate;
-			}
-			else if(a == 5)
-			{
-				b = random(0, 10);
-				SetResultValue(0);
-				
-				if(b < 2)
-					SpawnSpotFacing("BloodInnocentMime", 0, 0);
-					
-				else
-					SpawnSpotFacing("BloodInnocentMoron", 0, 0);
-				
-				terminate;
-			}
-			else if(a == 6)
-			{
-				SetResultValue(0);
-				SpawnSpotFacing("Hexen2_Sheep", 0, 0);
-				terminate;
-			}
-			else if(a == 7)
-			{
-				if(mode == 1)
-					SpawnSpotFacing("RMRLDFGuard", 0, 0);
-				else if(mode == 2)
-					SpawnSpotFacing("RMRLDFMilitia", 0, 0);
-				terminate;
-			}
+			Thing_Remove(0);
+			terminate;
 		}
-		
-		if(a >= misccharacterclasses-1)
-			a = random(-1,misccharacterclasses-1);
 		else
-			a++;
+			a = random(0,CLASSCOUNT);
+		
+		maxAttempts++;
 	}
-}
-
-Script "BonusItemCount" Open
-{
-	HealthBonusScriptCount = 0;
-	ArmorBonusScriptCount = 0;
-	HealthBonusMapCount = ThingCountName("HealPack0", 0);
-	ArmorBonusMapCount = ThingCountName("ArmorScrap200", 0);
 }
 
 Script "AllyCellPhone" ENTER
@@ -339,7 +404,7 @@ Script "Samsara_AllySwitch" (void)
 	switch(PlayerClass(pln))
 	{
 		case 4:
-			if(GetUserCvar(pln,"sams_cl_hexclass")==0)
+			if(GetUserCvar(pln,"samsara_cl_hexclass")==0)
 			{
 				if(CheckActorClass(newtid,"ClericAlly"))
 				{
@@ -348,7 +413,7 @@ Script "Samsara_AllySwitch" (void)
 				else
 					terminate;
 			}
-			else if(GetUserCvar(pln,"sams_cl_hexclass")==1)
+			else if(GetUserCvar(pln,"samsara_cl_hexclass")==1)
 			{
 				if(CheckActorClass(newtid,"MageAlly"))
 				{
@@ -357,7 +422,7 @@ Script "Samsara_AllySwitch" (void)
 				else
 					terminate;
 			}
-			else if(GetUserCvar(pln,"sams_cl_hexclass")==2)
+			else if(GetUserCvar(pln,"samsara_cl_hexclass")==2)
 			{
 				if(CheckActorClass(newtid,"FighterAlly"))
 				{
@@ -368,7 +433,7 @@ Script "Samsara_AllySwitch" (void)
 			}
 			break;
 		case 8:
-			switch(GetUserCvar(pln,"sams_cl_rottmode"))
+			switch(GetUserCvar(pln,"samsara_cl_rottmode"))
 			{
 				Case 0:
 					if(CheckActorClass(newtid,"IanPaulFreeley"))

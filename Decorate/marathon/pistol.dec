@@ -6,7 +6,6 @@ actor ".44 Magnum Mega Class A1" : Weapon// replaces Pistol
 {
     Weapon.BobRangeX 0
     Weapon.BobStyle Smooth
-    Weapon.PreferredSkin "SOPistolSkin"
     Weapon.SlotNumber 1
     Weapon.SelectionOrder 1900
     Decal BulletChip
@@ -18,304 +17,456 @@ actor ".44 Magnum Mega Class A1" : Weapon// replaces Pistol
     +NOALERT
     +INVENTORY.UNDROPPABLE
 	Inventory.RestrictedTo "MarathonPlayer"
+    Tag ".44 Magnum Mega Class A1"
     States
     {
       Spawn:
         PSTL A -1
-        STOP
+        stop
 
+      // Single
       Ready:
-        TNT1 A 0 A_JumpIfInventory("SynthFireActive",1,"Ready2")
+        TNT1 A 0 A_TakeInventory("SamsaraLevelSwitch_DualRaising")
+        TNT1 A 0 A_JumpIfInventory("SynthFireActive",1,"ReadyDual")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",0,"ReadyModernReloadable")
+      ReadyNonReloadable:
         PIST A 1 A_WeaponReady
-        TNT1 A 0 A_JumpIfNoAmmo("SingleReload")
-        LOOP
+      ReadyAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyAmmoCheckReloadable")
+        goto Ready
 
-      SingleReload:
-        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"SingleReloadCheck")
-      SingleReload2:
-        PIST F 11 A_PlaySound("marathon/pistol/reload")
-        PIST G 11
-        PIST H 11
-        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"SingleReloadAmmo")
-        TNT1 A 0 A_GiveInventory("MagnumBullet",8)
-        Goto Ready
-        
-      SingleReloadAmmo:
-        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-        goto Ready
-      SingleReloadAmmo2:
-        TNT1 A 0 A_TakeInventory("Clip",1)
-        TNT1 A 0 A_GiveInventory("MagnumBullet",1)
-        TNT1 A 0 A_JumpIfInventory("MagnumBullet",0,"Ready")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"SingleReloadAmmo2")
-        goto Ready
-        
-      SingleReloadCheck:
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"SingleReload2")
+      ReadyModernReloadable:
+        TNT1 A 0 A_JumpIfInventory("MagnumBullet",0,"ReadyNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReadyModernReloadableReserve")
+      ReadyModernReloadableCanReload:
+        PIST A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+        goto ReadyAmmoCheck
+
+      ReadyModernReloadableReserve:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyModernReloadableCanReload")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"ReadyModernReloadableCanReload")
+        goto ReadyNonReloadable
+
+      ReadyAmmoCheckReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Ready")
+        TNT1 A 0 A_JumpIfInventory("MagnumBullet",1,"Ready")
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto Reload
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"Reload")
         goto Ready
 
       Deselect:
-        TNT1 A 0 A_JumpIfInventory("SynthFireActive",1,"Deselect2")
+        TNT1 A 0 A_TakeInventory("SamsaraLevelSwitch_DualWielding")
+        TNT1 A 0 A_JumpIfInventory("SynthFireActive",1,"DeselectDual")
         TNT1 A 0 A_Lower
         PIST A 1 A_Lower
-        LOOP
+        loop
 
       Select:
-        TNT1 A 0 A_TakeInventory("UsingSMG",1)
-        //TNT1 A 0 A_TakeInventory("UsingPistols",1)
-        TNT1 A 0 A_TakeInventory("UsingFists",1)
-        TNT1 A 0 A_TakeInventory("UsingShotguns",1)
-        TNT1 A 0 A_TakeInventory("UsingFusionPistol",1)
-        TNT1 A 0 A_TakeInventory("UsingAssaultRifle",1)
-        TNT1 A 0 A_TakeInventory("UsingSpanker",1)
-        TNT1 A 0 A_TakeInventory("UsingToasty",1)
-        TNT1 A 0 A_TakeInventory("UsingAlienWeapon",1)
-        TNT1 A 0 A_TakeInventory("UsingAlienWeapon2",1)
-        TNT1 A 0 A_TakeInventory("UsingWMC",1)
-        TNT1 A 0 A_TakeInventory("UsingDualPistols",1)
-        TNT1 A 0 A_TakeInventory("UsingDualShotguns",1)
-        
-        TNT1 A 0 A_GiveInventory("UsingPistols",1)
+        TNT1 A 0 A_TakeInventory("UsingFists")
+        //TNT1 A 0 A_TakeInventory("UsingPistols")
+        //TNT1 A 0 A_TakeInventory("UsingDualPistols")
+        TNT1 A 0 A_TakeInventory("UsingSMG")
+        TNT1 A 0 A_TakeInventory("UsingPacifier")
+        TNT1 A 0 A_TakeInventory("UsingShotguns")
+        TNT1 A 0 A_TakeInventory("UsingDualShotguns")
+        TNT1 A 0 A_TakeInventory("UsingFusionPistol")
+        TNT1 A 0 A_TakeInventory("UsingAssaultRifle")
+        TNT1 A 0 A_TakeInventory("UsingSpanker")
+        TNT1 A 0 A_TakeInventory("UsingToasty")
+        TNT1 A 0 A_TakeInventory("UsingWMC")
+        TNT1 A 0 A_TakeInventory("UsingAlienWeapon")
+        TNT1 A 0 A_TakeInventory("UsingAlienWeapon2")
+        //TNT1 A 0 A_TakeInventory("UsingMarathonInstagib")
+
+        TNT1 A 0 A_GiveInventory("UsingPistols")
+        TNT1 A 0 A_JumpIfInventory("SamsaraLevelSwitch_DualWielding",1,"SelectDual")
+        TNT1 A 0 A_JumpIfInventory("SynthFireActive",1,"SelectDual")
+        TNT1 A 0 A_TakeInventory("UsingDualPistols")
         TNT1 A 0 A_Raise
         PIST A 1 A_Raise
-        LOOP
+        loop
 
       Fire:
-        TNT1 A 0 A_JumpIfInventory("SynthFireActive",1,"LFire")
-        TNT1 A 0 A_JumpIfNoAmmo(14)
-		TNT1 A 0 A_FireBullets(0,0, 1, 0, "SamsaraBlankPuff", FBF_NORANDOM)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"FireCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"FireCoop")
-        TNT1 A 0 A_AlertMonsters//,0,0,0,0)
-        TNT1 A 0 A_FireCustomMissile("MarathonMagnumBullet",random(-1,1),1,0,0,0,random(-1,1))//A_FireBullets(1,1,-1,20+random(0,8),"MarathonPuff")
-        TNT1 A 0 A_PlayWeaponSound("marathon/pistol/fire")
-        TNT1 A 0 A_FireCustomMissile("44mmCasingSpawner",0,0,8,0)
-        PIST A 3 A_Light2
-        PIST B 3 Bright A_Light1 
-        PIST C 3 Bright A_Light0
-        PIST D 3 
-        PIST E 4 
-        TNT1 A 0 A_Refire
-        Goto Ready
-        PIST A 1
-        Goto SingleReload
+        TNT1 A 0 A_JumpIfInventory("SynthFireActive",1,"LFireSwapCheck")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireReloadable")
+      FireNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto FireActual
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireActual")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"FireActual")
+        goto Ready
 
+      FireReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireActual")
+        TNT1 A 0 A_JumpIfInventory("MagnumBullet",1,"FireActual")
+      FireReloadableDryCheck:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto Reload
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"Reload")
+        goto Ready
+
+      FireActual:
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_FireCustomMissile("44mmCasingSpawner",0,false,8)
+        TNT1 A 0 A_GiveInventory("SamsaraMarathonMagnumLeftAttackHandler")
+      FireFinish:
+        PIST A 3 A_Light2
+        PIST B 3 Bright A_Light1
+        PIST C 3 Bright A_Light0
+        PIST D 3
+        PIST E 4
+        TNT1 A 0 A_ReFire
+        goto Ready
+
+      Reload:
+        PIST F 11
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
+      ReloadFinish:
+        TNT1 A 0 A_PlaySound("marathon/pistol/reload")
+        PIST GH 11
+        goto Ready
+
+      ReloadAmmo:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoReserve")
+        TNT1 A 0 A_JumpIfInventory("MagnumBullet",0,"ReloadFinish")
+        TNT1 A 0 A_GiveInventory("MagnumBullet")
+        loop
+
+      ReloadAmmoReserve:
+        TNT1 A 0 A_JumpIfInventory("MagnumBullet",0,"ReloadFinish")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+        goto ReloadFinish
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_TakeInventory("Clip",1)
+        TNT1 A 0 A_GiveInventory("MagnumBullet")
+        goto ReloadAmmo
+
+      // Dual Init
       AltFire:
-        TNT1 A 0 A_JumpIfInventory("SynthFireActive",1,"RFire")
+        TNT1 A 0 A_JumpIfInventory("SynthFireActive",1,"RFireSwapCheck")
         TNT1 A 0 A_JumpIfInventory("CanDualPistols",1,1)
         goto Ready
-        PIS3 A 1 A_GiveInventory("SynthFireActive",1)
-        PIS3 B 1 A_GiveInventory("UsingDualPistols",1)
-        PIS3 C 1
-        PIS3 DEFGHIJ 1 A_GiveInventory("UsingDualPistols",1)//ABCDEFGHIJKLMNOPQ 1
-        TNT1 A 0 A_GunFlash
-        PIS3 K 1 A_GiveInventory("SynthFireActive",1)
-        goto Ready2
+        TNT1 A 0 A_GiveInventory("UsingDualPistols")
+        PIS3 A 1 A_GiveInventory("SamsaraLevelSwitch_DualWielding")
+        PIS3 BCDEFGHIJ 1
+        TNT1 A 0 A_GiveInventory("SynthFireActive")
+        PIS3 K 1 A_GunFlash("Flash",GFF_NOEXTCHANGE)
+        goto ReadyDual
 
-      FireCoop:
-        TNT1 A 0 A_AlertMonsters//,0,0,0,0)
-        TNT1 A 0 A_FireCustomMissile("MarathonMagnumBulletCoop",random(-1,1),1,0,0,0,random(-1,1))//A_FireBullets(1,1,-1,20+random(0,8),"MarathonPuff")
-        TNT1 A 0 A_PlayWeaponSound("marathon/pistol/fire")
-        TNT1 A 0 A_FireCustomMissile("44mmCasingSpawner",0,0,8,0)
-        PIST A 3 A_Light2
-        PIST B 3 Bright A_Light1 
-        PIST C 3 Bright A_Light0
-        PIST D 3 
-        PIST E 4 
-        TNT1 A 0 A_Refire
-        Goto Ready
-        PIST A 1
-        Goto SingleReload
-        
-        
-      Deselect2:
-        TNT1 A 0 A_TakeInventory("SynthFireActive",1)
-        TNT1 A 0 A_TakeInventory("SynthFireLeft",1)
-        TNT1 A 0 A_TakeInventory("SynthFireRight",1)
-        TNT1 A 0 A_TakeInventory("LeftReload",1)
-        TNT1 A 0 A_TakeInventory("RightReload",1)
-
-      DS:
-        TNT1 A 0 A_Lower
-        PIS1 A 1 A_Lower
-        Goto DS
-
-      Ready2:
-        PIS1 A 1 A_GunFlash
-        TNT1 A 0 A_GiveInventory("SynthFireActive",1)
-        // Left Magnum
-      LIdle:
+      // Dual
+      ReadyDual:
+        TNT1 A 0 A_GiveInventory("SynthFireActive")
+        PIS1 A 1 A_GunFlash("Flash",GFF_NOEXTCHANGE)
+      // Left Magnum
+      LReady:
         TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        PIS1 A 1 A_WeaponReady(12)
-        TNT1 A 0 A_JumpIfInventory("MagnumBullet",1,1)
-        Goto LReload
+        PIS1 A 1 A_WeaponReady(WRF_NOFIRE)
+      LReadyAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"LReadyAmmoCheckReloadable")
+      LReadyFireCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReverseDualWieldFiring",1,"LReadyFireCheckSwap")
+        TNT1 A 0 A_JumpIfInventory("SynthFireRight",1,"LFire")
+        goto LReady
+
+      LReadyAmmoCheckReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"LReadyFireCheck")
+        TNT1 A 0 A_JumpIfInventory("MagnumBullet",1,"LReadyFireCheck")
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto LReload
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"LReload")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"LReload")
+        goto LReadyFireCheck
+
+      LReadyFireCheckSwap:
         TNT1 A 0 A_JumpIfInventory("SynthFireLeft",1,"LFire")
-        Loop
+        goto LReady
 
       LInvisible:
-        TNT1 A 33
-        TNT1 A 0 A_TakeInventory("RightReload",1)
-        Goto LIdle
+        TNT1 AAA 11
+        TNT1 A 0 A_TakeInventory("RightReload")
+        goto LReady
+
+      DeselectDual:
+        TNT1 A 0 A_TakeInventory("SamsaraLevelSwitch_DualWielding")
+        TNT1 A 0 A_TakeInventory("SynthFireActive")
+      DeselectDual2:
+        TNT1 A 0 A_TakeInventory("LeftReload")
+        TNT1 A 0 A_TakeInventory("RightReload")
+        TNT1 A 0 A_Lower
+        PIS1 A 1 A_Lower
+        loop
+
+      SelectDual:
+        TNT1 A 0 A_GiveInventory("UsingDualPistols")
+        TNT1 A 0 A_GiveInventory("SamsaraLevelSwitch_DualRaising")
+        TNT1 A 0 A_GiveInventory("SynthFireActive")
+        TNT1 A 0 A_GunFlash("Flash",GFF_NOEXTCHANGE)
+        TNT1 A 0 A_Raise
+        PIS1 A 1 A_Raise
+        goto Select
+
+      LFireSwapCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReverseDualWieldFiring",1,"RFire")
+      LFire:
+        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",0,"LFireModernReloadable")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"LFireClassicReloadable")
+      LFireNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto LFireActual
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"LFireActual")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"LFireActual")
+        goto LReady
+
+      LFireClassicReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"LFireActual")
+        TNT1 A 0 A_JumpIfInventory("MagnumBullet",1,"LFireActual")
+      LFireClassicReloadableDryCheck:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto LReload
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"LReload")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"LReload")
+        goto LReady
+
+      LFireModernReloadable:
+        TNT1 A 0 A_JumpIfInventory("SynthFireReload",1,1)
+        goto LFireClassicReloadable
+        TNT1 A 0 A_JumpIfInventory("MagnumBullet",0,"LFireClassicReloadable")
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"LFireModernReloadableReserve")
+        goto LReload
+
+      LFireModernReloadableReserve:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"LReload")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"LReload")
+        goto LFireClassicReloadable
+
+      LFireActual:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraForcePlayerAttackState")
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_FireCustomMissile("44mmCasingSpawner",0,false,8)
+        TNT1 A 0 A_GiveInventory("SamsaraMarathonMagnumLeftAttackHandler")
+      LFireFinish:
+        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
+        PIS1 A 3 A_Light2
+        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
+        PIS1 B 3 Bright A_Light1
+        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
+        PIS1 C 3 Bright A_Light0
+        PIS1 D 3 A_JumpIfInventory("RightReload",1,"LInvisible")
+        PIS1 E 4 A_JumpIfInventory("RightReload",1,"LInvisible")
+        goto LReadyFireCheck
 
       LReload:
         TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"LReloadCheck")
-        //goto LIdle
-      LReload2:
-        TNT1 A 0
         TNT1 A 0 A_Light0
-        TNT1 A 0 A_GiveInventory("LeftReload",1)
-        PIS1 F 11 A_PlayWeaponSound("marathon/pistol/reload")
-        PIS1 G 11
-        PIS1 H 11
-        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"LReloadAmmo")
-        TNT1 A 0 A_GiveInventory("MagnumBullet",8)
-        Goto LIdle
-        
+        PIS1 F 11 A_GiveInventory("LeftReload")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"LReloadAmmo")
+      LReloadFinish:
+        TNT1 A 0 A_PlaySound("marathon/pistol/reload")
+        PIS1 GH 11
+        goto LReady
+
       LReloadAmmo:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"LReloadAmmoReserve")
+        TNT1 A 0 A_JumpIfInventory("MagnumBullet",0,"LReloadFinish")
+        TNT1 A 0 A_GiveInventory("MagnumBullet")
+        loop
+
+      LReloadAmmoReserve:
+        TNT1 A 0 A_JumpIfInventory("MagnumBullet",0,"LReloadFinish")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-        goto LIdle
-      LReloadAmmo2:
+        goto LReloadFinish
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_TakeInventory("Clip",1)
-        TNT1 A 0 A_GiveInventory("MagnumBullet",1)
-        TNT1 A 0 A_JumpIfInventory("MagnumBullet",0,"LIdle")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"LReloadAmmo2")
-        goto LIdle
-        
-      LReloadCheck:
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"LReload2")
-        goto LIdle
+        TNT1 A 0 A_GiveInventory("MagnumBullet")
+        goto LReloadAmmo
 
-      LFire:
-        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        TNT1 A 0 A_JumpIfInventory("MagnumBullet",1,1)
-        Goto LReload//LIdle
-		TNT1 A 0 A_FireBullets(0,0, 1, 0, "SamsaraBlankPuff", FBF_NORANDOM)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"LFireCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"LFireCoop")
-        TNT1 A 0 A_AlertMonsters//,0,0,0,0)
-        TNT1 A 0 A_TakeInventory("MagnumBullet",1, TIF_NOTAKEINFINITE)
-        TNT1 A 0 A_FireCustomMissile("MarathonMagnumBullet",random(-1,1),0,0,0,0,random(-1,1))//A_FireBullets(1,1,-1,20+random(0,8),"MarathonPuff")
-        TNT1 A 0 A_PlayWeaponSound("marathon/pistol/fire")
-        TNT1 A 0 A_FireCustomMissile("44mmCasingSpawner",0,0,8,0)
-        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        PIS1 A 3 A_Light2
-        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        PIS1 B 3 Bright A_Light1 
-        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        PIS1 C 3 Bright A_Light0
-        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        PIS1 D 3 
-        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        PIS1 E 4 
-        TNT1 A 0 A_JumpIfInventory("SynthFireLeft",1,"LFire")
-        Goto LIdle
-
-      LFireCoop:
-        TNT1 A 0 A_AlertMonsters//,0,0,0,0)
-        TNT1 A 0 A_TakeInventory("MagnumBullet",1, TIF_NOTAKEINFINITE)
-        TNT1 A 0 A_FireCustomMissile("MarathonMagnumBulletCoop",random(-1,1),0,0,0,0,random(-1,1))//A_FireBullets(1,1,-1,20+random(0,8),"MarathonPuff")
-        TNT1 A 0 A_PlayWeaponSound("marathon/pistol/fire")
-        TNT1 A 0 A_FireCustomMissile("44mmCasingSpawner",0,0,8,0)
-        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        PIS1 A 3 A_Light2
-        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        PIS1 B 3 Bright A_Light1 
-        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        PIS1 C 3 Bright A_Light0
-        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        PIS1 D 3 
-        TNT1 A 0 A_JumpIfInventory("RightReload",1,"LInvisible")
-        PIS1 E 4 
-        TNT1 A 0 A_JumpIfInventory("SynthFireLeft",1,"LFire")
-        Goto LIdle
-        // Right Magnum
+      // Right Magnum
       Flash:
-        PIS2 A 8
-
-      RIdle:
-        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
         PIS2 A 1
-        TNT1 A 0 A_JumpIfInventory("MagnumBulletRight",1,1)
-        Goto RReload
+      RReady:
+        PIS2 A 1 A_JumpIfInventory("LeftReload",1,"RInvisible")
+        TNT1 A 0 A_JumpIfInventory("SamsaraLevelSwitch_DualRaising",1,"RReady")
+      RReadyAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"RReadyAmmoCheckReloadable")
+      RReadyFireCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReverseDualWieldFiring",1,"RReadyFireCheckSwap")
+        TNT1 A 0 A_JumpIfInventory("SynthFireLeft",1,"RFire")
+        goto RReady
+
+      RReadyAmmoCheckReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"RReadyFireCheck")
+        TNT1 A 0 A_JumpIfInventory("MagnumBulletRight",1,"RReadyFireCheck")
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto RReload
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"RReload")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"RReload")
+        goto RReadyFireCheck
+
+      RReadyFireCheckSwap:
         TNT1 A 0 A_JumpIfInventory("SynthFireRight",1,"RFire")
-        Loop
+        goto RReady
 
       RInvisible:
-        TNT1 A 33
-        TNT1 A 0 A_TakeInventory("LeftReload",1)
-        Goto RIdle
+        TNT1 AAA 11
+        TNT1 A 0 A_TakeInventory("LeftReload")
+        goto RReady
+
+      RFireSwapCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReverseDualWieldFiring",1,"LFire")
+      RFire:
+        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",0,"RFireModernReloadable")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"RFireClassicReloadable")
+      RFireNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto RFireActual
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"RFireActual")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"RFireActual")
+        goto RReady
+
+      RFireClassicReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"RFireActual")
+        TNT1 A 0 A_JumpIfInventory("MagnumBulletRight",1,"RFireActual")
+      RFireClassicReloadableDryCheck:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto RReload
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"RReload")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"RReload")
+        goto RReady
+
+      RFireModernReloadable:
+        TNT1 A 0 A_JumpIfInventory("SynthFireReload",1,1)
+        goto RFireClassicReloadable
+        TNT1 A 0 A_JumpIfInventory("MagnumBulletRight",0,"RFireClassicReloadable")
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"RFireModernReloadableReserve")
+        goto RReload
+
+      RFireModernReloadableReserve:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"RReload")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"RReload")
+        goto RFireClassicReloadable
+
+      RFireActual:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraForcePlayerAttackState")
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_FireCustomMissile("44mmCasingSpawner2",0,false,-8)
+        TNT1 A 0 A_GiveInventory("SamsaraMarathonMagnumRightAttackHandler")
+      RFireFinish:
+        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
+        PIS2 A 3 A_Light2
+        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
+        PIS2 B 3 Bright A_Light1
+        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
+        PIS2 C 3 Bright A_Light0
+        PIS2 D 3 A_JumpIfInventory("LeftReload",1,"RInvisible")
+        PIS2 E 4 A_JumpIfInventory("LeftReload",1,"RInvisible")
+        goto RReadyFireCheck
 
       RReload:
         TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
-        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"RReloadCheck")
-        //goto RIdle
-      RReload2:
         TNT1 A 0 A_Light0
-        TNT1 A 0 A_GiveInventory("RightReload",1)
-        PIS2 F 11 A_PlayWeaponSound("marathon/pistol/reload")
-        PIS2 G 11
-        PIS2 H 11
-        TNT1 A 0 //A_TakeInventory("MagnumBulletRight",8)
-        TNT1 A 0 //A_TakeInventory("MagnumClip",1)
-        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"RReloadAmmo")
-        TNT1 A 0 A_GiveInventory("MagnumBulletRight",8)
-        Goto RIdle
-        
+        PIS2 F 11 A_GiveInventory("RightReload")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"RReloadAmmo")
+      RReloadFinish:
+        TNT1 A 0 A_PlaySound("marathon/pistol/reload")
+        PIS2 GH 11
+        goto RReady
+
       RReloadAmmo:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"RReloadAmmoReserve")
+        TNT1 A 0 A_JumpIfInventory("MagnumBulletRight",0,"RReloadFinish")
+        TNT1 A 0 A_GiveInventory("MagnumBulletRight")
+        loop
+
+      RReloadAmmoReserve:
+        TNT1 A 0 A_JumpIfInventory("MagnumBulletRight",0,"RReloadFinish")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-        goto RIdle
-      RReloadAmmo2:
+        goto RReloadFinish
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_TakeInventory("Clip",1)
-        TNT1 A 0 A_GiveInventory("MagnumBulletRight",1)
-        TNT1 A 0 A_JumpIfInventory("MagnumBulletRight",0,"RIdle")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"RReloadAmmo2")
-        goto RIdle
-        
-      RReloadCheck:
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"RReload2")
-        goto RIdle
+        TNT1 A 0 A_GiveInventory("MagnumBulletRight")
+        goto RReloadAmmo
+    }
+}
 
-      RFire:
-        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
-        TNT1 A 0 A_JumpIfInventory("MagnumBulletRight",1,1)
-        Goto RReload//RIdle
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"RFireCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"RFireCoop")
-        TNT1 A 0 A_AlertMonsters//,0,0,0,0)
-        TNT1 A 0 A_TakeInventory("MagnumBulletRight",1, TIF_NOTAKEINFINITE)
-        TNT1 A 0 A_FireCustomMissile("MarathonMagnumBullet",random(-1,1),0,0,0,0,random(-1,1))//A_FireBullets(1,1,-1,20+random(0,8),"MarathonPuff")
-        TNT1 A 0 A_PlayWeaponSound("marathon/pistol/fire")
-        TNT1 A 0 A_FireCustomMissile("44mmCasingSpawner2",0,0,-8,0)
-        PIS2 A 3 A_Light2
-        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
-        PIS2 B 3 Bright A_Light1 
-        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
-        PIS2 C 3 Bright A_Light0
-        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
-        PIS2 D 3 
-        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
-        PIS2 E 4 
-        TNT1 A 0 A_JumpIfInventory("SynthFireRight",1,"RFire")
-        Goto RIdle
+actor SamsaraMarathonMagnumLeftAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+      PickupCheckAmmoNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto PickupAttack
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmoNonReloadable")
+        stop
 
-      RFireCoop:
-        TNT1 A 0 A_AlertMonsters//,0,0,0,0)
-        TNT1 A 0 A_TakeInventory("MagnumBulletRight",1, TIF_NOTAKEINFINITE)
-        TNT1 A 0 A_FireCustomMissile("MarathonMagnumBulletCoop",random(-1,1),0,0,0,0,random(-1,1))//A_FireBullets(1,1,-1,20+random(0,8),"MarathonPuff")
-        TNT1 A 0 A_PlayWeaponSound("marathon/pistol/fire")
-        TNT1 A 0 A_FireCustomMissile("44mmCasingSpawner2",0,0,-8,0)
-        PIS2 A 3 A_Light2
-        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
-        PIS2 B 3 Bright A_Light1 
-        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
-        PIS2 C 3 Bright A_Light0
-        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
-        PIS2 D 3 
-        TNT1 A 0 A_JumpIfInventory("LeftReload",1,"RInvisible")
-        PIS2 E 4 
-        TNT1 A 0 A_JumpIfInventory("SynthFireRight",1,"RFire")
-        Goto RIdle
+      PickupCheckAmmoReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("MagnumBullet",1,"PickupTakeAmmoReloadable")
+        stop
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("marathon/pistol/fire",CHAN_WEAPON)
+        TNT1 A 0 A_FireBullets(0,0,1,0,"SamsaraBlankPuff",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("MarathonMagnumBullet",random(-1,1),false,0,0,0,random(-1,1))
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("MarathonMagnumBulletCoop",random(-1,1),false,0,0,0,random(-1,1))
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmoNonReloadable:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("MagnumBullet",1)
+        goto PickupAttack
+    }
+}
+
+actor SamsaraMarathonMagnumRightAttackHandler : SamsaraMarathonMagnumLeftAttackHandler
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+        goto PickupCheckAmmoNonReloadable
+
+      PickupCheckAmmoReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("MagnumBulletRight",1,"PickupTakeAmmoReloadable")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("MagnumBulletRight",1)
+        goto PickupAttack
     }
 }
 
@@ -433,4 +584,3 @@ actor MarathonMagnumBulletCoop : MarathonMagnumBullet
     Speed 80
     Species "Player"
 }
-

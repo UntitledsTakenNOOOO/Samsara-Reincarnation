@@ -8,35 +8,52 @@
 
 // A handy method of detecting what Source Port you're using and using appropriate
 // scripts for it. Thanks to TheZombieKiller!
+// [tv50] GetTimeProperty is a new function in Zandronum that is treated as a dummy
+// [tv50] in ZDoom, returning 0 there (as opposed to 1970 in Zandronum with the
+// [tv50] parameters chosen). Compared to previous methods, no side effects have
+// [tv50] come from this, so this should be used for checking the current source port.
+
 script "IsThisZandro" OPEN
 {
-    /*int s = unusedTID(37000, 47000);
-
-    if (SpawnForced("Doomsphere",0,0,0,s,0))
-	{
-	*/
-	if (GetPlayerAccountName(0) == 0)
+	if (GetTimeProperty(0, 5, true) == 0) // TM_YEAR = 5
 	{
         //Log(s:"Zandronum check unsuccessful, assuming ZDoom.");
-        SetCVar("sams_runninginzandro",0);
-        SetCVar("sams_runninginzdoom",1);
+        SetCVar("samsara_runninginzandro",0);
+        SetCVar("samsara_runninginzdoom",1);
     } else {
-        //Thing_Remove(s);
         //Log(s:"Zandronum check successful.");
-        SetCVar("sams_runninginzandro",1);
-        SetCVar("sams_runninginzdoom",0);
+        SetCVar("samsara_runninginzandro",1);
+        SetCVar("samsara_runninginzdoom",0);
     }
+}
+
+Script "CanUZScript" OPEN
+{
+	if(SpawnForced("SamsaraCanUZScript",0,0,0,0,0))
+		SetCVAR("samsara_zscriptready",1);
+	else
+		SetCVAR("samsara_zscriptready",0);
+}
+
+Script "ReMixerLoaded" OPEN
+{
+	if(SpawnForced("SamsaraMixerLoadedToken",0,0,0,0,0))
+		SetCVAR("samsara_mixerloaded",1);
+	else
+		SetCVAR("samsara_mixerloaded",0);
 }
 
 // If running in ZDoom, mirror Zandro options to the ZDoom cvars so I don't have
 // to define them twice in the menu.
 script "ZDoomOptionMirror" ENTER
 {
-	If (GetCVar("sams_runninginzdoom") == 1)
+	If (GetCVar("samsara_runninginzdoom") == 1)
 	{
-		SetCVar("sams_zd_pickupmode",GetCVar("sams_cl_pickupmode"));
-		SetCVar("sams_zd_bloodyhell",GetCVar("sams_cl_bloodyhell"));
-		SetCVar("sams_zd_bloodypersistent",GetCVar("sams_cl_bloodypersistent"));
+		SetCVar("samsara_zd_expparticles",GetCVar("samsara_cl_expparticles"));
+		SetCVar("samsara_zd_pickupmode",GetCVar("samsara_cl_pickupmode"));
+		SetCVar("samsara_zd_noadditivepickups",GetCVar("samsara_cl_noadditivepickups"));
+		SetCVar("samsara_zd_bloodyhell",GetCVar("samsara_cl_bloodyhell"));
+		SetCVar("samsara_zd_bloodypersistent",GetCVar("samsara_cl_bloodypersistent"));
 		delay(1);
 		restart;
 	}
@@ -57,8 +74,14 @@ script "SecretNotifier" ENTER
 	{
 		if (CheckInventory("DoomguyClass"))
 		{
-			LocalAmbientSound("secretfound/doom", 127);
-			Log(l:"SECRETFOUND_DOOM");
+            if (CheckInventory("Doom64Mode"))
+            {
+                LocalAmbientSound("doom64guy/secret", 127);
+                Log(l:"SECRETFOUND_DOOM64");
+            } else {
+                LocalAmbientSound("secretfound/doom", 127);
+                Log(l:"SECRETFOUND_DOOM");
+            }
 		} else if (CheckInventory("WolfenClass"))
 		{
 			if(CheckInventory("WolfenClassMode") == 2)
@@ -210,6 +233,10 @@ script "SecretNotifier" ENTER
 		{
 			LocalAmbientSound("Kyle/Secret", 127);
 			Log(l:"SECRETFOUND_DEFAULT");
+		} else if (CheckInventory("BittermanClass"))
+		{
+			LocalAmbientSound("Q2Misc/Secret", 127);
+			Print(l:"SECRETFOUND_QUAKE2");
 		} else if (CheckInventory("Hexen2Class"))
 		{
 			LocalAmbientSound("Hexen2/Secret", 127);
@@ -217,7 +244,7 @@ script "SecretNotifier" ENTER
 		} else if (CheckInventory("CatacombClass"))
 		{
 			LocalAmbientSound("Catacomb/Secret", 127);
-			Log(l:"SECRETFOUND_WOLF");		
+			Log(l:"SECRETFOUND_WOLF");				
 		} else if (CheckInventory("PainkillerClass"))
 		{
 			LocalAmbientSound("Painkiller/Sekret", 127);
@@ -240,14 +267,14 @@ script "SecretNotifier" ENTER
 }
 
 // class-specific item pickup messages
-script "SoulSpherePickupMessage" (void)
+script "SoulSpherePickupMessage" (void) clientside
 {
 	// here's the nice way to do things, which zandro clearly won't let us do.
 	/*
-	int msgColors[22] = 
+	int msgColors[26] = 
 	{
-		"\ca", "\cb", "\cc", "\cd", "\ce", "\cf", "\cg", "\ch", "\ci", "\cj", "\ck",
-		"\cl", "\cm", "\cn", "\co", "\cp", "\cq", "\cr", "\cs", "\ct", "\cu", "\cv"
+		"\ca", "\cb", "\cc", "\cd", "\ce", "\cf", "\cg", "\ch", "\ci", "\cj", "\ck", "\cl", "\cm",
+		"\cn", "\co", "\cp", "\cq", "\cr", "\cs", "\ct", "\cu", "\cv", "\cw", "\cx", "\cy", "\cz"
 	};
 
 	int color = GetCvar("msg0color");
@@ -281,6 +308,10 @@ script "SoulSpherePickupMessage" (void)
 	else if (GetCvar("msg0color") == 19) { msgcolor = "\ct"; }
 	else if (GetCvar("msg0color") == 20) { msgcolor = "\cu"; }
 	else if (GetCvar("msg0color") == 21) { msgcolor = "\cv"; }
+	else if (GetCvar("msg0color") == 22) { msgcolor = "\cw"; }
+	else if (GetCvar("msg0color") == 23) { msgcolor = "\cx"; }
+	else if (GetCvar("msg0color") == 24) { msgcolor = "\cy"; }
+	else if (GetCvar("msg0color") == 25) { msgcolor = "\cz"; }
 	
 	if (CheckInventory("DukeClass") == 1) { Log(s:msgcolor, l:"SAMSARA_HEALPACK3_DUKE"); }
 	else if (CheckInventory("CorvusClass") == 1) { Log(s:msgcolor, l:"SAMSARA_HEALPACK3_RAVEN"); }
@@ -288,13 +319,13 @@ script "SoulSpherePickupMessage" (void)
 	else { Log(s:msgcolor, l:"SAMSARA_HEALPACK3"); }
 }
 
-script "HealPack2PickupMessage" (void)
+script "HealPack2PickupMessage" (void) clientside
 {
 	/*
-	int msgColors[22] = 
+	int msgColors[26] = 
 	{
-		"\ca", "\cb", "\cc", "\cd", "\ce", "\cf", "\cg", "\ch", "\ci", "\cj", "\ck",
-		"\cl", "\cm", "\cn", "\co", "\cp", "\cq", "\cr", "\cs", "\ct", "\cu", "\cv"
+		"\ca", "\cb", "\cc", "\cd", "\ce", "\cf", "\cg", "\ch", "\ci", "\cj", "\ck", "\cl", "\cm",
+		"\cn", "\co", "\cp", "\cq", "\cr", "\cs", "\ct", "\cu", "\cv", "\cw", "\cx", "\cy", "\cz"
 	};
 
 	int color = GetCvar("msg0color");
@@ -325,19 +356,23 @@ script "HealPack2PickupMessage" (void)
 	else if (GetCvar("msg0color") == 19) { msgcolor = "\ct"; }
 	else if (GetCvar("msg0color") == 20) { msgcolor = "\cu"; }
 	else if (GetCvar("msg0color") == 21) { msgcolor = "\cv"; }
+	else if (GetCvar("msg0color") == 22) { msgcolor = "\cw"; }
+	else if (GetCvar("msg0color") == 23) { msgcolor = "\cx"; }
+	else if (GetCvar("msg0color") == 24) { msgcolor = "\cy"; }
+	else if (GetCvar("msg0color") == 25) { msgcolor = "\cz"; }
 	
 	if (CheckInventory("CorvusClass") == 1) { Log(s:msgcolor, l:"SAMSARA_HEALPACK2_RAVEN"); }
 	else if (CheckInventory("HexenClass") == 1) { Log(s:msgcolor, l:"SAMSARA_HEALPACK2_RAVEN"); }
 	else { Log(s:msgcolor, l:"SAMSARA_HEALPACK2"); }
 }
 
-script "MegaSpherePickupMessage" (void)
+script "MegaSpherePickupMessage" (void) clientside
 {
 	/*
-	int msgColors[22] = 
+	int msgColors[26] = 
 	{
-		"\ca", "\cb", "\cc", "\cd", "\ce", "\cf", "\cg", "\ch", "\ci", "\cj", "\ck",
-		"\cl", "\cm", "\cn", "\co", "\cp", "\cq", "\cr", "\cs", "\ct", "\cu", "\cv"
+		"\ca", "\cb", "\cc", "\cd", "\ce", "\cf", "\cg", "\ch", "\ci", "\cj", "\ck", "\cl", "\cm",
+		"\cn", "\co", "\cp", "\cq", "\cr", "\cs", "\ct", "\cu", "\cv", "\cw", "\cx", "\cy", "\cz"
 	};
 
 	int color = GetCvar("msg0color");
@@ -369,13 +404,17 @@ script "MegaSpherePickupMessage" (void)
 	else if (GetCvar("msg0color") == 19) { msgcolor = "\ct"; }
 	else if (GetCvar("msg0color") == 20) { msgcolor = "\cu"; }
 	else if (GetCvar("msg0color") == 21) { msgcolor = "\cv"; }
+	else if (GetCvar("msg0color") == 22) { msgcolor = "\cw"; }
+	else if (GetCvar("msg0color") == 23) { msgcolor = "\cx"; }
+	else if (GetCvar("msg0color") == 24) { msgcolor = "\cy"; }
+	else if (GetCvar("msg0color") == 25) { msgcolor = "\cz"; }
 	
 	if (CheckInventory("CorvusClass") == 1) { Log(s:msgcolor, l:"SAMSARA_MEGAPACK_CORVUS"); }
 	else if (CheckInventory("MarathonClass") == 1) { Log(s:msgcolor, l:"SAMSARA_MEGAPACK_MARATHON"); }
 	else { Log(s:msgcolor, l:"SAMSARA_MEGAPACK"); }
 }
 
-script "InvisPickupMessage" (void)
+script "InvisPickupMessage" (void) clientside
 {
 	int colortemp = GetCvar("msg0color");
 	str msgcolor = "";
@@ -402,6 +441,10 @@ script "InvisPickupMessage" (void)
 	else if (GetCvar("msg0color") == 19) { msgcolor = "\ct"; }
 	else if (GetCvar("msg0color") == 20) { msgcolor = "\cu"; }
 	else if (GetCvar("msg0color") == 21) { msgcolor = "\cv"; }
+	else if (GetCvar("msg0color") == 22) { msgcolor = "\cw"; }
+	else if (GetCvar("msg0color") == 23) { msgcolor = "\cx"; }
+	else if (GetCvar("msg0color") == 24) { msgcolor = "\cy"; }
+	else if (GetCvar("msg0color") == 25) { msgcolor = "\cz"; }
 	
 	if (CheckInventory("DukeClass") == 1) { Log(s:msgcolor, l:"SAMSARA_POWERUP_HOLODUKE"); }
 	else { Log(s:msgcolor, l:"SAMSARA_POWERUP_INVIS"); }
@@ -429,7 +472,7 @@ script "BrutalChecker" ENTER
 
 // Pistol Start Stuff!
 
-str pistolwit[10] =
+str pistolwit[21] =
 {
 	"PISTOLSTART_WIT1",
 	"PISTOLSTART_WIT2",
@@ -440,16 +483,40 @@ str pistolwit[10] =
 	"PISTOLSTART_WIT7",
 	"PISTOLSTART_WIT8",
 	"PISTOLSTART_WIT9",
-	"PISTOLSTART_WIT10"
+	"PISTOLSTART_WIT10",
+	"PISTOLSTART_WIT11",
+	"PISTOLSTART_WIT12",
+	"PISTOLSTART_WIT13",
+	"PISTOLSTART_WIT14",
+	"PISTOLSTART_WIT15",
+	"PISTOLSTART_WIT16",
+	"PISTOLSTART_WIT17",
+	"PISTOLSTART_WIT18",
+	"PISTOLSTART_WIT19",
+	"PISTOLSTART_WIT20",
+	"PISTOLSTART_WIT21"
 };
 
 script "PistolStart" ENTER
 {
-	if(GetCvar("sams_pistolstart") == 1)
+	if(GetCvar("samsara_pistolstart") == 1 && (GameType () != GAME_TITLE_MAP))
 	{
 		GiveInventory("PistolStartEnabled", 1);
 		
 		SetActorProperty (0, APROP_Health, 100);
+		
+		// Some classes such as Grondoval and Demoness require special
+		// treatment for starting with the correct amount of health.
+		int pln = PlayerNumber();
+		switch(PlayerClass(pln))
+		{
+			case 18:
+				SetActorProperty (0, APROP_Health, 250);
+				break;
+			case 25:
+				SetActorProperty (0, APROP_Health, 70);
+				break;
+		}
 		
 		TakeInventory("GotWeapon0", 999);
 		TakeInventory("GotWeapon2", 999);
@@ -465,7 +532,7 @@ script "PistolStart" ENTER
 		}
 		
 		LocalAmbientSound("misc/pistolstart", 127);
-		Log(l:"PISTOLSTART_HEADER", s:" ", l:pistolwit[random(0,9)]);
+		Log(l:"PISTOLSTART_HEADER", s:" ", l:pistolwit[random(0,20)]);
 	}
 }
 

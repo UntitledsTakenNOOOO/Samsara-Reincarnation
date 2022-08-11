@@ -124,7 +124,7 @@ Script "Caleb_BurningManVoice" (int mode)
 	Thing_ChangeTID(0, master);
 	SetActivator(0, AAPTR_Master);
 	
-	if(GetCvar("sams_CrashDebugger") == true)
+	if(GetCvar("samsara_CrashDebugger") == true)
 	{
 		Log(s:"Debugger: Burning Enemy: ", s:GetActorClass(0));
 	}
@@ -144,7 +144,7 @@ Script "Caleb_BurningManVoice" (int mode)
 			if(deathsound != "")
 				SetActorProperty(0, APROP_DeathSound, deathsound);
 			
-			if(GetCvar("sams_CrashDebugger") == true)
+			if(GetCvar("samsara_CrashDebugger") == true)
 			{
 				Log(s:"Debugger: Pass");
 			}
@@ -161,7 +161,7 @@ Script "Caleb_BurningManVoice" (int mode)
 			if(deathsound != "")
 				SetActorProperty(0, APROP_DeathSound, deathsound);
 			
-			if(GetCvar("sams_CrashDebugger") == true)
+			if(GetCvar("samsara_CrashDebugger") == true)
 			{
 				Log(s:"Debugger: Pass");
 			}
@@ -194,7 +194,7 @@ Script "CalebAkimboCooldown" (void)
 	
 	while(1)
 	{
-		if(CheckInventory("BloodGunsAkimboCooldown") > 0 && !GetCvar("sams_permakimbo"))
+		if(CheckInventory("BloodGunsAkimboCooldown") > 0 && !GetCvar("samsara_permakimbo"))
 		{
 			GiveInventory("GunsAkimboP",1);
 			TakeInventory("BloodGunsAkimboCooldown",1);
@@ -202,4 +202,24 @@ Script "CalebAkimboCooldown" (void)
 		else if(CheckInventory("BloodGunsAkimboCooldown") == 0) { TakeInventory("GunsAkimboP",1); terminate; }
 		delay(35);
 	}
+}
+
+Script "CalebLifeLeechTurretMarkForDeath" (void)
+{
+	if(CheckInventory("LifeLeechMarkedForDeath"))
+		terminate;
+		
+	int oldTid = ActivatorTid();
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0,myTid);
+	SetActivator(0,AAPTR_Master);
+	if(!(ClassifyActor(0) & ACTOR_Alive))
+	{
+		SetActivator(myTid,AAPTR_Default);
+		GiveInventory("LifeLeechMarkedForDeath",1);
+		Delay(175);
+		SetActorState(0,"Death",1);
+		terminate;
+	}
+	Thing_ChangeTid(myTid,oldTid);
 }

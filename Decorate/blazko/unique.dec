@@ -1,21 +1,4 @@
-actor WolfExtraLife : Inventory//CustomInventory
-{
-    tag "Extra Life"
-    Inventory.Icon WOLFLIFE
-    Inventory.Amount 1
-    Inventory.MaxAmount 9
-	Inventory.InterHubAmount 9
-	Inventory.RestrictedTo "WolfenPlayer"
-    +INVBAR
-    +UNDROPPABLE
-	/*
-    States
-    {
-      Use:
-        TNT1 A 1 A_Print("You cannot use this here.")
-        fail
-    }*/
-}
+actor WolfExtraLife : Counter { Inventory.MaxAmount 9 }
 
 actor WolfLifeProtection : PowerProtection
 {
@@ -84,7 +67,7 @@ actor Salvate : ArtiTeleport
 
 actor Totenkopf_Flamethrower : InstantSwitchWeapon
 {
-    Tag "FlammenWerfer"
+    Tag "Flammenwerfer" // "Flamethrower" already exists and would be confusing with Classic/Lost's flamethrower
 	Weapon.SelectionOrder 400
     Weapon.SlotNumber 8
     Inventory.PickUpSound "Totenkopf/getweapon"
@@ -173,7 +156,7 @@ Actor Totenkopf_FlameThrowerFuel : Ammo
 
 actor Totenkopf_MG42 : InstantSwitchWeapon
 {
-	Tag "Portable MG42"
+	Tag "MG42 Portable Machine Gun"
     Weapon.SelectionOrder 750
     Weapon.SlotNumber 9
     Inventory.PickUpSound "Totenkopf/getweapon"
@@ -262,6 +245,7 @@ actor Totenkopf_Sniper : InstantSwitchWeapon
     Inventory.PickupMessage "Kar98k Sniper Rifle"
 	Inventory.RestrictedTo "WolfenPlayer"	
 	+WEAPON.NO_AUTO_SWITCH
+	+WEAPON.NOALERT
     States
     {
       Spawn:
@@ -279,6 +263,7 @@ actor Totenkopf_Sniper : InstantSwitchWeapon
         loop
 
       Fire:
+		TNT1 A 0 A_AlertMonsters
 		TNT1 B 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
         TNT1 B 3
 		TNT1 C 0 A_PlaySound("Totenkopf/atkkar98",CHAN_WEAPON)
@@ -305,6 +290,15 @@ actor Totenkopf_Sniper : InstantSwitchWeapon
 		TNT1 JK 5
 		TNT1 L 3
 		Goto Ready	  
+	  AltFire:
+		"####" "#" 0 A_JumpIfInventory("WolfenClassMode",2,1)
+		Goto Ready
+		"####" "#" 0 A_JumpIfInventory("Machine Gun",1,"SwitchWeaponMode")
+		Goto Ready
+	  SwitchWeaponMode:
+		"####" "#" 8
+		"####" "#" 0 A_SelectWeapon("Machine Gun")
+		Goto Deselect
     }
 } 
 
@@ -336,72 +330,3 @@ Actor Totenkopf_Tracer_SniperCoop : Totenkopf_Tracer_Sniper { Species "Player" +
 			fail
 	}
 }*/
-
-Actor WolfStrifeUnique1 : CustomInventory
-{
-	-COUNTITEM
-	+INVENTORY.ALWAYSPICKUP
-	Inventory.PickupMessage ""
-	Inventory.PickupSound ""
-	States
-	{
-		Spawn:
-			TNT1 A 0 
-			TNT1 A 1
-			Stop
-		Pickup:
-			TNT1 A 0 A_GiveInventory("Totenkopf_IHaveFlameThrower", 1)
-			TNT1 A 0 A_GiveInventory("Samsara_ModeWeaponChange", 1)
-			TNT1 A 0 A_GiveInventory("Totenkopf_FlameThrowerFuel", 40)
-			TNT1 A 0 A_GiveInventory("WolfExtraLife",1)
-			TNT1 A 0 A_GiveInventory("Wolfen_IHaveExtraLife",1)
-			TNT1 A 1 A_Railwait
-			Stop
-	}
-}
-
-Actor WolfStrifeUnique2 : CustomInventory
-{
-	-COUNTITEM
-	+INVENTORY.ALWAYSPICKUP
-	Inventory.PickupMessage ""
-	Inventory.PickupSound ""
-	States
-	{
-		Spawn:
-			TNT1 A 0 
-			TNT1 A 1
-			Stop
-		Pickup:
-			TNT1 A 0 A_GiveInventory("Totenkopf_IHaveMG42", 1)
-			TNT1 A 0 A_GiveInventory("Samsara_ModeWeaponChange", 1)
-			TNT1 A 0 A_GiveInventory("Cell", 80)
-			TNT1 A 0 A_GiveInventory("WolfExtraLife",1)
-			TNT1 A 0 A_GiveInventory("Wolfen_IHaveExtraLife",1)
-			TNT1 A 1 A_Railwait
-			Stop
-	}
-}
-
-Actor WolfStrifeUnique3 : CustomInventory
-{
-	-COUNTITEM
-	+INVENTORY.ALWAYSPICKUP
-	Inventory.PickupMessage ""
-	Inventory.PickupSound ""
-	States
-	{
-		Spawn:
-			TNT1 A 0 
-			TNT1 A 1
-			Stop
-		Pickup:
-			TNT1 A 0 A_GiveInventory("Shell",5)
-			TNT1 A 0 A_GiveInventory("Totenkopf_IHaveScope", 1)
-			TNT1 A 0 A_GiveInventory("Samsara_ModeWeaponChange", 1)
-			TNT1 A 0 A_GiveInventory("WolfExtraLife",1)
-			TNT1 A 0 A_GiveInventory("Wolfen_IHaveExtraLife",1)
-			TNT1 A 1 A_Railwait
-			Stop
-	}
-}
