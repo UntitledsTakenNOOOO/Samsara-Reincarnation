@@ -10,8 +10,8 @@ str Painkiller_Silver_CardGraphics[14][6] = {
 	{ "PKSCRD03", "PKBCRD03", "Dark Soul", "Morph into demon form at every 50 souls", "Painkiller_DarkSoul", "Painkiller_DarkSoul_Power" },
 	{ "PKSCRD04", "PKBCRD04", "Blessing", "Increase the base health to 150", "Painkiller_Blessing", "Painkiller_Blessing_Power" },
 	{ "PKSCRD05", "PKBCRD05", "Replenish", "Double the ammo in ammo boxes", "Painkiller_Replenish", "Painkiller_Replenish_Power" },
-	{ "PKSCRD06", "PKBCRD06", "Forgiveness", "You can use Golden Cards six times per level", "Painkiller_Forgiveness", "Painkiller_Forgiveness_Power" },
-	{ "PKSCRD07", "PKBCRD07", "Mercy", "You can use Golden Cards nine times per level", "Painkiller_Mercy", "Painkiller_Mercy_Power" },
+	{ "PKSCRD06", "PKBCRD06", "Forgiveness", "You can use Golden Cards five times per level", "Painkiller_Forgiveness", "Painkiller_Forgiveness_Power" },
+	{ "PKSCRD07", "PKBCRD07", "Mercy", "You can use Golden Cards seven times per level", "Painkiller_Mercy", "Painkiller_Mercy_Power" },
 	{ "PKSCRD08", "PKBCRD08", "Last Breath", "Health regeneration when you're dying", "Painkiller_LastBreath", "Painkiller_LastBreath_Power" },
 	{ "PKSCRD09", "PKBCRD09", "Health Stealer", "2.5% of the damage to the enemy goes to player's health", "Painkiller_HealthStealer", "Painkiller_HealthStealer_Power" },
 	{ "PKSCRD10", "PKBCRD10", "Health Regeneration", "Health starts regeneratating 10 seconds after the last damage", "Painkiller_HealthRegeneration", "Painkiller_HealthRegeneration_Power" },
@@ -1540,17 +1540,18 @@ Script "Painkiller_BlackTarotUI" (void)
 
 Script "Painkiller_GoldTarot_Activate" (void) net
 {
-	int gameMode = !(isCoop() || isInvasion() || isSinglePlayer()) ? 1 : 3;
-	if(CheckInventory("Painkiller_GoldActive") || CheckInventory("Painkiller_GoldSlot1") == 0 && CheckInventory("Painkiller_GoldSlot2") == 0 && CheckInventory("Painkiller_GoldSlot3") == 0 || CheckWeapon("Painkiller_DemonMorph") || !CheckInventory("Painkiller_TarotMPUses"))
+	int gameMode = !(isCoop() || isInvasion() || isSinglePlayer()) ? 0 : 1;
+	
+	if(CheckInventory("Painkiller_GoldActive") || CheckInventory("Painkiller_GoldSlot1") == 0 && CheckInventory("Painkiller_GoldSlot2") == 0 && CheckInventory("Painkiller_GoldSlot3") == 0 || CheckWeapon("Painkiller_DemonMorph") || (!CheckInventory("Painkiller_TarotMPUses") && gameMode == 0))
 		terminate;
-				
+						
 	if(CheckInventory("Painkiller_TarotUsage") >= gameMode)
 	{
-		if(!(CheckInventory("Painkiller_TarotUsage") < 3*gameMode && CheckInventory("Painkiller_Mercy_Power")) && !(CheckInventory("Painkiller_TarotUsage") < 2*gameMode && CheckInventory("Painkiller_Forgiveness_Power")))
+		if(!(CheckInventory("Painkiller_TarotUsage") < 3+(4*gameMode) && CheckInventory("Painkiller_Mercy_Power")) && !(CheckInventory("Painkiller_TarotUsage") < 2+(gameMode*3) && CheckInventory("Painkiller_Forgiveness_Power")))
 			terminate;
 	}
 	
-	if(gameMode == 1)
+	if(gameMode == 0)
 	{
 		TakeInventory("Painkiller_TarotMPUses",1);
 		TakeInventory("Painkiller_Tarot_GoldGiver",65536);
