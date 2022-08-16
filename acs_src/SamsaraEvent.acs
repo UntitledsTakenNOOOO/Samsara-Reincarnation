@@ -1540,7 +1540,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         SetActorProperty(0, APROP_JumpZ, max(i,0));
 
 		// This code was written by Kyle873 and adapted from Demonsteele to Samsara
-		if (GetCvar("samsara_speedmod") < 10001 && GetCvar("samsara_speedmod") > -2) // I forget what the maximum integer is. 36525? Well, whatever, anything beyond that and it'll crash.
+		if (GetCvar("samsara_speedmod") < 10001 && GetCvar("samsara_speedmod") != 100 && GetCvar("samsara_speedmod") > -2) // I forget what the maximum integer is. 36525? Well, whatever, anything beyond that and it'll crash.
 		{
 			// We need to check for alt classes that change character speed using SetActorProperty
 			if (GetUserCvar(pln,"samsara_cl_hexclass") == 1)	// Daedalon
@@ -1577,6 +1577,37 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			{
 				speedmod = max(0, condFalse(GetCVar("samsara_speedmod"), 100)) * 0.01; // Get the percentage equivalent of the value...
 				SetActorProperty(0, APROP_Speed, speedmod); // And adjust the player's speed accordingly.
+			}
+		}
+		else
+		{
+			if (GetUserCvar(pln,"samsara_cl_hexclass") == 1)	// Daedalon
+			{
+				SetActorProperty(0, APROP_Speed, 0.9225);
+			}
+			else if (GetUserCvar(pln,"samsara_cl_hexclass") == 2)	// Baratus
+			{
+				SetActorProperty(0, APROP_Speed, 1.3375);
+			}
+			else if (GetUserCvar(pln,"samsara_cl_rottmode") == 0)	// Ian Paul Freeley
+			{
+				SetActorProperty(0, APROP_Speed, 0.9);
+			}
+			else if (GetUserCvar(pln,"samsara_cl_rottmode") == 2)	// Thi Barrett
+			{
+				SetActorProperty(0, APROP_Speed, 1.1);
+			}
+			else if (GetUserCvar(pln,"samsara_cl_rottmode") == 3)	// Lorelei Ni
+			{
+				SetActorProperty(0, APROP_Speed, 1.2);
+			}
+			else if (GetUserCvar(pln,"samsara_cl_rottmode") == 4)	// Doug Wendt
+			{
+				SetActorProperty(0, APROP_Speed, 0.8);
+			}
+			else
+			{
+				SetActorProperty(0, APROP_Speed, 1.0);
 			}
 		}
         
@@ -1707,6 +1738,8 @@ script "SamsaraWolfMove" (void) //673 -- SAMSARA_WOLFMOVE
     int moving;
     int fired;
     int startTime = Timer();
+	int speedmodx;
+	int speedmody;
 
     WolfenEnterTimes[pln] = startTime;
 
@@ -1775,8 +1808,8 @@ script "SamsaraWolfMove" (void) //673 -- SAMSARA_WOLFMOVE
             sidex = cos(angle-0.25) * (side / ((CheckInventory("IsMorphed") * 2) + 1));
             sidey = sin(angle-0.25) * (side / ((CheckInventory("IsMorphed") * 2) + 1));
             
-            velx = forwardx + sidex;
-            vely = forwardy + sidey;
+			velx = forwardx + sidex;
+			vely = forwardy + sidey;
 			
 			forward = 0;
 			side = 0;
@@ -1793,8 +1826,18 @@ script "SamsaraWolfMove" (void) //673 -- SAMSARA_WOLFMOVE
             TakeInventory("WolfMoving", 0x7FFFFFFF);
         }
 		
-        SetActorVelocity(0, velx, vely, GetActorVelZ(0), 0, 0);
-        Delay(1);
+        if (GetCvar("samsara_speedmod") < 10001 && GetCvar("samsara_speedmod") != 100 && GetCvar("samsara_speedmod") > -2)
+		{
+			speedmodx = max(0, condFalse(GetCVar("samsara_speedmod"), 100)) * (velx / 100);
+			speedmody = max(0, condFalse(GetCVar("samsara_speedmod"), 100)) * (vely / 100);
+			SetActorVelocity(0, speedmodx, speedmody, GetActorVelZ(0), 0, 0);
+        }
+		else
+		{
+			SetActorVelocity(0, velx, vely, GetActorVelZ(0), 0, 0);
+		}
+		
+		Delay(1);
     }
 
     if (GetActorProperty(0, APROP_Speed) == 0)
