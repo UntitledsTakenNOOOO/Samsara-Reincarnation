@@ -2059,8 +2059,39 @@ script "SamsaraDeath" death //619 -- SAMSARA_DEATH
 				GiveInventory("MarathonFusionShotItem",1);
 			break;
 	}
-    Delay(1);
-    TakeInventory("QuadDamagePower", 1);
+
+    if (CheckInventory("DoomguyClass"))
+    {
+        int deadtimer = 0;
+
+        while (isDead(0))
+        {
+            if (CheckInventory("Doom64Mode"))
+            {
+                if (deadtimer >= 1050)
+                {
+                    ACS_NamedExecuteWithResult("SamsaraDoom64DeathMessage", Random(1, 12));
+                    deadtimer = 0;
+                }
+
+                deadtimer++;
+            } else {
+                if (deadtimer > 0) { deadtimer = 0; }
+            }
+
+            if (isDead(0)) { Delay(1); }
+        }
+    }
+}
+
+script "SamsaraDoom64DeathMessage" (int randmsg) CLIENTSIDE
+{
+    int pln = PlayerNumber(); // ensure only the activator gets the messages
+    int cpln = ConsolePlayerNumber();
+
+    str deathmsg = StrParam(s:"DOOM64MOCKPLAYER", d:randmsg);
+
+    if (pln == cpln) { Log(l:deathmsg); }
 }
 
 script "HandleInstagibWeapons" (void)
