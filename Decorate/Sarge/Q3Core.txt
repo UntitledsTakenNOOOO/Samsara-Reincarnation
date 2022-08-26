@@ -1,0 +1,266 @@
+Actor Q3Boolean : Inventory
+{
+    Inventory.MaxAmount 1
+	Inventory.InterHubAmount 0
+    +UNDROPPABLE
+    -INVBAR
+}
+
+Actor Q3Counter : Inventory
+{
+    Inventory.MaxAmount 131072 //signed 16 bit
+	Inventory.InterHubAmount 0
+    +UNDROPPABLE
+    -INVBAR
+}
+
+Actor Q3Weapon : Weapon
+{
+	Inventory.PickupSound "Quake3/Weapons/Pickup"
+	Obituary "insert quake 3 weapon obituary here"
+	Weapon.BobStyle Inverse
+    Weapon.BobSpeed 2.2
+    Weapon.BobRangeX 0.8
+    Weapon.BobRangeY 0.5
+	States
+	{
+		Spawn:
+			PIST A -1
+			Stop
+		Select:
+		DeselectLoop:
+			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Raise
+			TNT1 A 1 A_Raise
+			Loop
+		Deselect:
+		DeselectLoop:
+			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
+			TNT1 A 1 A_Lower
+			Loop
+		Ready:
+			Q300 A 1 A_WeaponReady
+			Loop
+		Fire:
+			Q300 A 1
+			Goto Ready
+		Crap:
+			Q300 A 0 A_Stop		Q301 A 0 A_Stop		Q303 A 0 A_Stop		Q304 A 0 A_Stop
+			Q305 A 0 A_Stop		Q306 A 0 A_Stop		Q307 A 0 A_Stop		Q308 A 0 A_Stop
+			Stop
+	}
+}
+
+Actor Q3GauntletSelected : Q3Boolean {}
+Actor Q3MachinegunSelected : Q3Boolean {}
+Actor Q3ShotgunSelected : Q3Boolean {}
+Actor Q3GrenadeLauncherSelected : Q3Boolean {}
+Actor Q3RocketLauncherSelected : Q3Boolean {}
+Actor Q3LightningGunSelected : Q3Boolean {}
+Actor Q3RailgunSelected : Q3Boolean {}
+Actor Q3PlasmagunSelected : Q3Boolean {}
+Actor Q3BFG10KSelected : Q3Boolean {}
+Actor Q3ChaingunSelected : Q3Boolean {}
+Actor Q3NailgunSelected : Q3Boolean {}
+Actor Q3ProximityLauncherSelected : Q3Boolean {}
+
+Actor Q3NullRail 
+{ 
+	+NOINTERACTION
+	States
+	{
+		Spawn:
+			TNT1 A 1
+			Stop
+	}
+}
+
+Actor Q3BulletPuff
+{
+	+NOINTERACTION
+	+NOGRAVITY
+	+PUFFONACTORS
+	+BLOODLESSIMPACT
+	+PUFFGETSOWNER
+	Renderstyle Add
+	Height 4
+	Radius 2
+	Decal "Q3BulletImpact"
+	DamageType "Q3Bullet"
+	Scale 0.75
+	States
+	{
+		Spawn:
+			Q300 A 0
+			Q300 A 0 A_Playsound("Quake3/MachineGun/Ricochet",CHAN_6)
+			Q300 A 0 A_JumpIf(abs(z - floorz) <= 4,"HitFloor")
+			Q300 A 0 A_CheckCeiling("HitCeiling")
+			Q300 A 0 A_JumpIf(waterlevel == 0, 2)
+			Q300 A 0 ACS_NamedExecuteWithResult("Q3DrawLaser",2)
+			Q300 A 0 A_FaceTarget
+			Q300 ABCDEF 1 Bright
+			Stop
+		HitFloor:
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3SpawnDecal")
+			TNT1 A 0 A_SetPitch(90)
+			Goto Spawn+4
+		HitCeiling:
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3SpawnDecal",0,1)
+			TNT1 A 0 A_SetPitch(-90)
+			Goto Spawn+4
+		XDeath:
+			TNT1 A 0 A_JumpIf(waterlevel == 0, 2)
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3DrawLaser",2)
+			TNT1 A 0 A_SpawnItemEx("Switchable_FlyingBlood",(radius*cos(CallACS("Q3_BloodGenerator_Return",1))),radius*sin(CallACS("Q3_BloodGenerator_Return",1)),CallACS("Q3_BloodGenerator_Return",2),random(-350,350)/100.00,random(-350,350)/100.00,random(500,1000)/100.00,random(-180,180),SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR|SXF_ABSOLUTEPOSITION)	
+			TNT1 A 0 A_SpawnItemEx("Q3BloodSpray",0,0,0,0,0,0,0,SXF_TRANSFERSCALE)
+			TNT1 A 1
+			Stop
+	}
+}
+
+Actor Q3BulletDecalFloor
+{
+	Height 2
+	Radius 4
+	Scale 8.0
+	Renderstyle Shaded
+	StencilColor "Black"
+	+NOINTERACTION
+	+NOGRAVITY
+	+MOVEWITHSECTOR
+	States
+	{
+		Spawn:
+			Q300 A 0 NoDelay A_JumpIf(CallACS("IsThisSky")==1,"Remove")
+			Q300 A 350
+			Q300 A 1 A_Fadeout(0.05)
+			wait
+		Remove:
+			TNT1 A 1
+			Stop
+	}
+}
+
+Actor Q3BulletDecalCeiling : Q3BulletDecalFloor {}
+
+Actor Q3ExplosiveDecalFloor : Q3BulletDecalFloor { Scale 32.0 }
+Actor Q3ExplosiveDecalCeiling : Q3ExplosiveDecalFloor { Scale 32.0 }
+Actor Q3LightningDecalFloor : Q3BulletDecalFloor { Scale 8.0 }
+Actor Q3LightningDecalCeiling : Q3LightningDecalFloor { Scale 8.0 }
+Actor Q3PlasmaDecalFloor : Q3BulletDecalFloor { Scale 12.0 }
+Actor Q3PlasmaDecalCeiling : Q3LightningDecalFloor { Scale 12.0 }
+
+Actor Q3MachineGunBrass
+{
+	Height 2
+	Radius 2
+	Speed 0
+	Damage (0)
+	Projectile
+	Gravity 0.5
+	-NOGRAVITY
+	+THRUACTORS
+	States
+	{
+		Spawn:
+			Q300 A 0
+			Q300 A 0 A_SetPitch(frandom(-30.0,30.0))
+			Q300 A 0 A_SetAngle(frandom(-30.0,30.0))
+		SpawnLoop:
+			Q300 A 1
+			Loop
+		Death:
+			Q300 A 105
+			Q300 A 1 A_Fadeout(0.5)
+			wait
+	}
+}
+
+
+Actor Q3GrenadeSmoke
+{
+	+NOINTERACTION
+	+NOGRAVITY
+	+FORCEXYBILLBOARD
+	Renderstyle Translucent
+	Alpha 0.5
+	Scale 0.1
+	Height 4
+	Radius 2
+	States
+	{
+		Spawn:
+			TNT1 A 0 NoDelay A_JumpIf(waterlevel > 0, "Bubble")
+			Q302 A 0 ACS_NamedExecuteWithResult("Q3EffectLifeCycle",0,16,-16,30)
+			Q302 B 100
+			Stop
+		Bubble:
+			TNT1 A 0 A_SpawnItemEx("Q3Bubble")
+			TNT1 A 1
+			Stop
+	}
+}
+
+Actor Q3Bubble
+{
+	+NOINTERACTION
+	+NOGRAVITY
+	+FORCEXYBILLBOARD
+	Renderstyle Translucent
+	Alpha 1.0
+	Scale 0.1
+	Height 4
+	Radius 2
+	States
+	{
+		Spawn:
+			Q399 A 0 NoDelay A_JumpIf(waterlevel == 0, "Remove")
+			Q399 A 0 ACS_NamedExecuteWithResult("Q3EffectLifeCycle",0,8,-32,30)
+			Q399 A 100
+			Stop
+		Remove:
+			TNT1 A 1
+			Stop
+	}
+}
+
+Actor Q3_BloodGeneratorAngle : Inventory { Inventory.Maxamount 131072 }
+Actor Q3_BloodGeneratorZ : Inventory { Inventory.Maxamount 131072 }
+
+/*
+Actor Q3ChainsawReplacer : RandomSpawner replaces Chainsaw { DropItem "Q3GrenadeLauncher" }
+Actor Q3ShotgunReplacer : RandomSpawner replaces Shotgun { DropItem "Q3Shotgun" }
+Actor Q3SuperShotgunReplacer : RandomSpawner replaces SuperShotgun { DropItem "Q3Nailgun" }
+Actor Q3ChaingunReplacer : RandomSpawner replaces Chaingun { DropItem "Q3LightningGun" }
+Actor Q3RocketLauncherReplacer : RandomSpawner replaces RocketLauncher { DropItem "Q3RocketLauncher" }
+Actor Q3PlasmaGunReplacer : RandomSpawner replaces PlasmaRifle { DropItem "Q3PlasmaGun" }
+Actor Q3BFG9000Replacer : RandomSpawner replaces BFG9000 { DropItem "Q3BFG10K" }
+Actor Q3BererkReplacer : RandomSpawner replaces Berserk { DropItem "Q3Chaingun" DropItem "Q3RailGun" DropItem "Q3ProximityLauncher" }
+*/
+
+Actor Q3QuadDamageSound : CustomInventory
+{
+	+INVENTORY.AUTOACTIVATE
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_JumpIfInventory("Q3QuadDamageFactor",1,1)
+			Goto Pickup+2
+			TNT1 A 0 A_PlaySound("Quake3/Items/QuadDamageActive",CHAN_7)
+			TNT1 A 0
+			Stop
+	}
+}
+
+Actor Q3ProtectionSound : CustomInventory
+{
+	+INVENTORY.AUTOACTIVATE
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_JumpIfInventory("Q3BattleSuitProtection",1,1)
+			Goto Pickup+2
+			TNT1 A 0 A_PlaySound("Quake3/Items/BioSuitProtect",CHAN_7)
+			TNT1 A 0
+			Stop
+	}
+}

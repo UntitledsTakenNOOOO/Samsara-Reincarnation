@@ -1,0 +1,420 @@
+Script "Q3SpawnRocketFlare" (void)
+{
+	int flaretid = UniqueTid();
+	
+	SpawnForced("Q3RocketFlare",0,0,0,flaretid);
+	
+	While(ClassifyActor(0) != ACTOR_WORLD)
+	{
+		SetActorVelocity(flaretid,GetActorVelX(0),GetActorVelY(0),GetActorVelZ(0),0,0);
+		Warp(flaretid,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_MOVEPTR|WARPF_COPYINTERPOLATION);
+		Delay(1);
+	}
+	Thing_Remove(flaretid);
+}
+
+Script "Q3SpawnDecal" (int type, int ceiling)
+{
+	str extension = ceiling ? "Ceiling" : "Floor";
+	int zCoord = ceiling ? GetActorCeilingZ(0) : GetActorFloorZ(0);
+	int newTid = 0;
+	switch(type)
+	{
+		case 0:
+			SpawnForced(strparam(s:"Q3BulletDecal",s:extension),GetActorX(0),GetActorY(0),zCoord);
+			break;
+		case 1:
+			SpawnForced(strparam(s:"Q3ExplosiveDecal",s:extension),GetActorX(0),GetActorY(0),zCoord);
+			break;
+		case 2:
+			SpawnForced(strparam(s:"Q3LightningDecal",s:extension),GetActorX(0),GetActorY(0),zCoord);
+			break;
+		case 3:
+			SpawnForced(strparam(s:"Q3PlasmaDecal",s:extension),GetActorX(0),GetActorY(0),zCoord);
+			break;
+		case 4:
+			newTid = UniqueTid();
+			SpawnForced(strparam(s:"Q3BloodDecal",s:extension),GetActorX(0),GetActorY(0),zCoord,newTid);
+			Thing_SetTranslation(newTid,-1);
+			break;
+	}
+}
+
+Script "Q3DrawLaser" (int type, int left)
+{
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int z = GetActorZ(0);
+	SetActivatorToTarget(0);
+	switch(type)
+	{
+		case 0: ACS_NamedExecuteWithResult("Q3LightningBeam",left,x,y,z); break;
+		case 1: ACS_NamedExecuteWithResult("Q3RailGunBeam",x,y,z); break;
+		case 2: ACS_NamedExecuteWithResult("Q3BubbleBeam",x,y,z); break;
+	}
+}
+
+Script "Q3LightningBeam" (int left, int tx, int ty, int tz) clientside
+{
+	int t, k = 0, l, angle, pitch, x, y, z, vx, vy, vz, mag, magI;
+	
+	//Properties
+	int height = GetActorViewHeight(0) - 9.0;
+	int space = 7;
+	int lightningCounter = ((timer()%8) + 1)*2;
+	int horz = 8.0;
+	int i = 24;
+	
+	if(left == 0)
+		horz = 3.2;
+		
+	str segment = "Q3LightningSegment";
+	str extension = left ? "L" : "R";
+	
+	int newtid = UniqueTid();
+	
+	int xoff = returnLaserOrigin(0, horz, height, GetActorAngle(0), GetActorPitch(0));
+	int yoff = returnLaserOrigin(1, horz, height, GetActorAngle(0), GetActorPitch(0));
+		
+    x = GetActorX(0) + xoff;
+	y = GetActorY(0) - yoff;
+	z = GetActorZ(0) + returnLaserOrigin(2, horz, height, GetActorAngle(0), GetActorPitch(0));
+	
+	int vectorx = tx - x;
+	int vectory = ty - y;
+	int vectorz = tz - z;
+	angle = VectorAngle(vectorx, vectory);
+	
+	int length = magnitudeTwo(vectorx>>16,vectory>>16);
+	pitch = VectorAngle(length<<16, vectorz);
+
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+    for (i = i; i < magI; i += space)
+    {
+        SpawnForced(strparam(s:segment,s:extension,d:lightningCounter), x+(vx*i), y+(vy*i), z+(vz*i), newtid);
+		SetActorPitch(newtid, pitch);
+		SetActorAngle(newtid, angle);
+		
+		lightningCounter--;
+		if(lightningCounter < 1)
+			lightningCounter = 16;
+
+		if(i % 1500 == 0)
+			Delay(1);
+    }
+}
+
+Script "Q3RailGunBeam" (int tx, int ty, int tz) clientside
+{
+	int t, k = 0, l, angle, pitch, x, y, z, vx, vy, vz, mag, magI;
+	
+	//Properties
+	int height = GetActorViewHeight(0) - 9.0;
+	int space = 16;
+	int horz = 8.0;
+	int i = 24;
+
+	str segment = "Q3RailGunSegment";
+	
+	int newtid = UniqueTid();
+	
+	int xoff = FixedMul(sin(GetActorAngle(0)),horz);
+	int yoff = FixedMul(cos(GetActorAngle(0)),horz);
+		
+    x = GetActorX(0) + xoff;
+	y = GetActorY(0) - yoff;
+	z = GetActorZ(0) + height;
+	
+	int vectorx = tx - x;
+	int vectory = ty - y;
+	int vectorz = tz - z;
+	angle = VectorAngle(vectorx, vectory);
+	
+	int length = magnitudeTwo(vectorx>>16,vectory>>16);
+	pitch = VectorAngle(length<<16, vectorz);
+
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+    for (i = i; i < magI; i += space)
+    {
+        SpawnForced(segment, x+(vx*i), y+(vy*i), z+(vz*i), newtid);
+		Thing_SetTranslation(newtid,-1);
+		SetActorPitch(newtid, pitch);
+		SetActorAngle(newtid, angle);
+
+		if(i % 1500 == 0)
+			Delay(1);
+    }
+}
+
+Script "Q3BubbleBeam" (int tx, int ty, int tz) clientside
+{
+	if(!isSinglePlayer()) // Don't even bother drawing this online. Bubbles will need to be server side and it's not even worth it.
+		terminate;
+	int t, k = 0, l, angle, pitch, x, y, z, vx, vy, vz, mag, magI;
+	
+	//Properties
+	int height = GetActorViewHeight(0) - 9.0;
+	int space = 32;
+	int horz = 0.0;
+	int i = 24;
+
+	str segment = "Q3Bubble";
+		
+	int xoff = FixedMul(sin(GetActorAngle(0)),horz);
+	int yoff = FixedMul(cos(GetActorAngle(0)),horz);
+		
+    x = GetActorX(0) + xoff;
+	y = GetActorY(0) - yoff;
+	z = GetActorZ(0) + height;
+	
+	int vectorx = tx - x;
+	int vectory = ty - y;
+	int vectorz = tz - z;
+	angle = VectorAngle(vectorx, vectory);
+	
+	int length = magnitudeTwo(vectorx>>16,vectory>>16);
+	pitch = VectorAngle(length<<16, vectorz);
+
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+    for (i = i; i < magI; i += space)
+    {
+        SpawnForced(segment, x+(vx*i), y+(vy*i), z+(vz*i));
+
+		if(i % 1500 == 0)
+			Delay(1);
+    }
+}
+
+Script "Q3EffectLifeCycle" (int animTime, int scaleFactor, int fadeFactor, int time)
+{
+	scaleFactor *= 0.001;
+	fadeFactor *= 0.001;
+	until(time <= 0)
+	{
+		time--;
+		SetActorProperty(0,APROP_ScaleX,GetActorProperty(0,APROP_ScaleX)+scaleFactor);
+		SetActorProperty(0,APROP_ScaleY,GetActorProperty(0,APROP_ScaleY)+scaleFactor);
+		SetActorProperty(0,APROP_Alpha,GetActorProperty(0,APROP_Alpha)+fadeFactor);
+		Delay(animTime == 0 ? 1 : animTime);
+		
+		if(GetActorProperty(0,APROP_ScaleX) <= 0) { SetActorProperty(0,APROP_ScaleX,0); SetActorProperty(0,APROP_ScaleY,0); };
+		if(GetActorProperty(0,APROP_Alpha) <= 0) SetActorProperty(0,APROP_Alpha,0);
+	}
+	Thing_Remove(0);
+}
+
+Script "Q3ProximityMineGlow" (int mineType)
+{
+	int newTid = UniqueTid();
+	str mine = "";
+	switch(mineType)
+	{
+		case 0: mine = "Q3ProximityMineGlow"; break;
+		case 1: mine = "Q3ProximityMineGlowFloor"; break;
+		case 2: mine = "Q3ProximityMineGlowCeiling"; break;
+	}
+	SpawnForced(mine,GetActorX(0),GetActorY(0),GetActorZ(0),newTid);
+	SetActorAngle(newTid,GetActorAngle(0));
+	SetActorPitch(newTid,GetActorPitch(0));
+	SetPointerExt(AAPTR_Tracer,0,newTid);
+	Thing_ChangeTid(newTid,0);
+	
+	while(!(ClassifyActor(0) > 1))
+	{
+		Warp(AAPTR_Tracer,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE|WARPF_USEPTR);
+		Delay(1);
+	}
+}
+
+str Q3Weapons[12] = { "Q3Gauntlet", "Q3Machinegun", "Q3Shotgun", "Q3GrenadeLauncher", "Q3RocketLauncher", "Q3LightningGun", "Q3Railgun", "Q3Plasmagun", "Q3BFG10K", "Q3Chaingun", "Q3Nailgun", "Q3ProximityLauncher" };
+str Q3WeaponSelections[12] = { "Q3GauntletSelected", "Q3MachinegunSelected", "Q3ShotgunSelected", "Q3GrenadeLauncherSelected", "Q3RocketLauncherSelected", "Q3LightningGunSelected", "Q3RailgunSelected", "Q3PlasmagunSelected", "Q3BFG10KSelected", "Q3ChaingunSelected", "Q3NailgunSelected", "Q3ProximityLauncherSelected" };
+str Q3PowerupItems[5] = { "Q3BattleSuitProtection", "Q3QuadDamageFactor", "Q3HasteTurbo", "Q3RegenerationDummy", "Q3InvisibilityCloak" };
+str Q3PowerupSounds[5] = { "Quake3/Items/BioSuitWearOff", "Quake3/Items/QuadDamageWearOff", "Quake3/Items/BioSuitWearOff", "Quake3/Items/BioSuitWearOff", "Quake3/Items/BioSuitWearOff" };
+str Q3PowerupIcons[5] = { "Q3ENVIRO", "Q3QUAD", "Q3HASTE", "Q3REGEN", "Q3INVIS" };
+str Q3PowerupGlow[5] = { "Q3BattleSuitGlowToken", "Q3QuadDamageGlowToken", "Q3HasteGlowToken", "Q3RegenerationGlowToken" };
+
+Script "Q3Loop" enter
+{
+	int a = 0;
+	int steptimer = timer();
+	int pTics = 0;
+	int aTics = 0;
+	int activePowerups;
+	str glow = "";
+	While(true)
+	{
+		steptimer = ACS_NamedExecuteWithResult("Q3_Decorate",0,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
+		for(a = 0; a < 12; a++)
+		{
+			if(CheckWeapon(Q3Weapons[a])) { GiveInventory(Q3WeaponSelections[a],1); break; }
+			else TakeInventory(Q3WeaponSelections[a],1);
+			
+		}
+		
+		activePowerups = 0;
+		//HUD Stuff
+		for(a = 0; a < 5; a++)
+		{
+			pTics = GetActorPowerupTics(0,Q3PowerupItems[a]);
+			if(pTics > 0)
+			{
+				glow = Q3PowerupGlow[a];
+				
+				if(strlen(glow) > 0)			
+					GiveInventory(glow, 1);
+				
+				switch(a)
+				{
+					default:
+						if(pTics/35 <= 5 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
+						break;
+					/*case 1:
+						if(pTics/35 == 3 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
+						break;*/
+					case 3:
+						if(pTics % 35 == 0 && GetActorProperty(0,APROP_Health) < 200) 
+						{ 
+							SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_Health)+5);
+							if(GetActorProperty(0,APROP_Health) > 200)
+								SetActorProperty(0,APROP_Health,200);
+							
+							PlaySound(0,"Quake3/Items/RegenActive",CHAN_7);
+						}
+						if(pTics/35 <= 5 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
+						break;
+				}
+				
+				activePowerups++;
+				ACS_NamedExecuteWithResult("Q3ExecuteHud",a,pTics,activePowerups);
+			}
+		}
+		
+		if(CheckInventory("Q3AmmoRegenerationDummy"))
+		{
+			if(timer()%52 == 0)
+			{
+				aTics = 0;
+				until(CheckInventory("Clip") >= 50 || aTics == 5)
+				{
+					aTics++;	GiveInventory("Clip",1);
+				}
+				aTics = 0;
+				until(CheckInventory("Shell") >= 10 || aTics == 1)
+				{
+					aTics++;	GiveInventory("Shell",1);
+				}
+				aTics = 0;
+				until(CheckInventory("RocketAmmo") >= 10 || aTics == 1)
+				{
+					aTics++;	GiveInventory("RocketAmmo",1);
+				}
+				aTics = 0;
+				until(CheckInventory("Cell") >= 60 || aTics == 6)
+				{
+					aTics++;	GiveInventory("Cell",1);
+				}
+			}
+		}
+		
+		Delay(1);
+	}
+}
+
+Script "Q3ExecuteHud" (int type, int tics, int active) clientside
+{
+	SetHudSize(640,480,1);
+	
+	SetFont(Q3PowerupIcons[type]);
+	HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25000+(type*2),CR_UNTRANSLATED,600.1,380.0-(32.0*active),0.1);
+	
+	SetFont("Q3NUMFNT");
+	HudMessage(d:tics/35;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25001+(type*2),CR_UNTRANSLATED,600.2,380.0-(32.0*active),0.1);
+}
+
+Script "Q3PlayerCodeFunctions" (int func)
+{
+	int result = 0;
+	int forward = GetPlayerInput(-1, INPUT_FORWARDMOVE);
+	int side = GetPlayerInput(-1, INPUT_SIDEMOVE);
+	int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+	int running = (GetCvar("cl_run")*256) - (buttons & BT_SPEED);
+	switch(func)
+	{
+		case 0:
+			result = (forward != 0 || side != 0) && running;
+			break;
+		case 1:
+			result = (forward != 0 || side != 0) && !running;
+			break;
+		case 2:
+			result = (forward < 0) && running;
+			break;
+		case 3:
+			result = GetActorViewHeight(0) <= 38.0;
+			break;
+		case 4:
+			result = (buttons & BT_JUMP) > 0 && forward >= 0;
+			break;
+		case 5:
+			result = (buttons & BT_JUMP) > 0 && forward < 0;
+			break;
+	}
+	SetResultValue(result);
+}
+
+Script "Q3_Decorate" (int value, int arg1, int arg2, int arg3)
+{
+	switch(value)
+	{
+		case 0: //do footstep - type, steptimer, movement
+			if(timer()-arg2>arg3 && GetActorZ(0) <= GetActorFloorZ(0)+4.0)
+			{
+				if(!CheckInventory("Q3Swimming"))
+					PlaySound(0,"Quake3/FootStep",CHAN_BODY,0.67,0);
+					
+				SetResultValue(timer());
+			}
+			else	
+				SetResultValue(arg2);
+			break;
+	}
+}
+
+Script "Q3_BloodGenerator_Offsets" (void)
+{
+	int missilex = GetActorX(0);
+	int missiley = GetActorY(0);
+	int missilez = GetActorZ(0);
+	SetActivator(0,AAPTR_Tracer);
+	int enemyx = GetActorX(0);
+	int enemyy = GetActorY(0);
+	int enemyz = GetActorZ(0);
+	int currentangle = GetActorAngle(0);
+	int vang = VectorAngle(enemyx - missilex, enemyy - missiley);
+	int angle = vang % 1.0;
+	TakeInventory("Q3_BloodGeneratorAngle",999999);
+	TakeInventory("Q3_BloodGeneratorZ",999999);
+	GiveInventory("Q3_BloodGeneratorAngle",angle+65536);
+	GiveInventory("Q3_BloodGeneratorZ",(missilez - enemyz)>>16 + 65536);
+}
+
+Script "Q3_BloodGenerator_Return" (int mode) 
+{
+	int result;
+	switch(mode)
+	{
+		case 1:
+			result = ((CheckInventory("Q3_BloodGeneratorAngle") - 65536)/182)+180;
+			break;
+		case 2:
+			result = CheckInventory("Q3_BloodGeneratorZ");
+			break;
+	}
+	SetResultValue(result);
+}

@@ -1,0 +1,292 @@
+Actor Q3LightningGun : Q3Weapon
+{
+	Weapon.AmmoUse 1
+	Weapon.AmmoGive 100
+	Weapon.SlotNumber 4
+	Weapon.AmmoType "Clip"
+	Inventory.Pickupmessage "Lightning Gun"
+	Obituary "%o was electrocuted by %k"
+	Tag "Lightning Gun"
+	+FLOATBOB
+	States
+	{
+		Spawn:
+			Q399 ABCDEFGH 2
+			Loop
+		Deselect:
+			Q301 A 0 A_StopSound(CHAN_5)
+			Q301 A 0 A_StopSound(CHAN_6)
+			Q301 A 0 A_PlaySound("Quake3/Weapons/Change",CHAN_5)
+			Q301 ABCDE 1
+			Goto DeselectLoop
+		Ready:
+			Q300 A 0 A_PlaySound("Quake3/Gauntlet/Idle",CHAN_5,0.75,true)
+			Q300 A 0 A_StopSound(CHAN_6)
+			Q302 ABCD 1
+		ReadyLoop:
+			Q300 A 0 A_StopSound(CHAN_6)
+			Q300 A 1 A_WeaponReady
+			Loop
+		Fire:
+			Q303 A 0 A_PlaySound("Quake3/LightningGun/Fire",CHAN_WEAPON)
+		Hold:
+			Q303 A 0 A_Playsound("Quake3/LightningGun/Loop",CHAN_6,1.0,true)
+			Q303 A 0 A_GunFlash
+			Q303 A 1 A_FireCustomMissile("Q3LightningBeam",0,0,4)
+			Q303 A 0 A_Refire
+			Goto ReadyLoop
+		Flash:
+			Q303 A 0 A_GiveInventory("Q3QuadDamageSound",1)
+			Q303 A 0 A_JumpIfInventory("Q3LightningGunConsumeAmmo",0,3)
+			Q303 A 0 A_GiveInventory("Q3LightningGunConsumeAmmo",1)
+			Q303 A 0 A_Jump(256,3)
+			Q303 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+			Q303 A 0 A_TakeInventory("Q3LightningGunConsumeAmmo",256)
+			Q304 A 1 Bright
+			Stop
+	}
+}
+
+Actor Q3LightningGunConsumeAmmo : Inventory { Inventory.MaxAmount 3 +UNDROPPABLE -INVBAR }
+
+Actor Q3LightningBeam : FastProjectile
+{
+	Projectile
+	Height 4
+	Radius 2
+	Speed 256
+	Damage (8)
+	Decal "Q3LightningImpact"
+	DamageType "Q3Lightning"
+	+BLOODLESSIMPACT
+	+SKYEXPLODE
+	States
+	{
+		Spawn:
+			TNT1 A 3
+		Death:
+			TNT1 A 0 A_JumpIf(abs(z - floorz) <= 4,"HitFloor")
+			TNT1 A 0 A_CheckCeiling("HitCeiling")
+			Goto DrawBeams
+		XDeath:
+			TNT1 A 0 A_SpawnItemEx("Q3BloodSpray",0,0,0,0,0,0,0,SXF_TRANSFERSCALE)
+			Goto DrawBeams
+		HitFloor:
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3SpawnDecal",2)
+			TNT1 A 0 A_SetPitch(90)
+			Goto DrawBeams
+		HitCeiling:
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3SpawnDecal",2,1)
+			TNT1 A 0 A_SetPitch(-90)
+			Goto DrawBeams
+		DrawBeams:
+			TNT1 A 0 A_SpawnItemEx("Q3LightningCrackle")
+			TNT1 A 0 A_PlaySound("Quake3/LightningGun/Hit",CHAN_6)
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3DrawLaser",0,1)
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3DrawLaser",0,0)
+			TNT1 A 1
+			Stop
+	}
+}
+
+Actor Q3LightningCrackle
+{
+	+NOINTERACTION
+	+NOGRAVITY
+	Height 4
+	Radius 2
+	Renderstyle Add
+	States
+	{
+		Spawn:
+			Q300 A 0 NoDelay ACS_NamedExecuteWithResult("Q3EffectLifeCycle",0,50,-100,15)
+			Q300 A 100 Bright
+			Stop
+	}
+}
+
+Actor Q3LightningSegmentL1
+{
+	+NOINTERACTION
+	+NOBLOCKMAP
+	+CLIENTSIDEONLY
+	Radius 1
+	Height 1
+	Renderstyle Add
+	Alpha 1.0
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 A 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+
+Actor Q3LightningSegmentL2 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 B 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL3 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 C 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL4 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 D 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL5 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 E 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL6 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 F 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL7 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 G 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL8 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 H 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL9 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 I 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL10 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 J 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL11 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 K 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL12 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 L 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL13 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 M 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL14 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 N 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL15 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 O 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+Actor Q3LightningSegmentL16 : Q3LightningSegmentL1 
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			RW00 P 1 Bright A_Fadeout(0.05)
+			stop
+	}
+}
+
+Actor Q3LightningSegmentR1 : Q3LightningSegmentL1 {}
+Actor Q3LightningSegmentR2 : Q3LightningSegmentL2 {}
+Actor Q3LightningSegmentR3 : Q3LightningSegmentL3 {}
+Actor Q3LightningSegmentR4 : Q3LightningSegmentL4 {}
+Actor Q3LightningSegmentR5 : Q3LightningSegmentL5 {}
+Actor Q3LightningSegmentR6 : Q3LightningSegmentL6 {}
+Actor Q3LightningSegmentR7 : Q3LightningSegmentL7 {}
+Actor Q3LightningSegmentR8 : Q3LightningSegmentL8 {}
+Actor Q3LightningSegmentR9 : Q3LightningSegmentL9 {}
+Actor Q3LightningSegmentR10 : Q3LightningSegmentL10 {}
+Actor Q3LightningSegmentR11 : Q3LightningSegmentL11 {}
+Actor Q3LightningSegmentR12 : Q3LightningSegmentL12 {}
+Actor Q3LightningSegmentR13 : Q3LightningSegmentL13 {}
+Actor Q3LightningSegmentR14 : Q3LightningSegmentL14 {}
+Actor Q3LightningSegmentR15 : Q3LightningSegmentL15 {}
+Actor Q3LightningSegmentR16 : Q3LightningSegmentL16 {}

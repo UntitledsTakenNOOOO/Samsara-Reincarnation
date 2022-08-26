@@ -1,0 +1,93 @@
+Actor Q3Plasmagun : Q3Weapon
+{
+	Weapon.AmmoUse 1
+	Weapon.AmmoGive 50
+	Weapon.SlotNumber 6
+	Weapon.AmmoType "Cell"
+	Inventory.Pickupmessage "Plasmagun"
+	Obituary "%o was melted by %k"
+	Tag "Plasmagun"
+	+FLOATBOB
+	States
+	{
+		Spawn:
+			Q399 ABCDEFGH 2
+			Loop
+		Deselect:
+			Q301 A 0 A_GunFlash("DeselectGlow",GFF_NOEXTCHANGE)
+			Q301 A 0 A_PlaySound("Quake3/Weapons/Change",CHAN_5)
+			Q301 ABCDE 1
+			Goto DeselectLoop
+		DeselectGlow:
+			Q306 ABCDE 1 Bright
+			Stop
+		Ready:
+			Q302 A 0 A_GunFlash("SelectGlow",GFF_NOEXTCHANGE)
+			Q302 ABCD 1
+		ReadyLoop:
+			Q300 A 0 A_GunFlash("ReadyGlow",GFF_NOEXTCHANGE)
+			Q300 AAAAAAAAAAAAAAAAAAAAAAAA 1 A_WeaponReady
+			Loop
+		SelectGlow:
+			Q307 ABCD 1 Bright
+			Stop
+		ReadyGlow:
+			Q305 ABCDEFGH 3 Bright
+			Stop
+		Fire:
+			Q303 A 0 A_GunFlash
+			Q303 A 0 A_PlaySound("Quake3/Plasma/Fire",CHAN_WEAPON)
+			Q303 A 0 A_FireCustomMissile("Q3PlasmaProjectile",0,1,6)
+			Q303 A 1 Bright
+			Q303 A 0 A_JumpIfInventory("Q3PlasmaExtraTic",1,2)
+			Q303 B 1 A_TakeInventory("Q3PlasmaExtraTic",1)
+			Q303 CD 1
+			Q303 A 0 A_GiveInventory("Q3PlasmaExtraTic",1)
+			Goto ReadyLoop
+		Flash:
+			Q304 A 0 A_GiveInventory("Q3QuadDamageSound",1)
+			Q304 A 1 Bright
+			Q308 CDE 1 Bright
+			Stop		
+	}
+}
+
+Actor Q3PlasmaProjectile
+{
+	Height 12
+	Radius 6
+	Damage (20)
+	Speed 32
+	Scale 0.33
+	Renderstyle Add
+	DamageType "Q3Energy"
+	Decal "Q3PlasmaImpact"
+	Projectile
+	+FORCEXYBILLBOARD
+	States
+	{
+		Spawn:
+			Q306 A 1 Bright
+			Loop
+		XDeath:
+			Q306 A 0 A_SpawnItemEx("Q3BloodSpray",0,0,0,0,0,0,0,SXF_TRANSFERSCALE)
+		Death:
+			Q306 A 0 A_JumpIf(abs(z - floorz) <= 4,"HitFloor")
+			Q306 A 0 A_CheckCeiling("HitCeiling")
+			Goto Finish
+		HitFloor:
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3SpawnDecal",3)
+			TNT1 A 0 A_SetPitch(90)
+			Goto Finish
+		HitCeiling:
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3SpawnDecal",3,1)
+			TNT1 A 0 A_SetPitch(-90)
+			Goto Finish
+		Finish:
+			Q306 A 0 ACS_NamedExecuteWithResult("Q3EffectLifeCycle",0,25,-50,16)
+			Q306 A 100 Bright
+			Stop
+	}
+}
+
+Actor Q3PlasmaExtraTic : Q3Boolean {}
