@@ -248,14 +248,21 @@ Script "Q3Loop" enter
 	int pTics = 0;
 	int aTics = 0;
 	int activePowerups;
-	int ammoRotCounter = 0;
+	int ammoRotCounter = 16;
 	int ammoRotDir = 1;
+	int health, armor;
 	str glow = "";
 	if(!CheckInventory("Q3Class"))
 		terminate;
 	
 	While(true)
 	{
+		health = GetActorProperty(0,APROP_Health);
+		armor = CheckInventory("Armor");
+		
+		if(health < 0) { health = 0; } if(health > 999) { health = 999; }
+		ACS_NamedExecuteWithResult("Q3HudHealthAndArmor",health,armor);
+	
 		steptimer = ACS_NamedExecuteWithResult("Q3_Decorate",0,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
 		for(a = 0; a < 12; a++)
 		{
@@ -337,17 +344,25 @@ Script "Q3Loop" enter
 				if(timer()%3==0)
 				{
 					ammoRotCounter += ammoRotDir;
-					if(ammoRotCounter == 15 || ammoRotCounter == -15)
-						ammoRotDir *= -1;
+					if(ammoRotCounter == 0 || ammoRotCounter == 30)
+						ammoRotDir *= -1;		
 				}
 				
-				ACS_NamedExecuteWithResult("Q3HudAmmo",a,ammoRotCounter < 0 ? 15-ammoRotCounter : ammoRotCounter);
+				ACS_NamedExecuteWithResult("Q3HudAmmo",a,ammoRotCounter);
 				break;
 			}
 		}
 		
 		Delay(1);
 	}
+}
+
+Script "Q3HudHealthAndArmor" (int health, int armor) clientside
+{
+	SetHudSize(640,400,1);
+	SetFont("Q3NUMFNT");
+	HudMessage(d:health;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,25102,"Q3Gold",288.2,396.2,0.1);
+	HudMessage(d:armor;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,25103,"Q3Gold",496.2,396.2,0.1);
 }
 
 Script "Q3HudAmmo" (int a, int graphic) clientside
