@@ -233,6 +233,8 @@ Script "Q3ProximityMineGlow" (int mineType)
 }
 
 str Q3Weapons[12] = { "Q3Gauntlet", "Q3Machinegun", "Q3Shotgun", "Q3GrenadeLauncher", "Q3RocketLauncher", "Q3LightningGun", "Q3Railgun", "Q3Plasmagun", "Q3BFG10K", "Q3Chaingun", "Q3Nailgun", "Q3ProximityLauncher" };
+str Q3Ammos[12] = { "", "Clip", "Shell", "Q3GrenadeLauncherAmmo", "RocketAmmo", "Clip", "Q3RailGunAmmo", "Cell", "Cell", "Q3ChaingunAmmo", "Shell", "Q3GrenadeLauncherAmmo" };
+str Q3AmmoIcons[12] = { "", "MB", "SH", "GR", "RK", "LG", "SL", "PL", "BF", "CB", "NL", "PX" };
 str Q3WeaponSelections[12] = { "Q3GauntletSelected", "Q3MachinegunSelected", "Q3ShotgunSelected", "Q3GrenadeLauncherSelected", "Q3RocketLauncherSelected", "Q3LightningGunSelected", "Q3RailgunSelected", "Q3PlasmagunSelected", "Q3BFG10KSelected", "Q3ChaingunSelected", "Q3NailgunSelected", "Q3ProximityLauncherSelected" };
 str Q3PowerupItems[5] = { "Q3BattleSuitProtection", "Q3QuadDamageFactor", "Q3HasteTurbo", "Q3RegenerationDummy", "Q3InvisibilityCloak" };
 str Q3PowerupSounds[5] = { "Quake3/Items/BioSuitWearOff", "Quake3/Items/QuadDamageWearOff", "Quake3/Items/BioSuitWearOff", "Quake3/Items/BioSuitWearOff", "Quake3/Items/BioSuitWearOff" };
@@ -246,6 +248,8 @@ Script "Q3Loop" enter
 	int pTics = 0;
 	int aTics = 0;
 	int activePowerups;
+	int ammoRotCounter = 0;
+	int ammoRotDir = 1;
 	str glow = "";
 	if(!CheckInventory("Q3Class"))
 		terminate;
@@ -294,7 +298,7 @@ Script "Q3Loop" enter
 				}
 				
 				activePowerups++;
-				ACS_NamedExecuteWithResult("Q3ExecuteHud",a,pTics,activePowerups);
+				ACS_NamedExecuteWithResult("Q3HudPowerup",a,pTics,activePowerups);
 			}
 		}
 		
@@ -325,11 +329,38 @@ Script "Q3Loop" enter
 			}
 		}
 		
+		//Drawing Ammo
+		for(a = 0; a < 12; a++)
+		{
+			if(CheckWeapon(Q3Weapons[a]))
+			{
+				if(timer()%3==0)
+				{
+					ammoRotCounter += ammoRotDir;
+					if(ammoRotCounter == 15 || ammoRotCounter == -15)
+						ammoRotDir *= -1;
+				}
+				
+				ACS_NamedExecuteWithResult("Q3HudAmmo",a,ammoRotCounter < 0 ? 15-ammoRotCounter : ammoRotCounter);
+				break;
+			}
+		}
+		
 		Delay(1);
 	}
 }
 
-Script "Q3ExecuteHud" (int type, int tics, int active) clientside
+Script "Q3HudAmmo" (int a, int graphic) clientside
+{
+	SetHudSize(2000,1500,1);
+	SetFont(strparam(s:"Q3AM",s:Q3AmmoIcons[a],s:graphic < 10 ? "0" : "",d:graphic));
+	HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25101,CR_UNTRANSLATED,382.1,1480.2,0.1);
+	SetHudSize(640,400,1);
+	SetFont("Q3NUMFNT");
+	HudMessage(d:CheckInventory(Q3Ammos[a]);HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25100,CR_UNTRANSLATED,128.2,396.2,0.1);
+}
+
+Script "Q3HudPowerup" (int type, int tics, int active) clientside
 {
 	SetHudSize(640,480,1);
 	
