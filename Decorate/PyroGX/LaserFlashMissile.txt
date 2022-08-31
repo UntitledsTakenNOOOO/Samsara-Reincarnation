@@ -1,0 +1,122 @@
+Actor DescentLaser : DescentWeaponPrimer
+{
+	Weapon.SlotNumber 1
+	Weapon.AmmoType1 "Clip"
+	Weapon.AmmoType2 "Shell"
+	Weapon.AmmoUse1 1
+	Weapon.AmmoUse2 1
+	Weapon.AmmoGive1 50
+	Weapon.AmmoGive2 4
+	Inventory.PickupMessage "Laser Cannon and Flash Missiles!"
+	Tag "Laser Cannon and Flash Missiles"
+	+FLOATBOB
+	States
+	{
+		Spawn:
+			DS53 ABCDEFGHIJKLMNO 2
+			Loop
+		SetPrimary:
+			TNT1 A 0 A_TakeInventory("DescentPrimaryCounter",65536)
+			TNT1 A 0 A_JumpIfInventory("DescentLaserLevel",4,"SetSuper")
+			Goto Super::SetPrimary
+		SetSecondary:
+			TNT1 A 0 A_TakeInventory("DescentMissileCamera",256)
+			TNT1 A 0 A_TakeInventory("DescentSecondaryCounter",65536)
+			Goto Super::SetSecondary
+		SetSuper:
+			TNT1 A 0 A_GiveInventory("DescentPrimaryCounter",1)
+			Goto Super::SetPrimary
+		Fire:
+			TNT1 A 1
+			Goto Ready
+	}
+}
+
+Actor DescentLaser1Projectile : DescentLaserProjectile {}
+Actor DescentLaser2Projectile : DescentLaser1Projectile
+{
+	Damage (7)
+	States
+	{
+		Death:
+			DS00 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_5)
+			DS00 A 0 A_SpawnItemEx("DescentLaser2Puff")
+			Stop
+	}
+}
+
+Actor DescentLaser3Projectile : DescentLaser1Projectile
+{
+	Damage (9)
+	States
+	{
+		Death:
+			DS00 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_5)
+			DS00 A 0 A_SpawnItemEx("DescentLaser3Puff")
+			Stop
+	}
+}
+
+Actor DescentLaser4Projectile : DescentLaser1Projectile
+{
+	Damage (11)
+	States
+	{
+		Death:
+			DS00 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_5)
+			DS00 A 0 A_SpawnItemEx("DescentPlasmaPuff")
+			Stop
+	}
+}
+
+Actor DescentLaser5Projectile : DescentLaserProjectile
+{
+	Damage (13)
+	States
+	{
+		Spawn:
+			DS00 A 1 Bright
+			Loop
+		Death:
+			DS00 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_5)
+			DS00 A 0 A_SpawnItemEx("DescentLaser5Puff")
+			Stop
+	}
+}
+
+Actor DescentLaser6Projectile : DescentLaser3Projectile { Damage (15) }
+
+Actor DescentFlashMissile : DescentMissile 
+{ 
+	ExplosionDamage 25
+	ExplosionRadius 50
+	States
+	{
+		Spawn:
+			DS00 A 0
+			DS00 A 0 A_GiveToTarget("DescentMissileCamera",1)
+			DS00 A 0 ACS_NamedExecuteWithResult("DescentMissileCamera")
+		SpawnLoop:
+			DS00 A 1 Bright
+			Loop
+		Death:
+			DS00 A 0 A_RadiusGive("DescentFlashGiver",60,RGF_PLAYERS|RGF_MONSTERS,1)
+			DS00 A 0 A_RemoveMaster
+			DS00 A 0 A_Explode(-1,-1,0,1)
+			DS00 A 0 A_GiveToTarget("DescentMissileStaticGiver",1)
+			DS00 A 0 A_TakeFromTarget("DescentMissileCamera",1)
+			DS00 A 0 A_PlaySound("Descent/Flash/Explode",CHAN_5)
+			DS02 ABCDEFGHIJKL 2 Bright
+			Stop
+	}
+}
+
+Actor DescentFlashGiver : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 ACS_NamedExecuteWithResult("DescentFlashFade")
+			stop
+	}
+}

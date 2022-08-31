@@ -1,0 +1,700 @@
+Script "DescentEnter" Enter
+{
+	if(!CheckInventory("DescentClass"))
+		terminate;
+	
+	ACS_NamedExecuteWithResult("DescentMovement");
+	ACS_NamedExecuteWithResult("DescentActions");
+	ACS_NamedExecuteWithResult("DescentHUD");
+}
+
+Script "DescentActions" (void)
+{
+	int buttons;
+	while(true)
+	{
+		buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+		
+		if(buttons & BT_ATTACK) 
+			GiveInventory("DescentPrimaryTrigger",1);
+		else
+			TakeInventory("DescentPrimaryTrigger",1);
+		if(buttons & BT_ALTATTACK) 
+			GiveInventory("DescentSecondaryTrigger",1);
+		else
+			TakeInventory("DescentSecondaryTrigger",1);
+							
+		Delay(1);
+	}
+}
+
+Script "DescentMovement" (void)
+{	
+	Delay(1);
+	int GZDoom = GetCvar("samsara_zscriptready");
+
+	//Variables related to thrust horizontally
+	int horizontalThrust = 0;
+	int horizontalThrustX = 0;
+	int horizontalThrustY = 0;
+
+	//Variables related to vertical bobbing
+	int verticalOscillate = 0;
+	int verticalOscillateThreshold = 15;
+	int verticalToggle = 1;
+	int verticalBob = 1.0;
+	int verticalThrust = 0;
+	
+	//Math - need angle, pitch, and roll
+	int angle, pitch, roll;
+	int sineAngle, cosineAngle, sinePitch, cosinePitch, sineRoll, cosineRoll;
+	
+	//Variables related to input and movement
+	int moveSpeed = 11;
+	int turnSpeed = 240;
+	int maxTurn = 1680;
+	int moveX, moveY, moveZ;
+	int forward, side, vertical, buttons, mouseYaw, mousePitch, tilting;
+	int invertedMouse = GetCvar("invertmouse");
+	int sensitivityX = GZDoom ? GetCvar("m_yaw") : GetCvar("m_sensitivity");
+	int sensitivityY = GZDoom ? GetCvar("m_pitch") : GetCvar("m_sensitivity");
+	int mouseFinalYaw, mouseFinalPitch;
+	
+	//Camera tilting - GZDoom Only
+	int turnRoll, tiltRoll;
+	
+	//Final position variables
+	int velX, velY, velZ;
+	
+	//Other Stuff
+	int deathCamTid, deathDirX, deathDirY, deathDirZ, deathCamDelay;
+	int gimbalLock = 1;
+	int gimbalDelay, rollBack, rolling, thirdPerson;
+			
+	While(ClassifyActor(0) & ACTOR_ALIVE)
+	{
+		if(!GetCvar("samsara_descentflight"))
+			GiveInventory("DescentGravityGiver",1);
+		else
+			GiveInventory("DescentGravityTaker",1);
+			
+		if(GZDoom)
+			GiveInventory("DescentThirdPersonChecker",1);
+		else
+		{
+			if(GetPlayerChaseCam(ConsolePlayerNumber()))
+				GiveInventory("DescentThirdPerson",1);
+			else
+				TakeInventory("DescentThirdPerson",1);
+		}
+						
+		
+		if(!CheckInventory("DescentGuidedController"))
+		{
+			SetPlayerProperty(0,1,PROP_FROZEN);
+			SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+			buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+			forward = GetPlayerInput(-1, INPUT_FORWARDMOVE);
+			side = -GetPlayerInput(-1, INPUT_SIDEMOVE) * gimbalLock;
+			vertical = GetPlayerInput(-1, INPUT_UPMOVE);
+			rollBack = buttons & BT_Strafe;
+					
+			forward = forward != 0 ? sign(forward) * 1.0 : 0;
+			side = side != 0 ? sign(side) * 1.0 : 0;
+			vertical = vertical != 0 ? sign(vertical) * 1.0 : 0;
+			
+			if(buttons & BT_Jump)	vertical += 65536;
+			if(buttons & BT_Crouch)	vertical -= 65536;
+			mouseYaw = GetPlayerInput(-1, INPUT_YAW);
+			mousePitch = GetPlayerInput(-1, INPUT_PITCH);
+			tilting = buttons & BT_STRAFE;
+		}
+		else
+		{
+			SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+			SetPlayerProperty(0,0,PROP_FROZEN);
+			buttons = 0;
+			forward = 0;
+			side = 0;
+			vertical = 0;
+			mouseYaw = 0;
+			mousePitch = 0;
+		}
+		
+		forward -= CheckInventory("DescentRecoil")*0.1;
+		if(CheckInventory("DescentRecoil") > 0) { TakeInventory("DescentRecoil",1); }
+		
+		angle = GetActorAngle(0);
+		pitch = GetActorPitch(0);
+		roll = GetActorRoll(0) - tiltRoll;
+		
+		angle += FixedMul(mouseYaw,sensitivityX+1.0) * gimbalLock;
+		pitch -= FixedMul((invertedMouse ? -mousePitch : mousePitch),sensitivityY+2.0) * gimbalLock;
+		
+		if(rollBack) { rolling = -gimbalLock; }
+		if(rolling != 0)
+		{
+			tiltRoll = 0;
+			if(gimbalLock < 0)
+			{
+				if(abs(roll) > 0.05)
+				{
+					if(abs(roll) - 0.5 >= 0.5)
+						roll -= 0.025;
+					else
+						roll += 0.025;
+				}
+				else
+				{
+					roll = 0;
+					rolling = 0;
+					gimbalLock *= -1;
+				}
+			}
+			else
+			{
+				if(abs(roll - 0.5) > 0.05)
+				{
+					if(abs(roll - 0.5) - 0.5 >= 0.5)
+						roll -= 0.025;
+					else
+						roll += 0.025;
+				}
+				else
+				{
+					roll = 0.5;
+					rolling = 0;
+					gimbalLock *= -1;
+				}
+			}
+		}
+		else
+		{
+			//Handle roll. This stuff is GZDoom only
+			if(mouseYaw < 0 && tiltRoll < maxTurn)
+				tiltroll += turnSpeed;
+			else if(mouseYaw > 0 && tiltRoll > -maxTurn)
+				tiltroll -= turnSpeed;
+			else if(mouseYaw == 0)
+			{
+				if(abs(tiltRoll) > turnSpeed)
+				{
+					if(tiltRoll > 0)
+						tiltRoll -= turnSpeed;
+					else
+						tiltRoll += turnSpeed;
+				}
+			}
+		}
+
+		// Clamp Pitch
+				
+		if(pitch < -0.5)			pitch += 1.0;
+		else if(pitch > 0.5)		pitch -= 1.0;
+		
+		/*PrintBold(s:"Angle is: ",d:angle/182,
+				s:"\nPitch is: ",d:pitch/182,
+				s:"\nRoll is: ",d:roll/182);*/
+				
+		//Facing a vertical axis? Flip it
+		
+		if((pitch > 0.25 || pitch < -0.25) && GZDoom)
+		{
+			gimbalLock *= -1;
+			if(angle <= 0.5)
+			{
+				angle += 0.5;
+				if(roll >= 0.5)
+					roll -= 0.5;
+				else if(roll < 0.5)
+					roll += 0.5;
+			}
+			else if(angle > 0.5) 	
+			{
+				angle -= 0.5;
+				if(roll >= 0.5)
+					roll += 0.5;
+				else if(roll < 0.5)
+					roll -= 0.5;
+			}
+		}
+			
+		//Set the rotation to the new ones
+		SetActorAngle(0,angle);
+		SetActorPitch(0,pitch);
+		SetActorRoll(0,roll + tiltRoll);
+						
+		//Now we calculate what movement looks like
+		sineAngle = sin(angle);
+		cosineAngle = cos(angle);
+		sinePitch = sin(-pitch);
+		cosinePitch = cos(-pitch);
+		sineRoll = sin(roll);
+		cosineRoll = cos(roll);
+		
+		verticalThrust = FixedMul((verticalBob*verticalToggle),cosinePitch);
+		horizontalThrust = FixedMul((verticalBob*verticalToggle),-sinePitch);
+		horizontalThrustX = FixedMul(horizontalThrust,cosineAngle);
+		horizontalThrustY = FixedMul(horizontalThrust,sineAngle);
+				
+		// Step One: Rotation About the Z-Axis
+		int angleX = FixedMul(forward,cosineAngle) - FixedMul(side*!tilting,sineAngle);
+		int angleY = FixedMul(forward,sineAngle) + FixedMul(side*!tilting,cosineAngle);
+		int angleZ = vertical;
+
+		// Step Two: Rotation About the X-Axis
+		int rollX = angleX;
+		int rollY = FixedMul(angleY,cosineRoll) - FixedMul(angleZ,sineRoll);
+		int rollZ = FixedMul(angleY,sineRoll) + FixedMul(angleZ,cosineRoll);
+
+		// Step Three: Rotation About the Y-Axis
+		int pitchX = FixedMul(rollX,cosinePitch) + FixedMul(rollZ,sinePitch);
+		int pitchY = RollY;
+		int pitchZ = FixedMul(rollZ,cosinePitch) - FixedMul(rollX,sinePitch);
+
+		// Step Four: Calculate Final Movement Vector
+		/*moveX = moveSpeed * pitchX;
+		moveY = moveSpeed * pitchY;
+		moveZ = moveSpeed * pitchZ;*/
+		
+		moveX = moveSpeed * angleX;
+		moveY = moveSpeed * angleY;
+		moveZ = moveSpeed * FixedMul(forward,sinePitch);
+		
+		if((moveX != 0 || moveY != 0 || moveZ != 0) && timer() % 4 == 0)
+			LineAttack(0,VectorAngle(moveX,moveY),GetActorPitch(0),0,"DescentRamPuff","",41.0);
+
+		/*PrintBold(s:"Z thrust is: ",f:verticalThrust,
+				s:"\nX thrust is: ",f:horizontalThrustX,
+				s:"\nY thrust is: ",f:horizontalThrustY,
+				s:"\nX Movement is: ",f:moveX,
+				s:"\nY Movement is: ",f:moveY,
+				s:"\nZ Movement is: ",f:moveZ);*/
+				
+		if(!GetCvar("samsara_descentflight"))
+		{
+			horizontalThrustX = 0;
+			horizontalThrustY = 0;
+			verticalThrust = 0;	
+		}
+				
+		velX = moveX + horizontalThrustX;
+		velY = moveY + horizontalThrustY;
+		velZ = GetCvar("samsara_descentflight") ? moveZ + verticalThrust : GetActorVelZ(0);
+							
+		if(verticalOscillate >= verticalOscillateThreshold)
+		{
+			verticalOscillate = 0;
+			verticalToggle *= -1;
+		}
+		
+		SetActorVelocity(0,velX,velY,velZ,0,0);
+		
+		Delay(1);
+		verticalOscillate++;
+		gimbalDelay--;
+	}
+	While(ClassifyActor(0) & ACTOR_DEAD)
+	{
+		if(deathCamTid == 0)
+		{
+			deathCamDelay = 0;
+			deathDirX = 1 - (2 * random(0,1));
+			deathDirY = 1 - (2 * random(0,1));
+			deathDirZ = 1 - (2 * random(0,1));
+			deathCamTid = UniqueTid(); 
+			SpawnForced("DescentDeathCamera",GetActorX(0),GetActorY(0),GetActorZ(0)+32.0,deathCamTid);
+			ThrustThing(random(0.0,1.0),random(4,8),0,deathCamTid);
+			SetPointerExt(AAPTR_TARGET,0,deathCamTid);
+			ChangeCamera(deathCamTid,0,0);
+		}
+		if(deathCamDelay == 35)
+			Thing_Stop(deathCamTid);
+		else
+			deathCamDelay++;
+			
+		SetActorAngle(0,GetActorAngle(0)+deathDirX*random(0,512));
+		SetActorPitch(0,GetActorPitch(0)+deathDirY*random(0,512));
+		SetActorRoll(0,GetActorRoll(0)+deathDirZ*random(0,512));
+		Delay(1);
+	}
+	Thing_Remove(deathCamTid);
+	SetActorRoll(0,0);
+	SetActorPitch(0,0);
+	restart;
+}
+
+str weaponNames[10] = { "DescentLaser", "DescentSuperLaser", "DescentVulcan", "DescentGauss", "DescentSpreadFire", "DescentFusion", "DescentHelix", "DescentOmega", "DescentPlasma", "DescentPhoenix" };
+str PrimaryStrings[10] = { "Laser ", "Laser ", "Vulcan", "Gauss", "Spread", "Fusion", "Helix", "Omega", "Plasma", "Phoenix" };
+str SecondaryStrings[10] = { "Flash", "Smart", "Concsn", "Homing", "Guided", "Mega", "Merc", "Shaker", "Proxim.", "Smart" };
+str AmmoTypesA[10] = { "Clip", "Clip", "Clip", "Clip", "Clip", "Cell", "Clip", "Cell", "Clip", "Clip" };
+str AmmoTypesB[10] = { "Shell", "Shell", "Shell", "Shell", "Shell", "RocketAmmo", "Shell", "RocketAmmo", "Shell", "Shell" };
+str AmmoIcons[4] = { "AMSMA0", "AMSMB0", "AMSMC0", "AMSMD0" };
+
+Script "DescentHUD" (void)
+{
+	str PrimaryGraphic = "DSPW0";
+	str SecondaryGraphic = "DSSW0";
+	int oldPrimary = CheckInventory("DescentPrimaryCounter");
+	int oldSecondary = CheckInventory("DescentSecondaryCounter");
+	str addonString = "";
+	str addonString2 = "";
+	str addonString3 = "";
+	int switchDelay = 10;
+	int switchCounterPrimary = switchDelay;
+	int switchCounterSecondary = switchDelay;
+	int alpha;
+	SetHudSize(320,200,1);
+	While(ClassifyActor(0) > 1)
+	{
+		//Basics
+		SetHudSize(960,600,1);
+		SetFont("DSFONT00");
+		HudMessage(d:GetActorProperty(0,APROP_Health);HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6880,"Descent Blue",490.0,446.0,0.1);
+		HudMessage(d:CheckInventory("Armor");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6881,"Descent Gold",490.0,408.0,0.1);
+		SetHudSize(320,200,1);
+		
+		//Spaceship drawing
+		if(GetActorProperty(0,APROP_Health) >= 100)
+		{
+			SetFont(strparam(s:"DSPYRO1",d:(timer()%20)/2));
+			HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6883,CR_UNTRANSLATED,20.0,19.0,0.1);
+		}
+		else if(GetActorProperty(0,APROP_Health) >= 0)
+		{
+			SetFont(strparam(s:"DSPYRO0",d:GetActorProperty(0,APROP_Health)/10));
+			HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6883,CR_UNTRANSLATED,20.0,19.0,0.1);
+		}
+		SetFont("DSPYRO");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6882,CR_UNTRANSLATED,15.0,14.0,0.1);
+		
+		//Total Ammos
+		SetHudSize(960,600,1);
+		SetFont("AMSMA0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6870,CR_UNTRANSLATED,22.0,480.0,0.1);
+		SetFont("AMSMB0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6871,CR_UNTRANSLATED,18.0,491.0,0.1);
+		SetFont("AMSMC0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6872,CR_UNTRANSLATED,14.0,502.0,0.1);
+		SetFont("AMSMD0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6873,CR_UNTRANSLATED,10.0,513.0,0.1);
+		
+		SetFont("DSFONT00");
+		HudMessage(d:CheckInventory("Clip"),s:"/",d:GetAmmoCapacity("Clip");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6874,"Descent Green",104.2,468.0,0.1);
+		HudMessage(d:CheckInventory("Shell"),s:"/",d:GetAmmoCapacity("Shell");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6875,"Descent Green",100.2,479.0,0.1);
+		HudMessage(d:CheckInventory("RocketAmmo"),s:"/",d:GetAmmoCapacity("RocketAmmo");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6876,"Descent Green",96.2,490.0,0.1);
+		HudMessage(d:CheckInventory("Cell"),s:"/",d:GetAmmoCapacity("Cell");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6877,"Descent Green",92.2,501.0,0.1);
+
+		//Weapon Widget
+		if(CheckInventory("DescentPrimaryCounter") != oldPrimary && switchCounterPrimary == switchDelay)
+		{
+			switchCounterPrimary = 0;
+			PlaySound(0,"Descent/Primary/Change",CHAN_7,1.0);
+		}
+		else
+		{	
+			alpha = abs((switchCounterPrimary - 5) * 0.2);
+		
+			if(switchCounterPrimary >= 5)
+				oldPrimary = CheckInventory("DescentPrimaryCounter");
+				
+			if(oldPrimary <= 1)
+				addonString = strparam(s:"\nLVL:",s:" ",d:CheckInventory("DescentLaserLevel")+1);
+			else
+				addonString = "";
+				
+			if(oldPrimary <= 1 && CheckInventory("DescentQuadLaser"))
+				addonString2 = "\nQuad";
+			else
+				addonString2 = "";
+				
+			SetHudSize(320,200,1);
+			SetFont(strparam(s:PrimaryGraphic,d:oldPrimary));
+			HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,6810,CR_UNTRANSLATED,64.1,172.0,0.1,alpha);
+			SetHudSize(960,600,1);
+			SetFont("DSFONT00");
+			SetHudClipRect(276,456,68,192,68);
+			HudMessage(s:strparam(s:PrimaryStrings[oldPrimary],s:addonString,s:addonString2);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6800,"Descent Green",276.1,456.1,0.1,alpha);
+			HudMessage(d:CheckInventory(AmmoTypesA[oldPrimary]);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6801,"Descent Red",276.1,512.1,0.1,alpha);
+			SetHudClipRect(0,0,0,0,0);
+			
+			if(switchCounterPrimary < switchDelay)
+				switchCounterPrimary++;
+		}	
+		
+		if(CheckInventory("DescentMissileStaticToken") || CheckInventory("DescentMissileCamera"))
+		{
+			HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,6850,CR_UNTRANSLATED,256.2,172.0,0.1);
+			if(!CheckInventory("DescentMissileStaticToken"))
+			{
+				SetHudSize(960,600,1);
+				SetFont("DSFONT00");
+				SetHudClipRect(656,456,128,192,64);
+				HudMessage(s:SecondaryStrings[CheckInventory("DescentSecondaryCounter")];HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6860,"Descent Green",696.0,456.1,0.1,alpha);
+				HudMessage(d:CheckInventory(AmmoTypesB[CheckInventory("DescentSecondaryCounter")]);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6861,"Descent Red",696.0,564.1,0.1,alpha);
+				SetHudClipRect(0,0,0,0,0);
+			}
+			else
+			{
+				HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6860,"Descent Green",720.2,456.1,0.1,alpha);
+				HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6861,"Descent Green",720.2,456.1,0.1,alpha);
+			}
+		}
+		else
+		{
+			if(CheckInventory("DescentSecondaryCounter") != oldSecondary && switchCounterSecondary == switchDelay)
+			{
+				switchCounterSecondary = 0;
+				PlaySound(0,"Descent/Secondary/Change",CHAN_7,1.0);
+			}
+			else
+			{	
+				alpha = abs((switchCounterSecondary - 5) * 0.2);
+			
+				if(switchCounterSecondary >= 5)
+					oldSecondary = CheckInventory("DescentSecondaryCounter");
+					
+				if(oldSecondary == 8)
+					addonString3 = " Bomb";
+				else if(oldSecondary == 9)
+					addonString3 = " Mine";
+				else
+					addonString3 = " Missile";
+					
+				SetHudSize(320,200,1);
+				SetFont(strparam(s:SecondaryGraphic,d:oldSecondary));
+				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,6850,CR_UNTRANSLATED,256.2,172.0,0.1,alpha);
+				SetHudSize(960,600,1);
+				SetFont("DSFONT00");
+				SetHudClipRect(624,456,128,192,64);
+				HudMessage(s:strparam(s:SecondaryStrings[oldSecondary],s:addonString3);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6860,"Descent Green",688.2,456.1,0.1,alpha);
+				HudMessage(d:CheckInventory(AmmoTypesB[oldSecondary]);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6861,"Descent Red",688.2,512.1,0.1,alpha);
+				SetHudClipRect(0,0,0,0,0);
+				
+				if(switchCounterSecondary < switchDelay)
+					switchCounterSecondary++;
+			}	
+		}
+				
+		Delay(1);
+	}
+}
+
+Script "DescentMissileCamera" (void)
+{
+	int newTid = UniqueTid();
+	int radius = GetActorProperty(0,APROP_Radius);
+	SpawnForced("AimingCamera",GetActorX(0),GetActorY(0),GetActorZ(0),newTid);
+	SetCameraToTexture(newTid,"DSMISCAM",90);
+	SetPointer(AAPTR_Master,newTid);
+	
+	while(ClassifyActor(0) & ACTOR_MISSILE)
+	{
+		int horizontalVector = magnitudeTwo_f(GetActorVelX(0), GetActorVelY(0))<<8;
+		int velZ = GetActorVelZ(0);
+		int pitch = VectorAngle(horizontalVector, velZ);
+		if(!CheckInventory("DescentGuidedController"))	{ SetActorPitch(0,pitch); }
+		SetActorPitch(newTid,-GetActorPitch(0));
+		Warp(AAPTR_Master,FixedMul(radius*4,cos(GetActorPitch(0))),0,FixedMul(radius*4,sin(GetActorPitch(0))),0,WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION|WARPF_USEPTR|WARPF_MOVEPTR);
+		Delay(1);
+	}
+	Thing_Remove(newTid);
+}
+
+Script "DescentGuidedMissile" (void)
+{
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0,myTid);
+	SetActivator(myTid,AAPTR_Target);
+	SetActorPitch(myTid,-GetActorPitch(0));
+	int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+	int GZDoom = GetCvar("samsara_zscriptready");
+	while(buttons & BT_ALTATTACK && (ClassifyActor(myTid) & ACTOR_MISSILE))
+	{
+		buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+		int mouseYaw = GetPlayerInput(-1, INPUT_YAW);
+		int mousePitch = GetPlayerInput(-1, INPUT_PITCH);
+		
+		int invertedMouse = GetCvar("invertmouse");
+		int sensitivityX = GZDoom ? GetCvar("m_yaw") : GetCvar("m_sensitivity");
+		int sensitivityY = GZDoom ? GetCvar("m_pitch") : GetCvar("m_sensitivity");
+		
+		mouseYaw = FixedMul(mouseYaw,sensitivityX+1.0);
+		mousePitch = FixedMul((invertedMouse ? -mousePitch : mousePitch),sensitivityY+2.0);
+		
+		SetActorAngle(myTid,GetActorAngle(myTid)+mouseYaw);
+		SetActorPitch(myTid,GetActorPitch(myTid)+mousePitch);
+				
+		int velX = 12*cos(GetActorAngle(myTid));
+		int velY = 12*sin(GetActorAngle(myTid));
+		int velZ = 12*sin(GetActorPitch(myTid));
+				
+		SetActorVelocity(myTid,0,0,0,0,0);
+		SetActorVelocity(myTid,velX,velY,velZ,0,0);
+			
+		Delay(1);
+	}
+		
+	TakeInventory("DescentGuidedController",1);
+}
+
+Script "DescentFlashFade" (void)
+{
+	FadeRange(255.0,255.0,255.0,0.9,0.0,0.0,0.0,0.0,1.0);
+}
+
+Script "DescentStaticHUD" (void)
+{
+	if(CheckInventory("DescentMissileCamera") > 0)
+	{
+		GiveInventory("DescentMissileStaticToken",1);
+		Delay(15);
+		TakeInventory("DescentMissileStaticToken",1);
+	}
+}
+
+Script "DescentChargeAmount" (void)
+{
+	SetActivatorToTarget(0);
+	SetResultValue(CheckInventory("DescentChargeToken"));
+}
+
+Script "DescentFusionChargeSound" (int overflow)
+{
+	int channel = overflow ? timer() % 3: CheckInventory("DescentChargeToken")%3;
+	switch(channel)
+	{
+		case 0: PlaySound(0,"Descent/Fusion/Charge",CHAN_WEAPON); break;
+		case 1: PlaySound(0,"Descent/Fusion/Charge",CHAN_5); break;
+		case 2: PlaySound(0,"Descent/Fusion/Charge",CHAN_6); break;
+	}
+}
+
+Script "DescentOmegaFireSound" (int overflow)
+{
+	int channel = timer() % 3;
+	switch(channel)
+	{
+		case 0: PlaySound(0,"Descent/Omega/Fire",CHAN_WEAPON); break;
+		case 1: PlaySound(0,"Descent/Omega/Fire",CHAN_5); break;
+		case 2: PlaySound(0,"Descent/Omega/Fire",CHAN_6); break;
+	}
+}
+
+Script "DescentHelixRotation" (void)
+{
+	SetResultValue(CheckInventory("DescentHelixRotation"));
+}
+
+Script "DescentOmegaLaser" (void)
+{
+	int tx = GetActorX(0); 
+	int ty = GetActorY(0); 
+	int tz = GetActorZ(0);
+	
+	SetActivatorToTarget(0);
+	
+	ACS_NamedExecuteWithResult("DescentOmegaLaserRender", tx, ty, tz);
+}
+
+Script "DescentOmegaLaserRender" (int tx, int ty, int tz) clientside
+{
+	int t, i, angle, pitch, x, y, z, vx, vy, vz, mag, magI, horz, pitchoffset,angleoffset, space, height;
+	int segmentx, segmenty, segmentz, bendinessX, bendinessy;
+	str segment;
+	
+	bendinessX = 6*randSign(); 
+	bendinessY = 6*randSign(); 
+	segment = "DescentOmegaEffect"; 
+	horz = (-12*cos(GetActorRoll(0)))>>16; 
+	i = 32; 
+	space = 64; 
+	height = 36;
+	
+	int xoff = (horz * sin(GetActorAngle(0))) - FixedMul(-i * cos(GetActorAngle(0)),cos(GetActorPitch(0))) + (random(-2,2) * sin(GetActorPitch(0)));
+	int yoff = (horz * cos(GetActorAngle(0))) + FixedMul(-i * sin(GetActorAngle(0)),cos(GetActorPitch(0))) + (random(-2,2) * sin(GetActorPitch(0)));
+				
+    x = GetActorX(0) + xoff;
+	y = GetActorY(0) - yoff;
+	z = GetActorZ(0) + (height * 1.0) + (-i * sin(GetActorPitch(0)));
+	
+	int vectorx = tx - x;
+	int vectory = ty - y;
+	int vectorz = tz - z;
+	angle = VectorAngle(vectorx, vectory);
+	
+	int length = magnitudeTwo(vectorx>>16,vectory>>16);
+	pitch = VectorAngle(length<<16, vectorz);
+
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+	
+	int newtid = UniqueTid();
+	int segments = (magI - abs(i)) / space;
+	int bendscale = random(1,segments / 2);
+	int bendcounter;
+	int bendFactor = (64-bendscale*4);
+	int segnum = 1;
+	for (i = i; i < magI; i += space)
+	{
+		SpawnForced(segment, x+segmentx, y+segmenty, z+segmentz, newtid);
+		if(segnum < 16)
+			segnum++;
+		else
+			segnum = 1;
+
+		if(bendcounter <= bendscale)
+		{
+			angleoffset += bendinessX*bendFactor;
+			pitchoffset += bendinessY*bendFactor;	
+		}
+		else if(bendcounter >= segments - bendscale)
+		{
+			angleoffset -= bendinessX*bendFactor;
+			pitchoffset -= bendinessY*bendFactor;	
+		}
+		else
+		{
+			angleoffset = 0;
+			pitchoffset = 0;
+		}
+				
+		SetActorAngle(newtid, angle+angleoffset);
+		SetActorPitch(newtid, pitch+pitchoffset);
+			
+		segmentx += FixedMul(cos(angle+angleoffset)*space,cos(pitch+pitchoffset));
+		segmenty += FixedMul(sin(angle+angleoffset)*space,cos(pitch+pitchoffset));
+		segmentz += sin(pitch+pitchoffset)*space;
+
+		Thing_ChangeTid(newtid,0);
+		bendcounter++;
+	}
+}
+
+Script "DescentMinePlace" (int type)
+{
+	int mineTid = UniqueTid();
+	switch(type)
+	{
+		case 0: SpawnForced("DescentProximityBomb",GetActorX(0),GetActorY(0),GetActorZ(0),mineTid); break;
+		case 1: SpawnForced("DescentSmartMine",GetActorX(0),GetActorY(0),GetActorZ(0),mineTid); break;
+	}
+	SetPointerExt(AAPTR_MASTER,0,mineTid);
+	SetPointerExt(AAPTR_FRIENDPLAYER,0,mineTid);
+	SetActorAngle(mineTid,GetActorAngle(0));
+	SetActorVelocity(mineTid,-16*cos(GetActorAngle(0)),-16*sin(GetActorAngle(0)),16*sin(GetActorPitch(0)),0,0);
+	
+	Delay(4);
+	
+	Thing_Stop(mineTid);
+}
+
+Script "DescentHasWeapon" (int type)
+{
+	switch(type)
+	{
+		case 0: SetResultValue(CheckInventory(weaponNames[CheckInventory("DescentPrimaryCounter")])); break;
+		case 1: SetResultValue(CheckInventory(weaponNames[CheckInventory("DescentSecondaryCounter")])); break;
+	}
+}
