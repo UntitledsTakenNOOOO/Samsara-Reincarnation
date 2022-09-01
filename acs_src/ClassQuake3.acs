@@ -233,7 +233,7 @@ Script "Q3ProximityMineGlow" (int mineType)
 }
 
 str Q3Weapons[12] = { "Q3Gauntlet", "Q3Machinegun", "Q3Shotgun", "Q3GrenadeLauncher", "Q3RocketLauncher", "Q3LightningGun", "Q3Railgun", "Q3Plasmagun", "Q3BFG10K", "Q3Chaingun", "Q3Nailgun", "Q3ProximityLauncher" };
-str Q3Ammos[12] = { "", "Clip", "Shell", "Q3GrenadeLauncherAmmo", "RocketAmmo", "Clip", "Q3RailGunAmmo", "Cell", "Cell", "Q3ChaingunAmmo", "Shell", "Q3GrenadeLauncherAmmo" };
+str Q3Ammos[12] = { "", "Clip", "Shell", "Q3GrenadeLauncherAmmo", "RocketAmmo", "Clip", "Q3RailGunAmmo", "Cell", "Cell", "Q3ChaingunAmmo", "Clip", "Q3GrenadeLauncherAmmo" };
 str Q3AmmoIcons[12] = { "", "MB", "SH", "GR", "RK", "LG", "SL", "PL", "BF", "CB", "NL", "PX" };
 str Q3WeaponSelections[12] = { "Q3GauntletSelected", "Q3MachinegunSelected", "Q3ShotgunSelected", "Q3GrenadeLauncherSelected", "Q3RocketLauncherSelected", "Q3LightningGunSelected", "Q3RailgunSelected", "Q3PlasmagunSelected", "Q3BFG10KSelected", "Q3ChaingunSelected", "Q3NailgunSelected", "Q3ProximityLauncherSelected" };
 str Q3PowerupItems[5] = { "Q3BattleSuitProtection", "Q3QuadDamageFactor", "Q3HasteTurbo", "Q3RegenerationDummy", "Q3InvisibilityCloak" };
@@ -257,105 +257,107 @@ Script "Q3Loop" enter
 	
 	While(true)
 	{
-		health = GetActorProperty(0,APROP_Health);
-		armor = CheckInventory("Armor");
-		
-		if(health < 0) { health = 0; } if(health > 999) { health = 999; }
-		ACS_NamedExecuteWithResult("Q3HudHealthAndArmor",health,armor);
-	
-		steptimer = ACS_NamedExecuteWithResult("Q3_Decorate",0,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
-		for(a = 0; a < 12; a++)
+		if(GetCvar("screenblocks")==11)
 		{
-			if(CheckWeapon(Q3Weapons[a])) { GiveInventory(Q3WeaponSelections[a],1); break; }
-			else TakeInventory(Q3WeaponSelections[a],1);
+			health = GetActorProperty(0,APROP_Health);
+			armor = CheckInventory("Armor");
 			
-		}
+			if(health < 0) { health = 0; } if(health > 999) { health = 999; }
+			ACS_NamedExecuteWithResult("Q3HudHealthAndArmor",health,armor);
 		
-		activePowerups = 0;
-		//HUD Stuff
-		for(a = 0; a < 5; a++)
-		{
-			pTics = GetActorPowerupTics(0,Q3PowerupItems[a]);
-			if(pTics > 0)
+			steptimer = ACS_NamedExecuteWithResult("Q3_Decorate",0,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
+			for(a = 0; a < 12; a++)
 			{
-				glow = Q3PowerupGlow[a];
+				if(CheckWeapon(Q3Weapons[a])) { GiveInventory(Q3WeaponSelections[a],1); break; }
+				else TakeInventory(Q3WeaponSelections[a],1);
 				
-				if(strlen(glow) > 0)			
-					GiveInventory(glow, 1);
-				
-				switch(a)
-				{
-					default:
-						if(pTics/35 <= 5 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
-						break;
-					/*case 1:
-						if(pTics/35 == 3 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
-						break;*/
-					case 3:
-						if(pTics % 35 == 0 && GetActorProperty(0,APROP_Health) < 200) 
-						{ 
-							SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_Health)+5);
-							if(GetActorProperty(0,APROP_Health) > 200)
-								SetActorProperty(0,APROP_Health,200);
-							
-							PlaySound(0,"Quake3/Items/RegenActive",CHAN_7);
-						}
-						if(pTics/35 <= 5 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
-						break;
-				}
-				
-				activePowerups++;
-				ACS_NamedExecuteWithResult("Q3HudPowerup",a,pTics,activePowerups);
 			}
-		}
-		
-		if(CheckInventory("Q3AmmoRegenerationDummy"))
-		{
-			if(timer()%52 == 0)
+			
+			activePowerups = 0;
+			//HUD Stuff
+			for(a = 0; a < 5; a++)
 			{
-				aTics = 0;
-				until(CheckInventory("Clip") >= 50 || aTics == 5)
+				pTics = GetActorPowerupTics(0,Q3PowerupItems[a]);
+				if(pTics > 0)
 				{
-					aTics++;	GiveInventory("Clip",1);
-				}
-				aTics = 0;
-				until(CheckInventory("Shell") >= 10 || aTics == 1)
-				{
-					aTics++;	GiveInventory("Shell",1);
-				}
-				aTics = 0;
-				until(CheckInventory("RocketAmmo") >= 10 || aTics == 1)
-				{
-					aTics++;	GiveInventory("RocketAmmo",1);
-				}
-				aTics = 0;
-				until(CheckInventory("Cell") >= 60 || aTics == 6)
-				{
-					aTics++;	GiveInventory("Cell",1);
+					glow = Q3PowerupGlow[a];
+					
+					if(strlen(glow) > 0)			
+						GiveInventory(glow, 1);
+					
+					switch(a)
+					{
+						default:
+							if(pTics/35 <= 5 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
+							break;
+						/*case 1:
+							if(pTics/35 == 3 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
+							break;*/
+						case 3:
+							if(pTics % 35 == 0 && GetActorProperty(0,APROP_Health) < 200) 
+							{ 
+								SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_Health)+5);
+								if(GetActorProperty(0,APROP_Health) > 200)
+									SetActorProperty(0,APROP_Health,200);
+								
+								PlaySound(0,"Quake3/Items/RegenActive",CHAN_7);
+							}
+							if(pTics/35 <= 5 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
+							break;
+					}
+					
+					activePowerups++;
+					ACS_NamedExecuteWithResult("Q3HudPowerup",a,pTics,activePowerups);
 				}
 			}
-		}
-		
-		//Drawing Ammo
-		for(a = 1; a < 12; a++)
-		{
-			if(CheckWeapon(Q3Weapons[a]))
+			
+			if(CheckInventory("Q3AmmoRegenerationDummy"))
 			{
-				if(timer()%3==0)
+				if(timer()%52 == 0)
 				{
-					ammoRotCounter += ammoRotDir;
-					if(ammoRotCounter == 0 || ammoRotCounter == 30)
-						ammoRotDir *= -1;		
+					aTics = 0;
+					until(CheckInventory("Clip") >= 50 || aTics == 5)
+					{
+						aTics++;	GiveInventory("Clip",1);
+					}
+					aTics = 0;
+					until(CheckInventory("Shell") >= 10 || aTics == 1)
+					{
+						aTics++;	GiveInventory("Shell",1);
+					}
+					aTics = 0;
+					until(CheckInventory("RocketAmmo") >= 10 || aTics == 1)
+					{
+						aTics++;	GiveInventory("RocketAmmo",1);
+					}
+					aTics = 0;
+					until(CheckInventory("Cell") >= 60 || aTics == 6)
+					{
+						aTics++;	GiveInventory("Cell",1);
+					}
 				}
-				
-				ACS_NamedExecuteWithResult("Q3HudAmmo",a,ammoRotCounter);
-				break;
 			}
+			
+			//Drawing Ammo
+			for(a = 1; a < 12; a++)
+			{
+				if(CheckWeapon(Q3Weapons[a]))
+				{
+					if(timer()%3==0)
+					{
+						ammoRotCounter += ammoRotDir;
+						if(ammoRotCounter == 0 || ammoRotCounter == 30)
+							ammoRotDir *= -1;		
+					}
+					
+					ACS_NamedExecuteWithResult("Q3HudAmmo",a,ammoRotCounter);
+					break;
+				}
+			}
+			
+			//Mugshot!
+			ACS_NamedExecuteWithResult("Q3DrawMugshot",((timer()/3)%160)+1);	
 		}
-		
-		//Mugshot!
-		ACS_NamedExecuteWithResult("Q3DrawMugshot",((timer()/3)%160)+1);
-		
 		Delay(1);
 	}
 }
