@@ -12,7 +12,7 @@
 */
 
 Actor Unreal_RedeemerLoad : Boolean { }
-Actor Unreal_Redeemer : UnrealWeapon 
+Actor Unreal_Redeemer : UnrealWeapon
 {
 	Tag "Redeemer"
 	Weapon.SlotNumber 7
@@ -23,7 +23,7 @@ Actor Unreal_Redeemer : UnrealWeapon
 	Weapon.AmmoUse2 60
 	Weapon.AmmoGive2 60
 	Weapon.UpSound "Unreal/RocketL/Select"
-	Inventory.PickupMessage "You got the Redeemer."	
+	Inventory.PickupMessage "You got the Redeemer."
 	Obituary "%o was vaporized by %k's Redeemer!!"
 	States
 	{
@@ -41,7 +41,10 @@ Actor Unreal_Redeemer : UnrealWeapon
 			UN01 O 1 A_WeaponReady
 			Loop
 		ReadyFlash:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 1 A_FireBullets(1,1,1,0, "Unreal_RazorBlankPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			Stop
+			TNT1 A 1 A_FireBullets(1,1,1,0, "Unreal_RazorBlankPuffCoop", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
 			Stop
 		Deselect:
 			UN02 A 0 A_TakeInventory("Unreal_RedeemerSelected",1)
@@ -50,13 +53,17 @@ Actor Unreal_Redeemer : UnrealWeapon
 		InstantDeselect: // I have to copy paste this everytime. Thanks, Zandronum.
 			TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
 			TNT1 A 1 A_Lower
-			Wait	
+			Wait
 		PigeonThrust:
 			//UN06 A 0 A_GunFlash("PigeonFlash",GFF_NOEXTCHANGE)
 			UN06 ABCABC 12 A_WeaponReady
 			Goto WIdle
 		PigeonFlash:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PigeonFlashCoop")
 			TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2 A_FireBullets(1,1,1,0, "Unreal_RazorBlankPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
+			Stop
+		PigeonFlashCoop:
+			TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 2 A_FireBullets(1,1,1,0, "Unreal_RazorBlankPuffCoop", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
 			Stop
 		Sway:
 			//UN07 A 0 A_GunFlash("PigeonFlash",GFF_NOEXTCHANGE)
@@ -64,14 +71,23 @@ Actor Unreal_Redeemer : UnrealWeapon
 			Goto WIdle
 		Fire:
 			UN03 A 0 ACS_NamedExecuteWithResult("Unreal_Recoil")
+			UN03 A 0 BRIGHT A_JumpIfInventory("CoopModeOn",1,2)
 			UN03 A 5 BRIGHT A_FireCustomMissile("Unreal_UMSRocket", 0, 1, 13)
-			UN03 A 0 BRIGHT A_PlaySound("Unreal/RocketL/Fire", CHAN_WEAPON)
-			UN03 B 5 BRIGHT 
+			Goto FireEnd
+			UN03 A 5 BRIGHT A_FireCustomMissile("Unreal_UMSRocketCoop", 0, 1, 13)
+			Goto FireEnd
+		FireEnd:
+			UN03 B 5 BRIGHT A_PlaySound("Unreal/RocketL/Fire", CHAN_WEAPON)
 			UN03 CDEFGHIJKLM 2 BRIGHT
 			Goto WIdle
 		AltFire:
 			UN03 A 0 ACS_NamedExecuteWithResult("Unreal_Recoil")
+			UN03 A 0 BRIGHT A_JumpIfInventory("CoopModeOn",1,2)
 			UN03 A 5 BRIGHT A_FireCustomMissile("Unreal_UMSRocket2", 0, 1, 13)
+			Goto AltFireEnd
+			UN03 A 5 BRIGHT A_FireCustomMissile("Unreal_UMSRocket2Coop", 0, 1, 13)
+			Goto AltFireEnd
+		AltFireEnd:
 			UN03 A 0 BRIGHT A_PlaySound("Unreal/RocketL/Fire", CHAN_WEAPON)
 			UN03 B 5 BRIGHT //A_FireBullets(1,1,1,0, "Unreal_RazorBlankPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
 			UN03 CDEFGHIJKLM 2 BRIGHT //A_FireBullets(1,1,1,0, "Unreal_RazorBlankPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
@@ -83,7 +99,7 @@ Actor Unreal_Redeemer : UnrealWeapon
 			UN01 ABCDEFGHIJKLMN 2 //A_FireBullets(1,1,1,0, "Unreal_RazorBlankPuff", FBF_NORANDOM|FBF_NOFLASH|FBF_EXPLICITANGLE)
 			Goto WIdle
 	}
-}	
+}
 
 Actor Unreal_UMSRocket
 {
@@ -101,8 +117,8 @@ Actor Unreal_UMSRocket
 		Spawn:
 			UN00 A 0 NoDelay ACS_NamedExecuteWithResult("Unreal_RedeemerPitch")
 			UN00 A 1 A_PlaySound("Unreal/RocketL/Loop1", CHAN_BODY, 1.0, True)
-			UN00 BC 1 
-		SpawnLoop:	
+			UN00 BC 1
+		SpawnLoop:
 			UN00 D 0 A_SpawnItemEx("UnrealSmoke",-32*cos(pitch)-32*sin(-pitch),0,32*sin(-pitch)-32*cos(pitch),0,0,0)
 			UN00 D 1 A_SpawnItemEx("UnrealSmoke",-64*cos(pitch)-32*sin(-pitch),0,64*sin(-pitch)-32*cos(pitch),0,0,0)
 			Loop
@@ -114,7 +130,9 @@ Actor Unreal_UMSRocket
 			TNT1 A 5 A_SpawnItemEx("Unreal_YellowShockwave", 0,0,0,0,0,0,0, SXF_NOCHECKPOSITION)
 			Stop
 	}
-}	
+}
+
+Actor Unreal_UMSRocketCoop : Unreal_UMSRocket { +THRUSPECIES Species "Player" }
 
 Actor Unreal_UMSRocket2 : Unreal_UMSRocket
 {
@@ -125,8 +143,8 @@ Actor Unreal_UMSRocket2 : Unreal_UMSRocket
 		Spawn:
 			UN00 A 0 NoDelay ACS_NamedExecuteWithResult("Unreal_RedeemerRocket")
 			UN00 A 1 A_PlaySound("Unreal/RocketL/Loop1", CHAN_BODY, 1.0, True)
-			UN00 BC 1 
-		SpawnLoop:	
+			UN00 BC 1
+		SpawnLoop:
 			UN00 D 0 A_SpawnItemEx("UnrealSmoke",-32*cos(pitch)-32*sin(-pitch),0,32*sin(-pitch)-32*cos(pitch),0,0,0)
 			UN00 D 1 A_SpawnItemEx("UnrealSmoke",-64*cos(pitch)-32*sin(-pitch),0,64*sin(-pitch)-32*cos(pitch),0,0,0)
 			Loop
@@ -139,7 +157,9 @@ Actor Unreal_UMSRocket2 : Unreal_UMSRocket
 			TNT1 A 5 A_SpawnItemEx("Unreal_YellowShockwave2", 0,0,0,0,0,0,0, SXF_NOCHECKPOSITION)
 			Stop
 	}
-}	
+}
+
+Actor Unreal_UMSRocket2Coop : Unreal_UMSRocket2 { +THRUSPECIES Species "Player" }
 
 Actor Unreal_RedeemerExplosionEffect : Unreal_EightballExplosiveEffect
 {
@@ -148,8 +168,8 @@ Actor Unreal_RedeemerExplosionEffect : Unreal_EightballExplosiveEffect
 		Spawn:
 			UN18 ABCDEFG 2 BRIGHT A_SetScale(scalex+0.5)
 			Stop
-		}
-} 
+	}
+}
 
 Actor Unreal_RedeemerExplosionEffect2 : Unreal_RedeemerExplosionEffect
 {
@@ -159,9 +179,9 @@ Actor Unreal_RedeemerExplosionEffect2 : Unreal_RedeemerExplosionEffect
 		Spawn:
 			UN27 AAABBBCCCDDDEEEFFFGGGHHH 1 BRIGHT A_SetScale(scalex+0.333)
 			Stop
-		}
-} 
-	
+	}
+}
+
 Actor Unreal_YellowShockwave
 {
 	+CLIENTSIDEONLY
@@ -175,7 +195,7 @@ Actor Unreal_YellowShockwave
 			UN00 ABCDEF 1 BRIGHT
 			Stop
 	}
-}	
+}
 
 Actor Unreal_YellowShockwave2 : Unreal_YellowShockwave
 { 
@@ -186,7 +206,7 @@ Actor Unreal_YellowShockwave2 : Unreal_YellowShockwave
 			UN00 ABCDEF 1 BRIGHT
 			Stop
 	}
-}	
+}
 
 Actor Unreal_QuadShotLoaded : Inventory { Inventory.MaxAmount 3	Inventory.InterHubAmount 0 +Inventory.UNDROPPABLE  -INVBAR }
 
@@ -200,18 +220,18 @@ Actor Unreal_QuadShot : UnrealWeapon
 	Weapon.AmmoType2 "Shell"
 	Weapon.AmmoUse2 2
 	Weapon.UpSound "Unreal/QuadShot/Reload"
-	Inventory.PickupMessage "You got the QuadShot."	
+	Inventory.PickupMessage "You got the QuadShot."
 	Obituary "%o was turned into ground beef by %k's QuadShot!"
 	States
 	{
 		Spawn:
 			UN00 A 10 BRIGHT
 			UN00 A 10
-			Loop	
+			Loop
 		Select:
 			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Raise
 			TNT1 A 1 A_Raise
-			loop			
+			loop
 		Ready:
 			UN02 ABCDEFGHIJ 2
 			Goto Widle
@@ -219,14 +239,19 @@ Actor Unreal_QuadShot : UnrealWeapon
 			UN01 A 1 A_WeaponReady
 			Loop
 		Deselect:
-			UN03 ABCD 2 
+			UN03 ABCD 2
 			Goto InstantDeselect
 		InstantDeselect: // I have to copy paste this everytime. Thanks, Zandronum.
 			TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
 			TNT1 A 1 A_Lower
-			Wait	
+			Wait
 		Fire:
+			UN01 B 0 BRIGHT A_JumpIfInventory("CoopModeOn",1,2)
 			UN01 B 3 BRIGHT A_FireBullets(6,6, 7, 25, "UnrealPuff", FBF_NORANDOM|FBF_USEAMMO)
+			Goto FireEnd
+			UN01 B 3 BRIGHT A_FireBullets(6,6, 7, 25, "UnrealPuffCoop", FBF_NORANDOM|FBF_USEAMMO)
+			Goto FireEnd
+		FireEnd:
 			UN01 C 0 BRIGHT A_PlaySound("Unreal/QuadShot/Fire", CHAN_WEAPON)
 			UN01 CDE 3 BRIGHT
 			Goto ShotgunPump
@@ -255,28 +280,33 @@ Actor Unreal_QuadShot : UnrealWeapon
 			UN01 A 0 A_JumpIfInventory("Unreal_QuadShotLoaded", 1, "TwoBarrels")
 			Goto OneBarrel
 		OneBarrel:
+			UN01 B 0 BRIGHT A_JumpIfInventory("CoopModeOn",1,2)
 			UN01 B 3 BRIGHT A_FireBullets(4,4, 7, 25, "UnrealPuff", FBF_NORANDOM|FBF_USEAMMO)
-			UN01 C 0 BRIGHT A_PlaySound("Unreal/QuadShot/Fire", CHAN_WEAPON)
-			UN01 C 0 BRIGHT A_TakeInventory("Unreal_QuadShotLoaded", 4)
-			UN01 CDE 3 BRIGHT
-			Goto ShotgunPump		
+			Goto BarrelEnd
+			UN01 B 3 BRIGHT A_FireBullets(4,4, 7, 25, "UnrealPuffCoop", FBF_NORANDOM|FBF_USEAMMO)
+			Goto BarrelEnd
 		TwoBarrels:
+			UN01 B 0 BRIGHT A_JumpIfInventory("CoopModeOn",1,2)
 			UN01 B 3 BRIGHT A_FireBullets(6,6, 14, 25, "UnrealPuff", FBF_NORANDOM|FBF_USEAMMO)
-			UN01 C 0 BRIGHT A_PlaySound("Unreal/QuadShot/Fire", CHAN_WEAPON)
-			UN01 C 0 BRIGHT A_TakeInventory("Unreal_QuadShotLoaded", 4)
-			UN01 CDE 3 BRIGHT
-			Goto ShotgunPump			
+			Goto BarrelEnd
+			UN01 B 3 BRIGHT A_FireBullets(6,6, 14, 25, "UnrealPuffCoop", FBF_NORANDOM|FBF_USEAMMO)
+			Goto BarrelEnd
 		ThreeBarrels:
+			UN01 B 0 BRIGHT A_JumpIfInventory("CoopModeOn",1,2)
 			UN01 B 3 BRIGHT A_FireBullets(8,8, 21, 25, "UnrealExtremePuff", FBF_NORANDOM|FBF_USEAMMO)
-			UN01 C 0 BRIGHT A_PlaySound("Unreal/QuadShot/Fire", CHAN_WEAPON)
-			UN01 C 0 BRIGHT A_TakeInventory("Unreal_QuadShotLoaded", 4)
-			UN01 CDE 3 BRIGHT
-			Goto ShotgunPump			
+			Goto BarrelEnd
+			UN01 B 3 BRIGHT A_FireBullets(8,8, 21, 25, "UnrealExtremePuffCoop", FBF_NORANDOM|FBF_USEAMMO)
+			Goto BarrelEnd
 		FourBarrels:
+			UN01 B 0 BRIGHT A_JumpIfInventory("CoopModeOn",1,2)
 			UN01 B 3 BRIGHT A_FireBullets(10,10, 28, 25, "UnrealExtremePuff", FBF_NORANDOM|FBF_USEAMMO)
+			Goto BarrelEnd
+			UN01 B 3 BRIGHT A_FireBullets(10,10, 28, 25, "UnrealExtremePuffCoop", FBF_NORANDOM|FBF_USEAMMO)
+			Goto BarrelEnd
+		BarrelEnd:
 			UN01 C 0 BRIGHT A_PlaySound("Unreal/QuadShot/Fire", CHAN_WEAPON)
-			UN01 C 0 BRIGHT A_TakeInventory("Unreal_QuadShotLoaded", 4)
-			UN01 CDE 3 BRIGHT
-			Goto ShotgunPump					
-		}
-}		
+			UN01 C 3 BRIGHT A_TakeInventory("Unreal_QuadShotLoaded", 4)
+			UN01 DE 3 BRIGHT
+			Goto ShotgunPump
+	}
+}
