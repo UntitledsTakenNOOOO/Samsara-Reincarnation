@@ -77,8 +77,14 @@ Actor Q3PlasmaProjectile
 		XDeath:
 			Q306 A 0 A_SpawnItemEx("Q3BloodSpray",0,0,0,0,0,0,0,SXF_TRANSFERSCALE)
 		Death:
+			Q306 A 0 A_Explode(14,14)
 			Q306 A 0 A_JumpIf(abs(z - floorz) <= 4,"HitFloor")
 			Q306 A 0 A_CheckCeiling("HitCeiling")
+			TNT1 A 0 A_JumpIfCloser(64,1)
+			Goto Finish
+			TNT1 A 0 A_JumpIf(CallACS("Q3_Decorate",2)==1, 1)
+			Goto Finish
+			Q306 A 0 A_GiveToTarget("Q3PlasmaClimber",1)
 			Goto Finish
 		HitFloor:
 			TNT1 A 0 ACS_NamedExecuteWithResult("Q3SpawnDecal",3)
@@ -96,5 +102,17 @@ Actor Q3PlasmaProjectile
 }
 
 Actor Q3PlasmaProjectileCoop : Q3PlasmaProjectile { +THRUSPECIES Species "Player" }
+
+Actor Q3PlasmaClimber : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_JumpIf(CallACS("Q3_Decorate",1)==1,1)
+			Stop
+			TNT1 A 0 ThrustThingZ(0,4,0,1)
+			Stop
+	}
+}
 
 Actor Q3PlasmaExtraTic : Q3Boolean {}
