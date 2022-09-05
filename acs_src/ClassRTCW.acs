@@ -512,7 +512,9 @@ Script "RTCW_PlayerController" (void)
 	int grenadeTimer;
 	//Bulk clear variables
 	int clearSpawn, clearRun, clearJump, clearPain, clearKick;
-	
+	//Cache whether game is coop
+	bool isCoopGame = isCoop();
+
 	int GZDoom = !GetPlayerAccountName(0);
 	while(1)
 	{
@@ -532,7 +534,7 @@ Script "RTCW_PlayerController" (void)
 		buttons = GetPlayerInput(-1,INPUT_BUTTONS);
 		movement = sideMove || forwardMove;
 		crouching = GetActorViewHeight(0) <=  36.0;
-			
+
 		//Sort actions on a priority basis
 		if(weapon != oldWeapon)
 		{
@@ -802,10 +804,13 @@ Script "RTCW_PlayerController" (void)
 		if(clearPain) { clearPain = 0; painSet = 0; painTimer = 0; }
 		if(clearKick) { clearKick = 0; kickSet = 0; kickTimer = 0; }
 		if(clearSwim) { clearSwim = 0; swimSet = 0; swimTimer = 0; }
-		
+
 		if(CheckWeapon("RTCW_Knife"))
-			LineAttack(0,GetActorAngle(0),GetActorPitch(0),0,"RTCW_KnifeHintPuff","None",64.0);
-		
+		{
+			if (isCoopGame) LineAttack(0,GetActorAngle(0),GetActorPitch(0),0,"RTCW_KnifeHintPuffCoop","None",64.0);
+			else LineAttack(0,GetActorAngle(0),GetActorPitch(0),0,"RTCW_KnifeHintPuff","None",64.0);
+		}
+
 		Delay(1);
 		crouchOld = crouching;
 		oldWeapon = weapon;

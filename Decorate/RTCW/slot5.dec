@@ -49,15 +49,20 @@ Actor RTCW_Panzerfaust : RTCW_Weapon
 			RW07 C 2
 			Stop
 		Fire:
-			RW00 A 0 A_JumpIfInventory("RocketAmmo",1,1)
-			Goto FireLast
 			RW00 A 0 A_GiveInventory("RTCW_FiringToken",1)
 			RW00 A 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
 			RW00 A 0 A_FireCustomMissile("RTCW_PanzerfaustShell",-random(85,105),0,8,4,0,-4)
 			RW00 A 0 A_Quake(3,15,0,128)
-			RW00 A 0 A_Gunflash("FireFlash")
-			RW00 A 0 A_FireCustomMissile("RTCW_PanzerfaustRocket",0,1,8)
 			RW00 A 0 A_PlaySound("RTCW/Panzerfaust/Fire",CHAN_WEAPON)
+			RW00 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			RW00 A 0 A_FireCustomMissile("RTCW_PanzerfaustRocket",0,1,8)
+			Goto FireContinue
+			RW00 A 0 A_FireCustomMissile("RTCW_PanzerfaustRocketCoop",0,1,8)
+			Goto FireContinue
+		FireContinue:
+			RW00 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+			Goto FireLast
+			RW00 A 0 A_Gunflash("FireFlash")
 		LoadPanzerfaust:
 			RW00 ABCDEFGHIJKLMNOP 2
 			RW00 P 0
@@ -68,14 +73,8 @@ Actor RTCW_Panzerfaust : RTCW_Weapon
 			RW02 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
 			Goto ReadyLoop	
 		FireLast:
-			RW02 C 0 A_GiveInventory("RTCW_FiringToken",1)
-			RW02 C 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
-			RW02 C 0 A_FireCustomMissile("RTCW_PanzerfaustShell",-random(85,105),0,8,4,0,-4)
-			RW02 C 0 A_Quake(3,15,0,128)
 			RW02 C 0 A_Gunflash("FireFlashLast")
 			RW02 C 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
-			RW02 C 0 A_FireCustomMissile("RTCW_PanzerfaustRocket",0,1,8)
-			RW02 C 0 A_PlaySound("RTCW/Panzerfaust/Fire",CHAN_WEAPON)
 		DeselectNoAmmo:
 			RW02 A 0 A_PlaySound("RTCW/Change",CHAN_7)
 			RW02 CDEFGHIJKL 2
@@ -99,11 +98,6 @@ Actor RTCW_Panzerfaust : RTCW_Weapon
 			RW09 A 18
 			RW09 A 0 A_TakeInventory("RTCW_Kicking",1)
 			Goto ReadyLoop
-		KickingFoot:
-			RW99 ABCD 2
-			RW99 E 0 A_FireCustomMissile("RTCW_KickProjectile",0,0,0,-8)
-			RW99 EFGHI 2
-			Stop
 	}
 }
 
@@ -144,6 +138,8 @@ Actor RTCW_PanzerfaustRocket
 			Stop
 	}
 }
+
+Actor RTCW_PanzerfaustRocketCoop : RTCW_PanzerfaustRocket { +THRUSPECIES Species "Player" }
 
 Actor RTCW_PanzerfaustShell : RTCW_Casing
 {

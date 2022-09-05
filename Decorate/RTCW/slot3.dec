@@ -52,36 +52,16 @@ Actor RTCW_Mauser : RTCW_Weapon
 		Fire:
 			RW00 B 0 A_JumpIfInventory("RTCW_MauserMagazine",1,1)
 			Goto Reload
-			RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
+			RW00 B 0 A_GiveInventory("SamsaraRTCWMauserAttackHandler")
 			RW00 B 0 A_JumpIfInventory("RTCW_Scoped",1,"FireScoped")
-			RW00 B 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
-			RW00 B 0 A_TakeInventory("RTCW_MauserMagazine",1)
-			RW00 B 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
 			RW00 B 0 A_GunFlash("FireFlash")
-			RW00 B 0 ACS_NamedExecuteWithResult("RTCW_Recoil",2)
-			RW00 B 0 A_FireCustomMissile("RTCW_SnooperTracer",FRandom(-2.5,2.5),0,0,4, 0, FRandom(-2.5,2.5))
-			RW00 B 0 A_JumpIfInventory("RTCW_MauserMagazine",1,1)
-			Goto FireLast
-			RW00 B 0 A_PlaySound("RTCW/Mauser/Fire",CHAN_Weapon)
+			Goto FireFinish
 		FireFinish:
 			RW00 BCDEFGHIJKLM 2
 			RW00 A 15
 			Goto ReadyLoop
-		FireLast:
-			RW00 B 0 A_PlaySound("RTCW/Mauser/FireLast",CHAN_Weapon)
-			Goto FireFinish
 		FireScoped:
-			RW00 B 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
-			RW00 B 0 A_GiveInventory("RTCW_AimSpread",16711680)
-			RW00 B 0 A_TakeInventory("RTCW_MauserMagazine",1)
-			RW00 B 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
-			RW00 B 0 A_FireCustomMissile("RTCW_MauserTracer",0,0,0,8)
-			RW00 B 0 A_SetAngle(angle+frandom(-2.0,2.0))
-			RW00 B 0 ACS_NamedExecuteWithResult("RTCW_Recoil",3)
 			RW00 B 6
-			RW00 B 0 A_JumpIfInventory("RTCW_MauserMagazine",1,1)			
-			Goto FireLast
-			RW00 B 0 A_PlaySound("RTCW/Mauser/Fire",CHAN_Weapon)
 			Goto FireFinish
 		FireFlash:
 			RW03 B 2 Bright
@@ -143,11 +123,6 @@ Actor RTCW_Mauser : RTCW_Weapon
 			RW00 A 18
 			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
 			Goto ReadyLoop
-		KickingFoot:
-			RW99 ABCD 2
-			RW99 E 0 A_FireCustomMissile("RTCW_KickProjectile",0,0,0,-8)
-			RW99 EFGHI 2
-			Stop
 	}
 }
 
@@ -165,6 +140,8 @@ Actor RTCW_MauserTracer : RTCW_Tracer
 			Goto Super::XDeath
 	}
 }
+
+Actor RTCW_MauserTracerCoop : RTCW_MauserTracer { +THRUSPECIES Species "Player" }
 
 Actor RTCW_MauserTracerDM : RTCW_Tracer
 { 
@@ -184,6 +161,62 @@ Actor RTCW_MauserMagazine : Ammo
 {
 	Inventory.MaxAmount 10
 	Ammo.BackpackMaxAmount 10
+}
+
+actor SamsaraRTCWMauserAttackHandler : Trigger
+{
+	States
+	{
+		// Ammo check stuff
+		Pickup:
+			TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+		PickupCheckAmmoNonReloadable:
+			TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+			TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupTakeAmmoNonReloadable")
+			Stop
+		PickupCheckAmmoReloadable:
+			TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+			TNT1 A 0 A_JumpIfInventory("RTCW_MauserMagazine",1,"PickupTakeAmmoReloadable")
+			Stop
+
+		// Attack stuff
+		PickupAttack:
+			TNT1 A 0 A_GiveInventory("RTCW_FiringToken",1)
+			TNT1 A 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
+			TNT1 A 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
+			TNT1 A 0 A_JumpIfInventory("RTCW_Scoped",1,"PickupAttackScope")
+			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil",2)
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+			TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracer",FRandom(-2.5,2.5),0,0,4, 0, FRandom(-2.5,2.5))
+			Goto PickupAttackSound
+		PickupAttackCoop:
+			TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracerCoop",FRandom(-2.5,2.5),0,0,4, 0, FRandom(-2.5,2.5))
+			Goto PickupAttackSound
+		PickupAttackScope:
+			TNT1 A 0 A_GiveInventory("RTCW_AimSpread",16711680)
+			TNT1 A 0 A_SetAngle(angle+frandom(-2.0,2.0))
+			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil",3)
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackScopeCoop")
+			TNT1 A 0 A_FireCustomMissile("RTCW_MauserTracer",0,0,0,8)
+			Goto PickupAttackSound
+		PickupAttackScopeCoop:
+			TNT1 A 0 A_FireCustomMissile("RTCW_MauserTracerCoop",0,0,0,8)
+			Goto PickupAttackSound
+		PickupAttackSound:
+			TNT1 A 0 A_JumpIfInventory("RTCW_MauserMagazine",1,2)
+			TNT1 A 0 A_PlaySound("RTCW/Mauser/FireLast",CHAN_Weapon)
+			Stop
+			TNT1 A 0 A_PlaySound("RTCW/Mauser/Fire",CHAN_Weapon)
+			Stop
+
+		// Ammo taking stuff
+		PickupTakeAmmoNonReloadable:
+			TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
+			Goto PickupAttack
+		PickupTakeAmmoReloadable:
+			TNT1 A 0 A_TakeInventory("RTCW_MauserMagazine",1)
+			Goto PickupAttack
+	}
 }
 
 Actor RTCW_Snooper : RTCW_Weapon
@@ -245,13 +278,9 @@ Actor RTCW_Snooper : RTCW_Weapon
 			RW00 B 0 A_JumpIfInventory("RTCW_SnooperMagazine",1,1)
 			Goto Reload
 			//RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
+			RW00 B 0 A_GiveInventory("SamsaraRTCWSnooperAttackHandler")
 			RW00 B 0 A_JumpIfInventory("RTCW_Scoped",1,"FireScoped")
-			RW00 B 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
-			RW00 B 0 A_TakeInventory("RTCW_SnooperMagazine",1)
 			RW00 B 0 A_GunFlash("FireFlash")
-			RW00 B 0 ACS_NamedExecuteWithResult("RTCW_Recoil",2)
-			RW00 B 0 A_FireCustomMissile("RTCW_SnooperTracer",FRandom(-1.5,1.5),0,0,4, 0, FRandom(-1.5,1.5))
-			RW00 B 0 A_PlaySound("RTCW/Snooper/Fire",CHAN_Weapon)
 		FireFinish:
 			RW00 BC 2
 			RW00 A 33
@@ -260,15 +289,6 @@ Actor RTCW_Snooper : RTCW_Weapon
 			RW03 B 2 Bright
 			Stop
 		FireScoped:
-			RW00 B 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
-			RW00 B 0 A_GiveInventory("RTCW_AimSpread",16711680)
-			RW00 B 0 A_TakeInventory("RTCW_SnooperMagazine",1)
-			RW00 B 0 A_FireCustomMissile("RTCW_SnooperTracer",0,0,0,8)
-			RW00 B 0 A_SetAngle(angle+frandom(-1.0,1.0))
-			RW00 B 0 ACS_NamedExecuteWithResult("RTCW_Recoil",4)
-			RW00 B 0 A_PlaySound("RTCW/Snooper/Fire",CHAN_Weapon)
-			Goto FireFinishScoped
-		FireFinishScoped:
 			TNT1 BC 2
 			TNT1 A 33
 			Goto ReadyLoop
@@ -331,11 +351,6 @@ Actor RTCW_Snooper : RTCW_Weapon
 			RW00 M 18
 			TNT1 A 0 A_TakeInventory("RTCW_Kicking",1)
 			Goto ReadyLoop
-		KickingFoot:
-			RW99 ABCD 2
-			RW99 E 0 A_FireCustomMissile("RTCW_KickProjectile",0,0,0,-8)
-			RW99 EFGHI 2
-			Stop
 	}
 }
 
@@ -364,6 +379,8 @@ Actor RTCW_SnooperTracer : RTCW_Tracer
 	}
 }
 
+Actor RTCW_SnooperTracerCoop : RTCW_SnooperTracer { +THRUSPECIES Species "Player" }
+
 Actor RTCW_SnooperTracerDM : RTCW_Tracer
 { 
 	States
@@ -375,5 +392,54 @@ Actor RTCW_SnooperTracerDM : RTCW_Tracer
 		XDeath:
 			TNT1 A 0 A_Explode(CallACS("RTCW_BulletDamage",70),8,!XF_HURTSOURCE,0,8)
 			Goto Super::XDeath
+	}
+}
+
+actor SamsaraRTCWSnooperAttackHandler : Trigger
+{
+	States
+	{
+		// Ammo check stuff
+		Pickup:
+			TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+		PickupCheckAmmoNonReloadable:
+			TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+			TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupTakeAmmoNonReloadable")
+			Stop
+		PickupCheckAmmoReloadable:
+			TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+			TNT1 A 0 A_JumpIfInventory("RTCW_SnooperMagazine",1,"PickupTakeAmmoReloadable")
+			Stop
+
+		// Attack stuff
+		PickupAttack:
+			TNT1 A 0 A_PlaySound("RTCW/Snooper/Fire",CHAN_Weapon)
+			TNT1 A 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
+			TNT1 A 0 A_JumpIfInventory("RTCW_Scoped",1,"PickupAttackScope")
+			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil",2)
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+			TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracer",FRandom(-1.5,1.5),0,0,4, 0, FRandom(-1.5,1.5))
+			Stop
+		PickupAttackCoop:
+			TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracerCoop",FRandom(-1.5,1.5),0,0,4, 0, FRandom(-1.5,1.5))
+			Stop
+		PickupAttackScope:
+			TNT1 A 0 A_GiveInventory("RTCW_AimSpread",16711680)
+			TNT1 A 0 A_SetAngle(angle+frandom(-1.0,1.0))
+			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil",4)
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackScopeCoop")
+			TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracer",0,0,0,8)
+			Goto PickupAttackSound
+		PickupAttackScopeCoop:
+			TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracerCoop",0,0,0,8)
+			Goto PickupAttackSound
+
+		// Ammo taking stuff
+		PickupTakeAmmoNonReloadable:
+			TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
+			Goto PickupAttack
+		PickupTakeAmmoReloadable:
+			TNT1 A 0 A_TakeInventory("RTCW_SnooperMagazine",1)
+			Goto PickupAttack
 	}
 }

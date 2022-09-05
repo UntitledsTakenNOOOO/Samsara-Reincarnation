@@ -39,15 +39,8 @@ Actor RTCW_MP40 : RTCW_Weapon
 		Fire:
 			RW00 B 0 A_JumpIfInventory("RTCW_MP40Magazine",1,1)
 			Goto Reload
-			RW00 B 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
-			//RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
-			RW00 B 0 A_TakeInventory("RTCW_MP40Magazine",1)
-			RW00 B 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
 			RW00 B 0 A_GunFlash("FireFlash")
-			RW00 B 0 A_GiveInventory("RTCW_MP40Spread",1)
-			RW00 B 0 A_FireCustomMissile("RTCW_LugerTracer",CallACS("RTCW_Decorate",1)*frandom(-1.0,1.0),0,0,4,0,CallACS("RTCW_Decorate",1)*frandom(-1.0,1.0))
-			RW00 B 0 A_PlaySound("RTCW/MP40/Fire",CHAN_Weapon)
-			RW00 B 0 ACS_NamedExecuteWithResult("RTCW_Recoil",1)
+			RW00 B 0 A_GiveInventory("SamsaraRTCWMP40AttackHandler")
 			RW00 B 1
 			RW00 C 0 A_Jump(37, 2)
 			RW00 C 1
@@ -97,11 +90,6 @@ Actor RTCW_MP40 : RTCW_Weapon
 			RW00 A 18
 			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
 			Goto ReadyLoop
-		KickingFoot:
-			RW99 ABCD 2
-			RW99 E 0 A_FireCustomMissile("RTCW_KickProjectile",0,0,0,-8)
-			RW99 EFGHI 2
-			Stop
 	}
 }
 
@@ -111,6 +99,46 @@ Actor RTCW_MP40Magazine : Ammo
 {
 	Inventory.MaxAmount 32
 	Ammo.BackpackMaxAmount 32
+}
+
+actor SamsaraRTCWMP40AttackHandler : Trigger
+{
+	States
+	{
+		// Ammo check stuff
+		Pickup:
+			TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+		PickupCheckAmmoNonReloadable:
+			TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+			TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmoNonReloadable")
+			Stop
+		PickupCheckAmmoReloadable:
+			TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+			TNT1 A 0 A_JumpIfInventory("RTCW_MP40Magazine",1,"PickupTakeAmmoReloadable")
+			Stop
+
+		// Attack stuff
+		PickupAttack:
+			TNT1 A 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
+			TNT1 A 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
+			TNT1 A 0 A_GiveInventory("RTCW_MP40Spread",1)
+			TNT1 A 0 A_PlaySound("RTCW/MP40/Fire",CHAN_Weapon)
+			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil",1)
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+			TNT1 A 0 A_FireCustomMissile("RTCW_LugerTracer",CallACS("RTCW_Decorate",1)*frandom(-1.0,1.0),0,0,4,0,CallACS("RTCW_Decorate",1)*frandom(-1.0,1.0))
+			Stop
+		PickupAttackCoop:
+			TNT1 A 0 A_FireCustomMissile("RTCW_LugerTracerCoop",CallACS("RTCW_Decorate",1)*frandom(-1.0,1.0),0,0,4,0,CallACS("RTCW_Decorate",1)*frandom(-1.0,1.0))
+			Stop
+
+		// Ammo taking stuff
+		PickupTakeAmmoNonReloadable:
+			TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+			Goto PickupAttack
+		PickupTakeAmmoReloadable:
+			TNT1 A 0 A_TakeInventory("RTCW_MP40Magazine",1)
+			Goto PickupAttack
+	}
 }
 
 Actor RTCW_Thompson : RTCW_Weapon
@@ -154,15 +182,8 @@ Actor RTCW_Thompson : RTCW_Weapon
 		Fire:
 			RW00 B 0 A_JumpIfInventory("RTCW_ThompsonMagazine",1,1)
 			Goto Reload
-			RW00 B 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
-			RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
-			RW00 B 0 A_TakeInventory("RTCW_ThompsonMagazine",1)
-			RW00 B 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
 			RW00 B 0 A_GunFlash("FireFlash")
-			RW00 B 0 A_GiveInventory("RTCW_ThompsonSpread",1)
-			RW00 B 0 A_FireCustomMissile("RTCW_ColtTracer",CallACS("RTCW_Decorate",1,2)*frandom(-1.0,1.0),0,0,4,0,CallACS("RTCW_Decorate",1,2)*frandom(-1.0,1.0))
-			RW00 B 0 A_PlaySound("RTCW/Thompson/Fire",CHAN_Weapon)
-			RW00 B 0 ACS_NamedExecuteWithResult("RTCW_Recoil",1)
+			RW00 B 0 A_GiveInventory("SamsaraRTCWThompsonAttackHandler")
 			RW00 B 1
 			RW00 C 2
 			RW00 D 1
@@ -225,4 +246,45 @@ Actor RTCW_ThompsonMagazine : Ammo
 {
 	Inventory.MaxAmount 30
 	Ammo.BackpackMaxAmount 30
+}
+
+actor SamsaraRTCWThompsonAttackHandler : Trigger
+{
+	States
+	{
+		// Ammo check stuff
+		Pickup:
+			TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+		PickupCheckAmmoNonReloadable:
+			TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+			TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmoNonReloadable")
+			Stop
+		PickupCheckAmmoReloadable:
+			TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+			TNT1 A 0 A_JumpIfInventory("RTCW_ThompsonMagazine",1,"PickupTakeAmmoReloadable")
+			Stop
+
+		// Attack stuff
+		PickupAttack:
+			TNT1 A 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
+			TNT1 A 0 A_GiveInventory("RTCW_FiringToken",1)
+			TNT1 A 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
+			TNT1 A 0 A_GiveInventory("RTCW_ThompsonSpread",1)
+			TNT1 A 0 A_PlaySound("RTCW/Thompson/Fire",CHAN_Weapon)
+			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil",1)
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+			TNT1 A 0 A_FireCustomMissile("RTCW_ColtTracer",CallACS("RTCW_Decorate",1,2)*frandom(-1.0,1.0),0,0,4,0,CallACS("RTCW_Decorate",1,2)*frandom(-1.0,1.0))
+			Stop
+		PickupAttackCoop:
+			TNT1 A 0 A_FireCustomMissile("RTCW_ColtTracerCoop",CallACS("RTCW_Decorate",1,2)*frandom(-1.0,1.0),0,0,4,0,CallACS("RTCW_Decorate",1,2)*frandom(-1.0,1.0))
+			Stop
+
+		// Ammo taking stuff
+		PickupTakeAmmoNonReloadable:
+			TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+			Goto PickupAttack
+		PickupTakeAmmoReloadable:
+			TNT1 A 0 A_TakeInventory("RTCW_ThompsonMagazine",1)
+			Goto PickupAttack
+	}
 }
