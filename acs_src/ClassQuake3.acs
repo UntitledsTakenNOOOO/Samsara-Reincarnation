@@ -257,80 +257,77 @@ Script "Q3Loop" enter
 	
 	While(true)
 	{
-		if(GetCvar("screenblocks")==11 && CheckInventory("SamsaraUsingNewFullscreenHUD"))
-		{
-			health = GetActorProperty(0,APROP_Health);
-			armor = CheckInventory("Armor");
-			
-			if(health < 0) { health = 0; } if(health > 999) { health = 999; }
-			ACS_NamedExecuteWithResult("Q3HudHealthAndArmor",health,armor);
+		health = GetActorProperty(0,APROP_Health);
+		armor = CheckInventory("Armor");
 		
-			steptimer = ACS_NamedExecuteWithResult("Q3_Decorate",0,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
-			for(a = 0; a < 12; a++)
-			{
-				if(CheckWeapon(Q3Weapons[a])) { GiveInventory(Q3WeaponSelections[a],1); break; }
-				else TakeInventory(Q3WeaponSelections[a],1);
-				
-			}
+		if(health < 0) { health = 0; } if(health > 999) { health = 999; }
+		ACS_NamedExecuteWithResult("Q3HudHealthAndArmor",health,armor);
+	
+		steptimer = ACS_NamedExecuteWithResult("Q3_Decorate",0,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
+		for(a = 0; a < 12; a++)
+		{
+			if(CheckWeapon(Q3Weapons[a])) { GiveInventory(Q3WeaponSelections[a],1); break; }
+			else TakeInventory(Q3WeaponSelections[a],1);
 			
-			activePowerups = 0;
-			//HUD Stuff
-			for(a = 0; a < 5; a++)
-			{
-				pTics = GetActorPowerupTics(0,Q3PowerupItems[a]);
-				if(pTics > 0)
-				{
-					glow = Q3PowerupGlow[a];
-					
-					if(strlen(glow) > 0)			
-						GiveInventory(glow, 1);
-					
-					switch(a)
-					{
-						default:
-							if(pTics/35 <= 5 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
-							break;
-						/*case 1:
-							if(pTics/35 == 3 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
-							break;*/
-						case 3:
-							if(pTics % 35 == 0 && GetActorProperty(0,APROP_Health) < 200) 
-							{ 
-								SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_Health)+5);
-								if(GetActorProperty(0,APROP_Health) > 200)
-									SetActorProperty(0,APROP_Health,200);
-								
-								PlaySound(0,"Quake3/Items/RegenActive",CHAN_7);
-							}
-							if(pTics/35 <= 5 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
-							break;
-					}
-					
-					activePowerups++;
-					ACS_NamedExecuteWithResult("Q3HudPowerup",a,pTics,activePowerups);
-				}
-			}
-			
-			//Drawing Ammo
-			for(a = 1; a < 12; a++)
-			{
-				if(CheckWeapon(Q3Weapons[a]))
-				{
-					if(timer()%3==0)
-					{
-						ammoRotCounter += ammoRotDir;
-						if(ammoRotCounter == 0 || ammoRotCounter == 30)
-							ammoRotDir *= -1;		
-					}
-					
-					ACS_NamedExecuteWithResult("Q3HudAmmo",a,ammoRotCounter);
-					break;
-				}
-			}
-			
-			//Mugshot!
-			ACS_NamedExecuteWithResult("Q3DrawMugshot",((timer()/3)%160)+1);	
 		}
+		
+		activePowerups = 0;
+		//HUD Stuff
+		for(a = 0; a < 5; a++)
+		{
+			pTics = GetActorPowerupTics(0,Q3PowerupItems[a]);
+			if(pTics > 0)
+			{
+				glow = Q3PowerupGlow[a];
+				
+				if(strlen(glow) > 0)			
+					GiveInventory(glow, 1);
+				
+				switch(a)
+				{
+					default:
+						if(pTics/35 <= 5 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
+						break;
+					/*case 1:
+						if(pTics/35 == 3 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
+						break;*/
+					case 3:
+						if(pTics % 35 == 0 && GetActorProperty(0,APROP_Health) < 200) 
+						{ 
+							SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_Health)+5);
+							if(GetActorProperty(0,APROP_Health) > 200)
+								SetActorProperty(0,APROP_Health,200);
+							
+							PlaySound(0,"Quake3/Items/RegenActive",CHAN_7);
+						}
+						if(pTics/35 <= 5 && pTics % 35 == 0) { PlaySound(0,Q3PowerupSounds[a],CHAN_7); }
+						break;
+				}
+				
+				activePowerups++;
+				ACS_NamedExecuteWithResult("Q3HudPowerup",a,pTics,activePowerups);
+			}
+		}
+		
+		//Drawing Ammo
+		for(a = 1; a < 12; a++)
+		{
+			if(CheckWeapon(Q3Weapons[a]))
+			{
+				if(timer()%3==0)
+				{
+					ammoRotCounter += ammoRotDir;
+					if(ammoRotCounter == 0 || ammoRotCounter == 30)
+						ammoRotDir *= -1;		
+				}
+				
+				ACS_NamedExecuteWithResult("Q3HudAmmo",a,ammoRotCounter);
+				break;
+			}
+		}
+		
+		//Mugshot!
+		ACS_NamedExecuteWithResult("Q3DrawMugshot",((timer()/3)%160)+1);	
 		
 		if(CheckInventory("Q3AmmoRegenerationDummy"))
 		{
@@ -365,42 +362,54 @@ Script "Q3Loop" enter
 
 Script "Q3DrawMugshot" (int image) clientside
 {
-	SetHudSize(1600,1200,1);
-	str zerobuffer = "";
-	if(image < 10) zerobuffer = "00";
-	else if(image < 100) zerobuffer = "0";
-		
-	SetFont(strparam(s:"Q3SGH",s:zerobuffer,d:image));
-	HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25105,CR_UNTRANSLATED,800.0,1200.2,0.1);
+	if(GetCvar("screenblocks")==11 && CheckInventory("SamsaraUsingNewFullscreenHUD"))
+	{
+		SetHudSize(1600,1200,1);
+		str zerobuffer = "";
+		if(image < 10) zerobuffer = "00";
+		else if(image < 100) zerobuffer = "0";
+			
+		SetFont(strparam(s:"Q3SGH",s:zerobuffer,d:image));
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25105,CR_UNTRANSLATED,800.0,1200.2,0.1);
+	}
 }
 
 Script "Q3HudHealthAndArmor" (int health, int armor) clientside
 {
-	SetHudSize(640,400,1);
-	SetFont("Q3NUMFNT");
-	HudMessage(d:health;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,25102,"Q3Gold",300.2,396.2,0.1);
-	HudMessage(d:armor;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,25103,"Q3Gold",496.2,396.2,0.1);
+	if(GetCvar("screenblocks")==11 && CheckInventory("SamsaraUsingNewFullscreenHUD"))
+	{
+		SetHudSize(640,400,1);
+		SetFont("Q3NUMFNT");
+		HudMessage(d:health;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,25102,"Q3Gold",300.2,396.2,0.1);
+		HudMessage(d:armor;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,25103,"Q3Gold",496.2,396.2,0.1);
+	}
 }
 
 Script "Q3HudAmmo" (int a, int graphic) clientside
 {
-	SetHudSize(2000,1500,1);
-	SetFont(strparam(s:"Q3AM",s:Q3AmmoIcons[a],s:graphic < 10 ? "0" : "",d:graphic));
-	HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25101,CR_UNTRANSLATED,382.1,1480.2,0.1);
-	SetHudSize(640,400,1);
-	SetFont("Q3NUMFNT");
-	HudMessage(d:CheckInventory(Q3Ammos[a]);HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,25100,"Q3Gold",128.2,396.2,0.1);
+	if(GetCvar("screenblocks")==11 && CheckInventory("SamsaraUsingNewFullscreenHUD"))
+	{
+		SetHudSize(2000,1500,1);
+		SetFont(strparam(s:"Q3AM",s:Q3AmmoIcons[a],s:graphic < 10 ? "0" : "",d:graphic));
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25101,CR_UNTRANSLATED,382.1,1480.2,0.1);
+		SetHudSize(640,400,1);
+		SetFont("Q3NUMFNT");
+		HudMessage(d:CheckInventory(Q3Ammos[a]);HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,25100,"Q3Gold",128.2,396.2,0.1);
+	}
 }
 
 Script "Q3HudPowerup" (int type, int tics, int active) clientside
 {
-	SetHudSize(640,480,1);
-	
-	SetFont(Q3PowerupIcons[type]);
-	HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25000+(type*2),CR_UNTRANSLATED,600.1,380.0-(32.0*active),0.1);
-	
-	SetFont("Q3NUMFNT");
-	HudMessage(d:tics/35;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25001+(type*2),CR_UNTRANSLATED,600.2,380.0-(32.0*active),0.1);
+	if(GetCvar("screenblocks")==11 && CheckInventory("SamsaraUsingNewFullscreenHUD"))
+	{
+		SetHudSize(640,480,1);
+		
+		SetFont(Q3PowerupIcons[type]);
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25000+(type*2),CR_UNTRANSLATED,600.1,380.0-(32.0*active),0.1);
+		
+		SetFont("Q3NUMFNT");
+		HudMessage(d:tics/35;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25001+(type*2),CR_UNTRANSLATED,600.2,380.0-(32.0*active),0.1);
+	}
 }
 
 Script "Q3PlayerCodeFunctions" (int func)
