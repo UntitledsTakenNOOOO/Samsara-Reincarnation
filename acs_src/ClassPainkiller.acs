@@ -152,27 +152,23 @@ Script "Painkiller_Loop" Enter
 		}
 		if(CheckInventory("Painkiller_SoulCount") >= 64 && !CheckInventory("Painkiller_GoldActive"))
 		{
-			if(CheckInventory("Painkiller_SoulCount") == 64 && !CheckInventory("Painkiller_DemonMorphFlash1") && !CheckInventory("Painkiller_NoDemonMorph"))
-			{
-				GiveInventory("Painkiller_DemonMorphFlash1",1);
-				ACS_NamedExecuteAlways("Painkiller_StartDemonMorph",0,17,0,0);
-			}
-			if(CheckInventory("Painkiller_SoulCount") == 65 && !CheckInventory("Painkiller_DemonMorphFlash2") && !CheckInventory("Painkiller_NoDemonMorph"))
-			{
-				GiveInventory("Painkiller_DemonMorphFlash2",1);
-				ACS_NamedExecuteAlways("Painkiller_StartDemonMorph",0,35,0,0);
-			}
-			else if((CheckInventory("Painkiller_SoulCount") == 66) && !CheckInventory("Painkiller_NoDemonMorph"))
+			if((CheckInventory("Painkiller_SoulCount") >= 66) && !CheckInventory("Painkiller_NoDemonMorph"))
 			{
 				TakeInventory("Painkiller_DemonMorphFlash1",1);
 				TakeInventory("Painkiller_DemonMorphFlash2",1);
 				TakeInventory("Painkiller_SoulCount",66);
 				ACS_NamedExecuteAlways("Painkiller_StartDemonMorph",0,1050,0,0);
 			}
-			else if((CheckInventory("Painkiller_SoulCount") == 66) && CheckInventory("Painkiller_NoDemonMorph"))
+			else if(CheckInventory("Painkiller_SoulCount") == 65 && !CheckInventory("Painkiller_DemonMorphFlash2") && !CheckInventory("Painkiller_NoDemonMorph"))
 			{
-				TakeInventory("Painkiller_SoulCount",66);
+				GiveInventory("Painkiller_DemonMorphFlash2",1);
+				ACS_NamedExecuteAlways("Painkiller_StartDemonMorph",0,35,0,0);
 			}
+			else if(CheckInventory("Painkiller_SoulCount") == 64 && !CheckInventory("Painkiller_DemonMorphFlash1") && !CheckInventory("Painkiller_NoDemonMorph"))
+			{
+				GiveInventory("Painkiller_DemonMorphFlash1",1);
+				ACS_NamedExecuteAlways("Painkiller_StartDemonMorph",0,17,0,0);
+			}	
 		}
 		int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
 		if((buttons & BT_AltAttack) && (buttons & BT_Attack))
@@ -1013,31 +1009,37 @@ Script "Painkiller_ComboAmmo" (int type, int cost)
 		SetResultValue(0);
 }
 
-Script "Painkiller_MonsterKill" (void)
+Script "Painkiller_MonsterKill" (int corpseActor)
 {
 	//For monsters that burst, we will get the coordinates so we know where to put it
 	int monsterX = GetActorX(0);
 	int monsterY = GetActorY(0);
 	int monsterZ = GetActorZ(0);
-	Delay(105);
-	if(ClassifyActor(0) & ACTOR_World)
+	Delay(104);
+	GiveInventory("Painkiller_CorpseRemover",1);
+	Delay(1);
+	if(corpseActor == 0)
 	{
-		if(GetActorProperty(0,APROP_SpawnHealth) >= 300)
-			SpawnForced("Painkiller_RedSoul",monsterX,monsterY,monsterZ,0);
+		if(ClassifyActor(0) & ACTOR_World)
+		{
+			if(GetActorProperty(0,APROP_SpawnHealth) >= 300)
+				SpawnForced("Painkiller_RedSoul",monsterX,monsterY,monsterZ,0);
+			else
+				SpawnForced("Painkiller_GreenSoul",monsterX,monsterY,monsterZ,0);
+				
+			SpawnForced("Painkiller_CorpseBurstGibbed",monsterX,monsterY,monsterZ,0);
+		}
 		else
-			SpawnForced("Painkiller_GreenSoul",monsterX,monsterY,monsterZ,0);
-			
-		SpawnForced("Painkiller_CorpseBurstGibbed",monsterX,monsterY,monsterZ,0);
+		{
+			if(GetActorProperty(0,APROP_SpawnHealth) >= 300)
+				SpawnSpotFacingForced("Painkiller_RedSoul",0,0);
+			else
+				SpawnSpotFacingForced("Painkiller_GreenSoul",0,0);
+				
+			GiveInventory("Painkiller_CorpseBurst2",1);
+		}
 	}
-	else
-	{
-		if(GetActorProperty(0,APROP_SpawnHealth) >= 300)
-			SpawnSpotFacingForced("Painkiller_RedSoul",0,0);
-		else
-			SpawnSpotFacingForced("Painkiller_GreenSoul",0,0);
-			
-		GiveInventory("Painkiller_CorpseBurst2",1);
-	}
+	else Thing_Remove(0);
 }
 
 Script "Painkiller_StartDemonMorph" (int duration)
