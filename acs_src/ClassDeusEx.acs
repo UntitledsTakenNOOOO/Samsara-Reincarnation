@@ -1,0 +1,593 @@
+
+Script "DeusEx_DamageModifiers" (int damage)
+{
+	int bulletX = GetActorX(0);
+	int bulletY = GetActorY(0);
+	int bulletZ = GetActorZ(0);
+	//int pointblank = CheckInventory("DeusEx_PointBlank");
+	int shooterX = GetActorX(0);
+	int shooterY = GetActorY(0);
+	int shooterZ = GetActorZ(0);	
+	SetActivator(0,AAPTR_Tracer);
+	int monsterX = GetActorX(0);
+	int monsterY = GetActorY(0);
+	int monsterZ = GetActorZ(0);
+	int monsterdistance = magnitudeThree(monsterX*shooterX,monsterY*shooterY,monsterZ*shooterZ);
+	int monsterHealth = GetActorProperty(0,APROP_Health);
+	int monsterHeight = GetActorProperty(0,APROP_Height);
+	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
+	int monsterAngle = GetActorAngle(0);
+	int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
+	int angle = vang % 1.0;		
+	int bulletdamage;
+	int backdamage = 1;
+	
+	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
+	
+/*	if(SetActivator(0, AAPTR_Tracer) == 0)
+		backdamage = 4;
+	else
+		backdamage = 1;		
+	*/
+	if(monsterWidth > monsterHeight)
+	{
+
+		
+		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.55) && bulletZ < monsterZ + FixedMul(monsterHeight,0.75) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.45))
+		{			
+			bulletdamage = damage*7;
+		}
+		else
+			bulletdamage = damage;
+		SetResultValue(bulletdamage*backdamage);
+	}
+	else
+	{
+		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.8))
+		{
+				
+			bulletdamage = damage*7;
+		}
+		else
+			bulletdamage = damage;
+		SetResultValue(bulletdamage*backdamage);		
+	}
+}
+
+Script "DeusEx_BackDamage" (int damage)
+{
+	int bulletX = GetActorX(0);
+	int bulletY = GetActorY(0);
+	int bulletZ = GetActorZ(0);
+	SetActivator(0,AAPTR_Tracer);
+	int monsterX = GetActorX(0);
+	int monsterY = GetActorY(0);
+	int monsterZ = GetActorZ(0);
+	int monsterHeight = GetActorProperty(0,APROP_Height);
+	int monsterAngle = GetActorAngle(0) - 0.5;
+	
+	int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
+	int angle = vang % 1.0;
+	int backdamage, bulletdamage;
+	
+	if(bulletZ > monsterZ + (monsterHeight / 3) && (abs(monsterAngle - angle)) < 0.6 && (abs(monsterAngle - angle)) > 0.4)
+		backdamage = 19;
+	else
+		backdamage = 1;
+		
+		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.8))
+		{
+				
+			bulletdamage = damage*7;
+		}
+		else
+			bulletdamage = damage;
+		SetResultValue(backdamage*bulletdamage);			
+}
+
+str DeusExSkillPoints[4] = { "DeusEx_LowTechPoints", "DeusEx_PistolPoints", "DeusEx_RiflePoints", "DeusEx_HeavyPoints" };
+
+Script "DeusEx_KillScript" (int override, int DeusExWeaponType)
+{
+	if(!(ClassifyActor(0) & ACTOR_MONSTER))
+		terminate;
+		
+	int HasXDeath; 
+	int isBoss = CheckFlag(0,"BOSS");
+	
+	if(GetTimeProperty(0, 5, true) == 0) // TM_YEAR = 5
+		HasXDeath = CheckActorState(0,"XDeath",1);
+	else
+		HasXDeath = 1;
+
+	//int DeusExWeaponType = CheckInventory("DeusEx_DeathTypeIndicator"); checks which weapon type the enemy was killed with, gives the corresponding points			
+		
+	int noblood = CheckFlag(0,"NOBLOOD");
+	int health;
+	int currentHealth = GetActorProperty(0, APROP_Health);		
+	
+	health = GetActorProperty(0, APROP_SpawnHealth);	
+	
+	SetActivatorToTarget(0);
+	
+	if(CheckInventory("DeusExClass"))
+		GiveInventory(DeusExSkillPoints[DeusExWeaponType], health*(1+(PlayerCount()/4)));			
+}	
+
+Script "DeusEx_WeaponSkillDamage" (int weapontype, int basedamage)
+{
+	int mult;
+	SetActivatorToTarget(0);
+	int pistolskill = CheckInventory("DeusEx_PistolSkill");
+	int lowtechskill = CheckInventory("DeusEx_LowTechSkill");
+	int rifleskill = CheckInventory("DeusEx_RifleSkill");
+	int demoskill = CheckInventory("DeusEx_DemolitionsSkill");
+	int heavyskill = CheckInventory("DeusEx_HeavyWeaponSkill");
+	Switch(weapontype)
+	{
+		Case 1:
+			mult = 1.0+(0.25*pistolskill);
+			//PrintBold(d:mult);
+			
+			SetResultValue(basedamage*mult>>16);
+			break;
+		Case 2:
+			mult = 1.0+(0.25*lowtechskill);
+			SetResultValue(basedamage*mult>>16);
+			break;	
+		Case 3:
+			mult = 1.0+(0.25*rifleskill);
+			SetResultValue(basedamage*mult>>16);
+			break;		
+		Case 4:
+			mult = 1.0+(0.25*demoskill);
+			SetResultValue(basedamage*mult>>16);
+			break;	
+		Case 5:
+			mult = 1.0+(0.25*heavyskill);
+			SetResultValue(basedamage*mult>>16);
+			break;				
+	}		
+}	
+
+
+str DeusExSpreads[7] = { "DeusEx_GlockSpread", "DeusEx_XBowSpread", "DeusEx_AssaultGunSpread", "DeusEx_ShotgunSpread", "DeusEx_PlasmaRifleSpread", "DeusEx_StealthSpread", "DeusEx_SawedOffSpread" };
+str DeusExWeaponSkills[5] = { "DeusEx_LowTechSkill", "DeusEx_PistolSkill", "DeusEx_RifleSkill", "DeusEx_DemolitionsSkill", "DeusEx_HeavyWeaponSkill" };
+int NXTPointsLowTech[4] = {675, 1350, 2025, 2700 };
+int NxtPointsPistol[4] = {945, 1890, 3150, 5985 };
+int NxtPointsRifle[4] = {1575, 3150, 5250, 9975 };
+int NxtPointsHeavy[4] = {4725, 9450, 15750, 29925 };
+Str DeusExLevelUpStrings[24] =
+{
+	"Low-Tech Skill has reached Trained level.",
+	"Low-Tech Skill has reached Proficient level.",
+	"Low-Tech Skill has reached Advanced level.",
+	"Low-Tech Skill has reached Master level.",
+	"Pistol Skill has reached Trained level.",
+	"Pistol Skill has reached Proficient level.",
+	"Pistol Skill has reached Advanced level.",
+	"Pistol Skill has reached Master level.",
+	"Rifle Skill has reached Trained level.",
+	"Rifle Skill has reached Proficient level.",
+	"Rifle Skill has reached Advanced level.",
+	"Rifle Skill has reached Master level.",
+	"Heavy Weapon Skill has reached Trained level.",
+	"Heavy Weapon Skill has reached Proficient level.",
+	"Heavy Weapon Skill has reached Advanced level.",
+	"Heavy Weapon Skill has reached Master level.",
+	"Medicine Skill has reached Trained level.",
+	"Medicine Skill has reached Proficient level.",
+	"Medicine Skill has reached Advanced level.",
+	"Medicine Skill has reached Master level.",
+	"Environmental Training has reached Trained level.",
+	"Environmental Training has reached Proficient level.",
+	"Environmental Training has reached Advanced level.",
+	"Environmental Training has reached Master level.",
+};	
+
+Script "DeusEx_GetWeaponSkill" ( int weapontype )
+{
+	SetResultValue(CheckInventory(DeusExWeaponSkills[weapontype]));
+}	
+
+Script "DeusEx_Enter" ENTER 
+{
+//	ACS_NamedExecuteWithResult("SamsaraOST_DeusExScriptedMusic");
+	if((ClassifyActor(0) & ACTOR_WORLD))
+		terminate;
+		
+	if(CheckInventory("DeusExClass"))
+	{
+		int speedx, speedy, lasttimer, velocity, movement;
+		int forward = GetPlayerInput(-1, INPUT_FORWARDMOVE);
+		int running = abs(GetPlayerInput(-1, INPUT_FORWARDMOVE)) > 6400 || abs(GetPlayerInput(-1, INPUT_SIDEMOVE)) > 6144;
+		int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+		
+		while((ClassifyActor(0) & ACTOR_ALIVE))
+		{
+			//we'll handle crouch here too
+/*			if(GetActorViewHeight(0) <=  GetActorViewHeight(0) / 2 << 16)
+				GiveInventory("DeusEx_Crouching",1);
+			else
+				TakeInventory("DeusEx_Crouching",1);*/		
+			If(buttons & BT_FORWARD && running)
+				GiveInventory("DeusEx_Running", 1);
+			else
+				
+			if (buttons & BT_JUMP)
+				GiveInventory("DeusEx_Jumping", 1);
+			else
+				TakeInventory("DeusEx_Jumping", 1);
+			
+			if (buttons & BT_CROUCH)
+				GiveInventory("DeusEx_Crouching", 1);
+			else
+				TakeInventory("DeusEx_Crouching", 1);
+			
+		if (buttons & BT_MOVELEFT)
+				GiveInventory("DeusEx_StrafeLeft", 1);
+		else if (buttons & BT_MOVERIGHT)
+				GiveInventory("DeusEx_StrafeRight", 1);
+		else
+				TakeInventory("DeusEx_StrafeLeft", 1);
+				TakeInventory("DeusEx_StrafeRight", 1);
+				
+			if (buttons & !BT_ATTACK);
+			{
+				TakeInventory("DeusEx_GlockSpread", 1);
+				TakeInventory("DeusEx_StealthSpread", 1);
+				TakeInventory("DeusEx_SawedOffSpread", 1);
+				TakeInventory("DeusEx_ShotgunSpread", 1);
+				TakeInventory("DeusEx_AssaultGunSpread", 1);
+				TakeInventory("DeusEx_PlasmaRifleSpread", 1);
+			}	
+				
+				
+			If(CheckInventory("DeusEx_GEPGunEquipped") || CheckInventory("DeusEx_FlameThrowerEquipped") || CheckInventory("DeusEx_PREquipped") || CheckInventory("DeusEx_LAWEquipped"))
+			{
+				If(CheckInventory("DeusEx_HeavyWeaponSkill") == 0)
+				{
+					SetActorProperty(0, APROP_SPEED, 0.45);
+				}	
+				Else If(CheckInventory("DeusEx_HeavyWeaponSkill") == 1)
+				{
+					SetActorProperty(0, APROP_SPEED, 0.75);	
+				}	
+				Else 
+					SetActorProperty(0, APROP_SPEED, 1.0);		
+			}
+			Else
+			{
+				SetActorProperty(0, APROP_SPEED, 1.0);	
+			}	
+				
+			HudMessage(d:CheckInventory("DeusEx_PistolPoints"); 8891, HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP, "ec1c24", 46.1, 560.1, 0.031);
+		
+			speedx = GetActorVelX(0);
+			speedy = GetActorVelY(0);
+			
+			velocity = magnitudeTwo_f(speedx, speedy);
+			if(velocity>>8 != 0)
+				movement = 750/((velocity>>8)*7);
+			else
+				movement = 0;
+													
+			if((Timer()-lasttimer) > movement && movement != 0)
+			{
+				SpawnSpotForced("DXStep",0,0,0);
+				lasttimer = Timer();
+			}
+			
+			Delay(1);
+		   If(CheckInventory("DeusEx_LowTechSkill") < 4 || CheckInventory("DeusEx_PistolSkill") < 4 || CheckInventory("DeusEx_RifleSkill") < 4 || CheckInventory("DeusEx_HeavyWeaponSkill") < 4 )	
+			{
+				if(CheckInventory("DeusEx_LowTechPoints") > NXTPointsLowTech[CheckInventory("DeusEx_LowTechSkill")] && CheckInventory("DeusEx_LowTechSkill") < 4)
+				{
+					GiveInventory("DeusEx_LowTechSkill", 1);
+					TakeInventory("DeusEx_LowTechPoints", 9999);
+					ACS_NamedExecuteAlways("DeusEx_Decorate", 0, 7, CheckInventory("DeusEx_LowTechSkill")-1);
+				}
+				If(CheckInventory("DeusEx_PistolPoints") > NxtPointsPistol[CheckInventory("DeusEx_PistolSkill")] && CheckInventory("DeusEx_PistolSkill") < 4)
+				{
+					GiveInventory("DeusEx_PistolSkill", 1);
+					SetAmmoCapacity("DeusEx_GlockSpread", GetAmmoCapacity("DeusEx_GlockSpread")-25);
+					SetAmmoCapacity("DeusEx_StealthSpread", GetAmmoCapacity("DeusEx_StealthSpread")-30);
+					SetAmmoCapacity("DeusEx_XBowSpread", GetAmmoCapacity("DeusEx_XBowSpread")-5);
+					SetAmmoCapacity("DeusEx_SawedOffSpread", GetAmmoCapacity("DeusEx_SawedOffSpread")-20);
+					SetAmmoCapacity("DeusEx_GlockMagazine", GetAmmoCapacity("DeusEx_GlockMagazine")+2);
+					SetAmmoCapacity("DeusEx_MiniXBowMagazine", GetAmmoCapacity("DeusEx_MiniXBowMagazine")+2);
+					SetAmmoCapacity("DeusEx_StealthMagazine", GetAmmoCapacity("DeusEx_StealthMagazine")+3);
+					SetAmmoCapacity("DeusEx_ShotgunMagazine", GetAmmoCapacity("DeusEx_ShotgunMagazine")+1);
+					int glockmax = GetAmmoCapacity("DeusEx_GlockMagazine");
+					int stealthmax = GetAmmoCapacity("DeusEx_StealthMagazine");
+					int xbowmax = GetAmmoCapacity("DeusEx_MiniXBowMagazine");
+					int shotgunmax = GetAmmoCapacity("DeusEx_ShotgunMagazine");
+					GiveInventory("DeusEx_GlockMagazine", glockmax);
+					GiveInventory("DeusEx_StealthMagazine", stealthmax);
+					GiveInventory("DeusEx_MiniXBowMagazine", xbowmax);
+					GiveInventory("DeusEx_ShotgunMagazine", shotgunmax);
+					TakeInventory("DeusEx_PistolPoints", 9999);
+					ACS_NamedExecuteAlways("DeusEx_Decorate", 0, 7, 3+CheckInventory("DeusEx_PistolSkill"));
+				}
+				If(CheckInventory("DeusEx_RiflePoints") > NxtPointsRifle[CheckInventory("DeusEx_RifleSkill")] && CheckInventory("DeusEx_RifleSkill") < 4)
+				{
+					GiveInventory("DeusEx_RifleSkill", 1);
+					SetAmmoCapacity("DeusEx_ShotgunSpread", GetAmmoCapacity("DeusEx_ShotgunSpread")-35);
+					SetAmmoCapacity("DeusEx_AssaultGunSpread", GetAmmoCapacity("DeusEx_AssaultGunSpread")-20);
+					SetAmmoCapacity("DeusEx_AssShotgunMagazine", GetAmmoCapacity("DeusEx_AssShotgunMagazine")+3);
+					SetAmmoCapacity("DeusEx_AssaultGunMagazine", GetAmmoCapacity("DeusEx_AssaultGunMagazine")+10);
+					SetAmmoCapacity("DeusEx_SniperMagazine", GetAmmoCapacity("DeusEx_SniperMagazine")+2);
+					int assgunmax = GetAmmoCapacity("DeusEx_AssaultGunMagazine");
+					int assshitmax = GetAmmoCapacity("DeusEx_AssShotgunMagazine"); // lol
+					int snipermax = GetAmmoCapacity("DeusEx_SniperMagazine");
+					GiveInventory("DeusEx_AssaultGunMagazine", assgunmax);
+					GiveInventory("DeusEx_AssShotgunMagazine", assshitmax);
+					GiveInventory("DeusEx_SniperMagazine", snipermax);
+					TakeInventory("DeusEx_RiflePoints", 9999);
+					ACS_NamedExecuteAlways("DeusEx_Decorate", 0, 7, 7+CheckInventory("DeusEx_RifleSkill"));
+				}	
+				If(CheckInventory("DeusEx_HeavyPoints") > NxtPointsHeavy[CheckInventory("DeusEx_HeavyWeaponSkill")] && CheckInventory("DeusEx_HeavyWeaponSkill") < 4 )
+				{
+					GiveInventory("DeusEx_HeavyWeaponSkill", 1);
+					SetAmmoCapacity("DeusEx_PlasmaRifleSpread", GetAmmoCapacity("DeusEx_PlasmaRifleSpread")-12);
+					SetAmmoCapacity("DeusEx_FlameThrowerMagazine", GetAmmoCapacity("DeusEx_FlameThrowerMagazine")+25);
+					SetAmmoCapacity("DeusEx_PlasmaRifleMagazine", GetAmmoCapacity("DeusEx_PlasmaRifleMagazine")+4);
+					int plasmamax = GetAmmoCapacity("DeusEx_PlasmaRifleMagazine");
+					int flamemax = GetAmmoCapacity("DeusEx_FlameThrowerMagazine");
+					GiveInventory("DeusEx_PlasmaRifleMagazine", plasmamax);
+					GiveInventory("DeusEx_FlameThrowerMagazine", flamemax);
+					TakeInventory("DeusEx_HeavyPoints", 9999);
+					ACS_NamedExecuteAlways("DeusEx_Decorate", 0, 7, 11+CheckInventory("DeusEx_HeavyWeaponSkill"));
+				}
+			}	
+		}
+	}
+}	
+
+Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
+{
+	int weaponskill = CheckInventory(DeusExWeaponSkills[arg2]);
+	int weaponskillacc = 0.25*weaponskill;
+	Switch(funct)
+	{
+		Case 1:
+			SetActorProperty(0, APROP_DAMAGEFACTOR, 2.0);
+			break;
+		Case 2:	
+			int damagefactor = GetActorProperty(0, APROP_DAMAGEFACTOR);
+			SetActorProperty(0, APROP_DAMAGEFACTOR, 1.0);
+			break;	
+		Case 3:
+		If(CheckInventory("DeusEx_HeavyWeaponSkill") == 0)
+		{
+			SetActorProperty(0, APROP_SPEED, 0.45);
+			break;
+		}	
+		Else If(CheckInventory("DeusEx_HeavyWeaponSkill") == 1)
+		{
+			SetActorProperty(0, APROP_SPEED, 0.75);
+			break;	
+		}	
+		Else 
+			SetActorProperty(0, APROP_SPEED, 1.0);
+			break;				
+		Case 4: 
+			SetActorProperty(0, APROP_SPEED, 1.0);
+			break;
+		case 5:
+			if(GetActorViewHeight(0) <=  GetActorViewHeight(0) / 2 << 16)
+				SetResultValue(1);
+			else
+				SetResultValue((1.0+CheckInventory(DeusExSpreads[arg1])*0.1 >> 16));
+			break;			
+		case 6:
+			SetResultValue(arg3*weaponskillacc);
+			break;
+		case 7:
+			LocalAmbientSound("DeusEx/SkillPoints", 127);
+			SetHudSize(640,480,1);
+			HudMessage(s:DeusExLevelUpStrings[arg1];HUDMSG_PLAIN,556,CR_UNTRANSLATED,0.1,0.1,3.0);
+			break;			
+	}
+}	
+
+Script "DeusEx_HasTarget" (void)
+{
+	SetActivator(0,AAPTR_TRACER);
+	SetActivator(0,AAPTR_TARGET);
+	if((ClassifyActor(0) & ACTOR_ALIVE) && SetActivator(0,AAPTR_TARGET))
+		SetResultValue(1);
+	else
+		SetResultValue(0);
+}
+
+
+
+Script "SamsaraOST_DeusExScriptedMusic" (void) clientside
+{
+	int musicvolume = 1.0;
+	int themeseed = random(0,thememax-1);
+	int songseed = random(0,songseedmax -1);
+	int targetmusicvolume = musicvolume;
+	int swapped, swaptofight, swaptoambient;
+	int laststate = 0;
+	int trigger = 1;
+//	int herosoundtrack = GetCvar("sams_cl_heromusic");
+//	int gameoverride = GetCvar("sams_cl_heromusicoverride");
+
+	while(CheckInventory("DeusExClass"))
+	{
+		int newtid = UniqueTid();
+		SpawnSpotFacingForced("DeusEx_MusicDecider",0,newtid);
+		SetPointerExt(AAPTR_TRACER,0,newtid);	
+
+		if(GetCvar("sams_runninginzdoom"))
+		{
+			SetMusicVolume(musicvolume);
+			if(CheckInventory("DeusEx_CombatMusic") || swaptofight == 1)
+			{
+				if(CheckInventory("DeusEx_CombatMusic") != swapped || swaptofight == 1)
+				{
+					swaptofight = 1;
+					//PrintBold(s:"Combat ",f:musicvolume);
+					if(laststate == 0)
+					{
+						trigger = 0;
+						musicvolume -= 0.01;
+					}
+					if(musicvolume < 0.0 || trigger == 1)
+					{
+						trigger = 1;
+						if(musicvolume < targetmusicvolume)
+							musicvolume += 0.01;
+						else
+						{
+							musicvolume = targetmusicvolume;
+							swaptofight = 0;
+							swaptoambient = 0;
+							swapped = 1;
+						}
+							
+						if(laststate == 0)
+							LocalSetMusic(DeusExMusic[themeseed][1][songseed],0);
+						laststate = 1;
+					}
+				}
+				else
+				{
+					SetMusicVolume(targetmusicvolume);
+					LocalSetMusic(DeusExMusic[themeseed][1][songseed],0);
+				}
+			}
+			else if(CheckInventory("DeusEx_CombatMusic") == 0 || swaptoambient == 1)
+			{
+				if(CheckInventory("DeusEx_CombatMusic") != swapped || swaptoambient == 1)
+				{
+					swaptoambient = 1;
+					//PrintBold(s:"Ambient ",f:musicvolume);
+					if(laststate == 1)
+					{
+						trigger = 0;
+						musicvolume -= 0.01;
+					}
+					if(musicvolume < 0.0 || trigger == 1)
+					{
+						trigger = 1;
+						if(musicvolume < targetmusicvolume)
+							musicvolume += 0.01;
+						else
+						{
+							musicvolume = targetmusicvolume;
+							swaptofight = 0;
+							swaptoambient = 0;
+							swapped = 0;
+						}
+							
+						if(laststate == 1)
+							LocalSetMusic(DeusExMusic[themeseed][0][songseed],0);
+						laststate = 0;
+					}
+				}
+				else
+				{
+					SetMusicVolume(targetmusicvolume);
+					LocalSetMusic(DeusExMusic[themeseed][0][songseed],0);
+				}
+			}
+		}
+		else
+		{
+			if(!CheckWeapon("Painkiller_DemonMorph") && !CheckInventory("Painkiller_GoldActive"))
+			{
+				if(CheckInventory("DeusEx_CombatMusic"))
+					LocalSetMusic(DeusExMusic[themeseed][1][songseed],0);
+				else
+					LocalSetMusic(DeusExMusic[themeseed][0][songseed],0);
+			}
+		}
+		
+		Delay(1);
+	}
+}
+
+Script "DeusEx_GibCreator" (void)
+{
+	int alive;
+	int a = 0;
+	int height = ACS_NamedExecuteWithResult("DeusEx_GibHeightCheck");
+	int radius = GetActorProperty(0,APROP_Radius)>>16;
+	int volume = height * radius * radius;
+	int chunks = volume/4000;
+	if(chunks < 1)
+		chunks = 1;
+		
+	for(a = 0; a < chunks; a++)
+		GiveInventory("DeusEx_TossChunk", 1);
+}
+
+Script "DeusEx_GibHeightCheck" (void)
+{
+	int height = (GetActorProperty(0,APROP_Height)>>16);
+	height += height * (3 * (GetActorProperty(0,APROP_Health) <= 0));
+	SetResultValue(height);
+}
+
+script "DeusEx_ProjectilePitch" (void)
+{
+	SetActivatorToTarget(0);
+	SetResultValue(GetActorPitch(0));
+}
+
+Script "DeusEx_ScopeZoom" (void)
+{
+	While(CheckInventory("DeusEx_Zoomed"))
+	{
+		SetHUDSize(256, 256, 0);
+		SetFont("SCPVEW2");
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD,17460,0,128.0,128.0,0.2,0.45);
+		SetFont("SCPVEW1");
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,12480,0,128.0,128.0,0.2,1.0);		
+		Delay(1);
+	}
+	SetHudSize(0,0,0);
+	SetFont("none");
+	HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,17460,0,128.0,128.0,0.2,0.45);
+	terminate;
+}		
+
+Script "PlayerCodeFunctions" (int func)
+{
+	int result = 0;
+	int forward = GetPlayerInput(-1, INPUT_FORWARDMOVE);
+	int side = GetPlayerInput(-1, INPUT_SIDEMOVE);
+	int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+	int running = abs(GetPlayerInput(-1, INPUT_FORWARDMOVE)) > 6400 || abs(GetPlayerInput(-1, INPUT_SIDEMOVE)) > 6144;
+	switch(func)
+	{
+		case 0:
+			result = (forward != 0 || side != 0) && running;
+			break;
+		case 1:
+			result = (forward != 0 || side != 0) && !running;
+			break;
+		case 2:
+			result = (forward < 0) && running;
+			break;
+		case 3:
+			result = GetActorViewHeight(0) <= 38.0;
+			break;
+		case 4:
+			result = (buttons & BT_JUMP) > 0 && forward >= 0;
+			break;
+		case 5:
+			result = (buttons & BT_JUMP) > 0 && forward < 0;
+			break;
+		case 6:
+			result = (buttons & BT_MOVELEFT) > 0 && running;
+			break;
+		case 7:
+			result = (buttons & BT_MOVERIGHT) > 0 && running;
+			break;
+	}
+	SetResultValue(result);
+}
