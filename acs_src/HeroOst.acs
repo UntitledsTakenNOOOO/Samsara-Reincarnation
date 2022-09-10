@@ -215,11 +215,37 @@ str DescentMusic[26] = {"DSTRAK00","DSTRAK01","DSTRAK02","DSTRAK03","DSTRAK04",
 "DSTRAK12","DSTRAK13","DSTRAK14","DSTRAK15","DSTRAK16","DSTRAK17","DSTRAK18",
 "DSTRAK19","DSTRAK20","DSTRAK21","DSTRAK22","DSTRAK23","DSTRAK24","DSTRAK25"};
 
-str gameClassesSTR[33] = {
+str DeusExMusic[22][2][4] = 
+{
+	{{"DXAMB01","DXAMB01","DXAMB01","DXAMB01"},{"DXFIT01","DXFIT01","DXFIT01","DXFIT01"}},
+	{{"DXAMB02","DXAMB02","DXAMB02","DXAMB02"},{"DXFIT02","DXFIT02","DXFIT02","DXFIT02"}},
+	{{"DXAMB03","DXAMB03","DXAMB03","DXAMB03"},{"DXFIT03","DXFIT03","DXFIT03","DXFIT03"}},
+	{{"DXAMB04","DXAMB04","DXAMB04","DXAMB04"},{"DXFIT04","DXFIT04","DXFIT04","DXFIT04"}},
+	{{"DXAMB05","DXAMB05","DXAMB05","DXAMB05"},{"DXFIT05","DXFIT05","DXFIT05","DXFIT05"}},
+	{{"DXAMB06","DXAMB06","DXAMB06","DXAMB06"},{"DXFIT06","DXFIT06","DXFIT06","DXFIT06"}},
+	{{"DXAMB07","DXAMB07","DXAMB07","DXAMB07"},{"DXFIT07","DXFIT07","DXFIT07","DXFIT07"}},
+	{{"DXAMB08","DXAMB08","DXAMB08","DXAMB08"},{"DXFIT08","DXFIT08","DXFIT08","DXFIT08"}},
+	{{"DXAMB09","DXAMB09","DXAMB09","DXAMB09"},{"DXFIT09","DXFIT09","DXFIT09","DXFIT09"}},
+	{{"DXAMB10","DXAMB10","DXAMB10","DXAMB10"},{"DXFIT10","DXFIT10","DXFIT10","DXFIT10"}},
+	{{"DXAMB11","DXAMB11","DXAMB11","DXAMB11"},{"DXFIT11","DXFIT11","DXFIT11","DXFIT11"}},
+	{{"DXAMB12","DXAMB12","DXAMB12","DXAMB12"},{"DXFIT12","DXFIT12","DXFIT12","DXFIT12"}},
+	{{"DXAMB13","DXAMB13","DXAMB13","DXAMB13"},{"DXFIT13","DXFIT13","DXFIT13","DXFIT13"}},
+	{{"DXAMB14A","DXAMB14A","DXAMB14A","DXAMB14A"},{"DXFIT14","DXFIT14","DXFIT14","DXFIT14"}},
+	{{"DXAMB14B","DXAMB14B","DXAMB14B","DXAMB14B"},{"DXFIT14","DXFIT14","DXFIT14","DXFIT14"}},	
+	{{"DXAMB15","DXAMB15","DXAMB15","DXAMB15"},{"DXFIT15","DXFIT15","DXFIT15","DXFIT15"}},	
+	{{"DXAMB16","DXAMB16","DXAMB16","DXAMB16"},{"DXFIT16","DXFIT16","DXFIT16","DXFIT16"}},		
+	{{"DXAMB17","DXAMB17","DXAMB17","DXAMB17"},{"DXFIT17","DXFIT17","DXFIT17","DXFIT17"}},	
+	{{"DXAMB18","DXAMB18","DXAMB18","DXAMB18"},{"DXFIT18","DXFIT18","DXFIT18","DXFIT18"}},		
+	{{"DXAMB19","DXAMB19","DXAMB19","DXAMB19"},{"DXFIT19","DXFIT19","DXFIT19","DXFIT19"}},		
+	{{"DXAMB20","DXAMB20","DXAMB20","DXAMB20"},{"DXFIT20","DXFIT20","DXFIT20","DXFIT20"}},			
+	{{"DXAMB21","DXAMB21","DXAMB21","DXAMB21"},{"DXFIT21","DXFIT21","DXFIT21","DXFIT21"}},		
+};	
+
+str gameClassesSTR[34] = {
 	"DoomguyClass", "ChexClass", "CorvusClass", "WolfenClass", "HexenClass", "DukeClass", "MarathonClass", "QuakeClass", "RottClass", "BlakeClass",
 	"CalebClass", "StrifeClass", "EradClass", "C7Class", "RMRClass", "KatarnClass", "POGreedClass", "DisruptorClass", "WitchavenClass", 
 	"HalfLifeClass", "SWClass", "CMClass", "JonClass", "RRClass", "BittermanClass", "Hexen2Class", "BondClass", "CatacombClass", "PainkillerClass", 
-	"UnrealClass", "RTCWClass", "Q3Class", "DescentClass"
+	"UnrealClass", "RTCWClass", "Q3Class", "DescentClass", "DeusExClass"
 };
 
 Script "SamsaraOST_Enter" Enter
@@ -664,6 +690,113 @@ Script "SamsaraOST_PainkillerScriptedMusic" (void)
 					GiveInventory("Painkiller_AmbientMusic",1);
 					LocalSetMusic(PainkillerMusic[themeseed][0][songseed],0);
 				}
+			}
+		}
+		
+		Delay(1);
+	}
+}
+
+Script "SamsaraOST_DeusExScriptedMusic" (void) clientside
+{
+	int musicvolume = 1.0;
+	int themeseed = random(0,thememax-1);
+	int songseed = random(0,songseedmax -1);
+	int targetmusicvolume = musicvolume;
+	int swapped, swaptofight, swaptoambient;
+	int laststate = 0;
+	int trigger = 1;
+	int herosoundtrack = GetCvar("sams_cl_heromusic");
+	int gameoverride = GetCvar("sams_cl_heromusicoverride");
+
+	while(CheckInventory("DeusExClass"))
+	{
+		int newtid = UniqueTid();
+		SpawnSpotFacingForced("DeusEx_MusicDecider",0,newtid);
+		SetPointerExt(AAPTR_TRACER,0,newtid);	
+
+		if(GetCvar("sams_runninginzdoom"))
+		{
+			SetMusicVolume(musicvolume);
+			if(CheckInventory("DeusEx_CombatMusic") || swaptofight == 1)
+			{
+				if(CheckInventory("DeusEx_CombatMusic") != swapped || swaptofight == 1)
+				{
+					swaptofight = 1;
+					//PrintBold(s:"Combat ",f:musicvolume);
+					if(laststate == 0)
+					{
+						trigger = 0;
+						musicvolume -= 0.01;
+					}
+					if(musicvolume < 0.0 || trigger == 1)
+					{
+						trigger = 1;
+						if(musicvolume < targetmusicvolume)
+							musicvolume += 0.01;
+						else
+						{
+							musicvolume = targetmusicvolume;
+							swaptofight = 0;
+							swaptoambient = 0;
+							swapped = 1;
+						}
+							
+						if(laststate == 0)
+							LocalSetMusic(DeusExMusic[themeseed][1][songseed],0);
+						laststate = 1;
+					}
+				}
+				else
+				{
+					SetMusicVolume(targetmusicvolume);
+					LocalSetMusic(DeusExMusic[themeseed][1][songseed],0);
+				}
+			}
+			else if(CheckInventory("DeusEx_CombatMusic") == 0 || swaptoambient == 1)
+			{
+				if(CheckInventory("DeusEx_CombatMusic") != swapped || swaptoambient == 1)
+				{
+					swaptoambient = 1;
+					//PrintBold(s:"Ambient ",f:musicvolume);
+					if(laststate == 1)
+					{
+						trigger = 0;
+						musicvolume -= 0.01;
+					}
+					if(musicvolume < 0.0 || trigger == 1)
+					{
+						trigger = 1;
+						if(musicvolume < targetmusicvolume)
+							musicvolume += 0.01;
+						else
+						{
+							musicvolume = targetmusicvolume;
+							swaptofight = 0;
+							swaptoambient = 0;
+							swapped = 0;
+						}
+							
+						if(laststate == 1)
+							LocalSetMusic(DeusExMusic[themeseed][0][songseed],0);
+						laststate = 0;
+					}
+				}
+				else
+				{
+					SetMusicVolume(targetmusicvolume);
+					LocalSetMusic(DeusExMusic[themeseed][0][songseed],0);
+				}
+			}
+		}
+		else
+		{
+			if(!CheckWeapon("Painkiller_DemonMorph") && !CheckInventory("Painkiller_GoldActive"))
+			{
+				if(CheckInventory("DeusEx_CombatMusic"))
+					LocalSetMusic(DeusExMusic[themeseed][1][songseed],0);
+				else
+					LocalSetMusic(DeusExMusic[themeseed][0][songseed],0);
 			}
 		}
 		
