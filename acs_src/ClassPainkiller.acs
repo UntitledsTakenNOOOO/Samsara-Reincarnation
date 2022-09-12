@@ -267,63 +267,72 @@ Script "Painkiller_Fire_Laser" (int sideOffset, int forwardOffset, int zOffset)
 {
 	int x = GetActorX(0);
 	int y = GetActorY(0);
-	int z = GetActorZ(0);
+	int z = GetActorZ(0) + 10.0;
 
-	//SetActivatorToTarget(0);
-	//PrintBold(s:GetActorClass(0));
+	SetActivatorToTarget(0);
 	
-	/*int pAngle = GetActorAngle(0);
+	int pAngle = GetActorAngle(0);
 	int pPitch = GetActorPitch(0);
 	int mx = GetActorX(0);
 	int my = GetActorY(0);
-	int mz = GetActorZ(0) + (zOffset * 1.0);
+	int mz = GetActorZ(0) + GetActorViewHeight(0);
 
 	int vectorX = mx - x;
 	int vectorY = my - y;
 	int vectorZ = mz - z;
 
-	int angle = VectorAngle(vectorX,vectorY);
+	int angle = VectorAngle(vectorX,vectorY) + 0.5;
 	int pitch = VectorAngle(VectorLength(vectorX,vectorY),vectorZ);
 	
-		
-	LineAttack(0,angle,pitch,0,"BulletPuff","",8192.0,FHF_NORANDOMPUFFZ);*/
+	LineAttack(0,angle,pitch,0,"Painkiller_Painkiller_LaserEnd","Painkiller",magnitudeThree_f(vectorX,vectorY,vectorZ),FHF_NORANDOMPUFFZ);
+
+	if(angle > 1.0) angle -= 1.0;
+	
+	int giveAngle = angle;
+	int givePitch = pitch;
+	
+	if(giveAngle < 0.0) giveAngle += 1.0;
+	if(givePitch < 0.0) givePitch += 1.0;
+			
+	GiveInventory("Painkiller_RailAngle",giveAngle + 1.0);
+	GiveInventory("Painkiller_RailPitch",givePitch + 1.0);
 }
 
-Script "Painkiller_Laser" (int type, int space, int height) clientside
+Script "Painkiller_Laser_Offsets" (int mode)
 {
-	int t, i, k = 0, l, angle, pitch, x, y, z, tx, ty, tz, vx, vy, vz, mag, magI, horz;
-	str segment;
-	switch(type)
+	switch(mode)
 	{
-		case 1:
-			segment = "Painkiller_PainkillerLaserSegment";
-			i = 8;
-			break;	
-		case 2:
-			segment = "Painkiller_ElectrodriverBeamSegment";
-			i = 44;
-			break;	
-		case 3:
-			segment = "Painkiller_ElectrodriverBeamSegment2";
-			i = 44;
-			break;	
+		case 0: SetResultValue(CheckInventory("Painkiller_RailAngle") - 1.0); break;
+		case 1: SetResultValue(CheckInventory("Painkiller_RailPitch") - 1.0); break;
 	}
-	
+}
 
-	int newtid = UniqueTid();
-
-	tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0);
-	
+Script "Painkiller_Laser" (int type, int space, int height)
+{
+	int tx = GetActorX(0); 
+	int ty = GetActorY(0); 
+	int tz = GetActorZ(0);
 	SetActivatorToTarget(0);
+	ACS_NamedExecuteWithResult("Painkiller_Laser_Draw",tx,ty,tz);
+}
+
+Script "Painkiller_Laser_Draw" (int tx, int ty, int tz) clientside
+{
+	int t, i, k = 0, l, angle, pitch, x, y, z, vx, vy, vz, mag, magI, horz, space;
+	str segment = "Painkiller_PainkillerLaserSegment";
 	
-	if(type == 2||type == 3)
-		horz = 7;
-	int xoff = sin(GetActorAngle(0)) * horz;
-	int yoff = cos(GetActorAngle(0)) * horz;
+	space = 36;
+	i = 15;
+	horz = 6;
+	
+	int newtid = UniqueTid();
+	
+	int xoff = (cos(GetActorAngle(0)) * i) + (sin(GetActorAngle(0)) * horz);
+	int yoff = (sin(GetActorAngle(0)) * i) - (cos(GetActorAngle(0)) * horz);
 		
     x = GetActorX(0) + xoff;
 	y = GetActorY(0) + yoff;
-	z = GetActorZ(0) + height*1.0;
+	z = GetActorZ(0) + GetActorViewHeight(0) - 4.5 - (i * sin(GetActorPitch(0)));
 	
 	int vectorx = tx - x;
 	int vectory = ty - y;
