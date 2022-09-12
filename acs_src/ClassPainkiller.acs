@@ -245,6 +245,52 @@ Script "Painkiller_Painkiller_WarpBack" (void)
 	}
 }
 
+Script "Painkiller_Fire_Laser" (void)
+{
+	int newtid = UniqueTid();
+	Thing_ChangeTid(0, newtid);
+
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int z = GetActorZ(0);
+
+	SetActivator(0, AAPTR_MASTER);
+
+	int playerAngle = GetActorAngle(0);
+
+	SetActivatorToTarget(newtid);
+
+	int xoff = sin(playerAngle);
+	int yoff = cos(playerAngle);
+
+	int tx = GetActorX(0) + xoff;
+	int ty = GetActorY(0) - yoff;
+	int tz = GetActorZ(0);
+
+	int vectorx = tx - x;
+	int vectory = ty - y;
+	int vectorz = z - tz;
+	int angle = VectorAngle(vectorx, vectory);
+
+	int length = magnitudeTwo(vectorx>>16,vectory>>16);
+	int pitch = VectorAngle(length<<16, vectorz);
+	
+	int velx = FixedMul(cos(angle), cos(pitch));
+    int vely = FixedMul(sin(angle), cos(pitch));
+    int velz = sin(pitch);
+	
+	SetActivator(newtid, AAPTR_MASTER);
+	int visuallasertid = UniqueTid();
+
+	SpawnProjectile(0, "Painkiller_Painkiller_Laser", angle>>8, 0, 0, 0, visuallasertid);
+	SetActorPosition(visuallasertid, x, y, z, false);
+
+	int damagelasertid = UniqueTid();
+
+	SpawnProjectile(0, "Painkiller_Painkiller_Laser_Damage", angle>>8, 0, 0, 0, damagelasertid);
+	SetActorPosition(damagelasertid, x, y, z, false);
+}
+
 Script "Painkiller_Laser" (int type, int space, int height) clientside
 {
 	int t, i, k = 0, l, angle, pitch, x, y, z, tx, ty, tz, vx, vy, vz, mag, magI, horz;
@@ -270,7 +316,7 @@ Script "Painkiller_Laser" (int type, int space, int height) clientside
 
 	tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0);
 	
-	SetActivatorToTarget(0);	
+	SetActivatorToTarget(0);
 	
 	if(type == 2||type == 3)
 		horz = 7;
