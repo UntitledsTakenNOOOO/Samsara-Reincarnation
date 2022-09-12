@@ -245,50 +245,28 @@ Script "Painkiller_Painkiller_WarpBack" (void)
 	}
 }
 
-Script "Painkiller_Fire_Laser" (void)
+Script "Painkiller_Fire_Laser" (int sideOffset, int forwardOffset, int zOffset)
 {
-	int newtid = UniqueTid();
-	Thing_ChangeTid(0, newtid);
-
 	int x = GetActorX(0);
 	int y = GetActorY(0);
 	int z = GetActorZ(0);
 
-	SetActivator(0, AAPTR_MASTER);
+	SetActivator(0,AAPTR_Master);
 
-	int playerAngle = GetActorAngle(0);
+	int pAngle = GetActorAngle(0);
+	int pPitch = GetActorPitch(0);
+	int mx = GetActorX(0) + (sideOffset * cos(pAngle) - forwardOffset * sin(pAngle));
+	int my = GetActorY(0) + (sideOffset * sin(pAngle) + forwardOffset * cos(pAngle));
+	int mz = GetActorZ(0) + (zOffset * 1.0);
 
-	SetActivatorToTarget(newtid);
+	int vectorX = mx - x;
+	int vectorY = my - y;
+	int vectorZ = mz - z;
 
-	int xoff = sin(playerAngle);
-	int yoff = cos(playerAngle);
+	int angle = VectorAngle(vectorX,vectorY);
+	int pitch = VectorAngle(VectorLength(vectorX,vectorY),vectorZ);
 
-	int tx = GetActorX(0) + xoff;
-	int ty = GetActorY(0) - yoff;
-	int tz = GetActorZ(0);
-
-	int vectorx = tx - x;
-	int vectory = ty - y;
-	int vectorz = z - tz;
-	int angle = VectorAngle(vectorx, vectory);
-
-	int length = magnitudeTwo(vectorx>>16,vectory>>16);
-	int pitch = VectorAngle(length<<16, vectorz);
-	
-	int velx = FixedMul(cos(angle), cos(pitch));
-    int vely = FixedMul(sin(angle), cos(pitch));
-    int velz = sin(pitch);
-	
-	SetActivator(newtid, AAPTR_MASTER);
-	int visuallasertid = UniqueTid();
-
-	SpawnProjectile(0, "Painkiller_Painkiller_Laser", angle>>8, 0, 0, 0, visuallasertid);
-	SetActorPosition(visuallasertid, x, y, z, false);
-
-	int damagelasertid = UniqueTid();
-
-	SpawnProjectile(0, "Painkiller_Painkiller_Laser_Damage", angle>>8, 0, 0, 0, damagelasertid);
-	SetActorPosition(damagelasertid, x, y, z, false);
+	LineAttack(0,angle,pitch,0);
 }
 
 Script "Painkiller_Laser" (int type, int space, int height) clientside
