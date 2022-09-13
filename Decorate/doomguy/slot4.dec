@@ -1,6 +1,7 @@
-actor Doom64ChaingunRefireCount : Boolean {}
+actor DGHasChaingun : Boolean {}
+actor Doom64ChaingunSoundChannelCount : Counter { Inventory.MaxAmount 3 }
 
-actor " Chaingun " : Weapon// : Chaingun doom64 chaingun fires slightly faster and has recoil bleh
+actor " Chaingun " : Weapon
 {
     Weapon.SelectionOrder 700
     Weapon.AmmoUse 1
@@ -16,373 +17,233 @@ actor " Chaingun " : Weapon// : Chaingun doom64 chaingun fires slightly faster a
 	Inventory.RestrictedTo "DoomguyPlayer"
     States
     {
+      // Classic
       Ready:
-		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Ready64")
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Ready64")
         DCHG N 1 A_WeaponReady
-        Loop
-		
-      Ready64:
-        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
-        64CG A 1 A_WeaponReady
-        Goto Ready		
+        loop
 
       Deselect:
-		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Deselect64")
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Deselect64")
         DCHG N 1 A_Lower
-        Loop
-		
-      Deselect64:
-        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
-        64CG A 1 A_Lower
-        Loop		
+        loop
 
       Select:
-		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Select64")
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Select64")
         DCHG N 1 A_Raise
-        Loop
-		
-      Select64:
-        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
-        64CG A 1 A_Raise
-        Loop		
+        loop
 
       Fire:
-		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Fire64")
-        TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaFire")//A_JumpIf(ACS_ExecuteWithResult(219, 0, 0, 0)==1, "VanillaFire")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Fire64")
         TNT1 A 0 A_GunFlash
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG A 2 BRIGHT A_FireBullets (5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2", FBF_USEAMMO|FBF_NORANDOM)
-        DCHG B 2 BRIGHT
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG C 2 BRIGHT A_FireBullets (5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2", FBF_USEAMMO|FBF_NORANDOM)
-        DCHG D 2 BRIGHT
-        DCHG N 1 A_ReFire
-        Goto Ready
-		
-      Fire64:
-		TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaFire64")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire64")
-        64CG A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 2 A_PlayWeaponSound("doom64guy/chngun")
-		64CG B 2
-        64CG B 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 2 A_PlaySound("doom64guy/chngun")
-		64CG D 1
-        64CG B 0 A_ReFire
-        Goto Ready	
-		
-	  VanillaFire64:
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire64Vanilla")
-        64CG A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 4 A_PlayWeaponSound("doom64guy/chngun")
-        64CG B 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 3 A_PlaySound("doom64guy/chngun")
-        64CG B 0 A_ReFire
-        Goto Ready
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"FireSmooth")
+      FireVanilla:
+        DCHG E 4 Bright A_GiveInventory("SamsaraDoomguyChaingunAttackHandler")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireVanilla2Attack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"FireVanilla2Attack")
+        goto FireVanilla2
 
-	  CoopFire64Vanilla:
-        64CG A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 4 A_PlayWeaponSound("doom64guy/chngun")
-        64CG B 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 3 A_PlaySound("doom64guy/chngun")
-        64CG B 0 A_ReFire
-        Goto Ready
-
-      Hold:
-		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Hold64")
-        TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaHold")//A_JumpIf(ACS_ExecuteWithResult(219, 0, 0, 0)==1, "VanillaHold")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHold")		
-        TNT1 A 0 A_GunFlash
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG A 2 BRIGHT A_FireBullets (5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2", FBF_USEAMMO|FBF_NORANDOM)
-        DCHG B 2 BRIGHT
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG C 2 BRIGHT A_FireBullets (5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2", FBF_USEAMMO|FBF_NORANDOM)
-        DCHG D 2 BRIGHT
+      FireVanilla2Attack:
+        TNT1 A 0 A_GunFlash("Flash2")
+      FireVanilla2:
+        DCHG F 4 Bright A_GiveInventory("SamsaraDoomguyChaingunAttackHandler")
+      FireFinish:
         TNT1 A 0 A_ReFire
-        DCHG N 1 A_ClearRefire
-        Goto Ready
-		
-      Hold64:
-		TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaHold64")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHold64")
-        TNT1 A 0 A_JumpIfInventory("Doom64ChaingunRefireCount", 1, "Hold2")
-        TNT1 A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 2 A_PlaySound ("doom64guy/chngun", 6)
-		64CG B 2 
-        64CG B 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 2 A_PlaySound ("doom64guy/chngun", 7)
-		64CG D 1
-        64CG A 0 A_GiveInventory("Doom64ChaingunRefireCount", 1)
-        64CG A 0 A_ReFire
-        Goto Ready		
-		
-      Hold2:
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHold2")
-        TNT1 A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 2 A_PlayWeaponSound("doom64guy/chngun")
-		64CG B 2
-        64CG B 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 2 A_PlaySound("doom64guy/chngun")
-		64CG D 1
-        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
-        64CG A 0 A_ReFire
-        Goto Ready
-		
-      CoopHold64:
-        TNT1 A 0 A_JumpIfInventory("Doom64ChaingunRefireCount", 1, "CoopHold2")
-        TNT1 A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 2 A_PlaySound ("doom64guy/chngun", 6)
-		64CG B 2
-        64CG B 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 2 A_PlaySound ("doom64guy/chngun", 7)
-		64CG D 1
-        64CG A 0 A_GiveInventory("Doom64ChaingunRefireCount", 1)
-        64CG A 0 A_ReFire
-        Goto Ready
-		
-      CoopHold2:
-        TNT1 A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 2 A_PlayWeaponSound("doom64guy/chngun")
-		64CG B 2
-        64CG B 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 2 A_PlaySound("doom64guy/chngun")
-		64CG D 1
-        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
-        64CG A 0 A_ReFire
-        Goto Ready		
-		
-	  VanillaHold64:
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHold64Vanilla")
-        TNT1 A 0 A_JumpIfInventory("Doom64ChaingunRefireCount", 1, "Hold2Vanilla")
-        TNT1 A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 4 A_PlaySound ("doom64guy/chngun", 6)
-        64CG B 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 3 A_PlaySound ("doom64guy/chngun", 7)
-        64CG A 0 A_GiveInventory("Doom64ChaingunRefireCount", 1)
-        64CG A 0 A_ReFire
-        Goto Ready		
-		
-      Hold2Vanilla:
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHold2Vanilla")
-        TNT1 A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 4 A_PlayWeaponSound("doom64guy/chngun")
-        64CG B 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 3 A_PlaySound("doom64guy/chngun")
-        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
-        64CG A 0 A_ReFire
-        Goto Ready	  
-		
-      CoopHold64Vanilla:
-        TNT1 A 0 A_JumpIfInventory("Doom64ChaingunRefireCount", 1, "CoopHold2Vanilla")
-        TNT1 A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 4 A_PlaySound ("doom64guy/chngun", 6)
-        64CG B 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 3 A_PlaySound ("doom64guy/chngun", 7)
-        64CG A 0 A_GiveInventory("Doom64ChaingunRefireCount", 1)
-        64CG A 0 A_ReFire
-        Goto Ready
-		
-      CoopHold2Vanilla:
-        TNT1 A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 4 A_PlayWeaponSound("doom64guy/chngun")
-        64CG B 0 A_FireBullets(5.6, 0, 1, 4*Random(1,4), "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 3 A_PlaySound("doom64guy/chngun")
-        64CG A 0 A_TakeInventory("Doom64ChaingunRefireCount", 1)
-        64CG A 0 A_ReFire
-        Goto Ready		
-        
-      VanillaFire:
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "VanillaCoopFire")
-        TNT1 A 0 A_GunFlash
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG E 4 BRIGHT A_FireBullets (5.6, 0, 1, 5, "DoomBulletPuff2")
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG F 4 BRIGHT A_FireBullets (5.6, 0, 1, 5, "DoomBulletPuff2")
-        DCHG N 1 A_ReFire
-        Goto Ready
+        goto Ready
 
-      VanillaHold:
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "VanillaCoopHold")
-        TNT1 A 0 A_GunFlash
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG E 4 BRIGHT A_FireBullets (5.6, 0, -1, 5, "DoomBulletPuff2")
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG F 4 BRIGHT A_FireBullets (5.6, 0, -1, 5, "DoomBulletPuff2")
-        DCHG N 0 A_ReFire
-        DCHG N 1 A_ClearRefire
-        Goto Ready
-        
-      CoopFire:
-        TNT1 A 0 A_GunFlash
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG A 2 BRIGHT A_FireBullets (5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2_Coop", FBF_USEAMMO|FBF_NORANDOM)
-        DCHG B 2 BRIGHT
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG C 2 BRIGHT A_FireBullets (5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2_Coop", FBF_USEAMMO|FBF_NORANDOM)
-        DCHG D 2 BRIGHT
-        DCHG N 1 A_ReFire
-        Goto Ready
-		
-      CoopFire64:
-        TNT1 A 0 A_GunFlash("Flash64")
-        64CG A 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG A 2 A_PlayWeaponSound("doom64guy/chngun")
-		64CG B 2
-        64CG B 0 A_FireBullets(5.6, 0, 1, Random(6,9)*2, "Doom64BulletPuff_Coop", FBF_NORANDOM|FBF_USEAMMO)
-        64CG A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 2, 3, 11)
-        64CG C 2 A_PlaySound("doom64guy/chngun")
-		64CG D 1
-        64CG B 0 A_ReFire
-        Goto Ready		
+      FireSmooth:
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyChaingunAttackHandler")
+        DCHG AB 2 Bright
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireSmooth2Attack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"FireSmooth2Attack")
+        goto FireSmooth2
 
-      CoopHold:
-        TNT1 A 0 A_GunFlash
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG A 2 BRIGHT A_FireBullets (5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2_Coop", FBF_USEAMMO|FBF_NORANDOM)
-        DCHG B 2 BRIGHT
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG C 2 BRIGHT A_FireBullets (5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2_Coop", FBF_USEAMMO|FBF_NORANDOM)
-        DCHG D 2 BRIGHT
-        TNT1 A 0 A_ReFire
-        DCHG N 1 A_ClearRefire
-        Goto Ready
-        
-      VanillaCoopFire:
-        TNT1 A 0 A_GunFlash
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG E 4 BRIGHT A_FireBullets (5.6, 0, 1, 5, "DoomBulletPuff2_Coop")
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG F 4 BRIGHT A_FireBullets (5.6, 0, 1, 5, "DoomBulletPuff2_Coop")
-        DCHG N 1 A_ReFire
-        Goto Ready
+      FireSmooth2Attack:
+        TNT1 A 0 A_GunFlash("Flash2")
+      FireSmooth2:
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyChaingunAttackHandler")
+        DCHG CD 2 Bright
+        goto FireFinish
 
-      VanillaCoopHold:
-        TNT1 A 0 A_GunFlash
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG E 4 BRIGHT A_FireBullets (5.6, 0, 1, 5, "DoomBulletPuff2_Coop")
-        TNT1 A 0 A_PlayWeaponSound("doomguy/pistol")
-        DCHG F 4 BRIGHT A_FireBullets (5.6, 0, 1, 5, "DoomBulletPuff2_Coop")
-        DCHG N 0 A_ReFire
-        DCHG N 1 A_ClearRefire
-        Goto Ready
-        
       Flash:
-        TNT1 A 5 BRIGHT A_Light1
-        TNT1 A 4 A_Light0
-        Goto LightDone
-		
+        TNT1 A 5 Bright A_Light1
+        goto LightDone
+
+      Flash2:
+        TNT1 A 5 Bright A_Light2
+        goto LightDone
+
+      // Doom 64 (fires slightly faster and has recoil visual)
+      Ready64:
+        64CG A 1 A_WeaponReady
+        goto Ready
+
+      Deselect64:
+        64CG A 1 A_Lower
+        goto Deselect
+
+      Select64:
+        64CG A 1 A_Raise
+        goto Select
+
+      Fire64:
+        TNT1 A 0 A_GunFlash("Flash64")
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"Fire64Smooth")
+      Fire64Vanilla:
+        64CG A 4 A_GiveInventory("SamsaraDoomguyChaingun64AttackHandler")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Fire64Vanilla2Attack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"Fire64Vanilla2Attack")
+        goto Fire64Vanilla2
+
+      Fire64Vanilla2Attack:
+        TNT1 A 0 A_GunFlash("Flash64_2")
+      Fire64Vanilla2:
+        64CG C 3 A_GiveInventory("SamsaraDoomguyChaingun64AttackHandler")
+        goto FireFinish
+
+      Fire64Smooth:
+        64CG A 2 A_GiveInventory("SamsaraDoomguyChaingun64AttackHandler")
+		64CG B 2
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Fire64Smooth2Attack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"Fire64Smooth2Attack")
+        goto Fire64Smooth2
+
+      Fire64Smooth2Attack:
+        TNT1 A 0 A_GunFlash("Flash64_2")
+      Fire64Smooth2:
+        64CG C 2 A_GiveInventory("SamsaraDoomguyChaingun64AttackHandler")
+		64CG D 1
+        goto FireFinish
+
       Flash64:
-        64CM A 3 Bright
-        TNT1 A 1
-        64CM B 2 Bright
-        TNT1 A 2
-        Goto LightDone		
+        64CM A 3 Bright A_Light1
+        goto LightDone
+
+      Flash64_2:
+        64CM B 2 Bright A_Light2
+        goto LightDone
 
       Spawn:
         WCGN A -1
-        Stop
+        stop
     }
 }
 
-//=================================================================================================
-//
-// Minigun
-//
-//=================================================================================================
-
-actor DGHasChaingun : Boolean {}
-actor DGHasMinigun : Boolean {}
-ACTOR " Minigun " : Weapon
+actor SamsaraDoomguyChaingunAttackHandler : Trigger
 {
-	Radius 20
-	Height 16
-	Weapon.AmmoType "Clip" 
-	Weapon.AmmoGive 0
-	Weapon.AmmoUse 1
-	Weapon.Selectionorder 700
-	Weapon.Kickback 100
-	Weapon.SlotNumber 4 // This line isn't in skulltag.pk3, which instead defines the slot directly in DoomPlayer
-	Inventory.PickupMessage "$PICKUP_MINIGUN" // "You got the minigun!"
-	Inventory.RestrictedTo "DoomguyPlayer"
-	Obituary "$OB_MINIGUN" // "%o was drilled by %k's minigun."
-	AttackSound "weapons/minigun"
-	Tag "Minigun"
-	States
-	{
-		Spawn:
-			MNGN A -1
-			Loop
-		Ready:
-			MNGG A 1 A_WeaponReady
-			Loop
-		Deselect:
-			MNGG A 1 A_Lower
-			Loop
-		Select: 
-			MNGG A 1 A_Raise 
-			Loop  
-		Fire: 
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
-			MNGG A 0 A_GunFlash
-			MNGG A 2 A_FireBullets(5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2", FBF_USEAMMO|FBF_NORANDOM)
-			MNGG B 2 A_FireBullets(5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2", FBF_USEAMMO|FBF_NORANDOM)
-			MNGG A 2 A_ReFire
-			MNGG B 2
-			MNGG A 4
-			MNGG B 4
-			MNGG A 8
-			MNGG B 8
-			Goto Ready 
-		CoopFire:
-			MNGG A 0 A_GunFlash
-			MNGG A 2 A_FireBullets(5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2_Coop", FBF_USEAMMO|FBF_NORANDOM)
-			MNGG B 2 A_FireBullets(5.6, 0, 1, Random(8,10)*2, "DoomBulletPuff2_Coop", FBF_USEAMMO|FBF_NORANDOM)
-			MNGG A 2 A_ReFire
-			MNGG B 2
-			MNGG A 4
-			MNGG B 4
-			MNGG A 8
-			MNGG B 8
-			Goto Ready 		
-		Flash: 
-			MNGF A 3 BRIGHT A_Light1 
-			MNGF B 3 BRIGHT A_Light0
-			Stop 
-	}
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("doomguy/chngun",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SamsaraImprovedDoomguyBalance",1,"PickupAttackImproved")
+      // Vanilla
+      PickupAttackVanilla:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackVanillaCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackVanillaCoop")
+      PickupAttackVanillaDM:
+        TNT1 A 0 A_FireBullets(5.6,0,1,5,"DoomBulletPuff2",FBF_NOFLASH)
+        stop
+
+      PickupAttackVanillaCoop:
+        TNT1 A 0 A_FireBullets(5.6,0,1,5,"DoomBulletPuff2_Coop",FBF_NOFLASH)
+        stop
+
+      // Improved
+      PickupAttackImproved:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackImprovedCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackImprovedCoop")
+      PickupAttackImprovedDM:
+        TNT1 A 0 A_FireBullets(5.6,0,1,Random(8,10)*2,"DoomBulletPuff2",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+
+      PickupAttackImprovedCoop:
+        TNT1 A 0 A_FireBullets(5.6,0,1,Random(8,10)*2,"DoomBulletPuff2_Coop",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+    }
+}
+
+actor SamsaraDoomguyChaingun64AttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupPlaySound
+
+      // Sound stuff
+      PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("Doom64ChaingunSoundChannelCount",0,"PickupPlaySound7")
+        TNT1 A 0 A_JumpIfInventory("Doom64ChaingunSoundChannelCount",2,"PickupPlaySound6")
+        TNT1 A 0 A_JumpIfInventory("Doom64ChaingunSoundChannelCount",1,"PickupPlaySound4")
+      PickupPlaySound1:
+        TNT1 A 0 A_PlaySound("doom64guy/chngun",CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("Doom64ChaingunSoundChannelCount")
+        goto PickupAttack
+
+      PickupPlaySound4:
+        TNT1 A 0 A_PlaySound("doom64guy/chngun")
+        TNT1 A 0 A_GiveInventory("Doom64ChaingunSoundChannelCount")
+        goto PickupAttack
+
+      PickupPlaySound6:
+        TNT1 A 0 A_PlaySound("doom64guy/chngun",CHAN_6)
+        TNT1 A 0 A_GiveInventory("Doom64ChaingunSoundChannelCount")
+        goto PickupAttack
+
+      PickupPlaySound7:
+        TNT1 A 0 A_PlaySound("doom64guy/chngun",CHAN_7)
+        TNT1 A 0 A_TakeInventory("Doom64ChaingunSoundChannelCount")
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SamsaraImprovedDoomguyBalance",1,"PickupAttackImproved")
+      // Vanilla
+      PickupAttackVanilla:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackVanillaCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackVanillaCoop")
+      PickupAttackVanillaDM:
+        TNT1 A 0 A_FireBullets(5.6,0,1,random(1,4)*4,"Doom64BulletPuff",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      PickupAttackVanillaCoop:
+        TNT1 A 0 A_FireBullets(5.6,0,1,random(1,4)*4,"Doom64BulletPuff_Coop",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      // Improved
+      PickupAttackImproved:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackImprovedCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackImprovedCoop")
+      PickupAttackImprovedDM:
+        TNT1 A 0 A_FireBullets(5.6,0,1,random(6,9)*2,"Doom64BulletPuff",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      PickupAttackImprovedCoop:
+        TNT1 A 0 A_FireBullets(5.6,0,1,random(6,9)*2,"Doom64BulletPuff_Coop",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 1, 0, 5)
+        stop
+    }
 }

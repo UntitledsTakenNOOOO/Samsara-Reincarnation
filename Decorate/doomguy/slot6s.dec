@@ -1,0 +1,73 @@
+actor DGHasRailGun : Boolean {}
+
+ACTOR " RailGun " : Weapon
+{
+	Radius 20
+	Height 16
+	Weapon.Selectionorder 100
+	Weapon.AmmoUse 10
+	Weapon.AmmoGive 0
+	Weapon.AmmoType "Cell"
+	Inventory.Pickupmessage "$PICKUP_RAILGUN"
+	Inventory.RestrictedTo "DoomguyPlayer"
+	Obituary "$OB_RAILGUN"
+	Tag "Railgun"
+	States
+	{
+	Ready:
+		RLGG A 1 A_WeaponReady
+		loop
+	Deselect:
+		RLGG A 1 A_Lower
+		loop
+	Select:
+		RLGG A 1 A_Raise
+		loop
+	Fire:
+		RLGG E 12 A_GiveInventory("SamsaraDoomguyRailgunAttackHandler")
+		RLGG F 6 A_CheckForReload(4,7)
+		RLGG GHIJKLA 6
+		TNT1 A 0 A_ReFire
+		goto Ready
+	Flash:
+		TNT1 A 5 Bright A_Light1
+		TNT1 A 5 Bright A_Light2
+		goto LightDone
+	Spawn:
+		RAIL A -1
+		stop
+	}
+}
+
+actor SamsaraDoomguyRailgunAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",10,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",10,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("weapons/railgf",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_RailAttack(75,0,false,"","",RGF_SILENT|RGF_FULLBRIGHT,0,"DoomRailPuff")
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_RailAttack(200,0,false,"","",RGF_SILENT|RGF_FULLBRIGHT,0,"DoomRailPuff_Coop")
+        stop
+    }
+}
+
+actor DoomRailPuff : DoomBulletPuff2 { +PIERCEARMOR }
+actor DoomRailPuff_Coop : DoomRailPuff { +THRUSPECIES +MTHRUSPECIES +DONTHARMSPECIES +DONTHARMCLASS Species "Player" }

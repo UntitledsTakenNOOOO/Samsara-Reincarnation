@@ -1,4 +1,7 @@
-actor "Plasma Rifle" : PlasmaRifle // Doom 64 PR fires much slower, but the projectiles pack a bit more punch
+actor DGHasPlasmaRifle : Boolean {}
+actor SamsaraDoom64PlasmaRifleSoundActive : Boolean {}
+
+actor "Plasma Rifle" : PlasmaRifle
 {
     Weapon.SlotNumber 6
     +INVENTORY.UNDROPPABLE
@@ -6,155 +9,220 @@ actor "Plasma Rifle" : PlasmaRifle // Doom 64 PR fires much slower, but the proj
 	Inventory.RestrictedTo "DoomguyPlayer"
     States
     {
+      // Classic
       Ready:
-		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Ready64")
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Ready64")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoom64PlasmaRifleSoundActive",1,"ReadyStopSound")
+      ReadyContinue:
         DPLS A 1 A_WeaponReady
-        Loop
-		
-      Ready64:
-        64PR B 0 A_PlaySound("doom64guy/plasmaidle", CHAN_6, 1, 1)
-	  ReadyLoop64:	
-		64PR B 0 A_JumpIfInventory("Doom64Mode", 1, 1)
-		Goto Ready+1
-        64PR BCD 2 A_WeaponReady
-        Loop		
+        goto Ready
+
+      ReadyStopSound:
+        TNT1 A 0 A_PlaySound("silence",CHAN_6)
+        TNT1 A 0 A_StopSound(CHAN_6)
+        goto ReadyContinue
 
       Deselect:
-		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Deselect64")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoom64PlasmaRifleSoundActive",1,"DeselectStopSound")
+      DeselectContinue:
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Deselect64")
         DPLS A 1 A_Lower
-        Loop
-		
-      Deselect64:
-        64PR A 0 A_StopSound(CHAN_6)
-        64PR A 1 A_Lower
-        Goto Deselect64+1		
+        goto Deselect
+
+      DeselectStopSound:
+        TNT1 A 0 A_PlaySound("silence",CHAN_6)
+        TNT1 A 0 A_StopSound(CHAN_6)
+        goto DeselectContinue
 
       Select:
-		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Select64")
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Select64")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoom64PlasmaRifleSoundActive",1,"SelectStopSound")
+      SelectContinue:
         DPLS A 1 A_Raise
-        Loop
-		
-      Select64:
-        64PR A 0 A_PlaySound("doom64guy/plasmaidle", CHAN_6, 1, 1)
-        64PR A 1 A_Raise
-        Goto Select64+1		
+        goto Select
+
+      SelectStopSound:
+        TNT1 A 0 A_PlaySound("silence",CHAN_6)
+        TNT1 A 0 A_StopSound(CHAN_6)
+        goto SelectContinue
 
       Fire:
-		TNT1 A 0 A_JumpIfInventory("Doom64Mode", 1, "Fire64")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
-        DPLS A 0 A_GunFlash
-        TNT1 A 0 A_Jump(258, "Fire1")
-		
-      Fire1:
-        DPLS A 3 BRIGHT A_FireCustomMissile("DoomPlasmaBall")
-        TNT1 A 0 A_Refire
-        TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaCooldown")//A_JumpIf(ACS_ExecuteWithResult(219, 0, 0, 0)==1, "VanillaCooldown")
-        DPLS A 1 A_JumpIfInventory("VanillaDoom", 1, "VanillaCooldown")//A_JumpIf(ACS_ExecuteWithResult(219, 0, 0, 0)==1, "VanillaCooldown")
-        goto FireEnd
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Fire64")
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"FireSmooth")
+        TNT1 A 0 A_GunFlash
+        DPLS A 3 Bright A_GiveInventory("SamsaraDoomguyPlasmaRifleAttackHandler")
+        DPLS H 20 A_ReFire
+        goto Ready
 
-      Fire2:
-        DPLF B 3 BRIGHT A_FireCustomMissile("DoomPlasmaBall")
-        TNT1 A 0 A_Refire
-        TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaCooldown")//A_JumpIf(ACS_ExecuteWithResult(219, 0, 0, 0)==1, "VanillaCooldown")
-        DPLS B 1 A_JumpIfInventory("VanillaDoom", 1, "VanillaCooldown")//A_JumpIf(ACS_ExecuteWithResult(219, 0, 0, 0)==1, "VanillaCooldown")
-        goto FireEnd
-		
-      Fire64:
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire64")
-		TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "Fire64Vanilla")
-        64PR A 0 A_GunFlash("Flash64")
-        64PR I 2 A_FireCustomMissile("Doom64PlasmaBall")
-		64PR J 2
-        TNT1 A 0 A_Refire
-        goto 64Cooldown
-		
-	  Fire64Vanilla:
-        64PR A 0 A_GunFlash("Flash64")
-        64PR A 5 A_FireCustomMissile("Doom64PlasmaBall")
-        TNT1 A 0 A_Refire
-        goto ReadyLoop64	  
+      Flash:
+	    TNT1 A 0 A_Jump(256,1,2)
+	    DPLF A 3 Bright A_Light1
+        goto LightDone
+	    DPLF B 3 Bright A_Light1
+        goto LightDone
 
-      CoopFire:
-        DPLS A 0 A_GunFlash
-        TNT1 A 0 A_Jump(258, "CoopFire1")
-
-      CoopFire1:
-        DPLS A 3 BRIGHT A_FireCustomMissile("DoomPlasmaBall2")
-        TNT1 A 0 A_Refire
-        TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaCooldown")//A_JumpIf(ACS_ExecuteWithResult(219, 0, 0, 0)==1, "VanillaCooldown")
-        DPLS A 1 A_JumpIfInventory("VanillaDoom", 1, "VanillaCooldown")//A_JumpIf(ACS_ExecuteWithResult(219, 0, 0, 0)==1, "VanillaCooldown")
-        goto FireEnd
-
-      CoopFire2:
-        DPLF B 3 BRIGHT A_FireCustomMissile("DoomPlasmaBall2")
-        TNT1 A 0 A_Refire
-        TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaCooldown")//A_JumpIf(ACS_ExecuteWithResult(219, 0, 0, 0)==1, "VanillaCooldown")
-        DPLS B 1 A_JumpIfInventory("VanillaDoom", 1, "VanillaCooldown")//A_JumpIf(ACS_ExecuteWithResult(219, 0, 0, 0)==1, "VanillaCooldown")
-        goto FireEnd
-		
-      CoopFire64:
-		TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "CoopFire64Vanilla")
-        64PR A 0 A_GunFlash("Flash64")
-        64PR I 2 A_FireCustomMissile("Doom64PlasmaBall2")
-		64PR J 2
-        TNT1 A 0 A_Refire
-        goto 64Cooldown	
-		
-	  CoopFire64Vanilla:
-        64PR A 0 A_GunFlash("Flash64")
-        64PR A 5 A_FireCustomMissile("Doom64PlasmaBall2")
-        TNT1 A 0 A_Refire
-        goto ReadyLoop64		  
-     
-      FireEnd:
-        TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaCooldown")
-        DPLS A 1
-        DPLS D 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed", 1, "RageEnd")
-        DPLS DEF 1
+      FireSmooth:
+        TNT1 A 0 A_GunFlash("FlashSmooth")
+        DPLS A 3 Bright A_GiveInventory("SamsaraDoomguyPlasmaRifleAttackHandler")
+        DPLS A 1 A_ReFire
+        DPLS BC 1
+        DPLS D 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,"FireSmoothRage")
+        DPLS EF 1
         DPLS GF 3
         DPLS EDCB 2
-        DPLS A 1
-        goto Ready
-      
-      RageEnd:
-        DPLS DF 2
-        DPLS G 4
-        DPLS FEDCBA 2
         goto Ready
 
-      VanillaCooldown:
-        DPLS H 20
+      FireSmoothRage:
+        DPLS DFGFDCB 2
         goto Ready
-		
-	  64Cooldown:
-		64PR EFGH 5
-		Goto ReadyLoop64
-	
-	  Flash:
-		TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, "VanillaFlash")
-		DPLF C 1 BRIGHT A_Light1
-		DPLF A 1 BRIGHT
-		DPLF B 1 BRIGHT 
-		DPLF D 1 BRIGHT
-		Goto LightDone
 
-      VanillaFlash:
-	    TNT1 A 0 A_Jump(128, 2)
-	    DPLF A 4 BRIGHT A_Light1
-        goto Lightdone
-	    DPLF B 4 BRIGHT A_Light1
-        goto Lightdone		
-		
+	  FlashSmooth:
+		TNT1 A 0 A_Light1
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,"FlashSmoothRage")
+		DPLF CABD 1 Bright
+		goto LightDone
+
+	  FlashSmoothRage:
+		DPLF AD 1 Bright
+		goto LightDone
+
+      // Doom 64 (fires slower, but is more damaging)
+      Ready64:
+        TNT1 A 0 A_PlaySound("doom64guy/plasmaidle",CHAN_6,1,true)
+        TNT1 A 0 A_GiveInventory("SamsaraDoom64PlasmaRifleSoundActive")
+        64PR BCD 2 A_WeaponReady
+        goto Ready
+
+      Deselect64:
+        64PR A 1 A_Lower
+        goto Deselect
+
+      Select64:
+        TNT1 A 0 A_PlaySound("doom64guy/plasmaidle",CHAN_6,1,true)
+        TNT1 A 0 A_GiveInventory("SamsaraDoom64PlasmaRifleSoundActive")
+        64PR A 1 A_Raise
+        goto Select
+
+      Fire64:
+		TNT1 A 0 A_JumpIfInventory("SamsaraImprovedDoomguyBalance",1,"Fire64ImprovedBalance")
+      Fire64VanillaBalance:
+		TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"Fire64VanillaBalanceSmooth")
+      Fire64VanillaBalanceVanilla:
+        TNT1 A 0 A_GunFlash("Flash64")
+        64PR A 5 A_GiveInventory("SamsaraDoomguyPlasmaRifle64AttackHandler")
+      Fire64Finish:
+        TNT1 A 0 A_ReFire
+        goto Ready
+
+      Fire64ImprovedBalance:
+		TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"Fire64ImprovedBalanceSmooth")
+      Fire64ImprovedBalanceVanilla:
+        TNT1 A 0 A_GunFlash("Flash64Improved")
+        64PR A 4 A_GiveInventory("SamsaraDoomguyPlasmaRifle64AttackHandler")
+        64PR A 20 A_ReFire
+        goto Ready
+
       Flash64:
-		TNT1 A 0 A_JumpIfInventory("VanillaDoom", 1, 2)
-		TNT1 A 4 BRIGHT
-		goto Lightdone
-        64RF A 4 Bright
-        goto Lightdone		
+        64RF A 4 Bright A_Light1
+        goto LightDone
+
+      Flash64Improved:
+        TNT1 A 0 A_Light1
+        64RF A 3 Bright A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,"Flash64ImprovedRage")
+        goto LightDone
+
+      Flash64ImprovedRage:
+        64RF A 2 Bright
+        goto LightDone
+
+      Fire64VanillaBalanceSmooth:
+        TNT1 A 0 A_GunFlash("Flash64Smooth")
+        64PR I 2 A_GiveInventory("SamsaraDoomguyPlasmaRifle64AttackHandler")
+		64PR J 3
+        goto Fire64Finish
+
+      Fire64ImprovedBalanceSmooth:
+        64PR A 0 A_GunFlash("Flash64ImprovedSmooth")
+        64PR I 2 A_GiveInventory("SamsaraDoomguyPlasmaRifle64AttackHandler")
+		64PR J 2
+        64PR E 5 A_ReFire
+        64PR FGH 5
+        goto Ready
+
+      Flash64Smooth:
+		TNT1 A 4 Bright A_Light1
+		goto LightDone
+
+      Flash64ImprovedSmooth:
+        TNT1 A 0 A_Light1
+        TNT1 A 3 Bright A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,"Flash64ImprovedSmoothRage")
+        goto LightDone
+
+      Flash64ImprovedSmoothRage:
+        TNT1 A 2 Bright
+        goto LightDone
 
       Spawn:
         WPLS A -1
-        Stop
+        stop
+    }
+}
+
+actor SamsaraDoomguyPlasmaRifleAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("DoomPlasmaBall",0,false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("DoomPlasmaBall2",0,false)
+        stop
+    }
+}
+
+actor SamsaraDoomguyPlasmaRifle64AttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("Doom64PlasmaBall",0,false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("Doom64PlasmaBall2",0,false)
+        stop
     }
 }
 
@@ -206,85 +274,3 @@ actor Doom64PlasmaBall : PlasmaBall
 }
 
 actor Doom64PlasmaBall2 : Doom64PlasmaBall { +THRUSPECIES Species "Player" }
-
-//=================================================================================================
-//
-// RailGun
-//
-//=================================================================================================
-
-actor DGHasPlasmaRifle : Boolean {}
-actor DGHasRailGun : Boolean {}
-ACTOR " RailGun " : Weapon
-{
-	Radius 20
-	Height 16
-	Weapon.Selectionorder 100
-	Weapon.AmmoUse 10
-	Weapon.AmmoGive 0
-	Weapon.AmmoType "Cell"
-	Inventory.Pickupmessage "$PICKUP_RAILGUN"
-	Inventory.RestrictedTo "DoomguyPlayer"
-	Obituary "$OB_RAILGUN"
-	Tag "Railgun"
-	States
-	{
-	Ready:
-		RLGG A 1 A_WeaponReady
-		loop
-	Deselect:
-		RLGG A 1 A_Lower
-		loop
-	Select:
-		RLGG A 1 A_Raise
-		loop
-	Fire:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn", 1, "SPFire")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
-		RLGG E 12 A_RailAttack(100, 0, 1, "", "", RGF_FULLBRIGHT, 0, "DoomBulletPuff2")
-		RLGG F 6 A_CheckForReload(4, 7)
-		RLGG G 6
-		RLGG H 6
-		RLGG I 6
-		RLGG J 6
-		RLGG K 6
-		RLGG L 6
-		RLGG A 6
-		RLGG M 0 A_ReFire
-		goto Ready
-	SPFire:
-		RLGG E 12 A_RailAttack(150, 0, 1, "", "", RGF_FULLBRIGHT, 0, "DoomBulletPuff2")
-		RLGG F 6 A_CheckForReload(4, 7)
-		RLGG G 6
-		RLGG H 6
-		RLGG I 6
-		RLGG J 6
-		RLGG K 6
-		RLGG L 6
-		RLGG A 6
-		RLGG M 0 A_ReFire
-		goto Ready	
-	CoopFire:
-		RLGG E 12 A_RailAttack(150, 0, 1, "", "", RGF_FULLBRIGHT, 0, "DoomRailPuff_Coop")
-		RLGG F 6 A_CheckForReload(4, 7)
-		RLGG G 6
-		RLGG H 6
-		RLGG I 6
-		RLGG J 6
-		RLGG K 6
-		RLGG L 6
-		RLGG A 6
-		RLGG M 0 A_ReFire
-		goto Ready			
-	Flash:
-		TNT1 A 5 bright A_Light1
-		TNT1 A 5 bright A_Light2
-		TNT1 A 0 bright A_Light0
-		Goto LightDone
-	Spawn:
-		RAIL A -1
-		stop
-	}
-}
-
-actor DoomRailPuff_Coop : DoomBulletPuff2 { +THRUSPECIES +MTHRUSPECIES +DONTHARMSPECIES +DONTHARMCLASS Species "Player" }
