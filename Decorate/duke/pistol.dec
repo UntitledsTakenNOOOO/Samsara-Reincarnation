@@ -235,7 +235,7 @@ actor "Glock 17" : Weapon
         goto FireSecond
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireSecond")
         TNT1 A 0 A_JumpIfInventory("Clip",1,"FireSecond")
-        goto BlankReady
+        goto Nothing
 
       FireReloadable:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireSecond")
@@ -245,7 +245,7 @@ actor "Glock 17" : Weapon
         goto Reload
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
         TNT1 A 0 A_JumpIfInventory("Clip",1,"Reload")
-        goto BlankReady
+        goto Nothing
 
       FireSecond:
         TNT1 A 0 A_GiveInventory("DBSHOT",20)
@@ -1211,7 +1211,10 @@ actor "Glock 17" : Weapon
 	  Stomp:
 		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_Shrinker_Stomp")
 		Goto Deselect
-        
+
+      Nothing:
+        TNT1 A 0 A_SelectWeapon("Mighty Boot")
+        goto Deselect
     }
 }
 
@@ -1233,6 +1236,15 @@ actor SamsaraDukePistolAttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("DukePistolReload",1,"PickupTakeAmmoReloadable")
         stop
+
+      // Ammo taking stuff
+      PickupTakeAmmoNonReloadable:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("DukePistolReload",1)
+        goto PickupAttack
 
       // Attack stuff
       PickupAttack:
@@ -1258,15 +1270,6 @@ actor SamsaraDukePistolAttackHandler : Trigger
       PickupAttackAccurateCoop:
         TNT1 A 0 A_FireBullets(0,0,-1,7,"DukePistolPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmoNonReloadable:
-        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
-        goto PickupAttack
-
-      PickupTakeAmmoReloadable:
-        TNT1 A 0 A_TakeInventory("DukePistolReload",1)
-        goto PickupAttack
     }
 }
 
@@ -1288,6 +1291,15 @@ actor SamsaraDukePistolLABAttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("DukePistolReload",1,"PickupTakeAmmoReloadable")
         stop
+
+      // Ammo taking stuff
+      PickupTakeAmmoNonReloadable:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("DukePistolReload",1)
+        goto PickupAttack
 
       // Attack stuff
       PickupAttack:
@@ -1313,31 +1325,13 @@ actor SamsaraDukePistolLABAttackHandler : Trigger
       PickupAttackAccurateCoop:
         TNT1 A 0 A_FireBullets(0,0,-1,7,"DukePistolPuffBeachCoop",FBF_NORANDOM|FBF_NOFLASH)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmoNonReloadable:
-        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
-        goto PickupAttack
-
-      PickupTakeAmmoReloadable:
-        TNT1 A 0 A_TakeInventory("DukePistolReload",1)
-        goto PickupAttack
     }
 }
 
 actor DukePistolReload : Ammo
 {
-    inventory.amount 1
-    inventory.maxamount 12
-    ammo.backpackamount 0
-    ammo.backpackmaxamount 12
-    +INVENTORY.IGNORESKILL
-    states
-    {
-      Spawn:
-        TNT1 A 35
-        stop
-    }
+    Inventory.MaxAmount 12
+    +IGNORESKILL
 }
 
 actor DukePistolBullet : FastProjectile
