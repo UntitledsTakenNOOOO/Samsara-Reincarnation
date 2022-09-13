@@ -36,3 +36,47 @@ script "HereticTomeChargeRate" (void)
 	SetResultValue(result);
 }
 
+Script "CorvusFaceTarget" (void)
+{
+	SetActivator(0,AAPTR_Master);
+	SetResultValue(GetActorAngle(0));
+}
+
+Script "HereticCloneSpawner" (void)
+{
+	int corvTid = UniqueTid();
+	Spawn("HereticCorvusClone",GetActorX(0),GetActorY(0),GetActorZ(0),corvTid);
+	SetActorAngle(corvTid,GetActorAngle(0));
+	SetActivator(0,AAPTR_Target);
+	SetPointerExt(AAPTR_Master,0,corvTid);
+	Thing_SetTranslation(corvTid,-1);
+	Thing_ChangeTid(corvTid,0);
+}
+
+Script "HereticTurnTowardTarget" (void)
+{
+	int corvX = GetActorX(0);
+	int corvY = GetActorY(0);
+	int corvZ = GetActorZ(0);
+	int tempTid = UniqueTid();
+	int corvTid = ActivatorTid();
+	Thing_ChangeTid(0,tempTid);
+	
+	SetActivator(0,AAPTR_Master);
+	
+	int playX = GetActorX(0) + FixedMul(512 * cos(GetActorAngle(0)),cos(GetActorPitch(0)));
+	int playY = GetActorY(0) + FixedMul(512 * sin(GetActorAngle(0)),cos(GetActorPitch(0)));
+	int playZ = GetActorZ(0) + 768 * sin(GetActorPitch(0));
+	
+	int vX = corvX - playX;
+	int vY = corvY - playY;
+	int vZ = corvZ - playZ;
+	
+	int vAngle = VectorAngle(vX,vY) - 0.5;
+	int vPitch = VectorAngle(VectorLength(vX,vY),vZ);
+		
+	SetActorAngle(tempTid,vAngle);
+	SetActorPitch(tempTid,vPitch);
+	
+	Thing_ChangeTid(tempTid,corvTid);
+}
