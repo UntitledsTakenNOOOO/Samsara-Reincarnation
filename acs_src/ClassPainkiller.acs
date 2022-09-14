@@ -49,10 +49,6 @@ str PKArmors[6][2] = {
 	{ "BlueArmorNoDrop", "PKARMOR3" },
 };
 
-str PKCompass[24] = { "PKCOMP01", "PKCOMP02", "PKCOMP03", "PKCOMP04", "PKCOMP05", "PKCOMP06", "PKCOMP07", "PKCOMP08", 
-"PKCOMP09", "PKCOMP10", "PKCOMP11", "PKCOMP12", "PKCOMP13", "PKCOMP14", "PKCOMP15", "PKCOMP16", "PKCOMP17", "PKCOMP18",
- "PKCOMP19", "PKCOMP20", "PKCOMP21", "PKCOMP22", "PKCOMP23", "PKCOMP24" }; 
-
 Script "Painkiller_BoltGunScopeGraphic" (void)
 {
 	while(CheckInventory("Painkiller_Zoomed"))
@@ -129,7 +125,10 @@ Script "Painkiller_Loop" Enter
 				}
 			}
 			SetHudSize(960,700,0);
-			SetFont(PKCompass[(GetActorAngle(0)/182)/15]);
+			int compassDegree = (GetActorAngle(0) / 910) + 1;
+			SetFont("SMALLFONT");
+			str compassZero = compassDegree < 10 ? "0" : "";
+			SetFont(strparam(s:"PKCOMP",s:compassZero,d:compassDegree));
 			HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1401,CR_UNTRANSLATED,480.0,52.0,0.1,1.0);
 			SetHudSize(0,0,0);
 		}
@@ -659,9 +658,9 @@ Script "Painkiller_Freeze2" (int thaw, int thawhealth, int renderstyle)
 	}
 }
 
-Script "Painkiller_StakeShatter" (void)
+Script "Painkiller_StakeShatter" (int activatorTrigger)
 {
-	SetActivator(0,AAPTR_TRACER);
+	if(!activatorTrigger) SetActivator(0,AAPTR_TRACER);
 	//PrintBold(s:GetActorClass(0));
 	if((ClassifyActor(0) & ACTOR_ALIVE || GetActorProperty(0,APROP_MASS) > 500 || !CheckInventory("Painkiller_RunStake")) && (GetActorClass(0) != "Painkiller_GrenadeHitBox"))
 	{
@@ -1857,4 +1856,20 @@ Script "Painkiller_GibHeightCheck" (void)
 	int height = (GetActorProperty(0,APROP_Height)>>16);
 	height += height * (3 * (GetActorProperty(0,APROP_Health) <= 0));
 	SetResultValue(height);
+}
+
+Script "Painkiller_FreezeShatter" (Void)
+{	
+	int height = GetActorProperty(0,APROP_Height);
+	int radius = GetActorProperty(0,APROP_Radius);
+	if(ClassifyActor(0) & ACTOR_DEAD) height *= 4;
+	int shatterAmount = ((height/1.0) * (radius/1.0)) / 32;
+	for(int i = 0; i < shatterAmount; i++)
+	{
+		int shardTid = UniqueTid();
+		SpawnForced("Painkiller_IceChunk",GetActorX(0)+random(0,radius),GetActorY(0)+random(0,radius),GetActorZ(0)+random(0,height),shardTid);
+		SetActorVelocity(shardTid,random(-2.0,2.0),random(-2.0,2.0),random(2.0,4.0),0,0);
+		Thing_ChangeTid(shardTid,0);
+	}
+	Thing_Remove(0);
 }
