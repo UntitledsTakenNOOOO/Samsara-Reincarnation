@@ -75,7 +75,8 @@ Script "DescentMovement" (void)
 			
 	While(ClassifyActor(0) & ACTOR_ALIVE && !PlayerIsBot(PlayerNumber()))
 	{
-		if(!GetCvar("samsara_descentflight"))
+		int descentFlight = GetCvar("samsara_descentflight") && !isNetworkGame();
+		if(!descentFlight)
 			GiveInventory("DescentGravityGiver",1);
 		else
 			GiveInventory("DescentGravityTaker",1);
@@ -93,7 +94,7 @@ Script "DescentMovement" (void)
 		
 		if(!CheckInventory("DescentGuidedController"))
 		{
-			if(GetCvar("samsara_descentflight"))
+			if(descentFlight)
 				SetPlayerProperty(0,1,PROP_FROZEN);
 			else
 				SetPlayerProperty(0,0,PROP_FROZEN);
@@ -226,7 +227,7 @@ Script "DescentMovement" (void)
 		}
 			
 		//Set the rotation to the new ones
-		if(GetCvar("samsara_descentflight"))
+		if(descentFlight)
 		{
 			SetActorAngle(0,angle);
 			SetActorPitch(0,pitch);
@@ -280,7 +281,7 @@ Script "DescentMovement" (void)
 				s:"\nY Movement is: ",f:moveY,
 				s:"\nZ Movement is: ",f:moveZ);*/
 				
-		if(!GetCvar("samsara_descentflight"))
+		if(!descentFlight)
 		{
 			horizontalThrustX = 0;
 			horizontalThrustY = 0;
@@ -289,7 +290,7 @@ Script "DescentMovement" (void)
 				
 		velX = moveX + horizontalThrustX;
 		velY = moveY + horizontalThrustY;
-		velZ = GetCvar("samsara_descentflight") ? moveZ + verticalThrust : GetActorVelZ(0);
+		velZ = descentFlight ? moveZ + verticalThrust : GetActorVelZ(0);
 							
 		if(verticalOscillate >= verticalOscillateThreshold)
 		{
@@ -297,7 +298,7 @@ Script "DescentMovement" (void)
 			verticalToggle *= -1;
 		}
 		
-		if(GetCvar("samsara_descentflight"))
+		if(descentFlight)
 			SetActorVelocity(0,velX,velY,velZ,0,0);
 		
 		Delay(1);
