@@ -481,7 +481,11 @@ Script "SamsaraOST_Enter" Enter
 			{
 				SetTrack = random(0,25);
 				LocalSetMusic(DescentMusic[SetTrack],0);
-			}		
+			}	
+			Else If((herosoundtrack == 1 && CheckInventory("DeusExClass") == TRUE) || (gameoverride == 37 && herosoundtrack == 2))
+			{
+				ACS_NamedExecuteWithResult("SamsaraOST_DeusExScriptedMusic",0,0,0,0);
+			}
 			
 			if(!CheckInventory("HalfLifeClass") || (!(gameoverride == 20 || gameoverride == 29) && herosoundtrack == 2))
 			{
@@ -597,9 +601,12 @@ Script "SamsaraOST_PainkillerScriptedMusic" (void)
 
 	while((herosoundtrack == 1 && CheckInventory("PainkillerClass") == TRUE) || (gameoverride == 32 && herosoundtrack == 2))
 	{
+		herosoundtrack = GetCvar("samsara_cl_heromusic");
+		gameoverride = GetCvar("samsara_cl_heromusicoverride");
 		int newtid = UniqueTid();
 		SpawnSpotFacingForced("Painkiller_MusicDecider",0,newtid);
-		SetPointerExt(AAPTR_TRACER,0,newtid);	
+		SetPointerExt(AAPTR_TRACER,0,newtid);
+		Thing_ChangeTid(newtid,0);
 
 		if(GetCvar("sams_runninginzdoom"))
 		{
@@ -695,9 +702,11 @@ Script "SamsaraOST_PainkillerScriptedMusic" (void)
 		
 		Delay(1);
 	}
+	TakeInventory("Painkiller_CombatMusic",1);
+	TakeInventory("Painkiller_AmbientMusic",1);
 }
 
-Script "SamsaraOST_DeusExScriptedMusic" (void) clientside
+Script "SamsaraOST_DeusExScriptedMusic" (void)
 {
 	int musicvolume = 1.0;
 	int themeseed = random(0,thememax-1);
@@ -706,14 +715,18 @@ Script "SamsaraOST_DeusExScriptedMusic" (void) clientside
 	int swapped, swaptofight, swaptoambient;
 	int laststate = 0;
 	int trigger = 1;
-	int herosoundtrack = GetCvar("sams_cl_heromusic");
-	int gameoverride = GetCvar("sams_cl_heromusicoverride");
+	int herosoundtrack = GetCvar("samsara_cl_heromusic");
+	int gameoverride = GetCvar("samsara_cl_heromusicoverride");
 
-	while(CheckInventory("DeusExClass"))
+	while((herosoundtrack == 1 && CheckInventory("DeusExClass") == TRUE) || (gameoverride == 37 && herosoundtrack == 2))
 	{
+		herosoundtrack = GetCvar("samsara_cl_heromusic");
+		gameoverride = GetCvar("samsara_cl_heromusicoverride");
+		
 		int newtid = UniqueTid();
 		SpawnSpotFacingForced("DeusEx_MusicDecider",0,newtid);
-		SetPointerExt(AAPTR_TRACER,0,newtid);	
+		SetPointerExt(AAPTR_TRACER,0,newtid);
+		Thing_ChangeTid(newtid,0);
 
 		if(GetCvar("sams_runninginzdoom"))
 		{
