@@ -1,0 +1,101 @@
+version "3.7"
+
+// Written by Kinsie, improved by cubebert
+// This handles the talismans in Strife Veteran Edition. Since these are
+// implemented as ZScript actors, we can't replace them with DECORATE.
+
+class SamsaraTalismanPowerup : CustomInventory replaces SVETalismanPowerup
+{
+	States
+	{
+	Pickup:
+		TNT1 A 0 A_Quake(5,35,0,256,0);
+		TNT1 A 0 A_GiveInventory("SamsaraTalismanPowerDamage");
+		Stop;
+	}
+}
+
+class SamsaraTalismanPowerDamage : PowerDamage
+{
+	Default
+	{
+		Powerup.Color "None", 0.0;
+		Powerup.Duration -0x7FFFFFFD;
+		DamageFactor "Normal", 4.0;
+		+INVENTORY.HUBPOWER
+		+INVENTORY.PERSISTENTPOWER
+	}
+}
+
+class SamsaraTalismanRed : Inventory replaces SVETalismanRed
+{
+	Default
+	{
+		+DROPPED
+		+FLOORCLIP
+		+INVENTORY.INVBAR
+		Radius 10;
+		Height 16;
+		Inventory.MaxAmount 1;
+		Inventory.Icon "I_FLGR";
+		Tag "$TAG_TALISMANRED";
+		Inventory.PickupMessage "$MSG_TALISMANRED";
+	}
+	States
+	{
+	Spawn:
+		FLGR A -1 BRIGHT;
+		Stop;
+	}
+	
+	override bool TryPickup (in out Actor toucher)
+	{
+		let useok = Super.TryPickup (toucher);
+		if (useok)
+		{
+			if (toucher.FindInventory("SamsaraTalismanRed") && 
+				toucher.FindInventory("SamsaraTalismanGreen") && 
+				toucher.FindInventory("SamsaraTalismanBlue"))
+			{
+				toucher.A_Print("$SAMSARA_SVE_TALISMANS");
+				toucher.A_PlaySound("sve/alltalismans",7,1.0,0,ATTN_NONE);
+				toucher.GiveInventoryType("SamsaraTalismanPowerup");
+			}
+		}
+		return useok;
+	}
+}
+
+class SamsaraTalismanBlue : SamsaraTalismanRed replaces SVETalismanBlue
+{
+	Default
+	{
+		+INVENTORY.INVBAR
+		Inventory.Icon "I_FLGB";
+		Tag "$TAG_TALISMANBLUE";
+		Inventory.PickupMessage "$MSG_TALISMANBLUE";
+	}
+	States
+	{
+	Spawn:
+		FLGB A -1 BRIGHT;
+		Stop;
+	}
+}
+
+class SamsaraTalismanGreen : SamsaraTalismanRed replaces SVETalismanGreen
+{
+	Default
+	{
+		+INVENTORY.INVBAR
+		Inventory.Icon "I_FLGG";
+		Tag "$TAG_TALISMANGREEN";
+		Inventory.PickupMessage "$MSG_TALISMANGREEN";
+	}
+	States
+	{
+	Spawn:
+		FLGG A -1 BRIGHT;
+		Stop;
+	}
+}
