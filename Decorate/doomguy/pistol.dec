@@ -1,3 +1,5 @@
+actor SamsaraDoomguyStrPistolLoaded : StrBooleanPermanent {}
+
 actor " Pistol " : Weapon
 {
     Weapon.SelectionOrder 1900
@@ -20,16 +22,20 @@ actor " Pistol " : Weapon
       // Classic
       Ready:
 		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Ready64")
-        DPIS A 1 A_WeaponReady
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"ReadyStr")
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrPistolLoaded")
+        DPIS A 1 A_WeaponReady(WRF_NOSECONDARY)
         loop
 
       Deselect:
 		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Deselect64")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"DeselectStr")
         DPIS A 1 A_Lower
         loop
 
       Select:
 		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Select64")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"SelectStr")
         DPIS A 1 A_Raise
         loop
 
@@ -45,7 +51,8 @@ actor " Pistol " : Weapon
 
       FireStart:
         TNT1 A 0 A_AlertMonsters
-        DPIS A 4 A_JumpIfInventory("Doom64Mode",1,"Fire64")
+        TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Fire64")
+        DPIS A 4 A_JumpIfInventory("DoomClassMode",1,"FireStr")
 		TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"FireSmooth")
         TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"FireVanillaAmmoCheck")
         goto FireVanillaAttack
@@ -99,9 +106,112 @@ actor " Pistol " : Weapon
         DPSF A 2 Bright A_Light1
         goto FlashFinish
 
+      // Stronghold
+      // Unpowered
+      DeselectStr:
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"DeselectStrPowered")
+      DeselectStrContinue:
+        TNT1 A 0 A_Lower
+        DPIS I 1 A_Lower
+        goto Deselect
+
+      SelectStr:
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"SelectStrPowered")
+      SelectStrContinue:
+        TNT1 A 0 A_Raise
+        DPIS I 1 A_Raise
+        goto Select
+
+      ReadyStr:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrPistolLoaded",1,"ReadyStrLoaded")
+      ReloadAnim:
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrPistolLoaded")
+        DPSR A 5 A_PlaySound("doomguy/stronghold/clipou")
+        DPSR BCDEFGH 4
+        DPSR I 4 A_PlaySound("doomguy/stronghold/clipin")
+        DPSR JKL 4
+        DPSR M 4 A_PlaySound("doomguy/stronghold/clipre")
+        DPSR NOP 4
+        goto Ready
+
+      ReadyStrLoaded:
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"ReadyStrLoadedPowered")
+        DPIS I 1 A_WeaponReady(WRF_NOSECONDARY)
+        goto Ready
+
+      FireStr:
+        DPIS I 3 A_JumpIfInventory("PowerWeaponLevel2",1,"FireStrPowered")
+        TNT1 A 0 A_GunFlash("FlashStr")
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/pistol",CHAN_WEAPON)
+        DPIS L 3 Bright A_FireBullets(5.6,0,1,5,"SamsaraDoomguyStrBulletPuffBallistic")
+        DPIS K 3
+        DPIS J 3 A_ReFire
+        goto Ready
+
+      FlashStr:
+        TNT1 A 4 Bright A_Light1
+        goto LightDone
+
+      // Powered
+      DeselectStrPowered:
+        TNT1 A 0 A_Lower
+        goto DeselectStrContinue
+
+      SelectStrPowered:
+        TNT1 A 0 A_Raise
+        goto SelectStrContinue
+
+      ReadyStrLoadedPowered:
+        DPIS I 1 A_WeaponReady
+        goto Ready
+
+      FireStrPowered:
+        TNT1 A 0 A_GunFlash("FlashStrPowered")
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/pistol",CHAN_WEAPON)
+        DPIS J 3 A_FireBullets(4,2.5,-1,12,"SamsaraDoomguyStrElectricalPuff")
+        DPIS KJI 3 A_ReFire
+        goto Ready
+
+      FlashStrPowered:
+        DPIS L 2 Bright A_Light1
+        goto LightDone
+
+      AltFire:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"AltFireAmmoCheck")
+        goto AltFireStart
+
+      AltFireAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireStart")
+        TNT1 A 0 A_JumpIfInventory("Clip",8,"AltFireStart")
+        TNT1 A 0 A_SelectWeapon(" Fist ")
+        goto Deselect
+
+      AltFireStart:
+        DPIS I 4 A_AlertMonsters
+        TNT1 A 0 A_GunFlash
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/pistol",CHAN_WEAPON)
+        DPIS L 4 Bright A_FireBullets(10,7,8,12,"SamsaraDoomguyStrElectricalPuff")
+        DPIS KJ 4
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"AltFireFinishReFire")
+      AltFireFinish:
+        DPIS I 4
+        goto Ready
+
+      AltFireFinishReFire:
+        TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"AltFireFinish")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,1)
+        goto AltFireFinish
+        TNT1 A 0 A_ReFire
+        goto AltFireFinish
+
+      AltFlash:
+        TNT1 A 5 Bright A_Light1
+        goto LightDone
+
       // Doom 64 (fires slightly faster)
       Ready64:
-        64PS A 1 A_WeaponReady
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrPistolLoaded")
+        64PS A 1 A_WeaponReady(WRF_NOSECONDARY)
         goto Ready
 
       Deselect64:
@@ -114,7 +224,7 @@ actor " Pistol " : Weapon
 
       Fire64:
         TNT1 A 0 A_GunFlash("Flash64")
-        TNT1 A 0 A_GiveInventory("SamsaraDoomguyPistol64AttackHandler")
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguy64PistolAttackHandler")
         TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"Fire64Smooth")
 	  Fire64Vanilla:
         64PS B 4 Bright
@@ -188,7 +298,7 @@ actor SamsaraDoomguyPistolAttackHandler : Trigger
     }
 }
 
-actor SamsaraDoomguyPistol64AttackHandler : Trigger
+actor SamsaraDoomguy64PistolAttackHandler : Trigger
 {
     States
     {
@@ -287,5 +397,3 @@ actor Doom64Bullet2: DoomBullet2
         stop
     }
 }
-
-actor SamsaraDoomguyStrPistolLoaded : StrBooleanPermanent {}
