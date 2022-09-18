@@ -276,3 +276,83 @@ actor Doom64PlasmaBall : PlasmaBall
 actor Doom64PlasmaBall2 : Doom64PlasmaBall { +THRUSPECIES Species "Player" }
 
 actor SamsaraDoomguyStrPlasmaRifleReadySoundCheck : StrBoolean {}
+
+actor SamsaraDoomguyStrPlasmaBall : PlasmaBall
+{
+    DamageType "DoomDamageType"
+    SeeSound "doomguy/stronghold/plasmaf"
+    DeathSound "doomguy/stronghold/plasmax"
+    Decal "DoomStrPlasmaScorch"
+    States
+    {
+      Spawn:
+        DPLM CD 6 Bright Light("PLASMABALL")
+        loop
+
+      Death:
+        DPLE F 4 Bright Light("PLASMA_X1")
+        DPLE GH 4 Bright Light("PLASMA_X2")
+        DPLE I 4 Bright Light("PLASMA_X3")
+        DPLE J 4 Bright Light("PLASMA_X4")
+        stop
+    }
+}
+
+actor SamsaraDoomguyStrPowerPlasmaBall : SamsaraDoomguyStrPlasmaBall
+{
+    Radius 22.75
+    Height 14
+    Speed 30
+    Damage (40)
+    DamageType "DoomDamageTypeNoSelfDamage"
+    Alpha 1
+    Scale 0.8
+    +FORCERADIUSDMG
+    States
+    {
+      Spawn:
+        DPLE F 2 Bright Light("POWERPLASMA_X1") A_SpawnItemEx("SamsaraDoomguyStrPowerPlasmaBallTrail",random(-1,1),random(-1,1),random(-1,1),random(-1,1),random(-1,1),random(-1,1),random(0,359))
+        loop
+
+      Death:
+        TNT1 A 0 A_GiveToTarget("SamsaraDoomguyNoSelfDamage")
+        TNT1 A 0 A_Explode(40,80)
+        TNT1 A 0 A_TakeFromTarget("PowerSamsaraDoomguyNoSelfDamage")
+      DeathFinish:
+        DPLE F 4 Bright Light("POWERPLASMA_X1")
+        DPLE GH 4 Bright Light("POWERPLASMA_X2")
+        DPLE I 4 Bright Light("POWERPLASMA_X3")
+        DPLE J 4 Bright Light("POWERPLASMA_X4")
+        stop
+    }
+}
+
+actor SamsaraDoomguyStrPowerPlasmaBall2 : SamsaraDoomguyStrPowerPlasmaBall
+{
+    Speed 60
+    Damage (60)
+    DamageType "DoomDamageType"
+    -FORCERADIUSDMG
+    +SEEKERMISSILE
+    States
+    {
+      Spawn:
+        DPLE F 1 Bright Light("POWERPLASMA_X1")
+      SpawnLoop:
+        TNT1 A 0 A_SeekerMissile(2,10,SMF_LOOK,50,10)
+        DPLE F 1 Bright Light("POWERPLASMA_X1") A_SpawnItemEx("SamsaraDoomguyStrPowerPlasmaBallTrail")
+        loop
+
+      Death:
+        goto DeathFinish
+    }
+}
+
+actor SamsaraDoomguyStrPowerPlasmaBallTrail : SamsaraDoomguyStrElectricalPuff
+{
+    SeeSound ""
+    AttackSound ""
+    Decal ""
+    +CLIENTSIDEONLY
+    +NOTONAUTOMAP
+}
