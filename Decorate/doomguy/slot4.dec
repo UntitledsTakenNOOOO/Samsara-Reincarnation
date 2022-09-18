@@ -9,33 +9,49 @@ actor " Chaingun " : Weapon
     Weapon.AmmoUse 1
     Weapon.AmmoGive 0
     Weapon.AmmoType "Clip"
-    Decal BulletChip
     Weapon.SlotNumber 4
 	Tag "Chaingun"
     Inventory.PickupMessage "You got the Chaingun!"
-    +INVENTORY.UNDROPPABLE
+    +ALT_USES_BOTH
+    +UNDROPPABLE
     Obituary "$SAMSARA_DOOMGUY_OB_SLOT4"
 	Inventory.RestrictedTo "DoomguyPlayer"
     States
     {
       // Classic
       Ready:
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrChaingunFiringSoundCheck")
 		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Ready64")
-        DCHG A 1 A_WeaponReady
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"ReadyStr")
+        DCHG A 1 A_WeaponReady(WRF_NOSECONDARY)
         loop
 
       Deselect:
-		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Deselect64")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrChaingunFiringSoundCheck",1,"DeselectStopSound")
+      DeselectStart:
+		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"DeselectStart64")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"DeselectStartStr")
         DCHG A 1 A_Lower
-        loop
+        goto Deselect
+
+      DeselectStopSound:
+        TNT1 A 0 A_PlaySound("silence",CHAN_WEAPON)
+        TNT1 A 0 A_StopSound(CHAN_WEAPON)
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrChaingunFiringSoundCheck")
+        goto DeselectStart
 
       Select:
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrChaingunFiringSoundCheck")
 		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Select64")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"SelectStr")
         DCHG A 1 A_Raise
         loop
 
       Fire:
 		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Fire64")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"FireStr")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrChaingunFiringSoundCheck",1,"FireStopSound")
+      FireStart:
         TNT1 A 0 A_GunFlash
         TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"FireSmooth")
       FireVanilla:
@@ -66,6 +82,12 @@ actor " Chaingun " : Weapon
         DCHG DE 2 Bright
         goto FireFinish
 
+      FireStopSound:
+        TNT1 A 0 A_PlaySound("silence",CHAN_WEAPON)
+        TNT1 A 0 A_StopSound(CHAN_WEAPON)
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrChaingunFiringSoundCheck")
+        goto FireStart
+
       Flash:
         TNT1 A 5 Bright A_Light1
         goto LightDone
@@ -74,12 +96,110 @@ actor " Chaingun " : Weapon
         TNT1 A 5 Bright A_Light2
         goto LightDone
 
-      // Doom 64 (fires slightly faster and has recoil visual)
-      Ready64:
-        64CG A 1 A_WeaponReady
+      // Stronghold
+      // Unpowered
+      ReadyStr:
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"ReadyStrPowered")
+        DCHG H 1 A_WeaponReady(WRF_NOSECONDARY)
         goto Ready
 
-      Deselect64:
+      DeselectStartStr:
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"DeselectStartStrPowered")
+      DeselectStartStrContinue:
+        TNT1 A 0 A_Lower
+        DCHG H 1 A_Lower
+        goto Deselect
+
+      SelectStr:
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"SelectStrPowered")
+      SelectStrContinue:
+        TNT1 A 0 A_Raise
+        DCHG H 1 A_Raise
+        goto Select
+
+      FireStr:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/chnglp",CHAN_WEAPON,1,true)
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrChaingunFiringSoundCheck")
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"FireStrPowered")
+        TNT1 A 0 A_GunFlash("FlashStr")
+        DCHG J 2 Bright A_FireBullets(4,2.3,1,5,"SamsaraDoomguyStrBulletPuffBallisticThruGhost")
+        DCHG K 1 Bright
+        TNT1 A 0 A_GunFlash("FlashStr")
+        DCHG L 2 Bright A_FireBullets(4,2.3,1,5,"SamsaraDoomguyStrBulletPuffBallisticThruGhost")
+        DCHG M 1 Bright
+      FireStrFinish:
+        TNT1 A 0 A_ReFire
+      FireStrFinishSound:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/chngdn",CHAN_WEAPON)
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrChaingunFiringSoundCheck")
+        goto Ready
+
+      FlashStr:
+        TNT1 A 1 Bright A_Light1
+        TNT1 A 1 Bright A_Light2
+        TNT1 A 1 Bright A_Light1
+        goto LightDone
+
+      // Powered
+      ReadyStrPowered:
+        DCHG H 1 A_WeaponReady
+        goto Ready
+
+      DeselectStartStrPowered:
+        TNT1 A 0 A_Lower
+        goto DeselectStartStrContinue
+
+      SelectStrPowered:
+        TNT1 A 0 A_Raise
+        goto SelectStrContinue
+
+      FireStrPowered:
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrChaingunPoweredAttackAmount") // reset
+      FireStrPoweredLoop:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrChaingunPoweredAttackAmount",0,"FireStrFinish")
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrChaingunPoweredAttackAmount")
+        TNT1 A 0 A_GunFlash("FlashStr")
+        DCHG J 2 Bright A_FireBullets(0.75,0.75,-1,20,"SamsaraDoomguyStrElectricalPuff",0)
+        DCHG K 1 Bright
+        TNT1 A 0 A_GunFlash("FlashStr")
+        DCHG L 2 Bright A_FireBullets(0.75,0.75,-1,20,"SamsaraDoomguyStrElectricalPuff")
+        DCHG M 1 Bright
+        loop
+
+      AltFire:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/chnglp",CHAN_WEAPON,1,true)
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrChaingunFiringSoundCheck")
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrChaingunPoweredAttackAmount") // reset
+      AltFireLoop:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrChaingunPoweredAttackAmount",0,"AltFireFinish")
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrChaingunPoweredAttackAmount")
+        TNT1 A 0 A_GunFlash
+        DCHG J 2 Bright A_FireBullets(7.5,3,-1,16,"SamsaraDoomguyStrRepPuffNoDamage")
+        DCHG K 1 Bright
+        TNT1 A 0 A_GunFlash
+        DCHG L 2 Bright A_FireBullets(7.5,3,-1,16,"SamsaraDoomguyStrRepPuffNoDamage")
+        DCHG M 1 Bright
+        loop
+
+      AltFireFinish:
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"AltFireFinishReFire")
+        TNT1 A 0 A_CheckReload
+        goto FireStrFinishSound
+
+      AltFireFinishReFire:
+        TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,2)
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,2)
+        TNT1 A 0 A_CheckReload
+        goto FireStrFinishSound
+        TNT1 A 0 A_ReFire
+        goto FireStrFinishSound
+
+      // Doom 64 (fires slightly faster and has recoil visual)
+      Ready64:
+        64CG A 1 A_WeaponReady(WRF_NOSECONDARY)
+        goto Ready
+
+      DeselectStart64:
         64CG A 1 A_Lower
         goto Deselect
 
@@ -88,6 +208,8 @@ actor " Chaingun " : Weapon
         goto Select
 
       Fire64:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrChaingunFiringSoundCheck",1,"Fire64StopSound")
+      Fire64Start:
         TNT1 A 0 A_GunFlash("Flash64")
         TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"Fire64Smooth")
       Fire64Vanilla:
@@ -115,6 +237,12 @@ actor " Chaingun " : Weapon
         64CG C 2 A_GiveInventory("SamsaraDoomguy64ChaingunAttackHandler")
 		64CG D 1
         goto FireFinish
+
+      Fire64StopSound:
+        TNT1 A 0 A_PlaySound("silence",CHAN_WEAPON)
+        TNT1 A 0 A_StopSound(CHAN_WEAPON)
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrChaingunFiringSoundCheck")
+        goto Fire64Start
 
       Flash64:
         64CM A 3 Bright A_Light1
