@@ -889,6 +889,7 @@ actor SamsaraImprovedDoomguyBalance : Boolean {}
 
 actor DoomBulletPuff : BulletPuff
 {
+    Decal "BulletChip"
     States
     {
       Spawn:
@@ -970,6 +971,7 @@ actor Doom64BulletPuff : BulletPuff
     Scale 0.82
     VSpeed 0.7
     RenderStyle Normal
+    Decal "BulletChip"
     states
     {
       Spawn:
@@ -1098,7 +1100,7 @@ actor SamsaraDoomguyNoSelfDamage : SamsaraPowerupGiver { Powerup.Type "SamsaraDo
 
 actor PowerSamsaraDoomguyNoSelfDamage : PowerProtection { DamageFactor "DoomDamageTypeNoSelfDamage", 0 }
 
-// Bullet puff (melee/railgun)
+// Bullet puff (base)
 
 actor SamsaraDoomguyStrBulletPuff : BulletPuff
 {
@@ -1115,8 +1117,6 @@ actor SamsaraDoomguyStrBulletPuff : BulletPuff
         stop
     }
 }
-
-actor SamsaraDoomguyStrBulletPuffCoop : SamsaraDoomguyStrBulletPuff { +MTHRUSPECIES }
 
 // Bullet puff (ballistic)
 
@@ -1180,3 +1180,53 @@ actor SamsaraDoomguyStrElectricalPuff
 }
 
 actor SamsaraDoomguyStrElectricalPuffCoop : SamsaraDoomguyStrElectricalPuff { +MTHRUSPECIES }
+
+// Repeater puff
+
+actor SamsaraDoomguyStrRepPuff
+{
+    Radius 3
+    Height 3
+    DamageType "DoomDamageType"
+    RenderStyle Add
+    Alpha 0.75
+    SeeSound "doomguy/stronghold/rephit"
+    AttackSound "doomguy/stronghold/rephit"
+    Decal "MummyScorch"
+    +ALWAYSPUFF
+    +NOBLOCKMAP
+    +NOGRAVITY
+    +NOTIMEFREEZE
+    +PUFFGETSOWNER
+    +PUFFONACTORS
+    States
+    {
+      Spawn:
+        BLAS A 0 Bright NoDelay Light("RepPuffSpawnG") A_Explode(32,88)
+      SpawnFinish:
+        BLAS A 3 Bright Light("RepPuffSpawnG") A_ChangeFlag("NOTIMEFREEZE",false)
+        BLAS B 3 Bright Light("RepPuffSpawnF")
+        BLAS C 3 Bright Light("RepPuffSpawnE")
+        BLAS D 3 Bright Light("RepPuffSpawnD")
+        BLAS E 3 Bright Light("RepPuffSpawnC")
+        BLAS F 3 Bright Light("RepPuffSpawnB")
+        BLAS G 3 Bright Light("RepPuffSpawnA")
+        stop
+    }
+}
+
+actor SamsaraDoomguyStrRepPuffNoDamage : SamsaraDoomguyStrRepPuff
+{
+    DamageType "DoomDamageTypeNoSelfDamage"
+    States
+    {
+      Spawn:
+        BLAS A 0 Bright NoDelay Light("RepPuffSpawnG") A_GiveToTarget("SamsaraDoomguyNoSelfDamage")
+        TNT1 A 0 A_Explode(32,88)
+        TNT1 A 0 A_TakeFromTarget("PowerSamsaraDoomguyNoSelfDamage")
+        goto SpawnFinish
+    }
+}
+
+actor SamsaraDoomguyStrRepPuffCoop : SamsaraDoomguyStrRepPuff { +MTHRUSPECIES }
+actor SamsaraDoomguyStrRepPuffNoDamageCoop : SamsaraDoomguyStrRepPuffNoDamage { +MTHRUSPECIES }

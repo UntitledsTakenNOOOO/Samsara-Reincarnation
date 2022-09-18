@@ -2,8 +2,8 @@ actor SamsaraDoomguyStrSuperShotgunSecondaryPoweredAttackAmount : Counter { Inve
 
 actor "Super Shotgun" : SuperShotgun
 {
-    Weapon.AmmoType "Shell"
-    Decal BulletChip
+    Weapon.AmmoType2 "Shell"
+    Weapon.AmmoUse2 4
     Weapon.SlotNumber 3
     +INVENTORY.UNDROPPABLE
     AttackSound ""
@@ -15,21 +15,25 @@ actor "Super Shotgun" : SuperShotgun
       // Classic
       Ready:
 		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Ready64")
-        DSSG A 1 A_WeaponReady
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"ReadyStr")
+        DSSG A 1 A_WeaponReady(WRF_NOSECONDARY)
         loop
 	
       Deselect:
 		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Deselect64")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"DeselectStr")
         DSSG A 1 A_Lower
         loop
 
       Select:
 		TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Select64")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"SelectStr")
         DSSG A 1 A_Raise
         loop
 
       Fire:
-        DSSG A 3 A_JumpIfInventory("Doom64Mode",1,"Fire64")
+        TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Fire64")
+        DSSG A 3 A_JumpIfInventory("DoomClassMode",1,"FireStr")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireAttack")
         TNT1 A 0 A_JumpIfInventory("Shell",2,"FireAttack")
         goto FireContinue
@@ -82,9 +86,13 @@ actor "Super Shotgun" : SuperShotgun
         DSSG D 4 A_CheckReload
         DSSG E 4
         DSSG F 2 A_PlaySound("doomguy/sshoto",CHAN_WEAPON)
-        DSSG GHIJJK 2
+        DSSG GHI 2
+        DSSG J 4
+        DSSG K 2
         DSSG L 4 A_PlaySound("doomguy/sshotl",CHAN_WEAPON)
-        DSSG MNOOP 2
+        DSSG MN 2
+        DSSG O 4
+        DSSG P 2
         DSSG Q 2 A_PlaySound("doomguy/sshotc",CHAN_WEAPON)
         DSSG R 2 A_ReFire
         DSSG S 4
@@ -97,15 +105,152 @@ actor "Super Shotgun" : SuperShotgun
         DSSF B 3 Bright A_Light2
         goto LightDone
 
+      // Stronghold
+      // Unpowered
+      ReadyStr:
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"ReadyStrPowered")
+        DSG2 I 1 A_WeaponReady(WRF_NOSECONDARY)
+        goto Ready
+
+      DeselectStr:
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"DeselectStrPowered")
+      DeselectStrContinue:
+        TNT1 A 0 A_Lower
+        DSG2 I 1 A_Lower
+        goto Deselect
+
+      SelectStr:
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"SelectStrPowered")
+      SelectStrContinue:
+        TNT1 A 0 A_Raise
+        DSG2 I 1 A_Raise
+        goto Select
+
+      FireStr:
+        DSG2 I 3 A_JumpIfInventory("PowerWeaponLevel2",1,"FireStrPowered")
+        TNT1 A 0 A_GunFlash("FlashStr")
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/sshotf",CHAN_WEAPON)
+        DSG2 U 2 Bright A_FireBullets(11.2,7.1,20,5,"SamsaraDoomguyStrBulletPuffBallisticThruGhost")
+        DSG2 V 3 Bright
+        DSG2 W 2 Bright
+        DSG2 J 3
+        DSG2 K 4
+        DSG2 L 4 A_CheckReload
+        DSG2 K 3
+        DSG2 M 3 A_PlaySound("doomguy/stronghold/sshoto",CHAN_WEAPON)
+        DSG2 N 3
+        DSG2 OP 4
+        DSG2 Q 3 A_PlaySound("doomguy/stronghold/sshotl",CHAN_WEAPON)
+        DSG2 RS 3
+        DSG2 T 4
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/sshotc",CHAN_WEAPON)
+        DSG2 M 6 A_ReFire
+        DSG2 I 5 A_ReFire
+        goto Ready
+
+      FlashStr:
+        TNT1 A 2 Bright A_Light1
+        TNT1 A 3 Bright A_Light2
+      FlashStrFinish:
+        TNT1 A 2 Bright A_Light1
+        goto LightDone
+
+      // Powered
+      ReadyStrPowered:
+        DSG2 I 1 A_WeaponReady
+        goto Ready
+
+      DeselectStrPowered:
+        TNT1 A 0 A_Lower
+        goto DeselectStrContinue
+
+      SelectStrPowered:
+        TNT1 A 0 A_Raise
+        goto SelectStrContinue
+
+      FireStrPowered:
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrSuperShotgunSecondaryPoweredAttackAmount") // reset
+      FireStrPoweredLoop:
+        DSG2 I 2 A_JumpIfInventory("SamsaraDoomguyStrSuperShotgunSecondaryPoweredAttackAmount",0,"FireStrPoweredContinue")
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrSuperShotgunSecondaryPoweredAttackAmount")
+        TNT1 A 0 A_GunFlash("FlashStrPowered")
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/sshotf",CHAN_WEAPON)
+        TNT1 A 0 A_FireBullets(14.6,9.4,20,12,"SamsaraDoomguyStrElectricalPuff")
+        DSG2 UVW 2 Bright
+        loop
+
+      FireStrPoweredContinue:
+        DSG2 JK 2
+        DSG2 L 2 A_CheckReload
+        DSG2 K 2
+        DSG2 M 2 A_PlaySound("doomguy/stronghold/sshoto",CHAN_WEAPON)
+        DSG2 NOP 2
+        DSG2 Q 2 A_PlaySound("doomguy/stronghold/sshotl",CHAN_WEAPON)
+        DSG2 RST 2
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/sshotc",CHAN_WEAPON)
+        DSG2 MI 2 A_ReFire
+        goto Ready
+
+      AltFire:
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrSuperShotgunSecondaryPoweredAttackAmount") // reset
+      AltFireLoop:
+        DSG2 I 2 A_JumpIfInventory("SamsaraDoomguyStrSuperShotgunSecondaryPoweredAttackAmount",0,"AltFireContinue")
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrSuperShotgunSecondaryPoweredAttackAmount")
+        TNT1 A 0 A_GunFlash("FlashStrPowered")
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/sshotf",CHAN_WEAPON)
+        TNT1 A 0 A_FireBullets(14.6,9.4,20,3,"SamsaraDoomguyStrRepPuffNoDamage")
+        DSG2 UVW 2 Bright
+        loop
+
+      AltFireContinue:
+        DSG2 JK 2
+        DSG2 L 2 A_CheckReload
+        DSG2 K 2
+        DSG2 M 2 A_PlaySound("doomguy/stronghold/sshoto",CHAN_WEAPON)
+        DSG2 NOP 2
+        DSG2 Q 2 A_PlaySound("doomguy/stronghold/sshotl",CHAN_WEAPON)
+        DSG2 RST 2
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/sshotc",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"AltFireFinishReFire")
+        TNT1 A 0 A_CheckReload
+      AltFireFinish:
+        DSG2 M 2
+        TNT1 A 0 A_JumpIfInventory("PowerWeaponLevel2",1,"AltFireFinish2ReFire")
+        TNT1 A 0 A_CheckReload
+      AltFireFinish2:
+        DSG2 I 2
+        goto Ready
+
+      AltFireFinishReFire:
+        TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,2)
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,2)
+        TNT1 A 0 A_CheckReload
+        goto AltFireFinish
+        TNT1 A 0 A_ReFire
+        goto AltFireFinish
+
+      AltFireFinish2ReFire:
+        TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,2)
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,2)
+        TNT1 A 0 A_CheckReload
+        goto AltFireFinish2
+        TNT1 A 0 A_ReFire
+        goto AltFireFinish2
+
+      FlashStrPowered:
+        TNT1 A 2 Bright A_Light1
+        TNT1 A 2 Bright A_Light2
+        goto FlashFinish
+
       // Doom 64 (has recoil visual and kickback)
       Ready64:
 		TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"Ready64Smooth")
       Ready64Vanilla:
-        64DB A 1 A_WeaponReady
+        64DB A 1 A_WeaponReady(WRF_NOSECONDARY)
         goto Ready
 
       Ready64Smooth:
-        64DB D 1 A_WeaponReady
+        64DB D 1 A_WeaponReady(WRF_NOSECONDARY)
         goto Ready
 
       Deselect64:
