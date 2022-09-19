@@ -14,32 +14,298 @@ ACTOR " RailGun " : Weapon
     Decal "RailScorch"
 	Obituary "$OB_RAILGUN"
 	Tag "Railgun"
+    +AMMO_OPTIONAL
+    +NOALERT
     +UNDROPPABLE
-	States
-	{
-	Spawn:
-		RAIL A -1
-		stop
-	Ready:
-		RLGG A 1 A_WeaponReady
-		loop
-	Deselect:
-		RLGG A 1 A_Lower
-		loop
-	Select:
-		RLGG A 1 A_Raise
-		loop
-	Fire:
-		RLGG E 12 A_GiveInventory("SamsaraDoomguyRailgunAttackHandler")
-		RLGG F 6 A_CheckForReload(4,7)
-		RLGG GHIJKLA 6
-		TNT1 A 0 A_ReFire
-		goto Ready
-	Flash:
-		TNT1 A 5 Bright A_Light1
-		TNT1 A 5 Bright A_Light2
-		goto LightDone
-	}
+    States
+    {
+      Spawn:
+        RAIL A -1
+        stop
+
+      // Classic
+      Ready:
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"ReadyStr")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"ReadyZoomOut")
+      ReadyContinue:
+        RLGG A 1 A_WeaponReady(WRF_NOSECONDARY)
+        goto Ready
+
+      ReadyZoomOut:
+        TNT1 A 0 A_ZoomFactor(1)
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrRailgunScope")
+        goto ReadyContinue
+
+      Deselect:
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"DeselectStr")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"DeselectZoomOut")
+      DeselectContinue:
+        RLGG A 1 A_Lower
+        goto Deselect
+
+      DeselectZoomOut:
+        TNT1 A 0 A_ZoomFactor(1)
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrRailgunScope")
+        goto DeselectContinue
+
+      Select:
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"SelectStr")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"SelectZoomOut")
+      SelectContinue:
+        RLGG A 1 A_Raise
+        goto Select
+
+      SelectZoomOut:
+        TNT1 A 0 A_ZoomFactor(1,ZOOM_INSTANT) // map change
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrRailgunScope")
+        goto SelectContinue
+
+      Fire:
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"FireStr")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",10,1)
+        goto Nothing
+        TNT1 A 0 A_AlertMonsters
+        RLGG E 12 A_GiveInventory("SamsaraDoomguyRailgunAttackHandler")
+        RLGG F 6 A_CheckForReload(4,7)
+        RLGG GHIJKLA 6
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",10,1)
+        goto Nothing
+        TNT1 A 0 A_ReFire
+        goto Ready
+
+      Flash:
+        TNT1 A 5 Bright A_Light1
+        TNT1 A 5 Bright A_Light2
+        goto LightDone
+
+      // Stronghold (its own version)
+      ReadyStr:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"ReadyStrZoom")
+        RAIG A 1 A_WeaponReady(WRF_ALLOWZOOM)
+        loop
+
+      ReadyStrZoom:
+        RSCP A 1 Bright A_WeaponReady(WRF_NOBOB|WRF_ALLOWZOOM)
+        goto Ready
+
+      // Unpowered
+      DeselectStr:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"DeselectStrZoomOut")
+      DeselectStrStart:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"DeselectStrStartPowered")
+      DeselectStrContinue:
+        TNT1 A 0 A_Lower
+        RAIG A 1 A_Lower
+        goto Deselect
+
+      DeselectStrZoomOut:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railzoomout")
+        TNT1 A 0 A_ZoomFactor(1)
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrRailgunScope")
+        goto DeselectStrStart
+
+      SelectStr:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"SelectStrZoomOut")
+      SelectStrStart:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"SelectStrStartPowered")
+      SelectStrContinue:
+        TNT1 A 0 A_Raise
+        RAIG A 1 A_Raise
+        goto Select
+
+      SelectStrZoomOut:
+        // no need for a sound
+        TNT1 A 0 A_ZoomFactor(1,ZOOM_INSTANT) // map change
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrRailgunScope")
+        goto SelectStrStart
+
+      AltFire:
+      Zoom:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"Unzoom")
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railzoomin")
+        TNT1 A 0 A_ZoomFactor(3)
+        RSCP A 8 Bright A_GiveInventory("SamsaraDoomguyStrRailgunScope")
+        goto Ready
+
+      Unzoom:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railzoomout")
+        TNT1 A 0 A_ZoomFactor(1)
+        RAIG A 8 A_TakeInventory("SamsaraDoomguyStrRailgunScope")
+        goto Ready
+
+      FireStr:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"FireStrPowered")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStrCharge")
+        TNT1 A 0 A_JumpIfInventory("Cell",5,"FireStrCharge")
+        goto Nothing
+
+      FireStrCharge:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railch",CHAN_WEAPON)
+      FireStrCharge0:
+        RAIG B 12 Bright A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"FireStrCharge0Zoomed")
+        TNT1 A 0 A_WeaponReady(WRF_NOBOB|WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_ReFire("FireStrCharge0Check")
+        RAIG E 4 Bright A_GunFlash("FlashStr")
+        TNT1 A 0 A_AlertMonsters
+        RAIG F 6 Bright A_GiveInventory("SamsaraDoomguyStrRailgunCharge0AttackHandler")
+      FireStrChargeFinish:
+        RAIG A 4
+        RAIG K 15
+        goto Ready
+
+      FireStrCharge0Zoomed:
+        RSCP A 12 Bright
+        TNT1 A 0 A_WeaponReady(WRF_NOBOB|WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_ReFire("FireStrCharge0Check")
+        RSCP A 4 Bright A_GunFlash("FlashStr")
+        TNT1 A 0 A_AlertMonsters
+        RSCP A 6 Bright A_GiveInventory("SamsaraDoomguyStrRailgunCharge0AttackHandler")
+      FireStrChargeFinishZoomed:
+        RSCP A 4 Bright
+        RSCP A 15 Bright
+        goto Ready
+
+      FireStrCharge0Check:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStrCharge1")
+        TNT1 A 0 A_JumpIfInventory("Cell",10,"FireStrCharge1")
+        goto FireStrCharge0
+
+      FireStrCharge1:
+        RAIG C 12 Bright A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"FireStrCharge1Zoomed")
+        TNT1 A 0 A_WeaponReady(WRF_NOBOB|WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_ReFire("FireStrCharge1Check")
+        RAIG G 4 Bright A_GunFlash("FlashStr")
+        TNT1 A 0 A_AlertMonsters
+        RAIG H 6 Bright A_GiveInventory("SamsaraDoomguyStrRailgunCharge1AttackHandler")
+        goto FireStrChargeFinish
+
+      FireStrCharge1Zoomed:
+        RSCP A 12 Bright
+        TNT1 A 0 A_WeaponReady(WRF_NOBOB|WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_ReFire("FireStrCharge1Check")
+        RSCP A 4 Bright A_GunFlash("FlashStr")
+        TNT1 A 0 A_AlertMonsters
+        RSCP A 6 Bright A_GiveInventory("SamsaraDoomguyStrRailgunCharge1AttackHandler")
+        goto FireStrChargeFinishZoomed
+
+      FireStrCharge1Check:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStrCharge2")
+        TNT1 A 0 A_JumpIfInventory("Cell",15,"FireStrCharge2")
+        goto FireStrCharge1
+
+      FireStrCharge2:
+        RAIG D 12 Bright A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"FireStrCharge2Zoomed")
+        TNT1 A 0 A_WeaponReady(WRF_NOBOB|WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_ReFire("FireStrCharge2")
+        RAIG I 4 Bright A_GunFlash("FlashStr")
+        TNT1 A 0 A_AlertMonsters
+        RAIG J 6 Bright A_GiveInventory("SamsaraDoomguyStrRailgunCharge2AttackHandler")
+        goto FireStrChargeFinish
+
+      FireStrCharge2Zoomed:
+        RSCP A 12 Bright
+        TNT1 A 0 A_WeaponReady(WRF_NOBOB|WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_ReFire("FireStrCharge2")
+        RSCP A 4 Bright A_GunFlash("FlashStr")
+        TNT1 A 0 A_AlertMonsters
+        RSCP A 6 Bright A_GiveInventory("SamsaraDoomguyStrRailgunCharge2AttackHandler")
+        goto FireStrChargeFinishZoomed
+
+      FlashStr:
+        TNT1 A 4 A_Light1
+        TNT1 A 6 A_Light2
+        goto LightDone
+
+      // Powered
+      DeselectStrStartPowered:
+        TNT1 A 0 A_Lower
+        goto DeselectStrContinue
+
+      SelectStrStartPowered:
+        TNT1 A 0 A_Raise
+        goto SelectStrContinue
+
+      FireStrPowered:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"FireStrPoweredZoomed")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStrPoweredStart")
+        TNT1 A 0 A_JumpIfInventory("Cell",2,"FireStrPoweredStart")
+        goto Nothing
+
+      FireStrPoweredStart:
+        RAIG A 1
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railch",CHAN_WEAPON)
+        RAIG BCD 1 Bright
+        RAIG I 1 Bright A_GunFlash("FlashStrPowered")
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf2",CHAN_WEAPON)
+      FireStrPoweredContinue:
+        TNT1 A 0 A_AlertMonsters
+        RAIG J 1 Bright A_GiveInventory("SamsaraDoomguyStrRailgunPoweredAttackHandler")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"FireStrPoweredFinishReFire")
+      FireStrPoweredFinish:
+        RAIG K 10
+        goto Ready
+
+      FireStrPoweredFinishReFire:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStrPoweredFinishReFireStart")
+        TNT1 A 0 A_JumpIfInventory("Cell",2,"FireStrPoweredFinishReFireStart")
+        goto Nothing
+
+      FireStrPoweredFinishReFireStart:
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,1)
+        goto FireStrPoweredFinish
+        TNT1 A 0 A_ReFire(1)
+        goto FireStrPoweredFinish
+        RAIG A 1
+        RAIG BCD 1 Bright
+        RAIG I 1 Bright A_GunFlash("FlashStrPowered")
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf1",CHAN_WEAPON)
+        goto FireStrPoweredContinue
+
+      FireStrPoweredZoomed:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStrPoweredStartZoomed")
+        TNT1 A 0 A_JumpIfInventory("Cell",4,"FireStrPoweredStartZoomed")
+        goto Nothing
+
+      FireStrPoweredStartZoomed:
+        RSCP A 1 Bright
+        RSCP A 7 Bright A_PlaySound("doomguy/stronghold/railch",CHAN_WEAPON)
+        RSCP A 1 Bright A_GunFlash("FlashStrPowered")
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf2",CHAN_WEAPON)
+      FireStrPoweredContinueZoomed:
+        TNT1 A 0 A_AlertMonsters
+        RSCP A 1 Bright A_GiveInventory("SamsaraDoomguyStrRailgunPoweredAttackHandler")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"FireStrPoweredFinishReFireZoomed")
+      FireStrPoweredFinishZoomed:
+        RSCP A 10 Bright
+        goto Ready
+
+      FireStrPoweredFinishReFireZoomed:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStrPoweredFinishReFireStartZoomed")
+        TNT1 A 0 A_JumpIfInventory("Cell",4,"FireStrPoweredFinishReFireStartZoomed")
+        goto Nothing
+
+      FireStrPoweredFinishReFireStartZoomed:
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,1)
+        goto FireStrPoweredFinishZoomed
+        TNT1 A 0 A_ReFire(1)
+        goto FireStrPoweredFinishZoomed
+        RSCP A 1 Bright
+        RSCP A 7 Bright
+        RSCP A 1 Bright A_GunFlash("FlashStrPowered")
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf3",CHAN_WEAPON)
+        goto FireStrPoweredContinueZoomed
+
+      FlashStrPowered:
+        TNT1 A 1 A_Light1
+        TNT1 A 1 A_Light2
+        goto LightDone
+
+      Nothing:
+        TNT1 A 0 A_SelectWeapon(" Pistol ")
+        goto Deselect
+    }
 }
 
 actor SamsaraDoomguyRailgunAttackHandler : Trigger
