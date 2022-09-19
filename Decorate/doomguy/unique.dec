@@ -4,6 +4,7 @@ actor DoomguyBerserker: Trigger
     {
       Pickup:
         TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"PickupDoom64")
+		TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"PickupDoomStronghold")
       PickupArtifact:
         TNT1 A 0 A_GiveInventory("Doom64UnmakerArtifact")
       PickupBerserkSwitchCheck:
@@ -21,11 +22,19 @@ actor DoomguyBerserker: Trigger
       PickupDoom64:
         TNT1 A 0 A_SetBlend("FF0000",0.15,105)
         goto PickupArtifact
+		
+	  PickupDoomStronghold:
+		TNT1 A 0 A_Jump(127, "PickupBerserkSwitchCheck")
+		TNT1 A 0 A_GiveInventory("DGStrHasWPK")
+		TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrWeaponPowerItem")
+		stop
     }
 }
 
 actor Doom64GuyBerserk: DoomguyBerserker {}
+actor DGStrHasWPK : Boolean {}
 
+/*
 actor SamsaraDoomguyStrWeaponPowerItem : PowerupGiver
 {
     Scale 0.75
@@ -43,4 +52,35 @@ actor SamsaraDoomguyStrWeaponPowerItem : PowerupGiver
         POWP A -1 Bright
         stop
     }
+}
+*/
+
+actor SamsaraDoomguyStrWeaponPowerItem : CustomInventory
+{
+	Inventory.Amount 1
+	Inventory.MaxAmount 3
+	Tag "Weapon Powerup Kit"
+    +INVBAR
+    +INVENTORY.UNDROPPABLE
+    Inventory.Icon "POWIA0"
+    Scale 0.75
+    Inventory.PickupMessage "Picked up a weapon powerup kit."
+    Inventory.PickupSound "doomguy/itemget"
+	Inventory.RestrictedTo "DoomguyPlayer"
+	States
+	{
+      Spawn:
+        POWP A -1 Bright
+        stop
+	  Use:
+		TNT1 A 0 A_TakeInventory("DGStrHasWPK", 999)
+		TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrWeaponPower", 1)
+		stop
+	}
+}
+
+actor SamsaraDoomguyStrWeaponPower : Powerup
+{
+    Powerup.Duration -60
+    Powerup.Color "80 00 FF", 0.1
 }
