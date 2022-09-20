@@ -352,8 +352,6 @@ Script "DescentHUD" (void)
 	str SecondaryGraphic = "DSSW0";
 	int oldPrimary = CheckInventory("DescentPrimaryCounter");
 	int oldSecondary = CheckInventory("DescentSecondaryCounter");
-	str addonString = "";
-	str addonString2 = "";
 	str addonString3 = "";
 	int switchDelay = 10;
 	int switchCounterPrimary = switchDelay;
@@ -362,326 +360,60 @@ Script "DescentHUD" (void)
 	SetHudSize(320,200,1);
 	While(CheckInventory("DescentClass"))
 	{
-		int screenblocks = GetUserCvar(PlayerNumber(),"screenblocks");
-		if((screenblocks == 10 || CheckInventory("SamsaraUsingNewFullscreenHUD")) && screenblocks < 12)
+		ACS_NamedExecuteWithResult("DescentDrawHealthAndArmorAndKills",GetActorProperty(0,APROP_Health),CheckInventory("Armor"),CheckInventory("KillCountAmount"));
+		ACS_NamedExecuteWithResult("DescentDrawAmmo",0,CheckInventory("Clip"),GetAmmoCapacity("Clip"));
+		ACS_NamedExecuteWithResult("DescentDrawAmmo",1,CheckInventory("Shell"),GetAmmoCapacity("Shell"));
+		ACS_NamedExecuteWithResult("DescentDrawAmmo",2,CheckInventory("RocketAmmo"),GetAmmoCapacity("RocketAmmo"));
+		ACS_NamedExecuteWithResult("DescentDrawAmmo",3,CheckInventory("Cell"),GetAmmoCapacity("Cell"));
+
+		//Weapon Widget
+		if(CheckInventory("DescentPrimaryCounter") != oldPrimary && switchCounterPrimary == switchDelay)
 		{
-			int smallHud = CheckInventory("DescentThirdPerson") || screenblocks == 11;
-			if(smallHud && CheckInventory("SamsaraUsingNewFullscreenHUD"))
-			{
-				//Basics
-				SetHudSize(960,600,1);
-				SetFont("DSFONT00");
-				HudMessage(d:GetActorProperty(0,APROP_Health);HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26880,"Descent Blue",432.0,526.0,60.0);
-				HudMessage(d:CheckInventory("Armor");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26881,"Descent Gold",349.0,562.0,60.0);
-				HudMessage(s:"Score: ";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26884,"Descent Green",686.0,532.0,60.0);
-				HudMessage(d:CheckInventory("KillCountAmount");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26885,"Descent Green",824.2,532.0,60.0);
-				SetHudSize(480,320,1);
+			switchCounterPrimary = 0;
+			PlaySound(0,"Descent/Primary/Change",CHAN_7,1.0);
+		}
+		else
+		{	
+			alpha = abs((switchCounterPrimary - 5) * 0.2);
+		
+			if(switchCounterPrimary >= 5)
+				oldPrimary = CheckInventory("DescentPrimaryCounter");
 				
-				//Spaceship drawing
-				if(GetActorProperty(0,APROP_Health) >= 100)
-				{
-					SetFont(strparam(s:"DSPYRO1",d:(timer()%20)/2));
-					HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26883,CR_UNTRANSLATED,73.0,148.0,60.0);
-				}
-				else if(GetActorProperty(0,APROP_Health) >= 0)
-				{
-					SetFont(strparam(s:"DSPYRO0",d:GetActorProperty(0,APROP_Health)/10));
-					HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26883,CR_UNTRANSLATED,73.0,148.0,60.0);
-				}
-				SetFont("DSPYRO");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26882,CR_UNTRANSLATED,68.0,143.0,60.0);
-				
-				//Total Ammos
-				SetHudSize(960,600,1);
-				SetFont("AMSMA0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26870,CR_UNTRANSLATED,880.0,538.0,60.0);
-				SetFont("AMSMB0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26871,CR_UNTRANSLATED,880.0,558.0,60.0);
-				SetFont("AMSMC0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26872,CR_UNTRANSLATED,880.0,578.0,60.0);
-				SetFont("AMSMD0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26873,CR_UNTRANSLATED,880.0,598.0,60.0);
-				
-				SetFont("DSFONT00");
-				HudMessage(d:CheckInventory("Clip"),s:"/",d:GetAmmoCapacity("Clip");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26874,"Descent Green",978.2,526.0,60.0);
-				HudMessage(d:CheckInventory("Shell"),s:"/",d:GetAmmoCapacity("Shell");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26875,"Descent Green",978.2,546.0,60.0);
-				HudMessage(d:CheckInventory("RocketAmmo"),s:"/",d:GetAmmoCapacity("RocketAmmo");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26876,"Descent Green",978.2,566.0,60.0);
-				HudMessage(d:CheckInventory("Cell"),s:"/",d:GetAmmoCapacity("Cell");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26877,"Descent Green",978.2,586.0,60.0);
-			}
+			ACS_NamedExecuteWithResult("DescentWeaponWidgetPrimary",oldPrimary,alpha);
+			
+			if(switchCounterPrimary < switchDelay)
+				switchCounterPrimary++;
+		}	
+		
+		if(CheckInventory("DescentMissileStaticToken") || CheckInventory("DescentMissileCamera"))
+		{
+			HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,26850,CR_UNTRANSLATED,256.2,172.0,60.0);
+			
+			if(!CheckInventory("DescentMissileStaticToken"))
+				ACS_NamedExecuteWithResult("DescentCameraDisplay");
 			else
-			{
-				RemoveMessages(26884,26885);
-				//We do this crap if automap is open
-				SetHudSize(960,600,1);
-				SetFont("DSFONT00");
-				HudMessage(d:GetActorProperty(0,APROP_Health);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26980,"Descent Blue",432.0,526.0,60.0);
-				HudMessage(d:CheckInventory("Armor");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26981,"Descent Gold",349.0,562.0,60.0);
-				HudMessage(s:"Score: ";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26984,"Descent Green",686.0,532.0,60.0);
-				HudMessage(d:CheckInventory("KillCountAmount");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26985,"Descent Green",824.2,532.0,60.0);
-				SetHudSize(480,320,1);
-				
-				//Spaceship drawing
-				if(GetActorProperty(0,APROP_Health) >= 100)
-				{
-					SetFont(strparam(s:"DSPYRO1",d:(timer()%20)/2));
-					HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26983,CR_UNTRANSLATED,73.0,148.0,60.0);
-				}
-				else if(GetActorProperty(0,APROP_Health) >= 0)
-				{
-					SetFont(strparam(s:"DSPYRO0",d:GetActorProperty(0,APROP_Health)/10));
-					HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26983,CR_UNTRANSLATED,73.0,148.0,60.0);
-				}
-				SetFont("DSPYRO");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26982,CR_UNTRANSLATED,68.0,143.0,60.0);
-				
-				//Total Ammos
-				SetHudSize(960,600,1);
-				SetFont("AMSMA0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26970,CR_UNTRANSLATED,880.0,538.0,60.0);
-				SetFont("AMSMB0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26971,CR_UNTRANSLATED,880.0,558.0,60.0);
-				SetFont("AMSMC0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26972,CR_UNTRANSLATED,880.0,578.0,60.0);
-				SetFont("AMSMD0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26973,CR_UNTRANSLATED,880.0,598.0,60.0);
-				
-				SetFont("DSFONT00");
-				HudMessage(d:CheckInventory("Clip"),s:"/",d:GetAmmoCapacity("Clip");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26974,"Descent Green",978.2,526.0,60.0);
-				HudMessage(d:CheckInventory("Shell"),s:"/",d:GetAmmoCapacity("Shell");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26975,"Descent Green",978.2,546.0,60.0);
-				HudMessage(d:CheckInventory("RocketAmmo"),s:"/",d:GetAmmoCapacity("RocketAmmo");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26976,"Descent Green",978.2,566.0,60.0);
-				HudMessage(d:CheckInventory("Cell"),s:"/",d:GetAmmoCapacity("Cell");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26977,"Descent Green",978.2,586.0,60.0);
-			
-				//Basics
-				SetHudSize(960,600,1);
-				SetFont("DSFONT00");
-				HudMessage(d:GetActorProperty(0,APROP_Health);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26880,"Descent Blue",490.0,446.0,60.0);
-				HudMessage(d:CheckInventory("Armor");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26881,"Descent Gold",490.0,408.0,60.0);
-				SetHudSize(320,200,1);
-				
-				//Spaceship drawing
-				if(GetActorProperty(0,APROP_Health) >= 100)
-				{
-					SetFont(strparam(s:"DSPYRO1",d:(timer()%20)/2));
-					HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26883,CR_UNTRANSLATED,20.0,19.0,60.0);
-				}
-				else if(GetActorProperty(0,APROP_Health) >= 0)
-				{
-					SetFont(strparam(s:"DSPYRO0",d:GetActorProperty(0,APROP_Health)/10));
-					HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26883,CR_UNTRANSLATED,20.0,19.0,60.0);
-				}
-				SetFont("DSPYRO");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26882,CR_UNTRANSLATED,15.0,14.0,60.0);
-				
-				//Total Ammos
-				SetHudSize(960,600,1);
-				SetFont("AMSMA0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26870,CR_UNTRANSLATED,22.0,480.0,60.0);
-				SetFont("AMSMB0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26871,CR_UNTRANSLATED,18.0,491.0,60.0);
-				SetFont("AMSMC0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26872,CR_UNTRANSLATED,14.0,502.0,60.0);
-				SetFont("AMSMD0");
-				HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26873,CR_UNTRANSLATED,10.0,513.0,60.0);
-				
-				SetFont("DSFONT00");
-				HudMessage(d:CheckInventory("Clip"),s:"/",d:GetAmmoCapacity("Clip");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26874,"Descent Green",104.2,468.0,60.0);
-				HudMessage(d:CheckInventory("Shell"),s:"/",d:GetAmmoCapacity("Shell");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26875,"Descent Green",100.2,479.0,60.0);
-				HudMessage(d:CheckInventory("RocketAmmo"),s:"/",d:GetAmmoCapacity("RocketAmmo");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26876,"Descent Green",96.2,490.0,60.0);
-				HudMessage(d:CheckInventory("Cell"),s:"/",d:GetAmmoCapacity("Cell");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26877,"Descent Green",92.2,501.0,60.0);
-			}
-			
-			//Weapon Widget
-			if(CheckInventory("DescentPrimaryCounter") != oldPrimary && switchCounterPrimary == switchDelay)
-			{
-				switchCounterPrimary = 0;
-				PlaySound(0,"Descent/Primary/Change",CHAN_7,1.0);
-			}
-			else
-			{	
-				alpha = abs((switchCounterPrimary - 5) * 0.2);
-			
-				if(switchCounterPrimary >= 5)
-					oldPrimary = CheckInventory("DescentPrimaryCounter");
-					
-				if(oldPrimary <= 1)
-					addonString = strparam(s:"\nLVL:",s:" ",d:CheckInventory("DescentLaserLevel")+1);
-				else
-					addonString = "";
-					
-				if(oldPrimary <= 1 && CheckInventory("DescentQuadLaser"))
-					addonString2 = "\nQuad";
-				else
-					addonString2 = "";
-				if(smallHud && CheckInventory("SamsaraUsingNewFullscreenHUD"))
-				{
-					SetHudSize(480,320,1);
-					SetFont(strparam(s:PrimaryGraphic,d:oldPrimary));
-					HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,26810,CR_UNTRANSLATED,90.1,296.0,60.0,alpha);
-					SetHudSize(960,600,1);
-					SetFont("DSFONT00");
-					SetHudClipRect(244,518,68,192,68);
-					HudMessage(s:strparam(s:PrimaryStrings[oldPrimary],s:addonString,s:addonString2);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26800,"Descent Green",244.1,518.1,60.0,alpha);
-					HudMessage(d:CheckInventory(AmmoTypesA[oldPrimary]);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26801,"Descent Red",244.1,576.1,60.0,alpha);
-					SetHudClipRect(0,0,0,0,0);
-				}
-				else
-				{
-					SetHudSize(320,200,1);
-					SetFont(strparam(s:PrimaryGraphic,d:oldPrimary));
-					HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN,26810,CR_UNTRANSLATED,64.1,172.0,60.0,alpha);
-					SetHudSize(960,600,1);
-					SetFont("DSFONT00");
-					SetHudClipRect(276,456,68,192,68);
-					HudMessage(s:strparam(s:PrimaryStrings[oldPrimary],s:addonString,s:addonString2);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26800,"Descent Green",276.1,456.1,60.0,alpha);
-					HudMessage(d:CheckInventory(AmmoTypesA[oldPrimary]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26801,"Descent Red",276.1,512.1,60.0,alpha);
-					SetHudClipRect(0,0,0,0,0);
-					
-					//Automap crap
-					SetHudSize(480,320,1);
-					SetFont(strparam(s:PrimaryGraphic,d:oldPrimary));
-					HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN,26910,CR_UNTRANSLATED,90.1,296.0,60.0,alpha);
-					SetHudSize(960,600,1);
-					SetFont("DSFONT00");
-					SetHudClipRect(244,518,68,192,68);
-					HudMessage(s:strparam(s:PrimaryStrings[oldPrimary],s:addonString,s:addonString2);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26900,"Descent Green",244.1,518.1,60.0,alpha);
-					HudMessage(d:CheckInventory(AmmoTypesA[oldPrimary]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26901,"Descent Red",244.1,576.1,60.0,alpha);
-					SetHudClipRect(0,0,0,0,0);
-				}
-				
-				if(switchCounterPrimary < switchDelay)
-					switchCounterPrimary++;
-			}	
-			
-			if(CheckInventory("DescentMissileStaticToken") || CheckInventory("DescentMissileCamera"))
-			{
-				HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN,26850,CR_UNTRANSLATED,256.2,172.0,60.0);
-				if(!CheckInventory("DescentMissileStaticToken"))
-				{
-					if(smallHud && CheckInventory("SamsaraUsingNewFullscreenHUD"))
-					{
-						SetHudSize(960,600,1);
-						SetFont("DSFONT00");
-						SetHudClipRect(520,514,128,192,64);
-						HudMessage(s:SecondaryStrings[CheckInventory("DescentSecondaryCounter")];HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26860,"Descent Green",566.0,514.1,60.0,alpha);
-						HudMessage(d:CheckInventory(AmmoTypesB[CheckInventory("DescentSecondaryCounter")]);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26861,"Descent Red",566.0,580.1,60.0,alpha);
-						SetHudClipRect(0,0,0,0,0);
-						SetHudSize(436,320,1);
-						SetFont("DSMISCAM");
-						HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,274.1,60.0,alpha);
-					}
-					else
-					{
-						SetHudSize(960,600,1);
-						SetFont("DSFONT00");
-						SetHudClipRect(656,456,128,192,64);
-						HudMessage(s:SecondaryStrings[CheckInventory("DescentSecondaryCounter")];HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26960,"Descent Green",696.0,456.1,60.0,alpha);
-						HudMessage(d:CheckInventory(AmmoTypesB[CheckInventory("DescentSecondaryCounter")]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26961,"Descent Red",696.0,564.1,60.0,alpha);
-						SetHudClipRect(0,0,0,0,0);
-						HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,264.1,60.0,alpha);
-					
-						SetHudSize(960,600,1);
-						SetFont("DSFONT00");
-						SetHudClipRect(520,514,128,192,64);
-						HudMessage(s:SecondaryStrings[CheckInventory("DescentSecondaryCounter")];HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26860,"Descent Green",566.0,514.1,60.0,alpha);
-						HudMessage(d:CheckInventory(AmmoTypesB[CheckInventory("DescentSecondaryCounter")]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26861,"Descent Red",566.0,580.1,60.0,alpha);
-						SetHudClipRect(0,0,0,0,0);
-						SetHudSize(436,320,1);
-						SetFont("DSMISCAM");
-						HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,274.1,60.0,alpha);
-					}
-				}
-				else
-				{
-					HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26960,"Descent Green",720.2,456.1,60.0,alpha);
-					HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26961,"Descent Green",720.2,456.1,60.0,alpha);
-					HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26860,"Descent Green",720.2,456.1,60.0,alpha);
-					HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26861,"Descent Green",720.2,456.1,60.0,alpha);
-					if(smallHud && CheckInventory("SamsaraUsingNewFullscreenHUD"))
-					{
-						SetHudSize(436,320,1);
-						SetFont("DESSTAT1");
-						HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,264.1,60.0,alpha);
-					}
-					else
-					{
-						SetHudSize(436,320,1);
-						SetFont("DESSTAT1");
-						HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,264.1,60.0,alpha);
-					}
-				}
-			}
-			else
-			{
-				HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,264.1,60.0,alpha);
-				if(CheckInventory("DescentSecondaryCounter") != oldSecondary && switchCounterSecondary == switchDelay)
-				{
-					switchCounterSecondary = 0;
-					PlaySound(0,"Descent/Secondary/Change",CHAN_7,1.0);
-				}
-				else
-				{	
-					alpha = abs((switchCounterSecondary - 5) * 0.2);
-				
-					if(switchCounterSecondary >= 5)
-						oldSecondary = CheckInventory("DescentSecondaryCounter");
-						
-					if(oldSecondary == 8)
-						addonString3 = " Bomb";
-					else if(oldSecondary == 9)
-						addonString3 = " Mine";
-					else
-						addonString3 = " Missile";
-					
-					if(smallHud && CheckInventory("SamsaraUsingNewFullscreenHUD"))
-					{
-						SetHudSize(480,320,1);
-						SetFont(strparam(s:SecondaryGraphic,d:oldSecondary));
-						HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,26850,CR_UNTRANSLATED,316.2,296.0,60.0,alpha);
-						SetHudSize(960,600,1);
-						SetFont("DSFONT00");
-						SetHudClipRect(500,518,128,192,64);
-						HudMessage(s:strparam(s:SecondaryStrings[oldSecondary],s:addonString3);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26860,"Descent Green",576.2,518.1,60.0,alpha);
-						HudMessage(d:CheckInventory(AmmoTypesB[oldSecondary]);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26861,"Descent Red",576.2,576.1,60.0,alpha);
-						SetHudClipRect(0,0,0,0,0);
-					}
-					else
-					{
-						SetHudSize(320,200,1);
-						SetFont(strparam(s:SecondaryGraphic,d:oldSecondary));
-						HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN,26850,CR_UNTRANSLATED,256.2,172.0,60.0,alpha);
-						SetHudSize(960,600,1);
-						SetFont("DSFONT00");
-						SetHudClipRect(624,456,128,192,64);
-						HudMessage(s:strparam(s:SecondaryStrings[oldSecondary],s:addonString3);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26860,"Descent Green",688.2,456.1,60.0,alpha);
-						HudMessage(d:CheckInventory(AmmoTypesB[oldSecondary]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26861,"Descent Red",688.2,512.1,60.0,alpha);
-						SetHudClipRect(0,0,0,0,0);
-						
-						//Buuuuuullshiit!
-						SetHudSize(480,320,1);
-						SetFont(strparam(s:SecondaryGraphic,d:oldSecondary));
-						HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN,26950,CR_UNTRANSLATED,316.2,296.0,60.0,alpha);
-						SetHudSize(960,600,1);
-						SetFont("DSFONT00");
-						SetHudClipRect(500,518,128,192,64);
-						HudMessage(s:strparam(s:SecondaryStrings[oldSecondary],s:addonString3);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26960,"Descent Green",576.2,518.1,60.0,alpha);
-						HudMessage(d:CheckInventory(AmmoTypesB[oldSecondary]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26961,"Descent Red",576.2,576.1,60.0,alpha);
-						SetHudClipRect(0,0,0,0,0);
-					}
-					
-					if(switchCounterSecondary < switchDelay)
-						switchCounterSecondary++;
-				}	
-			}
+				ACS_NamedExecuteWithResult("DescentCameraStaticDisplay");
 		}
 		else
 		{
-			RemoveMessages(26800,26810);
-			RemoveMessages(26850,26910);
-			RemoveMessages(26950,26999);
+			HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,264.1,60.0,alpha);
+			if(CheckInventory("DescentSecondaryCounter") != oldSecondary && switchCounterSecondary == switchDelay)
+			{
+				switchCounterSecondary = 0;
+				PlaySound(0,"Descent/Secondary/Change",CHAN_7,1.0);
+			}
+			else
+			{	
+				alpha = abs((switchCounterSecondary - 5) * 0.2);
 			
-			RemoveMessages(27800,27810);
-			RemoveMessages(27850,27910);
-			RemoveMessages(27950,27999);
+				if(switchCounterSecondary >= 5)
+					oldSecondary = CheckInventory("DescentSecondaryCounter");
+							
+				ACS_NamedExecuteWithResult("DescentWeaponWidgetSecondary",oldSecondary,alpha);
+				
+				if(switchCounterSecondary < switchDelay)
+					switchCounterSecondary++;
+			}	
 		}
 		
 		Delay(1);
@@ -694,6 +426,329 @@ Script "DescentHUD" (void)
 	RemoveMessages(27800,27810);
 	RemoveMessages(27850,27910);
 	RemoveMessages(27950,27999);
+}
+
+Script "DescentDrawHealthAndArmorAndKills" (int health, int armor, int kills) clientside
+{
+	if(GetCvar("screenblocks") == 12 || (!CheckInventory("SamsaraUsingNewFullscreenHUD") && GetCvar("screenblocks") == 11))
+	{
+		RemoveMessages(26870,26885);
+		RemoveMessages(26970,26985);
+		terminate;
+	}
+
+	SetHudSize(960,600,1);
+	SetFont("DSFONT00");
+	if(CheckInventory("DescentThirdPerson"))
+	{
+		//Basics
+		HudMessage(d:health;HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26880,"Descent Blue",432.0,526.0,60.0);
+		HudMessage(d:armor;HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26881,"Descent Gold",349.0,562.0,60.0);
+		HudMessage(s:"Score: ";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26884,"Descent Green",686.0,532.0,60.0);
+		HudMessage(d:kills;HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26885,"Descent Green",824.2,532.0,60.0);
+		SetHudSize(480,320,1);
+		
+		//Spaceship drawing
+		if(health >= 100)
+		{
+			SetFont(strparam(s:"DSPYRO1",d:(timer()%20)/2));
+			HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26883,CR_UNTRANSLATED,73.0,148.0,60.0);
+		}
+		else if(health >= 0)
+		{
+			SetFont(strparam(s:"DSPYRO0",d:health/10));
+			HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26883,CR_UNTRANSLATED,73.0,148.0,60.0);
+		}
+		SetFont("DSPYRO");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26882,CR_UNTRANSLATED,68.0,143.0,60.0);
+		
+		//Total Ammos
+		SetHudSize(960,600,1);
+		SetFont("AMSMA0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26870,CR_UNTRANSLATED,880.0,538.0,60.0);
+		SetFont("AMSMB0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26871,CR_UNTRANSLATED,880.0,558.0,60.0);
+		SetFont("AMSMC0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26872,CR_UNTRANSLATED,880.0,578.0,60.0);
+		SetFont("AMSMD0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26873,CR_UNTRANSLATED,880.0,598.0,60.0);
+	}
+	else
+	{
+		//Basics
+		RemoveMessages(26884,26885);
+		HudMessage(d:health;HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26980,"Descent Blue",432.0,526.0,60.0);
+		HudMessage(d:armor;HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26981,"Descent Gold",349.0,562.0,60.0);
+		HudMessage(s:"Score: ";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26984,"Descent Green",686.0,532.0,60.0);
+		HudMessage(d:kills;HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26985,"Descent Green",824.2,532.0,60.0);
+		SetHudSize(480,320,1);
+		
+		//Spaceship drawing
+		if(health >= 100)
+		{
+			SetFont(strparam(s:"DSPYRO1",d:(timer()%20)/2));
+			HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26983,CR_UNTRANSLATED,73.0,148.0,60.0);
+		}
+		else if(health >= 0)
+		{
+			SetFont(strparam(s:"DSPYRO0",d:health/10));
+			HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26983,CR_UNTRANSLATED,73.0,148.0,60.0);
+		}
+		SetFont("DSPYRO");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26982,CR_UNTRANSLATED,68.0,143.0,60.0);
+		
+		//Total Ammos
+		SetHudSize(960,600,1);
+		SetFont("AMSMA0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26970,CR_UNTRANSLATED,880.0,538.0,60.0);
+		SetFont("AMSMB0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26971,CR_UNTRANSLATED,880.0,558.0,60.0);
+		SetFont("AMSMC0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26972,CR_UNTRANSLATED,880.0,578.0,60.0);
+		SetFont("AMSMD0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26973,CR_UNTRANSLATED,880.0,598.0,60.0);
+		
+		//Basics
+		SetHudSize(960,600,1);
+		SetFont("DSFONT00");
+		HudMessage(d:health;HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26880,"Descent Blue",490.0,446.0,60.0);
+		HudMessage(d:armor;HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26881,"Descent Gold",490.0,408.0,60.0);
+		SetHudSize(320,200,1);
+		
+		//Spaceship drawing
+		if(health >= 100)
+		{
+			SetFont(strparam(s:"DSPYRO1",d:(timer()%20)/2));
+			HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26883,CR_UNTRANSLATED,20.0,19.0,60.0);
+		}
+		else if(health >= 0)
+		{
+			SetFont(strparam(s:"DSPYRO0",d:health/10));
+			HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26883,CR_UNTRANSLATED,20.0,19.0,60.0);
+		}
+		SetFont("DSPYRO");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26882,CR_UNTRANSLATED,15.0,14.0,60.0);
+	
+		//Total Ammos
+		SetHudSize(960,600,1);
+		SetFont("AMSMA0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26870,CR_UNTRANSLATED,22.0,480.0,60.0);
+		SetFont("AMSMB0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26871,CR_UNTRANSLATED,18.0,491.0,60.0);
+		SetFont("AMSMC0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26872,CR_UNTRANSLATED,14.0,502.0,60.0);
+		SetFont("AMSMD0");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26873,CR_UNTRANSLATED,10.0,513.0,60.0);
+	}
+}
+
+Script "DescentDrawAmmo" (int idOffset, int count, int capacity) clientside
+{
+	if(GetCvar("screenblocks") == 12 || (!CheckInventory("SamsaraUsingNewFullscreenHUD") && GetCvar("screenblocks") == 11))
+	{
+		RemoveMessages(26874,26877);
+		RemoveMessages(26974,26977);
+		terminate;
+	}
+
+	SetHudSize(960,600,1);
+	SetFont("DSFONT00");
+	if(CheckInventory("DescentThirdPerson"))
+	{
+		HudMessage(d:count,s:"/",d:capacity;HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26874+idOffset,"Descent Green",978.2,526.0+(20.0*idOffset),60.0);
+	}
+	else
+	{
+		HudMessage(d:CheckInventory("Clip"),s:"/",d:GetAmmoCapacity("Clip");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26974+idOffset,"Descent Green",978.2,526.0+(20.0*idOffset),60.0);
+		HudMessage(d:CheckInventory("Clip"),s:"/",d:GetAmmoCapacity("Clip");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26874+idOffset,"Descent Green",104.2-(4.0*idOffset),468.0+(11.0*idOffset),60.0);
+	}
+}
+
+Script "DescentWeaponWidgetPrimary" (int oldPrimary, int alpha) clientside
+{
+	str addonString, addonString2;
+	if(GetCvar("screenblocks") == 12 || (!CheckInventory("SamsaraUsingNewFullscreenHUD") && GetCvar("screenblocks") == 11))
+	{
+		RemoveMessages(26800,26810);
+		RemoveMessages(26900,26910);
+		terminate;
+	}
+	
+	if(oldPrimary <= 1)
+		addonString = strparam(s:"\nLVL:",s:" ",d:CheckInventory("DescentLaserLevel")+1);
+	else
+		addonString = "";
+						
+	if(oldPrimary <= 1 && CheckInventory("DescentQuadLaser"))
+		addonString2 = "\nQuad";
+	else
+		addonString2 = "";
+	
+	str PrimaryGraphic = "DSPW0";
+	if(CheckInventory("DescentThirdPerson"))
+	{
+		SetHudSize(480,320,1);
+		SetFont(strparam(s:PrimaryGraphic,d:oldPrimary));
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,26810,CR_UNTRANSLATED,90.1,296.0,60.0,alpha);
+		SetHudSize(960,600,1);
+		SetFont("DSFONT00");
+		SetHudClipRect(244,518,68,192,68);
+		HudMessage(s:strparam(s:PrimaryStrings[oldPrimary],s:addonString,s:addonString2);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26800,"Descent Green",244.1,518.1,60.0,alpha);
+		HudMessage(d:CheckInventory(AmmoTypesA[oldPrimary]);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26801,"Descent Red",244.1,576.1,60.0,alpha);
+		SetHudClipRect(0,0,0,0,0);
+	}
+	else
+	{
+		SetHudSize(320,200,1);
+		SetFont(strparam(s:PrimaryGraphic,d:oldPrimary));
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN,26810,CR_UNTRANSLATED,64.1,172.0,60.0,alpha);
+		SetHudSize(960,600,1);
+		SetFont("DSFONT00");
+		SetHudClipRect(276,456,68,192,68);
+		HudMessage(s:strparam(s:PrimaryStrings[oldPrimary],s:addonString,s:addonString2);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26800,"Descent Green",276.1,456.1,60.0,alpha);
+		HudMessage(d:CheckInventory(AmmoTypesA[oldPrimary]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26801,"Descent Red",276.1,512.1,60.0,alpha);
+		SetHudClipRect(0,0,0,0,0);
+		
+		//Automap crap
+		SetHudSize(480,320,1);
+		SetFont(strparam(s:PrimaryGraphic,d:oldPrimary));
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN,26910,CR_UNTRANSLATED,90.1,296.0,60.0,alpha);
+		SetHudSize(960,600,1);
+		SetFont("DSFONT00");
+		SetHudClipRect(244,518,68,192,68);
+		HudMessage(s:strparam(s:PrimaryStrings[oldPrimary],s:addonString,s:addonString2);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26900,"Descent Green",244.1,518.1,60.0,alpha);
+		HudMessage(d:CheckInventory(AmmoTypesA[oldPrimary]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26901,"Descent Red",244.1,576.1,60.0,alpha);
+		SetHudClipRect(0,0,0,0,0);
+	}
+}
+
+Script "DescentCameraDisplay" (void) clientside
+{
+	if(GetCvar("screenblocks") == 12 || (!CheckInventory("SamsaraUsingNewFullscreenHUD") && GetCvar("screenblocks") == 11))
+	{
+		RemoveMessages(26860,26870);
+		RemoveMessages(26960,26970);
+		terminate;
+	}
+
+	SetHudSize(960,600,1);
+	SetFont("DSFONT00");
+	if(CheckInventory("DescentThirdPerson"))
+	{
+		RemoveMessages(26960,26961);
+	
+		SetHudClipRect(520,514,128,192,64);
+		HudMessage(s:SecondaryStrings[CheckInventory("DescentSecondaryCounter")];HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26860,"Descent Green",566.0,514.1,60.0);
+		HudMessage(d:CheckInventory(AmmoTypesB[CheckInventory("DescentSecondaryCounter")]);HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26861,"Descent Red",566.0,580.1,60.0);
+		SetHudClipRect(0,0,0,0,0);
+		SetHudSize(436,320,1);
+		SetFont("DSMISCAM");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,274.1,60.0);
+	}
+	else
+	{
+		SetHudClipRect(656,456,128,192,64);
+		HudMessage(s:SecondaryStrings[CheckInventory("DescentSecondaryCounter")];HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26960,"Descent Green",696.0,456.1,60.0);
+		HudMessage(d:CheckInventory(AmmoTypesB[CheckInventory("DescentSecondaryCounter")]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26961,"Descent Red",696.0,564.1,60.0);
+		SetHudClipRect(0,0,0,0,0);
+		HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,264.1,60.0);
+	
+		SetHudSize(960,600,1);
+		SetFont("DSFONT00");
+		SetHudClipRect(520,514,128,192,64);
+		HudMessage(s:SecondaryStrings[CheckInventory("DescentSecondaryCounter")];HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26860,"Descent Green",566.0,514.1,60.0);
+		HudMessage(d:CheckInventory(AmmoTypesB[CheckInventory("DescentSecondaryCounter")]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26861,"Descent Red",566.0,580.1,60.0);
+		SetHudClipRect(0,0,0,0,0);
+		SetHudSize(436,320,1);
+		SetFont("DSMISCAM");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,274.1,60.0);
+	}
+}
+
+Script "DescentCameraStaticDisplay" (void) clientside
+{
+	if(GetCvar("screenblocks") == 12 || (!CheckInventory("SamsaraUsingNewFullscreenHUD") && GetCvar("screenblocks") == 11))
+	{
+		RemoveMessages(26860,26869);
+		RemoveMessages(26960,26969);
+		terminate;
+	}
+
+	SetHudSize(436,320,1);
+	SetFont("DESSTAT1");
+	
+	HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26960,"Descent Green",720.2,456.1,60.0);
+	HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26961,"Descent Green",720.2,456.1,60.0);
+	HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26860,"Descent Green",720.2,456.1,60.0);
+	HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26861,"Descent Green",720.2,456.1,60.0);
+	
+	if(CheckInventory("DescentThirdPerson"))
+	{
+		SetHudSize(436,320,1);
+		SetFont("DESSTAT1");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,264.1,60.0);
+	}
+	else
+	{
+		SetHudSize(436,320,1);
+		SetFont("DESSTAT1");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,264.1,60.0);
+	}
+}
+
+Script "DescentWeaponWidgetSecondary" (int oldSecondary, int alpha) clientside
+{
+	str addonString3 = "";
+	if(GetCvar("screenblocks") == 12 || (!CheckInventory("SamsaraUsingNewFullscreenHUD") && GetCvar("screenblocks") == 11))
+	{
+		RemoveMessages(26850,26861);
+		RemoveMessages(26950,26961);
+		terminate;
+	}
+	
+	if(oldSecondary == 8)
+		addonString3 = " Bomb";
+	else if(oldSecondary == 9)
+		addonString3 = " Mine";
+	else
+		addonString3 = " Missile";
+	
+	str SecondaryGraphic = "DSSW0";
+	if(CheckInventory("DescentThirdPerson"))
+	{
+		SetHudSize(480,320,1);
+		SetFont(strparam(s:SecondaryGraphic,d:oldSecondary));
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,26850,CR_UNTRANSLATED,316.2,296.0,60.0,alpha);
+		SetHudSize(960,600,1);
+		SetFont("DSFONT00");
+		SetHudClipRect(500,518,128,192,64);
+		HudMessage(s:strparam(s:SecondaryStrings[oldSecondary],s:addonString3);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26860,"Descent Green",576.2,518.1,60.0,alpha);
+		HudMessage(d:CheckInventory(AmmoTypesB[oldSecondary]);HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26861,"Descent Red",576.2,576.1,60.0,alpha);
+		SetHudClipRect(0,0,0,0,0);
+	}
+	else
+	{
+		SetHudSize(320,200,1);
+		SetFont(strparam(s:SecondaryGraphic,d:oldSecondary));
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN,26850,CR_UNTRANSLATED,256.2,172.0,60.0,alpha);
+		SetHudSize(960,600,1);
+		SetFont("DSFONT00");
+		SetHudClipRect(624,456,128,192,64);
+		HudMessage(s:strparam(s:SecondaryStrings[oldSecondary],s:addonString3);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26860,"Descent Green",688.2,456.1,60.0,alpha);
+		HudMessage(d:CheckInventory(AmmoTypesB[oldSecondary]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26861,"Descent Red",688.2,512.1,60.0,alpha);
+		SetHudClipRect(0,0,0,0,0);
+		
+		//Buuuuuullshiit!
+		SetHudSize(480,320,1);
+		SetFont(strparam(s:SecondaryGraphic,d:oldSecondary));
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN,26950,CR_UNTRANSLATED,316.2,296.0,60.0,alpha);
+		SetHudSize(960,600,1);
+		SetFont("DSFONT00");
+		SetHudClipRect(500,518,128,192,64);
+		HudMessage(s:strparam(s:SecondaryStrings[oldSecondary],s:addonString3);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26960,"Descent Green",576.2,518.1,60.0,alpha);
+		HudMessage(d:CheckInventory(AmmoTypesB[oldSecondary]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26961,"Descent Red",576.2,576.1,60.0,alpha);
+		SetHudClipRect(0,0,0,0,0);
+	}
 }
 
 Script "DescentRemoveHUD" (int player) DISCONNECT

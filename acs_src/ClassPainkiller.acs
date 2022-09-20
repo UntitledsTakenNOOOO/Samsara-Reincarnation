@@ -107,36 +107,7 @@ Script "Painkiller_Loop" (void)
 	}
 	while(CheckInventory("PainkillerClass"))
 	{
-		if(GetCVar("screenblocks") == 11)
-		{
-			SetHudSize(320,200,0);
-			for(int armortype = 0; armortype < 6; armortype++)
-			{
-				if(GetArmorType(PKArmors[armortype][0],pln))
-				{
-					SetFont(PKArmors[armortype][1]);
-					HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1400,CR_UNTRANSLATED,10.0,191.0,0.1,60.0);
-					break;
-				}
-				else
-				{
-					SetFont("PKARMOR0");
-					HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1400,CR_UNTRANSLATED,10.0,191.0,0.1,60.0);
-				}
-			}
-			SetHudSize(960,700,0);
-			int compassDegree = (GetActorAngle(0) / 910) + 1;
-			SetFont("SMALLFONT");
-			str compassZero = compassDegree < 10 ? "0" : "";
-			SetFont(strparam(s:"PKCOMP",s:compassZero,d:compassDegree));
-			HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1401,CR_UNTRANSLATED,480.0,52.0,0.1,60.0);
-			SetHudSize(0,0,0);
-		}
-		else
-		{
-			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1400,CR_UNTRANSLATED,480.0,52.0,0.1,60.0);
-			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1401,CR_UNTRANSLATED,480.0,52.0,0.1,60.0);
-		}
+		ACS_NamedExecuteWithResult("Painkiller_HudItems",pln);
 		if(CheckInventory("Painkiller_SilverSlot1") != lastsilver1)
 		{
 			TakeInventory(Painkiller_Silver_CardGraphics[lastsilver1-1][5],32);
@@ -196,6 +167,41 @@ Script "Painkiller_Loop" (void)
 			SpawnSpotForced("Painkiller_Step",0,0,0);
 			lasttimer = Timer();
 		}
+	}
+}
+
+Script "Painkiller_HudItems" (int pln) clientside
+{
+	int screenblocks = GetCvar("screenblocks");
+	if(screenblocks == 11 && CheckInventory("SamsaraUsingNewFullscreenHUD"))
+	{
+		SetHudSize(320,200,0);
+		for(int armortype = 0; armortype < 6; armortype++)
+		{
+			if(GetArmorType(PKArmors[armortype][0],pln))
+			{
+				SetFont(PKArmors[armortype][1]);
+				HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1400,CR_UNTRANSLATED,10.0,191.0,0.1,60.0);
+				break;
+			}
+			else
+			{
+				SetFont("PKARMOR0");
+				HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1400,CR_UNTRANSLATED,10.0,191.0,0.1,60.0);
+			}
+		}
+		SetHudSize(960,700,0);
+		int compassDegree = (GetActorAngle(0) / 910) + 1;
+		SetFont("SMALLFONT");
+		str compassZero = compassDegree < 10 ? "0" : "";
+		SetFont(strparam(s:"PKCOMP",s:compassZero,d:compassDegree));
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1401,CR_UNTRANSLATED,480.0,52.0,0.1,60.0);
+		SetHudSize(0,0,0);
+	}
+	else
+	{
+		HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1400,CR_UNTRANSLATED,480.0,52.0,0.1,60.0);
+		HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,1401,CR_UNTRANSLATED,480.0,52.0,0.1,60.0);
 	}
 }
 
@@ -1890,4 +1896,10 @@ Script "Painkiller_HitBoxRemover" (void)
 		Thing_Remove(0);
 	}
 	Thing_ChangeTid(myTid,0);
+}
+
+Script "Painkiller_LaserDamageSound" (void)
+{
+	SetActivator(0,AAPTR_Tracer);
+	PlaySound(0,"Painkiller/Painkiller/AltHit",CHAN_5,1.0);
 }
