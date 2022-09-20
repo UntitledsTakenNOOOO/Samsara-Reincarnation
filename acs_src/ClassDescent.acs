@@ -359,13 +359,13 @@ Script "DescentHUD" (void)
 	int switchCounterPrimary = switchDelay;
 	int switchCounterSecondary = switchDelay;
 	int alpha;
-	int clearMessages = 0;
 	SetHudSize(320,200,1);
 	While(CheckInventory("DescentClass"))
 	{
-		if(GetCvar("screenblocks") < 12)
+		int screenblocks = GetUserCvar(PlayerNumber(),"screenblocks");
+		if((screenblocks == 10 || CheckInventory("SamsaraUsingNewFullscreenHUD")) && screenblocks < 12)
 		{
-			int smallHud = CheckInventory("DescentThirdPerson") || GetCvar("screenblocks") == 11;
+			int smallHud = CheckInventory("DescentThirdPerson") || screenblocks == 11;
 			if(smallHud && CheckInventory("SamsaraUsingNewFullscreenHUD"))
 			{
 				//Basics
@@ -408,7 +408,7 @@ Script "DescentHUD" (void)
 				HudMessage(d:CheckInventory("RocketAmmo"),s:"/",d:GetAmmoCapacity("RocketAmmo");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26876,"Descent Green",978.2,566.0,60.0);
 				HudMessage(d:CheckInventory("Cell"),s:"/",d:GetAmmoCapacity("Cell");HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26877,"Descent Green",978.2,586.0,60.0);
 			}
-			else if(!smallHud)
+			else
 			{
 				RemoveMessages(26884,26885);
 				//We do this crap if automap is open
@@ -489,7 +489,6 @@ Script "DescentHUD" (void)
 				HudMessage(d:CheckInventory("RocketAmmo"),s:"/",d:GetAmmoCapacity("RocketAmmo");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26876,"Descent Green",96.2,490.0,60.0);
 				HudMessage(d:CheckInventory("Cell"),s:"/",d:GetAmmoCapacity("Cell");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26877,"Descent Green",92.2,501.0,60.0);
 			}
-			else clearMessages = 1;
 			
 			//Weapon Widget
 			if(CheckInventory("DescentPrimaryCounter") != oldPrimary && switchCounterPrimary == switchDelay)
@@ -513,7 +512,7 @@ Script "DescentHUD" (void)
 					addonString2 = "\nQuad";
 				else
 					addonString2 = "";
-				if(smallHud)
+				if(smallHud && CheckInventory("SamsaraUsingNewFullscreenHUD"))
 				{
 					SetHudSize(480,320,1);
 					SetFont(strparam(s:PrimaryGraphic,d:oldPrimary));
@@ -558,7 +557,7 @@ Script "DescentHUD" (void)
 				HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN,26850,CR_UNTRANSLATED,256.2,172.0,60.0);
 				if(!CheckInventory("DescentMissileStaticToken"))
 				{
-					if(smallHud)
+					if(smallHud && CheckInventory("SamsaraUsingNewFullscreenHUD"))
 					{
 						SetHudSize(960,600,1);
 						SetFont("DSFONT00");
@@ -575,8 +574,8 @@ Script "DescentHUD" (void)
 						SetHudSize(960,600,1);
 						SetFont("DSFONT00");
 						SetHudClipRect(656,456,128,192,64);
-						HudMessage(s:SecondaryStrings[CheckInventory("DescentSecondaryCounter")];HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6860,"Descent Green",696.0,456.1,60.0,alpha);
-						HudMessage(d:CheckInventory(AmmoTypesB[CheckInventory("DescentSecondaryCounter")]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,6861,"Descent Red",696.0,564.1,60.0,alpha);
+						HudMessage(s:SecondaryStrings[CheckInventory("DescentSecondaryCounter")];HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26960,"Descent Green",696.0,456.1,60.0,alpha);
+						HudMessage(d:CheckInventory(AmmoTypesB[CheckInventory("DescentSecondaryCounter")]);HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26961,"Descent Red",696.0,564.1,60.0,alpha);
 						SetHudClipRect(0,0,0,0,0);
 						HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA|HUDMSG_PLAIN,26869,CR_UNTRANSLATED,258.0,264.1,60.0,alpha);
 					
@@ -593,9 +592,11 @@ Script "DescentHUD" (void)
 				}
 				else
 				{
+					HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26960,"Descent Green",720.2,456.1,60.0,alpha);
+					HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26961,"Descent Green",720.2,456.1,60.0,alpha);
 					HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26860,"Descent Green",720.2,456.1,60.0,alpha);
 					HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_PLAIN|HUDMSG_COLORSTRING,26861,"Descent Green",720.2,456.1,60.0,alpha);
-					if(smallHud)
+					if(smallHud && CheckInventory("SamsaraUsingNewFullscreenHUD"))
 					{
 						SetHudSize(436,320,1);
 						SetFont("DESSTAT1");
@@ -631,7 +632,7 @@ Script "DescentHUD" (void)
 					else
 						addonString3 = " Missile";
 					
-					if(smallHud)
+					if(smallHud && CheckInventory("SamsaraUsingNewFullscreenHUD"))
 					{
 						SetHudSize(480,320,1);
 						SetFont(strparam(s:SecondaryGraphic,d:oldSecondary));
@@ -672,12 +673,15 @@ Script "DescentHUD" (void)
 				}	
 			}
 		}
-		else if(clearMessages == 1)
+		else
 		{
 			RemoveMessages(26800,26810);
 			RemoveMessages(26850,26910);
 			RemoveMessages(26950,26999);
-			clearMessages = 0;
+			
+			RemoveMessages(27800,27810);
+			RemoveMessages(27850,27910);
+			RemoveMessages(27950,27999);
 		}
 		
 		Delay(1);
