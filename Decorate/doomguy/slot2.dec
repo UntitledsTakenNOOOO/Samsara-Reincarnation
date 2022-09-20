@@ -2,10 +2,8 @@ actor SamsaraDoomguyStrAutoShotgunPoweredAttackAmount : Counter { Inventory.MaxA
 
 actor " Shotgun " : Shotgun
 {
-    Weapon.AmmoType2 "DoomguyStrASGClip"
     Weapon.SlotNumber 2
-    +AMMO_OPTIONAL
-    +NOALERT
+    +ALT_USES_BOTH
     +UNDROPPABLE
     AttackSound ""
 	Tag "Shotgun"
@@ -38,11 +36,7 @@ actor " Shotgun " : Shotgun
 
       Fire:
         TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"FireStr")
-        TNT1 A 0 A_JumpIfInventory("Doom64Mode",1,"Fire64")
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-        goto Nothing
-        DSHT A 3 A_AlertMonsters
+        DSHT A 3 A_JumpIfInventory("Doom64Mode",1,"Fire64")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireAttack")
         TNT1 A 0 A_JumpIfInventory("Shell",1,"FireAttack")
         goto FireContinue
@@ -58,9 +52,6 @@ actor " Shotgun " : Shotgun
         DSHT K 4
         DSHT JI 5
         DSHT A 3
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-        goto Nothing
         DSHT A 7 A_ReFire
         goto Ready
 
@@ -75,9 +66,6 @@ actor " Shotgun " : Shotgun
         DSHT F 3
         DSHT ED 2
         DSHT C 1
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-        goto Nothing
         DSHT B 3 A_ReFire
         DSHT A 4
         goto Ready
@@ -89,9 +77,6 @@ actor " Shotgun " : Shotgun
         DSHT H 6
         DSHT GF 4
         DSHT EDC 2
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-        goto Nothing
         DSHT B 2 A_ReFire
         DSHT A 4
         goto Ready
@@ -133,10 +118,6 @@ actor " Shotgun " : Shotgun
         goto Select
 
       Fire64:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-        goto Nothing
-        TNT1 A 0 A_AlertMonsters
         TNT1 A 0 A_GunFlash("Flash64")
         TNT1 A 0 A_GiveInventory("SamsaraDoomguy64ShotgunAttackHandler")
         TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"Fire64Smooth")
@@ -145,9 +126,6 @@ actor " Shotgun " : Shotgun
         64SG C 21
         64SG B 5
         64SG A 7
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-        goto Nothing
         64SG A 7 A_ReFire
         goto Ready
 
@@ -161,9 +139,6 @@ actor " Shotgun " : Shotgun
 		64SG IH 3
 		64SG G 3
         64SG F 3
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-        goto Nothing
         64SG E 3 A_ReFire
         64SG D 4
         goto Ready
@@ -173,25 +148,20 @@ actor " Shotgun " : Shotgun
         64SG N 2 Bright A_Light2
         goto LightDone
 
-      // Stronghold (Auto Shotgun)
-      ReadyStr:
-        TNT1 A 0 A_JumpIfInventory("DoomguyStrASGClip",0,"ReadyStrNonReloadable")
-        TNT1 A 0 A_JumpIfInventory("Shell",1,"ReadyStrReloadable")
-      ReadyStrNonReloadable:
-        ASGG A 1 A_WeaponReady(WRF_NOSECONDARY)
-        goto Ready
-
-      ReadyStrReloadable:
-        ASGG A 1 A_WeaponReady(WRF_ALLOWRELOAD)
-        goto Ready
-
+      // Stronghold
       // Unpowered
+      ReadyStr:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"ReadyStrPowered")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"ReadyStrPowered")
+        DSHT L 1 A_WeaponReady(WRF_NOSECONDARY)
+        goto Ready
+
       DeselectStr:
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"DeselectStrPowered")
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"DeselectStrPowered")
       DeselectStrContinue:
         TNT1 A 0 A_Lower
-        ASGG A 1 A_Lower
+        DSHT L 1 A_Lower
         goto Deselect
 
       SelectStr:
@@ -199,60 +169,36 @@ actor " Shotgun " : Shotgun
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"SelectStrPowered")
       SelectStrContinue:
         TNT1 A 0 A_Raise
-        ASGG A 1 A_Raise
+        DSHT L 1 A_Raise
         goto Select
 
       FireStr:
-        TNT1 A 0 A_JumpIfInventory("DoomguyStrASGClip",1,"FireStrActual")
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStrActual")
-        TNT1 A 0 A_JumpIfInventory("Shell",1,"Reload")
-        ASGG A 2 A_PlaySound("doomguy/stronghold/asgout")
-        goto Ready
-
-      FireStrActual:
-        TNT1 A 0 A_AlertMonsters
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"FireStrPowered")
-        ASGG A 1 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"FireStrPowered")
+        DSHT L 3 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"FireStrPowered")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStrAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,"FireStrAttack")
+        goto FireStrContinue
+
+      FireStrAttack:
         TNT1 A 0 A_GunFlash("FlashStr")
-        TNT1 A 0 A_PlaySound("doomguy/stronghold/asgfir",CHAN_WEAPON)
-        TNT1 A 0 A_TakeInventory("DoomguyStrASGClip",1,TIF_NOTAKEINFINITE)
-        ASGG L 2 Bright A_FireBullets(3.1,2.6,7,5,"SamsaraDoomguyStrBulletPuffBallisticThruGhost",0)
-        ASGG M 3 Bright
-        ASGG N 2 Bright
-        ASGG A 7 A_PlaySound("doomguy/stronghold/asgld1")
-      FireStrFinish:
-        TNT1 A 0 A_ReFire
+      FireStrContinue:
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrShotgunAttackHandler")
+        DSHT PQR 2 Bright
+        DSHT MNONM 4
+        DSHT L 3
+        DSHT L 5 A_ReFire
         goto Ready
 
       FlashStr:
-        TNT1 A 4 Bright A_Light1
+        TNT1 A 3 Bright A_Light1
         TNT1 A 3 Bright A_Light2
         goto LightDone
 
-      AltFire:
-      Reload:
-        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"ReloadPowered")
-        ASGG B 3 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"ReloadPowered")
-        ASGG CDEF 3
-        ASGG G 3 A_PlaySound("doomguy/stronghold/asgout")
-        ASGG HIJ 3
-        ASGG K 15
-        ASGG JIH 3
-      Reloading:
-        TNT1 A 0 A_JumpIfInventory("DoomguyStrASGClip",0,"ReloadFinish")
-        TNT1 A 0 A_JumpIfInventory("Shell",1,"ReloadingAmmoCalc")
-      ReloadFinish:
-        ASGG G 3 A_PlaySound("doomguy/stronghold/asgin")
-        ASGG FEDCB 3
-        ASGG A 8 A_PlaySound("doomguy/stronghold/asgld1")
+      // Powered
+      ReadyStrPowered:
+        DSHT L 1 A_WeaponReady
         goto Ready
 
-      ReloadingAmmoCalc:
-        TNT1 A 0 A_TakeInventory("Shell",1)
-        TNT1 A 0 A_GiveInventory("DoomguyStrASGClip")
-        goto Reloading
-
-      // Powered
       DeselectStrPowered:
         TNT1 A 0 A_Lower
         goto DeselectStrContinue
@@ -262,33 +208,50 @@ actor " Shotgun " : Shotgun
         goto SelectStrContinue
 
       FireStrPowered:
-        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrAutoShotgunPoweredAttackAmount") // reset
-      FireStrPoweredLoop:
-        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrAutoShotgunPoweredAttackAmount",0,"FireStrFinish")
-        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrAutoShotgunPoweredAttackAmount")
-        TNT1 A 0 A_GunFlash("FlashStrPowered")
-        TNT1 A 0 A_PlaySound("doomguy/stronghold/asgfir",CHAN_WEAPON)
-        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrAutoShotgunPoweredAttackHandler")
-        ASGG LMN 1 Bright
-        ASGG A 1 A_PlaySound("doomguy/stronghold/asgld1")
-        loop
+        DSHT L 2
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStrPoweredAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,"FireStrPoweredAttack")
+        goto FireStrPoweredContinue
 
-      FlashStrPowered:
-        TNT1 A 2 Bright A_Light1
-        TNT1 A 2 Bright A_Light2
+      FireStrPoweredAttack:
+        TNT1 A 0 A_GunFlash("FlashStr")
+      FireStrPoweredContinue:
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrShotgunPoweredPrimaryAttackHandler")
+        DSHT PQR 2 Bright
+        DSHT MNONM 2
+        DSHT L 1 A_ReFire
+        goto Ready
+
+      AltFire:
+        DSHT L 3
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,"AltFireAttack")
+        goto AltFireContinue
+
+      AltFireAttack:
+        TNT1 A 0 A_GunFlash
+      AltFireContinue:
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrShotgunPoweredSecondaryAttackHandler")
+        DSHT PQR 3 Bright
+        DSHT MNONM 3
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"AltFireFinishReFire")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"AltFireFinishReFire")
+        TNT1 A 0 A_CheckReload
+      AltFireFinish:
+        DSHT L 1
+        goto Ready
+
+      AltFireFinishReFire:
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,2)
+        TNT1 A 0 A_CheckReload
+        goto AltFireFinish
+        TNT1 A 0 A_ReFire
+        goto AltFireFinish
+
+      AltFlash:
+        TNT1 A 4 Bright A_Light1
+        TNT1 A 5 Bright A_Light2
         goto LightDone
-
-      ReloadPowered:
-        ASGG BCDEF 2
-        ASGG G 3 A_PlaySound("doomguy/stronghold/asgout")
-        ASGG HIJ 2
-        ASGG K 10
-        ASGG JIH 2
-        goto Reloading
-
-      Nothing:
-        TNT1 A 0 A_SelectWeapon(" Pistol ")
-        goto Deselect
     }
 }
 
@@ -387,28 +350,96 @@ actor SamsaraDoomguy64ShotgunAttackHandler : Trigger
     }
 }
 
-actor SamsaraDoomguyStrAutoShotgunPoweredAttackHandler : Trigger
+// Unpowered attack handler
+
+actor SamsaraDoomguyStrShotgunAttackHandler : Trigger
 {
     States
     {
+      // Ammo check stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrAutoShotgunPoweredAttackAmount",0,"PickupTakeAmmo")
-      PickupContinue:
-        TNT1 A 0 A_FireBullets(8.6,5.1,8,5,"SamsaraDoomguyStrElectricalPuff",FBF_NOFLASH) //Yes, I nerfed its accuracy. However, you get a chain-shotgun.
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupTakeAmmo")
         stop
 
+      // Ammo taking stuff
       PickupTakeAmmo:
-        TNT1 A 0 A_TakeInventory("DoomguyStrASGClip",1,TIF_NOTAKEINFINITE)
-        goto PickupContinue
+        TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/shotgf",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(4,3,8,5,"SamsaraDoomguyStrBulletPuffBallisticThruGhost",FBF_NOFLASH)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(4,3,8,5,"SamsaraDoomguyStrBulletPuffBallisticThruGhostCoop",FBF_NOFLASH)
+        stop
     }
 }
 
-// Ammo
+// Powered attack handlers
 
-actor DoomguyStrASGClip : Ammo
+actor SamsaraDoomguyStrShotgunPoweredPrimaryAttackHandler : Trigger
 {
-    Inventory.MaxAmount 20
-    Tag "Auto Shotgun Magazine"
-    +IGNORESKILL
-    +UNTOSSABLE
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/shotgf",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(3,2.5,10,12,"SamsaraDoomguyStrElectricalPuff",FBF_NOFLASH)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(3,2.5,10,12,"SamsaraDoomguyStrElectricalPuffCoop",FBF_NOFLASH)
+        stop
+    }
+}
+
+actor SamsaraDoomguyStrShotgunPoweredSecondaryAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/shotgf",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(12,10,8,9,"SamsaraDoomguyStrRepPuffNoDamage",FBF_NOFLASH)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(12,10,8,9,"SamsaraDoomguyStrRepPuffNoDamageCoop",FBF_NOFLASH)
+        stop
+    }
 }
