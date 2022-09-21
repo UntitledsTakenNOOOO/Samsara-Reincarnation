@@ -188,10 +188,16 @@ actor " Chaingun " : Weapon
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"FireStrPowered")
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"FireStrPowered")
         TNT1 A 0 A_GunFlash("FlashStr")
-        DCHG J 2 Bright A_FireBullets(4,2.3,1,5,"SamsaraDoomguyStrBulletPuffBallisticThruGhost")
+        DCHG J 2 Bright A_GiveInventory("SamsaraDoomguyStrChaingunAttackHandler")
         DCHG K 1 Bright
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStr2Attack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"FireStr2Attack")
+        goto FireStr2
+
+      FireStr2Attack:
         TNT1 A 0 A_GunFlash("FlashStr")
-        DCHG L 2 Bright A_FireBullets(4,2.3,1,5,"SamsaraDoomguyStrBulletPuffBallisticThruGhost")
+      FireStr2:
+        DCHG L 2 Bright A_GiveInventory("SamsaraDoomguyStrChaingunAttackHandler")
         DCHG M 1 Bright
       FireStrFinish:
         TNT1 A 0 A_ReFire
@@ -225,12 +231,20 @@ actor " Chaingun " : Weapon
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrChaingunPoweredAttackAmount",0,"FireStrFinish")
         TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrChaingunPoweredAttackAmount")
         TNT1 A 0 A_GunFlash("FlashStr")
-        DCHG J 2 Bright A_FireBullets(0.75,0.75,-1,20,"SamsaraDoomguyStrElectricalPuff",0)
+        TNT1 A 0 A_TakeInventory("SamsaraTakingAmmo")
+        DCHG J 2 Bright A_GiveInventory("SamsaraDoomguyStrChaingunPoweredPrimaryAttackHandler")
         DCHG K 1 Bright
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStrPoweredLoop2Attack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"FireStrPoweredLoop2Attack")
+        goto FireStrPoweredLoop2
+
+      FireStrPoweredLoop2Attack:
         TNT1 A 0 A_GunFlash("FlashStr")
-        DCHG L 2 Bright A_FireBullets(0.75,0.75,-1,20,"SamsaraDoomguyStrElectricalPuff")
+      FireStrPoweredLoop2:
+        TNT1 A 0 A_GiveInventory("SamsaraTakingAmmo")
+        DCHG L 2 Bright A_GiveInventory("SamsaraDoomguyStrChaingunPoweredPrimaryAttackHandler")
         DCHG M 1 Bright
-        loop
+        goto FireStrPoweredLoop
 
       AltFire:
         TNT1 A 0 A_PlaySound("doomguy/stronghold/chnglp",CHAN_WEAPON,1,true)
@@ -239,13 +253,25 @@ actor " Chaingun " : Weapon
       AltFireLoop:
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrChaingunPoweredAttackAmount",0,"AltFireFinish")
         TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrChaingunPoweredAttackAmount")
-        TNT1 A 0 A_GunFlash
-        DCHG J 2 Bright A_FireBullets(7.5,3,-1,16,"SamsaraDoomguyStrRepPuffNoDamage")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireLoop1Attack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"AltFireLoop1Attack")
+        goto AltFireLoop1
+
+      AltFireLoop1Attack:
+        TNT1 A 0 A_GunFlash("FlashStr")
+      AltFireLoop1:
+        DCHG J 2 Bright A_GiveInventory("SamsaraDoomguyStrChaingunPoweredSecondaryAttackHandler")
         DCHG K 1 Bright
-        TNT1 A 0 A_GunFlash
-        DCHG L 2 Bright A_FireBullets(7.5,3,-1,16,"SamsaraDoomguyStrRepPuffNoDamage")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireLoop2Attack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"AltFireLoop2Attack")
+        goto AltFireLoop2
+
+      AltFireLoop2Attack:
+        TNT1 A 0 A_GunFlash("FlashStr")
+      AltFireLoop2:
+        DCHG L 2 Bright A_GiveInventory("SamsaraDoomguyStrChaingunPoweredSecondaryAttackHandler")
         DCHG M 1 Bright
-        loop
+        goto AltFireLoop
 
       AltFireFinish:
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"AltFireFinishReFire")
@@ -377,6 +403,99 @@ actor SamsaraDoomguy64ChaingunAttackHandler : Trigger
       // Finishing stuff
       PickupFinish:
         TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 1, 0, 5)
+        stop
+    }
+}
+
+// Unpowered attack handler
+
+actor SamsaraDoomguyStrChaingunAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(4,2.3,1,5,"SamsaraDoomguyStrBulletPuffBallisticThruGhost",FBF_NOFLASH)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(4,2.3,1,5,"SamsaraDoomguyStrBulletPuffBallisticThruGhostCoop",FBF_NOFLASH)
+        stop
+    }
+}
+
+// Powered attack handlers
+
+actor SamsaraDoomguyStrChaingunPoweredPrimaryAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraTakingAmmo",1,1)
+        goto PickupAttack
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(0.75,0.75,-1,20,"SamsaraDoomguyStrElectricalPuff",FBF_NOFLASH)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(0.75,0.75,-1,20,"SamsaraDoomguyStrElectricalPuffCoop",FBF_NOFLASH)
+        stop
+    }
+}
+
+actor SamsaraDoomguyStrChaingunPoweredSecondaryAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(7.5,3,-1,16,"SamsaraDoomguyStrRepPuffNoDamage",FBF_NOFLASH)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(7.5,3,-1,16,"SamsaraDoomguyStrRepPuffNoDamageCoop",FBF_NOFLASH)
         stop
     }
 }
