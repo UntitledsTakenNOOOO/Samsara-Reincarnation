@@ -256,6 +256,11 @@ Script "Q3Loop" (void)
 
 	While(CheckInventory("Q3Class"))
 	{
+		if(timer()%5 == 0)
+			GiveInventory("Q3HudScroll",1);
+		else
+			TakeInventory("Q3HudScroll",1);
+			
 		int newHud = CheckInventory("SamsaraUsingNewFullscreenHUD");
 		health = GetActorProperty(0,APROP_Health);
 		armor = CheckInventory("Armor");
@@ -271,7 +276,7 @@ Script "Q3Loop" (void)
 			
 		}
 		
-		ACS_NamedExecuteWithResult("Q3HudKills",CheckInventory("KillCountAmount"),newHud);
+		ACS_NamedExecuteWithResult("Q3HudKills",CheckInventory("KillCountAmountTrue"),newHud);
 		
 		activePowerups = 0;
 		//HUD Stuff
@@ -307,7 +312,11 @@ Script "Q3Loop" (void)
 				}
 				
 				activePowerups++;
-				ACS_NamedExecuteWithResult("Q3HudPowerup",a,pTics,activePowerups,newHud);
+				ACS_NamedExecuteWithResult("Q3HudPowerup",a,pTics,activePowerups);
+			}
+			else
+			{
+				RemoveMessages(25000+(a*2),25001+(a*2));
 			}
 		}
 		
@@ -336,6 +345,15 @@ Script "Q3Loop" (void)
 		//Mugshot!
 		ACS_NamedExecuteWithResult("Q3DrawMugshot",((timer()/3)%160)+1,newHud);	
 		
+		//Ammo Capacities
+		ACS_NamedExecuteWithResult("Q3DrawAmmoCapacity",CheckInventory("Clip"),GetAmmoCapacity("Clip"),0);
+		ACS_NamedExecuteWithResult("Q3DrawAmmoCapacity",CheckInventory("Shell"),GetAmmoCapacity("Shell"),1);
+		ACS_NamedExecuteWithResult("Q3DrawAmmoCapacity",CheckInventory("RocketAmmo"),GetAmmoCapacity("RocketAmmo"),2);
+		ACS_NamedExecuteWithResult("Q3DrawAmmoCapacity",CheckInventory("Cell"),GetAmmoCapacity("Cell"),3);
+		ACS_NamedExecuteWithResult("Q3DrawAmmoCapacity",CheckInventory("Q3RailgunAmmo"),GetAmmoCapacity("Q3RailgunAmmo"),4);
+		ACS_NamedExecuteWithResult("Q3DrawAmmoCapacity",CheckInventory("Q3ChaingunAmmo"),GetAmmoCapacity("Q3ChaingunAmmo"),5);
+		
+		//Other
 		if(CheckInventory("Q3AmmoRegenerationDummy"))
 		{
 			if(timer()%52 == 0)
@@ -402,19 +420,27 @@ Script "Q3RemoveHUD" (int player) DISCONNECT
 
 Script "Q3DrawMugshot" (int image, int newHud) clientside
 {
+	str zerobuffer = "";
+	if(image < 10) zerobuffer = "00";
+	else if(image < 100) zerobuffer = "0";
 	if(GetCvar("screenblocks")==11 && newHud)
 	{
-		SetHudSize(1600,1200,1);
-		str zerobuffer = "";
-		if(image < 10) zerobuffer = "00";
-		else if(image < 100) zerobuffer = "0";
-			
+		SetHudSize(1600,1200,1);	
 		SetFont(strparam(s:"Q3SGH",s:zerobuffer,d:image));
-		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25105,CR_UNTRANSLATED,800.0,1200.2,60.0);
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP,25105,CR_UNTRANSLATED,800.0,1200.2,60.0);	
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITH3DVIEW,25109,CR_UNTRANSLATED,900.0,1150.2,60.0);
+	}
+	else if(GetCvar("screenblocks") < 11)
+	{
+		RemoveMessages(25109,25109);
+		SetHudSize(1600,1200,1);
+		SetFont(strparam(s:"Q3SGH",s:zerobuffer,d:image));
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25105,CR_UNTRANSLATED,900.0,1150.2,60.0);
 	}
 	else
 	{
 		RemoveMessages(25105,25105);
+		RemoveMessages(25109,25109);
 	}
 }
 
@@ -426,6 +452,11 @@ Script "Q3HudHealthAndArmor" (int health, int armor, int newHud) clientside
 		SetFont("Q3NUMFNT");
 		HudMessage(d:health;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,25102,"Q3Gold",300.2,396.2,60.0);
 		HudMessage(d:armor;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,25103,"Q3Gold",496.2,396.2,60.0);
+	}
+	else
+	{
+		RemoveMessages(25102,25103);
+		RemoveMessages(25110,25113);
 	}
 }
 
@@ -446,22 +477,15 @@ Script "Q3HudAmmo" (int a, int graphic, int newHud) clientside
 	}
 }
 
-Script "Q3HudPowerup" (int type, int tics, int active, int newHud) clientside
+Script "Q3HudPowerup" (int type, int tics, int active) clientside
 {
-	if(GetCvar("screenblocks")==11 && newHud)
-	{
-		SetHudSize(640,480,1);
-		
-		SetFont(Q3PowerupIcons[type]);
-		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25000+(type*2),CR_UNTRANSLATED,600.1,380.0-(32.0*active),60.0);
-		
-		SetFont("Q3NUMFNT");
-		HudMessage(d:tics/35;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25001+(type*2),CR_UNTRANSLATED,600.2,380.0-(32.0*active),60.0);
-	}
-	else
-	{
-		RemoveMessages(25000+(type*2),25001+(type*2));
-	}
+	SetHudSize(640,480,1);
+	
+	SetFont(Q3PowerupIcons[type]);
+	HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25000+(type*2),CR_UNTRANSLATED,600.1,380.0-(32.0*active),60.0);
+	
+	SetFont("Q3NUMFNT");
+	HudMessage(d:tics/35;HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD,25001+(type*2),CR_UNTRANSLATED,600.2,380.0-(32.0*active),60.0);
 }
 
 Script "Q3HudKills" (int kills, int newHud) clientside
@@ -518,6 +542,35 @@ Script "Q3DrawWeaponBarSelection" (int weaponNum, int newHud, int totalWeapons, 
 	{
 		RemoveMessages(25200,25200);
 	}
+}
+
+Script "Q3DrawAmmoCapacity" (int ammoAmount, int ammoCapacity, int offset)
+{
+	int row = 0;
+	int rowOffset = 68.0;
+	int colOffset = 18.0;
+	int trueOffset = offset;
+	SetHudSize(960,600,1);
+	switch(offset)
+	{
+		case 0: SetFont("AMSMA0"); break;
+		case 1: SetFont("AMSMB0"); break;
+		case 2: SetFont("AMSMC0"); break;
+		case 3: SetFont("AMSMD0"); break;
+		case 4: SetFont("AMSMN0"); break;
+		case 5: SetFont("AMSMO0"); break;
+	}
+	if(offset > 2)
+	{
+		row++;
+		offset -= 3;
+	}
+	rowOffset *= row;
+	colOffset *= offset;
+	HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,25300+trueOffset*2,CR_UNTRANSLATED,-128.0+rowOffset,536.0+colOffset,60.0);
+	SetFont("Q3NMBFNT");
+	SetHudSize(960,600,1);
+	HudMessage(d:ammoAmount;HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN|HUDMSG_COLORSTRING,25301+trueOffset*2,"Q3Gold2",-124.1+rowOffset,524.0+colOffset,60.0);
 }
 
 Script "Q3PlayerCodeFunctions" (int func)
