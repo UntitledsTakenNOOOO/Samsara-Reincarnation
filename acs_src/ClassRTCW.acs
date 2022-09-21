@@ -995,6 +995,7 @@ Script "RTCW_TeslaAimAttempts" (void)
 
 Script "RTCW_TeslaAim" (int xory)
 {
+	bool isCoopGame = isCoop();
 	int amplitude = 90;
 	int newTid = UniqueTid();
 	int randOff = -random(-amplitude,amplitude);
@@ -1009,7 +1010,7 @@ Script "RTCW_TeslaAim" (int xory)
 			int oldTid = PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_RETURNTID);
 			if(PickActor(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),1024.0,newTid,MF_SHOOTABLE|MF_SOLID,ML_BLOCKEVERYTHING|ML_BLOCKHITSCAN,PICKAF_FORCETID))
 			{
-				if(ClassifyActor(newTid) & ACTOR_ALIVE)
+				if((ClassifyActor(newTid) & ACTOR_ALIVE) && (!isCoopGame || !isPlayerOrBot(newTid)))
 				{
 					attacked = 1;
 					GiveInventory("RTCW_TeslaLook",1);
@@ -1125,7 +1126,7 @@ Script "RTCW_FlamethrowerTracer" (void)
 	SetActivator(0,AAPTR_Tracer);
 
 	int actorClass = ClassifyActor(0);
-	if(!(actorClass & ACTOR_ALIVE) && !(actorClass & ACTOR_MONSTER || (!isCoop() && actorClass & ACTOR_PLAYER)))
+	if(!(actorClass & ACTOR_ALIVE) && !(actorClass & ACTOR_MONSTER || (!isCoop() && (isPlayerOrBot(0) || GetActorProperty(0, APROP_FRIENDLY)))))
 		terminate;
 	
 	if(!CheckInventory("RTCW_FlamethrowerHitTarget") && !CheckInventory("RTCW_FlamethrowerBurnt"))
