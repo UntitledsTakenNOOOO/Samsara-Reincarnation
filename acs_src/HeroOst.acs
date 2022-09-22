@@ -157,8 +157,8 @@ str ChristmasMusic[16] = {"CHRIST01","CHRIST02","CHRIST03","CHRIST04","CHRIST05"
 "CHRIST06","CHRIST07","CHRIST08","CHRIST09","CHRIST10","CHRIST11","CHRIST12",
 "CHRIST13","CHRIST14","CHRIST15","CHRIST16"};
 
-int thememax = 27;
-int songseedmax = 4;
+int thememaxpk = 27;
+int songseedmaxpk = 4;
 //themes, song type, ambient songs
 str PainkillerMusic[27][2][4] = 
 {
@@ -215,6 +215,8 @@ str DescentMusic[26] = {"DSTRAK00","DSTRAK01","DSTRAK02","DSTRAK03","DSTRAK04",
 "DSTRAK12","DSTRAK13","DSTRAK14","DSTRAK15","DSTRAK16","DSTRAK17","DSTRAK18",
 "DSTRAK19","DSTRAK20","DSTRAK21","DSTRAK22","DSTRAK23","DSTRAK24","DSTRAK25"};
 
+int thememaxdx = 22;
+int songseedmaxdx = 4;
 str DeusExMusic[22][2][4] = 
 {
 	{{"DXAMB01","DXAMB01","DXAMB01","DXAMB01"},{"DXFIT01","DXFIT01","DXFIT01","DXFIT01"}},
@@ -260,8 +262,10 @@ Script "SamsaraOST_Enter" Enter
 	int hexen2cd = GetUserCVAR(pln,"samsara_cl_hex2cd");
 	If(herosoundtrack > 0  && (GetUserCVAR(pln,"samsara_cl_xmasmusic") == false || GetCVAR("samsara_merrychristmas") == false))
 	{
-		if(gameoverride != lastgame || herosoundtrack != lastmode || CheckInventory("SamsaraModeCounter") != altskin || bloodcd != lastblud || hexen2cd != lasthex || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel"))
+		if(gameoverride != lastgame || herosoundtrack != lastmode || CheckInventory("SamsaraModeCounter") != altskin || bloodcd != lastblud || hexen2cd != lasthex || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel") || CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
 		{
+            LocalSetMusic("");
+
 			If((herosoundtrack == 1 && CheckInventory("DoomguyClass") == TRUE) || ((gameoverride == 0 || gameoverride == 12) && herosoundtrack == 2))
 			{
 				if(GetUserCVAR(pln,"samsara_cl_doom64") && herosoundtrack == 1 || gameoverride == 12)	
@@ -396,11 +400,10 @@ Script "SamsaraOST_Enter" Enter
 					ACS_NamedExecuteAlways("SamsaraOST_HalfLifeScriptedMusic", 0, 3);
 					TakeInventory("HalfLifeMusicPlayingToken", 1);
 				}
-			
+
 				if(CheckInventory("SamsaraModeCounter") != altskin)
 					TakeInventory("HalfLifeMusicPlayingToken",999);
-					
-				LocalSetMusic("d_empty",0);
+
 				if(!CheckInventory("HalfLifeMusicPlayingToken"))
 				{	
 					SetTrack = random(0,2048);
@@ -460,7 +463,7 @@ Script "SamsaraOST_Enter" Enter
 			}
 			Else If((herosoundtrack == 1 && CheckInventory("PainkillerClass") == TRUE) || (gameoverride == 32 && herosoundtrack == 2))
 			{
-				ACS_NamedExecuteWithResult("SamsaraOST_PainkillerScriptedMusic",0,0,0,0);
+				if (!CheckInventory("SamsaraHeroMusicPainkillerActive")) { ACS_NamedExecuteWithResult("SamsaraOST_PainkillerScriptedMusic",0,0,0,0); }
 			}						
 			Else If((herosoundtrack == 1 && CheckInventory("UnrealClass") == TRUE) || (gameoverride == 33 && herosoundtrack == 2))
 			{
@@ -484,7 +487,7 @@ Script "SamsaraOST_Enter" Enter
 			}	
 			Else If((herosoundtrack == 1 && CheckInventory("DeusExClass") == TRUE) || (gameoverride == 37 && herosoundtrack == 2))
 			{
-				ACS_NamedExecuteWithResult("SamsaraOST_DeusExScriptedMusic",0,0,0,0);
+				if (!CheckInventory("SamsaraHeroMusicDeusExActive")) { ACS_NamedExecuteWithResult("SamsaraOST_DeusExScriptedMusic",0,0,0,0); }
 			}
 			
 			if(!CheckInventory("HalfLifeClass") || (!(gameoverride == 20 || gameoverride == 29) && herosoundtrack == 2))
@@ -497,29 +500,39 @@ Script "SamsaraOST_Enter" Enter
 				TakeInventory("HeroSoundTrackLevel", 2048);
 				GiveInventory("HeroSoundTrackLevel", GetLevelInfo(LEVELINFO_LEVELNUM));
 			}
+
+            SetInventory("SamsaraHeroMusicSelectingNextTrack", 0);
 		}
 	}
 	Else if(GetUserCvar(pln,"samsara_cl_xmasmusic") && GetCvar("samsara_merrychristmas") && herosoundtrack > 0)
 	{
-		if(CheckInventory("HeroSoundTrackXmas") < 1 || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel"))
+		if(CheckInventory("HeroSoundTrackXmas") < 1 || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel") || CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
 		{
+            LocalSetMusic("");
+
 			SetTrack = random(0,15);
 			LocalSetMusic(ChristmasMusic[SetTrack],0);
 			GiveInventory("HeroSoundTrackXmas", 1);
 			TakeInventory("HeroSoundTrack", 1);
 			TakeInventory("HeroSoundTrackLevel", 2048);
 			GiveInventory("HeroSoundTrackLevel", GetLevelInfo(LEVELINFO_LEVELNUM));
+
+            SetInventory("SamsaraHeroMusicSelectingNextTrack", 0);
 		}
 	}
 	else
 	{
 		if(CheckInventory("HeroSoundTrack") > 0 || CheckInventory("HeroSoundTrackXMas") == 1)
 		{
+            LocalSetMusic("");
+
 			LocalSetMusic("*",0);
 			TakeInventory("HeroSoundTrack", 2);
 			TakeInventory("HeroSoundTrackXmas", 1);
 			TakeInventory("HalfLifeMusicPlayingToken", 1);
 			TakeInventory("HeroSoundTrackLevel", 2048);
+
+            SetInventory("SamsaraHeroMusicSelectingNextTrack", 0);
 		}
 	}
 	lastmode = GetUserCvar(pln,"samsara_cl_heromusic");
@@ -590,8 +603,8 @@ Script "SamsaraOST_HalfLifeScriptedMusic" (int cause) clientside
 Script "SamsaraOST_PainkillerScriptedMusic" (void)
 {
 	int musicvolume = 1.0;
-	int themeseed = random(0,thememax-1);
-	int songseed = random(0,songseedmax -1);
+	int themeseed = random(0,thememaxpk-1);
+	int songseed = random(0,songseedmaxpk -1);
 	int targetmusicvolume = musicvolume;
 	int swapped, swaptofight, swaptoambient;
 	int laststate = 0;
@@ -603,6 +616,17 @@ Script "SamsaraOST_PainkillerScriptedMusic" (void)
 	{
 		herosoundtrack = GetCvar("samsara_cl_heromusic");
 		gameoverride = GetCvar("samsara_cl_heromusicoverride");
+
+        if (CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
+        {
+            LocalSetMusic("");
+
+	        themeseed = random(0,thememaxpk-1);
+	        songseed = random(0,songseedmaxpk -1);
+        }
+
+        SetInventory("SamsaraHeroMusicPainkillerActive", 1);
+
 		int newtid = UniqueTid();
 		SpawnSpotFacingForced("Painkiller_MusicDecider",0,newtid);
 		SetPointerExt(AAPTR_TRACER,0,newtid);
@@ -702,6 +726,7 @@ Script "SamsaraOST_PainkillerScriptedMusic" (void)
 		
 		Delay(1);
 	}
+    SetInventory("SamsaraHeroMusicPainkillerActive", 0);
 	TakeInventory("Painkiller_CombatMusic",1);
 	TakeInventory("Painkiller_AmbientMusic",1);
 }
@@ -709,8 +734,8 @@ Script "SamsaraOST_PainkillerScriptedMusic" (void)
 Script "SamsaraOST_DeusExScriptedMusic" (void)
 {
 	int musicvolume = 1.0;
-	int themeseed = random(0,thememax-1);
-	int songseed = random(0,songseedmax -1);
+	int themeseed = random(0,thememaxdx-1);
+	int songseed = random(0,songseedmaxdx -1);
 	int targetmusicvolume = musicvolume;
 	int swapped, swaptofight, swaptoambient;
 	int laststate = 0;
@@ -722,7 +747,17 @@ Script "SamsaraOST_DeusExScriptedMusic" (void)
 	{
 		herosoundtrack = GetCvar("samsara_cl_heromusic");
 		gameoverride = GetCvar("samsara_cl_heromusicoverride");
-		
+
+        if (CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
+        {
+            LocalSetMusic("");
+
+	        themeseed = random(0,thememaxdx-1);
+	        songseed = random(0,songseedmaxdx -1);
+        }
+
+        SetInventory("SamsaraHeroMusicDeusExActive", 1);
+
 		int newtid = UniqueTid();
 		SpawnSpotFacingForced("DeusEx_MusicDecider",0,newtid);
 		SetPointerExt(AAPTR_TRACER,0,newtid);
@@ -815,4 +850,42 @@ Script "SamsaraOST_DeusExScriptedMusic" (void)
 		
 		Delay(1);
 	}
+    SetInventory("SamsaraHeroMusicDeusExActive", 0);
+    SetInventory("DeusEx_CombatMusic", 0);
+}
+
+script "SamsaraOST_NextSong" (void) NET
+{
+    int pln = PlayerNumber();
+
+    if (PlayerIsSpectator(pln) > 0)
+    {
+        ACS_NamedExecuteWithResult("SamsaraOST_NextSong_Message", 0);
+        terminate;
+    } else if (GetUserCVar(pln, "samsara_cl_heromusic") <= 0) {
+        ACS_NamedExecuteWithResult("SamsaraOST_NextSong_Message", 1);
+        terminate;
+    }
+
+    SetInventory("SamsaraHeroMusicSelectingNextTrack", 1);
+}
+
+script "SamsaraOST_NextSong_Message" (int message) CLIENTSIDE
+{
+    int pln = PlayerNumber(); // ensure only the activator gets the messages
+    int cpln = ConsolePlayerNumber();
+
+    if (pln == cpln)
+    {
+        switch (message)
+        {
+            case 0:
+                Log(s:"This cannot be used while spectating.");
+                break;
+
+            default:
+                Log(s:"This can only be used with Hero Music enabled.");
+                break;
+        }
+    }
 }
