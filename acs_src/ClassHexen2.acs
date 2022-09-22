@@ -267,20 +267,28 @@ int Hexen2_NextLevelXP[11] = { 871, 2060, 4822, 9319, 19278, 36626, 66804, 11049
 
 Script "Hexen2_Hud" (void)
 {
-	int artifactrotationcount, animationspeed, randomincrease, clipmax, cellmax, currenthealth, oldhealth, second;
-	if(!CheckInventory("Hexen2Started"))
-	{
-		GiveInventory("Hexen2Intelligence", random(9,13));
-		GiveInventory("Hexen2Wisdom", random(11,14));
-		GiveInventory("Hexen2Dexterity", random(9,13));
-		GiveInventory("Hexen2Strength", random(11,14));
-		GiveInventory("Hexen2HealthAdd", GetActorProperty(0,APROP_SpawnHealth));
-		GiveInventory("Hexen2Started",1);
-		SetAmmoCapacity("Clip", (250*(CheckInventory("BackPack")+1)));
-		SetAmmoCapacity("Cell", (250*(CheckInventory("BackPack")+1)));
-	}
+	int artifactrotationcount, animationspeed, randomincrease, clipmax, cellmax, currenthealth, oldhealth, second, fullheal;
+
 	while(CheckInventory("Hexen2Class"))
 	{
+		//Check if the player spawned
+		if(!CheckInventory("Hexen2Started"))
+		{
+			GiveInventory("Hexen2Intelligence", random(9,13));
+			GiveInventory("Hexen2Wisdom", random(11,14));
+			GiveInventory("Hexen2Dexterity", random(9,13));
+			GiveInventory("Hexen2Strength", random(11,14));
+			GiveInventory("Hexen2HealthAdd", GetActorProperty(0,APROP_SpawnHealth));
+			GiveInventory("Hexen2Started",1);
+			SetAmmoCapacity("Clip", (250*(CheckInventory("BackPack")+1)));
+			SetAmmoCapacity("Cell", (250*(CheckInventory("BackPack")+1)));
+			if(!SinglePlayer() && !isCoop())
+			{
+				fullheal = 1;
+				GiveInventory("Hexen2Experience",36626);
+			}
+		}
+	
 		//crouch
 		if(GetActorViewHeight(0) <=  GetActorViewHeight(0) / 2 << 16)
 				GiveInventory("Hexen2Crouching",1);
@@ -344,6 +352,14 @@ Script "Hexen2_Hud" (void)
 				GiveInventory("Hexen2Wisdom", 1);
 				GiveInventory("Hexen2Dexterity", 1);
 				GiveInventory("Hexen2Strength", 1);
+			}
+			else
+			{
+				if(fullheal)
+				{
+					fullheal = 0;
+					SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_SpawnHealth));
+				}
 			}
 		}
 		else
