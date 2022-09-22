@@ -70,12 +70,14 @@ Actor DescentProximityBomb
 	States
 	{
 		Spawn:
+			DS15 A 0 NoDelay A_CopyFriendliness(AAPTR_Master)
+		SpawnLoop:
 			DS15 ABCDEFGHIJ 2 A_LookEx(0,0,64,0,0)
 			Loop
 		See:
 		Death:
 			DS02 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_5)
-			DS02 A 0 A_Explode(100,100,XF_HURTSOURCE,1)
+			DS02 A 0 A_CustomMissile("DescentMineExplosion")
 			DS02 ABCDEFGHIJKL 2 Bright
 			Stop
 	}
@@ -157,12 +159,14 @@ Actor DescentSmartMine
 	States
 	{
 		Spawn:
+			DS15 A 0 NoDelay A_CopyFriendliness(AAPTR_Master)
+		SpawnLoop:
 			DS16 ABCDE 2 A_LookEx(0,0,64,0,0)
 			Loop
 		See:
 		Death:
 			DS02 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_5)
-			DS02 A 0 A_Explode(100,100,XF_HURTSOURCE,1)
+			DS02 A 0 A_CustomMissile("DescentMineExplosion")
 			DS02 A 0 A_Jump(256,1,2,3,4,5,6,7)
 			DS02 AAAAAAAAAAAA 0 A_CustomMissile("DescentSmartMineBomblet",0,0,random(0,359),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(0,359))
 			DS02 ABCDEFGHIJKL 2 Bright
@@ -176,10 +180,25 @@ Actor DescentSmartMineCoop : DescentSmartMine
 		See:
 		Death:
 			DS02 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_5)
-			DS02 A 0 A_Explode(100,100,XF_HURTSOURCE,1)
+			DS02 A 0 A_CustomMissile("DescentMineExplosion")
 			DS02 A 0 A_Jump(256,1,2,3,4,5,6,7)
 			DS02 AAAAAAAAAAAA 0 A_CustomMissile("DescentSmartMineBombletCoop",0,0,random(0,359),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(0,359))
 			DS02 ABCDEFGHIJKL 2 Bright
+			Stop
+	}
+}
+
+Actor DescentMineExplosion
+{
+	Projectile
+	Speed 0
+	Damage (0)
+	+BLOODLESSIMPACT
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 1 A_Explode(100,100,XF_HURTSOURCE,1)
 			Stop
 	}
 }
@@ -189,12 +208,14 @@ Actor DescentSmartMineBomblet : DescentMissile
 	ExplosionDamage 30
 	ExplosionRadius 30
 	Speed 8
-	+SCREENSEEKER
 	+SEEKERMISSILE
 	States
 	{
 		Spawn:
-			DS17 A 0 NoDelay A_ReArrangePointers(AAPTR_NULL,AAPTR_TARGET,AAPTR_NULL)
+			DS17 A 0
+			DS17 A 0 A_TransferPointer(AAPTR_Target,AAPTR_Default,AAPTR_FriendPlayer,AAPTR_Target)
+			DS17 A 0 A_CopyFriendliness(AAPTR_Target)
+			DS17 A 0 A_ReArrangePointers(AAPTR_Target,AAPTR_Master,AAPTR_NULL)
 		SpawnLoop:
 			DS17 ABCDEF 1 Bright A_SeekerMissile(8,8,SMF_LOOK|SMF_PRECISE)
 			Loop
