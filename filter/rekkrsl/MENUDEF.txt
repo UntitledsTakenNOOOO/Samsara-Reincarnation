@@ -1,0 +1,655 @@
+//-------------------------------------------------------------------------------------------
+//
+// Note:
+// I hacked this stuff to bits. No one was here to stop me
+//
+//-------------------------------------------------------------------------------------------
+
+DEFAULTLISTMENU
+{
+	Font "BigFont", "Untranslated"
+	LineSpacing 20
+
+	Selector "M_SKULL1", -14, -5
+	Font "BigUpper", "Red"
+	LineSpacing 18
+	
+
+}
+
+//-------------------------------------------------------------------------------------------
+//
+// The main menu. There's a lot of differences here between the games
+//
+//-------------------------------------------------------------------------------------------
+
+LISTMENU "MainMenu"
+{
+
+	LineSpacing 16	// This must account for some single-graphic replacements, so it cannot be widened
+	StaticPatch 94, 2, "M_DOOM"
+	Position 97, 72
+	IfOption(ReadThis)
+	{
+		Position 97, 64
+	}
+
+	PatchItem "M_NGAME", "n", "PlayerclassMenu"
+	ifOption(SwapMenu)
+	{
+		PatchItem "M_LOADG", "l", "LoadGameMenu", 0
+		PatchItem "M_SAVEG", "s", "SaveGameMenu",0
+		PatchItem "M_OPTION","o", "RekkrOptionsMenu", 0
+	}
+	else
+	{
+		PatchItem "M_OPTION","o", "RekkrOptionsMenu", 0
+		PatchItem "M_LOADG", "l", "LoadGameMenu", 0
+		PatchItem "M_SAVEG", "s", "SaveGameMenu", 0
+	}
+	ifOption(ReadThis)
+	{
+		PatchItem "M_RDTHIS","r", "ReadThisMenu", 0
+	}
+	PatchItem "M_QUITG", "q", "QuitMenu", 0
+
+
+}
+
+//-------------------------------------------------------------------------------------------
+//
+// Text only variant of the main menu for Doom, Strife and Chex Quest to be used with localized content.
+//
+//-------------------------------------------------------------------------------------------
+
+LISTMENU "MainMenuTextOnly"
+{
+
+	StaticPatch 94, 2, "M_DOOM"
+	Position 97, 72
+	IfOption(ReadThis)
+	{
+		Position 97, 64
+	}
+
+	TextItem "$MNU_NEWGAME", "n", "PlayerclassMenu"
+	TextItem "$MNU_OPTIONS", "o", "RekkrOptionsMenu"
+	TextItem "$MNU_LOADGAME", "l", "LoadGameMenu"
+	TextItem "$MNU_SAVEGAME", "s", "SaveGameMenu"
+	IfOption(ReadThis)
+	{
+	TextItem "$MNU_INFO", "i", "ReadThisMenu"
+	}
+	TextItem "$MNU_QUITGAME", "q", "QuitMenu"
+}
+
+//-------------------------------------------------------------------------------------------
+//
+// Important note about the following template menus:
+// Don't even think about replacing them with something that's not an empty menu
+// with some static elements only. Proper function is not guaranteed then.
+//
+//-------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------
+//
+// The player class menu
+// The init code will set the first item to 'autoselect' if it's the only one.
+//
+//-------------------------------------------------------------------------------------------
+
+ListMenu "PlayerclassMenu"
+{
+
+	NetgameMessage "$NEWGAME"
+
+	StaticTextCentered 160, 15, "$MNU_CHOOSECLASS"
+	Position 48, 63
+	PlayerDisplay 220, 63, "20 00 00", "80 00 40"
+	MouseWindow 0, 220
+
+	// The rest of this menu will be set up based on the actual player definitions.
+}
+
+//-------------------------------------------------------------------------------------------
+//
+// The episode menu
+// The init code will set the first item to 'autoselect' if it's the only one.
+//
+//-------------------------------------------------------------------------------------------
+
+ListMenu "EpisodeMenu"
+{
+	StaticPatch 94, 2, "M_DOOM"
+	NetgameMessage "$NEWGAME"
+	Linespacing 16
+	Selector "M_SKULL1", 0, -5
+	Position 48, 85
+	StaticPatch 54, 60, "M_EPISOD", 0 , "$MNU_EPISODE"
+
+	// items will be filled in by MAPINFO
+}
+
+//-------------------------------------------------------------------------------------------
+//
+// The skill menu
+// Most of this will be filled in at runtime
+//
+//-------------------------------------------------------------------------------------------
+
+ListMenu "SkillMenu"
+{	
+	StaticPatch 94, 2, "M_DOOM"
+	//StaticPatch 96, 14, "M_NEWG", 0, "$MNU_NEWGAME"
+	StaticPatch 54, 57, "M_SKILL", 0, "$MNU_CHOOSESKILL"
+	Linespacing 16
+	Position 48, 80
+
+}
+
+//-------------------------------------------------------------------------------------------
+//
+// Raven's game files menu
+//
+//-------------------------------------------------------------------------------------------
+
+ListMenu "GameFilesMenu"
+{
+	Position 110, 60
+	TextItem "$MNU_LOADGAME", "l", "LoadGameMenu"
+	TextItem "$MNU_SAVEGAME", "s", "SaveGameMenu"
+}
+
+//-------------------------------------------------------------------------------------------
+//
+// Base definition for load game menu. Only the configurable part is done here
+//
+//-------------------------------------------------------------------------------------------
+
+ListMenu "LoadGameMenu"
+{
+
+	NetgameMessage "$LOADNET"
+
+	CaptionItem "$MNU_LOADGAME"
+	Position 80,40
+	Class "LoadMenu"	// uses its own implementation
+	Size Clean
+}
+
+//-------------------------------------------------------------------------------------------
+//
+// Base definition for save game menu. Only the configurable part is done here
+//
+//-------------------------------------------------------------------------------------------
+
+ListMenu "SaveGameMenu"
+{
+	CaptionItem "$MNU_SAVEGAME"
+	Position 80,40
+	Class "SaveMenu"	// uses its own implementation
+	Size Clean
+}
+
+//-------------------------------------------------------------------------------------------
+//
+// The option menu
+//
+//-------------------------------------------------------------------------------------------
+
+OptionValue "YesNo"
+{
+	0, "$TXT_NO"
+	1, "$TXT_YES"
+}
+
+OptionValue "NoYes"
+{
+	0, "$TXT_YES"
+	1, "$TXT_NO"
+}
+
+OptionValue "OnOff"
+{
+	0, "$OPTVAL_OFF"
+	1, "$OPTVAL_ON"
+}
+
+OptionValue "OffOn"
+{
+	0, "$OPTVAL_ON"
+	1, "$OPTVAL_OFF"
+}
+
+OptionValue AutoOffOn
+{
+	-1, "$OPTVAL_AUTO"
+	0, "$OPTVAL_OFF"
+	1, "$OPTVAL_ON"
+}
+
+OptionMenuSettings
+{
+	// These can be overridden if a different menu fonts requires it.
+	Linespacing 17
+
+}
+
+DefaultOptionMenu
+{
+	Position -15
+}
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+
+LISTMENU "RekkrOptionsMenu" 
+{
+	StaticPatch 94, 2, "M_DOOM"
+	Font "Bigfont"
+	Position 120, 64
+	Selector "M_SKULL1", -24, -2
+	LineSpacing 17
+	TextItem "video", "v", "RekkrVideoMenu"
+	TextItem "audio", "s", "RekkrSoundOptions"
+	TextItem "controls", "c", "RekkrControlsMenu"
+	TextItem "player", "p", "NewPlayerMenu"
+	TextItem "gameplay","m",			"rGameplayOptions"
+	TextItem "Other", "o",	"OptionsMenu"
+	Font "Smallfont"
+	Position 120, 144
+
+}
+
+
+
+
+OptionMenu "RekkrControlsMenu" 
+{
+
+	Title "$CNTRLMNU_TITLE"
+
+	Submenu    "$CNTRLMNU_ACTION"      , "RActionControlsMenu"
+	Submenu    "$CNTRLMNU_WEAPONS"     , "RWeaponsControlMenu"
+	Submenu    "$CNTRLMNU_OTHER"       , "ROtherControlsMenu"
+	Submenu    "$MNU_MULTIPLAYER"      , "ChatControlsMenu"
+	Submenu    "$AUTOMAPMNU_CONTROLS"  , "MapControlsMenu"
+	StaticText ""
+	Option     "$CNTRLMNU_LAYOUT"      , "cl_defaultconfiguration", "Layouts"
+	SafeCommand "$OPTMNU_DEFAULTS"     , "resetb2defaults"	
+	StaticText ""
+	Submenu    "$OPTMNU_MOUSE"         , "RekkrMouseOptions"
+	Submenu    "$OPTMNU_JOYSTICK"      , "JoystickOptions"
+
+}
+
+OptionMenu "RActionControlsMenu" 
+{
+	Title "$CNTRLMNU_ACTION_TITLE"
+	ScrollTop 2
+	StaticTextSwitchable "$CNTRLMNU_SWITCHTEXT1", "$CNTRLMNU_SWITCHTEXT2", "ControlMessage"
+
+	StaticText ""
+	Control    "$CNTRLMNU_ATTACK"           , "+attack"
+	Control    "$CNTRLMNU_USE"              , "+use"
+	
+	StaticText 	""
+	Control 	"$CNTRLMNU_ALTATTACK",		"+altattack"
+	Control 	"$CNTRLMNU_RELOAD",			"+reload"
+	Control 	"$CNTRLMNU_ZOOM",			"+zoom"
+
+	StaticText ""
+	Control    "$CNTRLMNU_FORWARD"          , "+forward"
+	Control    "$CNTRLMNU_BACK"             , "+back"
+	Control    "$CNTRLMNU_MOVELEFT"         , "+moveleft"
+	Control    "$CNTRLMNU_MOVERIGHT"        , "+moveright"
+
+	StaticText ""
+	Control    "$CNTRLMNU_TURNLEFT"         , "+left"
+	Control    "$CNTRLMNU_TURNRIGHT"        , "+right"
+	Control    "$CNTRLMNU_TURN180"          , "turn180"
+
+	StaticText ""
+	Control    "$CNTRLMNU_CENTERVIEW"       , "centerview"
+
+	StaticText ""
+	Control    "$CNTRLMNU_RUN"              , "+speed"
+	Control    "$CNTRLMNU_TOGGLERUN"        , "toggle cl_run"
+	Control    "$CNTRLMNU_STRAFE"           , "+strafe"
+	
+	StaticText ""
+	Control 	"Compendium: Open",			"samsara_compendium"
+	Control 	"Class Special 1",			"samsara_cmd_classuniques"
+	Control 	"Class Special 2",			"samsara_cmd_classuniques2"
+	StaticText ""
+	
+}
+
+OptionMenu "rOtherControlsMenu"
+{
+	Title "$CNTRLMNU_OTHER_TITLE"
+	ScrollTop 2
+	StaticTextSwitchable "$CNTRLMNU_SWITCHTEXT1", "$CNTRLMNU_SWITCHTEXT2", "ControlMessage"
+	StaticText ""
+	Control    "$CNTRLMNU_AUTOMAP"         , "togglemap"
+	StaticText ""
+	Control    "$CNTRLMNU_CHASECAM"        , "chase"
+	Control    "$CNTRLMNU_COOPSPY"         , "spynext"
+	StaticText ""
+	Control    "$CNTRLMNU_SCREENSHOT"      , "screenshot"
+	Control    "$CNTRLMNU_CONSOLE"         , "toggleconsole"
+	Control    "$CNTRLMNU_PAUSE"           , "pause"
+	StaticText ""
+	Control    "$CNTRLMNU_DISPLAY_INC"     , "sizeup"
+	Control    "$CNTRLMNU_DISPLAY_DEC"     , "sizedown"
+	Control    "$CNTRLMNU_TOGGLE_MESSAGES" , "togglemessages"
+	Control    "$CNTRLMNU_ADJUST_GAMMA"    , "bumpgamma"
+	StaticText ""
+	Control	   "Vintage Graphics Preset"   , "vintage"
+	Control	   "Vintage+ Graphics Preset"  , "vintageplus"
+	Control	   "Retro Graphics Preset"     , "retro"
+	Control	   "Modern Graphics Preset"    , "modern"
+	Control	   "Modern+ Graphics Preset"   , "modernplus"
+	StaticText ""
+	Control    "$CNTRLMNU_OPEN_HELP"       , "menu_help"
+	Control    "$CNTRLMNU_OPEN_SAVE"       , "menu_save"
+	Control    "$CNTRLMNU_OPEN_LOAD"       , "menu_load"
+	Control    "$CNTRLMNU_EXIT_TO_MAIN"    , "menu_endgame"
+	Control    "$CNTRLMNU_MENU_QUIT"       , "menu_quit"
+	StaticText ""
+	Control    "$CNTRLMNU_QUICKSAVE"       , "quicksave"
+	Control    "$CNTRLMNU_QUICKLOAD"       , "quickload"
+}
+
+
+OptionMenu rGameplayOptions
+{
+	Position -35
+	Title 	"$GMPLYMNU_TITLE"
+	//Indent 222
+	StaticText "MISC", 1
+	Option "$MISCMNU_ENABLEAUTOSAVES",			"disableautosave", "Autosave"
+	Slider "$MISCMNU_AUTOSAVECOUNT",			"autosavecount", 1, 20, 1, 0
+	Option "$MISCMNU_SAVELOADCONFIRMATION",		"saveloadconfirmation", "OnOff"
+	Option "$MISCMNU_QUICKSAVEROTATION",		"quicksaverotation", "OnOff"
+	Slider "$MISCMNU_QUICKSAVECOUNT",			"quicksaverotationcount", 1, 20, 1, 0
+	Option "$MISCMNU_QUICKEXIT",				"m_quickexit", "OnOff"
+	StaticText " "
+	Option "$AUTOMAPMNU_ROTATE",				"am_rotate", "RotateTypes"
+	Option "$AUTOMAPMNU_OVERLAY",				"am_overlay", "OverlayTypes"
+	Option "$AUTOMAPMNU_TEXTURED",				"am_textured", "OnOff"
+	Option "$AUTOMAPMNU_FOLLOW",				"am_followplayer", "OnOff"
+	Option "$AUTOMAPMNU_SHOWTIME",				"am_showtime", "OnOff"
+	Option "$AUTOMAPMNU_SHOWTOTALTIME",			"am_showtotaltime", "OnOff"
+	Option "$AUTOMAPMNU_SHOWMAPLABEL",			"am_showmaplabel", "MaplabelTypes"
+	Option "$AUTOMAPMNU_MARKFONT",				"am_markfont", "MapMarkFont"
+	Option "$AUTOMAPMNU_MARKCOLOR",				"am_markcolor", "TextColors"
+	StaticText " "
+	StaticText "CHEATING", 1
+	Option "$MOUSEMNU_ALWAYSMOUSELOOK",			"freelook", "OnOff"
+	Slider "$MOUSEMNU_MOUSELOOKSPEED",			"m_pitch", 0, 2.5, 0.1
+	Slider "$PLYRMNU_AUTOAIM", 					"Autoaim", 0, 35, 1
+	Option "$HUDMNU_CROSSHAIRON",				"crosshairon", "OnOff"
+	Option "$HUDMNU_CROSSHAIR",					"crosshair", "Crosshairs"
+	Option "$HUDMNU_FORCECROSSHAIR",			"crosshairforce", "OnOff"
+	Option "$HUDMNU_GROWCROSSHAIR",				"crosshairgrow", "OnOff"
+	Option "$HUDMNU_CROSSHAIRHEALTH",			"crosshairhealth", "CrosshairHealthTypes"
+	ColorPicker "$HUDMNU_CROSSHAIRCOLOR", 		"crosshaircolor"
+	Slider "$HUDMNU_CROSSHAIRSCALE",			"crosshairscale", 0.0, 2.0, 0.05, 2
+
+	StaticText " "
+	Submenu "$GMPLYMNU_DEATHMATCH",				"DeathmatchOptions"
+	Submenu "$GMPLYMNU_COOPERATIVE",			"CoopOptions"
+	StaticText " "
+	Option "$GMPLYMNU_TEAMPLAY",				"teamplay",	"OnOff"
+	Slider	"$GMPLYMNU_TEAMDAMAGE",				"teamdamage", 0, 1, 0.05,2
+	StaticText " "
+	StaticText "$NETMNU_LOCALOPTIONS", 1
+	Option "$NETMNU_MOVEPREDICTION",		"cl_noprediction", "OffOn"
+	Option "$NETMNU_LINESPECIALPREDICTION",	"cl_predict_specials", "OnOff"
+	Slider "$NETMNU_PREDICTIONLERPSCALE",	"cl_predict_lerpscale", 0.0, 0.5, 0.05, 2
+	Slider "$NETMNU_LERPTHRESHOLD",			"cl_predict_lerpthreshold", 0.1, 16.0, 0.1
+	StaticText " "
+	StaticText "$NETMNU_HOSTOPTIONS", 1
+	Option "$NETMNU_EXTRATICS",				"net_extratic", "ExtraTicMode"
+	Option "$NETMNU_TICBALANCE",			"net_ticbalance", "OnOff"
+	StaticText " "
+	Option "$GMPLYMNU_DOUBLEAMMO",				"sv_doubleammo", "YesNo"
+	Option "$GMPLYMNU_INFINITEAMMO",			"sv_infiniteammo", "YesNo"
+	Option "$GMPLYMNU_NOMONSTERS",				"sv_nomonsters", "YesNo"
+	Option "$GMPLYMNU_NOMONSTERSTOEXIT",		"sv_killallmonsters", "YesNo"
+	Option "$GMPLYMNU_MONSTERSRESPAWN",			"sv_monsterrespawn", "YesNo"
+	Option "$GMPLYMNU_NORESPAWN",				"sv_norespawn", "YesNo"
+	Option "$GMPLYMNU_ITEMSRESPAWN",			"sv_itemrespawn", "YesNo"
+	Option "$GMPLYMNU_SUPERRESPAWN",			"sv_respawnsuper", "YesNo"
+	Option "$GMPLYMNU_FASTMONSTERS",			"sv_fastmonsters", "YesNo"
+	Option "$GMPLYMNU_INSTANTREACTION",			"sv_instantreaction", "YesNo"
+	Option "$GMPLYMNU_DEGENERATION",			"sv_degeneration", "YesNo"
+	Option "$GMPLYMNU_ALLOWSUICIDE",			"sv_disallowsuicide", "NoYes"
+	Option "$GMPLYMNU_ALLOWFOV",				"sv_nofov", "NoYes"
+	Option "$GMPLYMNU_ALLOWAUTOMAP",			"sv_noautomap", "NoYes"
+	Option "$GMPLYMNU_AUTOMAPALLIES",			"sv_noautomapallies", "NoYes"
+	Option "$GMPLYMNU_ALLOWSPYING",				"sv_disallowspying", "NoYes"
+	Option "$GMPLYMNU_CHASECAM",				"sv_chasecam", "YesNo"
+	Option "$GMPLYMNU_DONTCHECKAMMO",			"sv_dontcheckammo", "NoYes"
+	Option "$GMPLYMNU_NOCOUNTENDMONSTER",		"sv_nocountendmonst", "NoYes"
+	Option "$GMPLYMNU_ALWAYSSPAWNMULTI",		"sv_alwaysspawnmulti", "YesNo"
+
+
+
+	Class "GameplayMenu"
+}
+
+OptionMenu "RWeaponsControlMenu" 
+{
+	Title "$CNTRLMNU_WEAPONS_TITLE"
+	ScrollTop 2
+	StaticTextSwitchable "$CNTRLMNU_SWITCHTEXT1", "$CNTRLMNU_SWITCHTEXT2", "ControlMessage"
+
+	StaticText ""
+	Control    "$CNTRLMNU_NEXTWEAPON"     , "weapnext"
+	Control    "$CNTRLMNU_PREVIOUSWEAPON" , "weapprev"
+
+	StaticText ""
+	Control    "$CNTRLMNU_SLOT1"          , "slot 1"
+	Control    "$CNTRLMNU_SLOT2"          , "slot 2"
+	Control    "$CNTRLMNU_SLOT3"          , "slot 3"
+	Control    "$CNTRLMNU_SLOT4"          , "slot 4"
+	Control    "$CNTRLMNU_SLOT5"          , "slot 5"
+	Control    "$CNTRLMNU_SLOT6"          , "slot 6"
+	Control    "$CNTRLMNU_SLOT7"          , "slot 7"
+	Control    "$CNTRLMNU_SLOT8"          , "slot 8"
+	Control    "$CNTRLMNU_SLOT9"          , "slot 9"
+	Control    "$CNTRLMNU_SLOT0"          , "slot 0"
+}
+
+
+OptionMenu "RekkrMouseOptions" 
+{
+	Title "$MOUSEMNU_TITLE"
+	Option "$MOUSEMNU_ENABLEMOUSE",		"use_mouse", "YesNo"
+	Option "$MOUSEMNU_MOUSEINMENU",		"m_use_mouse", "MenuMouse", "use_mouse"
+	Option "$MOUSEMNU_SHOWBACKBUTTON",	"m_show_backbutton", "Corners", "use_mouse"
+	IfOption(Windows)
+	{
+		Option "$MOUSEMNU_SWAPBUTTONS", "m_swapbuttons", "YesNo"
+	}
+	Option "$MOUSEMNU_CURSOR",			"vid_cursor", "Cursors"
+	StaticText 	""
+	Slider "$MOUSEMNU_SENSITIVITY_X",	"m_sensitivity_x", 0.5, 8, 0.25
+	Slider "$MOUSEMNU_SENSITIVITY_Y",	"m_sensitivity_y", 0.5, 8, 0.25
+	Option "$MOUSEMNU_SMOOTHMOUSE",		"m_filter", "YesNo"
+	StaticText 	""
+	Slider "$MOUSEMNU_TURNSPEED",		"m_yaw", 0, 2.5, 0.1
+	Slider "$MOUSEMNU_FORWBACKSPEED",	"m_forward", 0, 2.5, 0.1
+	Slider "$MOUSEMNU_STRAFESPEED",		"m_side", 0, 2.5, 0.1
+	StaticText 	""
+	Option "$MOUSEMNU_INVERTMOUSEX",	"invertmousex", "OnOff"
+	Option "$MOUSEMNU_LOOKSTRAFE",		"lookstrafe", "OnOff"
+	StaticText " "
+	StaticText "CHEATING", 1
+	Option "$MOUSEMNU_ALWAYSMOUSELOOK",			"freelook", "OnOff"
+	Slider "$MOUSEMNU_MOUSELOOKSPEED",			"m_pitch", 0, 2.5, 0.1
+	Option "$MOUSEMNU_INVERTMOUSE",				"invertmouse", "OnOff"
+	Option "$MOUSEMNU_LOOKSPRING",				"lookspring", "OnOff"
+}
+
+
+
+OptionMenu "RekkrSoundOptions" 
+{
+	Title "$SNDMNU_TITLE"
+	Title "$SNDMNU_TITLE"
+	Slider "$MODMNU_MASTERVOLUME",		"snd_mastervolume", 0, 1, 0.05, 2
+	StaticText " "
+	Slider "$SNDMNU_SFXVOLUME",			"snd_sfxvolume", 0, 1, 0.05, 2
+	Slider "$SNDMNU_MUSICVOLUME",		"snd_musicvolume", 0, 1, 0.05, 2
+	StaticText " "
+	Slider "$SNDMNU_MENUVOLUME",		"snd_menuvolume", 0, 1, 0.05, 2
+	StaticText " "
+	Option "$SNDMNU_MIDIDEVICE",		"snd_mididevice", "MidiDevices"
+	StaticText " "
+	Option "$SNDMNU_RANDOMIZEPITCHES",	"snd_pitched", "OnOff"
+	Slider "$SNDMNU_CHANNELS",			"snd_channels", 64, 256, 8, 0
+	StaticText " "
+	Submenu "$SNDMNU_ADVANCED",			"AdvSoundOptions"
+	Submenu "$OPTMNU_REVERB",			"ReverbEdit"
+}
+
+
+
+OptionMenu "RekkrVideoMenu" 
+{	
+	StaticText " "
+	StaticText "Aesthetic Presets"
+	StaticText "(bound to F8 thru F12 by default)"
+	Command "Vintage", "vintage"
+	Command "Vintage+", "vintageplus"
+	Command "Retro", "retro"
+	Command "Modern", "modern"
+	Command "Modern+", "modernplus"
+	StaticText "presets do not save on exit. for permanent"
+	StaticText "changes you must change settings manually below"
+	SubMenu "Graphics Adjustments", "RekkrGraphicsDetailMenu"
+	StaticText " "
+	StaticText "Resolution Options"
+	TextField "$VIDMNU_CUSTOMX", menu_resolution_custom_width
+	TextField "$VIDMNU_CUSTOMY", menu_resolution_custom_height
+	SubMenu "Select Resolution Preset", CustomResolutionMenu
+	Command "$VIDMNU_APPLYW", "menu_resolution_commit_changes 0"
+	Command "$VIDMNU_APPLYFS", "menu_resolution_commit_changes 1"
+	Option "$VIDMNU_FORCEASPECT",		"vid_aspect", "ForceRatios"
+	Option "$VIDMNU_CROPASPECT",		"vid_cropaspect", "CropAspect"
+	Option "$VIDMNU_SCALEMODE",			"vid_scalemode", "ScaleModes"
+	Slider "$VIDMNU_SCALEFACTOR",		"vid_scalefactor", 0.25, 2.0, 0.25, 2
+	Slider "$DSPLYMNU_SCREENSIZE",				"screenblocks", 				3.0, 12.0, 1.0, 0
+	TextField "Switch Monitor", vid_adapter
+	StaticText "(requires restart - usually 1,2,etc)"
+
+
+}
+
+
+OptionMenu "RekkrGraphicsDetailMenu" 
+{
+	Title "Graphics Adjustments"
+StaticText " "
+	Option "$VIDMNU_PREFERBACKEND",				"vid_preferbackend", 			"PreferBackend"
+	Option "$VIDMNU_RENDERMODE",				"vid_rendermode", 				"RenderMode"
+	Submenu "$GLMNU_TEXOPT", 					"GLTextureGLOptions"
+	Option "$VIDMNU_FULLSCREEN",				"vid_fullscreen", 				"YesNo"
+	Slider "$DSPLYMNU_GAMMA",					"vid_gamma",					0.75, 3.0, 0.05, 2
+	Slider "$DSPLYMNU_BRIGHTNESS",				"vid_brightness",				-0.8,0.8, 0.05,2
+	Slider "$DSPLYMNU_CONTRAST",				"vid_contrast",	   				0.1, 3.0, 0.1
+	Slider "$DSPLYMNU_SATURATION",				"vid_saturation",  				-3.0, 3.0, 0.25, 2
+	IfOption(Mac)
+	{
+		Option "$VIDMNU_HIDPI",					"vid_hidpi", 					"YesNo"
+	}
+	IfOption(Windows)
+	{
+		Option "$DSPLYMNU_GPUSWITCH",			vid_gpuswitch, 					"GPUSwitch"
+	}
+StaticText " "
+ScaleSlider "$SCALEMNU_STATBAR",			"st_scale", -1.0, 8.0, 1.0, "$SCALEMNU_USEUI", "$SCALEMNU_USEFS"
+ScaleSlider "$SCALEMNU_HUD", 				"hud_scale", -1.0, 8.0, 1.0, "$SCALEMNU_USEUI", "$SCALEMNU_USEFS"
+StaticText " "
+	Option "$DSPLYMNU_VSYNC",					"vid_vsync", "OnOff"
+	Option "$DSPLYMNU_CAPFPS",					"cl_capfps", "OffOn"
+	Option "$VIDMNU_MAXFPS",					"vid_maxfps", "MaxFps"
+	Option "$GLPREFMNU_FXAA",		 			gl_fxaa,						"FXAAQuality"
+	Option "$GLPREFMNU_SSAO",		 			gl_ssao,						"SSAOModes"
+	Option "$GLPREFMNU_BLOOM",		 			gl_bloom,						"OnOff"
+	Option "$GLPREFMNU_TONEMAP", 				gl_tonemap,						"TonemapModes"
+StaticText " "
+	Option "$TCMNU_DYNLIGHTS",					"r_dynlights", 					"OnOff"
+	Option "$GLLIGHTMNU_LIGHTSENABLED",			gl_lights,						"OnOff"
+	Option "$GLLIGHTMNU_LIGHTSHADOWMAP",		gl_light_shadowmap,				"YesNo"
+	Option "$DSPLYMNU_SPRITESHADOW",			"r_actorspriteshadow", 			"SpriteShadowModes"
+	Option "$GLPREFMNU_SECLIGHTMODE",			gl_lightmode,					"LightingModes"
+	Option "$GLPREFMNU_SWLMBANDED",				gl_bandedswlight,				"OnOff"
+StaticText " "
+	Option "$DSPLYMNU_WIPETYPE",				"wipetype", "Wipes"
+	Slider "$DSPLYMNU_MAXDECALS",				"cl_maxdecals", 				0, 10000, 100, 0
+	Option "$DSPLYMNU_NOMONSTERINTERPOLATION",	"nomonsterinterpolation", "NoYes"
+	Option "Blood Splats",						"cl_bloodsplats",				"OnOff"
+	Option "Missile Decals",					"cl_missiledecals",				"OnOff"
+	Option "$GLPREFMNU_SPRCLIP",				gl_spriteclip,					"SpriteclipModes"
+	Option "$DSPLYMNU_NOMONSTERINTERPOLATION",	"nomonsterinterpolation", 		"NoYes"
+	Option "$DSPLYMNU_TELEZOOM",				"telezoom", 					"OnOff"
+	Option "$DSPLYMNU_PLAYERSPRITES",			"r_drawplayersprites", 			"OnOff"
+	Option "$SCALEMNU_HUDASPECT", 				"hud_aspectscale", 				"OnOff"
+	Option "$DSPLYMNU_FAKECONTRAST",			"r_fakecontrast", 				"Contrast"
+
+}
+
+OptionMenu "RekkrCustomResolutionMenu" 
+{
+	Title "$VIDMNU_RESPRESETTTL"
+
+	StaticText "$VIDMNU_RESPRESETHEAD"
+	StaticText ""
+	StaticText "$VIDMNU_ASPECT43"
+	Command "640x480", "menu_resolution_set_custom 640 480"
+	Command "1024x768", "menu_resolution_set_custom 1024 768"
+	Command "1280x960", "menu_resolution_set_custom 1280 960"
+	Command "1600x1200", "menu_resolution_set_custom 1600 1200"
+	StaticText ""
+	StaticText "$VIDMNU_ASPECT54"
+	Command "1280x1024", "menu_resolution_set_custom 1280 1024"
+	StaticText ""
+	StaticText "$VIDMNU_ASPECT169"
+	Command "960x540", "menu_resolution_set_custom 960 540"
+	Command "(720p HD)  ca 1280x720", "menu_resolution_set_custom 1280 720"
+	Command "1366x768", "menu_resolution_set_custom 1366 768"
+	Command "1600x900", "menu_resolution_set_custom 1600 900"
+	Command "(1080p HD) 1920x1080", "menu_resolution_set_custom 1920 1080"
+	Command "(1440p HD) 2560x1440", "menu_resolution_set_custom 2560 1440"
+	Command "(4K UHD) 3840x2160", "menu_resolution_set_custom 3840 2160"
+	StaticText ""
+	StaticText "$VIDMNU_ASPECT1610"
+	Command "960x600", "menu_resolution_set_custom 960 600"
+	Command "1280x800", "menu_resolution_set_custom 1280 800"
+	Command "1440x900", "menu_resolution_set_custom 1440 900"
+	Command "1680x1050", "menu_resolution_set_custom 1680 1050"
+	Command "1920x1200", "menu_resolution_set_custom 1920 1200"
+	StaticText ""
+	StaticText "$VIDMNU_ASPECT219"
+	Command "1920x810", "menu_resolution_set_custom 1920 810"
+	Command "2560x1080", "menu_resolution_set_custom 2560 1080"
+}
+	
+OptionValue "TonemapModes"
+{
+	0, "$OPTVAL_OFF"
+	5, "$OPTVAL_PALETTE"
+}
+
