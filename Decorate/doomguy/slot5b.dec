@@ -6,7 +6,7 @@ actor "Land Mine Layer" : Weapon
     Inventory.RestrictedTo "DoomguyPlayer"
     Weapon.SlotNumber 5
     Weapon.AmmoType "DoomguyStrMines"
-    Weapon.AmmoGive 0
+    //Weapon.AmmoGive 5
     Weapon.AmmoUse 1
     Tag "Land Mines"
     +ALT_USES_BOTH
@@ -65,7 +65,7 @@ actor "Land Mine Layer" : Weapon
         LAYD ABCDE 1
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"FirePowered")
         TNT1 A 5 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"FirePowered")
-        TNT1 A 9 A_FireCustomMissile("SamsaraDoomguyStrLandmine3")
+        TNT1 A 9 A_GiveInventory("SamsaraDoomguyStrLandMineLayerPrimaryAttackHandler")
       FireFinish:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireFinishAmmo")
         TNT1 A 0 A_JumpIfInventory("DoomguyStrMines",1,"FireFinishAmmo")
@@ -86,7 +86,7 @@ actor "Land Mine Layer" : Weapon
         TNT1 A 10 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"AltFirePowered")
         LAYT A 1 A_PlaySound("doomguy/stronghold/minethrow",CHAN_WEAPON)
         LAYT BCDEFGH 1
-        LAYT I 1 A_FireCustomMissile("SamsaraDoomguyStrLandmine2",0,true,0,8)
+        LAYT I 1 A_GiveInventory("SamsaraDoomguyStrLandMineLayerSecondaryAttackHandler")
         LAYT JKLMNOPQR 1
         TNT1 A 10
       AltFireFinish:
@@ -113,7 +113,7 @@ actor "Land Mine Layer" : Weapon
 
       FirePowered:
         TNT1 A 3
-        TNT1 A 6 A_GiveInventory("SamsaraDoomguyStrLandMineLayerPoweredAttackHandler")
+        TNT1 A 6 A_GiveInventory("SamsaraDoomguyStrLandMineLayerPoweredPrimaryAttackHandler")
       FirePoweredFinish:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FirePoweredFinishAmmo")
         TNT1 A 0 A_JumpIfInventory("DoomguyStrMines",1,"FirePoweredFinishAmmo")
@@ -131,50 +131,164 @@ actor "Land Mine Layer" : Weapon
         TNT1 A 5
         LAYT A 1 A_PlaySound("doomguy/stronghold/minethrow",CHAN_WEAPON)
         LAYT BCDEFGH 1
-        LAYT I 1 A_GiveInventory("SamsaraDoomguyStrLandMineLayerPoweredAltAttackHandler")
+        LAYT I 1 A_GiveInventory("SamsaraDoomguyStrLandMineLayerPoweredSecondaryAttackHandler")
         LAYT JKLMNOPQR 1
         TNT1 A 5
         goto AltFireFinish
     }
 }
 
-actor SamsaraDoomguyStrLandMineLayerPoweredAttackHandler : Trigger
+// Unpowered attack handlers
+
+actor SamsaraDoomguyStrLandMineLayerPrimaryAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("DoomguyStrMines",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("DoomguyStrMines",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrLandmine3",0,false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrLandmine3Coop",0,false)
+        stop
+    }
+}
+
+actor SamsaraDoomguyStrLandMineLayerSecondaryAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("DoomguyStrMines",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("DoomguyStrMines",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrLandmine2",0,false,0,8)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrLandmine2Coop",0,false,0,8)
+        stop
+    }
+}
+
+// Powered attack handlers
+
+actor SamsaraDoomguyStrLandMineLayerPoweredPrimaryAttackHandler : Trigger
 {
     States
     {
       Pickup:
+      // Attack stuff (side)
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
         TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine3B",-7,false)
         TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine3B",7,false)
-      PickupMainCheck:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupMain")
-        TNT1 A 0 A_JumpIfInventory("DoomguyStrMines",1,"PickupMain")
+        goto Pickup2
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine3BCoop",-7,false)
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine3BCoop",7,false)
+        goto Pickup2
+
+      // Ammo check stuff (center)
+      Pickup2:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Pickup2TakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("DoomguyStrMines",1,"Pickup2TakeAmmo")
         stop
 
-      PickupMain:
+      // Ammo taking stuff (center)
+      Pickup2TakeAmmo:
         TNT1 A 0 A_TakeInventory("DoomguyStrMines",1,TIF_NOTAKEINFINITE)
+        goto Pickup2Attack
+
+      // Attack stuff (center)
+      Pickup2Attack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup2AttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup2AttackCoop")
+      Pickup2AttackDM:
         TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine3A",0,false)
+        stop
+
+      Pickup2AttackCoop:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine3ACoop",0,false)
         stop
     }
 }
 
-actor SamsaraDoomguyStrLandMineLayerPoweredAltAttackHandler : Trigger
+actor SamsaraDoomguyStrLandMineLayerPoweredSecondaryAttackHandler : Trigger
 {
     States
     {
       Pickup:
+      // Attack stuff (side)
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
         TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine2B",-7,false,0,8)
         TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine2B",7,false,0,8)
-      PickupMainCheck:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupMain")
-        TNT1 A 0 A_JumpIfInventory("DoomguyStrMines",1,"PickupMain")
+        goto Pickup2
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine2BCoop",-7,false,0,8)
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine2BCoop",7,false,0,8)
+        goto Pickup2
+
+      // Ammo check stuff (center)
+      Pickup2:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Pickup2TakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("DoomguyStrMines",1,"Pickup2TakeAmmo")
         stop
 
-      PickupMain:
+      // Ammo taking stuff (center)
+      Pickup2TakeAmmo:
         TNT1 A 0 A_TakeInventory("DoomguyStrMines",1,TIF_NOTAKEINFINITE)
+        goto Pickup2Attack
+
+      // Attack stuff (center)
+      Pickup2Attack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup2AttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup2AttackCoop")
+      Pickup2AttackDM:
         TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine2A",0,false,0,8)
+        stop
+
+      Pickup2AttackCoop:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerLandmine2ACoop",0,false,0,8)
         stop
     }
 }
+
+// Active land mine
 
 actor SamsaraDoomguyStrLandmine
 {
@@ -223,6 +337,10 @@ actor SamsaraDoomguyStrLandmine
     }
 }
 
+actor SamsaraDoomguyStrLandmineCoop : SamsaraDoomguyStrLandmine { Species "Player" }
+
+// Thrown land mine
+
 actor SamsaraDoomguyStrLandmine2 : SamsaraDoomguyStrLandmine
 {
     Speed 15
@@ -243,7 +361,35 @@ actor SamsaraDoomguyStrLandmine2 : SamsaraDoomguyStrLandmine
     }
 }
 
+actor SamsaraDoomguyStrLandmine2Coop : SamsaraDoomguyStrLandmine2
+{
+    Species "Player"
+    States
+    {
+      Death:
+        TNT1 A 0 A_StopSound
+        TNT1 A 0 A_SpawnItemEx("SamsaraDoomguyStrLandmineCoop",0,0,0,0,0,0,0,SXF_TRANSFERPOINTERS)
+        stop
+    }
+}
+
+// Dropped land mine
+
 actor SamsaraDoomguyStrLandmine3 : SamsaraDoomguyStrLandmine2 { Speed 2 }
+
+actor SamsaraDoomguyStrLandmine3Coop : SamsaraDoomguyStrLandmine3
+{
+    Species "Player"
+    States
+    {
+      Death:
+        TNT1 A 0 A_StopSound
+        TNT1 A 0 A_SpawnItemEx("SamsaraDoomguyStrLandmineCoop",0,0,0,0,0,0,0,SXF_TRANSFERPOINTERS)
+        stop
+    }
+}
+
+// Active powered land mine
 
 actor SamsaraDoomguyStrPowerLandmineA : SamsaraDoomguyStrLandmine
 {
@@ -256,6 +402,8 @@ actor SamsaraDoomguyStrPowerLandmineA : SamsaraDoomguyStrLandmine
     }
 }
 
+actor SamsaraDoomguyStrPowerLandmineACoop : SamsaraDoomguyStrPowerLandmineA { Species "Player" }
+
 actor SamsaraDoomguyStrPowerLandmineB : SamsaraDoomguyStrPowerLandmineA
 {
     States
@@ -265,6 +413,10 @@ actor SamsaraDoomguyStrPowerLandmineB : SamsaraDoomguyStrPowerLandmineA
         goto DeathFinish
     }
 }
+
+actor SamsaraDoomguyStrPowerLandmineBCoop : SamsaraDoomguyStrPowerLandmineB { Species "Player" }
+
+// Thrown powered land mine
 
 actor SamsaraDoomguyStrPowerLandmine2A : SamsaraDoomguyStrPowerLandmineA
 {
@@ -287,6 +439,18 @@ actor SamsaraDoomguyStrPowerLandmine2A : SamsaraDoomguyStrPowerLandmineA
     }
 }
 
+actor SamsaraDoomguyStrPowerLandmine2ACoop : SamsaraDoomguyStrPowerLandmine2A
+{
+    Species "Player"
+    States
+    {
+      Death:
+        TNT1 A 0 A_StopSound
+        TNT1 A 0 A_SpawnItemEx("SamsaraDoomguyStrPowerLandmineACoop",0,0,0,0,0,0,0,SXF_TRANSFERPOINTERS)
+        stop
+    }
+}
+
 actor SamsaraDoomguyStrPowerLandmine2B : SamsaraDoomguyStrPowerLandmine2A
 {
     States
@@ -298,8 +462,47 @@ actor SamsaraDoomguyStrPowerLandmine2B : SamsaraDoomguyStrPowerLandmine2A
     }
 }
 
+actor SamsaraDoomguyStrPowerLandmine2BCoop : SamsaraDoomguyStrPowerLandmine2B
+{
+    Species "Player"
+    States
+    {
+      Death:
+        TNT1 A 0 A_StopSound
+        TNT1 A 0 A_SpawnItemEx("SamsaraDoomguyStrPowerLandmineBCoop",0,0,0,0,0,0,0,SXF_TRANSFERPOINTERS)
+        stop
+    }
+}
+
+// Dropped powered land mine
+
 actor SamsaraDoomguyStrPowerLandmine3A : SamsaraDoomguyStrPowerLandmine2A { Speed 5 }
+
+actor SamsaraDoomguyStrPowerLandmine3ACoop : SamsaraDoomguyStrPowerLandmine3A
+{
+    Species "Player"
+    States
+    {
+      Death:
+        TNT1 A 0 A_StopSound
+        TNT1 A 0 A_SpawnItemEx("SamsaraDoomguyStrPowerLandmineACoop",0,0,0,0,0,0,0,SXF_TRANSFERPOINTERS)
+        stop
+    }
+}
+
 actor SamsaraDoomguyStrPowerLandmine3B : SamsaraDoomguyStrPowerLandmine2B { Speed 5 }
+
+actor SamsaraDoomguyStrPowerLandmine3BCoop : SamsaraDoomguyStrPowerLandmine3B
+{
+    Species "Player"
+    States
+    {
+      Death:
+        TNT1 A 0 A_StopSound
+        TNT1 A 0 A_SpawnItemEx("SamsaraDoomguyStrPowerLandmineBCoop",0,0,0,0,0,0,0,SXF_TRANSFERPOINTERS)
+        stop
+    }
+}
 
 // Ammo
 
@@ -309,7 +512,7 @@ actor DoomguyStrMines : Ammo
     Inventory.Icon "AMSMO0"
     Inventory.Amount 5
     Inventory.MaxAmount 40
-    Ammo.BackpackAmount 0
+    Ammo.BackpackAmount 5
     Ammo.BackpackMaxAmount 40
     Tag "Land Mines"
     States
