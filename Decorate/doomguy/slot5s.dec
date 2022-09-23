@@ -70,11 +70,7 @@ ACTOR " GrenadeLauncher " : Weapon
 
       FireStr:
         DGRL B 8 A_GunFlash("FlashStr")
-        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"FireStrPowered")
-        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"FireStrPowered")
-        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrGrenade",0,true,0,0,0,6.328125)
-      FireStrContinue:
-        DGRL B 12
+        DGRL B 12 A_GiveInventory("SamsaraDoomguyStrGrenadeLauncherAttackHandler")
         goto FireFinish
 
       FlashStr:
@@ -91,10 +87,6 @@ ACTOR " GrenadeLauncher " : Weapon
       SelectStrPowered:
         TNT1 A 0 A_Raise
         goto SelectStrContinue
-
-      FireStrPowered:
-        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerClusterGrenade",0,true,0,0,0,6.328125)
-        goto FireStrContinue
 	}
 }
 
@@ -195,27 +187,61 @@ actor DoomGrenadeVanillaCoop : DoomGrenadeVanilla
     +THRUSPECIES
 }
 
-actor SamsaraDoomguyStrGrenade // does not inherit from Grenade for source port equality, uses zdoom's physics
+// Attack handler
+
+actor SamsaraDoomguyStrGrenadeLauncherAttackHandler : Trigger
 {
-    Projectile
-    Radius 8
-    Height 8
-    Speed 25
-    Damage 20
-    DamageType "DoomDamageType"
-    ReactionTime 87 // zan value, didn't use A_Countdown in zdoom
-    Gravity 0.25
-    BounceType "Doom" // replaces +DOOMBOUNCE in zan, plays sounds as intended
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"PickupAttackPowered")
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPowerPerma",1,"PickupAttackPowered")
+      // Unpowered
+      PickupAttackUnpowered:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackUnpoweredCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackUnpoweredCoop")
+      PickupAttackUnpoweredDM:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrGrenade",0,false,0,0,0,6.328125)
+        stop
+
+      PickupAttackUnpoweredCoop:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrGrenadeCoop",0,false,0,0,0,6.328125)
+        stop
+
+      // Powered
+      PickupAttackPowered:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackPoweredCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackPoweredCoop")
+      PickupAttackPoweredDM:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerClusterGrenade",0,false,0,0,0,6.328125)
+        stop
+
+      PickupAttackPoweredCoop:
+        TNT1 A 0 A_FireCustomMissile("SamsaraDoomguyStrPowerClusterGrenadeCoop",0,false,0,0,0,6.328125)
+        stop
+    }
+}
+
+// Grenade
+
+actor SamsaraDoomguyStrGrenade : DoomGrenadeVanilla
+{
     SeeSound "doomguy/stronghold/grenlf"
-    BounceSound "doomguy/stronghold/grbnce" // no longer uses +USESTBOUNCESOUND from zan
+    BounceSound "doomguy/stronghold/grbnce"
     DeathSound "doomguy/stronghold/grenlx"
-    Decal "Scorch"
-    Obituary "%k played grenade catch with %o."
-    //SelfObituary "%o tripped %p own grenade."
-    +EXPLODEONDEATH
-    +GRENADETRAIL
-    -NOGRAVITY
-    +RANDOMIZE
+    -DEHEXPLOSION
     States
     {
       Spawn:
@@ -233,6 +259,14 @@ actor SamsaraDoomguyStrGrenade // does not inherit from Grenade for source port 
         stop
     }
 }
+
+actor SamsaraDoomguyStrGrenadeCoop : SamsaraDoomguyStrGrenade
+{
+    Species "Player"
+    +THRUSPECIES
+}
+
+// Powered grenade
 
 actor SamsaraDoomguyStrPowerClusterGrenade : SamsaraDoomguyStrGrenade
 {
@@ -265,6 +299,29 @@ actor SamsaraDoomguyStrPowerClusterGrenade : SamsaraDoomguyStrGrenade
     }
 }
 
+actor SamsaraDoomguyStrPowerClusterGrenadeCoop : SamsaraDoomguyStrPowerClusterGrenade
+{
+    Species "Player"
+    +THRUSPECIES
+    States
+    {
+      Death:
+        TNT1 A 0 A_ChangeFlag("NOGRAVITY",true)
+        TNT1 A 0 A_SetTranslucent(0.67,1)
+        TNT1 A 0 A_CustomMissile("SamsaraDoomguyStrPowerTinyGrenadeCoop",0,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER,random(60,80))
+        TNT1 A 0 A_CustomMissile("SamsaraDoomguyStrPowerTinyGrenadeCoop",0,0,72,CMF_AIMDIRECTION|CMF_TRACKOWNER,random(60,80))
+        TNT1 A 0 A_CustomMissile("SamsaraDoomguyStrPowerTinyGrenadeCoop",0,0,144,CMF_AIMDIRECTION|CMF_TRACKOWNER,random(60,80))
+        TNT1 A 0 A_CustomMissile("SamsaraDoomguyStrPowerTinyGrenadeCoop",0,0,216,CMF_AIMDIRECTION|CMF_TRACKOWNER,random(60,80))
+        TNT1 A 0 A_CustomMissile("SamsaraDoomguyStrPowerTinyGrenadeCoop",0,0,288,CMF_AIMDIRECTION|CMF_TRACKOWNER,random(60,80))
+        TNT1 A 0 A_Explode(32,192,0)
+        TNT1 A 0 A_ChangeFlag("FORCERADIUSDMG",false)
+        TNT1 A 0 A_Explode(32,128)
+        goto DeathFinish
+    }
+}
+
+// Powered tiny grenade
+
 actor SamsaraDoomguyStrPowerTinyGrenade : SamsaraDoomguyStrPowerClusterGrenade
 {
     Radius 4
@@ -296,4 +353,10 @@ actor SamsaraDoomguyStrPowerTinyGrenade : SamsaraDoomguyStrPowerClusterGrenade
         DMSL D 4 Bright Light("POWERGRENADETINY_X3")
         stop
     }
+}
+
+actor SamsaraDoomguyStrPowerTinyGrenadeCoop : SamsaraDoomguyStrPowerTinyGrenade
+{
+    Species "Player"
+    +THRUSPECIES
 }
