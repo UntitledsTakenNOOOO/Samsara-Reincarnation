@@ -475,9 +475,9 @@ Script "RTCW_Enter" (void)
 			if(venomheattimer > 1)
 			{
 				venomheattimer = 0;
-				TakeInventory("RTCW_VenomHeat",1);
+				TakeInventory("RTCW_VenomHeat",3);
 			}
-			if(stenheattimer > 15)
+			if(stenheattimer > 10)
 			{
 				stenheattimer = 0;
 				TakeInventory("RTCW_StenHeat",2);
@@ -1014,7 +1014,7 @@ Script "RTCW_TeslaAim" (int xory)
 				{
 					attacked = 1;
 					GiveInventory("RTCW_TeslaLook",1);
-					LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),20,"RTCW_TeslaZap","RTCWTesla",1024.0);
+					LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),50,"RTCW_TeslaZap","RTCWTesla",1024.0);
 					Thing_ChangeTid(newTid,oldTid);
 					TakeInventory("RTCW_TeslaLookAngle",255);
 					GiveInventory("RTCW_TeslaLookAngle",a/182 + amplitude);
@@ -1124,17 +1124,19 @@ Script "RTCW_FlamethrowerTracer" (void)
 	Thing_ChangeTid(0, myTid);
 
 	SetActivator(0,AAPTR_Tracer);
+	
+	int requiredIgnition = ClassifyActor(0) & ACTOR_Player || ClassifyActor(0) & ACTOR_Bot ? 25 : 50;
 
 	int actorClass = ClassifyActor(0);
 	if(!(actorClass & ACTOR_ALIVE) && !(actorClass & ACTOR_MONSTER || (!isCoop() && (isPlayerOrBot(0) || GetActorProperty(0, APROP_FRIENDLY)))))
 		terminate;
-	
+			
 	if(!CheckInventory("RTCW_FlamethrowerHitTarget") && !CheckInventory("RTCW_FlamethrowerBurnt"))
 	{
 		GiveInventory("RTCW_FlamethrowerHitTarget",1);
 		GiveInventory("RTCW_FlamethrowerIgnition",1);
 		
-		if(CheckInventory("RTCW_FlamethrowerIgnition") >= 50 && !CheckInventory("RTCW_FlamethrowerBurnt"))
+		if(CheckInventory("RTCW_FlamethrowerIgnition") >= requiredIgnition && !CheckInventory("RTCW_FlamethrowerBurnt"))
 		{
 			GiveInventory("RTCW_FlamethrowerBurnt",1);
 			int burnerTid = UniqueTid();
@@ -1259,6 +1261,65 @@ Script "RTCW_EnemyBurn" (void)
 		SpawnForced("RTCW_FlamethrowerFireVisual",GetActorX(0)+randSign()*radius,GetActorY(0)+randSign()*radius,GetActorZ(0)+random(0,height*4),0);
 		Delay(2);
 	}
+}
+
+Script "RTCW_BurnHandler" (void)
+{
+	int burnAmount;
+	if(ACS_NamedExecuteWithResult("RTCW_BurningOnPlayer"))
+	{
+		while(ACS_NamedExecuteWithResult("RTCW_BurningPlayerIsAlive") && ClassifyActor(0) > 1)
+		{
+			if(burnAmount == 32)
+			{	
+				SetActorState(0,"Remove",1);
+			}
+				
+			burnAmount++;
+			Delay(2);
+		}
+	}
+}
+
+Script "RTCW_BurningPlayerIsAlive" (void)
+{
+	SetActivator(0,AAPTR_Tracer);
+	if(ClassifyActor(0) & ACTOR_Alive)
+		SetResultValue(1);
+	else
+		SetResultValue(0);
+}
+
+Script "RTCW_BurningOnPlayer" (void)
+{
+	SetActivator(0,AAPTR_Tracer);
+	if(ClassifyActor(0) & ACTOR_Player || ClassifyActor(0) & ACTOR_Bot)
+	{
+		ACS_NamedExecuteWithResult("RTCW_ScreenBurn");
+		SetResultValue(1);
+	}
+	else
+	{
+		SetResultValue(0);
+	}
+}
+
+Script "RTCW_ScreenBurn" (void) clientside
+{
+	SetHudSize(16,16,1);
+	LocalAmbientSound("RTCW/Flamethrower/Blow",255);
+	int alpha = 0.5;
+	for(int a = 0; a < 4; a++)
+	{
+		for(int b = 1; b <+ 16; b++)
+		{
+			alpha -= 0.01;
+			SetFont(strparam(s:"RTCWBR",s:b < 10 ? "0" : "",d:b));
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 32150, CR_UNTRANSLATED, 16.0, 16.0, 0, alpha);
+			Delay(2);
+		}
+	}
+	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 32150, CR_UNTRANSLATED, 16.0, 16.0, 0, 0.5);
 }
 
 Script "RTCW_FlamethrowerFireScale" (void)
@@ -5133,8 +5194,11 @@ Script "RTCW_TeslaPush" (void)
 	if(!SetActivator(0,AAPTR_Tracer))
 		terminate;
 		
-	ThrustThing(angle>>8,2,0,0);	
-	ThrustThingZ(0,8,0,1);
+	if(GetActorProperty(0,APROP_Mass) < 500)
+	{
+		ThrustThing(angle>>8,2,0,0);	
+		ThrustThingZ(0,8,0,1);
+	}
 	
 	if(ClassifyActor(0) & ACTOR_DEAD)
 	{
