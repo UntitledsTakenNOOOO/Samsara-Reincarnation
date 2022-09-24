@@ -1,5 +1,6 @@
 actor DGHasRailGun : Boolean {}
 actor SamsaraDoomguyStrRailgunScope : Boolean {}
+actor SamsaraDoomguyStrRailgunPoweredHeldCheck : Boolean {}
 
 ACTOR " RailGun " : Weapon
 {
@@ -241,7 +242,7 @@ ACTOR " RailGun " : Weapon
         TNT1 A 0 A_PlaySound("doomguy/stronghold/railch",CHAN_WEAPON)
         RAIG BCD 1 Bright
         RAIG I 1 Bright A_GunFlash("FlashStrPowered")
-        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf2",CHAN_WEAPON)
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrRailgunPoweredHeldCheck")
       FireStrPoweredContinue:
         TNT1 A 0 A_AlertMonsters
         RAIG J 1 Bright A_GiveInventory("SamsaraDoomguyStrRailgunPoweredAttackHandler")
@@ -264,7 +265,7 @@ ACTOR " RailGun " : Weapon
         RAIG A 1
         RAIG BCD 1 Bright
         RAIG I 1 Bright A_GunFlash("FlashStrPowered")
-        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf1",CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrRailgunPoweredHeldCheck")
         goto FireStrPoweredContinue
 
       FireStrPoweredZoomed:
@@ -276,7 +277,7 @@ ACTOR " RailGun " : Weapon
         RSCP A 1 Bright
         RSCP A 7 Bright A_PlaySound("doomguy/stronghold/railch",CHAN_WEAPON)
         RSCP A 1 Bright A_GunFlash("FlashStrPowered")
-        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf2",CHAN_WEAPON)
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrRailgunPoweredHeldCheck")
       FireStrPoweredContinueZoomed:
         TNT1 A 0 A_AlertMonsters
         RSCP A 1 Bright A_GiveInventory("SamsaraDoomguyStrRailgunPoweredAttackHandler")
@@ -299,7 +300,7 @@ ACTOR " RailGun " : Weapon
         RSCP A 1 Bright
         RSCP A 7 Bright
         RSCP A 1 Bright A_GunFlash("FlashStrPowered")
-        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf3",CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrRailgunPoweredHeldCheck")
         goto FireStrPoweredContinueZoomed
 
       FlashStrPowered:
@@ -343,20 +344,61 @@ actor SamsaraDoomguyRailgunAttackHandler : Trigger
     }
 }
 
+actor DoomRailPuff : DoomBulletPuff2
+{
+    Decal ""
+    +PIERCEARMOR
+}
+
+actor DoomRailPuff_Coop : DoomRailPuff
+{
+    //+ALLOWTHRUFLAGS // doesn't exist in zandronum yet
+    +MTHRUSPECIES
+}
+
+// Unpowered attack handlers
+
 actor SamsaraDoomguyStrRailgunCharge0AttackHandler : Trigger
 {
     States
     {
+      // Ammo check stuff
       Pickup:
-        TNT1 A 0 A_TakeInventory("Cell",5,TIF_NOTAKEINFINITE)
-        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf1",CHAN_WEAPON)
-        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"PickupZoomed")
-      PickupUnzoomed:
-        TNT1 A 0 A_RailAttack(100,0,false,"FF 00 00","FF FF FF",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",5,"PickupTakeAmmo")
         stop
 
-      PickupZoomed:
-        TNT1 A 0 A_RailAttack(125,0,false,"FF 00 00","FF FF FF",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff")
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",5,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf1",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"PickupAttackZoomed")
+      // Unzoomed
+      PickupAttackUnzoomed:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackUnzoomedCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackUnzoomedCoop")
+      PickupAttackUnzoomedDM:
+        TNT1 A 0 A_RailAttack(100,0,false,"FF 00 00","FF FF FF",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuff")
+        stop
+
+      PickupAttackUnzoomedCoop:
+        TNT1 A 0 A_RailAttack(100,0,false,"FF 00 00","FF FF FF",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuffCoop")
+        stop
+
+      // Zoomed
+      PickupAttackZoomed:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackZoomedCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackZoomedCoop")
+      PickupAttackZoomedDM:
+        TNT1 A 0 A_RailAttack(125,0,false,"FF 00 00","FF FF FF",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuff")
+        stop
+
+      PickupAttackZoomedCoop:
+        TNT1 A 0 A_RailAttack(125,0,false,"FF 00 00","FF FF FF",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuffCoop")
         stop
     }
 }
@@ -365,17 +407,43 @@ actor SamsaraDoomguyStrRailgunCharge1AttackHandler : Trigger
 {
     States
     {
+      // Ammo check stuff
       Pickup:
-        TNT1 A 0 A_TakeInventory("Cell",10,TIF_NOTAKEINFINITE)
-        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf2",CHAN_WEAPON)
-        TNT1 A 0 A_RailAttack(0,0,false,"FF FF 00","FF FF FF",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff")
-        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"PickupZoomed")
-      PickupUnzoomed:
-        TNT1 A 0 A_RailAttack(150,0,false,"FF FF 00","FF 45 00",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",10,"PickupTakeAmmo")
         stop
 
-      PickupZoomed:
-        TNT1 A 0 A_RailAttack(175,0,false,"FF FF 00","FF 45 00",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff")
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",10,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf2",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"PickupAttackZoomed")
+      // Unzoomed
+      PickupAttackUnzoomed:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackUnzoomedCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackUnzoomedCoop")
+      PickupAttackUnzoomedDM:
+        TNT1 A 0 A_RailAttack(150,0,false,"FF FF 00","FF 45 00",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuff")
+        stop
+
+      PickupAttackUnzoomedCoop:
+        TNT1 A 0 A_RailAttack(150,0,false,"FF FF 00","FF 45 00",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuffCoop")
+        stop
+
+      // Zoomed
+      PickupAttackZoomed:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackZoomedCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackZoomedCoop")
+      PickupAttackZoomedDM:
+        TNT1 A 0 A_RailAttack(175,0,false,"FF FF 00","FF 45 00",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuff")
+        stop
+
+      PickupAttackZoomedCoop:
+        TNT1 A 0 A_RailAttack(175,0,false,"FF FF 00","FF 45 00",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuffCoop")
         stop
     }
 }
@@ -384,21 +452,48 @@ actor SamsaraDoomguyStrRailgunCharge2AttackHandler : Trigger
 {
     States
     {
+      // Ammo check stuff
       Pickup:
-        TNT1 A 0 A_TakeInventory("Cell",15,TIF_NOTAKEINFINITE)
-        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf3",CHAN_WEAPON)
-        TNT1 A 0 A_RailAttack(0,0,false,"00 00 FF","00 45 FF",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff")
-        TNT1 A 0 A_RailAttack(0,0,false,"00 00 FF","FF FF FF",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff")
-        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"PickupZoomed")
-      PickupUnzoomed:
-        TNT1 A 0 A_RailAttack(200,0,false,"00 00 FF","00 FF 00",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",15,"PickupTakeAmmo")
         stop
 
-      PickupZoomed:
-        TNT1 A 0 A_RailAttack(225,0,false,"00 00 FF","00 FF 00",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff")
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",15,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf3",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"PickupAttackZoomed")
+      // Unzoomed
+      PickupAttackUnzoomed:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackUnzoomedCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackUnzoomedCoop")
+      PickupAttackUnzoomedDM:
+        TNT1 A 0 A_RailAttack(200,0,false,"00 00 FF","00 FF 00",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuff")
+        stop
+
+      PickupAttackUnzoomedCoop:
+        TNT1 A 0 A_RailAttack(200,0,false,"00 00 FF","00 FF 00",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuffCoop")
+        stop
+
+      // Zoomed
+      PickupAttackZoomed:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackZoomedCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackZoomedCoop")
+      PickupAttackZoomedDM:
+        TNT1 A 0 A_RailAttack(225,0,false,"00 00 FF","00 FF 00",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuff")
+        stop
+
+      PickupAttackZoomedCoop:
+        TNT1 A 0 A_RailAttack(225,0,false,"00 00 FF","00 FF 00",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuffCoop")
         stop
     }
 }
+
+// Powered attack handler
 
 actor SamsaraDoomguyStrRailgunPoweredAttackHandler : Trigger
 {
@@ -406,26 +501,85 @@ actor SamsaraDoomguyStrRailgunPoweredAttackHandler : Trigger
     {
       Pickup:
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"PickupZoomed")
+      // Unzoomed
+      // Ammo check stuff (unzoomed)
       PickupUnzoomed:
-        TNT1 A 0 A_TakeInventory("Cell",2,TIF_NOTAKEINFINITE)
-        TNT1 A 0 A_RailAttack(45,0,false,"00 00 FF","FF FF FF",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff")
-        TNT1 A 0 A_RailAttack(45,0,false,"00 FF 00","FF FF FF",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupUnzoomedTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",2,"PickupUnzoomedTakeAmmo")
         stop
 
+      // Ammo taking stuff (unzoomed)
+      PickupUnzoomedTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",2,TIF_NOTAKEINFINITE)
+        goto PickupUnzoomedPlaySound
+
+      // Sound stuff (unzoomed)
+      PickupUnzoomedPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunPoweredHeldCheck",1,"PickupUnzoomedPlaySoundHold")
+      PickupUnzoomedPlaySoundFire:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf2",CHAN_WEAPON)
+        goto PickupUnzoomedAttack
+
+      PickupUnzoomedPlaySoundHold:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf1",CHAN_WEAPON)
+        goto PickupUnzoomedAttack
+
+      // Attack stuff (unzoomed)
+      PickupUnzoomedAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupUnzoomedAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupUnzoomedAttackCoop")
+      PickupUnzoomedAttackDM:
+        TNT1 A 0 A_RailAttack(45,0,false,"00 00 FF","FF FF FF",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuff")
+        TNT1 A 0 A_RailAttack(45,0,false,"00 FF 00","FF FF FF",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuff")
+        stop
+
+      PickupUnzoomedAttackCoop:
+        TNT1 A 0 A_RailAttack(45,0,false,"00 00 FF","FF FF FF",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuffCoop")
+        TNT1 A 0 A_RailAttack(45,0,false,"00 FF 00","FF FF FF",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuffCoop")
+        stop
+
+      // Zoomed
+      // Ammo check stuff (zoomed)
       PickupZoomed:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupZoomedTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",4,"PickupZoomedTakeAmmo")
+        stop
+
+      // Ammo taking stuff (zoomed)
+      PickupZoomedTakeAmmo:
         TNT1 A 0 A_TakeInventory("Cell",4,TIF_NOTAKEINFINITE)
-        TNT1 AAAA 0 A_RailAttack(30,0,false,"00 FF FF","FF FF FF",RGF_SILENT,0,"SamsaraDoomguyStrBulletPuff") // total damage: 120
+        goto PickupZoomedPlaySound
+
+      // Sound stuff (zoomed)
+      PickupZoomedPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunPoweredHeldCheck",1,"PickupZoomedPlaySoundHold")
+      PickupZoomedPlaySoundFire:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf2",CHAN_WEAPON)
+        goto PickupZoomedAttack
+
+      PickupZoomedPlaySoundHold:
+        TNT1 A 0 A_PlaySound("doomguy/stronghold/railf3",CHAN_WEAPON)
+        goto PickupZoomedAttack
+
+      // Attack stuff (zoomed)
+      PickupZoomedAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupZoomedAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupZoomedAttackCoop")
+      PickupZoomedAttackDM:
+        TNT1 AAAA 0 A_RailAttack(30,0,false,"00 FF FF","FF FF FF",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuff") // total damage: 120
+        stop
+
+      PickupZoomedAttackCoop:
+        TNT1 AAAA 0 A_RailAttack(30,0,false,"00 FF FF","FF FF FF",RGF_SILENT|RGF_FULLBRIGHT,0,"SamsaraDoomguyStrRailgunPuffCoop")
         stop
     }
 }
 
-actor DoomRailPuff : DoomBulletPuff2
-{
-    Decal ""
-    +PIERCEARMOR
-}
+// Bullet puff (railgun)
 
-actor DoomRailPuff_Coop : DoomRailPuff
+actor SamsaraDoomguyStrRailgunPuff : SamsaraDoomguyStrBulletPuff { +PIERCEARMOR }
+
+actor SamsaraDoomguyStrRailgunPuffCoop : SamsaraDoomguyStrRailgunPuff
 {
     //+ALLOWTHRUFLAGS // doesn't exist in zandronum yet
     +MTHRUSPECIES
