@@ -1,0 +1,317 @@
+actor "Missile Launcher" : Weapon// replaces Pistol
+{
+    Weapon.BobRangeX 0.75
+    Weapon.BobRangeY 0.95
+    Weapon.BobSpeed 1.1
+    Weapon.SlotNumber 5
+    Weapon.SelectionOrder 400
+    Weapon.AmmoUse 1
+    Weapon.AmmoGive 5
+    Weapon.AmmoType "RocketAmmo"
+	Weapon.AmmoUse2 1
+    Weapon.AmmoGive2 0
+    Weapon.AmmoType2 "HeatSeekingRockets"
+    DamageType "DukeExplosive"
+    +NOALERT
+	+AMMO_OPTIONAL
+    +ALT_AMMO_OPTIONAL
+    +INVENTORY.UNDROPPABLE
+    Obituary "$SAMSARA_DUKE_OB_SLOT2"
+    Decal BulletChip
+    Inventory.Pickupmessage "You got the Shotgun!"
+    Inventory.PickupSound "duke64/wepselect"
+    Weapon.UpSound "duke64/wepselect"
+	Inventory.RestrictedTo "Duke64Player"
+    Scale 0.5
+	
+    States
+    {
+		Spawn:
+			TNT1 A -1
+			Stop
+		Ready:
+			TNT1 A 0 A_JumpIfInventory("DukeReady",1,"IntroTaunt")
+			TNT1 A 0 A_JumpIfInventory("DukeWaiting",15,"WaitingTaunt")
+			TNT1 A 0 A_JumpIfInventory("UsingHeatSeeking",1,"ReadyHS")
+			D6ML A 1 A_WeaponReady
+			Loop
+		ReadyHS:
+			D6ML B 1 A_WeaponReady
+			Loop
+		Deselect:
+			TNT1 A 0 A_JumpIfInventory("UsingHeatSeeking",1,"DeselectHS")
+			TNT1 A 0 A_Lower
+			D6ML A 1 A_Lower
+			Loop
+		DeselectHS:
+			TNT1 A 0 A_Lower
+			D6ML B 1 A_Lower
+			Loop
+		Select:
+			TNT1 A 0 A_JumpIfInventory("DukeReady",1,"IntroTaunt1")
+			TNT1 A 0 A_JumpIfInventory("UsingHeatSeeking",1,"SelectHS")
+			D6ML A 1 A_Raise
+			D6ML A 0 A_Raise
+			D6ML A 0 A_Raise
+			D6ML A 1 A_Raise
+			D6ML A 0 A_Raise
+			D6ML A 1 A_Raise
+			D6ML A 0 A_Raise
+			D6ML A 1 A_Raise
+			D6ML A 0 A_Raise
+			D6ML A 1 A_Raise
+			D6ML A 0 A_Raise
+			D6ML AAAAAA 1 A_Raise
+			Loop
+		SelectHS:
+			//TNT1 A 0 A_JumpIfInventory("DukeReady",1,"IntroTaunt1")
+			//TNT1 A 0 A_GunFlash
+			D6ML B 1 A_Raise
+			D6ML B 0 A_Raise
+			D6ML B 0 A_Raise
+			D6ML B 1 A_Raise
+			D6ML B 0 A_Raise
+			D6ML B 1 A_Raise
+			D6ML B 0 A_Raise
+			D6ML B 1 A_Raise
+			D6ML B 0 A_Raise
+			D6ML B 1 A_Raise
+			D6ML B 0 A_Raise
+			D6ML BBBBBB 1 A_Raise
+		Fire:
+			TNT1 A 0 A_JumpIfInventory("UsingHeatSeeking",1,"HSFire")
+			TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,2)
+			TNT1 A 0 A_Jump(256,"Altfire")
+			D6ML D 2
+			D6ML EF 1
+			TNT1 A 0 A_AlertMonsters
+			TNT1 A 0 A_PlayWeaponSound("duke64/missilefire")
+			TNT1 A 0 A_FireCustomMissile("Duke64Rocket",0,1,4,2)
+			D6ML G 1 Bright ACS_ExecuteAlways(312, 0, 6, 3, 17)
+			D6ML FE 1 Bright A_Light1
+			D6ML D 2
+			D6ML C 1
+			D6MB ABC 1
+			D6MB D 2
+			D6MB EFG 1
+			D6MB H 6
+			D6MB IJK 1
+			D6MB L 2
+			D6MB MNOP 1
+			D6ML C 2
+			D6ML A 1
+			TNT1 A 0 A_Refire
+			Goto Ready
+		HSFire:
+			TNT1 A 0 A_JumpIfInventory("HeatSeekingRockets",1,2)
+			TNT1 A 0 A_Jump(256,"Altfire")
+			D6ML D 2
+			D6ML EF 1 
+			TNT1 A 0 A_AlertMonsters
+			TNT1 A 0 A_PlayWeaponSound("duke64/missilefire")
+			TNT1 A 0 A_FireCustomMissile("Duke64HeatSeeking",0,0,4,2)
+			TNT1 A 0 A_TakeInventory("HeatSeekingRockets",1)
+			D6ML G 1 Bright ACS_ExecuteAlways(312, 0, 6, 3, 17)
+			D6ML FE 1 Bright A_Light1
+			D6ML D 2
+			D6ML C 1
+			D6MR ABC 1
+			D6MR D 2
+			D6MR EFG 1
+			D6MR H 6
+			D6MR IJK 1
+			D6MR L 2
+			D6MR MNOP 1
+			D6ML C 2
+			D6ML B 1
+			TNT1 A 0 A_Refire
+			Goto ReadyHS
+		AltFire:
+			TNT1 A 0 A_JumpIfInventory("UsingHeatSeeking",1,"Altfire2")
+			TNT1 A 0 A_JumpIfInventory("HeatSeekingRockets",1,2)
+			TNT1 A 0 A_Jump(256,"Ready")
+			TNT1 A 0 A_PlaySound("duke64/wepselect")
+			D6ML A 5 A_WeaponReady(12)
+			TNT1 A 0 A_GiveInventory("UsingHeatSeeking",1)
+			D6ML A 10 A_WeaponReady(8)
+			Goto Ready
+		Altfire2:
+			TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,2)
+			TNT1 A 0 A_Jump(256,"Ready")
+			TNT1 A 0 A_PlaySound("duke64/wepselect")
+			D6ML B 5 A_WeaponReady(12)
+			TNT1 A 0 A_TakeInventory("UsingHeatSeeking",1)
+			D6ML B 10 A_WeaponReady(8)
+			Goto Ready
+		IntroTaunt:
+			D6ML AAAA 1 A_Lower
+			D6ML A 0 A_Lower
+			D6ML A 1 A_Lower
+			D6ML A 0 A_Lower
+			D6ML A 1 A_Lower
+			D6ML A 0 A_Lower
+			D6ML A 1 A_Lower
+			D6ML A 0 A_Lower
+			D6ML A 1 A_Lower
+			D6ML A 0 A_Lower
+			D6ML A 0 A_Lower
+		IntroTaunt1:
+			TNT1 AAAAAAAAAAAAA 0 A_Raise
+			TNT1 A 0 A_JumpIfInventory("DukeBallgag",1,"IntroTaunt2")
+			KNUX A 3
+			KNUX B 3
+			TNT1 A 0 A_JumpIfInventory("DukeBallgag",1,"IntroTaunt3")
+			TNT1 A 0 A_JumpIfInventory("PistolStartEnabled",1,"IntroTaunt3")
+			TNT1 A 0 A_PlaySoundEX("duke64/introtaunt","SoundSlot7",0,0)
+			KNUX C 3
+			TNT1 A 0 A_GiveInventory("DukeTauntCooldown",5)
+			TNT1 A 0 ACS_ExecuteAlways(205)
+			KNUX D 3 A_PlayWeaponSound("duke/knuckles")
+			KNUX C 3
+			KNUX B 3
+			KNUX A 3 A_TakeInventory("DukeReady",1)
+			KNUX AAAAAAAAAAAAAA 0 A_Lower
+			TNT1 A 0 A_PlayWeaponSound("duke64/wepselect")
+			Goto Select
+		IntroTaunt2:
+			KNUX A 3
+			KNUX B 3
+		IntroTaunt3:
+			KNUX C 3
+			KNUX D 3 A_PlayWeaponSound("duke/knuckles")
+			KNUX C 3
+			KNUX B 3
+			KNUX A 3 A_TakeInventory("DukeReady",1)
+			KNUX AAAAAAAAAAAAAA 0 A_Lower
+			TNT1 A 0 A_PlayWeaponSound("duke64/wepselect")
+			Goto Select
+        WaitingTaunt:
+			D6ML AAAA 1 A_Lower
+			D6ML A 0 A_Lower
+			D6ML A 1 A_Lower
+			D6ML A 0 A_Lower
+			D6ML A 1 A_Lower
+			D6ML A 0 A_Lower
+			D6ML A 1 A_Lower
+			D6ML A 0 A_Lower
+			D6ML A 1 A_Lower
+			D6ML A 0 A_Lower
+			D6ML A 0 A_Lower
+		WaitingTaunt1:
+			TNT1 AAAAAAAAAAAAA 0 A_Raise
+			TNT1 A 0 A_JumpIfInventory("DukeBallgag",1,"IntroTaunt2")
+			KNUX A 3
+			KNUX B 3
+			TNT1 A 0 A_JumpIfInventory("DukeBallgag",1,"IntroTaunt3")
+			TNT1 A 0 A_PlaySoundEX("duke64/waitingtoolong","SoundSlot7",0,0)
+			KNUX C 3
+			TNT1 A 0 A_GiveInventory("DukeTauntCooldown",5)
+			TNT1 A 0 ACS_ExecuteAlways(205)
+			KNUX D 3 A_PlayWeaponSound("duke/knuckles")
+			KNUX C 3
+			KNUX B 3
+			KNUX A 3 A_TakeInventory("DukeWaiting",15)
+			KNUX AAAAAAAAAAAAAA 0 A_Lower
+			TNT1 A 0 A_PlayWeaponSound("duke64/wepselect")
+			Goto Select
+		WaitingTaunt2:
+			KNUX A 3
+			KNUX B 3
+		WaitingTaunt3:
+			KNUX C 3
+			KNUX D 3 A_PlayWeaponSound("duke/knuckles")
+			KNUX C 3
+			KNUX B 3
+			KNUX A 3 A_TakeInventory("DukeWaiting",15)
+			KNUX AAAAAAAAAAAAAA 0 A_Lower
+			TNT1 A 0 A_PlayWeaponSound("duke64/wepselect")
+			Goto Select
+	}
+}
+
+actor Duke64Rocket : DukeRocket
+{
+	States
+    {
+      Spawn:
+        MISX A 1 bright A_SpawnItemEx("Duke64RocketPuff",0,0,0,0,0,0,0,160)
+        Loop
+
+      Death:
+        TNT1 A 0 A_Explode(128, 128)
+        TNT1 A 0 A_PlaySound("duke64/explosion", 6, 1.0, 0, ATTN_NONE)
+        TNT1 A 1 A_SpawnItemEx("MLExplosion",0,0,0,0,0,0,0,160)
+		TNT1 A 0 A_SpawnItemEx("MissileFireRing",0,0,0,0,0,0,0,160)
+		TNT1 A 0 A_SpawnItemEx("MissileFireBall",0,0,0,0,0,0,0,160)
+        Stop
+    }
+}
+
+actor Duke64HeatSeeking : Duke64Rocket
+{
+	+SEEKERMISSILE
+	+SCREENSEEKER
+	States
+    {
+      Spawn:
+        MISX A 1 bright A_SeekerMissile(0,2,SMF_PRECISE|SMF_LOOK)
+		TNT1 A 0 A_JumpIfTracerCloser(4096,"NoWeave")
+		TNT1 A 0 A_Weave(3, 3, 1.5, 1.5)
+		TNT1 A 0 A_SpawnItemEx("Duke64RocketPuff",0,0,0,0,0,0,0,160)
+        Loop
+	  NoWeave:
+		MISX A 1 bright A_SeekerMissile(0,2,SMF_PRECISE|SMF_LOOK)
+		TNT1 A 0 A_SpawnItemEx("Duke64RocketPuff",0,0,0,0,0,0,0,160)
+        Loop
+    }
+}
+
+actor MLExplosion : RPGExplosion
+{
+    States
+    {
+      Spawn:
+        DKSX A 2 BRIGHT
+		DKSX B 3 BRIGHT
+		DKSX CD 2 BRIGHT
+		DKSX E 3 BRIGHT
+		DKSX FG 2 BRIGHT
+		DKSX H 3 BRIGHT
+		DKSX IJ 2 BRIGHT
+		DKSX K 3 BRIGHT
+		DKSX LM 2 BRIGHT
+		DKSX N 3 BRIGHT
+		DKSX OP 2 BRIGHT
+		DKSX Q 3 BRIGHT
+        Stop
+    }
+}
+
+actor Duke64RocketPuff : DukeRocketPuff
+{
+	Scale 0.5
+    States
+    {
+      Spawn:
+        TNT1 A 2
+        D6PF AA 1 A_SetScale(scalex+0.05,scaley+0.05)
+		D6PF BBCCDDEEFFGGHHII 2 A_SetScale(scalex+0.05,scaley+0.05)
+        Stop
+    }
+}
+
+Actor MissileFireRing : Duke64FireRing { Mass 1 }
+Actor MissileFireBall : Duke64FireBall { Mass 1 }
+
+Actor UsingHeatSeeking : Boolean { }
+
+actor HeatSeekingRockets : Ammo
+{
+    Inventory.Amount 1
+    Inventory.MaxAmount 12
+
+    Ammo.BackpackAmount 3
+    Ammo.BackpackMaxAmount 25
+
+    Inventory.Icon "AMSML0"
+}
