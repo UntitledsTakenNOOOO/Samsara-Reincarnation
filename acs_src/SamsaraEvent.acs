@@ -1266,21 +1266,33 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
 			case CLASS_DUKE:
-				dukemode = GetUserCvar(pln,"samsara_cl_dkclab");
-				if(dukemode != previousvalue)
+				dukemode = GetUserCvar(pln,"samsara_cl_dukemode");
+				if(dukemode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
 				{
 					TakeInventory("SamsaraModeCounter",999);
 					GiveInventory("SamsaraModeCounter",dukemode);
-					if(dukemode) 
+					TakeInventory("Samsara_ModeWeaponChange",1);
+					if (dukemode >= 0) 
 					{ 
-						GiveInventory("DukeLabToken", 1); 
-						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 1, pln); 
-					}
-					else 
-					{ 
-						ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln); 
-						TakeInventory("DukeLabToken", 0x7FFFFFFF); 
-					}
+						TakeInventory("DukeClassMode", 2); 
+						GiveInventory("DukeClassMode", dukemode); 
+						if(dukemode == 1)
+						{ 							
+							GiveInventory("DukeLabToken", 1); 
+							SetActorProperty(0,APROP_SoundClass,"DukePlayer");
+						}
+						else if(dukemode == 2)
+						{
+							TakeInventory("DukeLabToken", 0x7FFFFFFF); 
+							SetActorProperty(0,APROP_SoundClass,"Duke64Player");
+						}
+						else 
+						{ 
+							TakeInventory("DukeLabToken", 0x7FFFFFFF); 
+							SetActorProperty(0,APROP_SoundClass,"DukePlayer");
+							}
+						}
+					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, dukemode, pln); 
 					previousvalue = dukemode;
 				}
 				break;
