@@ -44,11 +44,11 @@ Script "DescentMovement" (void)
 	int verticalToggle = 1;
 	int verticalBob = 1.0;
 	int verticalThrust = 0;
-	
+
 	//Math - need angle, pitch, and roll
 	int angle, pitch, roll;
 	int sineAngle, cosineAngle, sinePitch, cosinePitch, sineRoll, cosineRoll;
-	
+
 	//Variables related to input and movement
 	int moveSpeed = 11;
 	int turnSpeed = 240;
@@ -59,20 +59,22 @@ Script "DescentMovement" (void)
 	int sensitivityX = GZDoom ? GetCvar("m_yaw") : GetCvar("m_sensitivity");
 	int sensitivityY = GZDoom ? GetCvar("m_pitch") : GetCvar("m_sensitivity");
 	int mouseFinalYaw, mouseFinalPitch;
-	
+
 	//Camera tilting - GZDoom Only
 	int turnRoll, tiltRoll;
-	
+
 	//Final position variables
 	int velX, velY, velZ;
-	
+
 	//Other Stuff
 	int deathCamTid, deathDirX, deathDirY, deathDirZ, deathCamDelay;
 	int gimbalLock = 1;
 	int gimbalDelay, rollBack, rolling, thirdPerson;
-	
+
+	bool isCoopGame = isCoop();
+
 	if(PlayerIsBot(PlayerNumber())) { GiveInventory("DescentBotTrigger",1); }
-			
+
 	While(!PlayerIsBot(PlayerNumber()) && CheckInventory("DescentClass"))
 	{
 		if(ClassifyActor(0) & ACTOR_ALIVE)
@@ -92,26 +94,25 @@ Script "DescentMovement" (void)
 				else
 					TakeInventory("DescentThirdPerson",1);
 			}
-							
-			
+
 			if(!CheckInventory("DescentGuidedController"))
 			{
 				if(descentFlight)
 					SetPlayerProperty(0,1,PROP_FROZEN);
 				else
 					SetPlayerProperty(0,0,PROP_FROZEN);
-					
+
 				SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
 				buttons = GetPlayerInput(-1, INPUT_BUTTONS);
 				forward = GetPlayerInput(-1, INPUT_FORWARDMOVE);
 				side = -GetPlayerInput(-1, INPUT_SIDEMOVE) * gimbalLock;
 				vertical = GetPlayerInput(-1, INPUT_UPMOVE);
 				rollBack = buttons & BT_Strafe;
-						
+
 				forward = forward != 0 ? sign(forward) * 1.0 : 0;
 				side = side != 0 ? sign(side) * 1.0 : 0;
 				vertical = vertical != 0 ? sign(vertical) * 1.0 : 0;
-				
+
 				if(buttons & BT_Jump)	vertical += 65536;
 				if(buttons & BT_Crouch)	vertical -= 65536;
 				mouseYaw = GetPlayerInput(-1, INPUT_YAW);
@@ -129,17 +130,17 @@ Script "DescentMovement" (void)
 				mouseYaw = 0;
 				mousePitch = 0;
 			}
-			
+
 			forward -= CheckInventory("DescentRecoil")*0.1;
 			if(CheckInventory("DescentRecoil") > 0) { TakeInventory("DescentRecoil",1); }
-			
+
 			angle = GetActorAngle(0);
 			pitch = GetActorPitch(0);
 			roll = GetActorRoll(0) - tiltRoll;
-			
+
 			angle += FixedMul(mouseYaw,sensitivityX+1.0) * gimbalLock;
 			pitch -= FixedMul((invertedMouse ? -mousePitch : mousePitch),sensitivityY+2.0) * gimbalLock;
-			
+
 			if(rollBack || CheckInventory("DescentRollToken")) { TakeInventory("DescentRollToken",1); rolling = -gimbalLock; }
 			if(rolling != 0)
 			{
@@ -197,16 +198,15 @@ Script "DescentMovement" (void)
 			}
 
 			// Clamp Pitch
-					
 			if(pitch < -0.5)			pitch += 1.0;
 			else if(pitch > 0.5)		pitch -= 1.0;
-			
+
 			/*PrintBold(s:"Angle is: ",d:angle/182,
 					s:"\nPitch is: ",d:pitch/182,
 					s:"\nRoll is: ",d:roll/182);*/
 					
 			//Facing a vertical axis? Flip it
-			
+
 			if((pitch > 0.25 || pitch < -0.25) && GZDoom)
 			{
 				gimbalLock *= -1;
@@ -227,7 +227,7 @@ Script "DescentMovement" (void)
 						roll -= 0.5;
 				}
 			}
-				
+
 			//Set the rotation to the new ones
 			if(descentFlight)
 			{
@@ -235,7 +235,7 @@ Script "DescentMovement" (void)
 				SetActorPitch(0,pitch);
 				SetActorRoll(0,roll + tiltRoll);
 			}
-							
+		
 			//Now we calculate what movement looks like
 			sineAngle = sin(angle);
 			cosineAngle = cos(angle);
@@ -243,12 +243,12 @@ Script "DescentMovement" (void)
 			cosinePitch = cos(-pitch);
 			sineRoll = sin(roll);
 			cosineRoll = cos(roll);
-			
+
 			verticalThrust = FixedMul((verticalBob*verticalToggle),cosinePitch);
 			horizontalThrust = FixedMul((verticalBob*verticalToggle),-sinePitch);
 			horizontalThrustX = FixedMul(horizontalThrust,cosineAngle);
 			horizontalThrustY = FixedMul(horizontalThrust,sineAngle);
-					
+
 			// Step One: Rotation About the Z-Axis
 			int angleX = FixedMul(forward,cosineAngle) - FixedMul(side*!tilting,sineAngle);
 			int angleY = FixedMul(forward,sineAngle) + FixedMul(side*!tilting,cosineAngle);
@@ -268,13 +268,16 @@ Script "DescentMovement" (void)
 			/*moveX = moveSpeed * pitchX;
 			moveY = moveSpeed * pitchY;
 			moveZ = moveSpeed * pitchZ;*/
-			
+
 			moveX = moveSpeed * angleX;
 			moveY = moveSpeed * angleY;
 			moveZ = moveSpeed * FixedMul(forward,sinePitch);
-			
+
 			if((moveX != 0 || moveY != 0 || moveZ != 0) && timer() % 4 == 0)
-				LineAttack(0,VectorAngle(moveX,moveY),GetActorPitch(0),5,"DescentRamPuff","",41.0);
+			{
+				if (isCoopGame) LineAttack(0,VectorAngle(moveX,moveY),GetActorPitch(0),5,"DescentRamPuffCoop","",41.0);
+				else LineAttack(0,VectorAngle(moveX,moveY),GetActorPitch(0),5,"DescentRamPuff","",41.0);
+			}
 
 			/*PrintBold(s:"Z thrust is: ",f:verticalThrust,
 					s:"\nX thrust is: ",f:horizontalThrustX,
@@ -282,28 +285,27 @@ Script "DescentMovement" (void)
 					s:"\nX Movement is: ",f:moveX,
 					s:"\nY Movement is: ",f:moveY,
 					s:"\nZ Movement is: ",f:moveZ);*/
-					
+	
 			if(!descentFlight)
 			{
 				horizontalThrustX = 0;
 				horizontalThrustY = 0;
 				verticalThrust = 0;	
 			}
-					
+
 			velX = moveX + horizontalThrustX;
 			velY = moveY + horizontalThrustY;
 			velZ = descentFlight ? moveZ + verticalThrust : GetActorVelZ(0);
-								
+
 			if(verticalOscillate >= verticalOscillateThreshold)
 			{
 				verticalOscillate = 0;
 				verticalToggle *= -1;
 			}
-			
+
 			if(descentFlight)
 				SetActorVelocity(0,velX,velY,velZ,0,0);
-			
-			
+
 			verticalOscillate++;
 			gimbalDelay--;
 		}
@@ -325,13 +327,13 @@ Script "DescentMovement" (void)
 				Thing_Stop(deathCamTid);
 			else
 				deathCamDelay++;
-				
+
 			SetActorAngle(0,GetActorAngle(0)+deathDirX*random(0,512));
 			SetActorPitch(0,GetActorPitch(0)+deathDirY*random(0,512));
 			SetActorRoll(0,GetActorRoll(0)+deathDirZ*random(0,512));
 			Delay(1);
 		}
-		
+
 		Delay(1);
 	}
 	Thing_Remove(deathCamTid);
