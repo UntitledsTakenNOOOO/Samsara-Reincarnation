@@ -129,7 +129,7 @@ Script "Painkiller_Loop" (void)
 				TakeInventory("Painkiller_SoulCount",66);
 				ACS_NamedExecuteAlways("Painkiller_StartDemonMorph",0,1050,0,0);
 			}
-			else if(CheckInventory("Painkiller_SoulCount") == 65 && !CheckInventory("Painkiller_DemonMorphFlash2") && !CheckInventory("Painkiller_NoDemonMorph"))
+			/*else if(CheckInventory("Painkiller_SoulCount") == 65 && !CheckInventory("Painkiller_DemonMorphFlash2") && !CheckInventory("Painkiller_NoDemonMorph"))
 			{
 				GiveInventory("Painkiller_DemonMorphFlash2",1);
 				ACS_NamedExecuteAlways("Painkiller_StartDemonMorph",0,35,0,0);
@@ -138,7 +138,7 @@ Script "Painkiller_Loop" (void)
 			{
 				GiveInventory("Painkiller_DemonMorphFlash1",1);
 				ACS_NamedExecuteAlways("Painkiller_StartDemonMorph",0,17,0,0);
-			}	
+			}	*/
 		}
 		int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
 		if((buttons & BT_AltAttack) && (buttons & BT_Attack))
@@ -1103,19 +1103,22 @@ Script "Painkiller_MonsterKill" (int corpseActor)
 
 Script "Painkiller_StartDemonMorph" (int duration)
 {
+	SetFont("PKDEMONB");
+	SetHudSize(1,1,1);
+	HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA,32600,0,0.0,0.0,65536.0,0.5);
+	ACS_NamedExecuteWithResult("Painkiller_DemonMorphFade");
 	GiveInventory("Painkiller_DemonMorph", 1);
 	SetWeapon("Painkiller_DemonMorph");
-	//PlaySound(0,"Painkiller/DemonMorph/Loop",CHAN_5|CHAN_NOPAUSE,1.0,true,ATTN_NORM);
 	Delay(duration);
-	/*TakeInventory("PainkillerDemonMorphSlower",999);
-	TakeInventory("PainkillerDemonMorphTimerFreezer",999);
-	TakeInventory("PainkillerDemonMorphScreen",999);
-	TakeInventory("PainkillerDemonMorphScreen2",999);
-	StopSound(0,CHAN_5|CHAN_NOPAUSE);
-	TakeInventory("PainkillerDemonMorphScreen",999);
-	PlaySound(0,"Painkiller/DemonMorph/Stop",CHAN_5|CHAN_NOPAUSE,1.0,0,ATTN_NORM);
-	TakeInventory("Painkiller_DemonMorph", 1);*/
+	HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,32600,0,0.0,0.0,0.5,0.1);
 	GiveInventory("Painkiller_DemonMorphRemove",1);
+}
+
+Script "Painkiller_DemonMorphFade" (void)
+{
+	FadeRange(0.0,0.0,0.0,0.0,1.0,1.0,1.0,1.0,0.25);
+	Delay(9);
+	FadeRange(1.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.25);
 }
 
 Script "Painkiller_ItemRemoval" Unloading
@@ -1668,20 +1671,18 @@ Script "Painkiller_GoldTarot_Activate" (void) net
 
 Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 {
+	Playsound(0,"Painkiller/BulletTimeStart",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
+	Playsound(0,"Painkiller/BulletTimeLoop",CHAN_NOPAUSE|CHAN_7,1.0,1,ATTN_NORM);
 	switch(type)
 	{
 		case 1:
 			if(SinglePlayer())
 			{
-				Playsound(0,"Painkiller/BulletTimeStart",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
-				Playsound(0,"Painkiller/BulletTimeLoop",CHAN_NOPAUSE|7,1.0,1,ATTN_NORM);
 				while(CheckInventory("Painkiller_GoldActive"))
 				{
 					GiveInventory("Painkiller_Haste_Freezer",1);
 					Delay(7);
 				}
-				StopSound(0,CHAN_7);
-				Playsound(0,"Painkiller/BulletTimeStop",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
 			}
 			else
 				Print(s:"Haste does not work outside of singleplayer games. Please select a different gold card.");
@@ -1689,15 +1690,11 @@ Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 		case 2:
 			if(SinglePlayer())
 			{
-				Playsound(0,"Painkiller/BulletTimeStart",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
-				Playsound(0,"Painkiller/BulletTimeLoop",CHAN_NOPAUSE|CHAN_7,1.0,1,ATTN_NORM);
 				while(CheckInventory("Painkiller_GoldActive"))
 				{
 					GiveInventory("Painkiller_DoubleHaste_Freezer",1);
 					Delay(5);
 				}
-				StopSound(0,CHAN_7);
-				Playsound(0,"Painkiller/BulletTimeStop",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
 			}
 			else
 				Print(s:"Double Haste does not work outside of singleplayer games. Please select a different gold card.");
@@ -1705,15 +1702,11 @@ Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 		case 3:
 			if(SinglePlayer())
 			{
-				Playsound(0,"Painkiller/BulletTimeStart",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
-				Playsound(0,"Painkiller/BulletTimeLoop",CHAN_NOPAUSE|CHAN_7,1.0,1,ATTN_NORM);
 				while(CheckInventory("Painkiller_GoldActive"))
 				{
 					GiveInventory("Painkiller_TripleHaste_Freezer",1);
 					Delay(3);
 				}
-				StopSound(0,CHAN_7);
-				Playsound(0,"Painkiller/BulletTimeStop",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
 			}
 			else
 				Print(s:"Triple Haste does not work outside of singleplayer games. Please select a different gold card.");
@@ -1805,12 +1798,18 @@ Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 			TakeInventory("Painkiller_MagicGun_Ammo",1);
 			break;
 		case 13:
+			SetFont("PKDEMONB");
+			SetHudSize(1,1,1);
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA,32600,0,0.0,0.0,65536.0,0.5);
+			ACS_NamedExecuteWithResult("Painkiller_DemonMorphFade");
 			while(CheckInventory("Painkiller_GoldActive"))
 			{
 				GiveInventory("Painkiller_DemonMorph",1);
 				SetWeapon("Painkiller_DemonMorph");
 				Delay(5);
 			}
+			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,32600,0,0.0,0.0,0.5,0.1);
+			GiveInventory("Painkiller_DemonMorphRemove",1);
 			GiveInventory("Painkiller_DemonMorphRemove",1);
 			//TakeInventory("Painkiller_DemonMorph",1);
 			//TakeInventory("PainkillerDemonMorphSlower",1);
@@ -1826,6 +1825,8 @@ Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 			TakeInventory("Painkiller_WeaponModifier_Token",1);
 			break;
 	}
+	StopSound(0,CHAN_7);
+	Playsound(0,"Painkiller/BulletTimeStop",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
 }
 
 Script "Painkiller_SoulCatcher" (int type)
