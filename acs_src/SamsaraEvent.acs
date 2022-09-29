@@ -4,17 +4,29 @@ script "SamsaraOpen" open  //623 -- SAMSARA_OPEN
     int opd, pd;
     int opdu, pdu;
     int opds, pds;
-        
-	if(StrICmp(strparam(l:"NETEND"),"you can't end a netquest!\n\npress a key.") == 0)
+       
+	int checkerTid = UniqueTid();
+	int spawnerTid = UniqueTid();
+	while(!Spawn("SamsaraIWADChecker",GetFirstPlayerCoords(0),GetFirstPlayerCoords(1),GetFirstPlayerCoords(2),spawnerTid)) { Delay(1); }
+	
+	Thing_SpawnNoFog(spawnerTid,240,0,checkerTid);
+	
+	if(GetActorClass(checkerTid) == "SamsaraIWADChecker_Doom")
+		currentGame = GAME_DOOM;
+	else if(GetActorClass(checkerTid) == "SamsaraIWADChecker_Chex")
 		currentGame = GAME_CHEX;
-	else if(StrICmp(strparam(l:"SWSTRING"),"Only available in the registered version") == 0)
+	else if(GetActorClass(checkerTid) == "SamsaraIWADChecker_Heretic")
 		currentGame = GAME_HERETIC;
-	else if(StrICmp(strparam(x:GetCvar("am_cdwallcolor")),"734323") == 0)
+	else if(GetActorClass(checkerTid) == "SamsaraIWADChecker_Hexen")
 		currentGame = GAME_HEXEN;
-	else if(StrICmp(strparam(k:"showpop 3"),"??? (Showpop 3)") != 0)
-		currentGame = GAME_STRIFE;
-		
+	else if(GetActorClass(checkerTid) == "SamsaraIWADChecker_Strife")
+		currentGame = GAME_STRIFE;	
+	
+	Thing_Remove(spawnerTid);
+	Thing_Remove(checkerTid);
+			
 	SetCvar("samsara_currentgame",currentGame);
+	SetCvar("samsara_processedgame",1);
 		
     if (!GetCVar("samsara_cvarinfo"))
     {   SetCVar ("samsara_cvarinfo", 0);
