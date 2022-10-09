@@ -6,7 +6,6 @@ actor " Rocket Launcher ": InstantSwitchWeapon
     Weapon.AmmoUse 1
     Weapon.AmmoGive 2
     Weapon.AmmoType "RocketAmmo"
-    //+AMMO_OPTIONAL
     +DONTBOB
     +INVENTORY.UNDROPPABLE
     +WEAPON.EXPLOSIVE
@@ -17,100 +16,89 @@ actor " Rocket Launcher ": InstantSwitchWeapon
     States
     {
       Spawn:
-        TNT1 A 0
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,2)
-		WRLP A 4
-        Loop
-		WRLP B 4
-        Loop
+        WRLP A -1
+        stop
 
+      // Original
       Ready:
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,4)
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,2)
-		WRCK A 1 A_WeaponReady
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"ReadyCTK")
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"ReadyLost")
+        WRCK A 1 A_WeaponReady
         loop
-        WRCK E 1 A_WeaponReady
-        loop
-        TK07 A 1 A_WeaponReady
-        loop		
 
       Fire:
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireCTK")
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireCTK")
         WRCK B 4 A_JumpIfInventory("WolfenClassMode",1,"FireLost")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
-        TNT1 A 0 A_JumpIfInventory("RJingModeOn",1,"RJFire")
-        TNT1 A 0 A_FireCustomMissile("WolfRocket")
-      FireFinish:
-        WRCK C 4 Bright
+        WRCK C 4 Bright A_GiveInventory("SamsaraWolfenRocketLauncherAttackHandler")
         WRCK DB 4
-        TNT1 A 0 A_Refire
+      FireFinish:
+        TNT1 A 0 A_ReFire
         goto Ready
-        
-      RJFire:
-        TNT1 A 0 A_FireCustomMissile("WolfRocketRJ")
-        goto FireFinish
 
-      CoopFire:
-        TNT1 A 0 A_JumpIfInventory("RJingModeOn",1,"RJFireCoop")
-        TNT1 A 0 A_FireCustomMissile("WolfRocket2")
-        goto FireFinish
-        
-      RJFireCoop:
-        TNT1 A 0 A_FireCustomMissile("WolfRocket2RJ")
-        goto FireFinish
-		
-	  FireLost:
+      // Lost Missions
+      ReadyLost:
+        WRCK E 1 A_WeaponReady
+        goto Ready
+
+      FireLost:
         WRCK F 4
-	    TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFireLost")
-        TNT1 A 0 A_JumpIfInventory("RJingModeOn",1,"RJFireLost")
-        TNT1 A 0 A_FireCustomMissile("LostRocket")
-      FireLostFinish:
-        WRCK G 4 Bright
+        WRCK G 4 Bright A_GiveInventory("SamsaraWolfenLostRocketLauncherAttackHandler")
         WRCK HF 4
-        TNT1 A 0 A_Refire
-        goto Ready
-		
-	  RJFireLost:
-        TNT1 A 0 A_FireCustomMissile("LostRocketRJ")
-        goto FireLostFinish
+        goto FireFinish
 
-      CoopFireLost:
-        TNT1 A 0 A_JumpIfInventory("RJingModeOn",1,"RJFireCoopLost")
-        TNT1 A 0 A_FireCustomMissile("LostRocket2")
-        goto FireLostFinish
-        
-      RJFireCoopLost:
-        TNT1 A 0 A_FireCustomMissile("LostRocket2RJ")
-        goto FireLostFinish
-		
+      // Castle Totenkopf SDL (Panzerschreck)
+      ReadyCTK:
+        TK07 A 1 A_WeaponReady
+        goto Ready
+
       FireCTK:
-		TK07 B 0 A_JumpIfInventory("DMModeOn", 1, "DMFireCTK")
-		TK07 B 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFireCTK")
         TK07 B 3
-        TK07 C 0 A_PlaySound("Totenkopf/missilefire",CHAN_WEAPON)
-        TK07 C 3 Bright A_FireCustomMissile("Totenkopf_Panzerschreck_Projectile",0,1,0,8)
-		TK07 DE 3
-		TK07 F 32
-		TK07 A 3
-        Goto Ready
-		
-	  CoopFireCTK:
-        TK07 B 3
-        TK07 C 0 A_PlaySound("Totenkopf/missilefire",CHAN_WEAPON)
-        TK07 C 3 Bright A_FireCustomMissile("Totenkopf_Panzerschreck_ProjectileCoop",0,1,0,8)
-		TK07 DE 3
-		TK07 F 32
-		TK07 A 3
-        Goto Ready	  	
-		
-	  DMFireCTK:
-        TK07 B 3
-        TK07 C 0 A_PlaySound("Totenkopf/missilefire",CHAN_WEAPON)
-        TK07 C 3 Bright A_FireCustomMissile("Totenkopf_Panzerschreck_ProjectileDM",0,1,0,8)
-		TK07 DE 3
-		TK07 F 32
-		TK07 A 3
-        Goto Ready		
+        TK07 C 3 Bright A_GiveInventory("SamsaraTotenkopfPanzerschreckAttackHandler")
+        TK07 DE 3
+        TK07 F 32
+        TK07 A 3
+        goto FireFinish
+    }
+}
+
+// Original
+
+actor SamsaraWolfenRocketLauncherAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_JumpIfInventory("RJingModeOn",1,"PickupAttackDMRJ")
+        TNT1 A 0 A_FireCustomMissile("WolfRocket",0,false)
+        stop
+
+      PickupAttackDMRJ:
+        TNT1 A 0 A_FireCustomMissile("WolfRocketRJ",0,false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_JumpIfInventory("RJingModeOn",1,"PickupAttackCoopRJ")
+        TNT1 A 0 A_FireCustomMissile("WolfRocket2",0,false)
+        stop
+
+      PickupAttackCoopRJ:
+        TNT1 A 0 A_FireCustomMissile("WolfRocket2RJ",0,false)
+        stop
     }
 }
 
@@ -178,6 +166,47 @@ actor WolfRocketSmoke
     }
 }
 
+// Lost Missions
+
+actor SamsaraWolfenLostRocketLauncherAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_JumpIfInventory("RJingModeOn",1,"PickupAttackDMRJ")
+        TNT1 A 0 A_FireCustomMissile("LostRocket",0,false)
+        stop
+
+      PickupAttackDMRJ:
+        TNT1 A 0 A_FireCustomMissile("LostRocketRJ",0,false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_JumpIfInventory("RJingModeOn",1,"PickupAttackCoopRJ")
+        TNT1 A 0 A_FireCustomMissile("LostRocket2",0,false)
+        stop
+
+      PickupAttackCoopRJ:
+        TNT1 A 0 A_FireCustomMissile("LostRocket2RJ",0,false)
+        stop
+    }
+}
+
 actor LostRocket : WolfRocket
 {
 	SeeSound "wolfen/missilefire2"
@@ -221,6 +250,37 @@ ACTOR SODRocketSmoke : WolfRocketSmoke
 	}
 }
 
+// Castle Totenkopf SDL
+
+actor SamsaraTotenkopfPanzerschreckAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Totenkopf/missilefire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("Totenkopf_Panzerschreck_ProjectileDM",0,false,0,8)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("Totenkopf_Panzerschreck_ProjectileCoop",0,false,0,8)
+        stop
+    }
+}
 
 Actor Totenkopf_Panzerschreck_Projectile
 {
