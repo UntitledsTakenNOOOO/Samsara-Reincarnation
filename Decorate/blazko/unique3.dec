@@ -1,0 +1,105 @@
+actor Totenkopf_Sniper : InstantSwitchWeapon
+{
+	Tag "Kar98k Rifle (Scope)"
+	Weapon.SlotPriority 2
+	Weapon.AmmoGive 0
+    Weapon.SelectionOrder 800
+    Weapon.SlotNumber 2
+    Inventory.PickUpSound "Totenkopf/getweapon"
+    Weapon.AmmoUse 1
+    Weapon.AmmoType "Shell"
+//	+WEAPON.NOAUTOFIRE
+    +THRUGHOST
+    +DONTBOB
+    +INVENTORY.UNDROPPABLE
+    Obituary ""
+    Weapon.YAdjust 16
+	Weapon.SlotPriority 3	
+    Inventory.PickupMessage "Kar98k Sniper Rifle"
+	Inventory.RestrictedTo "WolfenPlayer"	
+	+WEAPON.NO_AUTO_SWITCH
+	+WEAPON.NOALERT
+    States
+    {
+      Spawn:
+		TK12 M 4
+        Loop
+
+	  Deselect:
+	    TNT1 A 0 A_ZoomFactor(1.0,ZOOM_INSTANT)
+		Goto Super::Deselect
+
+      Ready:
+		TNT1 A 0 A_ZoomFactor(4.0,ZOOM_INSTANT)
+		TNT1 A 0 A_JumpIf(CallACS("Totenkopf_SniperScope")==1,1)
+        TNT1 A 1 A_WeaponReady
+        loop
+
+      Fire:
+		TNT1 A 0 A_AlertMonsters
+		TNT1 B 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
+        TNT1 B 3
+		TNT1 C 0 A_PlaySound("Totenkopf/atkkar98",CHAN_WEAPON)
+		TNT1 C 3 Bright A_FireCustomMissile("Totenkopf_Tracer_Sniper")
+		TNT1 D 5
+		TNT1 E 0 A_JumpIfNoAmmo("Ready")
+		TNT1 E 0 A_PlaySound("Totenkopf/kar98bolt",CHAN_5)
+		TNT1 E 5
+		TNT1 F 5
+		TNT1 GHI 2
+		TNT1 JK 5
+		TNT1 L 3
+		Goto Ready
+	  CoopFire:
+        TNT1 B 3
+		TNT1 C 0 A_PlaySound("Totenkopf/atkkar98",CHAN_WEAPON)
+		TNT1 C 3 Bright A_FireCustomMissile("Totenkopf_Tracer_SniperCoop")
+		TNT1 D 5
+		TNT1 E 0 A_JumpIfNoAmmo("Ready")
+		TNT1 E 0 A_PlaySound("Totenkopf/kar98bolt",CHAN_5)
+		TNT1 E 5
+		TNT1 F 5
+		TNT1 GHI 2
+		TNT1 JK 5
+		TNT1 L 3
+		Goto Ready	  
+	  AltFire:
+		"####" "#" 0 A_JumpIfInventory("WolfenClassMode",2,1)
+		Goto Ready
+		"####" "#" 0 A_JumpIfInventory("Machine Gun",1,"SwitchWeaponMode")
+		Goto Ready
+	  SwitchWeaponMode:
+		"####" "#" 8
+		"####" "#" 0 A_SelectWeapon("Machine Gun")
+		Goto Deselect
+    }
+} 
+
+Actor Totenkopf_Tracer_Sniper : Totenkopf_Tracer { Damage ((125+random(0,256)%25)) }
+Actor Totenkopf_Tracer_SniperCoop : Totenkopf_Tracer_Sniper { Species "Player" +THRUSPECIES }
+
+/*Actor Totenkopf_SniperPickup : CustomInventory
+{
+	Inventory.PickupMessage "Scoped Kar98k Rifle"
+	Inventory.PickUpSound "Totenkopf/getweapon"
+	+INVENTORY.AUTOACTIVATE
+	States
+	{
+		Spawn:
+			TK12 M 4
+			Loop
+		Pickup:
+			TNT1 A 0 A_JumpIfInventory("Shell",0,1)
+			Goto Pickup+3
+			TNT1 A 0 A_JumpIfInventory("Totenkopf_Sniper",1,1)
+			Goto Pickup+3
+			TNT1 A 0 A_JumpIfInventory("Totenkopf_Kar98K",1,"PickupFailure")
+			TNT1 A 0 A_GiveInventory("Totenkopf_Sniper",1)
+			TNT1 A 0 A_GiveInventory("Totenkopf_Kar98K",1)
+			TNT1 A 0 A_GiveInventory("Shell",5)
+			Stop
+		PickupFailure:
+			TNT1 A 0 A_Railwait
+			fail
+	}
+}*/

@@ -1,0 +1,88 @@
+actor Totenkopf_Flamethrower : InstantSwitchWeapon
+{
+    Tag "Flammenwerfer" // "Flamethrower" already exists and would be confusing with Original/Lost Missions flamethrower
+	Weapon.SelectionOrder 400
+    Weapon.SlotNumber 8
+    Inventory.PickUpSound "Totenkopf/getweapon"
+    Weapon.AmmoUse 1
+    Weapon.AmmoGive 0
+    Weapon.AmmoType "Totenkopf_FlamethrowerFuel"
+    +THRUGHOST
+    +DONTBOB
+    +INVENTORY.UNDROPPABLE
+    Inventory.PickupMessage "Flamethrower"
+	Inventory.RestrictedTo "WolfenPlayer"		
+    Obituary ""
+    Weapon.YAdjust 16
+    States
+    {
+      Spawn:
+		TK06 F 4
+        Loop
+
+      Ready:
+        TK06 A 1 A_WeaponReady
+        loop
+
+      Fire:
+        TK06 B 2
+		Goto Hold
+
+      Hold:
+		TK06 C 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHold")
+        TK06 C 0 A_PlaySound("Totenkopf/flamethrower",CHAN_WEAPON)
+        TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
+        TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
+		TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
+		TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
+		TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
+		TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
+        TK06 D 2 Bright
+		TK06 D 0 A_Refire
+		TK06 E 3
+        Goto Ready
+	  CoopHold:
+        TK06 C 0 A_PlaySound("Totenkopf/flamethrower",CHAN_WEAPON)
+        TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
+        TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
+		TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
+		TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
+		TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
+		TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
+        TK06 D 2 Bright
+		TK06 D 0 A_Refire
+		TK06 E 3
+        Goto Ready	  
+    }
+}
+
+Actor Totenkopf_Flamethrower_Projectile
+{
+	Speed 24
+	Damage (random(0,256)>>3)
+	Height 16
+	Radius 8
+	Projectile
+	DamageType "TotenkopfFire"
+	+BLOODLESSIMPACT
+	+NOEXTREMEDEATH
+	+NODAMAGETHRUST
+	States
+	{
+		Spawn:
+			TK52 ABABCDCD 3 Bright
+		Death:
+			TK52 A 0 A_Stop
+			TK52 EFG 2 Bright
+			Stop
+	}
+} 
+Actor Totenkopf_Flamethrower_ProjectileCoop : Totenkopf_Flamethrower_Projectile { Species "Player" +THRUSPECIES }
+
+Actor Totenkopf_FlameThrowerFuel : Ammo 
+{
+	Inventory.MaxAmount 200
+	Ammo.BackPackMaxAmount 400
+	Ammo.BackPackAmount 40
+	Inventory.Icon "AMSMN0"
+}	
