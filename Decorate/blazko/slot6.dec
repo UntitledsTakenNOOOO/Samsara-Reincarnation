@@ -1,3 +1,5 @@
+actor SamsaraTotenkopfChaingunAttackSilentSound : Boolean {}
+
 actor " Flamethrower ": InstantSwitchWeapon
 {
     Weapon.SelectionOrder 1900
@@ -6,7 +8,6 @@ actor " Flamethrower ": InstantSwitchWeapon
     Weapon.AmmoUse 1
     Weapon.AmmoGive 40
     Weapon.AmmoType "Cell"
-    //+AMMO_OPTIONAL
     +DONTBOB
     +INVENTORY.UNDROPPABLE
     Inventory.PickupMessage "You got the Flamethrower!"
@@ -16,35 +17,25 @@ actor " Flamethrower ": InstantSwitchWeapon
     States
     {
       Spawn:
-        TNT1 A 0
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,2)
-		WFLP A 4
-        Loop
-		WFLP B 4
-        Loop
+        WFLP A -1
+        stop
 
+      // Original
       Ready:
-	    TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,4)
-        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,2)
-		WFLT A 1 A_WeaponReady
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"ReadyCTK")
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"ReadyLost")
+        WFLT A 1 A_WeaponReady
         loop
-		WFLT E 1 A_WeaponReady
-        loop
-        TK08 A 1 A_WeaponReady
-        loop		
 
       Fire:
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,4)
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,2)
-        WFLT B 5
-		Goto Hold
-		WFLT F 5
-		Goto Hold
-        TK08 B 2	
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireCTK")
+        WFLT B 5 A_JumpIfInventory("WolfenClassMode",1,"FireLost")
+        goto HoldStart
 
       Hold:
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"HoldCTK")
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"HoldCTK")
         TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"HoldLost")
+      HoldStart:
         TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"HoldSmooth")
       HoldVanilla:
         WFLT C 4 Bright A_GiveInventory("SamsaraWolfenFlamethrowerAttackHandler")
@@ -59,10 +50,16 @@ actor " Flamethrower ": InstantSwitchWeapon
         goto HoldFinish
 
       HoldFinish:
-        TNT1 A 0 A_ReFire
-        WFLT B 3 A_ClearReFire
+        WFLT B 3 A_ReFire
         goto Ready
 
+      // Lost Missions
+      ReadyLost:
+        WFLT E 1 A_WeaponReady
+        goto Ready
+
+      FireLost:
+        WFLT F 5
       HoldLost:
         TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"HoldLostSmooth")
       HoldLostVanilla:
@@ -78,56 +75,32 @@ actor " Flamethrower ": InstantSwitchWeapon
         goto HoldLostFinish
 
       HoldLostFinish:
-        TNT1 A 0 A_ReFire
-        WFLT F 3 A_ClearReFire
+        WFLT F 3 A_ReFire
         goto Ready
 
+      // Castle Totenkopf SDL (Chaingun)
+      ReadyCTK:
+        TK08 A 1 A_WeaponReady
+        goto Ready
+
+      FireCTK:
+        TK08 B 2
       HoldCTK:
-		TK08 C 0 A_JumpIfInventory("DMModeOn", 1, "DMHoldCTK")
-		TK08 C 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHoldCTK")
-        TK08 C 0 A_PlaySound("Totenkopf/atkchaingun",CHAN_WEAPON)
-        TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_Chaingun",random(-6,6))
-        TK08 D 2 Bright A_FireCustomMissile("Totenkopf_Tracer_Chaingun",random(-6,6))
-		TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_Chaingun",random(-6,6))
-		TK08 D 2 Bright A_FireCustomMissile("Totenkopf_Tracer_Chaingun",random(-6,6))
-		TK08 C 0 A_PlaySound("Totenkopf/atkchaingun",CHAN_WEAPON)
-		TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_Chaingun",random(-6,6))
-        TK08 D 2 Bright A_FireCustomMissile("Totenkopf_Tracer_Chaingun",random(-6,6))
-		TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_Chaingun",random(-6,6))
-		TK08 D 2 Bright
-		TK08 D 0 A_Refire
-        TK08 E 2
-        Goto Ready
-	  CoopHoldCTK:
-        TK08 C 0 A_PlaySound("Totenkopf/atkchaingun",CHAN_WEAPON)
-        TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunCoop",random(-6,6))
-        TK08 D 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunCoop",random(-6,6))
-		TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunCoop",random(-6,6))
-		TK08 D 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunCoop",random(-6,6))
-		TK08 C 0 A_PlaySound("Totenkopf/atkchaingun",CHAN_WEAPON)
-		TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunCoop",random(-6,6))
-        TK08 D 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunCoop",random(-6,6))
-		TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunCoop",random(-6,6))
-		TK08 D 2 Bright
-		TK08 D 0 A_Refire
-        TK08 E 2
-        Goto Ready	  	
-	  DMHoldCTK:
-        TK08 C 0 A_PlaySound("Totenkopf/atkchaingun",CHAN_WEAPON)
-        TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunDM",random(-6,6))
-        TK08 D 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunDM",random(-6,6))
-		TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunDM",random(-6,6))
-		TK08 D 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunDM",random(-6,6))
-		TK08 C 0 A_PlaySound("Totenkopf/atkchaingun",CHAN_WEAPON)
-		TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunDM",random(-6,6))
-        TK08 D 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunDM",random(-6,6))
-		TK08 C 2 Bright A_FireCustomMissile("Totenkopf_Tracer_ChaingunDM",random(-6,6))
-		TK08 D 2 Bright
-		TK08 D 0 A_Refire
-        TK08 E 2
-        Goto Ready		
+        TNT1 A 0 A_TakeInventory("SamsaraTotenkopfChaingunAttackSilentSound")
+        TK08 C 2 Bright A_GiveInventory("SamsaraTotenkopfChaingunAttackHandler")
+        TNT1 A 0 A_GiveInventory("SamsaraTotenkopfChaingunAttackSilentSound")
+        TK08 DCD 2 Bright A_GiveInventory("SamsaraTotenkopfChaingunAttackHandler")
+        TNT1 A 0 A_TakeInventory("SamsaraTotenkopfChaingunAttackSilentSound")
+        TK08 C 2 Bright A_GiveInventory("SamsaraTotenkopfChaingunAttackHandler")
+        TNT1 A 0 A_GiveInventory("SamsaraTotenkopfChaingunAttackSilentSound")
+        TK08 DC 2 Bright A_GiveInventory("SamsaraTotenkopfChaingunAttackHandler")
+        TK08 D 2 Bright
+        TK08 E 2 A_ReFire
+        goto Ready
     }
 }
+
+// Original/Lost Missions
 
 actor SamsaraWolfenFlamethrowerAttackHandler : Trigger
 {
@@ -184,6 +157,43 @@ actor WolfenFire
 }
 
 actor WolfenFireCoop: WolfenFire { +THRUSPECIES Species "Player" }
+
+// Castle Totenkopf SDL
+
+actor SamsaraTotenkopfChaingunAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
+        goto PickupPlaySound
+
+      // Sound stuff
+      PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraTotenkopfChaingunAttackSilentSound",1,"PickupAttack")
+        TNT1 A 0 A_PlaySound("Totenkopf/atkchaingun",CHAN_WEAPON)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("Totenkopf_Tracer_ChaingunDM",random(-6,6),false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("Totenkopf_Tracer_ChaingunCoop",random(-6,6),false)
+        stop
+    }
+}
 
 Actor Totenkopf_Tracer_Chaingun : Totenkopf_Tracer 
 { 
