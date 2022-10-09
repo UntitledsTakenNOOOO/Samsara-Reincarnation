@@ -10,6 +10,7 @@ actor "Spear of Destiny": InstantSwitchWeapon
     +WEAPON.NOAUTOFIRE
 	+WEAPON.AMMO_OPTIONAL
     +WEAPON.BFG
+    +NOALERT
 	Inventory.RestrictedTo "WolfenPlayer"
     Obituary "$SAMSARA_WOLFEN_OB_SLOT7" 
     Inventory.PickupMessage "You got the Spear of Destiny!"
@@ -18,138 +19,122 @@ actor "Spear of Destiny": InstantSwitchWeapon
     States
     {
       Spawn:
-		TNT1 A 0
-        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,2)
-	    WSPR E 4
-        Loop
-		WSPR N 4
-        Loop
-	
+        WSPR E -1
+        stop
 
+      // Original
       Ready:
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,4)
-        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,2)
-		WSPR A 1 A_WeaponReady
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"ReadyCTK")
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"ReadyLost")
+        WSPR A 1 A_WeaponReady
         loop
-		WSPR J 1 A_WeaponReady
-        loop
-        TK09 A 1 A_WeaponReady
-        loop			
 
       Fire:
-		TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireCTK")
-		TNT1 A 0 A_JumpIfInventory("Cell", 40, 1)
-		Goto Ready
-        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"FireLost")
-		TNT1 A 0 A_JumpIfInventory("SPModeOn", 1, "SPFire")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
-        WSPR B 20 A_PlayWeaponSound("wolfen/spearready")
-        WSPR C 15 BRIGHT
-        WSPR C 0 A_PlayWeaponSound("wolfen/spearfire")
-        WSPR D 15 BRIGHT A_FireCustomMissile("SpearBoltDM", 0, 1, 0, 0)
-        WSPR C 15 BRIGHT
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireCTK")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+        TNT1 A 0 A_JumpIfInventory("Cell",40,"FireStart")
+      FireNoAmmo:
+        TNT1 A 0 A_ClearReFire
+        TNT1 A 0 A_SelectWeapon("Luger")
+        goto Deselect
+
+      FireStart:
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_PlaySound("wolfen/spearready",CHAN_WEAPON)
+        WSPR B 20 A_JumpIfInventory("WolfenClassMode",1,"FireLost")
+        WSPR C 15 Bright
+        WSPR D 15 Bright A_GiveInventory("SamsaraWolfenSpearOfDestinyAttackHandler")
+        WSPR C 15 Bright
         WSPR B 15
-        WSPR A 5 A_Refire
-        goto Ready
-	  
-	  FireLost:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn", 1, "SPFireLost")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFireLost")
-        WSPR K 20 A_PlayWeaponSound("wolfen/spearready")
-        WSPR L 15 BRIGHT
-        WSPR L 0 A_PlayWeaponSound("wolfen/spearfire")
-        WSPR M 15 BRIGHT A_FireCustomMissile("SpearBoltDM", 0, 1, 0, 0)
-        WSPR L 15 BRIGHT
-        WSPR K 15
-        WSPR J 5 A_Refire
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",40,1)
+        goto FireNoAmmo
+        WSPR A 5 A_ReFire
         goto Ready
 
-      SPFire:
-        WSPR B 20 A_PlayWeaponSound("wolfen/spearready")
-        WSPR C 15 BRIGHT
-        WSPR C 0 A_PlayWeaponSound("wolfen/spearfire")
-        WSPR D 15 BRIGHT A_FireCustomMissile("SpearBolt", 0, 1, 0, 0)
-        WSPR C 15 BRIGHT
-        WSPR B 15
-        WSPR A 5 A_Refire
-        goto Ready
-		
-	  SPFireLost:
-        WSPR K 20 A_PlayWeaponSound("wolfen/spearready")
-        WSPR L 15 BRIGHT
-        WSPR L 0 A_PlayWeaponSound("wolfen/spearfire")
-        WSPR M 15 BRIGHT A_FireCustomMissile("SpearBolt", 0, 1, 0, 0)
-        WSPR L 15 BRIGHT
-        WSPR K 15
-        WSPR J 5 A_Refire
+      Hold:
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"HoldCTK")	  
+        goto Fire
+
+      // Lost Missions
+      ReadyLost:
+        WSPR J 1 A_WeaponReady
         goto Ready
 
-      CoopFire:
-        WSPR B 20 A_PlayWeaponSound("wolfen/spearready")
-        WSPR C 15 BRIGHT
-        WSPR C 0 A_PlayWeaponSound("wolfen/spearfire")
-        WSPR D 15 BRIGHT A_FireCustomMissile("SpearBolt2", 0, 1, 0, 0)
-        WSPR C 15 BRIGHT
-        WSPR B 15
-        WSPR A 5 A_Refire
-        goto Ready
-		
-	  CoopFireLost:
-        WSPR K 20 A_PlayWeaponSound("wolfen/spearready")
-        WSPR L 15 BRIGHT
-        WSPR L 0 A_PlayWeaponSound("wolfen/spearfire")
-        WSPR M 15 BRIGHT A_FireCustomMissile("SpearBolt2", 0, 1, 0, 0)
-        WSPR L 15 BRIGHT
+      FireLost:
+        WSPR K 20
+        WSPR L 15 Bright
+        WSPR M 15 Bright A_GiveInventory("SamsaraWolfenSpearOfDestinyAttackHandler")
+        WSPR L 15 Bright
         WSPR K 15
-        WSPR J 5 A_Refire
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",40,1)
+        goto FireNoAmmo
+        WSPR J 5 A_ReFire
         goto Ready
-		
+
+      // Castle Totenkopf SDL (Flakgun)
+      ReadyCTK:
+        TK09 A 1 A_WeaponReady
+        goto Ready
+
       FireCTK:
-		TK09 B 3 A_JumpIfInventory("Cell", 3, "HoldCTK")
-		Goto Ready
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStartCTK")
+        TNT1 A 0 A_JumpIfInventory("Cell",3,"FireStartCTK")
+        goto FireNoAmmo
+
+      FireStartCTK:
+        TK09 B 3 A_AlertMonsters
+        goto HoldStartCTK
 
       HoldCTK:
-		TK09 C 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHoldCTK")
-		TK09 C 0 A_JumpIfInventory("Cell", 3, 1)
-		Goto FinishCTK
-		TK09 C 0 A_PlaySound("Totenkopf/atkflakgun",CHAN_WEAPON)
-        TK09 C 3 Bright A_FireCustomMissile("Totenkopf_Flakgun_ProjectileDM",random(-6,6),0,0,0)
-		TK09 D 0 A_TakeInventory("Cell", 3, TIF_NOTAKEINFINITE)
-		TK09 D 0 A_JumpIfInventory("Cell", 3, 1)
-		Goto FinishCTK
-		TK09 D 0 A_PlaySound("Totenkopf/atkflakgun",CHAN_WEAPON)
-        TK09 D 4 Bright A_FireCustomMissile("Totenkopf_Flakgun_ProjectileDM",random(-6,6),0,0,0)
-		TK09 D 0 A_TakeInventory("Cell", 3, TIF_NOTAKEINFINITE)
-		TK09 D 0 A_Refire("HoldCTK")
-	  FinishCTK:
-        TK09 E 3
-        Goto Ready
-	  CoopHoldCTK:
-        TK09 C 0 A_JumpIfInventory("Cell", 3, 1)
-		Goto FinishCTK
-		TK09 C 0 A_PlaySound("Totenkopf/atkflakgun",CHAN_WEAPON)
-        TK09 C 3 Bright A_FireCustomMissile("Totenkopf_Flakgun_ProjectileCoop",random(-6,6),0,0,0)
-		TK09 D 0 A_TakeInventory("Cell", 3, TIF_NOTAKEINFINITE)
-		TK09 D 0 A_JumpIfInventory("Cell", 3, 1)
-		Goto FinishCTK
-		TK09 D 0 A_PlaySound("Totenkopf/atkflakgun",CHAN_WEAPON)
-        TK09 D 4 Bright A_FireCustomMissile("Totenkopf_Flakgun_ProjectileCoop",random(-6,6),0,0,0)
-		TK09 D 0 A_TakeInventory("Cell", 3, TIF_NOTAKEINFINITE)
-		TK09 D 0 A_Refire("CoopHoldCTK")
-        Goto FinishCTK	  		
-	SPHoldCTK:
-		TK09 C 0 A_JumpIfInventory("Cell", 3, 1)
-		Goto FinishCTK
-		TK09 C 0 A_PlaySound("Totenkopf/atkflakgun",CHAN_WEAPON)
-        TK09 C 3 Bright A_FireCustomMissile("Totenkopf_Flakgun_Projectile",random(-6,6),0,0,0)
-		TK09 D 0 A_TakeInventory("Cell", 3, TIF_NOTAKEINFINITE)
-		TK09 D 0 A_JumpIfInventory("Cell", 3, 1)
-		Goto FinishCTK
-		TK09 D 0 A_PlaySound("Totenkopf/atkflakgun",CHAN_WEAPON)
-        TK09 D 4 Bright A_FireCustomMissile("Totenkopf_Flakgun_Projectile",random(-6,6),0,0,0)
-		TK09 D 0 A_TakeInventory("Cell", 3, TIF_NOTAKEINFINITE)
-		TK09 D 0 A_Refire("HoldCTK")
-		Goto FinishCTK
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",3,1)
+        goto FireNoAmmo
+        TNT1 A 0 A_AlertMonsters
+      HoldStartCTK:
+        TK09 C 3 Bright A_GiveInventory("SamsaraTotenkopfFlakgunAttackHandler")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",3,1)
+        goto FireNoAmmo
+        TK09 D 4 Bright A_GiveInventory("SamsaraTotenkopfFlakgunAttackHandler")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",3,1)
+        goto FireNoAmmo
+        TK09 E 3 A_ReFire
+        goto Ready
+    }
+}
+
+// Original/Lost Missions
+
+actor SamsaraWolfenSpearOfDestinyAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",40,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",40,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("wolfen/spearfire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("SpearBoltDM",0,false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("SpearBolt2",0,false)
+        stop
     }
 }
 
@@ -362,6 +347,38 @@ actor SpearShotTrail2: SpearShotTrail
 {
     Scale 0.3
     +CLIENTSIDEONLY
+}
+
+// Castle Totenkopf SDL
+
+actor SamsaraTotenkopfFlakgunAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",3,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",3,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Totenkopf/atkflakgun",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("Totenkopf_Flakgun_ProjectileDM",random(-6,6),false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("Totenkopf_Flakgun_ProjectileCoop",random(-6,6),false)
+        stop
+    }
 }
 
 Actor Totenkopf_Flakgun_Projectile : Totenkopf_Tracer
