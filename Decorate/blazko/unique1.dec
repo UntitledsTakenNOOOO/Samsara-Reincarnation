@@ -1,3 +1,5 @@
+actor SamsaraTotenkopfFlamethrowerAttackSilentSound : Boolean {}
+
 actor Totenkopf_Flamethrower : InstantSwitchWeapon
 {
     Tag "Flammenwerfer" // "Flamethrower" already exists and would be confusing with Original/Lost Missions flamethrower
@@ -7,18 +9,16 @@ actor Totenkopf_Flamethrower : InstantSwitchWeapon
     Weapon.AmmoUse 1
     Weapon.AmmoGive 0
     Weapon.AmmoType "Totenkopf_FlamethrowerFuel"
-    +THRUGHOST
     +DONTBOB
     +INVENTORY.UNDROPPABLE
     Inventory.PickupMessage "Flamethrower"
 	Inventory.RestrictedTo "WolfenPlayer"		
-    Obituary ""
     Weapon.YAdjust 16
     States
     {
       Spawn:
-		TK06 F 4
-        Loop
+        TK06 F -1
+        stop
 
       Ready:
         TK06 A 1 A_WeaponReady
@@ -26,33 +26,49 @@ actor Totenkopf_Flamethrower : InstantSwitchWeapon
 
       Fire:
         TK06 B 2
-		Goto Hold
-
       Hold:
-		TK06 C 0 A_JumpIfInventory("CoopModeOn", 1, "CoopHold")
-        TK06 C 0 A_PlaySound("Totenkopf/flamethrower",CHAN_WEAPON)
-        TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
-        TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
-		TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
-		TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
-		TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
-		TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,1,0,8)
-        TK06 D 2 Bright
-		TK06 D 0 A_Refire
-		TK06 E 3
-        Goto Ready
-	  CoopHold:
-        TK06 C 0 A_PlaySound("Totenkopf/flamethrower",CHAN_WEAPON)
-        TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
-        TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
-		TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
-		TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
-		TK06 C 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
-		TK06 D 2 Bright A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,1,0,8)
-        TK06 D 2 Bright
-		TK06 D 0 A_Refire
-		TK06 E 3
-        Goto Ready	  
+        TNT1 A 0 A_TakeInventory("SamsaraTotenkopfFlamethrowerAttackSilentSound")
+        TK06 C 2 Bright A_GiveInventory("SamsaraTotenkopfFlamethrowerAttackHandler")
+        TNT1 A 0 A_GiveInventory("SamsaraTotenkopfFlamethrowerAttackSilentSound")
+        TK06 DCDC 2 Bright A_GiveInventory("SamsaraTotenkopfFlamethrowerAttackHandler")
+        TK06 D 4 Bright A_GiveInventory("SamsaraTotenkopfFlamethrowerAttackHandler")
+        TK06 E 3 A_ReFire
+        goto Ready
+    }
+}
+
+actor SamsaraTotenkopfFlamethrowerAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Totenkopf_FlamethrowerFuel",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Totenkopf_FlamethrowerFuel",1,TIF_NOTAKEINFINITE)
+        goto PickupPlaySound
+
+      // Sound stuff
+      PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraTotenkopfFlamethrowerAttackSilentSound",1,"PickupAttack")
+        TNT1 A 0 A_PlaySound("Totenkopf/flamethrower",CHAN_WEAPON)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("Totenkopf_Flamethrower_Projectile",0,false,0,8)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("Totenkopf_Flamethrower_ProjectileCoop",0,false,0,8)
+        stop
     }
 }
 
