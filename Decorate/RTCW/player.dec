@@ -1,4 +1,4 @@
-Actor RTCW_Blazkowicz : PlayerPawn
+Actor RTCW_Blazkowicz : SamsaraPlayerPawnNormalRedBlood
 {
 	Speed 1
 	Health 100
@@ -30,6 +30,8 @@ Actor RTCW_Blazkowicz : PlayerPawn
 	Species "Player"
 	//Player.AttackZOffset 22
 	//+DONTTRANSLATE
+	var int user_scalex;
+	var int user_scaley;
 	States
 	{
 		//Knife
@@ -1080,8 +1082,14 @@ Actor RTCW_Blazkowicz : PlayerPawn
 			TNT1 A 0 A_JumpIfInventory("RTCW_WeaponToken",3,"Pain2LugerSil")
 			TNT1 A 0 A_JumpIfInventory("RTCW_WeaponToken",2,"Pain2Luger")
 			Goto Pain2Knife			
+		Pain.Shock:
+		Pain.Tesla:
+			CBGS A 4 A_Pain
+			CBGS A 4
+			Goto Spawn
 		Death:
 			TNT1 A 0 A_NoBlocking
+			TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
 			TNT1 A 0 A_PlayerScream
 			TNT1 A 0 A_Jump(128,"Death2")
 			TNT1 A 0 A_JumpIfInventory("RTCW_WeaponToken",17,"Death1Sten")
@@ -1137,48 +1145,75 @@ Actor RTCW_Blazkowicz : PlayerPawn
 			TNT1 A 0 A_JumpIfInventory("RTCW_WeaponToken",3,"BurnLugerSil")
 			TNT1 A 0 A_JumpIfInventory("RTCW_WeaponToken",2,"BurnLuger")
 			Goto BurnKnife
-		Death.RottExplosive:
-			TNT1 A 0 A_SpawnItemEx("RottGibbedMan",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-			TNT1 A 0 A_Jump(128,2)
-			TNT1 A 0 A_GiveToTarget("LudicrousGibsItem", 1)
-			BLAN A 1 A_UnsetSolid
-			TNT1 A -1
-			Stop
-		Death.RottFire:
+		Death.RTCWVenomBullet:
+			"####" "#" 0 A_JumpIfHealthLower(-50,"RTCWXDeath")
+			"####" "#" 0 A_SpawnItemEx("RTCW_DeathGibber",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)	
+			TNT1 A -1 A_Jump(256,"Death")
+			wait
+		Death.RTCWExplosive:
+		RTCWXDeath:
+		RTCWXDeath2:
+		XDeath:
 			TNT1 A 0 A_UnsetSolid
-			TNT1 A 0 A_SpawnItem("BurningSkeleton") 
+			TNT1 A 0 A_SpawnItemEx("RTCW_GibSpawner",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			TNT1 A 5 A_FadeOut
 			TNT1 A -1
 			Stop
-		Death.RottDisintegrate:
-			TNT1 A 0 A_PlayerScream
-			TNT1 A 0 A_UnsetSolid
-			TNT1 A 5 A_SpawnItem("RGodModeDeath")
-			TNT1 A -1
+		Death.ExpanderDMG:
+		XDeath.ExpanderDMG:
+			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			"####" "#" 0 A_PlaySound("duke/expand")
+			Goto ExpanderLoop
+		ExpanderLoop:
+			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
+			loop
+		ExpanderPop:	
+			"####" "#" 10
+			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+			"####" A 0 A_Jump(96,2)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+			"####" A 0 A_SetScale (1.0, 1.0)
+			"####" A 0 A_UnsetSolid
+			"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+			TNT1 A -1 A_UnsetSolid
 			Stop
-		Disintegrate:
-			"####" "#" 0 A_UnsetSolid
-			"####" "#" 0 ACS_NamedExecuteAlways("ExtraDeathFX",0,1)
-			"####" "#" 0 A_PlayerScream
-			"####" "#" 0 A_Stop
-			"####" "#" 3 A_SpawnItem("DisintEffectSmall",0,10)
-			"####" "#" 3 A_SetTranslucent(0.9,0)
-			"####" "#" 0 ACS_NamedExecuteAlways("ExtraDeathFX",0,1)
-			"####" "#" 3 A_SetTranslucent(0.8,0)
-			"####" "#" 0 ACS_NamedExecuteAlways("ExtraDeathFX",0,1)
-			"####" "#" 3 A_SetTranslucent(0.7,0)
-			"####" "#" 0 ACS_NamedExecuteAlways("ExtraDeathFX",0,1)
-			"####" "#" 3 A_SetTranslucent(0.6,0)
-			"####" "#" 0 ACS_NamedExecuteAlways("ExtraDeathFX",0,1)
-			"####" "#" 3 A_SetTranslucent(0.5,0)
-			"####" "#" 0 ACS_NamedExecuteAlways("ExtraDeathFX",0,1)
-			"####" "#" 2 A_SetTranslucent(0.4,0)
-			"####" "#" 0 ACS_NamedExecuteAlways("ExtraDeathFX",0,1)
-			"####" "#" 2 A_SetTranslucent(0.3,0)
-			"####" "#" 0 ACS_NamedExecuteAlways("ExtraDeathFX",0,1)
-			"####" "#" 2 A_SetTranslucent(0.2,0)
-			"####" "#" 0 ACS_NamedExecuteAlways("ExtraDeathFX",0,1)
-			"####" "#" 2 A_SetTranslucent(0.1,0)
-			TNT1 A -1
+		Death.ExpanderDMGCoop:
+		XDeath.ExpanderDMGCoop:
+			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			"####" "#" 0 A_PlaySound("duke/expand")
+			Goto ExpanderLoopCoop
+		ExpanderLoopCoop:
+			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
+			loop
+		ExpanderPopCoop:	
+			"####" "#" 10
+			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+			"####" A 0 A_Jump(96,2)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+			"####" A 0 A_SetScale (1.0, 1.0)
+			"####" A 0 A_UnsetSolid
+			"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+			TNT1 A -1 A_UnsetSolid
 			Stop			
 		Lean:
 			TNT1 A 1

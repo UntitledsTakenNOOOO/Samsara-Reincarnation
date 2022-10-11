@@ -4,7 +4,7 @@ Actor Q3Swimming : Q3Boolean {} //Disable footsteps when swimming
 Actor Q3Class : Boolean {}
 Actor Q3HudScroll : Boolean {}
 
-Actor Q3Sarge : PlayerPawn
+Actor Q3Sarge : SamsaraPlayerPawnNormalRedBlood
 {
 	Speed 1
 	Health 100
@@ -22,8 +22,9 @@ Actor Q3Sarge : PlayerPawn
 	Player.StartItem "IsSamsaraClass", 1
 	DamageFactor "Q3Explosive", 0.5
 	DamageFactor "Q3BFG", 0.5
-	Species "Player"
 	Player.ColorRange 112,127
+	var int user_scalex;
+	var int user_scaley;
 	//+DONTTRANSLATE
 	States
 	{
@@ -2885,16 +2886,18 @@ Actor Q3Sarge : PlayerPawn
 			"####" "#" 0 A_JumpIfInventory("Q3AnimClip",2,"Walk")
 			"####" "#" 0 A_JumpIfInventory("Q3AnimClip",1,"Run")
 			Goto Spawn
-        Pain.DoomDamageTypeStunner:
-            "####" "#" 0 A_JumpIfInventory("PowerSamsaraDoomguyStrStunnerSpeedDebuff",1,"Pain") // ensure the timer doesn't reset when you are already slowed
-            "####" "#" 0 A_GiveInventory("SamsaraDoomguyStrStunnerSpeedDebuff") // slows down, but not stopped completely
-            goto Pain
+		Pain.Shock:
+		Pain.Tesla:
+			CBGS A 4 A_Pain
+			CBGS A 4
+			Goto Spawn
 			
 		Death.Drowning:
 			QP00 A 0 A_PlaySound("Quake3/Sarge/Drown",CHAN_VOICE)
 			Goto Death+1
 		Death:
 			QP00 A 0 A_PlayerScream
+			QP00 A 0 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
 			QP00 A 0 A_Jump(256,"Death1","Death2","Death3")
 		Death1:
 			QP00 A 0 A_NoBlocking
@@ -2924,9 +2927,66 @@ Actor Q3Sarge : PlayerPawn
 		XDeath.Q3Energy:
 		XDeath:
 			TNT1 A 0 A_NoBlocking
-			TNT1 AA 1 A_SpawnItemEx("Q3GibGenerator",0,0,0,0,0,0,0,SXF_USEBLOODCOLOR)
+			TNT1 A 1 A_SpawnItemEx("Q3GibGenerator",0,0,0,0,0,0,0,SXF_USEBLOODCOLOR)
 			TNT1 A -1
 			Stop
+		Death.ExpanderDMG:
+		XDeath.ExpanderDMG:
+			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			"####" "#" 0 A_PlaySound("duke/expand")
+			Goto ExpanderLoop
+		ExpanderLoop:
+			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
+			loop
+		ExpanderPop:	
+			"####" "#" 10
+			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+			"####" A 0 A_Jump(96,2)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+			"####" A 0 A_SetScale (1.0, 1.0)
+			"####" A 0 A_UnsetSolid
+			"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+			TNT1 A -1 A_UnsetSolid
+			Stop
+		Death.ExpanderDMGCoop:
+		XDeath.ExpanderDMGCoop:
+			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			"####" "#" 0 A_PlaySound("duke/expand")
+			Goto ExpanderLoopCoop
+		ExpanderLoopCoop:
+			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
+			loop
+		ExpanderPopCoop:	
+			"####" "#" 10
+			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+			"####" A 0 A_Jump(96,2)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+			"####" A 0 A_SetScale (1.0, 1.0)
+			"####" A 0 A_UnsetSolid
+			"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+			TNT1 A -1 A_UnsetSolid
+			Stop
+			
 		Frames:
 			QP00 A 0 A_Stop	QP01 A 0 A_Stop	QP02 A 0 A_Stop	QP03 A 0 A_Stop	QP04 A 0 A_Stop	QP05 A 0 A_Stop	QP06 A 0 A_Stop	QP07 A 0 A_Stop
 			QP08 A 0 A_Stop	QP09 A 0 A_Stop	QP0A A 0 A_Stop	QP0B A 0 A_Stop	QP0C A 0 A_Stop	QP0D A 0 A_Stop	QP0E A 0 A_Stop	QP0F A 0 A_Stop

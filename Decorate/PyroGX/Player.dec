@@ -1,4 +1,4 @@
-Actor DescentPyroGX : PlayerPawn
+Actor DescentPyroGX : SamsaraPlayerPawnNormalNoBlood
 {
 	//+NOGRAVITY
 	+DONTFALL
@@ -13,12 +13,13 @@ Actor DescentPyroGX : PlayerPawn
 	Player.StartItem "DescentWeaponPadUp"
 	Player.StartItem "DescentWeaponPadDown"
 	Player.ColorRange 112,127
-	Species "Player"
 	Speed 1
 	Health 100
 	Radius 16
 	Height 56
 	Mass 100
+	var int user_scalex;
+	var int user_scaley;
 	States
 	{
 		Spawn:
@@ -34,10 +35,6 @@ Actor DescentPyroGX : PlayerPawn
 		Pain:
 			DS00 A 15 A_Pain
 			Goto Spawn
-        Pain.DoomDamageTypeStunner:
-            TNT1 A 0 A_JumpIfInventory("PowerSamsaraDoomguyStrStunnerSpeedDebuff",1,"Pain") // ensure the timer doesn't reset when you are already slowed
-            TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrStunnerSpeedDebuff") // slows down, but not stopped completely
-            goto Pain
 		XDeath:
 		Death:
 			DS00 A 0 A_PlayerScream
@@ -48,6 +45,60 @@ Actor DescentPyroGX : PlayerPawn
 			DS00 A 0 A_SpawnItemEx("DescentPyroGXDebris4",0,0,32,frandom(4,8),0,frandom(-8,8),random(0,359),SXF_TRANSFERTRANSLATION)
 			DS00 A 0 A_SpawnItemEx("DescentPyroGXDebris5",0,0,32,frandom(4,8),0,frandom(-8,8),random(0,359),SXF_TRANSFERTRANSLATION)
 			TNT1 A -1
+			Stop
+		Death.ExpanderDMG:
+		XDeath.ExpanderDMG:
+			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			"####" "#" 0 A_PlaySound("duke/expand")
+			Goto ExpanderLoop
+		ExpanderLoop:
+			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
+			loop
+		ExpanderPop:	
+			"####" "#" 10
+			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+			"####" A 0 A_Jump(96,2)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+			"####" A 0 A_SetScale (1.0, 1.0)
+			"####" A 0 A_UnsetSolid
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+			DS00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 5 A_SpawnItemEx("DescentSmallExplosion",random(-10,10),random(-10,10),32+random(-10,10))
+			TNT1 A -1 A_UnsetSolid
+			Stop
+		Death.ExpanderDMGCoop:
+		XDeath.ExpanderDMGCoop:
+			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			"####" "#" 0 A_PlaySound("duke/expand")
+			Goto ExpanderLoopCoop
+		ExpanderLoopCoop:
+			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
+			loop
+		ExpanderPopCoop:	
+			"####" "#" 10
+			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+			"####" A 0 A_Jump(96,2)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+			"####" A 0 A_SetScale (1.0, 1.0)
+			"####" A 0 A_UnsetSolid
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+			DS00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 5 A_SpawnItemEx("DescentSmallExplosion",random(-10,10),random(-10,10),32+random(-10,10))
+			TNT1 A -1 A_UnsetSolid
 			Stop
 	}
 }
