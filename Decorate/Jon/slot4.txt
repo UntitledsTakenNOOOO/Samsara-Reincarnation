@@ -2,206 +2,394 @@ actor PSM60 : Weapon
 {
 	Inventory.PickupSound "PS/Ipickup2"
 	Weapon.selectionorder 1100
-	Weapon.Ammotype "Clip"
 	Weapon.BobStyle Smooth
 	Weapon.BobRangeX 0.75
 	Weapon.BobRangeY 0.28
-	Weapon.BobSpeed 1.4		
-	Weapon.Ammouse 1
-	Weapon.Ammogive 24
+	Weapon.BobSpeed 1.4
+	Weapon.AmmoType1 "PSM60Reload"
+	Weapon.AmmoUse1 1
+	Weapon.AmmoType2 "Clip"
+	Weapon.AmmoGive2 24
 	Weapon.SlotNumber 4
 	Obituary "%o was drilled by %k bullets."
 	Inventory.Pickupmessage "You found the M60!"
 	Weapon.UpSound "Jon/M60Up"
 	Inventory.RestrictedTo "PSPlayer"		
-	Tag "M60"	
+	Tag "M60"
+    +AMMO_OPTIONAL
+    +NOALERT
 	States 
 	{
 		Spawn:
 			WM60 A -1 Bright
-			Stop
+			stop
+
 		Deselect:
 			TNT1 A 0 A_GunFlash("DeselectBelt",GFF_NOEXTCHANGE)
 			TNT1 A 0 A_PlaySound("Jon/M60Down",CHAN_WEAPON)
 			M60R A 1 A_Lower
-			Goto Deselect+2
+			wait
+
 		DeselectBelt:
 			M60A D 1
-			Loop
+			loop
+
 		Select:
 			TNT1 A 0 A_GunFlash("SelectBelt",GFF_NOEXTCHANGE)
 			M60R B 1 A_Raise
-			Goto Select+1
+			wait
+
 		SelectBelt:
 			M60A D 1
-			Loop
-		Ready:
+			loop
+
+        Ready:
 			TNT1 A 0 A_GunFlash("ReadyBelt",GFF_NOEXTCHANGE)
-			M60_ A 1 A_WeaponReady
-			Loop
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",0,"ReadyModernReloadable")
+        ReadyNonReloadable:
+            M60_ A 1 A_WeaponReady
+            goto Ready
+
+        ReadyModernReloadable:
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",0,"ReadyNonReloadable")
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+            goto ReadyNonReloadable
+            M60_ A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+            goto Ready
+
 		ReadyBelt:
-			M60A B 0 A_JumpIfInventory("PSM60ReloadShit",96,"ReadyBelt4")
-			M60A B 0 A_JumpIfInventory("PSM60ReloadShit",93,"ReadyBelt3")
-			M60A B 0 A_JumpIfInventory("PSM60ReloadShit",72,"ReadyBelt2")
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyBeltReloadable")
+        ReadyBeltNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("Clip",28,"ReadyBelt1")
+            TNT1 A 0 A_JumpIfInventory("Clip",7,"ReadyBelt2")
+            TNT1 A 0 A_JumpIfInventory("Clip",4,"ReadyBelt3")
+            goto ReadyBelt4
+
+        ReadyBeltReloadable:
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",28,"ReadyBelt1")
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",7,"ReadyBelt2")
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",4,"ReadyBelt3")
+            goto ReadyBelt4
+
 		ReadyBelt1:
 			M60A B 1
-			Loop
+			loop
+
 		ReadyBelt2:
 			M60A D 1
-			Loop
+			loop
+
 		ReadyBelt3:
 			M60A F 1
-			Loop
+			loop
+
 		ReadyBelt4:
 			M60A H 1
-			Loop
-		Fire:
+			loop
+
+        Fire:
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireReloadable")
+        FireNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireActual")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"FireActual")
+            goto Nothing
+
+        FireReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireActual")
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",1,"FireActual")
+        FireReloadableDryCheck:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"Reload")
+            goto Nothing
+
+        FireActual:
+            TNT1 A 0 A_AlertMonsters
 			TNT1 A 0 A_GunFlash("FireBelt",GFF_NOEXTCHANGE)
-			TNT1 A 0 A_JumpIfInventory("PSM60ReloadShit",99,"Reload")		
-			TNT1 A 0 A_PlaySound("Jon/M60Fire",CHAN_WEAPON)	
-			TNT1 A 0 A_JumpIfInventory("PSM60ReloadShit",99,"Reload")		
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")	
-			TNT1 A 0 A_Quake(1,2,0,16,"")
-			M60_ C 1 Bright A_FireBullets(2,2,1,15,"PSBulletPuff",FBF_USEAMMO|FBF_NORANDOM)
-			M60_ C 0 A_CustomMissile("ExM60CaseSpawner", 10, 0, 0, CMF_AIMDIRECTION, -pitch)			
-			M60_ A 1 A_GiveInventory("PSM60ReloadShit",1)
-			M60_ A 1 A_JumpIfInventory("PSM60ReloadShit",99,"Reload")	
+        Fire1:
+			TNT1 A 0 A_CustomMissile("ExM60CaseSpawner",10,0,0,CMF_AIMDIRECTION,-pitch)
+			M60_ C 1 Bright A_GiveInventory("SamsaraPowerSlaveM60AttackHandler")
 			M60_ A 1
-			TNT1 A 0 A_Quake(1,2,0,16,"")
-			TNT1 A 0 A_PlaySound("Jon/M60Fire",CHAN_WEAPON)			
-			M60_ B 2 Bright A_FireBullets(2,2,1,15,"PSBulletPuff",FBF_USEAMMO|FBF_NORANDOM)
-			M60_ B 0 A_CustomMissile("ExM60CaseSpawner", 10, 0, 0, CMF_AIMDIRECTION, -pitch)			
-			M60_ A 1 A_GiveInventory("PSM60ReloadShit",1)
-			M60_ A 1 A_JumpIfInventory("PSM60ReloadShit",99,"Reload")	
+	        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"Fire1ContinueReloadable")
+        Fire1ContinueNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Fire1Continue")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"Fire1Continue")
+            goto Nothing
+
+        Fire1ContinueReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Fire1Continue")
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",1,"Fire1Continue")
+        Fire1ContinueReloadableSwitchCheck:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"Reload")
+            goto Nothing
+
+        Fire1Continue:
+			M60_ A 2
+        Fire2CasingSpawnerCheck:
+		    TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"Fire2CasingSpawnerReloadable")
+        Fire2CasingSpawnerNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Fire2CasingSpawner")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"Fire2CasingSpawner")
+            goto Fire2
+
+        Fire2CasingSpawnerReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Fire2CasingSpawner")
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",1,"Fire2CasingSpawner")
+            goto Fire2
+
+        Fire2CasingSpawner:
+			TNT1 A 0 A_CustomMissile("ExM60CaseSpawner",10,0,0,CMF_AIMDIRECTION,-pitch)
+        Fire2:
+			M60_ B 2 Bright A_GiveInventory("SamsaraPowerSlaveM60AttackHandler")
 			M60_ A 1
-			TNT1 A 0 A_Quake(1,2,0,16,"")
-			TNT1 A 0 A_PlaySound("Jon/M60Fire",CHAN_WEAPON)	
-			M60_ C 1 Bright A_FireBullets(2,2,1,15,"PSBulletPuff",FBF_USEAMMO|FBF_NORANDOM)
-			M60_ C 0 A_CustomMissile("ExM60CaseSpawner", 10, 0, 0, CMF_AIMDIRECTION, -pitch)			
-			M60_ A 1 A_GiveInventory("PSM60ReloadShit",1)
-			M60_ A 1 A_JumpIfInventory("PSM60ReloadShit",99,"Reload")	
+	        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"Fire2ContinueReloadable")
+        Fire2ContinueNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Fire2Continue")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"Fire2Continue")
+            goto Nothing
+
+        Fire2ContinueReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Fire2Continue")
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",1,"Fire2Continue")
+        Fire2ContinueReloadableSwitchCheck:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"Reload")
+            goto Nothing
+
+        Fire2Continue:
+			M60_ A 2
+        Fire3CasingSpawnerCheck:
+		    TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"Fire3CasingSpawnerReloadable")
+        Fire3CasingSpawnerNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Fire3CasingSpawner")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"Fire3CasingSpawner")
+            goto Fire3
+
+        Fire3CasingSpawnerReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Fire3CasingSpawner")
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",1,"Fire3CasingSpawner")
+            goto Fire3
+
+        Fire3CasingSpawner:
+			TNT1 A 0 A_CustomMissile("ExM60CaseSpawner",10,0,0,CMF_AIMDIRECTION,-pitch)
+        Fire3:
+			M60_ C 1 Bright A_GiveInventory("SamsaraPowerSlaveM60AttackHandler")
 			M60_ A 1
-			TNT1 A 0 A_Refire
-			Goto Ready
+	        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"Fire3ContinueReloadable")
+        Fire3ContinueNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Fire3Continue")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"Fire3Continue")
+            goto Nothing
+
+        Fire3ContinueReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Fire3Continue")
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",1,"Fire3Continue")
+        Fire3ContinueReloadableSwitchCheck:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"Reload")
+            goto Nothing
+
+        Fire3Continue:
+			M60_ A 2
+	        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireFinishReloadable")
+        FireFinishNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireFinish")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"FireFinish")
+            goto Nothing
+
+        FireFinishReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireFinish")
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",1,"FireFinish")
+        FireFinishReloadableSwitchCheck:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireFinish")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"FireFinish")
+            goto Nothing
+
+        FireFinish:
+            TNT1 A 0 A_ReFire
+			goto Ready
+
 		FireBelt:
-			M60A B 0 A_JumpIfInventory("PSM60ReloadShit",96,"FireBelt4")
-			M60A B 0 A_JumpIfInventory("PSM60ReloadShit",93,"FireBelt3")
-			M60A B 0 A_JumpIfInventory("PSM60ReloadShit",72,"FireBelt2")
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireBeltReloadable")
+        FireBeltNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("Clip",28,"FireBelt1")
+            TNT1 A 0 A_JumpIfInventory("Clip",7,"FireBelt2")
+            TNT1 A 0 A_JumpIfInventory("Clip",4,"FireBelt3")
+            goto FireBelt4
+
+        FireBeltReloadable:
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",28,"FireBelt1")
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",7,"FireBelt2")
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",4,"FireBelt3")
+            goto FireBelt4
+
 		FireBelt1:
 			M60A B 1 Bright Offset(-2,34)
 			M60A A 1
-			M60A A 1
+			M60A A 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A B 1
 			M60A A 2 Bright Offset(-2,34)
 			M60A B 1
-			M60A B 1
+			M60A B 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A A 1
 			M60A B 1 Bright Offset(-2,34)
 			M60A A 1
-			M60A A 1
+			M60A A 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A B 1
-			Stop
+			stop
+
 		FireBelt2:
 			M60A D 1 Bright Offset(-2,34)
 			M60A C 1
-			M60A C 1
+			M60A C 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A D 1
 			M60A C 2 Bright Offset(-2,34)
 			M60A D 1
-			M60A D 1
+			M60A D 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A C 1
 			M60A D 1 Bright Offset(-2,34)
 			M60A C 1
-			M60A C 1
+			M60A C 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A D 1
-			Stop
+			stop
+
 		FireBelt3:
 			M60A F 1 Bright Offset(-2,34)
 			M60A E 1
-			M60A E 1
+			M60A E 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A F 1
 			M60A E 2 Bright Offset(-2,34)
 			M60A F 1
-			M60A F 1
+			M60A F 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A E 1
 			M60A F 1 Bright Offset(-2,34)
 			M60A E 1
-			M60A E 1
+			M60A E 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A F 1
-			Stop
+			stop
+
 		FireBelt4:
 			M60A H 1 Bright Offset(-2,34)
 			M60A G 1
-			M60A G 1
+			M60A G 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A H 1
 			M60A G 2 Bright Offset(-2,34)
 			M60A H 1
-			M60A H 1
+			M60A H 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A G 1
 			M60A H 1 Bright Offset(-2,34)
 			M60A G 1
-			M60A G 1
+			M60A G 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
 			M60A H 1
-			Stop
-		CoopFire:	
-			TNT1 A 0 A_GunFlash("FireBelt",GFF_NOEXTCHANGE)
-			TNT1 A 0 A_Quake(1,2,0,16,"")
-			M60_ C 1 Bright A_FireBullets(2,2,1,15,"PSBulletPuffCoop",FBF_USEAMMO|FBF_NORANDOM)
-			M60_ C 0 A_CustomMissile("ExM60CaseSpawner", 10, 0, 0, CMF_AIMDIRECTION, -pitch)			
-			M60_ A 1 A_GiveInventory("PSM60ReloadShit",1)
-			M60_ A 1 A_JumpIfInventory("PSM60ReloadShit",99,"Reload")	
-			M60_ A 1
-			TNT1 A 0 A_Quake(1,2,0,16,"")
-			TNT1 A 0 A_PlaySound("Jon/M60Fire",CHAN_WEAPON)			
-			M60_ B 2 Bright A_FireBullets(2,2,1,15,"PSBulletPuffCoop",FBF_USEAMMO|FBF_NORANDOM)
-			M60_ B 0 A_CustomMissile("ExM60CaseSpawner", 10, 0, 0, CMF_AIMDIRECTION, -pitch)			
-			M60_ A 1 A_GiveInventory("PSM60ReloadShit",1)
-			M60_ A 1 A_JumpIfInventory("PSM60ReloadShit",99,"Reload")	
-			M60_ A 1
-			TNT1 A 0 A_Quake(1,2,0,16,"")
-			TNT1 A 0 A_PlaySound("Jon/M60Fire",CHAN_WEAPON)	
-			M60_ C 1 Bright A_FireBullets(2,2,1,15,"PSBulletPuffCoop",FBF_USEAMMO|FBF_NORANDOM)
-			M60_ C 0 A_CustomMissile("ExM60CaseSpawner", 10, 0, 0, CMF_AIMDIRECTION, -pitch)			
-			M60_ A 1 A_GiveInventory("PSM60ReloadShit",1)
-			M60_ A 1 A_JumpIfInventory("PSM60ReloadShit",99,"Reload")	
-			M60_ A 1
-			TNT1 A 0 A_Refire("CoopFire")
-			Goto Ready				
+			stop
+
 		Reload:
-			TNT1 A 0 A_JumpIfInventory("Clip",1,"DoReload")
-			Goto Ready
-		DoReload:
-			M60_ AA 1 offset(-10,40) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ AA 1 offset(-20,45) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ AA 1 offset(-30,50) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ A 1 offset(-40,55) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ A 1 offset(-50,60) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ A 1 offset(-60,65) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			TNT1 A 0 A_PlaySound("PS/MagnumR",CHAN_BODY)
-			M60_ XXX 1 offset(-75,76) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)			
-			M60_ XX 1 offset(-78,76) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ XXXXXXXXXXX 1 offset(-80,81) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			TNT1 A 0 A_TakeInventory("PSM60ReloadShit",CallACS("PSAmmoBelt"))
+			M60_ A 2 Offset(-10,40) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ A 2 Offset(-20,45) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ A 2 Offset(-30,50) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ A 1 Offset(-40,55) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ A 1 Offset(-50,60) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ A 1 Offset(-60,65) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			TNT1 A 0 A_PlaySound("PS/MagnumR")
+			M60_ X 3 Offset(-75,76) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ X 2 Offset(-78,76) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ X 11 Offset(-80,81) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
+        ReloadFinish:
 			M60_ X 0 A_GunFlash("ReloadBelt",GFF_NOEXTCHANGE)
-			M60_ XXX 1 offset(-78,76) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ XX 1 offset(-75,76) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			TNT1 A 0 A_PlaySound("PS/MagnumR",CHAN_BODY)			
-			M60_ X 1 offset(-60,65) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ X 1 offset(-50,60) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ X 1 offset(-40,55) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ XX 1 offset(-30,50) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ XX 1 offset(-20,45) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60_ XX 1 offset(-10,40) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			M60R AABB 1 offset(0,37) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ X 3 Offset(-78,76) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ X 2 Offset(-75,76) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			TNT1 A 0 A_PlaySound("PS/MagnumR")
+			M60_ X 1 Offset(-60,65) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ X 1 Offset(-50,60) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ X 1 Offset(-40,55) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ X 2 Offset(-30,50) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ X 2 Offset(-20,45) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60_ X 2 Offset(-10,40) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
+			M60R AB 2 Offset(0,37) A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
 			M60_ A 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_NOSWITCH)
-			Goto Ready
+			goto Ready
+
 		ReloadBelt:
-			TNT1 A 39
-			M60A CCDDC 1
-			Stop
+			TNT1 A 3
+			TNT1 A 2
+			TNT1 AAA 1
+			TNT1 AAA 2
+			M60A CD 2
+			M60A C 1
+			stop
+
+        ReloadAmmo:
+            TNT1 A 0 A_JumpIfInventory("PSM60Reload",0,"ReloadFinish")
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+            goto ReloadFinish
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            TNT1 A 0 A_TakeInventory("Clip",1)
+            TNT1 A 0 A_GiveInventory("PSM60Reload")
+            loop
+
+        Nothing:
+            TNT1 A 0 A_ClearReFire
+            TNT1 A 0 A_SelectWeapon("PSMagnum")
+            goto Deselect
 	}
 }
 
+actor SamsaraPowerSlaveM60AttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+      PickupCheckAmmoNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmoNonReloadable")
+        stop
+
+      PickupCheckAmmoReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("PSM60Reload",1,"PickupTakeAmmoReloadable")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmoNonReloadable:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("PSM60Reload",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Jon/M60Fire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(2,2,-1,15,"PSBulletPuff",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(2,2,-1,15,"PSBulletPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_Quake(1,2,0,16,"")
+        stop
+    }
+}
+
+actor PSM60Reload : Ammo
+{
+    Inventory.MaxAmount 99
+    +IGNORESKILL
+}
+
 Actor PSBullet3 : PSBullet1 { Damage (15) }
-Actor PSM60ReloadShit : Inventory { Inventory.Amount 1 Inventory.MaxAmount 99 }
-Actor M60Sprite : Inventory { Inventory.Amount 1 Inventory.MaxAmount 1 }
