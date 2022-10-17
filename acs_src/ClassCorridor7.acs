@@ -6,12 +6,37 @@ Script "C7MinePlacer" (int deathmatch)
 	SetPointerExt(AAPTR_Master,0,newTid);
 }
 
+Script "Corridor7ActivateVisor" (void)
+{
+	if(CheckInventory("C7VisorActive") < 2)
+		GiveInventory("C7VisorActive",1);
+	else
+		TakeInventory("C7VisorActive",2);
+}
+
 Script "Corridor7Loop" (void)
 {
 	int currentMines = 0;
 	int transferMines = 0;
 	While(CheckInventory("C7Class"))
 	{
+		switch(CheckInventory("C7VisorActive"))
+		{
+			case 0:
+				TakeInventory("C7NightVisionPower",1);
+				TakeInventory("C7InfraredPower",1);
+				break;
+			case 1:
+				TakeInventory("C7InfraredPower",1);
+				GiveInventory("C7NightVisionPower",1);
+				break;
+			case 2:
+				TakeInventory("C7NightVisionPower",1);
+				GiveInventory("C7InfraredPower",1);
+				GiveInventory("C7EnemyLookerInfrared",1);
+				break;
+		}
+	
 		if(!SinglePlayer() && !isCoop())
 		{
 			if(ClassifyActor(0) & ACTOR_DEAD) 
@@ -30,5 +55,61 @@ Script "Corridor7Loop" (void)
 		}
 		
 		Delay(1);
+	}
+}
+
+int infraredMessageIds = 0;
+
+Script "Corridor7MonsterCoordinate" (void) clientside
+{
+	if(infraredMessageIds >= 256)
+		terminate;
+		
+	int myX = GetActorX(0);
+	int myY = GetActorY(0);
+	int myZ = GetActorZ(0);
+	
+	int monsterRadius = CheckInventory("C7EnemyMonsterRadius");
+	int monsterHeight = CheckInventory("C7EnemyMonsterHeight");
+	int monsterX = (CheckInventory("C7EnemyCoordinateX") - 65536) * 1.0;
+	int monsterY = (CheckInventory("C7EnemyCoordinateY") - 65536) * 1.0;
+	int monsterZ = (CheckInventory("C7EnemyCoordinateZ") - 65536) * 1.0;
+	
+	//PrintBold(s:"Monster X: ",d:monsterX,s:" Monster Y: ",d:monsterY,s:" Monster Z: ",d:monsterZ);
+	
+	TakeInventory("C7EnemyCoordinateX",131072);
+	TakeInventory("C7EnemyCoordinateY",131072);
+	TakeInventory("C7EnemyCoordinateZ",131072);
+	TakeInventory("C7EnemyMonsterRadius",1024);
+	TakeInventory("C7EnemyMonsterHeight",1024);
+	
+	int distance = magnitudeThree_f(monsterX - myX,monsterY - myY,monsterZ - myZ);
+	
+	if(distance <= 1024.0)
+	{
+		int monsterAngle = VectorAngle(monsterX - myX, monsterY - myY);
+		int playerAngle = GetActorAngle(0);
+		int deltaAngle = (monsterAngle - playerAngle + 1.0) % 1.0;
+		
+		int monsterPitch = VectorAngle(VectorLength(monsterX - myX, monsterY - myY), monsterZ - myZ);
+		int playerPitch = GetActorPitch(0);
+		int deltaPitch = (monsterPitch + playerPitch + 1.0) % 1.0;
+				
+		if (deltaAngle < 0.2 || deltaAngle > 0.8)
+		{
+			int hudX = FixedMul(960.0,(20.0/monsterRadius))/1.0;
+			int hudY = FixedMul(720.0,(52.0/monsterHeight))/1.0;
+			int sx = (hudX/2) - ((hudX/2) * Sin (deltaAngle) / Cos (deltaAngle));
+			int sy = (hudY/2) - ((hudY/2) * Sin (deltaPitch) / Cos (deltaPitch));
+			SetHudSize(hudX, hudY, 0);
+			SetFont("TIPHIL15");
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 30500+infraredMessageIds, CR_UNTRANSLATED, sx * 1.0, sy * 1.0, 0.3, (1024.0-distance)/1024);
+			infraredMessageIds++;
+		
+			Delay(1);
+		
+			HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 30500+infraredMessageIds, CR_UNTRANSLATED, sx * 1.0, sy * 1.0, 0.3, (1024.0-distance)/1024);
+			infraredMessageIds--;
+		}	
 	}
 }
