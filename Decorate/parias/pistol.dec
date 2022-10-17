@@ -1,45 +1,45 @@
 actor "Sapphire Wand" : MWeapWand
 {
-    Weapon.SelectionOrder 3600
-    Weapon.SlotNumber 1
+	Weapon.SelectionOrder 3600
+	Weapon.SlotNumber 1
 	+WEAPON.NOALERT
-    +INVENTORY.UNDROPPABLE
-    Weapon.KickBack 0
-    Weapon.YAdjust 9
+	+INVENTORY.UNDROPPABLE
+	Weapon.KickBack 0
+	Weapon.YAdjust 9
 	Inventory.RestrictedTo "HexenPlayer"
-    Tag "Jade Wand"
-    States
-    {
-      Select:
+	Tag "Jade Wand"
+	States
+	{
+	  Select:
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "SelectFighter")
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "SelectMage")
 		H116 A 1 A_Raise
 		Loop
-	  SelectMage:	
-        MWND A 1 A_Raise
-        Loop
+	  SelectMage:
+		MWND A 1 A_Raise
+		Loop
 	  SelectFighter:
 		H100 E 1 A_Raise
 		Loop
-      Deselect:
+	  Deselect:
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "DeselectFighter")
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "DeselectMage")
 		H116 A 1 A_Lower
 		Loop
-	  DeselectMage:	
-        MWND A 1 A_Lower
-        Loop
+	  DeselectMage:
+		MWND A 1 A_Lower
+		Loop
 	  DeselectFighter:
 		H100 E 1 A_Lower
 		Loop
-      Ready:
+	  Ready:
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "ReadyFighter")
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "ReadyMage")
 		H116 A 1 A_WeaponReady
 		Loop
-	  ReadyMage:	
-        MWND A 1 A_WeaponReady
-        Goto Ready
+	  ReadyMage:
+		MWND A 1 A_WeaponReady
+		Goto Ready
 	  ReadyFighter:
 		H100 E 0 A_JumpIfNoAmmo("FakeReadyFighter")
 		H100 EF 5
@@ -53,58 +53,52 @@ actor "Sapphire Wand" : MWeapWand
 		Goto Ready
 		H100 E 1 A_WeaponReady
 		Loop
-      Fire:
+	  Fire:
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "FireFighter")
 		TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "FireMage")
-		TNT1 A 0 A_AlertMonsters
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")	  
-		H116 A 2 Bright
+		H116 A 2 Bright A_AlertMonsters
 		H116 B 0 A_PlaySound("hexen/jadefire",CHAN_WEAPON)
+		H116 B 0 A_JumpIfInventory("CoopModeOn",1,2)
 		H116 B 4 Bright A_FireBullets(4,4, 4, 3, "JadePuff")
-		H116 B 2
-		H116 A 5
-		H116 A 0 A_Refire
-		Goto Ready		
-	  CoopFire:
-		H116 A 2 Bright
-		H116 B 0 A_PlaySound("hexen/jadefire",CHAN_WEAPON)
+		Goto FireEnd
 		H116 B 4 Bright A_FireBullets(4,4, 4, 3, "JadePuffCoop")
+		Goto FireEnd
+	  FireEnd:
 		H116 B 2
 		H116 A 5
 		H116 A 0 A_Refire
-		Goto Ready		  
-      FireMage:
-        TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"FireMageSmooth")
-      FireMageVanilla:
-        MWND A 6
-        MWND B 6 Bright Offset(0,48) A_GiveInventory("SamsaraHexenSapphireWandAttackHandler")
-        MWND A 3 Offset(0,40)
-        MWND A 3 Offset(0,36) A_ReFire
-        goto Ready
-      FireMageSmooth:
-        MWND A 2
-        MWND J 2
-        MWND K 2 Bright
-        MWND B 4 Bright Offset(0,48) A_GiveInventory("SamsaraHexenSapphireWandAttackHandler")
-        MWND J 3 Offset(0,40)
-        MWND A 2 Offset(0,36)
-        MWND A 3 Offset(0,32) A_ReFire
-        goto Ready
+		Goto Ready
+	  FireMage:
+		TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"FireMageSmooth")
+	  FireMageVanilla:
+		MWND A 6
+		MWND B 6 Bright Offset(0,48) A_GiveInventory("SamsaraHexenSapphireWandAttackHandler")
+		MWND A 3 Offset(0,40)
+		MWND A 3 Offset(0,36) A_ReFire
+		goto Ready
+	  FireMageSmooth:
+		MWND AJ 2
+		MWND K 2 Bright
+		MWND B 4 Bright Offset(0,48) A_GiveInventory("SamsaraHexenSapphireWandAttackHandler")
+		MWND J 3 Offset(0,40)
+		MWND A 2 Offset(0,36)
+		MWND A 3 Offset(0,32) A_ReFire
+		goto Ready
 	  FireFighter:
 		TNT1 A 0 A_AlertMonsters
 		H100 B 0 A_JumpIfCloser(64, "FireFighterMelee")
 		H100 A 0 A_FireBullets(0,0, 1, 0, "SamsaraBlankPuff", FBF_NORANDOM)
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"FireFighterCoop")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"FireFighterCoop")
 		TNT1 A 0 A_FireCustomMissile("HexenImpalerMissile",0,1)
-      FireFighterFinish:
+	  FireFighterFinish:
 		H100 B 6 A_Recoil(1)
 		H100 C 8 A_PlaySound("Hexen/Weapon/XBowLoad", CHAN_WEAPON)
 		H100 DEF 5
 		H100 A 12
 		Goto RealReadyFighter
-      FireFighterCoop:
+	  FireFighterCoop:
 		TNT1 A 0 A_FireCustomMissile("HexenImpalerMissileCoop",0,1)
-        goto FireFighterFinish
+		goto FireFighterFinish
 	  FireFighterMelee:
 		H100 A 2 Offset(0,24)
 		H100 A 2 Offset(0,14)
@@ -120,40 +114,40 @@ actor "Sapphire Wand" : MWeapWand
 		H100 A 2 Offset(0,24)
 		H100 A 10 Offset(0,32)
 		Goto RealReadyFighter
-    }
+	}
 }
 
 actor SamsaraHexenSapphireWandAttackHandler : Trigger
 {
-    States
-    {
-      // Attack stuff
-      Pickup:
-        TNT1 A 0 A_PlaySound("MageWandFire",CHAN_WEAPON)
-        TNT1 A 0 A_FireBullets(0,0,1,0,"SamsaraBlankPuff",FBF_NORANDOM|FBF_NOFLASH)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
-      PickupDM:
-        TNT1 A 0 A_FireCustomMissile("MageWandMissile2",0,false)
-        stop
+	States
+	{
+	  // Attack stuff
+	  Pickup:
+		TNT1 A 0 A_PlaySound("MageWandFire",CHAN_WEAPON)
+		TNT1 A 0 A_FireBullets(0,0,1,0,"SamsaraBlankPuff",FBF_NORANDOM|FBF_NOFLASH)
+		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+	  PickupDM:
+		TNT1 A 0 A_FireCustomMissile("MageWandMissile2",0,false)
+		stop
 
-      PickupCoop:
-        TNT1 A 0 A_FireCustomMissile("MageWandMissile3",0,false)
-        stop
-    }
+	  PickupCoop:
+		TNT1 A 0 A_FireCustomMissile("MageWandMissile3",0,false)
+		stop
+	}
 }
 
 actor MageWandMissile2 : MageWandMissile
 {
-    Radius 3
-    Height 2
+	Radius 3
+	Height 2
 	Damage (random(1,4)*2)
-    Obituary "$SAMSARA_HEXEN_OB_PISTOL"
-    SeeSound "" // currently handled in attack handler due to +SPAWNSOUNDSOURCE not working properly in netplay
-    Decal RailScorchLower
-    -SPAWNSOUNDSOURCE
-    +NOBOSSRIP
-    DamageType "Pistol"
+	Obituary "$SAMSARA_HEXEN_OB_PISTOL"
+	SeeSound "" // currently handled in attack handler due to +SPAWNSOUNDSOURCE not working properly in netplay
+	Decal RailScorchLower
+	-SPAWNSOUNDSOURCE
+	+NOBOSSRIP
+	DamageType "Pistol"
 }
 
 actor MageWandMissile3 : MageWandMissile2 { Species "Player" +THRUSPECIES }
@@ -187,8 +181,8 @@ ACTOR HexenImpalerMissile : FastProjectile
 
 actor HexenImpalerMissileCoop : HexenImpalerMissile
 {
-    Species "Player"
-    +THRUSPECIES
+	Species "Player"
+	+THRUSPECIES
 }
 
 actor HexenImpalerPuff
@@ -225,9 +219,6 @@ actor JadePuff
 		  Spawn:
 			H116 IJKLMNO 2 bright
 			stop
-		  Crash:
-			H116 IJKLMNO 2 bright
-			stop
 	  }
 }
 
@@ -236,7 +227,7 @@ actor JadePuffCoop
 	Species "Player"
 	+THRUSPECIES
 	+MTHRUSPECIES
-}	
+}
 
 actor HexenJadeBulletCoop : FastProjectile
 {
