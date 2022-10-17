@@ -1,41 +1,41 @@
 int activetokenselectors[CLASSCOUNT];
 int pickrandos = 0;
 
-str miscCharGameTypesStr[CLASSCOUNT] =
+str miscCharGameTypesStr[CLASSCOUNT][MAXMODES] =
 {	
-	"", 
-	"", 
-	"", 
-	"", 
-	"",
-	"samsara_misccharspawn_duke3d", 
-	"",
-	"",
-	"samsara_misccharspawn_rott",
-	"",
-	"samsara_misccharspawn_blood", 
-	"samsara_misccharspawn_strife",
-	"",
-	"",
-	"samsara_misccharspawn_rmr", 
-	"",
-	"",
-	"",
-	"",
-	"samsara_misccharspawn_halflife", 
-	"samsara_misccharspawn_sw", 
-	"",
-	"samsara_misccharspawn_ps", 
-	"samsara_misccharspawn_rr", 
-	"samsara_misccharspawn_quake2", 
-	"samsara_misccharspawn_hexen2",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	""
+	{},
+	{},
+	{},
+	{},
+	{},
+	{ "samsara_misccharspawn_duke3d", },
+	{},
+	{},
+	{ "samsara_misccharspawn_rott", },
+	{},
+	{ "samsara_misccharspawn_blood", },
+	{ "samsara_misccharspawn_strife", },
+	{},
+	{},
+	{ "samsara_misccharspawn_rmr", },
+	{},
+	{},
+	{},
+	{},
+	{ "samsara_misccharspawn_halflife", },
+	{ "samsara_misccharspawn_sw", },
+	{},
+	{ "samsara_misccharspawn_ps", },
+	{ "samsara_misccharspawn_rr", },
+	{ "samsara_misccharspawn_quake2", },
+	{ "samsara_misccharspawn_hexen2", },
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{}
 };
 			
 
@@ -110,14 +110,44 @@ script "HeroOnMap" Open
 			{
 				if(PlayerClass(p) == b && !setBasedSpawns)
 				{
-					activetokenselectors[b] = 1;
 					if(b == 5 || b == 8 || b == 10 || b == 11 || b == 14 || b == 19 || b == 20 || b == 22 || b == 23 || b == 24 || b == 25)
 						pickrandos = 1;
+						
+					switch(b)
+					{
+						default:
+							activetokenselectors[b] = 1;
+							break;
+						case 0: 
+							if(!(activetokenselectors[b] & 1<<GetUserCvar(p,"samsara_cl_doommode"))) 
+								activetokenselectors[b] += 1<<GetUserCvar(p,"samsara_cl_doommode");	
+							break;
+						case 3: 
+							if(!(activetokenselectors[b] & 1<<GetUserCvar(p,"samsara_cl_wolfmode")))
+								activetokenselectors[b] += 1<<GetUserCvar(p,"samsara_cl_wolfmode");
+							break;
+						case 5: 
+							if(!(activetokenselectors[b] & 1<<GetUserCvar(p,"samsara_cl_wolfmode")))
+								activetokenselectors[b] += 1<<GetUserCvar(p,"samsara_cl_dukemode");
+							break;
+						case 19: 
+							if(!(activetokenselectors[b] & 1<<GetUserCvar(p,"samsara_cl_wolfmode")))
+								activetokenselectors[b] += 1<<GetUserCvar(p,"samsara_cl_shephardmode");
+							break;
+					}
 				}
-				else if(GetCvar(miscCharGameTypesStr[b]) == 1 && setBasedSpawns)
+				else if(setBasedSpawns)
 				{
-					activetokenselectors[b] = 1;
-					pickrandos = 1;
+					for(int c = 0; c < MAXMODES; c++)
+					{
+						if(GetCvar(miscCharGameTypesStr[b][c]) == 1 && setBasedSpawns)
+						{
+							if(!(activetokenselectors[b] & 1<<GetCvar(miscCharGameTypesStr[b][c])) )
+								activetokenselectors[b] += GetCvar(miscCharGameTypesStr[b][c]);	
+							
+							pickrandos = 1;
+						}
+					}
 				}
 			}
 		}
