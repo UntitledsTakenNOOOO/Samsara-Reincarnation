@@ -10,7 +10,6 @@ Class Bolognese_WallBlood_ZScript : Actor
 		Gravity 0.7;
 		damage 0;
 		DamageType 'Blood';
-		Decal 'BloodSmear'; // We'll need to figure out why A_SprayDecal isn't working
 		+MISSILE;
 		+CLIENTSIDEONLY;
 		+NOTELEPORT;
@@ -20,10 +19,29 @@ Class Bolognese_WallBlood_ZScript : Actor
 	States
 	{
 		Spawn:
-			TNT1 AAAA 4;
-			loop;
-		Death:
-			TNT1 A 3;
+			TNT1 A 0;
+			TNT1 A 0 A_SetAngle(random(0, 360));
+			TNT1 A 0 A_SetPitch(random(-50, 50));
+			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
+			TNT1 A 0 A_SprayDecal("BloodSmear", 344, (0, 0, 0), (0, 0, 0), true, 0);
+			TNT1 A 0 A_SetAngle(random(0, 360));
+			TNT1 A 0 A_SetPitch(random(-50, 50));
+			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
+			TNT1 A 0 A_SprayDecal("BloodSmear", 344, (0, 0, 0), (0, 0, 0), true, 0);
+			TNT1 A 0 A_SetAngle(random(0, 360));
+			TNT1 A 0 A_SetPitch(random(-50, 50));
+			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
+			TNT1 A 0 A_SprayDecal("BloodSmear", 344, (0, 0, 0), (0, 0, 0), true, 0);
+			TNT1 A 0 A_SetAngle(random(0, 360));
+			TNT1 A 0 A_SetPitch(random(-50, 50));
+			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
+			TNT1 A 0 A_SprayDecal("BloodSmear", 344, (0, 0, 0), (0, 0, 0), true, 0);
+			TNT1 A 0 A_SetAngle(random(0, 360));
+			TNT1 A 0 A_SetPitch(random(-50, 50));
+			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
+			TNT1 A 0 A_SetAngle(random(0, 360));
+			TNT1 A 0 A_SetPitch(random(-50, 50));
+			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
 			stop;
 	}
 }
