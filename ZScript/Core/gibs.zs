@@ -16,6 +16,7 @@ Class Bolognese_WallBlood_ZScript : Actor
 		+NOBLOCKMAP;
 		+THRUACTORS;
 	}
+	
 	States
 	{
 		Spawn:
