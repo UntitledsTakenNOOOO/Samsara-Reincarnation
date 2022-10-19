@@ -21,28 +21,21 @@ Class Bolognese_WallBlood_ZScript : Actor
 	{
 		Spawn:
 			TNT1 A 0;
-			TNT1 A 0 A_SetAngle(random(0, 360));
-			TNT1 A 0 A_SetPitch(random(-50, 50));
-			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
-			TNT1 A 0 A_SprayDecal("BloodSmear", 344, (0, 0, 0), (0, 0, 0), true, 0);
-			TNT1 A 0 A_SetAngle(random(0, 360));
-			TNT1 A 0 A_SetPitch(random(-50, 50));
-			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
-			TNT1 A 0 A_SprayDecal("BloodSmear", 344, (0, 0, 0), (0, 0, 0), true, 0);
-			TNT1 A 0 A_SetAngle(random(0, 360));
-			TNT1 A 0 A_SetPitch(random(-50, 50));
-			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
-			TNT1 A 0 A_SprayDecal("BloodSmear", 344, (0, 0, 0), (0, 0, 0), true, 0);
-			TNT1 A 0 A_SetAngle(random(0, 360));
-			TNT1 A 0 A_SetPitch(random(-50, 50));
-			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
-			TNT1 A 0 A_SprayDecal("BloodSmear", 344, (0, 0, 0), (0, 0, 0), true, 0);
-			TNT1 A 0 A_SetAngle(random(0, 360));
-			TNT1 A 0 A_SetPitch(random(-50, 50));
-			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
-			TNT1 A 0 A_SetAngle(random(0, 360));
-			TNT1 A 0 A_SetPitch(random(-50, 50));
-			TNT1 A 0 A_SprayDecal("BloodSplat", 344, (0, 0, 0), (0, 0, 0), true, 0);
+			TNT1 A 0 
+			{
+				for(int i = 8; i >= 0; i--)
+				{
+					A_SetAngle(random(0, 360));
+					A_SetPitch(random(-50, 50));
+					A_SprayDecal("BloodSmear", 172, (0, 0, 0), (0, 0, 0), true, 0);
+					A_SetAngle(random(0, 360));
+					A_SetPitch(random(-50, 50));
+					A_SprayDecal("BloodSplat", 172, (0, 0, 0), (0, 0, 0), true, 0);
+					A_SetAngle(random(0, 360));
+					A_SetPitch(random(-50, 50));
+					A_SprayDecal("BloodSplat", 172, (0, 0, 0), (0, 0, 0), true, 0);
+				}
+			}
 			stop;
 	}
 }
