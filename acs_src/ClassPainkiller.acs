@@ -66,9 +66,9 @@ Script "Painkiller_Loop" (void)
 {
 	if(!CheckInventory("PainkillerClass"))
 		terminate;
-		
+
 	ACS_NamedExecuteWithResult("Painkiller_BlackTarotRestore");
-		
+
 	//int musicvolume = GetCVAR("SND_MusicVolume");
 	int pln = PlayerNumber();
 	int lastsilver1, lastsilver2;
@@ -86,7 +86,7 @@ Script "Painkiller_Loop" (void)
 		TakeInventory("Painkiller_FlamerAmmo",9999);
 		TakeInventory("Painkiller_ElectroAmmo",9999);
 		TakeInventory("Painkiller_HeaterAmmo",9999);
-		
+
 		SetAmmoCapacity("Clip",666);
 		SetAmmoCapacity("Shell",666);
 		SetAmmoCapacity("RocketAmmo",666);
@@ -95,7 +95,7 @@ Script "Painkiller_Loop" (void)
 		SetAmmoCapacity("Painkiller_FlamerAmmo",666);
 		SetAmmoCapacity("Painkiller_ElectroAmmo",666);
 		SetAmmoCapacity("Painkiller_HeaterAmmo",666);
-		
+
 		GiveInventory("Clip",666);
 		GiveInventory("Shell",666);
 		GiveInventory("RocketAmmo",666);
@@ -154,13 +154,13 @@ Script "Painkiller_Loop" (void)
 		int speedx, speedy, lasttimer, velocity, movement;	
 		speedx = GetActorVelX(0);
 		speedy = GetActorVelY(0);
-			
+
 		velocity = magnitudeTwo_f(speedx, speedy);
 		if(velocity>>8 != 0)
 			movement = 750/((velocity>>8)*7);
 		else
 			movement = 0;
-													
+								
 		if((Timer()-lasttimer) > movement && movement != 0)
 		{
 			//PlaySound(0, "HLPlayer/Step", CHAN_BODY, 1.0, false, ATTN_NORM);
@@ -215,18 +215,18 @@ Script "Painkiller_Painkiller_WarpBack" (void)
 	while(true)
 	{
 		//PrintBold(s:GetActorClass(0));
-	
+
 		int currentX = GetActorX(current);
 		int currentY = GetActorY(current);
 		int currentZ = GetActorZ(current);
 		int playerX = GetActorX(0);
 		int playerY = GetActorY(0);
 		int playerZ = GetActorZ(0);
-		
+
 		if(currentX > playerX+movedistance) { inrangeX = false; currentX-=movedistance; }
 		else if(currentX < playerX-movedistance) { inrangeX = false; currentX+=movedistance; }
 		else { inrangeX = true; currentX = playerX; }
-			
+
 		if(currentY > playerY+movedistance) { inrangeY = false; currentY-=movedistance; }
 		else if(currentY < playerY-movedistance) { inrangeY = false; currentY+=movedistance; }
 		else { inrangeY = true; currentY = playerY; }
@@ -234,16 +234,16 @@ Script "Painkiller_Painkiller_WarpBack" (void)
 		if(currentZ > playerZ+52.0) { inrangeZ = false; currentZ-=movedistance; }
 		else if(currentZ < playerZ+28.0) { inrangeZ = false; currentZ+=movedistance; }
 		else { inrangeZ = true; currentZ = playerZ+36.0; }
-			
+
 		if(inrangeX && inrangeY && inrangeZ)
 		{
 			GiveInventory("Painkiller_PainkillerReturned",1);
 			Thing_Remove(current);
 			terminate;
 		}
-		
+
 		//PrintBold(d:inrangeX,d:inrangeY,d:inrangeZ);
-		
+
 		//SetActorPosition(current,currentX,currentY,currentZ,0);
 		Warp(current,currentX,currentY,currentZ,0,WARPF_NOCHECKPOSITION|WARPF_ABSOLUTEPOSITION|WARPF_INTERPOLATE|WARPF_MOVEPTR);
 		Delay(1);
@@ -275,7 +275,7 @@ Script "Painkiller_Fire_Laser" (int sideOffset, int forwardOffset, int zOffset)
 	int z = GetActorZ(0) + 10.0;
 
 	SetActivatorToTarget(0);
-	
+
 	int pAngle = GetActorAngle(0);
 	int pPitch = GetActorPitch(0);
 	int mx = GetActorX(0);
@@ -288,17 +288,17 @@ Script "Painkiller_Fire_Laser" (int sideOffset, int forwardOffset, int zOffset)
 
 	int angle = VectorAngle(vectorX,vectorY) + 0.5;
 	int pitch = VectorAngle(VectorLength(vectorX,vectorY),vectorZ);
-	
+
 	LineAttack(0,angle,pitch,0,"Painkiller_Painkiller_LaserEnd","Painkiller",magnitudeThree_f(vectorX,vectorY,vectorZ),FHF_NORANDOMPUFFZ);
 
 	if(angle > 1.0) angle -= 1.0;
-	
+
 	int giveAngle = angle;
 	int givePitch = pitch;
-	
+
 	if(giveAngle < 0.0) giveAngle += 1.0;
 	if(givePitch < 0.0) givePitch += 1.0;
-			
+
 	GiveInventory("Painkiller_RailAngle",giveAngle + 1.0);
 	GiveInventory("Painkiller_RailPitch",givePitch + 1.0);
 }
@@ -325,39 +325,39 @@ Script "Painkiller_Laser_Draw" (int tx, int ty, int tz) clientside
 {
 	int t, i, k = 0, l, angle, pitch, x, y, z, vx, vy, vz, mag, magI, horz, space;
 	str segment = "Painkiller_PainkillerLaserSegment";
-	
+
 	space = 36;
 	i = 15;
 	horz = 6;
-	
+
 	int newtid = UniqueTid();
-	
+
 	int xoff = (cos(GetActorAngle(0)) * i) + (sin(GetActorAngle(0)) * horz);
 	int yoff = (sin(GetActorAngle(0)) * i) - (cos(GetActorAngle(0)) * horz);
-		
-    x = GetActorX(0) + xoff;
+
+	x = GetActorX(0) + xoff;
 	y = GetActorY(0) + yoff;
 	z = GetActorZ(0) + GetActorViewHeight(0) - 4.5 - (i * sin(GetActorPitch(0)));
-	
+
 	int vectorx = tx - x;
 	int vectory = ty - y;
 	int vectorz = tz - z;
 	angle = VectorAngle(vectorx, vectory);
-	
+
 	int length = magnitudeTwo(vectorx>>16,vectory>>16);
 	pitch = VectorAngle(length<<16, vectorz);
 
-    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
-    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
-    magI = ftoi(mag);
-    for (i = i; i < magI; i += space)
-    {
-        SpawnForced(segment, x+(vx*i), y+(vy*i), z+(vz*i), newtid);
+	vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+	vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+	magI = ftoi(mag);
+	for (i = i; i < magI; i += space)
+	{
+		SpawnForced(segment, x+(vx*i), y+(vy*i), z+(vz*i), newtid);
 		SetActorPitch(newtid, pitch);
 		SetActorAngle(newtid, angle);
 		if(i % 1500 == 0)
 			Delay(1);
-    }
+	}
 }
 
 Script "Painkiller_ShotgunBlast" (void)
@@ -365,23 +365,23 @@ Script "Painkiller_ShotgunBlast" (void)
 	int newtid = UniqueTid();
 	int thrust;
 	int angle = GetActorAngle(0)+0.5;
-	
+
 	Thing_ChangeTid(0,newtid);
 	SetActivator(0,AAPTR_Tracer);
 	if(ClassifyActor(0) == ACTOR_NONE || ClassifyActor(0) & ACTOR_ALIVE)
 		terminate;
-			
+
 	int mass = GetActorProperty(0,APROP_Mass);
 	if(mass != 0)
 		thrust = 800/mass;
-	
+
 	int x = GetActorX(0);
 	int y = GetActorY(0);
 	int z = GetActorZ(0);
 	SetActivator(newtid,AAPTR_Target);
 	int distance = magnitudeThree_f(x - GetActorX(0),y - GetActorY(0),z - GetActorZ(0));
 	SetActivator(newtid,AAPTR_Tracer);
-	
+
 	if(distance < 192.0)
 	{
 		ThrustThing(angle*256/65536,thrust,1,0);
@@ -395,7 +395,7 @@ Script "Painkiller_BloodGenerator_Offsets" (void)
 	int missiley = GetActorY(0);
 	int missilez = GetActorZ(0);
 	SetActivator(0,AAPTR_Tracer);
-		
+
 	int enemyx = GetActorX(0);
 	int enemyy = GetActorY(0);
 	int enemyz = GetActorZ(0);
@@ -426,9 +426,9 @@ Script "Painkiller_BloodGenerator_Return" (int mode)
 script "Painkiller_ProjectilePitch" (void)
 {
 	int horizontalVector = magnitudeTwo_f(GetActorVelX(0), GetActorVelY(0))<<8;
-    int velZ = GetActorVelZ(0);
-    int pitch = VectorAngle(horizontalVector, velZ);
-    SetActorPitch(0, pitch);
+	int velZ = GetActorVelZ(0);
+	int pitch = VectorAngle(horizontalVector, velZ);
+	SetActorPitch(0, pitch);
 }
 
 Script "Painkiller_ShooterPitch" (void)
@@ -501,7 +501,7 @@ Script "Painkiller_Freeze" (int thaw, int thawhealth, int renderstyle)
 			render = GetActorProperty(0, APROP_RenderStyle);
 			SetActorProperty(0,APROP_RenderStyle,STYLE_NORMAL);
 			SetActorProperty(0,APROP_Invulnerable,1);
-			
+
 			if(GetCVar("sams_runninginzandro"))
 			{
 				for(loopcounter = 2450; loopcounter < 2459; loopcounter++)
@@ -516,7 +516,7 @@ Script "Painkiller_Freeze" (int thaw, int thawhealth, int renderstyle)
 					freezetimer++;
 					Delay(1);
 				}
-				
+
 				if(GetActorProperty(0,APROP_Health) > GetActorProperty(0,APROP_SpawnHealth)/2)
 					ACS_NamedExecuteWithResult("Painkiller_Freeze",2,health,render,0);
 				else
@@ -529,16 +529,16 @@ Script "Painkiller_Freeze" (int thaw, int thawhealth, int renderstyle)
 			else
 			{
 				SetActorProperty(0,APROP_Health,health/2);
-			
+
 				for(loopcounter = 2450; loopcounter < 2459; loopcounter++)
 				{	
 					Thing_SetTranslation(0,loopcounter);
 					Delay(2);
 				}
-				
+
 				SetActorProperty(0,APROP_Invulnerable,0);
 				SetActorFlag(0,"BUDDHA",1);
-				
+
 				while(GetActorProperty(0,APROP_Health) > 1)
 				{
 					freezetimer++;
@@ -548,7 +548,7 @@ Script "Painkiller_Freeze" (int thaw, int thawhealth, int renderstyle)
 						ACS_NamedExecuteWithResult("Painkiller_Freeze",2,health,render,0);
 						terminate;
 					}
-					
+
 					Delay(1);
 				}
 				SetActorFlag(0,"BUDDHA",0);
@@ -593,7 +593,7 @@ Script "Painkiller_Freeze2" (int thaw, int thawhealth, int renderstyle)
 			render = GetActorProperty(0, APROP_RenderStyle);
 			SetActorProperty(0,APROP_RenderStyle,STYLE_NORMAL);
 			SetActorProperty(0,APROP_Invulnerable,1);
-			
+
 			if(GetCVar("sams_runninginzandro"))
 			{
 				for(loopcounter = 2450; loopcounter < 2459; loopcounter++)
@@ -608,7 +608,7 @@ Script "Painkiller_Freeze2" (int thaw, int thawhealth, int renderstyle)
 					freezetimer++;
 					Delay(1);
 				}
-				
+
 				if(GetActorProperty(0,APROP_Health) > GetActorProperty(0,APROP_SpawnHealth)/2)
 					ACS_NamedExecuteWithResult("Painkiller_Freeze",2,health,render,0);
 				else
@@ -621,16 +621,16 @@ Script "Painkiller_Freeze2" (int thaw, int thawhealth, int renderstyle)
 			else
 			{
 				SetActorProperty(0,APROP_Health,health/2);
-			
+
 				for(loopcounter = 2450; loopcounter < 2459; loopcounter++)
 				{	
 					Thing_SetTranslation(0,loopcounter);
 					Delay(2);
 				}
-				
+
 				SetActorProperty(0,APROP_Invulnerable,0);
 				SetActorFlag(0,"BUDDHA",1);
-				
+
 				while(GetActorProperty(0,APROP_Health) > 1)
 				{
 					freezetimer++;
@@ -640,7 +640,7 @@ Script "Painkiller_Freeze2" (int thaw, int thawhealth, int renderstyle)
 						ACS_NamedExecuteWithResult("Painkiller_Freeze",2,health,render,0);
 						terminate;
 					}
-					
+
 					Delay(1);
 				}
 				SetActorFlag(0,"BUDDHA",0);
@@ -712,13 +712,13 @@ Script "Painkiller_StakeRetrieveTracer" (void)
 	int deltaX = monsterX - stakeX;
 	int deltaY = monsterY - stakeY;
 	int deltaZ = monsterZ - stakeZ;
-	
+
 	int gravity = GetActorProperty(0,APROP_GRAVITY);
 	int height = GetActorProperty(0,APROP_HEIGHT)*4;
 	GiveInventory("Painkiller_Staked",1);
 	SetActorProperty(0,APROP_GRAVITY,0.0);
 	GiveInventory("Painkiller_NoInteractionOn",1);
-		
+
 	While(ClassifyActor(newtid) > 1 && ClassifyActor(0) & ACTOR_DEAD)
 	{
 		Warp(newtid,-8.0,0,deltaZ,0,WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION);
@@ -743,7 +743,7 @@ Script "Painkiller_ForceStakeBodyRemoval" (void)
 	Delay(100);
 	if(CheckInventory("Painkiller_Staked") == 1)
 		terminate;
-		
+
 	GiveInventory("Painkiller_CorpseBurst",1);
 	Delay(2);
 	Thing_Remove(0);
@@ -795,10 +795,10 @@ Script "Painkiller_EnemyCharrer" (int inventory)
 	int loopcounter;
 	if(inventory == 0)
 		SetActivator(0,AAPTR_TRACER);
-		
+
 	if(strleft(GetActorClass(0),9) == "Totenkopf")
 		terminate;
-		
+
 	if(ClassifyActor(0) & ACTOR_DEAD && !CheckInventory("Painkiller_PainkillerRoasted") && !(ClassifyActor(0) & ACTOR_PLAYER))
 	{
 		GiveInventory("Painkiller_PainkillerRoasted",1);
@@ -850,67 +850,66 @@ Script "Painkiller_LaserBezier" (int type, int space, int height) clientside
 			i = -16;
 			break;	
 	}
-	
 
 	int newtid = UniqueTid();
 
 	tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0);
-	
+
 	SetActivatorToTarget(0);	
-	
+
 	if(type == 2||type == 3)
 		horz = 5 + random(-2,2);
 	if(type == 4||type == 5)
 		horz = random(-2,2);
-	
+
 	//int xoff = (horz * sin(GetActorAngle(0))) - (i * cos(GetActorAngle(0)) * cos(GetActorPitch(0)));
 	//int yoff = (horz * cos(GetActorAngle(0))) + (i * sin(GetActorAngle(0)) * cos(GetActorPitch(0)));
 	int xoff = (horz * sin(GetActorAngle(0))) - FixedMul(i * cos(GetActorAngle(0)),cos(GetActorPitch(0))) + (random(-2,2) * sin(GetActorPitch(0)));
 	int yoff = (horz * cos(GetActorAngle(0))) + FixedMul(i * sin(GetActorAngle(0)),cos(GetActorPitch(0))) + (random(-2,2) * sin(GetActorPitch(0)));
-	
+
 	//PrintBold(s:"X Coordinate: ", f:xoff, s:", Y Coordinate: ", f:yoff);
-		
-    x = GetActorX(0) + xoff;
+
+	x = GetActorX(0) + xoff;
 	y = GetActorY(0) - yoff;
 	//z = GetActorZ(0) + (GetActorViewHeight(0)-(GetActorProperty(0,APROP_AttackZOffset)/2) - 2) + height * (1.0 - cos(GetActorPitch(0)));
 	//z = GetActorZ(0) + FixedMul(height * 1.0,sin(GetActorPitch(0)));
 	z = GetActorZ(0) + (height * 1.0) + (i * sin(GetActorPitch(0)));
-	
+
 	int vectorx = tx - x;
 	int vectory = ty - y;
 	int vectorz = tz - z;
 	angle = VectorAngle(vectorx, vectory);
-	
+
 	int length = magnitudeTwo(vectorx>>16,vectory>>16);
 	pitch = VectorAngle(length<<16, vectorz);
 
-    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
-    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
-    magI = ftoi(mag);
+	vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+	vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+	magI = ftoi(mag);
 	curve = sin(Timer()*1536)/256;
-		
-    for (i = i; i < magI; i += space)
-    {
+
+	for (i = i; i < magI; i += space)
+	{
 		//PrintBold(f:segmentz);
 		int newtid2 = UniqueTid();
-			
+
 		SpawnForced(segment, x+segmentx, y+segmenty, z+segmentz, newtid);
 		Thing_ChangeTid(newtid,newtid2);
 			
 		pitchoffset += curve;
-			
+
 		SetActorAngle(newtid2, angle);
 		SetActorPitch(newtid2, pitch+pitchoffset);
 		//segmentx += (cos(angle)*space) * (cos(pitch+pitchoffset)*space);
 		//segmenty += (sin(angle)*space) * (cos(pitch+pitchoffset)*space);
-		
+
 		segmentx += FixedMul(cos(angle)*space,cos(pitch+pitchoffset));
 		segmenty += FixedMul(sin(angle)*space,cos(pitch+pitchoffset));
 		segmentz += sin(pitch+pitchoffset)*space;
 		Thing_ChangeTid(newtid2,0);
 		if(i % 1500 == 0)
 			Delay(1);
-    }
+	}
 }
 
 Script "Painkiller_ElectrodriverOscilate" (void)
@@ -934,30 +933,39 @@ Script "Painkiller_DemonMorphBlast" (void)
 
 Script "Painkiller_EnemyFryer" (void)
 {
-	int loopcounter, actorIsDead;
 	SetActivator(0,AAPTR_TRACER);
-	
-	if(CheckInventory("Painkiller_Frying"))
+
+	if (CheckInventory("Painkiller_Frying"))
 		terminate;
-		
-	Playsound(0,"Painkiller/Electrodriver/ElectroFryLoop",CHAN_ITEM,0.33,true);
+
+	PlaySound(0,"Painkiller/Electrodriver/ElectroFryLoop",CHAN_ITEM,0.33,true);
 	GiveInventory("Painkiller_Frying",1);
-		
-	while(loopcounter < 17 && !(ClassifyActor(0) <= 1) && !(actorIsDead && (ClassifyActor(0) & ACTOR_ALIVE)))
+
+	bool actorIsDead;
+
+	int actorClass = ClassifyActor(0);
+
+	for (int loopcounter = 0; loopcounter < 17 && !(actorClass <= ACTOR_WORLD) && !(actorIsDead && (actorClass & ACTOR_ALIVE)); loopcounter++)
 	{
 		Delay(10);
-		SpawnForced("Painkiller_ElectroDriverFrySpawner",GetActorX(0),GetActorY(0),GetActorZ(0)+GetActorProperty(0,APROP_Height)/2,0,0);
-		SpawnForced("Painkiller_ElectroDriverFryEffect",GetActorX(0),GetActorY(0),GetActorZ(0)+GetActorProperty(0,APROP_Height)/2,0,0);
-		
-		if(ClassifyActor(0) & ACTOR_ALIVE)
+
+		actorClass = ClassifyActor(0);
+
+		int x = GetActorX(0);
+		int y = GetActorY(0);
+		int z = GetActorZ(0) + GetActorProperty(0,APROP_Height)/2;
+
+		SpawnForced("Painkiller_ElectroDriverFrySpawner",x,y,z,0,0);
+		SpawnForced("Painkiller_ElectroDriverFryEffect",x,y,z,0,0);
+
+		if (actorClass & ACTOR_ALIVE)
 			SetActorState(0,"Pain",true);
 		else
 			actorIsDead = true;
-			
+
 		SetActorVelocity(0,random(-0.5,0.5),random(-0.5,0.5),0,0,0);
 		//ThrustThing(random(0,256),1,0,0);
 		ThrustThingZ(0,2,random(0,1),1);
-		loopcounter++;
 	}
 	TakeInventory("Painkiller_Frying",1);
 	StopSound(0,CHAN_ITEM);
@@ -965,15 +973,20 @@ Script "Painkiller_EnemyFryer" (void)
 
 Script "Painkiller_ElectroDiscEffects" (void)
 {
-	int loopcounter;
-		
-	Playsound(0,"Painkiller/Electrodriver/ElectroGeoFryLoop",CHAN_ITEM,0.33,true);
-		
-	while(loopcounter < 17)
+	PlaySound(0,"Painkiller/Electrodriver/ElectroGeoFryLoop",CHAN_ITEM,0.33,true);
+
+	Delay(10);
+
+	for (int loopcounter = 0; loopcounter < 17 && !(ClassifyActor(0) & ACTOR_WORLD); loopcounter++)
 	{
+		int x = GetActorX(0);
+		int y = GetActorY(0);
+		int z = GetActorZ(0) + GetActorProperty(0,APROP_Height)/2;
+
+		SpawnForced("Painkiller_ElectroDriverFrySpawner",x,y,z,0,0);
+		SpawnForced("Painkiller_ElectroDriverFryEffect",x,y,z,0,0);
+
 		Delay(10);
-		SpawnForced("Painkiller_ElectroDriverFrySpawner",GetActorX(0),GetActorY(0),GetActorZ(0)+GetActorProperty(0,APROP_Height)/2,0,0);
-		SpawnForced("Painkiller_ElectroDriverFryEffect",GetActorX(0),GetActorY(0),GetActorZ(0)+GetActorProperty(0,APROP_Height)/2,0,0);
 	}
 	StopSound(0,CHAN_ITEM);
 }
@@ -1178,7 +1191,7 @@ Script "Painkiller_BlackTarotRestore" (void)
 	int player = PlayerNumber();
 	if(isCoop() || isSinglePlayer() || isInvasion())
 		terminate;
-		
+
 	for(int silver = 0; silver < 14; silver++)
 	{
 		GiveInventory(Painkiller_Silver_CardGraphics[silver][4],1);
@@ -1187,7 +1200,7 @@ Script "Painkiller_BlackTarotRestore" (void)
 	{
 		GiveInventory(Painkiller_Gold_CardGraphics[gold][4],1);
 	}
-		
+
 	for(int i = 0; i < 32; i++)
 	{
 		if(GetCvar("samsara_mp_silverSlot1") == i)
@@ -1225,7 +1238,7 @@ Script "Painkiller_BlackTarotUI" (void)
 	int hudboundsy = 1280;
 	int hudcenterx = hudboundsx/2;
 	int hudcentery = hudboundsy/2;
-	
+
 	While(CheckInventory("Painkiller_TarotOpened"))
 	{
 		int mousesensitivity = GetCvar("mouse_sensitivity");
@@ -1235,23 +1248,23 @@ Script "Painkiller_BlackTarotUI" (void)
 		int yaw = GetPlayerInput(-1, INPUT_YAW);
 		int pitch = GetPlayerInput(-1, INPUT_PITCH);
 		int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
-		
+
 		if(yaw > 1 || yaw < -1)
 			cursorx -= FixedMul(yaw/16,mousesensitivity);
-		
+
 		if(pitch > 1 || pitch < -1)
 			cursory -= FixedMul(pitch/8,mousesensitivity);
-		
+
 		if(cursorx < 0)
 			cursorx = 0;	
 		else if(cursorx > hudboundsx)
 			cursorx = hudboundsx;
-			
+
 		if(cursory < 0)
 			cursory = 0;
 		else if(cursory > hudboundsy)
 			cursory = hudboundsy;
-		
+
 		SetHudSize(hudboundsx,hudboundsy,true);
 		SetFont("PKTBOARD");
 		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1578,0,hudcenterx*1.0,hudcentery*1.0,0.1,60.0);
@@ -1264,7 +1277,7 @@ Script "Painkiller_BlackTarotUI" (void)
 		{
 			if(!CheckInventory(Painkiller_Silver_CardGraphics[a][4]))
 				continue;
-				
+
 			SetHudSize(4*hudboundsx,hudboundsy*2,true);
 			SetFont(Painkiller_Silver_CardGraphics[a][0]);
 			if(CheckInventory("Painkiller_SilverSlot1") == (a+1))
@@ -1319,7 +1332,7 @@ Script "Painkiller_BlackTarotUI" (void)
 					}
 				}
 			}
-			
+
 			if(dropdelay <= 0 && (holding == 0 && CheckInventory("Painkiller_SilverSlot1") != (a+1) && CheckInventory("Painkiller_SilverSlot2") != (a+1) && cursorx < FixedMul(hudboundsx,0.125)+(a*61)+24) && (cursorx > (FixedMul(hudboundsx,0.125)+(a*61)-24)) && (cursory < FixedMul(hudboundsy,0.25) && cursory > FixedMul(hudboundsy,0.1675)))
 			{
 				if(buttons & (BT_USE|BT_ATTACK))
@@ -1381,10 +1394,10 @@ Script "Painkiller_BlackTarotUI" (void)
 					holding = 0;
 				}
 			}
-			
+
 			SetHudSize(FixedMul(5.75,hudboundsx),FixedMul(2.625,hudboundsy),true);
 			SetFont(Painkiller_Silver_CardGraphics[a][0]);
-			
+
 			if(holding == a+1)
 			{
 				RemoveMessages(1551+a,1551+a);
@@ -1411,12 +1424,12 @@ Script "Painkiller_BlackTarotUI" (void)
 				}
 			}
 		}
-		
+
 		for(b = 0; b < PainkillerGoldTarotCards; b++)
 		{
 			if(!CheckInventory(Painkiller_Gold_CardGraphics[b][4]))
 				continue;
-				
+
 			SetHudSize(4*hudboundsx,hudboundsy*2,true);
 			SetFont(Painkiller_Gold_CardGraphics[b][0]);
 			if(CheckInventory("Painkiller_GoldSlot1") == (b+1))
@@ -1497,7 +1510,7 @@ Script "Painkiller_BlackTarotUI" (void)
 					}
 				}
 			}
-			
+
 			if(dropdelay <= 0 && (holding == 0 && CheckInventory("Painkiller_GoldSlot1") != (b+1) && CheckInventory("Painkiller_GoldSlot2") != (b+1) && CheckInventory("Painkiller_GoldSlot3") != (b+1) && cursorx < FixedMul(hudboundsx,0.1025)+(b*53)+20) && (cursorx > (FixedMul(hudboundsx,0.1025)+(b*53)-20)) && (cursory < FixedMul(hudboundsy,0.85) && cursory > FixedMul(hudboundsy,0.78)))
 			{
 				if(buttons & (BT_USE|BT_ATTACK))
@@ -1564,10 +1577,10 @@ Script "Painkiller_BlackTarotUI" (void)
 					holding = 0;
 				}
 			}
-			
+
 			SetHudSize(FixedMul(6.75,hudboundsx),FixedMul(3.0,hudboundsy),true);
 			SetFont(Painkiller_Gold_CardGraphics[b][0]);
-			
+
 			if(holding == (a+b+1))
 			{
 				RemoveMessages(1521+b,1521+b);
@@ -1600,7 +1613,7 @@ Script "Painkiller_BlackTarotUI" (void)
 				}
 			}
 		}
-		
+
 		Delay(1);
 		holddelay--;
 		dropdelay--;
@@ -1612,10 +1625,10 @@ Script "Painkiller_BlackTarotUI" (void)
 Script "Painkiller_GoldTarot_Activate" (void) net
 {
 	int gameMode = !(isCoop() || isInvasion() || isSinglePlayer()) ? 0 : 1;
-	
+
 	if(CheckInventory("Painkiller_GoldActive") || CheckInventory("Painkiller_GoldSlot1") == 0 && CheckInventory("Painkiller_GoldSlot2") == 0 && CheckInventory("Painkiller_GoldSlot3") == 0 || CheckWeapon("Painkiller_DemonMorph") || (!CheckInventory("Painkiller_TarotMPUses") && gameMode == 0))
 		terminate;
-						
+
 	if(CheckInventory("Painkiller_TarotUsage") >= 3 || (CheckInventory("Painkiller_TarotMPUses") < 3 && gameMode == 0))
 	{
 		if(gameMode == 0)
@@ -1629,25 +1642,25 @@ Script "Painkiller_GoldTarot_Activate" (void) net
 				terminate;
 		}
 	}
-	
+
 	if(gameMode == 0)
 	{		
 		if(!CheckInventory("Painkiller_NoTarotCardLimit"))
 		{
 			TakeInventory("Painkiller_TarotMPUses",1);
 		}
-		
+
 		TakeInventory("Painkiller_Tarot_GoldGiver",65536);
 	}
-	
+
 	//TakeInventory("Painkiller_TarotLevel",99999);
 	//GiveInventory("Painkiller_TarotLevel",levelnum);
-	
+
 	if(!CheckInventory("Painkiller_NoTarotCardLimit"))
 	{
 		GiveInventory("Painkiller_TarotUsage",1);
 	}
-	
+
 	int duration = 0;
 	GiveInventory("Painkiller_GoldActive",1);
 	if(CheckInventory("Painkiller_GoldSlot1") > 0)
@@ -1656,9 +1669,9 @@ Script "Painkiller_GoldTarot_Activate" (void) net
 		GiveInventory(Painkiller_Gold_CardGraphics[CheckInventory("Painkiller_GoldSlot2")-1][5],1);
 	if(CheckInventory("Painkiller_GoldSlot3") > 0)
 		GiveInventory(Painkiller_Gold_CardGraphics[CheckInventory("Painkiller_GoldSlot3")-1][5],1);
-		
+
 	int maxDuration = 700+(CheckInventory("Painkiller_TimeBonus_Power")*350)+(CheckInventory("Painkiller_DoubleTimeBonus_Power")*700);
-	
+
 	while(duration < maxDuration && (ClassifyActor(0) & ACTOR_ALIVE))
 	{
 		SetHudSize(320,256,1);
@@ -1818,15 +1831,19 @@ Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 Script "Painkiller_SoulCatcher" (int type)
 {
 	int newtid = UniqueTid();
-	if(type == 0)
+
+	if (type == 0)
 		SpawnSpotFacingForced("Painkiller_SoulTarget",0,newtid);
 	else
 		SpawnSpotFacingForced("Painkiller_SoulTargetRed",0,newtid);
-	While(ClassifyActor(0) != ACTOR_WORLD)
+
+	while(ClassifyActor(0) != ACTOR_WORLD && ClassifyActor(newtid) != ACTOR_NONE)
 	{
 		Warp(newtid,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION);
 		Delay(1);
 	}
+
+	Thing_Remove(0);
 	Thing_Remove(newtid);
 }
 
@@ -1835,7 +1852,7 @@ Script "Painkiller_IsItGibbed" (void)
 	int health = 66;
 	if(CheckInventory("Painkiller_Sceptred"))
 		health = 1;
-						
+
 	SetResultValue(GetActorProperty(0,APROP_Health) < -health);
 }
 
@@ -1849,7 +1866,7 @@ Script "Painkiller_DropCoins" (int frozen)
 	int chunks = volume/1000;
 	if(chunks < 1)
 		chunks = 1;
-		
+
 	for(a = 0; a < chunks; a++)
 		GiveInventory("Painkiller_TossCoin", 1);
 }
@@ -1864,7 +1881,7 @@ Script "Painkiller_GibCreator" (int frozen)
 	int chunks = volume/2000;
 	if(chunks < 1)
 		chunks = 1;
-		
+
 	for(a = 0; a < chunks; a++)
 		GiveInventory("Painkiller_TossChunk", 1);
 	for(a = 0; a < chunks/2; a++)
