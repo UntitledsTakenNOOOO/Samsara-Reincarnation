@@ -17,6 +17,8 @@ Actor SuperCoopChicken
     +DONTMORPH
     +FLOORCLIP
     +THRUSPECIES
+    +NOTDMATCH
+    +NOICEDEATH
     DropItem "HealPack0", 64
     DropItem "ArmorScrap", 64
     DropItem "HealPack0", 32
@@ -36,6 +38,17 @@ Actor SuperCoopChicken
     DeathSound "chicken/death"
     ActiveSound "chicken/active"
     Obituary "$SAMSARA_STTP3K_OB_CHICKEN1"
+    DamageFactor "CorvusCrossbow", 1.1
+    DamageFactor "DragonClaw", 1.5
+    DamageFactor "WitchMelee", 1.1	
+	DamageFactor "DeusExSabot", 0.8
+	DamageFactor "DeusExSabotPistol", 0.8
+	PainChance "MightyBoot", 255
+	PainChance "CalebFire", 0
+	PainChance "WTMelee", 255
+	PainChance "WTMeleeIce", 255	  
+	PainChance "ShrinkerDMG", 0
+	PainChance "PainkillerIce", 0
     States
     {
     Spawn:
@@ -168,7 +181,8 @@ Actor SuperCoopChicken
     Death.WolfenFlamethrower:
 	Death.TotenkopfFire:
         CHKN E 0 A_Scream
-        CHKN E 0 A_GiveToTarget("KillCount",1)
+        CHKN E 0 A_GiveToTarget("ChickenKillCount",1)
+		CHKN E 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
         CHKN EEEEEEE 0 A_Feathers
         CHKN E 0 A_SpawnItem("WolfensteinChickenLeg")
         ACLO E -1
@@ -316,6 +330,38 @@ Actor SuperCoopChicken
         "####" "#" 1 A_IceGuyDie
         TNT1 A 0
         stop
+	Death.DeusExMelee:
+	Death.DeusExStunned:
+	Death.DeusExLAM:
+		TNT1 A 0 ACS_NamedExecuteAlways("DeusEx_KillScript", 0, 0, 0)
+		TNT1 A -1 A_Jump(256, "Death")
+		Wait						
+	Death.DeusExPistol:
+	Death.DeusExKnockedOut:
+	Death.DeusExPoisonEffect:
+	Death.DeusExSabotPistol:
+		TNT1 A 0 ACS_NamedExecuteAlways("DeusEx_KillScript", 0, 0, 1)
+		TNT1 A -1 A_Jump(256, "Death")
+		Wait			
+	Death.DeusExPistolFire:
+		TNT1 A 0 ACS_NamedExecuteAlways("DeusEx_KillScript", 0, 0, 1)
+		TNT1 A -1 A_Jump(256, "Burn")
+		Wait		
+	Death.DeusExSabot:
+	Death.DeusExRifleShot:
+	Death.DeusExRifleExploded:
+		TNT1 A 0 ACS_NamedExecuteAlways("DeusEx_KillScript", 0, 0, 2)
+		TNT1 A -1 A_Jump(256, "Death")
+		Wait					
+	Death.DeusExFlamed:
+		TNT1 A 0 ACS_NamedExecuteAlways("DeusEx_KillScript", 0, 0, 3)
+		TNT1 A -1 A_Jump(256, "Burn")
+		Wait				
+	Death.DeusExBurned:
+	Death.DeusExExploded:
+		TNT1 A 0 ACS_NamedExecuteAlways("DeusEx_KillScript", 0, 0, 3)
+		TNT1 A -1 A_Jump(256, "Death")
+		Wait		
     }
 }
 
@@ -412,7 +458,7 @@ actor AssaultChicken : SuperCoopChicken
         Loop
     Pain:
         TNT1 AAAAA 0 A_Feathers
-        ZHK2 D 5 A_Feathers
+        ZHK2 D 5 //A_Feathers
         ZHK2 C 5 A_Pain
         Goto See
     Pain.MightyBoot:
@@ -453,8 +499,8 @@ actor AssaultChicken : SuperCoopChicken
         TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
 		TNT1 A 0 A_Gravity
         ZHK2 E 6 A_Scream
-        TNT1 AAAAA 0 A_Feathers
-        ZHK2 F 6 A_Feathers
+        TNT1 AAAAA 0 //A_Feathers
+        ZHK2 F 6 //A_Feathers
         ZHK2 G 6
         ZHK2 H 6 A_NoBlocking
         ZHK2 IJK 6
@@ -463,8 +509,9 @@ actor AssaultChicken : SuperCoopChicken
 	Death.WolfenFlamethrower:
 	Death.TotenkopfFire:
         ZHK2 E 0 A_Scream
-        ZHK2 E 0 A_GiveToTarget("KillCount",1)
-        ZHK2 EEEEEEE 0 A_Feathers
+        ZHK2 E 0 A_GiveToTarget("ChickenKillCount",1)
+		ZHK2 E 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+        ZHK2 EEEEEEE 0 //A_Feathers
         ZHK2 E 0 A_SpawnItem("WolfensteinChickenLeg")
         ACLO E -1
         stop
@@ -576,7 +623,8 @@ actor ExplosiveChicken : SuperCoopChicken
     Death.WolfenFlamethrower:
 	Death.TotenkopfFire:
         ZHK3 E 0 A_Scream
-        ZHK3 E 0 A_GiveToTarget("KillCount",1)
+        ZHK3 E 0 A_GiveToTarget("ChickenKillCount",1)
+		ZHK3 E 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
         ZHK3 EEEEEEE 0 A_Feathers
         ZHK3 E 0 A_SpawnItem("WolfensteinChickenLeg")
         ACLO E -1
