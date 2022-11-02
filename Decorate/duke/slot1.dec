@@ -66,10 +66,13 @@ actor Pipebombs : DukeWeapon
 		TNT1 A 0 A_JumpIfInventory("DukeGiveMoney",1,"GiveMoney")
 		TNT1 A 0 A_JumpIfInventory("DukeThrownPipebomb",1,"Ready2")
 		TNT1 A 0 A_JumpIfInventory("DukeStomp", 1, "Stomp")
+		TNT1 A 0 A_JumpIfInventory("DukeClassMode", 2, 4)
 		TNT1 A 0 A_JumpIfInventory("DukeLABToken", 1, 2)
 		DKPB A 1 A_WeaponReady
 		Loop
 		DKPA A 1 A_WeaponReady
+		Loop
+		D6PB A 1 A_WeaponReady
 		Loop
 	  Ready2:
 		TNT1 A 0 A_JumpIfInventory("DukeStomp", 1, "Stomp")
@@ -93,10 +96,14 @@ actor Pipebombs : DukeWeapon
 		TNT1 A 0 A_TakeInventory("DukeThrownPipebomb",1)
 		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
 		Goto Super::Deselect
+		DKPB A 0 A_JumpIfInventory("DukeClassMode", 2, "Deselect64")
 		DKPB A 0 A_JumpIfInventory("DukeLABToken", 1, "DeselectLAB")
 		Goto Super::Deselect
 	  DeselectLAB:
 		DKPA A 0
+		Goto Super::Deselect
+	  Deselect64:
+		D6PB A 0
 		Goto Super::Deselect
 	  DeselectDetonator:
 		DKPB O 0 A_TakeInventory("DukeThrownPipebomb",1)
@@ -109,10 +116,14 @@ actor Pipebombs : DukeWeapon
 		TNT1 A 0 A_TakeInventory("DukePipebombFired",1)
 		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
 		Goto Super::Deselect
+		DKPB A 0 A_JumpIfInventory("DukeClassMode", 2, "Select64")
 		DKPB A 0 A_JumpIfInventory("DukeLABToken", 1, "SelectLAB")
 		Goto Super::Select
 	  SelectLAB:
 		DKPA A 0
+		Goto Super::Select
+	  Select64:
+		D6PB A 0
 		Goto Super::Select
 
 	  Fire:
@@ -1018,6 +1029,118 @@ actor PipebombFrag
 		Stop
 	}
 }
+
+actor Duke64Kaboom : Inventory { -INVBAR +INVENTORY.UNDROPPABLE Inventory.MaxAmount 1 }
+
+actor Duke64Pipebomb
+{
+    SeeSound "duke/pipebomb"
+    DamageType "DukeExplosive"
+    Speed 16
+    Radius 10
+    Height 8
+    Health 5
+    Species "Player"
+    Obituary "$SAMSARA_DUKE_OB_SLOT1"
+    Gravity 0.8
+    DamageFactor "MightyBoot", 0.0
+    BounceFactor 0.7
+    BounceCount 3
+    Scale 0.2
+    PROJECTILE
+    +NOBLOOD
+    +SHOOTABLE
+    -NOBLOCKMAP
+    -NOLIFTDROP
+    -NOGRAVITY
+    +NOTELEPORT
+    -TELESTOMP
+    +MOVEWITHSECTOR
+    +BOUNCEONACTORS
+    +DOOMBOUNCE
+    -EXPLODEONWATER
+    +CANBOUNCEWATER
+    +FORCERADIUSDMG
+    +THRUGHOST
+    +THRUSPECIES
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        TNT1 A 0 A_PlaySoundEx("silence","voice",0,0)
+        TNT1 A 0 A_JumpIfInTargetInventory ("CoopModeOn",1,"Spawn3")
+        TNT1 A 0 A_ChangeFlag ("Thruspecies",0)
+      Spawn2:
+        PBOM AA 1 A_JumpIfInTargetInventory ("Duke64Kaboom",1,"Death")
+        PBOM BB 1 A_JumpIfInTargetInventory ("Duke64Kaboom",1,"Death")
+        Loop
+      Spawn3:
+        PBOM AA 1 A_JumpIfInTargetInventory ("Duke64Kaboom",1,"Death")
+        PBOM BB 1 A_JumpIfInTargetInventory ("Duke64Kaboom",1,"Death")
+        Loop
+        
+      Death:
+        TNT1 A 0 A_ChangeFlag("SHOOTABLE",1) //for r3827 compatibility
+        TNT1 A 0 A_PlaySound("duke/pipebomb")
+        TNT1 A 0 A_Jump(256,"Death1","Death2")
+
+      Death1:
+        TNT1 A 0 A_ChangeFlag("SHOOTABLE",1)
+        TNT1 A 0 A_Gravity
+        TNT1 A 0 A_JumpIfHealthLower(0,"Explode")
+        TNT1 A 0 A_JumpIfInTargetInventory ("Duke64Kaboom",1,"Explode")
+        PBOM A 1
+        TNT1 A 0 A_JumpIfCloser(20,"Remove1")
+        Loop
+
+      Death2:
+        TNT1 A 0 A_ChangeFlag("SHOOTABLE",1)
+        TNT1 A 0 A_Gravity
+        TNT1 A 0 A_JumpIfHealthLower(0,"Explode")
+        TNT1 A 0 A_JumpIfInTargetInventory ("Duke64Kaboom",1,"Explode")
+        PBOM B 1
+        TNT1 A 0 A_JumpIfCloser(20,"Remove2")
+        Loop
+
+      Explode:
+        TNT1 A 0 A_ChangeFlag("SHOOTABLE",0) //This must be cleared when we get here so double explosions don't happen!
+        TNT1 A 0 A_NoBlocking
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_PlaySound("duke/explosion", CHAN_WEAPON, 1.0, 0, 1)
+        TNT1 A 0 A_PlaySound("duke/pipeexplosion", 5, 0.5, 0, 0)
+        TNT1 AAAAAAA 0 A_SpawnItemEx("PipebombFrag",random(-1,1),random(-1,1),random(26,56),random(-2,2),random(-2,2),random(5,15),random(-180,180),160)//A_SpawnDebris("PipebombFrag")
+        TNT1 A 1 A_SpawnItemEx("RPGExplosion",0,0,3,0,0,0,0,32)//A_SpawnItem("RPGExplosion")
+        TNT1 A 1 A_Explode(128,192) // Pipebombs have 1.5 the radius of the rockets.
+        Stop
+
+      Remove1:
+        TNT1 A 0 A_JumpIfInTargetInventory("RocketAmmo",0,"Death1")
+        PBOM A 1
+        TNT1 A 0 A_GiveToTarget("DukeAmmoIndicator",1)
+        TNT1 A 0 A_GiveToTarget("RocketAmmo",1)
+        TNT1 A 0 Thing_Remove(0)
+        Stop
+
+      Remove2:
+        TNT1 A 0 A_JumpIfInTargetInventory("RocketAmmo",0,"Death2")
+        PBOM B 1
+        TNT1 A 0 A_GiveToTarget("DukeAmmoIndicator",1)
+        TNT1 A 0 A_GiveToTarget("RocketAmmo",1)
+        TNT1 A 0 Thing_Remove(0)
+        Stop
+    }
+}
+
+actor Duke64Pipebomb2 : Duke64Pipebomb { Speed 17 }
+actor Duke64Pipebomb3 : Duke64Pipebomb { Speed 18 }
+actor Duke64Pipebomb4 : Duke64Pipebomb { Speed 19 }
+actor Duke64Pipebomb5 : Duke64Pipebomb { Speed 20 }
+actor Duke64Pipebomb6 : Duke64Pipebomb { Speed 21 }
+actor Duke64Pipebomb7 : Duke64Pipebomb { Speed 22 }
+actor Duke64Pipebomb8 : Duke64Pipebomb { Speed 23 }
+actor Duke64Pipebomb9 : Duke64Pipebomb { Speed 24 }
+actor Duke64Pipebomb10 : Duke64Pipebomb { Speed 25 }
+actor Duke64Pipebomb11 : Duke64Pipebomb { Speed 26 }
 
 actor DukeAmmoIndicator: CustomInventory
 {
