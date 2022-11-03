@@ -1328,7 +1328,6 @@ Script "Goldeneye_BuildTank" (void)
 	int myTid = UniqueTid();
 	Thing_ChangeTid(0,myTid);
 	int partTid = UniqueTid();
-
 	
 	SpawnForced("Goldeneye_Tank_Collision_FrontL",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
@@ -1369,15 +1368,28 @@ Script "Goldeneye_BuildTank" (void)
 	Thing_ChangeTid(partTid,0);
 }
 
+Script "Goldeneye_TankActivationHeight" (void)
+{
+	int myZ = GetActorZ(0);
+	SetActivator(0,AAPTR_Target);
+	SetResultValue(GetActorZ(0) - myZ > 32.0);
+}
+
 Script "Goldeneye_TankActivator" (void)
 {
+	int tankStart = timer();
 	int yawStorage = 0;
 	int interpolate = WARPF_INTERPOLATE * GetCvar("samsara_zscriptready");
 	ACS_NamedExecuteWithResult("Goldeneye_TankTurretWarp", interpolate);
 	SetActivator(0,AAPTR_Target);
-	SetPlayerProperty(0,1,PROP_FROZEN);
-	while(ClassifyActor(0) & ACTOR_ALIVE)
+	GiveInventory("Goldeneye_TankForward",65536);
+	GiveInventory("Goldeneye_TankSide",65536);
+	while(ClassifyActor(0) & ACTOR_ALIVE && CheckInventory("Goldeneye_UsingTank"))
 	{
+		SetActorProperty(0,APROP_DamageFactor,0.1);
+		SetPlayerProperty(0,1,PROP_FROZEN);
+		if(GetPlayerInput(-1,INPUT_BUTTONS) & BT_USE && timer() > (tankStart + 35))
+			TakeInventory("Goldeneye_UsingTank",1);
 		int playerYaw = GetPlayerInput(-1,INPUT_YAW);	
 		int playerPitch = GetPlayerInput(-1,INPUT_PITCH);
 		yawStorage += playerYaw;
@@ -1389,6 +1401,9 @@ Script "Goldeneye_TankActivator" (void)
 		SetActorVelocity(0,0,0,0,0,0);
 		Delay(1);
 	}
+	SetPlayerProperty(0,0,PROP_FROZEN);
+	TakeInventory("Goldeneye_TankForward",131072);
+	TakeInventory("Goldeneye_TankSide",131072);
 }
 
 Script "Goldeneye_TankMoveInput" (int interpolate)
@@ -1396,9 +1411,38 @@ Script "Goldeneye_TankMoveInput" (int interpolate)
 	int myTid = UniqueTid();
 	Thing_ChangeTid(0,myTid);
 	SetActivator(0,AAPTR_Target);
+	
 	int playerForward = GetPlayerInput(-1,INPUT_FORWARDMOVE);
 	int playerSideMove = GetPlayerInput(-1,INPUT_SIDEMOVE);
-	if(playerForward !=0 || playerSideMove != 0) GiveInventory("Goldeneye_TankDamageObjects",1);
+	
+	if(playerForward == 0)
+	{
+		playerForward = CheckInventory("Goldeneye_TankForward")-65536;
+		playerForward = FixedMul(playerForward,0.9125);
+		TakeInventory("Goldeneye_TankForward",131072);
+		GiveInventory("Goldeneye_TankForward",playerForward+65536);
+	}
+	else
+	{
+		TakeInventory("Goldeneye_TankForward",131072);
+		GiveInventory("Goldeneye_TankForward",playerForward+65536);
+	}
+	
+	if(playerSideMove == 0)
+	{
+		playerSideMove = CheckInventory("Goldeneye_TankSide")-65536;
+		playerSideMove = FixedMul(playerSideMove,0.667);
+		TakeInventory("Goldeneye_TankSide",131072);
+		GiveInventory("Goldeneye_TankSide",playerSideMove+65536);
+	}
+	else
+	{
+		TakeInventory("Goldeneye_TankSide",131072);
+		GiveInventory("Goldeneye_TankSide",playerSideMove+65536);
+	}
+		
+	if(abs(playerForward) > 1024 || abs(playerSideMove) > 1024 != 0) GiveInventory("Goldeneye_TankDamageObjects",1);
+	
 	SetActivator(myTid,AAPTR_Tracer);
 	ACS_NamedExecuteWithResult("Goldeneye_TankMove",playerForward,-playerSideMove,interpolate);
 	Thing_ChangeTid(myTid,0);
@@ -1409,7 +1453,7 @@ Script "Goldeneye_TankMove" (int playerForward, int playerSideMove, int interpol
 	int forwardOffset = 112;
 	int sideOffset = 24;
 	int dummyTid = UniqueTid();
-	int moving = playerForward != 0 || playerSideMove != 0;
+	int moving = abs(playerForward) > 2048 || abs(playerSideMove) > 2048;
 	if(playerForward > 0)
 	{
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
@@ -1462,7 +1506,7 @@ Script "Goldeneye_TankMove" (int playerForward, int playerSideMove, int interpol
 
 Script "Goldeneye_TankTurretWarp" (int interpolate)
 {
-	while(true)
+	while(ACS_NamedExecuteWithResult("Goldeneye_IsUsingTank"))
 	{
 		ACS_NamedExecuteWithResult("Goldeneye_TankMoveInput",interpolate);
 		SetActorAngle(0,ACS_NamedExecuteWithResult("Goldeneye_TankCounters"));
@@ -1472,6 +1516,16 @@ Script "Goldeneye_TankTurretWarp" (int interpolate)
 		Warp(AAPTR_TARGET,-6.0,9.0,32.0,0,WARPF_NOCHECKPOSITION|WARPF_MOVEPTR|WARPF_USEPTR|interpolate);
 		Delay(1);
 	}
+	SetActivator(0,AAPTR_Tracer);
+	TakeInventory("Goldeneye_UsingTank",1);
+	StopSound(0,CHAN_5);
+	StopSound(0,CHAN_6);
+}
+
+Script "Goldeneye_IsUsingTank" (void)
+{
+	SetActivator(0,AAPTR_Target);
+	SetResultValue(CheckInventory("Goldeneye_UsingTank"));
 }
 
 Script "Goldeneye_TankBarrelPitch" (void)
