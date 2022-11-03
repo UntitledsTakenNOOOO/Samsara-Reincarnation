@@ -1322,3 +1322,178 @@ Script "BondHitBox" (int damage)
 	}
 	Thing_ChangeTID(newtid,oldTID);
 }			
+
+Script "Goldeneye_BuildTank" (void)
+{
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0,myTid);
+	int partTid = UniqueTid();
+
+	
+	SpawnForced("Goldeneye_Tank_Collision_FrontL",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	Thing_ChangeTid(partTid,0);
+	
+	SpawnForced("Goldeneye_Tank_Collision_FrontR",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	Thing_ChangeTid(partTid,0);
+	
+	SpawnForced("Goldeneye_Tank_Collision_BackL",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	Thing_ChangeTid(partTid,0);
+	
+	SpawnForced("Goldeneye_Tank_Collision_BackR",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	Thing_ChangeTid(partTid,0);
+	
+	SpawnForced("Goldeneye_Tank_Step_Front",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	Thing_ChangeTid(partTid,0);
+	
+	SpawnForced("Goldeneye_Tank_Step_Back",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	Thing_ChangeTid(partTid,0);
+	
+	SpawnForced("Goldeneye_Tank_Turret",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	
+	SetPointerExt(AAPTR_Master,partTid,0);
+	Thing_ChangeTid(myTid,0);
+	
+	SetActivator(partTid);
+	Thing_ChangeTid(partTid,0);
+	
+	SpawnForced("Goldeneye_Tank_Barrel",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	SetPointer(AAPTR_Master,partTid);
+	Thing_ChangeTid(partTid,0);
+}
+
+Script "Goldeneye_TankActivator" (void)
+{
+	int yawStorage = 0;
+	int interpolate = WARPF_INTERPOLATE * GetCvar("samsara_zscriptready");
+	ACS_NamedExecuteWithResult("Goldeneye_TankTurretWarp", interpolate);
+	SetActivator(0,AAPTR_Target);
+	SetPlayerProperty(0,1,PROP_FROZEN);
+	while(ClassifyActor(0) & ACTOR_ALIVE)
+	{
+		int playerYaw = GetPlayerInput(-1,INPUT_YAW);	
+		int playerPitch = GetPlayerInput(-1,INPUT_PITCH);
+		yawStorage += playerYaw;
+		if(yawStorage > 1.0) yawStorage -= 1.0;
+		if(yawStorage < 0.0) yawStorage += 1.0;
+		TakeInventory("Goldeneye_TankAngle",65536);
+		GiveInventory("Goldeneye_TankAngle",yawStorage);
+		
+		SetActorVelocity(0,0,0,0,0,0);
+		Delay(1);
+	}
+}
+
+Script "Goldeneye_TankMoveInput" (int interpolate)
+{
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0,myTid);
+	SetActivator(0,AAPTR_Target);
+	int playerForward = GetPlayerInput(-1,INPUT_FORWARDMOVE);
+	int playerSideMove = GetPlayerInput(-1,INPUT_SIDEMOVE);
+	if(playerForward !=0 || playerSideMove != 0) GiveInventory("Goldeneye_TankDamageObjects",1);
+	SetActivator(myTid,AAPTR_Tracer);
+	ACS_NamedExecuteWithResult("Goldeneye_TankMove",playerForward,-playerSideMove,interpolate);
+	Thing_ChangeTid(myTid,0);
+}
+
+Script "Goldeneye_TankMove" (int playerForward, int playerSideMove, int interpolate)
+{
+	int forwardOffset = 112;
+	int sideOffset = 24;
+	int dummyTid = UniqueTid();
+	int moving = playerForward != 0 || playerSideMove != 0;
+	if(playerForward > 0)
+	{
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * 2 * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * 2 * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * 2 * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * 2 * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid))	playerForward = 0;
+		if(playerForward != 0) Thing_Remove(dummyTid);
+	}
+	if(playerForward < 0)
+	{
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * 2 * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * 2 * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * 2 * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * 2 * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
+		if(playerForward != 0) Thing_Remove(dummyTid);
+	}
+	forwardOffset = 40;
+	sideOffset = 56;
+	if(playerSideMove > 0)
+	{
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * 2 * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * 2 * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * 3 * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * 3 * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * 2 * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * 2 * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * 3 * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * 3 * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(playerSideMove != 0) Thing_Remove(dummyTid);
+	}
+	if(playerSideMove < 0)
+	{
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * 2 * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * 2 * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * 3 * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * 3 * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * 2 * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * 2 * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * 3 * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * 3 * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(playerSideMove != 0) Thing_Remove(dummyTid);
+	}
+	
+	SetActorAngle(0,GetActorAngle(0)+playerSideMove/16);
+	if(moving) PlaySound(0,"Goldeneye/Tank/Move",CHAN_6,0.5,1,0.5);
+	else { PlaySound(0,"Goldeneye/Tank/Idle",CHAN_5,0.5,1,0.5); StopSound(0,CHAN_6); }
+	
+	Warp(0,playerForward*20,0,0,0,WARPF_NOCHECKPOSITION|interpolate);
+}
+
+Script "Goldeneye_TankTurretWarp" (int interpolate)
+{
+	while(true)
+	{
+		ACS_NamedExecuteWithResult("Goldeneye_TankMoveInput",interpolate);
+		SetActorAngle(0,ACS_NamedExecuteWithResult("Goldeneye_TankCounters"));
+		Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_USECALLERANGLE|WARPF_USEPTR|interpolate);
+		ACS_NamedExecuteWithResult("Goldeneye_TankBarrelPitch");
+		Warp(AAPTR_MASTER,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_USEPTR|WARPF_MOVEPTR|interpolate);
+		Warp(AAPTR_TARGET,-6.0,9.0,32.0,0,WARPF_NOCHECKPOSITION|WARPF_MOVEPTR|WARPF_USEPTR|interpolate);
+		Delay(1);
+	}
+}
+
+Script "Goldeneye_TankBarrelPitch" (void)
+{
+	int pitch = -ACS_NamedExecuteWithResult("Goldeneye_TankCounters",1);
+	SetActivator(0,AAPTR_Master);
+	SetActorPitch(0,pitch);
+}
+
+Script "Goldeneye_TankCounters" (int type)
+{
+	switch(type)
+	{
+		case 0:
+			SetActivator(0,AAPTR_Target);
+			SetResultValue(CheckInventory("Goldeneye_TankAngle"));
+			break;
+		case 1:
+			SetActivator(0,AAPTR_Target);
+			if(GetActorPitch(0) > 0) SetResultValue(0);
+			else if(GetActorPitch(0) < -0.016) SetResultValue(-0.016);
+			else SetResultValue(GetActorPitch(0));
+			break;
+	}
+}
