@@ -14,7 +14,7 @@ Script "BondAim" (void)// Clientside
 		int weaponSway = GetUserCvar(PlayerNumber(),"samsara_cl_goldeneyesway"); 
 
 		int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
-		
+
 		if(weaponSway)
 		{
 			int yaw = FixedMul(GetPlayerInput(-1, MODINPUT_YAW),GetCvar("m_yaw"));	
@@ -63,17 +63,17 @@ Script "BondAim" (void)// Clientside
 			else if(CheckInventory("BondGunAngle") < 5)
 				GiveInventory("BondGunAngle", 1);
 		}
-		
+
 		if(buttonPress & BT_Attack)
 			GiveInventory("BondPrimaryToken",1);
 		else
 			TakeInventory("BondPrimaryToken",1);
-				
+
 		if(buttonPress & BT_AltAttack)
 			GiveInventory("BondSecondaryToken",1);
 		else
 			TakeInventory("BondSecondaryToken",1); 
-		
+
 		Delay(1);
 		inputcounter+=weaponSway;
 	}
@@ -84,16 +84,16 @@ Script "BondAim" (void)// Clientside
 Script "BondWatchLookUpAndDown" (void) Clientside
 {
 	int pp;
-	
+
 	int playerpitch = GetActorPitch(0);
 	int requiredangle = 5460;
 	int originalangle;
-	
+
 	if(!CheckInventory("BondWatchToken"))
 	{
 		if(isSinglePlayer())
 			GiveInventory("Goldeneye_TimeFreezer",1);
-			
+
 		if(playerpitch >= requiredangle)
 		{
 			pp = playerpitch;
@@ -105,7 +105,6 @@ Script "BondWatchLookUpAndDown" (void) Clientside
 			}
 			GiveInventory("BondAngleTokens", GetActorAngle(0) + 65536);
 		}
-			
 		else
 		{
 			pp = playerpitch;
@@ -121,9 +120,9 @@ Script "BondWatchLookUpAndDown" (void) Clientside
 	else
 	{	
 		SetActorAngle(0, CheckInventory("BondAngleTokens") - 65536);
-		
+
 		originalangle = CheckInventory("BondPitchTokens") - 16384;
-	
+
 		if(playerpitch >= originalangle)
 			for(pp = requiredangle; pp > originalangle; pp-=360)
 			{
@@ -133,13 +132,12 @@ Script "BondWatchLookUpAndDown" (void) Clientside
 				SetActorPitch(0, pp);
 				Delay(1);
 			}
-			
 		else
 			for(pp = requiredangle; pp < originalangle; pp+=360)
 			{
 				if(GetPlayerInput(-1, INPUT_PITCH) != 0)
 					break;
-					
+
 				SetActorPitch(0, pp);
 				Delay(1);
 			}
@@ -298,39 +296,39 @@ Script "BondWatchInterface" (void) Clientside
 	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS);
 	str levelname = strParam(n:PRINTNAME_LEVELNAME);
 	int flashtic;
-	
+
 	if(CheckInventory("BondWatchUIInit"))
 	{			
 		SpawnSpotForced("Goldeneye_WatchOpen", 0, 0, 0);
-		
+
 		menuindex = 1;
 		GiveInventory("BondWatchAnimation", 1);
 		TakeInventory("BondWatchUIInit", 1);
-			
+
 		for(d = 10; d > 0; d--)
 		{
 			SetHudSize(360+(176*d), 220+(108*d), false);
-			
+
 			if(GetActorProperty(0, APROP_Health) < 100)
 				SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/6]); // add 12 to numerator if zero bars doesn't cut it
-		
+
 			else
 				SetFont(GoldeneyeHealthBars[16]);
-				
+
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11951, CR_UNTRANSLATED, (78 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0, 0.9);		
 			SetFont(GoldeneyeHealthBars[0]);
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11952, CR_UNTRANSLATED, (78 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0, 0.33);
-			
+
 			if(CheckInventory("BasicArmor") < 100)
 				SetFont(GoldeneyeArmorBars[CheckInventory("BasicArmor")/6]);
-		
+
 			else
 				SetFont(GoldeneyeArmorBars[16]);
-				
+
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11949, CR_UNTRANSLATED, (248 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0, 0.9);
 			SetFont(GoldeneyeArmorBars[0]);
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11950, CR_UNTRANSLATED, (248 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0, 0.33);
-			
+
 			SetFont("GEWTCHGR");
 			SetHudSize(416+(200*d), 260+(793*d), false);
 			HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, (416+(200*d))/2 * 1.0, (260+(793*d))/2 * 1.0, 1.0);
@@ -340,12 +338,11 @@ Script "BondWatchInterface" (void) Clientside
 		TakeInventory("BondWatchAnimation", 1);
 		LocalSetMusic("GEWATCH");
 	}
-	
+
 	if(CheckInventory("BondWatchUIDeinit"))
 	{	
-		
 		g = 0;
-		
+
 		SpawnSpotForced("Goldeneye_WatchClose", 0, 0, 0);
 	
 		if(CheckInventory("BondWeaponSwitchToken") > 0);
@@ -354,7 +351,7 @@ Script "BondWatchInterface" (void) Clientside
 		menuindex = 1;
 		GiveInventory("BondWatchAnimation", 1);
 		TakeInventory("BondWatchUIDeinit", 1);
-				
+
 		if(GetCVAR("samsara_cl_heromusic") == true)
 		{
 			LocalSetMusic(GoldeneyeMusic[CheckInventory("BondMusicToken")-1]);
@@ -362,46 +359,44 @@ Script "BondWatchInterface" (void) Clientside
 		else
 		{
 			LocalSetMusic("*");
-		}	
-			
+		}
+
 		SetHudSize(0, 0, false);
 		SetFont("");
-		
+
 		RemoveMessages(11960, 12050);
-		
+
 		for(d = 0; d < 10; d++)
 		{
 			SetHudSize(360+(176*d), 220+(108*d), false);
-			
+
 			if(GetActorProperty(0, APROP_Health) < 100)
 				SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/6]); // add 12 to numerator if zero bars doesn't cut it
-		
 			else
 				SetFont(GoldeneyeHealthBars[16]);
-				
+
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 11951, CR_UNTRANSLATED, (78 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0, 0.9);
 			SetFont(GoldeneyeHealthBars[0]);
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 11952, CR_UNTRANSLATED, (78 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0, 0.33);
-			
+
 			if(CheckInventory("BasicArmor") < 100)
 				SetFont(GoldeneyeArmorBars[CheckInventory("BasicArmor")/6]);
-		
 			else
 				SetFont(GoldeneyeArmorBars[16]);
-				
+
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11949, CR_UNTRANSLATED, (248 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0, 0.9);
 			SetFont(GoldeneyeArmorBars[0]);
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11950, CR_UNTRANSLATED, (248 + (91*d)) * 1.0 + 0.4, (104 + (54*d)) * 1.0, 1.0, 0.33);
-			
+
 			SetFont("GEWTCHGR");
 			SetHudSize(416+(200*d), 260+(793*d), false);
 			HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, (416+(200*d))/2 * 1.0, (260+(793*d))/2 * 1.0, 1.0);
 			Delay(1);
 		}
-		
+
 		SetHudSize(0, 0, false);
 		SetFont("");
-		
+
 		RemoveMessages(11900, 12050);
 		TakeInventory("BondWatchAnimation", 1);
 		terminate;
@@ -412,25 +407,25 @@ Script "BondWatchInterface" (void) Clientside
 		if(menuindex == 1)
 		{
 			g = 0;
-			
+
 			SetFont("007TABON");
 			SetHudSize(800, 540, false);
 			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11996, CR_UNTRANSLATED, 320.4, 430.0, 1.0);
 			SetFont("007TABOF");
 			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11998, CR_UNTRANSLATED, 400.4, 430.0, 1.0);
 			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11997, CR_UNTRANSLATED, 480.4, 430.0, 1.0);
-			
+
 			SetFont("GEFONTS");
 			SetHudSize(320, 280, false);
 			HudMessage(s:"Q WATCH v2.01 BETA"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12001, CR_GREEN, 160.0, 48.0, 1.0);
 			SetFont("GEWTCHGR");
 			SetHudSize(416, 260, false);
 			HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, 124.0, 1.0);
-			
+
             for (a = 0; a < 18; a++)
             {
                 SetFont("GEFONTS");
-                SetHudSize(360, 240, false);		
+                SetHudSize(360, 240, false);
                 SetHudWrapWidth(64);
 
                 if (!CheckInventory("BondWeaponSwitchToken"))
@@ -477,30 +472,28 @@ Script "BondWatchInterface" (void) Clientside
 			SetFont("GEFONTS");
 			SetHudWrapWidth(0);
 			SetHudSize(260, 220, false);
-			
+
 			if(GetActorProperty(0, APROP_Health) < 100)
 				SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/6]); // add 12 to numerator if zero bars doesn't cut it
-			
 			else
 				SetFont(GoldeneyeHealthBars[16]);
-			
+
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 11951, CR_UNTRANSLATED, 56.4, 104.0, 1.0, 0.9);
 			SetFont(GoldeneyeHealthBars[0]);
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 11952, CR_UNTRANSLATED, 56.4, 104.0, 1.0, 0.33);
-			
+
 			if(CheckInventory("BasicArmor") < 100)
 				SetFont(GoldeneyeArmorBars[CheckInventory("BasicArmor")/6]);
-			
 			else
 				SetFont(GoldeneyeArmorBars[16]);
-				
+
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11949, CR_UNTRANSLATED, 204.4, 104.0, 1.0, 0.9);
 			SetFont(GoldeneyeArmorBars[0]);
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11950, CR_UNTRANSLATED, 204.4, 104.0, 1.0, 0.33);
-			
+
 			SetFont("");
 			SetHudSize(0, 0, false);
-			
+
 			if(GetPlayerInput(-1, INPUT_SIDEMOVE) > 0 || buttonPress & BT_Right || GetPlayerInput(-1, INPUT_YAW) < -512)
 			{
 				SpawnSpotForced("Goldeneye_WatchTabSwitch", 0, 0, 0);
@@ -554,36 +547,34 @@ Script "BondWatchInterface" (void) Clientside
 			SetFont("007TABOF");
 			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11996, CR_UNTRANSLATED, 320.4, 430.0, 1.0);
 			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11997, CR_UNTRANSLATED, 480.4, 430.0, 1.0);
-			
+
 			SetFont("GEWTCHGR");
 			SetHudSize(416, 260, false);
 			HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, 124.0, 1.0);
-			
+
 			SetHudSize(260, 220, false);
-			
+
 			if(GetActorProperty(0, APROP_Health) < 100)
 				SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/6]); // add 12 to numerator if zero bars doesn't cut it
-			
 			else
 				SetFont(GoldeneyeHealthBars[16]);
-			
+
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 11951, CR_UNTRANSLATED, 56.4, 104.0, 1.0, 0.9);
 			SetFont(GoldeneyeHealthBars[0]);
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 11952, CR_UNTRANSLATED, 56.4, 104.0, 1.0, 0.33);
-			
+
 			if(CheckInventory("BasicArmor") < 100)
 				SetFont(GoldeneyeArmorBars[CheckInventory("BasicArmor")/6]);
-			
 			else
 				SetFont(GoldeneyeArmorBars[16]);
-				
+
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 11949, CR_UNTRANSLATED, 204.4, 104.0, 1.0, 0.9);
 			SetFont(GoldeneyeArmorBars[0]);
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 11950, CR_UNTRANSLATED, 204.4, 104.0, 1.0, 0.33);
-			
+
 			SetFont("");
 			SetHudSize(0, 0, false);
-			
+
 			carriedweapons = 0;
 			SetHudSize(400, 300, false);
 			SetFont("GEFONTS");
@@ -615,14 +606,13 @@ Script "BondWatchInterface" (void) Clientside
 							}
 						}
 					}
-						
+
 					if((c) == weaponindex)
 					{
 						TakeInventory("BondWeaponToken", 18);
 						HudMessage(s:GoldeneyeWeaponInfo[c][1]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11996 - weaponlistamount, CR_GREEN, 125.1, 180.0 + ((weaponlistamount*10) * 1.0) - ((realweaponindex*10) * 1.0), 1.0);
 						GiveInventory("BondWeaponToken", c+1);
 					}
-						
 					else
 						HudMessage(s:GoldeneyeWeaponInfo[c][1]; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11996 - weaponlistamount, CR_DARKGREEN, 125.1, 180.0 + ((weaponlistamount*10) * 1.0) - ((realweaponindex*10) * 1.0), 1.0);		
 				}
@@ -635,50 +625,49 @@ Script "BondWatchInterface" (void) Clientside
 				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12003, CR_UNTRANSLATED, 400.0, 300.0, 1.0);
 			else
 				HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12003, CR_UNTRANSLATED, 400.0, 300.0, 1.0);
-			
+
 			if(g < 71)
 				g++;	
 			else
 				g = 0;
-				
+
 			SetHudSize(0, 0, false);
-			
+
 			if(GetPlayerInput(-1, INPUT_FORWARDMOVE) > 0 || GetPlayerInput(-1, INPUT_PITCH) > 128)
 			{
 				if(realweaponindex > 0)
 					realweaponindex--;
-					
+
 				else
 					realweaponindex = weaponlistamount-1;
-				
+
 				weaponindex--;
 				for(d = weaponindex; d > -2; d--)
 				{
 					if(d == -1)
 						d = 18;
-						
+
 					if(CheckInventory(GoldeneyeWeaponInfo[d][0]))
 					{
 						weaponindex = d;
 						break;
 					}
 				}
-					
+
 				Delay(7);
-					
 			}
 			else if(GetPlayerInput(-1, INPUT_FORWARDMOVE) < 0 || GetPlayerInput(-1, INPUT_PITCH) < -128)
-			{	
+			{
 				if(realweaponindex < weaponlistamount-1)
 					realweaponindex++;
 				else
 					realweaponindex = 0;
-								
+
 				for(d = weaponindex + 1; d < 19; d++)
 				{
 					if(d == 18)
 						d = 0;
-						
+
 					if(CheckInventory(GoldeneyeWeaponInfo[d][0]))
 					{
 						weaponindex = d;
@@ -695,8 +684,8 @@ Script "BondWatchInterface" (void) Clientside
 					if((e+1) == CheckInventory("BondWeaponToken"))
 					{
 						TakeInventory("BondWeaponSwitchToken", 18);
-						GiveInventory("BondWeaponSwitchToken", CheckInventory("BondWeaponToken"));	
-					}		
+						GiveInventory("BondWeaponSwitchToken", CheckInventory("BondWeaponToken"));
+					}
 				}
 				Delay(7);
 			}
@@ -756,37 +745,34 @@ Script "BondWatchInterface" (void) Clientside
 			SetFont("007TABOF");
 			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11996, CR_UNTRANSLATED, 320.4, 430.0, 1.0);
 			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11998, CR_UNTRANSLATED, 400.4, 430.0, 1.0);
-			
+
 			SetFont("GEWTCHGR");
 			SetHudSize(416, 260, false);
 			HudMessage(s:"A"; HUDMSG_ADDBLEND|HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 12002, CR_DARKGREEN, 208.0, 124.0, 1.0);
-			
+
 			SetHudSize(260, 220, false);
-			
+
 			if(GetActorProperty(0, APROP_Health) < 100)
 				SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/6]); // add 12 to numerator if zero bars doesn't cut it
-			
 			else
 				SetFont(GoldeneyeHealthBars[16]);
-			
+
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 11951, CR_UNTRANSLATED, 56.4, 104.0, 1.0, 0.9);
 			SetFont(GoldeneyeHealthBars[0]);
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 11952, CR_UNTRANSLATED, 56.4, 104.0, 1.0, 0.33);
-			
+
 			if(CheckInventory("BasicArmor") < 100)
 				SetFont(GoldeneyeArmorBars[CheckInventory("BasicArmor")/6]);
-			
 			else
 				SetFont(GoldeneyeArmorBars[16]);
-				
+
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11949, CR_UNTRANSLATED, 204.4, 104.0, 1.0, 0.9);
 			SetFont(GoldeneyeArmorBars[0]);
 			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11950, CR_UNTRANSLATED, 204.4, 104.0, 1.0, 0.33);
 
-			
 			SetFont("");
 			SetHudSize(0, 0, false);
-			
+
 			SetFont("GEFONTS");
 			SetHudSize(320, 200, false);
 			SetHudClipRect(100, 0, 120, 60, 0, 0);
@@ -799,24 +785,22 @@ Script "BondWatchInterface" (void) Clientside
 			HudMessage(s:"a. Eliminate all resistance"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11985, CR_DARKGREEN, 88.1, 116.0, 1.0);
 			HudMessage(s:"b. Locate enemy stashes"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11984, CR_DARKGREEN, 88.1, 136.0, 1.0);
 			HudMessage(s:"c. Loot enemy supplies"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11983, CR_DARKGREEN, 88.1, 156.0, 1.0);
-			
+
 			if(flashtic % 35 == 0)
 			{
 				HudMessage(s:"Incomplete"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11987, CR_DARKGREEN, 240.2, 86.0, 1.0);
 			}
-				
 			else
 			{
 				HudMessage(s:"Incomplete"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11987, CR_GREEN, 240.2, 86.0, 1.0);
 			}
-			
+
 			if(GetLevelInfo(LEVELINFO_KILLED_MONSTERS) < GetLevelInfo(LEVELINFO_TOTAL_MONSTERS))
 			{
 				if(flashtic % 35 == 0)
 				{
 					HudMessage(d:GetLevelInfo(LEVELINFO_KILLED_MONSTERS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_MONSTERS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11982, CR_DARKGREEN, 240.2, 126.0, 1.0);
 				}
-					
 				else
 				{
 					HudMessage(d:GetLevelInfo(LEVELINFO_KILLED_MONSTERS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_MONSTERS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11982, CR_GREEN, 240.2, 126.0, 1.0);
@@ -826,14 +810,13 @@ Script "BondWatchInterface" (void) Clientside
 			{
 				HudMessage(s:"Complete"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11982, CR_GREEN, 240.2, 126.0, 1.0);
 			}
-			
+
 			if(GetLevelInfo(LEVELINFO_FOUND_SECRETS) < GetLevelInfo(LEVELINFO_TOTAL_SECRETS))
 			{
 				if(flashtic % 35 == 0)
 				{
 					HudMessage(d:GetLevelInfo(LEVELINFO_FOUND_SECRETS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_SECRETS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11981, CR_DARKGREEN, 240.2, 146.0, 1.0);
 				}
-					
 				else
 				{
 					HudMessage(d:GetLevelInfo(LEVELINFO_FOUND_SECRETS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_SECRETS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11981, CR_GREEN, 240.2, 146.0, 1.0);
@@ -843,14 +826,13 @@ Script "BondWatchInterface" (void) Clientside
 			{
 				HudMessage(s:"Complete"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11981, CR_GREEN, 240.2, 146.0, 1.0);
 			}
-			
+
 			if(GetLevelInfo(LEVELINFO_FOUND_ITEMS) < GetLevelInfo(LEVELINFO_TOTAL_ITEMS))
 			{
 				if(flashtic % 35 == 0)
 				{
 					HudMessage(d:GetLevelInfo(LEVELINFO_FOUND_ITEMS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_ITEMS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11980, CR_DARKGREEN, 240.2, 166.0, 1.0);
 				}
-					
 				else
 				{
 					HudMessage(d:GetLevelInfo(LEVELINFO_FOUND_ITEMS), s:"/", d: GetLevelInfo(LEVELINFO_TOTAL_ITEMS); HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11980, CR_GREEN, 240.2, 166.0, 1.0);
@@ -860,13 +842,12 @@ Script "BondWatchInterface" (void) Clientside
 			{
 				HudMessage(s:"Complete"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 11980, CR_GREEN, 240.2, 166.0, 1.0);
 			}
-			
+
 			if(flashtic == 70)
 				flashtic = 0;
-			
 			else
 				flashtic++;
-			
+
 			if(GetPlayerInput(-1, INPUT_SIDEMOVE) > 0 || buttonPress & BT_Right || GetPlayerInput(-1, INPUT_YAW) < -512)
 			{
 				SpawnSpotForced("Goldeneye_WatchTabSwitch", 0, 0, 0);
@@ -917,10 +898,10 @@ Script "BondWatchInterface" (void) Clientside
 	{
 			SetFont("");
 			RemoveMessages(11900, 12050);
-			
+
 			terminate;
 	}
-	
+
 	Delay(1);
 	restart;
 }
@@ -1059,16 +1040,16 @@ Script "BondWatchMagnet" (int angle)
 		int targetx = GetActorX(newtid);
 		int targety = GetActorY(newtid);
 		int targetz = GetActorZ(newtid);
-		
+
 		int vang = VectorAngle(targetx - currentx, targety - currenty);
 		ThrustThing((vang >> 8) + 128, 16, 0, newtid);
-		
+
 		if(sin(GetActorPitch(0)) > 0)
 			ThrustThingZ(newtid, abs(sin(GetActorPitch(0) >> 8)) / 2, 0, 1);
 		else
 			ThrustThingZ(newtid, abs(sin(GetActorPitch(0) >> 8)) / 2, 1, 1);
 	}
-	
+
 	Thing_ChangeTid(newtid, oldtid);
 }
 
@@ -1081,7 +1062,7 @@ Script "BondDeathFunctions" Death clientside
 {
 	if(!CheckInventory("BondClass"))
 		terminate;
-		
+
 	LocalSetMusic("");
 	LocalAmbientSound("Goldeneye/MissionDeath", 1.0);
 	FadeTo(0,0,0,0.0,0.01);
@@ -1096,7 +1077,7 @@ Script "BondDeathFunctions" Death clientside
 			HudMessage(s:""; HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 10050, CR_UNTRANSLATED, -48.0, 40.0, 1.0, 0.75);
 			break;
 		}
-			
+
 		SetFont(RedDeathImages[a]);
 		HudMessage(s:"a"; HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 10048, CR_UNTRANSLATED, 144.0, 40.0, 1.0, 0.75);
 		HudMessage(s:"a"; HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 10049, CR_UNTRANSLATED, 48.0, 40.0, 1.0, 0.75);
@@ -1117,7 +1098,7 @@ Script "BondDeathFunctions" Death clientside
 	else
 	{
 		LocalSetMusic("*");
-	}	
+	}
 }
 
 Script "BondDeathCameraWiggle" (void) clientside
@@ -1129,7 +1110,7 @@ Script "BondDeathCameraWiggle" (void) clientside
 		{
 			SetActorPitch(0, a);
 			Delay(1);
-			
+
 			if(ClassifyActor(0) & ACTOR_ALIVE)
 				break;
 		}
@@ -1140,17 +1121,17 @@ Script "BondDeathCameraWiggle" (void) clientside
 		{
 			SetActorPitch(0, a);
 			Delay(1);
-			
+
 			if(ClassifyActor(0) & ACTOR_ALIVE)
 				break;
 		}
 	}
-	
+
 	for(a = GetActorPitch(0); a < 8096; a+=256)
 	{
 		SetActorPitch(0, a);
 		Delay(1);
-		
+
 		if(ClassifyActor(0) & ACTOR_ALIVE)
 			break;
 	}
@@ -1158,7 +1139,7 @@ Script "BondDeathCameraWiggle" (void) clientside
 	{
 		SetActorPitch(0, a);
 		Delay(1);
-		
+
 		if(ClassifyActor(0) & ACTOR_ALIVE)
 			break;
 	}
@@ -1166,7 +1147,7 @@ Script "BondDeathCameraWiggle" (void) clientside
 	{
 		SetActorPitch(0, a);
 		Delay(1);
-		
+
 		if(ClassifyActor(0) & ACTOR_ALIVE)
 			break;
 	}
@@ -1174,7 +1155,7 @@ Script "BondDeathCameraWiggle" (void) clientside
 	{
 		SetActorPitch(0, a);
 		Delay(1);
-		
+
 		if(ClassifyActor(0) & ACTOR_ALIVE)
 			break;
 	}
@@ -1191,25 +1172,25 @@ Script "BondDamageIndicators" (void) clientside
     if (GetCVar("screenblocks") == 11 && !CheckInventory("SamsaraUsingNewFullscreenHUD")) { terminate; }
 
 	SetHudSize(480, 360, 1);
-			
+
 	if(GetActorProperty(0, APROP_Health) < 100)
-		SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/6]); // add 12 to numerator if zero bars doesn't cut it		
+		SetFont(GoldeneyeHealthBars[GetActorProperty(0, APROP_Health)/6]); // add 12 to numerator if zero bars doesn't cut it
 	else
 		SetFont(GoldeneyeHealthBars[16]);
-			
+
 	HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11951, CR_UNTRANSLATED, 128.4, 168.0, 0.5, 0.9);
 	SetFont(GoldeneyeHealthBars[0]);
 	HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11952, CR_UNTRANSLATED, 128.4, 168.0, 0.5, 0.33);
-	
+
 	if(CheckInventory("BasicArmor") < 100)
-		SetFont(GoldeneyeArmorBars[CheckInventory("BasicArmor")/6]);		
+		SetFont(GoldeneyeArmorBars[CheckInventory("BasicArmor")/6]);
 	else
 		SetFont(GoldeneyeArmorBars[16]);
-				
+
 	HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11949, CR_UNTRANSLATED, 352.4, 168.0, 0.5, 0.9);
 	SetFont(GoldeneyeArmorBars[0]);
 	HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 11950, CR_UNTRANSLATED, 352.4, 168.0, 0.5, 0.33);
-	
+
 	SetFont("");
 	SetHudSize(0, 0, 0);
 }
@@ -1222,7 +1203,6 @@ Script "BondWeaponChecker" (void)
 		{
 			if(a == 0 || a == 10 || a == 11 || a == 12 || a == 15 || a == 16 || a == 17)
 				SetResultValue(0);
-			
 			else
 				SetResultValue(a);
 		}
@@ -1253,7 +1233,7 @@ Script "BondZoomAmountModify" (void)
 		else if(buttonPress & BT_Back)
 			TakeInventory("BondZoomAmount", 1);
 	}
-		
+
 	Delay(1);
 	restart;
 }
@@ -1273,28 +1253,28 @@ Script "BondHitBox" (int damage)
 	int monsterY = GetActorY(0);
 	int monsterZ = GetActorZ(0);
 	int newtid = UniqueTID();
-	int oldTID = ActivatorTID();	
+	int oldTID = ActivatorTID();
 	int monsterHealth = GetActorProperty(0,APROP_Health);
 	int monsterHeight = GetActorProperty(0,APROP_Height);
 	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
 	int result;
-	
+
 	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
-	
+
 	if(!CheckInventory("IsFatButBiped") && monsterWidth > monsterHeight)
 	{
 		int monsterAngle = GetActorAngle(0);
 		int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
 		int angle = vang % 1.0;
-		
+
 		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
-		{			
+		{
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeHead");
 			SetResultValue(damage*3);
 		}
 		else
 			SetResultValue(damage/2);
-	}		
+	}
 	else
 	{
 		if(!CheckInventory("NoHeadShots") && (bulletZ >= monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.75)))/* && (z <= tz+GetActorProperty(0,APROP_Height))*/
@@ -1303,7 +1283,7 @@ Script "BondHitBox" (int damage)
 				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
 			else
 				result = 0;
-				
+
 			if(result == -1)
 				damage = -1;
 
@@ -1321,48 +1301,51 @@ Script "BondHitBox" (int damage)
 		}
 	}
 	Thing_ChangeTID(newtid,oldTID);
-}			
+}
 
 Script "Goldeneye_BuildTank" (void)
 {
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int z = GetActorZ(0);
 	int myTid = UniqueTid();
 	Thing_ChangeTid(0,myTid);
 	int partTid = UniqueTid();
-	
-	SpawnForced("Goldeneye_Tank_Collision_FrontL",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+
+	SpawnForced("Goldeneye_Tank_Collision_FrontL",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	Thing_ChangeTid(partTid,0);
-	
-	SpawnForced("Goldeneye_Tank_Collision_FrontR",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+
+	SpawnForced("Goldeneye_Tank_Collision_FrontR",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	Thing_ChangeTid(partTid,0);
-	
-	SpawnForced("Goldeneye_Tank_Collision_BackL",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+
+	SpawnForced("Goldeneye_Tank_Collision_BackL",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	Thing_ChangeTid(partTid,0);
-	
-	SpawnForced("Goldeneye_Tank_Collision_BackR",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+
+	SpawnForced("Goldeneye_Tank_Collision_BackR",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	Thing_ChangeTid(partTid,0);
-	
-	SpawnForced("Goldeneye_Tank_Step_Front",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+
+	SpawnForced("Goldeneye_Tank_Step_Front",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	Thing_ChangeTid(partTid,0);
-	
-	SpawnForced("Goldeneye_Tank_Step_Back",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+
+	SpawnForced("Goldeneye_Tank_Step_Back",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	Thing_ChangeTid(partTid,0);
-	
-	SpawnForced("Goldeneye_Tank_Turret",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+
+	SpawnForced("Goldeneye_Tank_Turret",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
-	
+
 	SetPointerExt(AAPTR_Master,partTid,0);
 	Thing_ChangeTid(myTid,0);
-	
+
 	SetActivator(partTid);
 	Thing_ChangeTid(partTid,0);
-	
-	SpawnForced("Goldeneye_Tank_Barrel",GetActorX(0),GetActorY(0),GetActorZ(0),partTid);
+
+	SpawnForced("Goldeneye_Tank_Barrel",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	SetPointer(AAPTR_Master,partTid);
 	Thing_ChangeTid(partTid,0);
@@ -1397,7 +1380,7 @@ Script "Goldeneye_TankActivator" (void)
 		if(yawStorage < 0.0) yawStorage += 1.0;
 		TakeInventory("Goldeneye_TankAngle",65536);
 		GiveInventory("Goldeneye_TankAngle",yawStorage);
-		
+
 		SetActorVelocity(0,0,0,0,0,0);
 		Delay(1);
 	}
@@ -1411,10 +1394,10 @@ Script "Goldeneye_TankMoveInput" (int interpolate)
 	int myTid = UniqueTid();
 	Thing_ChangeTid(0,myTid);
 	SetActivator(0,AAPTR_Target);
-	
+
 	int playerForward = GetPlayerInput(-1,INPUT_FORWARDMOVE);
 	int playerSideMove = GetPlayerInput(-1,INPUT_SIDEMOVE);
-	
+
 	if(playerForward == 0)
 	{
 		playerForward = CheckInventory("Goldeneye_TankForward")-65536;
@@ -1427,7 +1410,7 @@ Script "Goldeneye_TankMoveInput" (int interpolate)
 		TakeInventory("Goldeneye_TankForward",131072);
 		GiveInventory("Goldeneye_TankForward",playerForward+65536);
 	}
-	
+
 	if(playerSideMove == 0)
 	{
 		playerSideMove = CheckInventory("Goldeneye_TankSide")-65536;
@@ -1440,9 +1423,9 @@ Script "Goldeneye_TankMoveInput" (int interpolate)
 		TakeInventory("Goldeneye_TankSide",131072);
 		GiveInventory("Goldeneye_TankSide",playerSideMove+65536);
 	}
-		
+
 	if(abs(playerForward) > 1024 || abs(playerSideMove) > 1024 != 0) GiveInventory("Goldeneye_TankDamageObjects",1);
-	
+
 	SetActivator(myTid,AAPTR_Tracer);
 	ACS_NamedExecuteWithResult("Goldeneye_TankMove",playerForward,-playerSideMove,interpolate);
 	Thing_ChangeTid(myTid,0);
@@ -1450,57 +1433,61 @@ Script "Goldeneye_TankMoveInput" (int interpolate)
 
 Script "Goldeneye_TankMove" (int playerForward, int playerSideMove, int interpolate)
 {
+	int angle = GetActorAngle(0);
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int z = GetActorZ(0);
 	int forwardOffset = 112;
 	int sideOffset = 24;
 	int dummyTid = UniqueTid();
 	int moving = abs(playerForward) > 2048 || abs(playerSideMove) > 2048;
 	if(playerForward > 0)
 	{
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * 2 * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * 2 * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * 2 * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * 2 * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid))	playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)),y + (forwardOffset * sin(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) - (sideOffset * 2 * sin(angle)),y + (forwardOffset * sin(angle)) + (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) + (sideOffset * 2 * sin(angle)),y + (forwardOffset * sin(angle)) - (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid))	playerForward = 0;
 		if(playerForward != 0) Thing_Remove(dummyTid);
 	}
 	if(playerForward < 0)
 	{
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * 2 * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * 2 * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * 2 * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * 2 * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)),y - (forwardOffset * sin(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) - (sideOffset * sin(angle)),y - (forwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) + (sideOffset * sin(angle)),y - (forwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) - (sideOffset * 2 * sin(angle)),y - (forwardOffset * sin(angle)) + (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) + (sideOffset * 2 * sin(angle)),y - (forwardOffset * sin(angle)) - (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
 		if(playerForward != 0) Thing_Remove(dummyTid);
 	}
 	forwardOffset = 40;
 	sideOffset = 56;
 	if(playerSideMove > 0)
 	{
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * 2 * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * 2 * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * 3 * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * 3 * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * 2 * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * 2 * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * 3 * cos(GetActorAngle(0))) - (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * 3 * sin(GetActorAngle(0))) + (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (sideOffset * sin(angle)),y + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * 2 * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * 2 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * 3 * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * 3 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) - (sideOffset * sin(angle)),y - (forwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * 2 * cos(angle)) - (sideOffset * sin(angle)),y - (forwardOffset * 2 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * 3 * cos(angle)) - (sideOffset * sin(angle)),y - (forwardOffset * 3 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
 		if(playerSideMove != 0) Thing_Remove(dummyTid);
 	}
 	if(playerSideMove < 0)
 	{
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * 2 * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * 2 * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) + (forwardOffset * 3 * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) + (forwardOffset * 3 * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * 2 * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * 2 * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
-		if(!Spawn("Goldeneye_Tank_CollisionBoundary",GetActorX(0) - (forwardOffset * 3 * cos(GetActorAngle(0))) + (sideOffset * sin(GetActorAngle(0))),GetActorY(0) - (forwardOffset * 3 * sin(GetActorAngle(0))) - (sideOffset * cos(GetActorAngle(0))),GetActorZ(0) + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (sideOffset * sin(angle)),y - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * 2 * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * 2 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * 3 * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * 3 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) + (sideOffset * sin(angle)),y - (forwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * 2 * cos(angle)) + (sideOffset * sin(angle)),y - (forwardOffset * 2 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * 3 * cos(angle)) + (sideOffset * sin(angle)),y - (forwardOffset * 3 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
 		if(playerSideMove != 0) Thing_Remove(dummyTid);
 	}
-	
-	SetActorAngle(0,GetActorAngle(0)+playerSideMove/16);
+
+	SetActorAngle(0,angle+playerSideMove/16);
 	if(moving) PlaySound(0,"Goldeneye/Tank/Move",CHAN_6,0.5,1,0.5);
 	else { PlaySound(0,"Goldeneye/Tank/Idle",CHAN_5,0.5,1,0.5); StopSound(0,CHAN_6); }
-	
+
 	Warp(0,playerForward*20,0,0,0,WARPF_NOCHECKPOSITION|interpolate);
 }
 
