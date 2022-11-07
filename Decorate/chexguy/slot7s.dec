@@ -1,0 +1,106 @@
+Actor "Liquid Zorcher" : Weapon
+{
+    Weapon.SelectionOrder 2800
+    //Weapon.SlotNumber 7
+    Inventory.PickUpSound "chex/weaponget"
+    Weapon.AmmoUse 10
+    Weapon.AmmoGive 40
+    Weapon.AmmoType "Cell"
+    +WEAPON.NOAUTOFIRE
+    +BLOODLESSIMPACT
+    +WEAPON.BFG
+    +NOEXTREMEDEATH
+    +INVENTORY.UNDROPPABLE
+    Inventory.PickupMessage "You got the LAZ Device! Woot!"
+    Obituary "$SAMSARA_CHEX_OB_SLOT7_1"
+    DamageType "ZorchBfg"
+	Inventory.RestrictedTo "ChexWarrior"
+    Tag "Liquid Zorcher"
+    States
+    {
+
+      Ready:
+		CFGG I 0 A_PlaySound("chex/bfg10kidle")
+		CFGG III 1 A_WeaponReady
+		CFGG JJJ 1 A_WeaponReady
+		CFGG KKK 1 A_WeaponReady
+		CFGG LLL 1 A_WeaponReady
+        loop
+
+      Deselect:
+        CFGG M 1 A_Lower
+        loop
+
+      Select:
+        CFGG M 1 A_Raise
+        loop
+
+      Fire:
+ 		CFGG M 20 A_PlaySound("chex/bfg10kfire")
+		CFGG N 4
+		CFGG O 1
+		CFGG P 1
+		CFGG Q 1
+		CFGG R 1
+		Goto Hold
+	  Hold:
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopHold")
+		CFGG S 2 A_GunFlash
+		CFGG T 2 A_FireBullets(0,0,1,0,"LiquidZorcherShot")
+		CFGG U 2
+		CFGG V 0 A_ReFire
+		CFGG V 35 A_PlaySound("chex/bfg10kcool")
+		Goto Ready
+		
+	  CoopHold:
+		CFGG S 2 A_GunFlash
+		CFGG T 2 A_FireBullets(0,0,1,0,"LiquidZorcherShot2")
+		CFGG U 2
+		CFGG V 0 A_ReFire
+		CFGG V 35 A_PlaySound("chex/bfg10kcool")
+		Goto Ready
+
+      Flash:
+	    TNT1 A 2 Bright A_Light1
+		TNT1 A 3 Bright
+        Goto LightDone
+
+      Spawn:
+        CFUG B -1
+        stop
+    }
+}
+
+ACTOR LiquidZorcherShot
+{
+	Radius 11
+	Height 8
+	Speed 20
+	Damage 160
+	DamageType "Zorch"
+	+NOBLOCKMAP
+	+NOGRAVITY
+	+ACTIVATEIMPACT
+	+ACTIVATEPCROSS
+	+NOTELEPORT 
+	+PUFFONACTORS	
+	+PUFFGETSOWNER
+	+FORCERADIUSDMG
+	+BLOODLESSIMPACT
+	+NOEXTREMEDEATH
+	Renderstyle Add
+	Alpha 0.75
+	SeeSound "chex/bfgx"
+	AttackSound "chex/bfgx"
+	Game Chex
+	States
+	{
+	Spawn:
+		CFE1 A 0 Bright
+		CFE1 A 3 Bright A_Explode(160,160,0)
+		CFE1 BCDEF 3 Bright
+		Stop
+	}
+}
+
+Actor LiquidZorcherShot2 : LiquidZorcherShot { Species "Player" +THRUSPECIES +MTHRUSPECIES }

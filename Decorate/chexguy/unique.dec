@@ -7,3 +7,107 @@ actor ChexSoulsphere: Trigger
         stop
     }
 }
+
+actor "Chain-Lightning Zorcher" : Weapon
+{
+    Weapon.SelectionOrder 1600
+    Weapon.SlotNumber 8
+    Inventory.PickUpSound "chex/weaponget"
+    Weapon.AmmoUse 2
+    Weapon.AmmoGive 0
+    Weapon.AmmoType "Cell"
+    +BLOODLESSIMPACT
+    +PUFFONACTORS
+    +THRUGHOST
+    //+AMMO_OPTIONAL
+    +INVENTORY.UNDROPPABLE
+    DamageType "Zorch"
+    Inventory.PickupMessage "You got the Large Zorcher!"
+	Inventory.RestrictedTo "ChexWarrior"
+    Tag "Chain-Lightning Zorcher"
+    States
+    {
+      Ready:
+        PISC S 1 A_WeaponReady
+        Loop
+
+      Deselect:
+        PISC S 1 A_Lower
+        Loop
+
+      Select:
+        PISC S 1 A_Raise
+        Loop
+
+      Fire:
+		TNT1 A 0 A_JumpIfInventory("Cell",6,"Fire2")
+		TNT1 A 0 A_SelectWeapon("Mini-Zorcher")
+		goto Deselect
+	  Fire2:
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
+        PISC U 0 A_GunFlash
+		PISC U 4 A_FireCustomMissile("ChexPackChainLightning",-1,1,-8,1,0)
+		PISC U 4 A_FireCustomMissile("ChexPackChainLightning",-1,1,-8,1,0)
+		PISC U 4 A_FireCustomMissile("ChexPackChainLightning",-1,1,-8,1,0)
+		PISC T 7
+		PISC T 7 A_CheckReload
+		PISC T 8 A_Refire
+        Goto Ready
+
+      CoopFire:
+        PISC U 0 A_GunFlash
+		PISC U 4 A_FireCustomMissile("ChexPackChainLightning2",-1,1,-8,1,0)
+		PISC U 4 A_FireCustomMissile("ChexPackChainLightning2",-1,1,-8,1,0)
+		PISC U 4 A_FireCustomMissile("ChexPackChainLightning2",-1,1,-8,1,0)
+		PISC T 7
+		PISC T 7 A_CheckReload
+		PISC T 8 A_Refire
+        Goto Ready
+
+      Flash:
+		CPIS EE 2 Bright A_Light1
+		CPIS F 2 Bright A_Light2
+		CPIS F 2 Bright A_Light0
+		CPIS G 2 Bright A_Light1
+		CPIS G 2 Bright A_Light0
+        Goto LightDone
+
+      Spawn:
+        SHOC C -1
+        Stop
+    }
+}
+
+actor ChexPackChainLightning
+{
+	Height 3
+	Radius 3
+	Damage 5
+	Speed 60
+	PROJECTILE
+	-NOGRAVITY
+	+RIPPER
+	+HEXENBOUNCE
+	+BLOODLESSIMPACT
+	-BLOODSPLATTER
+	DamageType "Zorch"
+	
+	Gravity 0
+	Bouncecount 3
+	Mass 0
+	Seesound "chex/clshot"
+	Deathsound "chex/icehit"
+	Obituary "%o was caught in the path of %k's Chain-Lightning."
+	States
+	{
+	Spawn:
+		CMIS J 1000 BRIGHT A_Die
+		wait
+	Death:
+		CMIS K 3 bright 
+		CMIS L 3 bright
+		stop
+	}
+}
+
+actor ChexPackChainLightning2 : ChexPackChainLightning { +THRUSPECIES Species "Player" }
