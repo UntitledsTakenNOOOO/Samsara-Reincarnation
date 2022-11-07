@@ -1396,7 +1396,7 @@ Script "Goldeneye_TankMoveInput" (int interpolate)
 	Thing_ChangeTid(0,myTid);
 	SetActivator(0,AAPTR_Target);
 
-	int playerForward = GetPlayerInput(-1,INPUT_FORWARDMOVE);
+	int playerForward = GetPlayerInput(-1,INPUT_FORWARDMOVE)/16;
 	int playerSideMove = GetPlayerInput(-1,INPUT_SIDEMOVE);
 
 	if(playerForward == 0)
@@ -1407,6 +1407,17 @@ Script "Goldeneye_TankMoveInput" (int interpolate)
 	}
 	else
 	{
+		if(playerForward > 0)
+		{
+			if(CheckInventory("Goldeneye_TankForward")-65536 < 12800)
+				GiveInventory("Goldeneye_TankForward",playerForward);	
+		}
+		else
+		{
+			if(CheckInventory("Goldeneye_TankForward")-65536 > -12800)
+				TakeInventory("Goldeneye_TankForward",abs(playerForward));
+		}
+		playerForward = CheckInventory("Goldeneye_TankForward")-65536;
 		SetInventory("Goldeneye_TankForward",playerForward+65536);
 	}
 
@@ -1414,6 +1425,7 @@ Script "Goldeneye_TankMoveInput" (int interpolate)
 	{
 		playerSideMove = CheckInventory("Goldeneye_TankSide")-65536;
 		playerSideMove = FixedMul(playerSideMove,0.667);
+		if(abs(playerSideMove) <= 3) playerSideMove = 0;
 		SetInventory("Goldeneye_TankSide",playerSideMove+65536);
 	}
 	else
@@ -1444,55 +1456,85 @@ Script "Goldeneye_TankMove" (int playerForward, int playerSideMove, int interpol
 	int forwardOffset = 112;
 	int sideOffset = 24;
 	int dummyTid = UniqueTid();
-	int moving = abs(playerForward) > 2048 || abs(playerSideMove) > 2048;
 	if(playerForward > 0)
 	{
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)),y + (forwardOffset * sin(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) - (sideOffset * 2 * sin(angle)),y + (forwardOffset * sin(angle)) + (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) + (sideOffset * 2 * sin(angle)),y + (forwardOffset * sin(angle)) - (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
-		if(playerForward != 0) Thing_Remove(dummyTid);
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		SetActorAngle(dummyTid,angle);
 	}
 	if(playerForward < 0)
 	{
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)),y - (forwardOffset * sin(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) - (sideOffset * sin(angle)),y - (forwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) + (sideOffset * sin(angle)),y - (forwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) - (sideOffset * 2 * sin(angle)),y - (forwardOffset * sin(angle)) + (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) + (sideOffset * 2 * sin(angle)),y - (forwardOffset * sin(angle)) - (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
-		if(playerForward != 0) Thing_Remove(dummyTid);
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		SetActorAngle(dummyTid,angle+0.5);
 	}
 	forwardOffset = 40;
 	sideOffset = 56;
 	if(playerSideMove > 0)
 	{
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (sideOffset * sin(angle)),y + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * 2 * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * 2 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * 3 * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * 3 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) - (sideOffset * sin(angle)),y - (forwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * 2 * cos(angle)) - (sideOffset * sin(angle)),y - (forwardOffset * 2 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * 3 * cos(angle)) - (sideOffset * sin(angle)),y - (forwardOffset * 3 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
-		if(playerSideMove != 0) Thing_Remove(dummyTid);
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		SetActorAngle(dummyTid,angle+0.25);
 	}
 	if(playerSideMove < 0)
 	{
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (sideOffset * sin(angle)),y - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * 2 * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * 2 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x + (forwardOffset * 3 * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * 3 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * cos(angle)) + (sideOffset * sin(angle)),y - (forwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * 2 * cos(angle)) + (sideOffset * sin(angle)),y - (forwardOffset * 2 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
 		if(!Spawn("Goldeneye_Tank_CollisionBoundary",x - (forwardOffset * 3 * cos(angle)) + (sideOffset * sin(angle)),y - (forwardOffset * 3 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
-		if(playerSideMove != 0) Thing_Remove(dummyTid);
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		SetActorAngle(dummyTid,angle-0.25);
 	}
-
+	
+	Delay(1);
 	SetActorAngle(0,angle+playerSideMove/16);
-	if(moving) PlaySound(0,"Goldeneye/Tank/Move",CHAN_6,0.5,1,0.5);
+	if(abs(playerForward) > 2048 || abs(playerSideMove) > 2048) PlaySound(0,"Goldeneye/Tank/Move",CHAN_6,0.5,1,0.5);
 	else { PlaySound(0,"Goldeneye/Tank/Idle",CHAN_5,0.5,1,0.5); StopSound(0,CHAN_6); }
-
-	Warp(0,playerForward*20,0,0,0,WARPF_NOCHECKPOSITION|interpolate);
+	Thing_Remove(dummyTid);
+	if(CheckInventory("Goldeneye_Tank_Blocked"))
+	{
+		playerForward = 0; 
+		playerSideMove = 0;
+		TakeInventory("Goldeneye_Tank_Blocked",1);
+	}
+	else Warp(0,playerForward*20,0,0,0,WARPF_NOCHECKPOSITION|interpolate);
 }
 
 Script "Goldeneye_TankTurretWarp" (int interpolate)
