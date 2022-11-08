@@ -7,9 +7,10 @@ ACTOR " RailGun " : Weapon
 	Radius 20
 	Height 16
 	Weapon.Selectionorder 100
-	Weapon.AmmoUse 10
-	Weapon.AmmoGive 0
-	Weapon.AmmoType "Cell"
+    Weapon.AmmoType1 "DoomguyRailgunClip"
+    Weapon.AmmoUse1 1
+    Weapon.AmmoType2 "Cell"
+    //Weapon.AmmoGive2 40
 	Inventory.Pickupmessage "You got the railgun!"
 	Inventory.RestrictedTo "DoomguyPlayer"
     Decal "RailScorch"
@@ -28,14 +29,27 @@ ACTOR " RailGun " : Weapon
       Ready:
         TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"ReadyStr")
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrRailgunScope",1,"ReadyZoomOut")
-      ReadyContinue:
-        DRLG A 1 A_WeaponReady(WRF_NOSECONDARY)
-        goto Ready
+        goto ReadyContinue
 
       ReadyZoomOut:
         TNT1 A 0 A_ZoomFactor(1)
         TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrRailgunScope")
         goto ReadyContinue
+
+      ReadyContinue:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",0,"ReadyModernReloadable")
+      ReadyNonReloadable:
+        DRLG A 1 A_WeaponReady(WRF_NOSECONDARY)
+        goto Ready
+
+      ReadyModernReloadable:
+        TNT1 A 0 A_JumpIfInventory("DoomguyRailgunClip",0,"ReadyNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",10,1)
+        goto ReadyNonReloadable
+        DRLG A 1 A_WeaponReady(WRF_NOSECONDARY|WRF_ALLOWRELOAD)
+        goto Ready
 
       Deselect:
         TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"DeselectStr")
@@ -63,23 +77,81 @@ ACTOR " RailGun " : Weapon
 
       Fire:
         TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"FireStr")
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-        TNT1 A 0 A_JumpIfInventory("Cell",10,1)
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireReloadable")
+      FireNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+        TNT1 A 0 A_JumpIfInventory("Cell",10,"FireStart")
         goto Nothing
+
+      FireReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStart")
+        TNT1 A 0 A_JumpIfInventory("DoomguyRailgunClip",1,"FireStart")
+      FireReloadableDryCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
+        TNT1 A 0 A_JumpIfInventory("Cell",10,"Reload")
+        goto Nothing
+
+      FireStart:
         TNT1 A 0 A_AlertMonsters
         DRLG E 12 A_GiveInventory("SamsaraDoomguyRailgunAttackHandler")
-        DRLG F 6 A_CheckForReload(4,7)
-        DRLG GHIJKLA 6
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-        TNT1 A 0 A_JumpIfInventory("Cell",10,1)
-        goto Nothing
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireFinishReloadable")
+        goto FireFinish
+
+      FireFinishReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireFinish")
+        TNT1 A 0 A_JumpIfInventory("DoomguyRailgunClip",1,"FireFinish")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStart")
+        TNT1 A 0 A_JumpIfInventory("Cell",10,"ReloadStart")
+        goto FireFinish
+
+      FireFinish:
+        DRLG A 6
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireReFireReloadable")
+        goto FireReFireNonReloadable
+
+      FireReFire:
         TNT1 A 0 A_ReFire
         goto Ready
+
+      FireReFireNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireReFire")
+        TNT1 A 0 A_JumpIfInventory("Cell",10,"FireReFire")
+        goto Nothing
+
+      FireReFireReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireReFire")
+        TNT1 A 0 A_JumpIfInventory("DoomguyRailgunClip",1,"FireReFire")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireReFire")
+        TNT1 A 0 A_JumpIfInventory("Cell",10,"FireReFire")
+        goto Nothing
 
       Flash:
         TNT1 A 5 Bright A_Light1
         TNT1 A 5 Bright A_Light2
         goto LightDone
+
+      Reload:
+        DRLG E 6
+      ReloadStart:
+        DRLG F 6 A_PlaySound("doomguy/railgu")
+        DRLG GHIJ 6
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
+      ReloadFinish:
+        DRLG K 6 A_PlaySound("doomguy/railgl")
+        DRLG L 6
+        goto FireFinish
+
+      ReloadAmmo:
+        TNT1 A 0 A_JumpIfInventory("DoomguyRailgunClip",0,"ReloadFinish")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",10,1)
+        goto ReloadFinish
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_TakeInventory("Cell",10)
+        TNT1 A 0 A_GiveInventory("DoomguyRailgunClip")
+        loop
 
       // Stronghold (its own version)
       ReadyStr:
@@ -309,6 +381,7 @@ ACTOR " RailGun " : Weapon
         goto LightDone
 
       Nothing:
+        TNT1 A 0 A_ClearReFire
         TNT1 A 0 A_SelectWeapon(" Pistol ")
         goto Deselect
     }
@@ -320,13 +393,24 @@ actor SamsaraDoomguyRailgunAttackHandler : Trigger
     {
       // Ammo check stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-        TNT1 A 0 A_JumpIfInventory("Cell",10,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+      PickupCheckAmmoNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("Cell",10,"PickupTakeAmmoNonReloadable")
+        stop
+
+      PickupCheckAmmoReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("DoomguyRailgunClip",1,"PickupTakeAmmoReloadable")
         stop
 
       // Ammo taking stuff
-      PickupTakeAmmo:
+      PickupTakeAmmoNonReloadable:
         TNT1 A 0 A_TakeInventory("Cell",10,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("DoomguyRailgunClip",1)
         goto PickupAttack
 
       // Attack stuff
@@ -342,6 +426,37 @@ actor SamsaraDoomguyRailgunAttackHandler : Trigger
         TNT1 A 0 A_RailAttack(200,0,false,"","",RGF_SILENT|RGF_FULLBRIGHT,0,"DoomRailPuff_Coop")
         stop
     }
+}
+
+actor SamsaraDoomguyRailgunReloader : Trigger // used for (re)spawn
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
+        stop
+        TNT1 A 0 A_JumpIfInventory("DoomguyRailgunClip",0,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",10,1)
+        stop
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_TakeInventory("Cell",10)
+        TNT1 A 0 A_GiveInventory("DoomguyRailgunClip")
+        loop
+    }
+}
+
+// Ammo
+
+actor DoomguyRailgunClip : Ammo
+{
+    Inventory.MaxAmount 4
+    Tag "Railgun Magazine"
+    +IGNORESKILL
+    +UNTOSSABLE
 }
 
 actor DoomRailPuff : DoomBulletPuff2
