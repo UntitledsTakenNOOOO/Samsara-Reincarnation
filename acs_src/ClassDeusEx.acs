@@ -620,3 +620,73 @@ Script "DeusExRecoil" (int weapon) clientside
 			break;				
 	}
 }	
+
+Script "DeusExFlamethrowerHandler" (void)
+{
+	int startTime = timer();
+	int channelCounter = 0;
+	int channel = 0;
+	PlaySound(0,"DeusEx/FlameThrower/Fire", CHAN_6, 1.0, 0, ATTN_NORM);
+	While(CheckInventory("DeusEx_FlamethrowerFiring"))
+	{
+		if((timer() - startTime) > 24)
+		{
+			switch(channelCounter)
+			{
+				case 0: channel = CHAN_WEAPON; break;
+				case 1: channel = CHAN_5; channelCounter = -1; break;
+				case 2: channel = CHAN_6; break;
+			}
+			PlaySound(0,"DeusEx/FlameThrower/Fire", channel, 1.0, 0, ATTN_NORM);
+			startTime = timer();
+			channelCounter++;
+		}
+		GiveInventory("DeusEx_FlamethrowerFireHandler",1);
+		Delay(1);
+	}
+}
+
+Script "DeusExIgnite" (void)
+{
+	SetActivator(0,AAPTR_TRACER);
+	if(!CheckFlag(0,"SHOOTABLE"))
+		terminate;
+		
+	GiveInventory("DeusEx_FlamethrowerOnFireCounter",1050);
+	
+	if(!CheckInventory("DeusEx_FlamethrowerIsOnFire"))
+	{
+		GiveInventory("DeusEx_FlamethrowerIsOnFire",1);
+		int ignitionTimer = 0;
+		int deathMultiplier = ClassifyActor(0) & ACTOR_DEAD ? 4 : 1;
+		int radius = (GetActorProperty(0,APROP_Radius)>>16) - 8;
+		int height = (GetActorProperty(0,APROP_Height)>>16) * deathMultiplier;
+		int space = (height * radius * radius) / 2048;
+		int dummyFlameTid = UniqueTid();
+		for(int a = 0; a < space; a++)
+		{
+			int randomX = random(-radius*1.0,radius*1.0);
+			int randomY = random(-radius*1.0,radius*1.0);
+			int randomZ = random(height*0.2,height*0.8);
+			SpawnForced("DeusEx_BurnEffect",GetActorX(0)+randomX,GetActorY(0)+randomY,GetActorZ(0)+randomZ,dummyFlameTid);
+			SetPointerExt(AAPTR_MASTER,0,dummyFlameTid);
+			ACS_NamedExecuteWithResult("DeusExFlame",dummyFlameTid,randomX,randomY,randomZ);
+			Thing_ChangeTid(dummyFlameTid,0);
+		}
+		until(ClassifyActor(0) & ACTOR_DEAD || CheckInventory("DeusEx_FlamethrowerOnFireCounter") < 1) { TakeInventory("DeusEx_FlamethrowerOnFireCounter",1); Delay(1); }
+		TakeInventory("DeusEx_FlamethrowerIsOnFire",1);
+	}
+}
+
+Script "DeusExFlame" (int dummyTid, int X, int Y, int Z)
+{
+	SetActivator(dummyTid);
+	While(Warp(AAPTR_MASTER,X,Y,Z,0,WARPF_ABSOLUTEOFFSET|WARPF_NOCHECKPOSITION|WARPF_USEPTR) && ClassifyActor(0) > 1) { Delay(1); }
+}
+
+Script "DeusExIsMasterDead" (void)
+{
+	SetActivator(0,AAPTR_MASTER);
+	if(ClassifyActor(0) & ACTOR_ALIVE) SetResultValue(0);
+	else SetResultValue(1);
+}
