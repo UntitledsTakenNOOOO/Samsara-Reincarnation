@@ -28,6 +28,7 @@ ACTOR " Minigun " : Weapon
       Ready:
         TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrMinigunFiringSoundCheck")
         TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"ReadyStr")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"Ready64")
         DMNG A 1 A_WeaponReady(WRF_NOSECONDARY)
         loop
 
@@ -35,6 +36,7 @@ ACTOR " Minigun " : Weapon
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrMinigunFiringSoundCheck",1,"DeselectStopSound")
       DeselectStart:
         TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"DeselectStartStr")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"DeselectStart64")
         DMNG A 1 A_Lower
         goto Deselect
 
@@ -47,11 +49,13 @@ ACTOR " Minigun " : Weapon
       Select:
         TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrMinigunFiringSoundCheck")
         TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"SelectStr")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"Select64")
         DMNG A 1 A_Raise 
         loop
 
       Fire:
         TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"FireStr")
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"Fire64")
         TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrMinigunFiringSoundCheck",1,"FireStopSound")
       FireStart:
         TNT1 A 0 A_GunFlash
@@ -83,6 +87,53 @@ ACTOR " Minigun " : Weapon
 
       Flash2:
         DMNF B 3 Bright A_Light2
+        goto LightDone
+
+      // Doom 64 (no changes)
+      Ready64:
+        64MN A 1 A_WeaponReady(WRF_NOSECONDARY)
+        goto Ready
+
+      DeselectStart64:
+        64MN A 1 A_Lower
+        goto Deselect
+
+      Select64:
+        64MN A 1 A_Raise
+        goto Select
+
+      Fire64:
+        TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrMinigunFiringSoundCheck",1,"Fire64StopSound")
+      Fire64Start:
+        TNT1 A 0 A_GunFlash("Flash64")
+        64MN A 2 A_GiveInventory("SamsaraDoomguy64MinigunAttackHandler")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Fire64_2Attack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"Fire64_2Attack")
+        goto Fire64_2
+
+      Fire64_2Attack:
+        TNT1 A 0 A_GunFlash("Flash64_2")
+      Fire64_2:
+        64MN B 2 A_GiveInventory("SamsaraDoomguy64MinigunAttackHandler")
+      Fire64Finish:
+        64MN A 2 A_ReFire
+        64MN B 2
+        64MN AB 4
+        64MN AB 8
+        goto Ready
+
+      Fire64StopSound:
+        TNT1 A 0 A_PlaySound("silence",CHAN_6)
+        TNT1 A 0 A_StopSound(CHAN_6)
+        TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrMinigunFiringSoundCheck")
+        goto Fire64Start
+
+      Flash64:
+        64NM A 3 Bright A_Light1
+        goto LightDone
+
+      Flash64_2:
+        64NM B 3 Bright A_Light2
         goto LightDone
 
       // Stronghold
@@ -274,6 +325,51 @@ actor SamsaraDoomguyMinigunAttackHandler : Trigger
 
       PickupAttackImprovedCoop:
         TNT1 A 0 A_FireBullets(5.6,0,1,random(8,10)*2,"DoomBulletPuff2ThruGhost_Coop",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+    }
+}
+
+actor SamsaraDoomguy64MinigunAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("doom64guy/minigun",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SamsaraImprovedDoomguyBalance",1,"PickupAttackImproved")
+      // Vanilla
+      PickupAttackVanilla:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackVanillaCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackVanillaCoop")
+      PickupAttackVanillaDM:
+        TNT1 A 0 A_FireBullets(5.6,0,1,random(1,4)*4,"Doom64BulletPuffThruGhost",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+
+      PickupAttackVanillaCoop:
+        TNT1 A 0 A_FireBullets(5.6,0,1,random(1,4)*4,"Doom64BulletPuffThruGhost_Coop",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+
+      // Improved
+      PickupAttackImproved:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackImprovedCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackImprovedCoop")
+      PickupAttackImprovedDM:
+        TNT1 A 0 A_FireBullets(5.6,0,1,random(6,9)*2,"Doom64BulletPuffThruGhost",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+
+      PickupAttackImprovedCoop:
+        TNT1 A 0 A_FireBullets(5.6,0,1,random(6,9)*2,"Doom64BulletPuffThruGhost_Coop",FBF_NORANDOM|FBF_NOFLASH)
         stop
     }
 }
