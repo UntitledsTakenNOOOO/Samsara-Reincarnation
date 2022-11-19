@@ -85,7 +85,7 @@ ACTOR " BFG10K " : Weapon
         TNT1 A 3 Bright
         goto LightDone
 
-      // Doom 64 (has kickback and blend effect, latter only happening on Fire state)
+      // Doom 64 (has kickback, has blend effect on puff)
       Ready64:
         TNT1 A 0 A_PlaySound("doom64guy/bfg10kidle")
         64BG BBBCCCDDD 1 A_WeaponReady
@@ -104,8 +104,7 @@ ACTOR " BFG10K " : Weapon
         64BG A 7
         64BG E 1 Bright
       Hold64:
-        TNT1 A 0 Bright A_SetBlend("Green",0.15,5)
-		64BG F 2 Bright A_GunFlash
+        64BG F 2 Bright A_GunFlash
         64BG G 2 Bright A_GiveInventory("SamsaraDoomguy64BFG10KAttackHandler")
         64BG H 2 Bright
         TNT1 A 0 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
@@ -224,14 +223,15 @@ Actor ST_BFG10kShot
   Height 8
   Speed 20
   DamageType "DoomDamageType"
-  +NoBlockMap
-  +NoGravity
-  +ActivateImpact
-  +ActivatePCross
-  +NoTeleport
-  +PuffOnActors
-  +PuffGetsOwner
-  +ForceRadiusDmg
+  +NOBLOCKMAP
+  +NOGRAVITY
+  +ACTIVATEIMPACT
+  +ACTIVATEPCROSS
+  +NOTELEPORT
+  +PUFFONACTORS
+  +PUFFGETSOWNER
+  +FORCERADIUSDMG
+  +NOTIMEFREEZE
   Renderstyle Add
   Alpha 0.75
   SeeSound "doomguy/bfg10kx"
@@ -242,7 +242,8 @@ Actor ST_BFG10kShot
   {
   Spawn:
     DBFE A 0 Bright
-    DBFE A 3 Bright A_Explode(160,160)
+    TNT1 A 0 A_Explode(160,160)
+    DBFE A 3 Bright A_ChangeFlag("NOTIMEFREEZE",false)
     DBFE BCDEF 3 Bright
     stop
   }
@@ -295,7 +296,9 @@ actor Doom64BFG10KShot : ST_BFG10kShot
     {
       Spawn:
         64BB C 0 Bright Light("BFGBALL_X1")
-        64BB C 3 Bright Light("BFGBALL_X1") A_Explode(160,160)
+        TNT1 A 0 A_GiveToTarget("Doom64BFG10KImpactFlash")
+        TNT1 A 0 A_Explode(160,160)
+        64BB C 3 Bright Light("BFGBALL_X1") A_ChangeFlag("NOTIMEFREEZE",false)
         64BB D 3 Bright Light("BFGBALL_X2") A_FadeOut(0.142857)
         64BB E 3 Bright Light("BFGBALL_X3") A_FadeOut(0.142857)
         64BB F 3 Bright Light("BFGBALL_X1") A_FadeOut(0.142857)
@@ -306,6 +309,16 @@ actor Doom64BFG10KShot : ST_BFG10kShot
 }
 
 actor Doom64BFG10KShotCoop : Doom64BFG10KShot { +MTHRUSPECIES +DONTHARMSPECIES }
+
+actor Doom64BFG10KImpactFlash : Trigger
+{
+	States
+	{
+	  Pickup:
+		TNT1 A 0 A_SetBlend("Green",0.15,5)
+		stop
+	}
+}
 
 // Melee attack handler
 
