@@ -1,8 +1,10 @@
 // Unmaker (Doom 64)
 
+actor SamsaraUsingAbsolutionUnmaker : Boolean {}
 actor Doom64_IHaveUnmaker : Boolean {}
 actor Doom64UnmakerArtifact : Counter { Inventory.MaxAmount 3 }
 actor Doom64UnmakerReFireCount : Counter { Inventory.MaxAmount 3 }
+actor Doom64UnmakerSoundChannelCount : Counter { Inventory.MaxAmount 3 }
 
 actor " Unmaker " : Weapon
 {
@@ -170,165 +172,375 @@ actor " Unmaker " : Weapon
 
 actor SamsaraDoomguyUnmakerSingleAttackHandler : Trigger
 {
-	States
-	{
-	  // Ammo check stuff
-	  Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-		TNT1 A 0 A_JumpIfInventory("Cell",1,"PickupTakeAmmo")
-		goto PickupFinish
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,"PickupTakeAmmo")
+        goto PickupFinish
 
-	  // Ammo taking stuff
-	  PickupTakeAmmo:
-		TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
-		goto PickupAttack
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
+        goto PickupPlaySound
 
-	  // Attack stuff
-	  PickupAttack:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
-	  PickupAttackDM:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",0,false)
-		goto PickupFinish
+      // Sound stuff
+      PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingAbsolutionUnmaker",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerSoundChannelCount",0,"PickupPlaySound7")
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerSoundChannelCount",2,"PickupPlaySound6")
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerSoundChannelCount",1,"PickupPlaySound4")
+      PickupPlaySound1:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker",CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
 
-	  PickupAttackCoop:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",0,false)
-		goto PickupFinish
+      PickupPlaySound4:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker")
+        TNT1 A 0 A_GiveInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
 
-	  // Finishing stuff
-	  PickupFinish:
-		TNT1 A 0 A_TakeInventory("Doom64UnmakerReFireCount")
-		stop
-	}
+      PickupPlaySound6:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker",CHAN_6)
+        TNT1 A 0 A_GiveInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
+
+      PickupPlaySound7:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker",CHAN_7)
+        TNT1 A 0 A_TakeInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingAbsolutionUnmaker",1,"PickupAttackProjectile")
+      // Hitscan (Original)
+      PickupAttackHitscan:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackHitscanCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackHitscanCoop")
+      PickupAttackHitscanDM:
+        TNT1 A 0 A_FireBullets(0,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
+
+      PickupAttackHitscanCoop:
+        TNT1 A 0 A_FireBullets(0,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
+
+      // Projectile (Absolution)
+      PickupAttackProjectile:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackProjectileCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackProjectileCoop")
+      PickupAttackProjectileDM:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",0,false)
+        goto PickupFinish
+
+      PickupAttackProjectileCoop:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",0,false)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_TakeInventory("Doom64UnmakerReFireCount")
+        stop
+    }
 }
 
 actor SamsaraDoomguyUnmakerDoubleAttackHandler : Trigger
 {
-	States
-	{
-	  // Ammo check stuff
-	  Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-		TNT1 A 0 A_JumpIfInventory("Cell",2,"PickupTakeAmmo")
-		goto PickupFinish
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",2,"PickupTakeAmmo")
+        goto PickupFinish
 
-	  // Ammo taking stuff
-	  PickupTakeAmmo:
-		TNT1 A 0 A_TakeInventory("Cell",2,TIF_NOTAKEINFINITE)
-		goto PickupAttack
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",2,TIF_NOTAKEINFINITE)
+        goto PickupPlaySound
 
-	  // Attack stuff
-	  PickupAttack:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
-	  PickupAttackDM:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",-2,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",2,false)
-		goto PickupFinish
+      // Sound stuff
+      PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingAbsolutionUnmaker",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerSoundChannelCount",0,"PickupPlaySound7")
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerSoundChannelCount",2,"PickupPlaySound6")
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerSoundChannelCount",1,"PickupPlaySound4")
+      PickupPlaySound1:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker",CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
 
-	  PickupAttackCoop:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",-2,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",2,false)
-		goto PickupFinish
+      PickupPlaySound4:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker")
+        TNT1 A 0 A_GiveInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
 
-	  // Finishing stuff
-	  PickupFinish:
-		TNT1 A 0 A_TakeInventory("Doom64UnmakerReFireCount")
-		stop
-	}
+      PickupPlaySound6:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker",CHAN_6)
+        TNT1 A 0 A_GiveInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
+
+      PickupPlaySound7:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker",CHAN_7)
+        TNT1 A 0 A_TakeInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingAbsolutionUnmaker",1,"PickupAttackProjectile")
+      // Hitscan (Original)
+      PickupAttackHitscan:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackHitscanCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackHitscanCoop")
+      PickupAttackHitscanDM:
+        TNT1 A 0 A_FireBullets(-2,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(2,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
+
+      PickupAttackHitscanCoop:
+        TNT1 A 0 A_FireBullets(-2,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(2,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
+
+      // Projectile (Absolution)
+      PickupAttackProjectile:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackProjectileCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackProjectileCoop")
+      PickupAttackProjectileDM:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",-2,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",2,false)
+        goto PickupFinish
+
+      PickupAttackProjectileCoop:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",-2,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",2,false)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_TakeInventory("Doom64UnmakerReFireCount")
+        stop
+    }
 }
 
 actor SamsaraDoomguyUnmakerTripleAttackHandler : Trigger
 {
-	States
-	{
-	  // Ammo check stuff
-	  Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-		TNT1 A 0 A_JumpIfInventory("Cell",3,"PickupTakeAmmo")
-		goto PickupFinish
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",3,"PickupTakeAmmo")
+        goto PickupFinish
 
-	  // Ammo taking stuff
-	  PickupTakeAmmo:
-		TNT1 A 0 A_TakeInventory("Cell",3,TIF_NOTAKEINFINITE)
-		goto PickupAttack
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",3,TIF_NOTAKEINFINITE)
+        goto PickupPlaySound
 
-	  // Attack stuff
-	  PickupAttack:
-		TNT1 A 0 A_JumpIfInventory("Doom64UnmakerReFireCount",0,"PickupAttack4")
-		TNT1 A 0 A_JumpIfInventory("Doom64UnmakerReFireCount",2,"PickupAttack3")
-		TNT1 A 0 A_JumpIfInventory("Doom64UnmakerReFireCount",1,"PickupAttack2")
-	  PickupAttack1:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack1Coop")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack1Coop")
-	  PickupAttack1DM:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",0,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",-3,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",3,false)
-		goto PickupFinish
+      // Sound stuff
+      PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingAbsolutionUnmaker",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerSoundChannelCount",0,"PickupPlaySound7")
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerSoundChannelCount",2,"PickupPlaySound6")
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerSoundChannelCount",1,"PickupPlaySound4")
+      PickupPlaySound1:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker",CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
 
-	  PickupAttack1Coop:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",0,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",-3,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",3,false)
-		goto PickupFinish
+      PickupPlaySound4:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker")
+        TNT1 A 0 A_GiveInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
 
-	  PickupAttack2:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack2Coop")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack2Coop")
-	  PickupAttack2DM:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",0,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",-6,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",6,false)
-		goto PickupFinish
+      PickupPlaySound6:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker",CHAN_6)
+        TNT1 A 0 A_GiveInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
 
-	  PickupAttack2Coop:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",0,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",-6,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",6,false)
-		goto PickupFinish
+      PickupPlaySound7:
+        TNT1 A 0 A_PlaySound("doom64guy/unmaker",CHAN_7)
+        TNT1 A 0 A_TakeInventory("Doom64UnmakerSoundChannelCount")
+        goto PickupAttack
 
-	  PickupAttack3:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack3Coop")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack3Coop")
-	  PickupAttack3DM:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",0,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",-9,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",9,false)
-		goto PickupFinish
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerReFireCount",0,"PickupAttack4")
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerReFireCount",2,"PickupAttack3")
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerReFireCount",1,"PickupAttack2")
+      // First spread pattern
+      PickupAttack1:
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingAbsolutionUnmaker",1,"PickupAttack1Projectile")
+      // Hitscan (Original)
+      PickupAttack1Hitscan:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack1HitscanCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack1HitscanCoop")
+      PickupAttack1HitscanDM:
+        TNT1 A 0 A_FireBullets(-3,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(0,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(3,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
 
-	  PickupAttack3Coop:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",0,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",-9,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",9,false)
-		goto PickupFinish
+      PickupAttack1HitscanCoop:
+        TNT1 A 0 A_FireBullets(-3,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(0,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(3,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
 
-	  PickupAttack4:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack4Coop")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack4Coop")
-	  PickupAttack4DM:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",0,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",-12,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",12,false)
-		goto PickupFinish
+      // Projectile (Absolution)
+      PickupAttack1Projectile:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack1ProjectileCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack1ProjectileCoop")
+      PickupAttack1ProjectileDM:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",-3,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",0,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",3,false)
+        goto PickupFinish
 
-	  PickupAttack4Coop:
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",0,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",-12,false)
-		TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",12,false)
-		goto PickupFinish
+      PickupAttack1ProjectileCoop:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",-3,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",0,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",3,false)
+        goto PickupFinish
 
-	  // Finishing stuff
-	  PickupFinish:
-		TNT1 A 0 A_JumpIfInventory("Doom64UnmakerReFireCount",0,"PickupFinishTake")
-		TNT1 A 0 A_GiveInventory("Doom64UnmakerReFireCount")
-		stop
+      // Second spread pattern
+      PickupAttack2:
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingAbsolutionUnmaker",1,"PickupAttack2Projectile")
+      // Hitscan (Original)
+      PickupAttack2Hitscan:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack2HitscanCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack2HitscanCoop")
+      PickupAttack2HitscanDM:
+        TNT1 A 0 A_FireBullets(-6,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(0,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(6,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
 
-	  PickupFinishTake:
-		TNT1 A 0 A_TakeInventory("Doom64UnmakerReFireCount")
-		stop
-	}
+      PickupAttack2HitscanCoop:
+        TNT1 A 0 A_FireBullets(-6,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(0,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(6,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
+
+      // Projectile (Absolution)
+      PickupAttack2Projectile:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack2ProjectileCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack2ProjectileCoop")
+      PickupAttack2ProjectileDM:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",-6,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",0,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",6,false)
+        goto PickupFinish
+
+      PickupAttack2ProjectileCoop:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",-6,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",0,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",6,false)
+        goto PickupFinish
+
+      // Third spread pattern
+      PickupAttack3:
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingAbsolutionUnmaker",1,"PickupAttack3Projectile")
+      // Hitscan (Original)
+      PickupAttack3Hitscan:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack3HitscanCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack3HitscanCoop")
+      PickupAttack3HitscanDM:
+        TNT1 A 0 A_FireBullets(-9,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(0,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(9,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
+
+      PickupAttack3HitscanCoop:
+        TNT1 A 0 A_FireBullets(-9,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(0,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(9,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
+
+      // Projectile (Absolution)
+      PickupAttack3Projectile:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack3ProjectileCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack3ProjectileCoop")
+      PickupAttack3ProjectileDM:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",-9,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",0,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",9,false)
+        goto PickupFinish
+
+      PickupAttack3ProjectileCoop:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",-9,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",0,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",9,false)
+        goto PickupFinish
+
+      // Fourth spread pattern
+      PickupAttack4:
+        TNT1 A 0 A_JumpIfInventory("SamsaraUsingAbsolutionUnmaker",1,"PickupAttack4Projectile")
+      // Hitscan (Original)
+      PickupAttack4Hitscan:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack4HitscanCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack4HitscanCoop")
+      PickupAttack4HitscanDM:
+        TNT1 A 0 A_FireBullets(-12,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(0,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(12,0,-1,random(1,8)*10,"Doom64UnmakerPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
+
+      PickupAttack4HitscanCoop:
+        TNT1 A 0 A_FireBullets(-12,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(0,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        TNT1 A 0 A_FireBullets(12,0,-1,random(1,8)*10,"Doom64UnmakerPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        goto PickupFinish
+
+      // Projectile (Absolution)
+      PickupAttack4Projectile:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttack4ProjectileCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttack4ProjectileCoop")
+      PickupAttack4ProjectileDM:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",-12,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser",0,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaserSilent",12,false)
+        goto PickupFinish
+
+      PickupAttack4ProjectileCoop:
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",-12,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2",0,false)
+        TNT1 A 0 A_FireCustomMissile("Doom64UnmakerLaser2Silent",12,false)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_JumpIfInventory("Doom64UnmakerReFireCount",0,"PickupFinishTake")
+        TNT1 A 0 A_GiveInventory("Doom64UnmakerReFireCount")
+        stop
+
+      PickupFinishTake:
+        TNT1 A 0 A_TakeInventory("Doom64UnmakerReFireCount")
+        stop
+    }
 }
+
+actor Doom64UnmakerPuff
+{
+    Scale 0.75
+    Decal "BulletChip"
+    Obituary "%k \cperased\c- %o \cpwith the Unmaker.\c-"
+    +BLOODLESSIMPACT
+    +NOBLOCKMAP
+    +NOGRAVITY
+    +PUFFONACTORS
+    +RANDOMIZE
+    States
+    {
+      Spawn:
+        64UL CD 2 Bright Light("UNMAKERSHOT_X") A_FadeOut(0.1)
+        loop
+    }
+}
+
+actor Doom64UnmakerPuffCoop : Doom64UnmakerPuff { +MTHRUSPECIES }
 
 actor Doom64UnmakerLaser
 {
@@ -341,9 +553,6 @@ actor Doom64UnmakerLaser
 	PROJECTILE
 	+RANDOMIZE
 	+BLOODLESSIMPACT
-	+DONTREFLECT
-	+DONTBLAST
-	+NOTIMEFREEZE
 	SeeSound "doom64guy/unmaker"
 	Obituary "%k \cperased\c- %o \cpwith the Unmaker.\c-"
 	States
