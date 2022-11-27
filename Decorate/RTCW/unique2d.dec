@@ -3,9 +3,8 @@ Actor RTCW_Snooper : RTCW_Weapon
 	Weapon.SlotNumber 3
 	Weapon.SlotPriority 1
 	Weapon.SelectionOrder 1500
-	Weapon.AmmoUse1 1
-	Weapon.AmmoUse2 0
 	Weapon.AmmoType1 "RTCW_SnooperMagazine"
+	Weapon.AmmoUse1 1
 	Weapon.AmmoType2 "Shell"
 	Weapon.AmmoGive2 5
 	Obituary "%o was killed (snooper) by %k."
@@ -19,130 +18,251 @@ Actor RTCW_Snooper : RTCW_Weapon
 		Spawn:
 			RW98 A -1
 			Stop
+
+        ReadyActual:
+            RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyActualReloadable")
+        ReadyActualNonReloadable:
+			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,3)
+			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+			RW00 A 1 A_WeaponReady
+			goto ReadyActualAmmoCheck
+			TNT1 A 0 A_JumpIf(CallACS("RTCW_Decorate", 3) == 0, 2)
+			TNT1 A 1 A_ZoomFactor(90.0/CallACS("RTCW_Decorate", 2, 2)*1.0)
+			TNT1 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+			TNT1 A 1 A_WeaponReady
+			goto ReadyActualAmmoCheck
+
+        ReadyActualReloadable:
+			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,3)
+			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+			RW00 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+			goto ReadyActualAmmoCheck
+			TNT1 A 0 A_JumpIf(CallACS("RTCW_Decorate", 3) == 0, 2)
+			TNT1 A 1 A_ZoomFactor(90.0/CallACS("RTCW_Decorate", 2, 2)*1.0)
+			TNT1 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+			TNT1 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+			goto ReadyActualAmmoCheck
+
+        ReadyActualAmmoCheck:
+            RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
+            goto ReadyActual
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"ReadyActual")
+            RW00 A 0 A_JumpIfInventory("RTCW_SnooperMagazine",1,"ReadyActual")
+            goto ReloadCheck
+
 		Deselect:
 			RW00 G 0 A_PlaySound("RTCW/Change",CHAN_7)
 			RW00 G 0 A_TakeInventory("RTCW_ZoomFactor",90)
 			RW00 G 0 A_TakeInventory("RTCW_Scoped",1)
-			RW00 G 0 A_ZoomFactor(1.0)
-			RW00 GHIJKLM 2
+			RW00 G 2 A_ZoomFactor(1.0)
+			RW00 HIJKLM 2
 			Goto Super::Deselect
-		Ready:
+
+		Ready: // our "Select" state
 			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
-			RW00 A 0 A_GiveInventory("RTCW_WeaponToken",11)
-			RW00 MNOPQ 2
-		ReadyLoop:
-			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,"ReadyLoopScoped")
-			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
-			RW00 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
-			Loop
-		ReadyLoopScoped:
-			TNT1 A 0 A_JumpIfInventory("RTCW_Scoped",1,1)
-			Goto ReadyLoopScoped+3
-			TNT1 A 0 A_JumpIf(CallACS("RTCW_Decorate",3)==0,2)
-			TNT1 A 1 A_ZoomFactor(90.0/CallACS("RTCW_Decorate",2,2)*1.0)
-			TNT1 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
-			TNT1 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
-			Loop
-		NoAmmo:
-			RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
-			RW00 A 17
-			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
-			Goto Deselect
-		NoAmmoScoped:
-			TNT1 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
-			TNT1 A 17
-			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
-			Goto Deselect
+			RW00 M 2 A_GiveInventory("RTCW_WeaponToken",11)
+			RW00 NOPQ 2
+            goto ReadyActual
+
 		Fire:
-			RW00 B 0 A_JumpIfInventory("RTCW_SnooperMagazine",1,1)
-			Goto Reload
+            RW00 B 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireReloadable")
+        FireNonReloadable:
+            RW00 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+            RW00 B 0 A_JumpIfInventory("Shell",1,"FireStart")
+            goto FireDry
+
+        FireReloadable:
+            RW00 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStart")
+            RW00 B 0 A_JumpIfInventory("RTCW_SnooperMagazine",1,"FireStart")
+        FireReloadableDryCheck:
+            RW00 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadScopeCheck")
+            RW00 B 0 A_JumpIfInventory("Shell",1,"ReloadScopeCheck")
+            goto FireDry
+
+        FireDry:
+            RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+			RW00 A 17 A_JumpIfInventory("RTCW_Scoped",1,1)
+            goto FireDryFinish
+			TNT1 A 17
+			goto FireDryFinish
+
+        FireDryFinish:
+			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
+			Goto Deselect
+
+        FireUnderwater:
+            RW00 A 0 A_PlaySound("RTCW/UnderwaterFire",CHAN_5)
+			RW00 A 17 A_JumpIfInventory("RTCW_Scoped",1,1)
+            goto ReadyActual
+			TNT1 A 17
+			goto ReadyActual
+
+		FireStart:
+            RW00 B 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"FireUnderwater")
 			//RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
 			RW00 B 0 A_FireCustomMissile("RTCW_Casing",-random(85,105),0,8,4,0,-4)
-			RW00 B 0 A_GiveInventory("SamsaraRTCWSnooperAttackHandler")
 			RW00 B 0 A_JumpIfInventory("RTCW_Scoped",1,"FireScoped")
 			RW00 B 0 A_GunFlash("FireFlash")
-		FireFinish:
-			RW00 BC 2
+			RW00 B 2 A_GiveInventory("SamsaraRTCWSnooperAttackHandler")
+			RW00 C 2
 			RW00 A 33
-			Goto ReadyLoop
+			goto ReadyActual
+
+		FireScoped:
+			TNT1 B 2 A_GiveInventory("SamsaraRTCWSnooperAttackHandler")
+			TNT1 C 2
+			TNT1 A 33
+			goto ReadyActual
+
 		FireFlash:
 			RW03 B 2 Bright
 			Stop
-		FireScoped:
-			TNT1 BC 2
-			TNT1 A 33
-			Goto ReadyLoop
+
 		AltFire:
 			RW00 A 0 A_PlaySound("RTCW/Change",CHAN_7)
-			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,"LowerScope")
-			RW00 A 0 A_GiveInventory("RTCW_ZoomFactor",40)
-			RW00 A 0 A_GiveInventory("RTCW_Scoped",1)
-			RW00 A 0 ACS_NamedExecuteWithResult("RTCW_Scope",2)
+			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,"AltFireUnscope")
+		AltFireScope:
+			TNT1 A 0 A_GiveInventory("RTCW_ZoomFactor",40)
+			TNT1 A 0 A_GiveInventory("RTCW_Scoped",1)
+			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Scope", 2)
 			TNT1 A 10 A_ZoomFactor(90.0/40.0)
-			Goto ReadyLoop
-		LowerScope:
+			goto ReadyActual
+
+		AltFireUnscope:
 			RW00 A 0 A_TakeInventory("RTCW_ZoomFactor",90)
 			RW00 A 0 A_TakeInventory("RTCW_Scoped",1)
 			RW00 A 0 A_ZoomFactor(1.0)
-			Goto Ready
-		Reload:
-			TNT1 A 0 A_JumpIfInventory("RTCW_Scoped",1,"ScopedNoAmmo")
-			TNT1 A 0 A_JumpIfInventory("RTCW_SnooperMagazine",0,"ReadyLoop")
-			TNT1 A 0 A_JumpIfInventory("Shell",1,"ReloadSuccess")
-			TNT1 A 0 A_JumpIfInventory("RTCW_SnooperMagazine",1,1)
-			goto NoAmmo
-			TNT1 A 0
-			goto ReadyLoop
-		ScopedNoAmmo:
-			TNT1 A 0 A_JumpIfInventory("RTCW_SnooperMagazine",0,"ReadyLoop")
-			TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-			Goto NoAmmoScoped
-			TNT1 A 0 A_JumpIfInventory("RTCW_SnooperMagazine",1,"ReloadLowerScope")
-			TNT1 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_6)
-			TNT1 A 17
-		ReloadLowerScope:
+			goto Ready
+
+        Reload:
+        ReloadCheck:
+            RW00 A 0 A_JumpIfInventory("RTCW_SnooperMagazine",0,"ReadyActual")
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadScopeCheck")
+            RW00 A 0 A_JumpIfInventory("Shell",1,"ReloadScopeCheck")
+            goto ReadyActual
+
+        ReloadScopeCheck:
+			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,1)
+            goto ReloadStart
 			RW00 A 0 A_PlaySound("RTCW/Change",CHAN_7)
-			Goto ReloadSuccess+1
-		ReloadSuccess:
-			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,"ReloadLowerScope")
 			RW00 A 0 A_TakeInventory("RTCW_ZoomFactor",90)
 			RW00 A 0 A_TakeInventory("RTCW_Scoped",1)
-			RW00 A 0 A_ZoomFactor(1.0)
-			RW00 A 0 A_PlaySound("RTCW/Snooper/Reload",CHAN_6)
-			RW00 "QRSTUVWXYZ[\]" 2
+			RW00 M 2 A_ZoomFactor(1.0)
+			RW00 NOPQ 2
+            goto ReloadCheck
+
+		ReloadStart:
+			RW00 Q 2 A_PlaySound("RTCW/Snooper/Reload",CHAN_6)
+			RW00 "RSTUVWXYZ[\]" 2
 			RW01 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]" 2
 			RW02 ABCDEFG 1
-			goto ReloadAmmo
-		ReloadAmmo:
-			TNT1 A 0 A_JumpIfInventory("RTCW_SnooperMagazine",0,"ReadyLoop")
-			TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-			goto ReadyLoop
-			TNT1 A 0 A_GiveInventory("RTCW_SnooperMagazine",1)
-			TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
-			Loop
+			RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
+            goto ReloadDone
+
+        ReloadDone:
+            RW00 A 0
+			goto ReadyActual
+
+        ReloadAmmo:
+            TNT1 A 0 A_JumpIfInventory("RTCW_SnooperMagazine",0,"ReloadDone")
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+            goto ReloadDone
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            TNT1 A 0 A_TakeInventory("Shell",1)
+            TNT1 A 0 A_GiveInventory("RTCW_SnooperMagazine")
+            loop
+
 		Kicking:
-			TNT1 A 0 A_Gunflash("KickingFoot")
+			TNT1 A 0 A_GunFlash("KickingFoot")
 		KickingDelay:
-			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,"KickingScopedDelay")
-			RW00 A 18
+			RW00 A 18 A_JumpIfInventory("RTCW_Scoped",1,1)
+			goto KickingDelayFinish
+			TNT1 A 18 // not really supposed to see anything, even the kick
+			goto KickingDelayFinish
+
+        KickingDelayFinish:
 			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
-			Goto ReadyLoop
-		KickingScopedDelay:
-			RW00 M 18
-			TNT1 A 0 A_TakeInventory("RTCW_Kicking",1)
-			Goto ReadyLoop
+			goto ReadyActual
 	}
 }
 
-actor RTCW_SnooperVision : PowerLightAmp
+actor SamsaraRTCWSnooperAttackHandler : Trigger
 {
-	Powerup.Color InverseMap
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+      PickupCheckAmmoNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupTakeAmmoNonReloadable")
+        stop
+
+      PickupCheckAmmoReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RTCW_SnooperMagazine",1,"PickupTakeAmmoReloadable")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmoNonReloadable:
+        TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("RTCW_SnooperMagazine",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("RTCW/Snooper/Fire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("RTCW_Scoped",1,"PickupAttackScoped")
+      // Unscoped
+      PickupAttackUnscoped:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackUnscopedCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackUnscopedCoop")
+      PickupAttackUnscopedDM:
+        TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracer",frandom(-1.5,1.5),false,0,4,0,frandom(-1.5,1.5))
+        goto PickupFinish
+
+      PickupAttackUnscopedCoop:
+        TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracerCoop",frandom(-1.5,1.5),false,0,4,0,frandom(-1.5,1.5))
+        goto PickupFinish
+
+      // Scoped
+      PickupAttackScoped:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackScopedCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackScopedCoop")
+      PickupAttackScopedDM:
+        TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracer",0,false,0,8)
+        goto PickupFinish
+
+      PickupAttackScopedCoop:
+        TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracerCoop",0,false,0,8)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_JumpIfInventory("RTCW_Scoped",1,"PickupFinishScoped")
+      PickupFinishUnscoped:
+        TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil", 2)
+        stop
+
+      PickupFinishScoped:
+        TNT1 A 0 A_GiveInventory("RTCW_AimSpread",16711680)
+        TNT1 A 0 A_SetAngle(angle+frandom(-1.0,1.0))
+        TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil", 4)
+        stop
+    }
 }
 
-Actor RTCW_SnooperMagazine : Ammo
+actor RTCW_SnooperMagazine : Ammo
 {
-	Inventory.MaxAmount 5
-	Ammo.BackpackMaxAmount 5
+    Inventory.MaxAmount 5
+    +IGNORESKILL
 }
 
 Actor RTCW_SnooperTracer : RTCW_Tracer
@@ -175,50 +295,4 @@ Actor RTCW_SnooperTracerDM : RTCW_Tracer
 	}
 }
 
-actor SamsaraRTCWSnooperAttackHandler : Trigger
-{
-	States
-	{
-		// Ammo check stuff
-		Pickup:
-			TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
-		PickupCheckAmmoNonReloadable:
-			TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
-			TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupTakeAmmoNonReloadable")
-			Stop
-		PickupCheckAmmoReloadable:
-			TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
-			TNT1 A 0 A_JumpIfInventory("RTCW_SnooperMagazine",1,"PickupTakeAmmoReloadable")
-			Stop
-
-		// Attack stuff
-		PickupAttack:
-			TNT1 A 0 A_PlaySound("RTCW/Snooper/Fire",CHAN_Weapon)
-			TNT1 A 0 A_JumpIfInventory("RTCW_Scoped",1,"PickupAttackScope")
-			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil",2)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
-			TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracer",FRandom(-1.5,1.5),0,0,4, 0, FRandom(-1.5,1.5))
-			Stop
-		PickupAttackCoop:
-			TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracerCoop",FRandom(-1.5,1.5),0,0,4, 0, FRandom(-1.5,1.5))
-			Stop
-		PickupAttackScope:
-			TNT1 A 0 A_GiveInventory("RTCW_AimSpread",16711680)
-			TNT1 A 0 A_SetAngle(angle+frandom(-1.0,1.0))
-			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil",4)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackScopeCoop")
-			TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracer",0,0,0,8)
-			Stop
-		PickupAttackScopeCoop:
-			TNT1 A 0 A_FireCustomMissile("RTCW_SnooperTracerCoop",0,0,0,8)
-			Stop
-
-		// Ammo taking stuff
-		PickupTakeAmmoNonReloadable:
-			TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
-			Goto PickupAttack
-		PickupTakeAmmoReloadable:
-			TNT1 A 0 A_TakeInventory("RTCW_SnooperMagazine",1)
-			Goto PickupAttack
-	}
-}
+actor RTCW_SnooperVision : PowerLightAmp { Powerup.Color InverseMap }
