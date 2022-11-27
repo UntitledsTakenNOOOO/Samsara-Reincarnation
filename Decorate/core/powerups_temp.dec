@@ -218,7 +218,7 @@ Actor SamsaraPowerInvisibilityShadowGiver : PowerupGiver
 	}
 }
 
-actor PortGhostly : PowerupGiver
+Actor PortGhostly : PowerupGiver
 {
     tag "Shadowsphere"
     inventory.maxamount 16
@@ -230,9 +230,9 @@ actor PortGhostly : PowerupGiver
     Powerup.Type SamsaraPowerInvisibilityGhost
 }
 
-actor QuakeInvisTimer: Counter {}
+Actor QuakeInvisTimer: Counter {}
 
-actor PortShadowArmor : PowerupGiver
+Actor PortShadowArmor : PowerupGiver
 {
 	+FLOORCLIP
 	+VISIBILITYPULSE
@@ -255,7 +255,7 @@ actor PortShadowArmor : PowerupGiver
 	}
 }
 
-actor WTInvisibilityPhial : CustomInventory
+Actor WTInvisibilityPhial : CustomInventory
 {
 	Tag "Invisibility Potion"
     inventory.maxamount 10
@@ -286,9 +286,9 @@ actor WTInvisibilityPhial : CustomInventory
 	}
 }
 
-actor WTInvisibility : PowerInvisibility { +SHADOW Powerup.Duration -30 Powerup.Strength 80 Powerup.Mode "Fuzzy" }
+Actor WTInvisibility : PowerInvisibility { +SHADOW Powerup.Duration -30 Powerup.Strength 80 Powerup.Mode "Fuzzy" }
 
-actor EyeOfSiaItem_EX : PowerupGiver
+Actor EyeOfSiaItem_EX : PowerupGiver
 {
 	+INVENTORY.INVBAR
 	+INVENTORY.UNDROPPABLE
@@ -301,7 +301,7 @@ actor EyeOfSiaItem_EX : PowerupGiver
 	Tag "Eye of Sia"
 }
 
-actor PortGhostly2 : PowerupGiver
+Actor PortGhostly2 : PowerupGiver
 {
     tag "Shadowsphere"
     inventory.maxamount 16
@@ -372,6 +372,373 @@ Actor SamsaraPowerInvisibilityDXEnviro4Giver : PowerupGiver
 		TNT1 A 2
 		loop
 	}
+}
+
+Actor InvulnPowerup : CustomInventory replaces InvulnerabilitySphere
+{
+	RenderStyle Add
+	Alpha 0.95
+	+FLOATBOB
+    +INVENTORY.PICKUPFLASH
+    +INVENTORY.BIGPOWERUP
+    +COUNTITEM
+	+INVENTORY.QUIET
+    Inventory.PickupAnnouncerEntry "invulnerability"
+    //Inventory.PickupMessage "$SAMSARA_POWERUP_INVULN"
+    Inventory.PickupSound "nosoundforyoubitch"
+	States
+	{
+	Spawn:
+		NVLN A 0
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate",28,0,0) == 1, "NoInvuln")
+        NVLN A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
+		wait
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("DoomguyClass",1,"PickupDoomguy")
+		TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupCorvus")
+		TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupGhost")
+		TNT1 A 0 A_JumpIfInventory("DukeClass",1,"PickupDuke")
+		TNT1 A 0 A_JumpIfInventory("MarathonClass",1,"PickupMarathon")
+		TNT1 A 0 A_JumpIfInventory("QuakeClass",1,"PickupQuake")
+		TNT1 A 0 A_JumpIfInventory("RottClass", 1, "PickupRott")
+		TNT1 A 0 A_JumpIfInventory("POGreedClass", 1, "PickupIPOG")
+		TNT1 A 0 A_JumpIfInventory("JonClass",1,"PickupJon")
+		TNT1 A 0 A_JumpIfInventory("BittermanClass",1,"PickupBitterman")
+		TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupHexen2")
+		TNT1 A 0 A_JumpIfInventory("CatacombClass", 1, "PickupCatacomb")
+		TNT1 A 0 A_JumpIfInventory("Q3Class", 1, "PickupSarge")
+		TNT1 A -1 A_Jump(256,"PickupNormal")
+		wait
+	PickupNormal:
+        TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_PlaySound("invulnget", CHAN_ITEM)
+        TNT1 A 1 A_GiveInventory("SamsaraPowerInvulnerableNormalGiver")
+		stop
+	PickupDoomguy:
+        TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,2)
+		TNT1 A 0 A_JumpIfInventory("DoomClassMode",1,"PickupDoomguy64")
+		TNT1 A -1 A_Jump(256,"PickupNormal")
+		wait
+	PickupDoomguy64:
+        TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_PlaySound("invulnget", CHAN_ITEM)
+        TNT1 A 1 A_GiveInventory("SamsaraPowerInvulnerableDoom64Giver")
+		stop
+	PickupCorvus:
+		TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_PlaySound("heretic/itemget", CHAN_ITEM)
+        TNT1 A 1 A_GiveInventory("PortRingInvuln")
+		stop
+	PickupHexen:
+		TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+        TNT1 A 0 A_PlaySound("hexen/artiget", CHAN_ITEM)
+        TNT1 A 1 A_GiveInventory("PortIconDefender")
+		stop
+	PickupDuke:
+        TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_PlaySound("invulnget", CHAN_ITEM)
+        TNT1 A 0 A_JumpIfInventory("DukeBallgag", 1, 6)
+		TNT1 A 0 A_TakeInventory("DukeTauntCooldown")
+		TNT1 A 0 A_StopSound(CHAN_7)
+        TNT1 A 0 A_GiveInventory("DukeTauntCooldown", 5) // was 15 despite the max being 5
+		TNT1 A 0 ACS_NamedExecuteAlways("DukeTauntCooldown")
+        TNT1 A 0 A_PlaySoundEx("duke/invuln", "soundslot7", 0, 0)
+        TNT1 A 1 A_GiveInventory("SamsaraPowerInvulnerableGoldMapGiver")
+		stop
+	PickupMarathon:
+        TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_PlaySound("marathon/bigitemget", CHAN_ITEM)
+        TNT1 A 1 A_GiveInventory("SamsaraPowerInvulnerableNormalGiver")
+		stop
+	PickupQuake:
+		TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_GiveInventory("QuakePentTimer", 1050)
+		stop
+	PickupRott:
+		TNT1 A 0 A_JumpIfInventory("DogProtection", 1, "PickupFail")
+		TNT1 A 0 A_JumpIfInventory("GodProtection", 1, "PickupFail")
+		TNT1 A 0 A_Jump(128,"PickupRott2")
+		TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_PlaySound("gen/godmode", CHAN_ITEM)
+		TNT1 A 0 A_GiveInventory("God Hand", 1)
+		TNT1 A 0 A_GiveInventory("GodProtection")
+		TNT1 A 0 A_Selectweapon("God Hand")
+		stop
+	PickupRott2:
+		TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_PlaySound("gen/dogmode", CHAN_ITEM)
+		TNT1 A 0 A_GiveInventory("Doggie", 1)
+		TNT1 A 0 A_GiveInventory("DogProtection")
+		TNT1 A 0 ACS_NamedExecuteWithResult("RottDogModeHandler")	
+		TNT1 A 0 A_GiveInventory("DogMode")
+		TNT1 A 0 A_Selectweapon("Doggie")
+		stop
+	PickupIPOG:
+		TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
+		TNT1 A 0 A_PlaySound("greed/pickup", CHAN_ITEM)
+		TNT1 A 1 A_GiveInventory("IPOGReversoPill")
+		stop
+	PickupJon:
+        TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_PlaySound("Jon/SpecialItemPick", CHAN_ITEM)
+		TNT1 A 1 A_GiveInventory("DivineScarab_Ex")
+		stop
+	PickupBitterman:
+		TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		stop
+	PickupHexen2:
+		TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+        TNT1 A 0 A_PlaySound("hexen2/artifactpickup", CHAN_ITEM)
+        TNT1 A 1 A_GiveInventory("PortIconDefender2")
+		stop
+	PickupCatacomb:
+		TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
+		TNT1 A 0 A_PlaySound("Catacomb/Hourglass", CHAN_ITEM)
+		TNT1 A 1 A_GiveInventory("Catacomb_Hourglass", 1)
+		stop
+	PickupSarge:
+		TNT1 A 0 ACS_NamedExecute("InvulnPickupMessage")
+		TNT1 A 0 A_PlaySound("Quake3/Items/QuadDamage", CHAN_ITEM)
+		TNT1 A 1 A_GiveInventory("Q3QuadDamageFactor", 1)
+		stop
+	PickupFail:
+        NVLN A 1 BRIGHT
+        fail
+	NoInvuln:
+        TNT1 A 1
+        stop
+	}
+}
+
+Actor SamsaraPowerInvulnerableNormal : PowerProtection
+{
+	Powerup.Duration -30
+	Powerup.Color InverseMap
+	damagefactor "normal", 0.0
+	damagefactor "Pistol", 0.0
+	DamageFactor "DoomFist", 0.0
+	damagefactor "ZorchPistol", 0.0
+	damagefactor "Wraithverge", 0.0
+	damagefactor "zorch", 0.0
+	damagefactor "fire", 0.0
+	damagefactor "ice", 0.0
+	damagefactor "slime", 0.0
+	damagefactor "bfg", 0.0
+	damagefactor "bfgspray", 0.0
+	damagefactor "disintegrate", 0.0
+	damagefactor "electric", 0.0
+	DamageFactor "BFG", 0.0
+	DamageFactor "BFGSpray", 0.0
+	DamageFactor "Poison", 0.0
+	DamageFactor "PoisonCloud", 0.0
+	DamageFactor "Mace", 0.0
+	DamageFactor "DragonClaw", 0.0
+	DamageFactor "WolfenFlamethrower", 0.0
+	DamageFactor "DukeDamage", 0.0
+	DamageFactor "DukeExplosive", 0.0
+	DamageFactor "DukeSpectral", 0.0
+	DamageFactor "MightyBoot", 0.0
+	DamageFactor "DukeIce", 0.0
+	DamageFactor "DukePistol", 0.0
+	DamageFactor "MarathonPistol", 0.0
+	DamageFactor "Explosive", 0.0
+	DamageFactor "DoomPlasma", 0.0
+	DamageFactor "CorvusCrossbow", 0.0
+	DamageFactor "CorvusHellstaff", 0.0
+	DamageFactor "CorvusHellstaffTomed", 0.0
+	DamageFactor "MarathonPlasma", 0.0
+	DamageFactor "BJSpear", 0.0
+	DamageFactor "DoomCacodemon", 0.0
+	DamageFactor "DoomHellNoble", 0.0
+	DamageFactor "DoomSpiderPlasma", 0.0
+	DamageFactor "DoomTheseGuysAreTheBest", 0.0
+	DamageFactor "HereNitrogolem", 0.0
+	DamageFactor "HereAxeGreen", 0.0
+	DamageFactor "HereAxeRed", 0.0
+	DamageFactor "Wizard", 0.0
+	DamageFactor "HereLichWind", 0.0
+	DamageFactor "HereDsparil", 0.0
+	DamageFactor "HexBishop", 0.0
+	DamageFactor "HexSlaughtaur", 0.0
+	DamageFactor "HexGreenFire", 0.0
+	DamageFactor "HexStalkerShot", 0.0
+	DamageFactor "HexHeresiarchPurple", 0.0
+	DamageFactor "QuakePistol", 0.0
+	DamageFactor "NotQuadded", 0.0
+	DamageFactor "SpectralNoQuad", 0.0
+
+	DamageFactor "MarathonFusion", 1.0
+	DamageFactor "Kamikaze", 1.0
+	DamageFactor "ZorchKamikaze", 1.0
+	DamageFactor "Suicide", 1.0
+	DamageFactor "NotSuicide", 0.0		// Used for monsters with suicide attacks
+	DamageFactor "Telefrag", 1.0
+
+	DamageFactor "PunchDagger", 0.0
+	DamageFactor "StrifePistol", 0.0
+	DamageFactor "ElectricBolt", 0.0
+	DamageFactor "PoisonBolt", 0.0
+	DamageFactor "MiniExplosive", 0.0
+	DamageFactor "StrifeExplosive", 0.0
+	DamageFactor "PhosFire", 0.0  
+	DamageFactor "RottExplosive", 0.0
+	DamageFactor "RottFire", 0.0
+	DamageFactor "RottBullet", 0.0
+	DamageFactor "BlakePlasma", 0.0
+	DamageFactor "BlakeBullet", 0.0
+	DamageFactor "Dynamite", 0.0
+	DamageFactor "LifeLeech", 0.0
+	DamageFactor "Tesla", 0.0
+	DamageFactor "CalebBullet", 0.0
+	DamageFactor "CalebNapalm", 0.0
+	DamageFactor "CalebFire", 0.0  
+	DamageFactor "C7MineBoom", 0.0
+	DamageFactor "EradCoopGreenFire", 0.0  
+	DamageFactor "EradCoopExplosive2", 0.0  
+	DamageFactor "RMR-BigPlasma", 0.0		
+	DamageFactor "RMR-CyanPlasma", 0.0  
+	DamageFactor "RMR-YellowPlasma", 0.0  
+	DamageFactor "RMR-YellowPlasma2", 0.0    
+	DamageFactor "RMR-GreenPlasma", 0.0  
+	DamageFactor "RMR-Bullet", 0.0  
+	DamageFactor "RMR-DiscoBall", 0.0  
+	DamageFactor "PGBullet", 0.0
+	DamageFactor "PGPlasma", 0.0
+	DamageFactor "PGLaser", 0.0
+	DamageFactor "PGFire", 0.0
+	DamageFactor "PGExplosive", 0.0  
+	DamageFactor "Disruptoruniversaldamageshit4", 0.0
+	DamageFactor "Disruptoruniversaldamageshit3", 0.0
+	DamageFactor "Disruptoruniversaldamageshit2",	0.0
+	DamageFactor "Disruptoruniversaldamageshit1", 0.0
+	DamageFactor "DisruptorWall", 0.0
+	DamageFactor "WTMelee", 0.0
+	DamageFactor "WTRanged", 0.0
+	DamageFactor "WTRangedFire", 0.0
+	DamageFactor "WTMeleeIce", 0.0
+	DamageFactor "WTRangedIce", 0.0
+	DamageFactor "Nuke", 0.0
+	DamageFactor "HLSqueak", 0.0
+	DamageFactor "HLExplosive", 0.0
+	DamageFactor "HLRPGExplosive", 0.0
+	DamageFactor "HLLaser", 0.0
+	DamageFactor "HLBarnacle", 0.0
+	DamageFactor "HLBullet", 0.0  
+}
+
+Actor SamsaraPowerInvulnerableNormalGiver : PowerupGiver
+{
+	Inventory.MaxAmount 0
+	Powerup.Type SamsaraPowerInvulnerableNormal
+	+INVENTORY.AUTOACTIVATE
+	+INVENTORY.ALWAYSPICKUP
+	States
+	{
+	Spawn:
+		TNT1 A 2
+		loop
+	}
+}
+
+Actor SamsaraPowerInvulnerableDoom64 : SamsaraPowerInvulnerableNormal { Powerup.Color "FF FF FF", 0.35 }
+
+Actor SamsaraPowerInvulnerableDoom64Giver : PowerupGiver
+{
+	Inventory.MaxAmount 0
+	Powerup.Type SamsaraPowerInvulnerableDoom64
+	+INVENTORY.AUTOACTIVATE
+	+INVENTORY.ALWAYSPICKUP
+	States
+	{
+	Spawn:
+		TNT1 A 2
+		loop
+	}
+}
+
+Actor SamsaraPowerInvulnerableGoldMap : SamsaraPowerInvulnerableNormal { Powerup.Color GoldMap }
+
+Actor SamsaraPowerInvulnerableGoldMapGiver : PowerupGiver
+{
+	Inventory.MaxAmount 0
+	Powerup.Type SamsaraPowerInvulnerableGoldMap
+	+INVENTORY.AUTOACTIVATE
+	+INVENTORY.ALWAYSPICKUP
+	States
+	{
+	Spawn:
+		TNT1 A 2
+		loop
+	}
+}
+
+Actor SamsaraPowerInvulnerableGrey : SamsaraPowerInvulnerableNormal { Powerup.Color Grey, 0.1 }
+
+Actor PortRingInvuln : PowerupGiver
+{
+    tag "Ring of Invulnerability"
+    +INVENTORY.UNDROPPABLE
+    +inventory.hubpower
+    Inventory.MaxAmount 16
+    Inventory.Icon "ARTIINVU"
+    Powerup.Type SamsaraPowerInvulnerableGoldMap
+    inventory.usesound "heretic/itemuse"
+	Inventory.RestrictedTo "CorvusPlayer"
+}
+
+Actor QuakePentagram : SamsaraPowerInvulnerableNormal
+{
+    Powerup.Duration 0x7FFFFFFF
+    Powerup.Color "FF 20 00", 0.15
+}
+
+Actor QuakePentTimer: Counter { inventory.interhubamount 0 }
+
+Actor DivineScarab_Ex : PowerupGiver
+{
+	+FLOATBOB
+    +INVENTORY.UNDROPPABLE
+    +INVENTORY.PICKUPFLASH
+    +INVENTORY.HUBPOWER	
+    Inventory.MaxAmount 2
+    Inventory.Icon "_EX3F0"
+    Inventory.UseSound "Jon/itemuse"
+    Inventory.PickupMessage "You found a Divine Scarab!"
+	Inventory.RestrictedTo "PSPlayer"
+    Powerup.Type SamsaraPowerInvulnerableNormal
+	Tag "Divine Scarab"
+	States
+	{
+		Spawn:
+			NULL A -1
+			Stop
+	}
+}
+
+Actor PortIconDefender : PowerupGiver
+{
+    tag "Icon of the Defender"
+    +INVENTORY.UNDROPPABLE
+    +inventory.hubpower
+    Inventory.MaxAmount 16
+    Inventory.Icon "ARTIDFND"
+    Powerup.Type SamsaraPowerInvulnerableGrey
+    inventory.usesound "hexen/artiuse"
+	Inventory.RestrictedTo "HexenPlayer"
+}
+
+Actor PortIconDefender2 : PowerupGiver
+{
+    tag "Icon of the Defender"
+    +INVENTORY.UNDROPPABLE
+    +inventory.hubpower
+    Inventory.MaxAmount 16
+    Inventory.Icon "H2INVT07"
+    Powerup.Type SamsaraPowerInvulnerableGrey
+    inventory.usesound "hexen2/artiuse"
+	Inventory.RestrictedTo "Demoness"
 }
 
 /*
