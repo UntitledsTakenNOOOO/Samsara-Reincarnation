@@ -460,32 +460,34 @@ Script "RTCW_Enter" (void)
 		int sidemove =  GetPlayerInput(-1,INPUT_SIDEMOVE);
 		int venomheattimer;
 		int stenheattimer;
-		
-		if(GetCvar("sv_infiniteammo"))
-		{
-			TakeInventory("RTCW_VenomHeat",150);
-			TakeInventory("RTCW_StenHeat",10);
-		}
-		
+
 		steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
 		Delay(1);
 		TakeInventory("RTCW_TeslaSoundToken",1);
 		//Drastically reduced cooldown
-		if(!(buttons & BT_ATTACK) || CheckInventory("RTCW_VenomCooling") || CheckInventory("RTCW_StenCooling"))
+		if(CheckInventory("SamsaraHasInfiniteAmmo") >= 2 || (!(buttons & BT_ATTACK) || CheckInventory("RTCW_VenomCooling")) || !CheckWeapon("RTCW_Venom"))
 		{
 			venomheattimer++;
-			stenheattimer++;
+
 			if(venomheattimer > 1)
 			{
 				venomheattimer = 0;
 				TakeInventory("RTCW_VenomHeat",3);
 			}
+		}
+        else { venomheattimer = 0; }
+
+		if(CheckInventory("SamsaraHasInfiniteAmmo") >= 2 || !CheckInventory("RTCW_StenCoolLock") || !CheckWeapon("RTCW_Sten"))
+		{
+			stenheattimer++;
+
 			if(stenheattimer > 1)
 			{
 				stenheattimer = 0;
 				TakeInventory("RTCW_StenHeat",2);
 			}
 		}
+        else { stenheattimer = 0; }
 	}
 	TakeInventory("RTCW_Detection",1);
 }
@@ -862,9 +864,6 @@ Script "RTCW_OverHeat" (void) clientside
 				HudMessage(s:""; HUDMSG_PLAIN, 1500, CR_UNTRANSLATED, 0, 0, 0, 0);
 				HudMessage(s:""; HUDMSG_PLAIN, 1501, CR_UNTRANSLATED, 0, 0, 0, 0);
 			}
-			
-			if(GetCvar("sv_infiniteammo"))
-				TakeInventory("RTCW_VenomHeat",150);
 		}
 		else if(CheckWeapon("RTCW_Sten"))
 		{
