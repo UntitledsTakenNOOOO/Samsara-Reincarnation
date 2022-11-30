@@ -21,8 +21,9 @@ Class Bolognese_WallBlood_ZScript : Actor
 	{
 		Spawn:
 			TNT1 A 0;
-			TNT1 A 0 
+			TNT1 A 0
 			{
+				CopyBloodColor(master);
 				for(int i = 8; i >= 0; i--)
 				{
 					A_SetAngle(random(0, 360));
