@@ -525,31 +525,32 @@ Script "PlayerCodeFunctions" (int func)
 	SetResultValue(result);
 }
 
-Script "DeusExRecoil" (int weapon) clientside
+Script "DeusExRecoil" (int amount, int duration, int type, int rollForce) clientside
 {
 	int a;
 	int pln = PlayerNumber();
 	if (GetUserCvar(pln,"samsara_cl_norecoil")) { terminate; }	
-	switch(weapon)
+	str skillSelector = "";
+	switch(type)
 	{
-		case 1:
-			for(a = 0; a < 3; a++) { SetActorPitch(0, GetActorPitch(0) - a*24); Delay(1); }
-			for(a = 2; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*24); Delay(1); }
-			break;
-		case 2:
-			for(a = 0; a < 4; a++) { SetActorPitch(0, GetActorPitch(0) - a*50); Delay(1); }
-			for(a = 2; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*50); Delay(1); }
-			break;		
-		case 3:
-			for(a = 0; a < 3; a++) { SetActorPitch(0, GetActorPitch(0) - a*42); Delay(1); }
-			for(a = 2; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*42); Delay(1); }
-			break;			
-		case 4:
-			for(a = 0; a < 3; a++) { SetActorPitch(0, GetActorPitch(0) - a*72); Delay(1); }
-			for(a = 2; a > 0; a--) { SetActorPitch(0, GetActorPitch(0) + a*72); Delay(1); }
-			break;				
+		case 0: skillSelector = "DeusEx_LowTechSkill"; break;
+		case 1: skillSelector = "DeusEx_PistolSkill"; break;
+		case 2: skillSelector = "DeusEx_RifleSkill"; break;
+		case 3: skillSelector = "DeusEx_HeavyWeaponSkill"; break;
 	}
-}	
+	ACS_NamedExecuteWithResult("DeusExRecoilRoll",amount * (5 - CheckInventory(skillSelector)),rollForce == 0 ? 0 : rollForce);
+	amount *= 4-CheckInventory(skillSelector);
+	for(a = 0; a < duration; a++) { SetActorPitch(0, GetActorPitch(0) - a*amount); Delay(1); }
+}
+
+Script "DeusExRecoilRoll" (int amount, int forceOverride)
+{
+	int a;
+	int direction = (random(0,1) * 2) - 1;
+	amount = forceOverride == 0 ? amount : forceOverride;
+	for(a = 0; a < 3; a++) { SetActorRoll(0, GetActorRoll(0) - a*amount*direction); Delay(1); }
+	for(a = 0; a < 3; a++) { SetActorRoll(0, GetActorRoll(0) + a*amount*direction); Delay(1); }
+}
 
 Script "DeusExFlamethrowerHandler" (void)
 {
