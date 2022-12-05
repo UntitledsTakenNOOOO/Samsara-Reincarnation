@@ -13,48 +13,54 @@ Actor RTCW_Knife : RTCW_Weapon
 		Spawn:
 			RW98 A -1
 			Stop
-		Deselect:
-			RW00 V 0 A_PlaySound("RTCW/Change",CHAN_7)
-			RW00 GHIJK 2
-			Goto Super::Deselect
-		Ready:
-			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
-			RW00 A 0 A_GiveInventory("RTCW_WeaponToken",1)
-			RW00 LMNO 2
-		ReadyLoop:
+
+		ReadyActual:
 			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
 			RW00 A 1 A_WeaponReady
 			Loop
+
+		Deselect:
+			RW00 G 2 A_PlaySound("RTCW/Change",CHAN_7)
+			RW00 HIJK 2
+			Goto Super::Deselect
+
+		Ready: // our "Select" state
+			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW00 L 2 A_GiveInventory("RTCW_WeaponToken",1)
+			RW00 MNO 2
+            goto ReadyActual
+
 		Fire:
-			RW00 B 0 A_PlaySound("RTCW/Knife/Shank",CHAN_WEAPON)
-			RW00 B 2
+			RW00 B 2 A_PlaySound("RTCW/Knife/Shank",CHAN_WEAPON)
 			RW00 C 1
-			RW00 D 0 A_JumpIfInventory("CoopModeOn",1,2)
-			RW00 D 0 A_FireCustomMissile("RTCW_KnifeAttack")
-			Goto FireEnd
-			RW00 D 0 A_FireCustomMissile("RTCW_KnifeAttackCoop")
-			Goto FireEnd
-		FireEnd:
-			RW00 D 2
-			RW00 E 1
-			RW00 F 2
-			Goto ReadyLoop
+			RW00 D 2 A_GiveInventory("SamsaraRTCWKnifeAttackHandler")
+			RW00 EF 1
+			Goto ReadyActual
+
 		Kicking:
 			TNT1 A 0 A_Gunflash("KickingFoot")
 		KickingDelay:
 			RW00 A 18
 			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
-			Goto ReadyLoop
-		KickingFoot:
-			RW99 ABCD 2
-			RW99 E 0 A_JumpIfInventory("CoopModeOn",1,2)
-			RW99 E 0 A_FireCustomMissile("RTCW_KickProjectile",0,0,0,-8)
-			Goto KickingFootEnd
-			RW99 E 0 A_FireCustomMissile("RTCW_KickProjectileCoop",0,0,0,-8)
-			Goto KickingFootEnd
-		KickingFootEnd:
-			RW99 EFGHI 2
-			Stop
+			Goto ReadyActual
+	}
+}
+
+actor SamsaraRTCWKnifeAttackHandler : Trigger
+{
+	States
+	{
+      // Attack stuff
+	  Pickup:
+		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+	  PickupDM:
+		TNT1 A 0 A_FireCustomMissile("RTCW_KnifeAttack",0,false)
+		stop
+
+	  PickupCoop:
+		TNT1 A 0 A_FireCustomMissile("RTCW_KnifeAttackCoop",0,false)
+		stop
 	}
 }
 
@@ -70,6 +76,7 @@ Actor RTCW_KnifeAttack : FastProjectile
 	+HITTRACER
 	+NODAMAGETHRUST
 	+NOEXTREMEDEATH
+    +NOTIMEFREEZE
 	States
 	{
 		Spawn:
@@ -109,6 +116,7 @@ Actor RTCW_KnifeHintPuff
 	+BLOODLESSIMPACT
 	+HITTRACER
 	+DONTSPLASH
+    +NOTIMEFREEZE
 	States
 	{
 		Spawn:
