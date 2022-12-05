@@ -626,7 +626,7 @@ Script "DeusExIsMasterDead" (void)
 
 Script "DeusExGEPTargetter" (void)
 {
-	while(CheckWeapon("DeusEx_GEPGun") && ClassifyActor(0) & ACTOR_ALIVE)
+	while(CheckWeapon("DeusEx_GEPGun") && ClassifyActor(0) & ACTOR_ALIVE && !(ClassifyActor(0) & ACTOR_PLAYER && isCoop()))
 	{
 		GiveInventory("DeusEx_GEPTargeter",1);
 		Delay(6);
@@ -671,4 +671,33 @@ Script "DeusEx_BloodGenerator_Return" (int mode)
 			break;
 	}
 	SetResultValue(result);
+}
+
+Script "DeusEx_LAMTrigger" (void)
+{
+	while(CheckWeapon("DeusEX_LAM"))
+	{
+		Delay(1);
+		GiveInventory("DeusEx_LAMTrigger",1);
+	}
+}
+
+Script "DeusEx_PlantMine" (void)
+{
+	int newTid = UniqueTid();
+	SpawnSpotFacingForced("DeusEx_LAMStatic",0,newTid);
+	SetPointerExt(AAPTR_TRACER,0,newTid);
+	Thing_ChangeTid(newTid,0);
+}
+
+Script "DeusEX_LAMMineGlowPlacement" (void)
+{
+	int pitch = GetActorPitch(0);
+	if(pitch > 0.5) pitch = 1.0 - pitch;
+	switch(pitch)
+	{
+		default: SetActorState(0,"SpawnNormal",1); break;
+		case 0.25: SetActorState(0,"SpawnFloor",1); break;
+		case 0.75: SetActorState(0,"SpawnCeiling",1); break;
+	}
 }
