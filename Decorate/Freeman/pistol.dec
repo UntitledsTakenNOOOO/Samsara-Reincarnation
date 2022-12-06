@@ -1,9 +1,5 @@
-Actor HL9mmCounter : Ammo
-{
-	+INVENTORY.IGNORESKILL
-	Inventory.Amount 1
-	Inventory.MaxAmount 17
-}
+actor freeman_pistolselected : Boolean {}
+
 Actor "9mm Pistol" : HLWeapon
 {
 	Weapon.Slotnumber 1
@@ -16,8 +12,7 @@ Actor "9mm Pistol" : HLWeapon
 	Inventory.Pickupsound "halflife/weaponpickup"
 	DamageType "HLBullet"
 	Weapon.AmmoType "HL9mmCounter"
-    Weapon.AmmoUse 0
-    Weapon.AmmoGive 17
+    Weapon.AmmoUse 1
 	+WEAPON.WIMPY_WEAPON
 	Inventory.RestrictedTo "HalfLifePlayer"
     Tag "9mm Pistol"
@@ -26,6 +21,85 @@ Actor "9mm Pistol" : HLWeapon
 	Spawn:
 		HWP0 Z -1
 		stop
+
+    // Gordon Freeman
+	ReadyActual:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyActualReloadable")
+    ReadyActualNonReloadable:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualNonReloadableOpp")
+		HWP9 A 2 A_WeaponReady
+        goto ReadyActualJump
+
+    ReadyActualReloadable:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualReloadableOpp")
+		HWP9 A 2 A_WeaponReady(WRF_ALLOWRELOAD)
+        goto ReadyActualJump
+
+    ReadyActualJump:
+		TNT1 A 0 A_Jump(4,"ReadyActualAmmoCheck")
+		TNT1 A 0 A_Jump(3,"ReadyActualAmmoCheck")
+		TNT1 A 0 A_Jump(2,"ReadyActualAmmoCheck")
+		TNT1 A 0 A_Jump(1,"ReadyActualIdle1","ReadyActualIdle2","ReadyActualIdle3")
+        goto ReadyActualAmmoCheck
+
+	ReadyActualIdle1:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyActualIdle1Reloadable")
+    ReadyActualIdle1NonReloadable:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualIdle1NonReloadableOpp")
+        HWP9 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		HWP8 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		HWP7 ABCDEFGHIJ 1 A_WeaponReady
+		goto ReadyActual
+
+    ReadyActualIdle1Reloadable:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualIdle1ReloadableOpp")
+        HWP9 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		HWP8 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		HWP7 ABCDEFGHIJ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		goto ReadyActual
+
+	ReadyActualIdle2:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyActualIdle2Reloadable")
+    ReadyActualIdle2NonReloadable:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualIdle2NonReloadableOpp")
+        HW10 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        HW11 ABCDEFGHIJKLMNO 1 A_WeaponReady
+		goto ReadyActual
+
+    ReadyActualIdle2Reloadable:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualIdle2ReloadableOpp")
+        HW10 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+        HW11 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		goto ReadyActual
+	
+	ReadyActualIdle3:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyActualIdle3Reloadable")
+    ReadyActualIdle3NonReloadable:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualIdle3NonReloadableOpp")
+        HW12 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        HW13 ABCDEFGHIJKLMNOPQRSTUVW 1 A_WeaponReady
+		goto ReadyActual
+
+    ReadyActualIdle3Reloadable:
+		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualIdle3ReloadableOpp")
+        HW12 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
+        HW13 ABCDEFGHIJKLMNOPQRSTUVW 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		goto ReadyActual
+
+    ReadyActualAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
+        goto ReadyActual
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"ReadyActual")
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"ReadyActual")
+        goto ReloadCheck
+
+	Deselect:
+		TNT1 A 0 A_TakeInventory("freeman_pistolselected",1)
+	DeselectLoop:	
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+		TNT1 A 1 A_Lower
+		loop
+
 	Select:
 		TNT1 A 0 A_TakeInventory("freeman_fistselected",1)	
 		TNT1 A 0 A_TakeInventory("freeman_slot1selected",1)		
@@ -40,299 +114,424 @@ Actor "9mm Pistol" : HLWeapon
 		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
 		TNT1 A 1 A_Raise
 		loop
-	Deselect:
-		TNT1 A 0 A_TakeInventory("freeman_pistolselected",1)
-	DeselectLoop:	
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
-		TNT1 A 1 A_Lower
-		loop
-	Ready:
+
+	Ready: // our "Select" state
+		TNT1 A 0 A_PlaySound("halflife/weaponselect",CHAN_WEAPON)
 		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReadyOpp")
-		TNT1 A 0 A_PlaySound("halflife/weaponselect",CHAN_WEAPON)
 		HWP0 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
-		goto WIdle
-	ReadyOpp:
-		TNT1 A 0 A_PlaySound("halflife/weaponselect",CHAN_WEAPON)
-		OPP0 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
-		goto WIdle
-	WIdle:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "WIdleOpp")
-		HWP9 A 2 A_WeaponReady(WRF_ALLOWRELOAD)
-		TNT1 A 0 A_Jump(4,"A")
-		TNT1 A 0 A_Jump(3,"A")
-		TNT1 A 0 A_Jump(2,"A")		
-		TNT1 A 0 A_Jump(1,"Idle1","Idle2","Idle3")
-	A:
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"WIdle")
-		goto Reload
-	Idle1:
-        HWP9 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
-		HWP8 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
-		HWP7 ABCDEFGHIJ 1 A_WeaponReady(WRF_ALLOWRELOAD)
-		Goto WIdle
-	Idle2:
-        HW10 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
-        HW11 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_ALLOWRELOAD)		
-		Goto WIdle		
-	Idle3:
-        HW12 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
-        HW13 ABCDEFGHIJKLMNOPQRSTUVW 1 A_WeaponReady(WRF_ALLOWRELOAD)		
-		Goto WIdle
-	WIdleOpp:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
-		Goto WIdle
+		goto ReadyActual
+
+    Fire:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireReloadable")
+    FireNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto FireStart
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"FireStart")
+        goto FireDry
+
+    FireReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStart")
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"FireStart")
+        goto FireDry
+
+    FireDry:
+        TNT1 A 0 A_PlaySound("halflife/weaponempty",CHAN_WEAPON)
+        HWP2 A 4 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireDryOpp")
+        goto ReadyActualAmmoCheck
+
+    Hold:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"HoldReloadable")
+    HoldNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto FireStart
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"FireStart")
+        goto HoldDry
+
+    HoldReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStart")
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"FireStart")
+        goto HoldDry
+
+    HoldDry:
+        TNT1 A 0 A_PlaySound("halflife/weaponempty",CHAN_WEAPON)
+        TNT1 A 0 A_ClearReFire
+        HWP3 G 1 A_JumpIfInventory("HalfLifeOpposingForce",1,"HoldDryOpp")
+        HWP3 HIJ 1
+        HWP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+        goto ReadyActualAmmoCheck
+
+	FireStart:
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_FireCustomMissile("HLBrassShellCaser",0,false)
+        TNT1 A 0 A_GiveInventory("SamsaraHalfLife9mmHandgunPrimaryAttackHandler")
+		HWP2 A 1 Bright A_JumpIfInventory("HalfLifeOpposingForce",1,"FireOpp")
+		HWP2 B 1 Bright
+		HWP3 AB 2
+		HWP3 CDEF 1
+		HWP3 GHIJKLMN 2 A_ReFire
+		goto ReadyActual
+
+    AltFire:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"AltFireReloadable")
+    AltFireNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto AltFireStart
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireStart")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"AltFireStart")
+        goto FireDry
+
+    AltFireReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"AltFireStart")
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"AltFireStart")
+        goto FireDry
+
+    AltHold:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"AltHoldReloadable")
+    AltHoldNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto AltFireStart
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireStart")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"AltFireStart")
+        goto AltHoldDry
+
+    AltHoldReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"AltFireStart")
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"AltFireStart")
+        goto AltHoldDry
+
+    AltHoldDry:
+        TNT1 A 0 A_PlaySound("halflife/weaponempty",CHAN_WEAPON)
+        TNT1 A 0 A_ClearReFire
+        HWP3 E 1 A_JumpIfInventory("HalfLifeOpposingForce",1,"AltHoldDryOpp")
+        HWP3 FGHIJ 1
+        HWP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+        goto ReadyActualAmmoCheck
+
+	AltFireStart:
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_FireCustomMissile("HLBrassShellCaser",0,false)
+        TNT1 A 0 A_GiveInventory("SamsaraHalfLife9mmHandgunSecondaryAttackHandler")
+		HWP2 B 1 Bright A_JumpIfInventory("HalfLifeOpposingForce",1,"AltFireOpp")
+		HWP3 AB 1
+		HWP3 CD 2
+		HWP3 EFGHIJKLM 2 A_ReFire
+		goto ReadyActual
+
+    Reload:
+    ReloadCheck:
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",0,"ReadyActual")
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto ReloadStart
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStart")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"ReloadStart")
+        goto ReadyActual
+
+	ReloadStart:
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,1)
+        goto ReloadStartAmmoless
+		HWP4 A 2 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReloadOpp")
+		HWP4 B 2
+		HWP4 D 2 A_PlaySound("halflife/9mm_reload1",CHAN_WEAPON)
+		HWP4 FHIJKLMNOQSU 2
+		HWP4 W 2 A_PlaySound("halflife/9mm_reload0",CHAN_WEAPON)
+		HWP4 XY 2
+		TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
+	ReloadDone:
+		HWP4 Z 2
+		HWP5 ABCDFHIKLNO 2
+		goto ReadyActual
+
+    ReloadAmmo:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoReserve")
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",0,"ReloadDone")
+        TNT1 A 0 A_GiveInventory("HL9mmCounter")
+        loop
+
+    ReloadAmmoReserve:
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",0,"ReloadDone")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+        goto ReloadDone
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_TakeInventory("Clip",1)
+        TNT1 A 0 A_GiveInventory("HL9mmCounter")
+        goto ReloadAmmo
+
+	ReloadStartAmmoless:
+		HW14 P 2 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReloadAmmolessOpp")
+		HW14 QRS 2
+		HW14 T 2 A_PlaySound("halflife/9mm_reload1",CHAN_WEAPON)
+		HW14 UVWXY 2
+		HW15 ABCDEFGHIJKL 2
+		HW15 M 2 A_PlaySound("halflife/9mm_reload0",CHAN_WEAPON)
+		HW15 NO 2
+		TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmoAmmoless")
+	ReloadDoneAmmoless:
+		HW15 PQRSTUVWXYZ 2
+		HW16 ABCD 2
+		goto ReadyActual
+
+    ReloadAmmoAmmoless:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoAmmolessReserve")
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",0,"ReloadDoneAmmoless")
+        TNT1 A 0 A_GiveInventory("HL9mmCounter")
+        loop
+
+    ReloadAmmoAmmolessReserve:
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",0,"ReloadDoneAmmoless")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+        goto ReloadDoneAmmoless
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_TakeInventory("Clip",1)
+        TNT1 A 0 A_GiveInventory("HL9mmCounter")
+        goto ReloadAmmoAmmoless
+
+    // Adrian Shephard
+    ReadyActualNonReloadableOpp:
+		OPP9 A 2 A_WeaponReady
+        goto ReadyActualJump
+
+    ReadyActualReloadableOpp:
 		OPP9 A 2 A_WeaponReady(WRF_ALLOWRELOAD)
-		TNT1 A 0 A_Jump(4,"A")
-		TNT1 A 0 A_Jump(3,"A")
-		TNT1 A 0 A_Jump(2,"A")		
-		TNT1 A 0 A_Jump(1,"Idle1Opp","Idle2Opp","Idle3Opp")
-	AOpp:
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"WIdle")
-		goto Reload
-	Idle1Opp:
+        goto ReadyActualJump
+
+    ReadyActualIdle1NonReloadableOpp:
+        OPP9 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		OPP8 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		OPP7 ABCDEFGHIJ 1 A_WeaponReady
+		goto ReadyActual
+
+    ReadyActualIdle1ReloadableOpp:
         OPP9 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
 		OPP8 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
 		OPP7 ABCDEFGHIJ 1 A_WeaponReady(WRF_ALLOWRELOAD)
-		Goto WIdleOpp
-	Idle2Opp:
+		goto ReadyActual
+
+    ReadyActualIdle2NonReloadableOpp:
+        OP10 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        OP11 ABCDEFGHIJKLMNO 1 A_WeaponReady
+		goto ReadyActual
+
+    ReadyActualIdle2ReloadableOpp:
         OP10 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
-        OP11 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_ALLOWRELOAD)		
-		Goto WIdleOpp	
-	Idle3Opp:
+        OP11 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		goto ReadyActual
+
+    ReadyActualIdle3NonReloadableOpp:
+        OP12 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        OP13 ABCDEFGHIJKLMNOPQRSTUVW 1 A_WeaponReady
+		goto ReadyActual
+
+    ReadyActualIdle3ReloadableOpp:
         OP12 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_ALLOWRELOAD)
-        OP13 ABCDEFGHIJKLMNOPQRSTUVW 1 A_WeaponReady(WRF_ALLOWRELOAD)		
-		Goto WIdleOpp
-	Fire:
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"Hold")
-		goto FireReload
-	Hold:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "HoldOpp")
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,1)
-		goto FireReloadHold
-		TNT1 A 0 A_FireBullets(0,0, 1, 0, "SamsaraBlankPuff", FBF_NORANDOM)
-		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
-		TNT1 A 0 A_AlertMonsters
-		HWP2 A 1 bright A_TakeInventory("HL9mmCounter",1)
-		HWP2 B 1 bright A_PlaySound("halflife/9mm_shoot",CHAN_WEAPON)	
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"FireCoop")
-		TNT1 A 0 A_FireCustomMissile("HL9mmBullet",frandom(-1.21,1.21),0,5,3,0,frandom(-1.88,1.88))
-		goto FireDone
-	FireCoop:
-		TNT1 A 0 A_FireCustomMissile("HL9mmBulletCoop",frandom(-1.21,1.21),0,5,3,0,frandom(-1.88,1.88))
-		goto FireDone
-	FireDone:
-		HWP3 A 2
-		HWP3 B 2 A_FireCustomMissile("HLBrassShellCaser",0,0,0,0,0,0)
-		HWP3 CDEF 1
-		HWP3 GHIJKLMN 2 A_Refire
-		goto WIdle
-	HoldOpp:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
-		Goto Hold+1
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,1)
-		goto FireReloadHoldOpp
-		TNT1 A 0 A_FireBullets(0,0, 1, 0, "SamsaraBlankPuff", FBF_NORANDOM)
-		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
-		TNT1 A 0 A_AlertMonsters
-		OPP2 A 1 bright A_TakeInventory("HL9mmCounter",1)
-		OPP2 B 1 bright A_PlaySound("halflife/9mm_shoot",CHAN_WEAPON)	
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"FireCoopOpp")
-		TNT1 A 0 A_FireCustomMissile("HL9mmBullet",frandom(-1.21,1.21),0,5,3,0,frandom(-1.88,1.88))
-		goto FireDoneOpp
-	FireCoopOpp:
-		TNT1 A 0 A_FireCustomMissile("HL9mmBulletCoop",frandom(-1.21,1.21),0,5,3,0,frandom(-1.88,1.88))
-		goto FireDoneOpp
-	FireDoneOpp:
-		OPP3 A 2
-		OPP3 B 2 A_FireCustomMissile("HLBrassShellCaser",0,0,0,0,0,0)
+        OP13 ABCDEFGHIJKLMNOPQRSTUVW 1 A_WeaponReady(WRF_ALLOWRELOAD)
+		goto ReadyActual
+
+	ReadyOpp:
+		OPP0 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		goto ReadyActual
+
+    FireDryOpp:
+        OPP2 A 4
+        goto ReadyActualAmmoCheck
+
+    HoldDryOpp:
+        OPP3 GHIJ 1
+        OPP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+        goto ReadyActualAmmoCheck
+
+	FireOpp:
+		OPP2 AB 1 Bright
+		OPP3 AB 2
 		OPP3 CDEF 1
-		OPP3 GHIJKLMN 2 A_Refire
-		goto WIdleOpp
-	AltFire:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "AltFireOpp")
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"AltHold")
-		goto FireReload
-	AltHold:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "AltHoldOpp")
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,1)
-		goto FireReloadHoldAlt
-		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
-		TNT1 A 0 A_AlertMonsters
-		TNT1 A 0 A_PlaySound("halflife/9mm_shoot",CHAN_WEAPON)
-		HWP2 B 1 bright A_TakeInventory("HL9mmCounter",1)
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"AltFireCoop")
-		TNT1 A 0 A_FireCustomMissile("HL9mmBullet",frandom(-5.00,5.00),0,5,3,0,frandom(-5.00,5.00))
-		goto AltFireDone
-	AltFireCoop:
-		TNT1 A 0 A_FireCustomMissile("HL9mmBulletCoop",frandom(-5.00,5.00),0,5,3,0,frandom(-5.00,5.00))
-		goto AltFireDone
-	AltFireDone:
-		HWP3 A 1
-		HWP3 B 1 A_FireCustomMissile("HLBrassShellCaser",0,0,0,0,0,0)
-		HWP3 CD 2
-		HWP3 EFGHIJKLM 2 A_Refire
-		goto WIdle
+		OPP3 GHIJKLMN 2 A_ReFire
+		goto ReadyActual
+
+    AltHoldDryOpp:
+        OPP3 EFGHIJ 1
+        OPP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+        goto ReadyActualAmmoCheck
+
 	AltFireOpp:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
-		Goto AltFire+1
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"AltHoldOpp")
-		goto FireReloadOpp
-	AltHoldOpp:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
-		Goto AltHold+1
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,1)
-		goto FireReloadHoldAltOpp
-		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
-		TNT1 A 0 A_AlertMonsters
-		TNT1 A 0 A_PlaySound("halflife/9mm_shoot",CHAN_WEAPON)
-		OPP2 B 1 bright A_TakeInventory("HL9mmCounter",1)
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"AltFireCoopOpp")
-		TNT1 A 0 A_FireCustomMissile("HL9mmBullet",frandom(-5.00,5.00),0,5,3,0,frandom(-5.00,5.00))
-		goto AltFireDoneOpp
-	AltFireCoopOpp:
-		TNT1 A 0 A_FireCustomMissile("HL9mmBulletCoop",frandom(-5.00,5.00),0,5,3,0,frandom(-5.00,5.00))
-		goto AltFireDoneOpp
-	AltFireDoneOpp:
-		OPP3 A 1
-		OPP3 B 1 A_FireCustomMissile("HLBrassShellCaser",0,0,0,0,0,0)
+		OPP2 B 1 Bright
+		OPP3 AB 1
 		OPP3 CD 2
-		OPP3 EFGHIJKLM 2 A_Refire
-		goto WIdleOpp
-	FireReload:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "FireReloadOpp")
-		HWP2 A 1 A_PlaySound("halflife/weaponempty",CHAN_WEAPON) //Break 0-tic-cycle
-		HWP2 A 3
-		goto Reload
-	FireReloadHold:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "FireReloadHoldOpp")
-		TNT1 A 0 A_PlaySound("halflife/weaponempty",CHAN_WEAPON)
-		HWP3 GHI 1
-		HWP3 J 1 A_ClearRefire
-		HWP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
-		goto Reload
-	FireReloadHoldAlt:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "FireReloadHoldAltOpp")
-		TNT1 A 0 A_PlaySound("halflife/weaponempty",CHAN_WEAPON)
-		HWP3 EFGHIJ 1
-		HWP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
-		goto Reload
-	FireReloadOpp:
-		OPP2 A 1 A_PlaySound("halflife/weaponempty",CHAN_WEAPON) //Break 0-tic-cycle
-		OPP2 A 3
-		goto Reload
-	FireReloadHoldOpp:
-		TNT1 A 0 A_PlaySound("halflife/weaponempty",CHAN_WEAPON)
-		OPP3 GHI 1
-		OPP3 J 1 A_ClearRefire
-		OPP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
-		goto Reload
-	FireReloadHoldAltOpp:
-		TNT1 A 0 A_PlaySound("halflife/weaponempty",CHAN_WEAPON)
-		OPP3 EFGHIJ 1
-		OPP3 KLM 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
-		goto Reload
-	Reload:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReloadOpp")
-//		TNT1 A 0 A_TakeInventory("HLReloadTrigger",999)
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",17,"WIdle")
-		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadCheckAmmo")
-		goto ReloadSuccess
-	ReloadCheckAmmo:
-		TNT1 A 0 A_JumpIfInventory("Clip",1,"ReloadSuccess")
-		goto WIdle
-	ReloadSuccess:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReloadSuccessOpp")
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter", 1, 1)
-		Goto ReloadSuccessAmmoless
-		HWP4 A 2 //A_TakeInventory("HL9mmCounter",999) //You lose your ammo, fuck you
-		HWP4 BDFHI 2
-		HWP4 J 2 A_PlaySound("halflife/9mm_reload1",CHAN_WEAPON)
-		HWP4 KLMNOQSUWXYZ 2
-		HWP5 A 2 A_PlaySound("halflife/9mm_reload0",CHAN_WEAPON)
-		HWP5 BC 2
-		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"SetAmmoPistolMode")
-		goto SetAmmo
-	ReloadSuccessAmmoless:
-		HW14 P 2 //A_TakeInventory("HL9mmCounter",999) //You lose your ammo, fuck you
-		HW14 QRSTU 2
-		HW14 V 2 A_PlaySound("halflife/9mm_reload1",CHAN_WEAPON)
-		HW14 WXYZ 2
-		HW15 ABCDEFGH 2
-		HW15 I 2 A_PlaySound("halflife/9mm_reload0",CHAN_WEAPON)
-		HW15 JK 2
-		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"SetAmmoPistolMode2")
-		goto SetAmmo2	
-	SetAmmo:
-		TNT1 A 0 A_GiveInventory("HL9mmCounter",17)
-		goto ReloadFinish
-	SetAmmo2:
-		TNT1 A 0 A_GiveInventory("HL9mmCounter",17)
-		goto ReloadFinishAmmoless		
-	SetAmmoPistolMode:
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",17,"ReloadFinish")
-		TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-		goto ReloadFinish
-		TNT1 A 0 A_GiveInventory("HL9mmCounter",1)
-		TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
-		loop
-	SetAmmoPistolMode2:
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",17,"ReloadFinish")
-		TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-		goto ReloadFinishAmmoless
-		TNT1 A 0 A_GiveInventory("HL9mmCounter",1)
-		TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
-		loop		
-	ReloadFinish:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReloadFinishOpp")
-		HWP5 DFHIKLNO 2 
-		goto WIdle
-	ReloadFinishAmmoless:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReloadFinishAmmolessOpp")
-		HW15 LMNOPQRSTUVWXYZ 2 
-		HW16 ABCD 2
-		goto WIdle		
+		OPP3 EFGHIJKLM 2 A_ReFire
+		goto ReadyActual
+
 	ReloadOpp:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
-		Goto Reload+1
-//		TNT1 A 0 A_TakeInventory("HLReloadTrigger",999)
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter",17,"WIdle")
-		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadCheckAmmo")
-		goto ReloadSuccessOpp
-	ReloadSuccessOpp:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
-		Goto ReloadSuccessOpp+1
-		TNT1 A 0 A_JumpIfInventory("HL9mmCounter", 1, 1)
-		Goto ReloadSuccessAmmolessOpp
-		OPP4 A 2 //A_TakeInventory("HL9mmCounter",999) //You lose your ammo, fuck you
-		OPP4 BDFHI 2
-		OPP4 J 2 A_PlaySound("halflife/9mm_reload1",CHAN_WEAPON)
-		OPP4 KLMNOQSUWXYZ 2
-		OPP5 A 2 A_PlaySound("halflife/9mm_reload0",CHAN_WEAPON)
-		OPP5 BC 2
-		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"SetAmmoPistolMode")
-		goto SetAmmo
-	ReloadSuccessAmmolessOpp:
-		OP14 P 2 //A_TakeInventory("HL9mmCounter",999) //You lose your ammo, fuck you
-		OP14 QRSTU 2
-		OP14 V 2 A_PlaySound("halflife/9mm_reload1",CHAN_WEAPON)
-		OP14 WXYZ 2
-		OP15 ABCDEFGH 2
-		OP15 I 2 A_PlaySound("halflife/9mm_reload0",CHAN_WEAPON)
-		OP15 JK 2
-		TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"SetAmmoPistolMode2")
-		goto SetAmmo2		
-	ReloadFinishOpp:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
-		Goto ReloadFinish+1
-		OPP5 DFHIKLNO 2
-		goto WIdleOpp
-	ReloadFinishAmmolessOpp:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
-		Goto ReloadFinishAmmolessOpp+1	
-		OP15 LMNOPQRSTUVWXYZ 2 
+		OPP4 AB 2
+		OPP4 D 2 A_PlaySound("halflife/9mm_reload1",CHAN_WEAPON)
+		OPP4 FHIJKLMNOQSU 2
+		OPP4 W 2 A_PlaySound("halflife/9mm_reload0",CHAN_WEAPON)
+		OPP4 XY 2
+		TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmoOpp")
+	ReloadDoneOpp:
+		OPP4 Z 2
+		OPP5 ABCDFHIKLNO 2
+		goto ReadyActual
+
+    ReloadAmmoOpp:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoReserveOpp")
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",0,"ReloadDoneOpp")
+        TNT1 A 0 A_GiveInventory("HL9mmCounter")
+        loop
+
+    ReloadAmmoReserveOpp:
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",0,"ReloadDoneOpp")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+        goto ReloadDoneOpp
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_TakeInventory("Clip",1)
+        TNT1 A 0 A_GiveInventory("HL9mmCounter")
+        goto ReloadAmmoOpp
+
+	ReloadAmmolessOpp:
+		OP14 PQRS 2
+		OP14 T 2 A_PlaySound("halflife/9mm_reload1",CHAN_WEAPON)
+		OP14 UVWXY 2
+		OP15 ABCDEFGHIJKL 2
+		OP15 M 2 A_PlaySound("halflife/9mm_reload0",CHAN_WEAPON)
+		OP15 NO 2
+		TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmoAmmolessOpp")
+	ReloadDoneAmmolessOpp:
+		OP15 PQRSTUVWXYZ 2
 		OP16 ABCD 2
-		goto WIdleOpp			
+		goto ReadyActual
+
+    ReloadAmmoAmmolessOpp:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoAmmolessReserveOpp")
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",0,"ReloadDoneAmmolessOpp")
+        TNT1 A 0 A_GiveInventory("HL9mmCounter")
+        loop
+
+    ReloadAmmoAmmolessReserveOpp:
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",0,"ReloadDoneAmmolessOpp")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+        goto ReloadDoneAmmolessOpp
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_TakeInventory("Clip",1)
+        TNT1 A 0 A_GiveInventory("HL9mmCounter")
+        goto ReloadAmmoAmmolessOpp
 	}
+}
+
+actor SamsaraHalfLife9mmHandgunPrimaryAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+      PickupCheckAmmoNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto PickupAttack
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmoNonReloadable")
+        stop
+
+      PickupCheckAmmoReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"PickupTakeAmmoReloadable")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmoNonReloadable:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("HL9mmCounter",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("halflife/9mm_shoot",CHAN_WEAPON)
+        TNT1 A 0 A_FireBullets(0,0,1,0,"SamsaraBlankPuff",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("HL9mmBullet",frandom(-1.21,1.21),false,5,3,0,frandom(-1.88,1.88))
+        goto PickupFinish
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("HL9mmBulletCoop",frandom(-1.21,1.21),false,5,3,0,frandom(-1.88,1.88))
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
+        stop
+    }
+}
+
+actor SamsaraHalfLife9mmHandgunSecondaryAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+      PickupCheckAmmoNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto PickupAttack
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmoNonReloadable")
+        stop
+
+      PickupCheckAmmoReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("HL9mmCounter",1,"PickupTakeAmmoReloadable")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmoNonReloadable:
+        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("HL9mmCounter",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("halflife/9mm_shoot",CHAN_WEAPON)
+        TNT1 A 0 A_FireBullets(0,0,1,0,"SamsaraBlankPuff",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("HL9mmBullet",frandom(-5.00,5.00),false,5,3,0,frandom(-5.00,5.00))
+        goto PickupFinish
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("HL9mmBulletCoop",frandom(-5.00,5.00),false,5,3,0,frandom(-5.00,5.00))
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
+        stop
+    }
+}
+
+actor HL9mmCounter : Ammo
+{
+    Inventory.MaxAmount 17
+    +IGNORESKILL
 }
 
 Actor HL9mmBullet : HLBullet 
@@ -384,13 +583,4 @@ Actor HL9MMMuzzleFlash
 			HW29 K 1 A_Warp(AAPTR_Master,cos(pitch)*30,4,35-(sin(pitch)*30),0,WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE)
 			Stop
 	}
-}
-
-Actor freeman_pistolselected : Inventory
-{
-	Inventory.MaxAmount 1
-	Inventory.InterhubAmount 0
-	+INVENTORY.IGNORESKILL
-	+INVENTORY.UNDROPPABLE
-	-INVENTORY.INVBAR
 }
