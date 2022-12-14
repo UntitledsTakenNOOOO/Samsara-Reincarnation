@@ -1,22 +1,22 @@
 actor "Guns Akimbo" : CustomInventory
 {
-  inventory.pickupmessage "Guns Akimbo!"
-  inventory.pickupsound "misc/p_pkup"
-  +COUNTITEM
-  +INVENTORY.AUTOACTIVATE
-  +INVENTORY.ALWAYSPICKUP
-  +INVENTORY.FANCYPICKUPSOUND
-  Inventory.RestrictedTo "Caleb"
-  states
-  {
-  Spawn:
-    PSTR B -1
-    stop
-  Pickup:
-	TNT1 A 0 ACS_NamedExecuteWithResult("CalebAkimboCooldown")
-    TNT1 A 0 A_GiveInventory ("GunsAkimboP")
-    stop 
-  }
+	inventory.pickupmessage "Guns Akimbo!"
+	inventory.pickupsound "misc/p_pkup"
+	+COUNTITEM
+	+INVENTORY.AUTOACTIVATE
+	+INVENTORY.ALWAYSPICKUP
+	+INVENTORY.FANCYPICKUPSOUND
+	Inventory.RestrictedTo "Caleb"
+	states
+	{
+	Spawn:
+		PSTR B -1
+		Stop
+	Pickup:
+		TNT1 A 0 ACS_NamedExecuteWithResult("CalebAkimboCooldown")
+		TNT1 A 0 A_GiveInventory("GunsAkimboP")
+		Stop
+	}
 }
 
 actor GunsAkimboP : Boolean { Inventory.MaxAmount 1 Inventory.InterHubAmount 1 }
@@ -25,256 +25,187 @@ actor AkimboStay : Boolean { }
 
 actor BloodGunsAkimboCooldown : Inventory { Inventory.MaxAmount 120 }
 
-actor VoodooDoll : Weapon
+actor VoodooDoll : CalebWeapon
 {
-  obituary "%k \cutortured\c- %o."
-  inventory.pickupmessage "Voodoo Doll! Find some victims!"
-  Inventory.PickupSound "Caleb/Weaponup2"
-  weapon.selectionorder 500
-  weapon.bobstyle Smooth
-  weapon.bobrangeX 0.2
-  weapon.bobrangeY 0.4
-  weapon.bobspeed 0.5 
-  weapon.kickback 0
-  weapon.ammotype "Voodoo"
-  weapon.ammouse 0
-  weapon.ammouse2 0
-  weapon.ammogive 100
-  weapon.ammotype2 "Voodoo"
-  Weapon.SlotNumber 8
-  Weapon.SlotPriority 8  
-  Tag "Voodoo Doll"  
-  +FRIGHTENED
-  +WEAPON.NOALERT
-  Inventory.RestrictedTo "Caleb"  
-  states
-  {
-  Ready:
-    TNT1 A 0 A_TakeInventory("UsingPitchfork", 1)
-	TNT1 A 0 A_JumpIfInventory("CalebReady",1,"IntroTaunt")
-    TNT1 A 0 A_JumpIfInventory("CalebWaiting",60,"WaitingTaunt")	
-    TNT1 A 0 A_JumpIf(momx >= 6,"ReadyMoving")
-    TNT1 A 0 A_JumpIf(momx <= -6,"ReadyMoving")
-    VOO3 A 1 A_WeaponReady
-    Goto Ready+1
-  ReadyMoving:
-	VOO3 AAARRARRAAARRRRAAA 7 A_WeaponReady
-	Goto Ready+1
-  Deselect:
-	TNT1 A 0 A_JumpIfInventory("Voodoo", 1, 2)
-	TNT1 A 0 A_TakeInventory("VoodooDoll", 1)  
-  DeselectLoop:	
-	TNT1 AA 0 A_Lower
-    VOO3 A 1 A_Lower
-    Loop
-  Select:
-	TNT1 AA 0 A_Raise
-    VOO3 A 1 A_Raise
-    Loop
-  Fire:
-	VOO3 O 0 A_JumpIfTargetInLOS(1)
-	Goto Self
-	VOO3 O 0 A_JumpIfInventory("CoopModeOn", 1, "FireCoop")
-	VOO3 O 0 A_Jump(96,"Chest","Shoulder")
-    VOO3 O 0 A_Jump(256,"Chest","Shoulder","Eye","Pelvis")
-  Self:
-	VOO3 BC 2 A_WeaponReady(14)
-	TNT1 A 0 A_PlayWeaponSound("Vodoo/Stab")
-	TNT1 A 0 Thing_Damage(0,1,18)	
-	VDOE DEEFFGGHH 1 A_WeaponReady(14)
-	VOO3 CBA 2 A_WeaponReady(14)
-	TNT1 A 0 A_Refire
-    Goto Ready
-  Chest:
-	VOO3 BC 2 A_WeaponReady(14)
-    TNT1 A 0 A_PlayWeaponSound ("Vodoo/Stab")
-    TNT1 A 0 A_FireBullets(1, 0, 1, 25, "VoodooPuff", FBF_NORANDOM|FBF_USEAMMO)
-	TNT1 A 0 A_TakeInventory("Voodoo", 1, TIF_NOTAKEINFINITE)
-	VOO3 D 6 A_WeaponReady(14)
-	VOO3 CBA 2 A_WeaponReady(14)
-	TNT1 A 0 A_JumpIfInventory("Voodoo", 1, 1)
-    goto Drop
-	TNT1 A 0
-	Goto Ready	
-  Shoulder:
-	VOO3 BC 2 A_WeaponReady(14)
-    TNT1 A 0 A_PlayWeaponSound ("Vodoo/Stab")
-    TNT1 A 0 A_FireBullets(1, 0, 1, 25, "VoodooPuff", FBF_NORANDOM|FBF_USEAMMO)
-	TNT1 A 0 A_TakeInventory("Voodoo", 1, TIF_NOTAKEINFINITE)
-	VOO3 E 6 A_WeaponReady(14)
-	VOO3 CBA 2 A_WeaponReady(14)
-	TNT1 A 0 A_JumpIfInventory("Voodoo", 1, 1)
-    goto Drop
-	TNT1 A 0
-	Goto Ready
-  Pelvis:
-    VOO3 MN 2 A_WeaponReady(14)
-    VOO3 M 0 A_PlayWeaponSound ("Vodoo/Stab")
-    VOO3 M 0 A_PlaySound ("Vodoo/Doll")
-    VOO3 M 0 A_FireBullets(1, 0, 1, 25, "VoodooPuff", FBF_NORANDOM|FBF_USEAMMO)
-    TNT1 A 0 A_TakeInventory("Voodoo", 3, TIF_NOTAKEINFINITE)
-	VOO3 PQPQPQP 4 A_WeaponReady(14)
-    VOO3 NMA 2 A_WeaponReady(14)
-	TNT1 A 0 A_JumpIfInventory("Voodoo", 1, 1)
-    goto Drop
-	TNT1 A 0
-	Goto Ready	
-  Eye:
-    VOO3 FG 2 A_WeaponReady(14)
-	TNT1 A 0 A_PlayWeaponSound ("Vodoo/Stab")
-    TNT1 A 0 A_FireBullets(1, 0, 1, 25, "VoodooPuff", FBF_NORANDOM|FBF_USEAMMO)
-	TNT1 A 0 A_TakeInventory("Voodoo", 1, TIF_NOTAKEINFINITE)
-	VOO3 I 3 A_WeaponReady(14)
-	VOO3 JKLKJ 4 A_WeaponReady(14)
-	VOO3 GFA 2 A_WeaponReady(14)
-	TNT1 A 0 A_JumpIfInventory("Voodoo", 1, 1)
-    goto Drop
-	TNT1 A 0
-	Goto Ready	
-  FireCoop:
-	VOO3 O 0 A_Jump(96,"ChestCoop","ShoulderCoop")
-    VOO3 O 0 A_Jump(256,"ChestCoop","ShoulderCoop","EyeCoop","PelvisCoop")
-	Goto Self
-  ChestCoop:
-	VOO3 BC 2 A_WeaponReady(14)
-    TNT1 A 0 A_PlayWeaponSound ("Vodoo/Stab")
-    TNT1 A 0 A_FireBullets(1, 0, 1, 25, "VoodooPuffCoop", FBF_NORANDOM|FBF_USEAMMO)
-	TNT1 A 0 A_TakeInventory("Voodoo", 1, TIF_NOTAKEINFINITE)
-	VOO3 D 6 A_WeaponReady(14)
-	VOO3 CBA 2 A_WeaponReady(14)
-	TNT1 A 0 A_JumpIfInventory("Voodoo", 1, 1)
-    goto Drop
-	TNT1 A 0
-	Goto Ready	
-  ShoulderCoop:
-	VOO3 BC 2 A_WeaponReady(14)
-    TNT1 A 0 A_PlayWeaponSound ("Vodoo/Stab")
-    TNT1 A 0 A_FireBullets(1, 0, 1, 25, "VoodooPuffCoop", FBF_NORANDOM|FBF_USEAMMO)
-	TNT1 A 0 A_TakeInventory("Voodoo", 1, TIF_NOTAKEINFINITE)
-	VOO3 E 6 A_WeaponReady(14)
-	VOO3 CBA 2 A_WeaponReady(14)
-	TNT1 A 0 A_JumpIfInventory("Voodoo", 1, 1)
-    goto Drop
-	TNT1 A 0
-	Goto Ready
-  PelvisCoop:
-    VOO3 MN 2 A_WeaponReady(14)
-    VOO3 M 0 A_PlayWeaponSound ("Vodoo/Stab")
-    VOO3 M 0 A_PlaySound ("Vodoo/Doll")
-    VOO3 M 0 A_FireBullets(1, 0, 1, 25, "VoodooPuffCoop", FBF_NORANDOM|FBF_USEAMMO)
-    TNT1 A 0 A_TakeInventory("Voodoo", 3, TIF_NOTAKEINFINITE)
-	VOO3 PQPQPQP 4 A_WeaponReady(14)
-    VOO3 NMA 2 A_WeaponReady(14)
-	TNT1 A 0 A_JumpIfInventory("Voodoo", 1, 1)
-    goto Drop
-	TNT1 A 0
-	Goto Ready	
-  EyeCoop:
-    VOO3 FG 2 A_WeaponReady(14)
-	TNT1 A 0 A_PlayWeaponSound ("Vodoo/Stab")
-    TNT1 A 0 A_FireBullets(1, 0, 1, 25, "VoodooPuffCoop", FBF_NORANDOM|FBF_USEAMMO)
-	TNT1 A 0 A_TakeInventory("Voodoo", 1, TIF_NOTAKEINFINITE)
-	VOO3 I 3 A_WeaponReady(14)
-	VOO3 JKLKJ 4 A_WeaponReady(14)
-	VOO3 GFA 2 A_WeaponReady(14)
-	TNT1 A 0 A_JumpIfInventory("Voodoo", 1, 1)
-    goto Drop
-	TNT1 A 0
-	Goto Ready	
-  AltFire:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "AltfireCoop")
-	TNT1 A 0 A_AlertMonsters
-    TNT1 A 0 A_PlaySound ("Vodoo/Altfire",CHAN_WEAPON)
-    VOO3 C 2 A_WeaponReady(14)
-    VDOL ABCDEF 4 A_WeaponReady(14)
-	TNT1 A 0 A_FireCustomMissile("VoodooPuff2")
-    VDOL G 19 A_WeaponReady(14)
-    goto Drop
-  AltFireCoop:
-	TNT1 A 0 A_AlertMonsters
-    TNT1 A 0 A_PlaySound ("Vodoo/Altfire",CHAN_WEAPON)
-    VOO3 C 2 A_WeaponReady(14)
-    VDOL ABCDEF 4 A_WeaponReady(14)
-	TNT1 A 0 A_FireCustomMissile("VoodooPuff2Coop")
-    VDOL G 19 A_WeaponReady(14)
-    goto Drop	
-  Flash:
-    VDOL J 0    
-    stop
-  Spawn:
-    VDLF A -1
-    stop
-  Drop:
-	TNT1 A 0 A_TakeInventory("VoodooDoll", 1)
-	TNT1 A 0 A_SelectWeapon("PitchFork")
-  Goto Deselect
-  IntroTaunt:
-	TNT1 A 0 A_JumpIfInventory("CalebBallgag",1,2)
-	TNT1 A 0 A_PlaySoundEx("Caleb/Enter", "SoundSlot7", 0, 0)
-	TNT1 A 0 A_TakeInventory("CalebReady", 1)
-	TNT1 A 0 A_GiveInventory("CalebTauntCooldown",5)
-	TNT1 A 0 ACS_NamedExecuteAlways("CalebTauntCooldown", 0)
-	Goto Ready
-  WaitingTaunt:
-	TNT1 A 0 A_JumpIfInventory("CalebIdleBallgag",1,"IdleBallgagStuff")
-	TNT1 A 0 A_JumpIfInventory("CalebBallgag",1,2)
-	TNT1 A 0 A_PlaySoundEx("Caleb/Bored", "SoundSlot7", 0, 0)
-	TNT1 A 0 A_TakeInventory("CalebWaiting", 525)
-	TNT1 A 0 A_GiveInventory("CalebTauntCooldown",5)
-	TNT1 A 0 ACS_NamedExecuteAlways("CalebTauntCooldown", 0)
-	Goto Ready	
-  IdleBallgagStuff:
-	TNT1 A 0 A_TakeInventory("CalebWaiting",525)
-	goto Ready	
-  }
+	obituary "%k \cutortured\c- %o."
+	inventory.pickupmessage "Voodoo Doll! Find some victims!"
+	Inventory.PickupSound "Caleb/Weaponup2"
+	weapon.selectionorder 500
+	weapon.kickback 0
+	weapon.ammotype "Voodoo"
+	weapon.ammouse 0
+	weapon.ammouse2 0
+	weapon.ammogive 100
+	weapon.ammotype2 "Voodoo"
+	Weapon.SlotNumber 8
+	Weapon.SlotPriority 8
+	Tag "Voodoo Doll"
+	+FRIGHTENED
+	+WEAPON.NOALERT
+	states
+	{
+	Ready:
+		TNT1 A 0 A_TakeInventory("UsingPitchfork", 1)
+		TNT1 A 0 A_JumpIfInventory("CalebReady",1,"IntroTaunt")
+		TNT1 A 0 A_JumpIfInventory("CalebWaiting",60,"WaitingTaunt")
+		TNT1 A 0 A_JumpIf(momx >= 6,"ReadyMoving")
+		TNT1 A 0 A_JumpIf(momx <= -6,"ReadyMoving")
+		VOO3 A 1 A_WeaponReady
+		Goto Ready+1
+	ReadyMoving:
+		VOO3 AAARRARRAAARRRRAAA 7 A_WeaponReady
+		Goto Ready+1
+	Deselect:
+		VOO3 A 0 A_JumpIfInventory("Voodoo", 1, "DeselectLoop")
+		VOO3 A 0 A_TakeInventory("VoodooDoll", 1)
+		Goto Super::DeselectLoop
+	Select:
+		VOO3 A 0
+		Goto Super::SelectLoop
+	Fire:
+		VOO3 O 0 A_JumpIfTargetInLOS(1)
+		Goto Self
+		VOO3 O 0 A_Jump(96,"Chest","Shoulder")
+		VOO3 O 0 A_Jump(256,"Chest","Shoulder","Eye","Pelvis")
+		Goto Chest
+	Self:
+		VOO3 BC 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VDOE D 0 A_PlayWeaponSound("Vodoo/Stab")
+		VDOE D 0 Thing_Damage(0,1,18)
+		VDOE DEEFFGGHH 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VOO3 CBA 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VOO3 A 0 A_Refire
+		Goto Ready
+	Chest:
+		VOO3 BC 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VOO3 D 0 A_PlayWeaponSound("Vodoo/Stab")
+		VOO3 D 0 A_JumpIfInventory("CoopModeOn", 1, 2)
+		VOO3 D 0 A_FireBullets(1, 0, 1, 25, "VoodooPuff", FBF_NORANDOM|FBF_USEAMMO)
+		Goto ChestEnd
+		VOO3 D 0 A_FireBullets(1, 0, 1, 25, "VoodooPuffCoop", FBF_NORANDOM|FBF_USEAMMO)
+		Goto ChestEnd
+	ChestEnd:
+		VOO3 D 0 A_TakeInventory("Voodoo", 1, TIF_NOTAKEINFINITE)
+		VOO3 D 6 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VOO3 CBA 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		Goto CheckVoodooAmmo
+	Shoulder:
+		VOO3 BC 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VOO3 E 0 A_PlayWeaponSound("Vodoo/Stab")
+		VOO3 E 0 A_JumpIfInventory("CoopModeOn", 1, 2)
+		VOO3 E 0 A_FireBullets(1, 0, 1, 25, "VoodooPuff", FBF_NORANDOM|FBF_USEAMMO)
+		Goto ShoulderEnd
+		VOO3 E 0 A_FireBullets(1, 0, 1, 25, "VoodooPuffCoop", FBF_NORANDOM|FBF_USEAMMO)
+		Goto ShoulderEnd
+	ShoulderEnd:
+		VOO3 E 0 A_TakeInventory("Voodoo", 1, TIF_NOTAKEINFINITE)
+		VOO3 E 6 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VOO3 CBA 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		Goto CheckVoodooAmmo
+	Pelvis:
+		VOO3 MN 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VOO3 M 0 A_PlayWeaponSound("Vodoo/Stab")
+		VOO3 M 0 A_PlaySound("Vodoo/Doll")
+		VOO3 M 0 A_JumpIfInventory("CoopModeOn", 1, 2)
+		VOO3 M 0 A_FireBullets(1, 0, 1, 25, "VoodooPuff", FBF_NORANDOM|FBF_USEAMMO)
+		Goto PelvisEnd
+		VOO3 M 0 A_FireBullets(1, 0, 1, 25, "VoodooPuffCoop", FBF_NORANDOM|FBF_USEAMMO)
+		Goto PelvisEnd
+	PelvisEnd:
+		VOO3 P 0 A_TakeInventory("Voodoo", 3, TIF_NOTAKEINFINITE)
+		VOO3 PQPQPQP 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VOO3 NMA 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		Goto CheckVoodooAmmo
+	Eye:
+		VOO3 FG 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VOO3 I 0 A_PlayWeaponSound("Vodoo/Stab")
+		VOO3 I 0 A_JumpIfInventory("CoopModeOn", 1, 2)
+		VOO3 I 0 A_FireBullets(1, 0, 1, 25, "VoodooPuff", FBF_NORANDOM|FBF_USEAMMO)
+		Goto EyeEnd
+		VOO3 I 0 A_FireBullets(1, 0, 1, 25, "VoodooPuffCoop", FBF_NORANDOM|FBF_USEAMMO)
+		Goto EyeEnd
+	EyeEnd:
+		VOO3 I 0 A_TakeInventory("Voodoo", 1, TIF_NOTAKEINFINITE)
+		VOO3 I 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VOO3 JKLKJ 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VOO3 GFA 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		Goto CheckVoodooAmmo
+	CheckVoodooAmmo:
+		TNT1 A 0 A_JumpIfInventory("Voodoo", 1, 1)
+		Goto Drop
+		TNT1 A 0
+		Goto Ready
+	AltFire:
+		TNT1 A 0 A_AlertMonsters
+		TNT1 A 0 A_PlaySound ("Vodoo/Altfire",CHAN_WEAPON)
+		VOO3 C 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		VDOL ABCDEF 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, 2)
+		TNT1 A 0 A_FireCustomMissile("VoodooPuff2")
+		Goto AltFireEnd
+		TNT1 A 0 A_FireCustomMissile("VoodooPuff2Coop")
+		Goto AltFireEnd
+	AltFireEnd:
+		VDOL G 19 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		Goto Drop
+	Flash:
+		VDOL J 0
+		Stop
+	Spawn:
+		VDLF A -1
+		Stop
+	Drop:
+		TNT1 A 0 A_TakeInventory("VoodooDoll", 1)
+		Goto Ready
+	}
 }
 
 actor VoodooPuff
 {
-  RenderStyle None
-  +INVISIBLE
-  +NOBLOCKMAP
-  +DONTSPLASH
-  +NOGRAVITY
-  +ALWAYSPUFF
-  +FOILINVUL
-  +FORCEPAIN
-  DamageType "Vodoo"
-  states
-  {
-  Spawn:
-    VDLF A 5
-    stop
-  }
+	RenderStyle None
+	+INVISIBLE
+	+NOBLOCKMAP
+	+DONTSPLASH
+	+NOGRAVITY
+	+ALWAYSPUFF
+	+FOILINVUL
+	+FORCEPAIN
+	DamageType "Vodoo"
+	states
+	{
+	Spawn:
+		VDLF A 5
+		Stop
+	}
 }
 
 Actor VoodooPuffCoop : VoodooPuff { +MTHRUSPECIES +THRUSPECIES Species "Player" }
 
 actor VoodooPuff2 : BulletPuff // Uses tid of it as ammo, in the script the tid becomes half of the ammo amount.
 {
-  +NOBLOCKMAP
-  +DONTSPLASH
-  +NOGRAVITY
-  +ALWAYSPUFF
-  +FOILINVUL
-  +FORCERADIUSDMG
-  +PUFFGETSOWNER
-  radius 255
-  height 255
-  speed 1000
-  damage 10000
-  PROJECTILE
-  DamageType "Vodoo"
-  states
-  {
-  Spawn:
-    TNT1 A 1
-    Goto Death
-  Death:
-    TNT1 A 1 ACS_NamedExecuteAlways("CalebUnique", 0)
-    TNT1 A 0 A_BFGSpray("VoodooPuff",tid,15)
-    stop
-  }
+	+NOBLOCKMAP
+	+DONTSPLASH
+	+NOGRAVITY
+	+ALWAYSPUFF
+	+FOILINVUL
+	+FORCERADIUSDMG
+	+PUFFGETSOWNER
+	radius 255
+	height 255
+	speed 1000
+	damage 10000
+	PROJECTILE
+	DamageType "Vodoo"
+	states
+	{
+	Spawn:
+		TNT1 A 1
+		Goto Death
+	Death:
+		TNT1 A 1 ACS_NamedExecuteAlways("CalebUnique", 0)
+		TNT1 A 0 A_BFGSpray("VoodooPuff",tid,15)
+		Stop
+	}
 }
 
 actor VoodooPuff2Coop : VoodooPuff2 { +MTHRUSPECIES +THRUSPECIES Species "Player" }
@@ -283,947 +214,802 @@ ACTOR Voodoo : Ammo { Inventory.MaxAmount 100 Ammo.BackpackAmount 0 Ammo.Backpac
 
 Actor CalebSprayReadyDummy : Inventory { Inventory.Amount 1 Inventory.MaxAmount 1 }
 Actor SprayCan2 : Inventory { Inventory.Amount 1 Inventory.MaxAmount 1 }
-actor Spraycan : Weapon
+actor Spraycan : CalebWeapon
 {
-  obituary "%o was toasted by %k's Aerosol Can!"
-  radius 20
-  height 16
-  inventory.pickupmessage "You got the Spraycan!"  
-  Inventory.PickupSound "Caleb/Weaponup"
-  Inventory.RestrictedTo "Caleb"
-  weapon.selectionorder 540
-  weapon.bobstyle Smooth
-  weapon.bobrangeX 0.2
-  weapon.bobrangeY 0.4
-  weapon.bobspeed 0.5  
-  weapon.kickback 0
-  weapon.ammotype1 "SprayCanAmmo"
-  weapon.ammouse1 1
-  weapon.ammogive1 48
-  weapon.ammotype2 "SprayCanAmmo"
-  Weapon.SlotNumber 9
-  weapon.ammouse2 48
-  Tag "Aerosol Can"
-  +WEAPON.NOALERT
-  +NOAUTOAIM
-  states
-  {
-  Ready:
-  	TNT1 A 0 A_TakeInventory("ThrowPowerBig",255)
-	TNT1 A 0 A_TakeInventory("ThrowPower",255)
-	TNT1 A 0 A_TakeInventory("UsingPitchfork", 1)
-	TNT1 A 0 A_JumpIfInventory("CalebSprayReadyDummy",1,"ReadyLoop")
-	DYHN O 1 A_WeaponReady(WRF_NOFIRE)
-    TNT1 A 0 A_PlayWeaponSound("TNT/Zip")
-	DYHN P 1 A_WeaponReady(WRF_NOFIRE)
-	TNT1 A 0 A_PlaySound("TNT/Match",6)	
-	DYHN QRS 1 A_WeaponReady(WRF_NOFIRE)
-	TNT1 A 0 A_TakeInventory("CalebTNTDeselectDummy",1)			
-	TNT1 A 0 A_GiveInventory("CalebSprayReadyDummy",1)	
-	SPRC HH 1 A_WeaponReady(WRF_NOFIRE)
-	SPRC II 1 A_WeaponReady(WRF_NOFIRE)
-	SPRC JJ 1 A_WeaponReady(WRF_NOFIRE)
-	Goto ReadyLoop+8
-  ReadyLoop:
-	TNT1 A 0 A_TakeInventory("ThrowPowerBig",255)
-	TNT1 A 0 A_TakeInventory("ThrowPower",255)
-	TNT1 A 0 A_JumpIfInventory("CalebReady",1,"IntroTaunt")
-    TNT1 A 0 A_JumpIfInventory("CalebWaiting",60,"WaitingTaunt")	
-    TNT1 A 0 A_StopSound(CHAN_WEAPON)
-    TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
-    SPRF B 3 A_WeaponReady
-	TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
-	SPRF C 3 A_WeaponReady
-	TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
-	SPRF D 3 A_WeaponReady
-    loop
-  ReadyFire:
-    SPAF AB 2 bright A_WeaponReady(WRF_NOSECONDARY)
-	TNT1 A 0 A_JumpIfInventory("TNTSoundDelay", 1, 3)
-	TNT1 A 0 A_GiveInventory("TNTSoundDelay", 1)
-	TNT1 A 0 A_PlayWeaponSound("TNT/FUSE")	
-	SPAF CDE 2 bright A_WeaponReady(WRF_NOSECONDARY)
-	SPAF FG 2 bright A_WeaponReady(WRF_NOSECONDARY)
-	SPAF G 0 bright A_GiveInventory("ThrowPowerBig", 3)
-	SPAF G 1 bright A_WeaponReady(WRF_NOSECONDARY)
-	TNT1 A 0 A_JumpIfInventory("ThrowPowerBig", 140, "Explode")
-//	TNT1 A 0 A_StopSound(CHAN_WEAPON)
-	Loop
-  Deselect:
-	TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
-	TNT1 A 0 A_JumpIfInventory("WhoopsIDied",1,"DeselectDead")
-	TNT1 A 0 A_JumpIfInventory("CalebTNTDeselectDummy",1,"DeselectAmmoLess")
-	TNT1 A 0 //A_JumpIfnoammo("DeselectAmmoLess")  
-    SPRC D 1 
-	SPRC C 1 
-	SPRC B 1 
-    TNT1 A 0 A_PlayWeaponSound("TNT/Zip")
-  DeselectLoop:
-	TNT1 AA 0 A_Lower
-    SPRC A 1 A_Lower
-    Loop
-  DeselectDead:
-	TNT1 A 0 A_TakeInventory("WhoopsIDied",999)  
-	TNTH S 4 A_TakeInventory("ThrowPowerBig",255)
-	TNTH T 3 A_Lower
-	TNTH U 1 A_Lower
-	Goto DeselectDead+3
-  DeselectAmmoLess:
-	DYHN TPO 1
-    TNT1 A 0 A_PlayWeaponSound("TNT/Zip")	
-  DeselectAmmolessLoop:	
-	TNT1 AA 0 A_Lower
-	DYHN N 1 A_Lower
-	Loop 
-  Select:
-	TNT1 A 0 A_GiveInventory("CalebTNTDeselectDummy",1)	  
-	TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)  
-	TNT1 A 0 A_TakeInventory("ThrowPower",300)
-	TNT1 A 0 A_TakeInventory("ThrowPowerBig",300)
-	//TNT1 A 0 A_JumpIfNoAmmo("RaiseAmmoless")
-  SelectLoop:	
-	TNTL AA 0 A_Raise
-    DYHN N 1 A_Raise
-	Loop
-  RaiseAmmoless:
-	PTNT OO 0 A_Raise
-    PTNT O 1 A_Raise
-	Loop
-  Cannot:
-	TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
-    TNT1 A 0 A_TakeInventory("ThrowPower",255)
-	TNT1 A 0 A_SelectWeapon("Pitchfork")
-	Goto Deselect
-  Cannot2:
-	TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
-	TNT1 A 0 A_SelectWeapon("Pitchfork")
-	Goto Deselect
-  Fire:
-  	TNT1 A 0 A_JumpIfNoAmmo("TakeAway")
-    TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
-	TNT1 A 0 A_JumpIfInventory("SprayCan2", 1, "Fire2")
-	TNT1 A 0 A_Playsound("Napalm/Act2", CHAN_WEAPON, 1.0, true)
-    TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")  
-	PLSG B 0 A_FireCustomMissile ("SprayCanFire",0+frandom(-1.0,1.0),1,0+frandom(-1.0,1.0),4+frandom(-1.0,1.0))
-	TNT1 A 0 A_GunFlash
-	SPRF A 3 BRIGHT A_WeaponReady(15)
-    PLSG B 0 A_ReFire
-	TNT1 A 0 A_StopSound(CHAN_WEAPON)
-    Goto ReadyLoop
-  CoopFire:
-	PLSG B 0 A_FireCustomMissile ("SprayCanFireCoop",0+frandom(-1.0,1.0),1,0+frandom(-1.0,1.0),4+frandom(-1.0,1.0))
-	TNT1 A 0 A_GunFlash
-	SPRF A 3 BRIGHT A_WeaponReady(15)
-    PLSG B 0 A_ReFire
-	TNT1 A 0 A_StopSound(CHAN_WEAPON)
-    Goto ReadyLoop
-  TakeAway:
-    TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
-	TNT1 A 1 A_SelectWeapon("Pitchfork")
-	Goto Deselect
-  Altfire:
-	SPLG J 0 A_JumpIfInventory("SprayCan2", 1, "ReadyFire")
-    SPLG JA 2 bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-	DYNL A 0 A_PlayWeaponSound("Spray/Can")
-	SPLG BCD 2 bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-	SPLG EFGHI 2 bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-//	TNT1 A 0 A_Refire
-	SPLG I 1 bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-	TNT1 A 0 A_JumpIfInventory("ThrowPowerBig", 140, "Explode")
-	TNT1 A 0 A_StopSound(CHAN_WEAPON)
-	TNT1 A 0 A_GiveInventory("SprayCan2", 1)
-	Goto ReadyFire
-  Fire2:
-	TNT1 A 0 A_GiveInventory("TNTCounter", 1)
-	TNT1 A 0 A_JumpIfInventory("TNTSoundDelay", 1, 3)
-	TNT1 A 0 A_GiveInventory("TNTSoundDelay", 1)
-	TNT1 A 0 A_PlayWeaponSound("TNT/FUSE")
-	TNT1 A 0 A_JumpIfInventory("ThrowPowerBig", 140, "Explode")
-	TNT1 A 0 A_JumpIfInventory("TNTCounter", 3, "Hold3")
-	TNT1 A 0 A_JumpIfInventory("TNTCounter", 2, "Hold2")
-	TNT1 A 0 A_JumpIfInventory("TNTCounter", 1, "Hold1")
-  Hold1:
-	TNT1 A 0 A_GiveInventory("ThrowPower", 3)
-	TNT1 A 0 A_GiveInventory("ThrowPowerBig", 3)
-	SPAF GAB 2 bright A_WeaponReady(14)
-	TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
-	TNT1 A 0 A_Refire("Fire2")
-	TNT1 A 0 A_StopSound(CHAN_WEAPON)
-    Goto Throw	
-  Hold2:
-    TNT1 A 0 A_GiveInventory("ThrowPower", 3)
-	TNT1 A 0 A_GiveInventory("ThrowPowerBig", 3)
-	SPAF CD 2 bright A_WeaponReady(14)
-	TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
-	TNT1 A 0 A_Refire("Fire2")
-	TNT1 A 0 A_StopSound(CHAN_WEAPON)
-    Goto Throw	
-  Hold3:
-    TNT1 A 0 A_GiveInventory("ThrowPower", 3)
-	TNT1 A 0 A_GiveInventory("ThrowPowerBig", 3)
-	SPAF EF 2 bright A_WeaponReady(14)
-	TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
-	TNT1 A 0 A_TakeInventory("TNTCounter", 3)
-	TNT1 A 0 A_Refire("Fire2")
-	TNT1 A 0 A_PlayWeaponSound("Spray/Can")
-	TNT1 A 0 A_StopSound(CHAN_WEAPON)
-    Goto Throw
-  Explode:
-	TNT1 A 0 A_TakeInventory("ThrowPower",255)
-	TNT1 A 0 A_TakeInventory("ThrowPowerBig", 200)	
-	TNT1 A 0 A_TakeInventory("TNTCounter", 3)	
-	TNT1 A 0 A_GiveInventory("WhoopsIDied",1)
-	TNT1 A 0 A_PlaySound("Napalm/Explode",CHAN_ITEM)
-    TNT1 A 0 A_SpawnItem("FlareKaboom5")
-	TNT1 A 0 DamageThing(0,14)
-	TNT1 AAAAA 0 A_SpawnItemex("Blower",-16)
-	TNT1 AAA 1 A_SpawnItemex("Blower",-16)
-	TNTH S 4 A_TakeInventory("ThrowPowerBig",255)
-	TNTH T 8
-	TNTH U 5
-	Goto ReadyLoop
-  Throw:
-	ZIPU BDFG 1 Bright
-	DYNH ABCD 1
-	TNT1 A 0 A_GunFlash 
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 70, "Throw_35")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 68, "Throw_34")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 66, "Throw_33")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 64, "Throw_32")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 62, "Throw_31")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 60, "Throw_30")  
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 58, "Throw_29")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 56, "Throw_28")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 54, "Throw_27")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 52, "Throw_26")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 50, "Throw_25")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 48, "Throw_24")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 46, "Throw_23")  
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 44, "Throw_22")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 42, "Throw_21")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 40, "Throw_20")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 38, "Throw_19")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 36, "Throw_18")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 34, "Throw_17")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 32, "Throw_16")  
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 30, "Throw_15")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 28, "Throw_14")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 26, "Throw_13")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 24, "Throw_12")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 22, "Throw_11")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 20, "Throw_10")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 18, "Throw_9")  
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 16, "Throw_8")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 14, "Throw_7")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 12, "Throw_6")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 10, "Throw_5")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 8, "Throw_4")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 6, "Throw_3")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 4, "Throw_2")
-	TNT1 A 0 A_JumpIfInventory("ThrowPower", 2, "Throw_1")
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_Coop")
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt")
-	Goto ThrowFinish
-  Throw_1:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_1_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt1")
-	Goto ThrowFinish
-  Throw_2:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_2_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt2")
-	Goto ThrowFinish	
-  Throw_3:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_3_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt3")
-	Goto ThrowFinish	
-  Throw_4:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_4_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt4")
-	Goto ThrowFinish	
-  Throw_5:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_5_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt5")
-	Goto ThrowFinish	
-  Throw_6:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_6_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt6")
-	Goto ThrowFinish	
-  Throw_7:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_7_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt7")
-	Goto ThrowFinish	
-  Throw_8:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_8_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt8")
-	Goto ThrowFinish	
-  Throw_9:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_9_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt9")
-	Goto ThrowFinish	
-  Throw_10:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_10_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt10")
-	Goto ThrowFinish	
-  Throw_11:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_11_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt11")
-	Goto ThrowFinish
-  Throw_12:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_12_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt12")
-	Goto ThrowFinish	
-  Throw_13:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_13_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt13")
-	Goto ThrowFinish	
-  Throw_14:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_14_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt14")
-	Goto ThrowFinish	
-  Throw_15:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_15_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt15")
-	Goto ThrowFinish
-  Throw_16:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_16_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt16")
-	Goto ThrowFinish
-  Throw_17:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_17_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt17")
-	Goto ThrowFinish
-  Throw_18:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_18_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt18")
-	Goto ThrowFinish
-  Throw_19:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_19_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt19")
-	Goto ThrowFinish
-  Throw_20:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_20_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt20")
-	Goto ThrowFinish
-  Throw_21:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_21_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt21")
-	Goto ThrowFinish
-  Throw_22:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_22_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt22")
-	Goto ThrowFinish
-  Throw_23:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_23_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt23")
-	Goto ThrowFinish
-  Throw_24:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_24_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt24")
-	Goto ThrowFinish
-  Throw_25:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_25_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt25")
-	Goto ThrowFinish
-  Throw_26:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_26_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt26")
-	Goto ThrowFinish
-  Throw_27:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_27_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt27")
-	Goto ThrowFinish
-  Throw_28:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_28_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt28")
-	Goto ThrowFinish
-  Throw_29:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_29_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt29")
-	Goto ThrowFinish
-  Throw_30:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_30_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt30")
-	Goto ThrowFinish
-  Throw_31:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_31_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt31")
-	Goto ThrowFinish
-  Throw_32:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_32_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt32")
-	Goto ThrowFinish
-  Throw_33:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_33_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt33")
-	Goto ThrowFinish
-  Throw_34:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_34_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt34")
-	Goto ThrowFinish
-  Throw_35:
-	TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Throw_35_Coop")  
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt35")
-	Goto ThrowFinish
-  Throw_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt_Coop")
-	Goto ThrowFinish
-  Throw_1_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt1_Coop")
-	Goto ThrowFinish
-  Throw_2_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt2_Coop")
-	Goto ThrowFinish	
-  Throw_3_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt3_Coop")
-	Goto ThrowFinish	
-  Throw_4_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt4_Coop")
-	Goto ThrowFinish	
-  Throw_5_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt5_Coop")
-	Goto ThrowFinish	
-  Throw_6_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt6_Coop")
-	Goto ThrowFinish	
-  Throw_7_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt7_Coop")
-	Goto ThrowFinish	
-  Throw_8_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt8_Coop")
-	Goto ThrowFinish	
-  Throw_9_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt9_Coop")
-	Goto ThrowFinish	
-  Throw_10_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt10_Coop")
-	Goto ThrowFinish	
-  Throw_11_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt11_Coop")
-	Goto ThrowFinish
-  Throw_12_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt12_Coop")
-	Goto ThrowFinish	
-  Throw_13_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt13_Coop")
-	Goto ThrowFinish	
-  Throw_14_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt14_Coop")
-	Goto ThrowFinish	
-  Throw_15_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt15_Coop")
-	Goto ThrowFinish
-  Throw_16_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt16_Coop")
-	Goto ThrowFinish
-  Throw_17_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt17_Coop")
-	Goto ThrowFinish
-  Throw_18_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt18_Coop")
-	Goto ThrowFinish
-  Throw_19_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt19_Coop")
-	Goto ThrowFinish
-  Throw_20_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt20_Coop")
-	Goto ThrowFinish
-  Throw_21_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt21_Coop")
-	Goto ThrowFinish
-  Throw_22_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt22_Coop")
-	Goto ThrowFinish
-  Throw_23_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt23_Coop")
-	Goto ThrowFinish
-  Throw_24_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt24_Coop")
-	Goto ThrowFinish
-  Throw_25_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt25_Coop")
-	Goto ThrowFinish
-  Throw_26_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt26_Coop")
-	Goto ThrowFinish
-  Throw_27_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt27_Coop")
-	Goto ThrowFinish
-  Throw_28_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt28_Coop")
-	Goto ThrowFinish
-  Throw_29_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt29_Coop")
-	Goto ThrowFinish
-  Throw_30_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt30_Coop")
-	Goto ThrowFinish
-  Throw_31_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt31_Coop")
-	Goto ThrowFinish
-  Throw_32_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt32_Coop")
-	Goto ThrowFinish
-  Throw_33_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt33_Coop")
-	Goto ThrowFinish
-  Throw_34_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt34_Coop")
-	Goto ThrowFinish
-  Throw_35_Coop:
-	TNT1 A 0 A_FireCustomMissile("SprayCanAlt35_Coop")
-	Goto ThrowFinish
-  ThrowFinish:	//Why done without Offset? Because hand made is faster and more accurate!
-	TNT1 A 0 A_StopSound(CHAN_WEAPON)
-	TNT1 A 0 A_PlayWeaponSound("TNT/Throw")
-	TNT1 A 0 A_TakeInventory("ThrowPower", 150)
-	TNT1 A 0 A_TakeInventory("ThrowPowerBig", 300)
-	TNT1 A 0 A_TakeInventory("SprayCanAmmo", 47, TIF_NOTAKEINFINITE)
-	TNT1 A 0 A_TakeInventory("SprayCan2", 5)
-	DYHN EFG 2
-	DYHN HI 2
-	DYHN J 2
-	TNT1 A 0 A_JumpIfInventory("SprayCanAmmo", 1, 1)
-    Goto TakeAway
-	ZIPU LLKKII 1
-	DYHN KK 1
-    SPRC HH 1
-    SPRC II 1 
-	SPRC JJ 1
-    Goto ReadyLoop
-  IntroTaunt:
-	TNT1 A 0 A_JumpIfInventory("CalebBallgag",1,2)
-	TNT1 A 0 A_PlaySoundEx("Caleb/Enter", "SoundSlot7", 0, 0)
-	TNT1 A 0 A_TakeInventory("CalebReady", 1)
-	TNT1 A 0 A_GiveInventory("CalebTauntCooldown",5)
-	TNT1 A 0 ACS_NamedExecuteAlways("CalebTauntCooldown", 0)
-	Goto ReadyLoop
-  WaitingTaunt:
-	TNT1 A 0 A_JumpIfInventory("CalebIdleBallgag",1,"IdleBallgagStuff")
-	TNT1 A 0 A_JumpIfInventory("CalebBallgag",1,2)
-	TNT1 A 0 A_PlaySoundEx("Caleb/Bored", "SoundSlot7", 0, 0)
-	TNT1 A 0 A_TakeInventory("CalebWaiting", 525)
-	TNT1 A 0 A_GiveInventory("CalebTauntCooldown",5)
-	TNT1 A 0 ACS_NamedExecuteAlways("CalebTauntCooldown", 0)
-	Goto ReadyLoop	  
-  IdleBallgagStuff:
-	TNT1 A 0 A_TakeInventory("CalebWaiting",525)
-	goto ReadyLoop
-  Spawn:
-    SPFI J 1
-    stop
-  Cannot:
-    TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
-	TNT1 A 0 A_SelectWeapon("PitchFork")
-	Goto Deselect		
-  }
+	obituary "%o was toasted by %k's Aerosol Can!"
+	radius 20
+	height 16
+	inventory.pickupmessage "You got the Spraycan!"
+	Inventory.PickupSound "Caleb/Weaponup"
+	weapon.selectionorder 540
+	weapon.kickback 0
+	weapon.ammotype1 "SprayCanAmmo"
+	weapon.ammouse1 1
+	weapon.ammogive1 48
+	weapon.ammotype2 "SprayCanAmmo"
+	Weapon.SlotNumber 9
+	weapon.ammouse2 48
+	Tag "Aerosol Can"
+	+WEAPON.NOALERT
+	+NOAUTOAIM
+	states
+	{
+	Ready:
+		TNT1 A 0 A_TakeInventory("ThrowPowerBig",255)
+		TNT1 A 0 A_TakeInventory("ThrowPower",255)
+		TNT1 A 0 A_TakeInventory("UsingPitchfork", 1)
+		TNT1 A 0 A_JumpIfInventory("CalebSprayReadyDummy",1,"ReadyLoop")
+		DYHN O 1 A_WeaponReady(WRF_NOFIRE)
+		TNT1 A 0 A_PlayWeaponSound("TNT/Zip")
+		DYHN P 1 A_WeaponReady(WRF_NOFIRE)
+		TNT1 A 0 A_PlaySound("TNT/Match",6)
+		DYHN QRS 1 A_WeaponReady(WRF_NOFIRE)
+		TNT1 A 0 A_TakeInventory("CalebTNTDeselectDummy",1)
+		TNT1 A 0 A_GiveInventory("CalebSprayReadyDummy",1)
+		SPRC HHIIJJ 1 A_WeaponReady(WRF_NOFIRE)
+		Goto ReadyLoop+8
+	ReadyLoop:
+		TNT1 A 0 A_TakeInventory("ThrowPowerBig",255)
+		TNT1 A 0 A_TakeInventory("ThrowPower",255)
+		TNT1 A 0 A_JumpIfInventory("CalebReady",1,"IntroTaunt")
+		TNT1 A 0 A_JumpIfInventory("CalebWaiting",60,"WaitingTaunt")
+		TNT1 A 0 A_StopSound(CHAN_WEAPON)
+		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
+		SPRF B 3 A_WeaponReady
+		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
+		SPRF C 3 A_WeaponReady
+		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
+		SPRF D 3 A_WeaponReady
+		Loop
+	ReadyFire:
+		SPAF AB 2 bright A_WeaponReady(WRF_NOSECONDARY)
+		TNT1 A 0 A_JumpIfInventory("TNTSoundDelay", 1, 3)
+		TNT1 A 0 A_GiveInventory("TNTSoundDelay", 1)
+		TNT1 A 0 A_PlayWeaponSound("TNT/FUSE")
+		SPAF CDEFG 2 bright A_WeaponReady(WRF_NOSECONDARY)
+		SPAF G 0 bright A_GiveInventory("ThrowPowerBig", 3)
+		SPAF G 1 bright A_WeaponReady(WRF_NOSECONDARY)
+		TNT1 A 0 A_JumpIfInventory("ThrowPowerBig", 140, "Explode")
+		Loop
+	Deselect:
+		TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
+		TNT1 A 0 A_JumpIfInventory("WhoopsIDied",1,"DeselectDead")
+		TNT1 A 0 A_JumpIfInventory("CalebTNTDeselectDummy",1,"DeselectAmmoLess")
+		TNT1 A 0 //A_JumpIfnoammo("DeselectAmmoLess")
+		SPRC DCB 1
+		SPRC A 0 A_PlayWeaponSound("TNT/Zip")
+		Goto Super::DeselectLoop
+	DeselectDead:
+		TNT1 A 0 A_TakeInventory("WhoopsIDied",999)
+		TNTH S 4 A_TakeInventory("ThrowPowerBig",255)
+		TNTH T 3 A_Lower
+		TNTH U 1 A_Lower
+		Goto DeselectDead+3
+	DeselectAmmoLess:
+		DYHN TPO 1
+		DYHN N 0 A_PlayWeaponSound("TNT/Zip")
+		Goto Super::DeselectLoop
+	Select:
+		DYHN N 0 A_GiveInventory("CalebTNTDeselectDummy",1)
+		DYHN N 0 A_TakeInventory("CalebSprayReadyDummy",1)
+		DYHN N 0 A_TakeInventory("ThrowPower",300)
+		DYHN N 0 A_TakeInventory("ThrowPowerBig",300)
+		Goto Super::SelectLoop
+	Cannot:
+		TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
+		TNT1 A 0 A_TakeInventory("ThrowPower",255)
+		TNT1 A 0 A_SelectWeapon("Pitchfork")
+		Goto Deselect
+	Cannot2:
+		TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
+		TNT1 A 0 A_SelectWeapon("Pitchfork")
+		Goto Deselect
+	Fire:
+		TNT1 A 0 A_JumpIfNoAmmo("TakeAway")
+		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
+		TNT1 A 0 A_JumpIfInventory("SprayCan2", 1, "Fire2")
+		TNT1 A 0 A_PlaySound("Napalm/Act2", CHAN_WEAPON, 1.0, true)
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+		TNT1 A 0 A_FireCustomMissile("SprayCanFire",0+frandom(-1.0,1.0),1,0+frandom(-1.0,1.0),4+frandom(-1.0,1.0))
+		Goto FireEnd
+		TNT1 A 0 A_FireCustomMissile("SprayCanFireCoop",0+frandom(-1.0,1.0),1,0+frandom(-1.0,1.0),4+frandom(-1.0,1.0))
+		Goto FireEnd
+	FireEnd:
+		TNT1 A 0 A_GunFlash
+		SPRF A 3 BRIGHT A_WeaponReady(WRF_NOBOB|WRF_NOSWITCH|WRF_NOFIRE)
+		TNT1 A 0 A_ReFire
+		TNT1 A 0 A_StopSound(CHAN_WEAPON)
+		Goto ReadyLoop
+	TakeAway:
+		TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
+		TNT1 A 1 A_SelectWeapon("Pitchfork")
+		Goto Deselect
+	AltFire:
+		SPLG J 0 A_JumpIfInventory("SprayCan2", 1, "ReadyFire")
+		SPLG JA 2 bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		DYNL A 0 A_PlayWeaponSound("Spray/Can")
+		SPLG BCDEFGHI 2 bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		// TNT1 A 0 A_Refire
+		SPLG I 1 bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		TNT1 A 0 A_JumpIfInventory("ThrowPowerBig", 140, "Explode")
+		TNT1 A 0 A_StopSound(CHAN_WEAPON)
+		TNT1 A 0 A_GiveInventory("SprayCan2", 1)
+		Goto ReadyFire
+	Fire2:
+		TNT1 A 0 A_GiveInventory("TNTCounter", 1)
+		TNT1 A 0 A_JumpIfInventory("TNTSoundDelay", 1, 3)
+		TNT1 A 0 A_GiveInventory("TNTSoundDelay", 1)
+		TNT1 A 0 A_PlayWeaponSound("TNT/FUSE")
+		TNT1 A 0 A_JumpIfInventory("ThrowPowerBig", 140, "Explode")
+		TNT1 A 0 A_JumpIfInventory("TNTCounter", 3, "Hold3")
+		TNT1 A 0 A_JumpIfInventory("TNTCounter", 2, "Hold2")
+		Goto Hold1
+	Hold1:
+		TNT1 A 0 A_GiveInventory("ThrowPower", 3)
+		TNT1 A 0 A_GiveInventory("ThrowPowerBig", 3)
+		SPAF GAB 2 bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
+		TNT1 A 0 A_Refire("Fire2")
+		TNT1 A 0 A_StopSound(CHAN_WEAPON)
+		Goto Throw
+	Hold2:
+		TNT1 A 0 A_GiveInventory("ThrowPower", 3)
+		TNT1 A 0 A_GiveInventory("ThrowPowerBig", 3)
+		SPAF CD 2 bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
+		TNT1 A 0 A_Refire("Fire2")
+		TNT1 A 0 A_StopSound(CHAN_WEAPON)
+		Goto Throw
+	Hold3:
+		TNT1 A 0 A_GiveInventory("ThrowPower", 3)
+		TNT1 A 0 A_GiveInventory("ThrowPowerBig", 3)
+		SPAF EF 2 bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
+		TNT1 A 0 A_TakeInventory("TNTCounter", 3)
+		TNT1 A 0 A_Refire("Fire2")
+		TNT1 A 0 A_PlayWeaponSound("Spray/Can")
+		TNT1 A 0 A_StopSound(CHAN_WEAPON)
+		Goto Throw
+	Explode:
+		TNT1 A 0 A_TakeInventory("ThrowPower",255)
+		TNT1 A 0 A_TakeInventory("ThrowPowerBig", 200)
+		TNT1 A 0 A_TakeInventory("TNTCounter", 3)
+		TNT1 A 0 A_GiveInventory("WhoopsIDied",1)
+		TNT1 A 0 A_PlaySound("Napalm/Explode",CHAN_ITEM)
+		TNT1 A 0 A_SpawnItem("FlareKaboom5")
+		TNT1 A 0 DamageThing(0,14)
+		TNT1 AAAAA 0 A_SpawnItemex("Blower",-16)
+		TNT1 AAA 1 A_SpawnItemex("Blower",-16)
+		TNTH S 4 A_TakeInventory("ThrowPowerBig",255)
+		TNTH T 8
+		TNTH U 5
+		Goto ReadyLoop
+	Throw:
+		ZIPU BDFG 1 Bright
+		DYNH ABCD 1
+		TNT1 A 0 A_GunFlash
+		TNT1 A 0 A_GiveInventory("SamsaraBloodSprayCanAltAttackHandler")
+		TNT1 A 0 A_StopSound(CHAN_WEAPON)
+		TNT1 A 0 A_PlayWeaponSound("TNT/Throw")
+		TNT1 A 0 A_TakeInventory("ThrowPower", 150)
+		TNT1 A 0 A_TakeInventory("ThrowPowerBig", 300)
+		TNT1 A 0 A_TakeInventory("SprayCanAmmo", 47, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_TakeInventory("SprayCan2", 5)
+		DYHN EFGHIJ 2
+		TNT1 A 0 A_JumpIfInventory("SprayCanAmmo", 1, 1)
+		Goto TakeAway
+		ZIPU LKI 2
+		DYHN K 2
+		SPRC HIJ 2
+		Goto ReadyLoop
+	Spawn:
+		SPFI J 1
+		Stop
+	Cannot:
+		TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
+		TNT1 A 0 A_SelectWeapon("PitchFork")
+		Goto Deselect
+	}
 }
-	
-ACTOR SprayCanAlt
-{  
-   Decal Scorch
-   Radius 3
-   Height 4
-   Speed 5
-   Scale 0.5
-   Damage (0)
-   PROJECTILE
-   -NOGRAVITY
-   +DONTSPLASH
-   +ThruGhost
-   +NoDamageThrust
-   damagetype "CalebFire"
-   States
-   {
-   Spawn:      
-      TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
-	  TNT1 A 0 ThrustThingZ(0, 15, 0, 1)
-   SpawnLoop:
-      STOS ABCDEF 2 Bright
-	  STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-	  STOS H 2 Bright
-      LOOP
-   Death:
-	  TNT1 A 0 A_StopSound(CHAN_BODY)
-      TNT1 A 1 Bright A_PlayWeaponSound("Flare/Explode2")
-      TNT1 A 3 Bright A_Explode(100, 100)
 
-	//I made it burn the area.. oh well until somoene ACS burning
-      BFE1 A 0 A_SpawnItem("FlareKaboom5", 0, 16)
-	  TNT1 B 3 Bright A_Explode(5,104)
-	  TNT1 B 2 Bright A_Explode(5,114)
-	  TNT1 B 2 Bright A_Explode(5,124)
-	  TNT1 B 3 Bright A_Explode(5,134)
-	  TNT1 B 2 Bright A_Explode(5,154)
-	  TNT1 B 2 Bright A_Explode(5,164)
-	  TNT1 B 3 Bright A_Explode(5,174)
-	  TNT1 B 3 Bright A_Explode(5,184)
-			
-	  TNT1 B 3 Bright A_Explode(5,194)
-	  TNT1 B 2 Bright A_Explode(5,204)
-	  TNT1 B 2 Bright A_Explode(5,184)
-	  TNT1 B 3 Bright A_Explode(5,164)
-	  TNT1 B 2 Bright A_Explode(5,144)
-	  TNT1 B 2 Bright A_Explode(5,124)
-	  TNT1 B 3 Bright A_Explode(5,104)
-	  TNT1 B 3 Bright A_Explode(5, 84)
-	  TNT1 BBBBBBBBBBBBB 3 Bright A_Explode(3, 64)
-      Stop
-   }
+Actor SamsaraBloodSprayCanAltAttackHandler : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 70, "Throw_35")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 68, "Throw_34")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 66, "Throw_33")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 64, "Throw_32")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 62, "Throw_31")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 60, "Throw_30")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 58, "Throw_29")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 56, "Throw_28")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 54, "Throw_27")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 52, "Throw_26")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 50, "Throw_25")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 48, "Throw_24")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 46, "Throw_23")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 44, "Throw_22")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 42, "Throw_21")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 40, "Throw_20")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 38, "Throw_19")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 36, "Throw_18")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 34, "Throw_17")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 32, "Throw_16")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 30, "Throw_15")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 28, "Throw_14")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 26, "Throw_13")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 24, "Throw_12")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 22, "Throw_11")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 20, "Throw_10")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 18, "Throw_9")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 16, "Throw_8")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 14, "Throw_7")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 12, "Throw_6")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 10, "Throw_5")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 8, "Throw_4")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 6, "Throw_3")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 4, "Throw_2")
+			TNT1 A 0 A_JumpIfInventory("ThrowPower", 2, "Throw_1")
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt_Coop")
+			Stop
+		Throw_1:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt1")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt1_Coop")
+			Stop
+		Throw_2:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt2")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt2_Coop")
+			Stop
+		Throw_3:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt3")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt3_Coop")
+			Stop
+		Throw_4:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt4")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt4_Coop")
+			Stop
+		Throw_5:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt5")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt5_Coop")
+			Stop
+		Throw_6:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt6")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt6_Coop")
+			Stop
+		Throw_7:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt7")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt7_Coop")
+			Stop
+		Throw_8:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt8")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt8_Coop")
+			Stop
+		Throw_9:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt9")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt9_Coop")
+			Stop
+		Throw_10:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt10")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt10_Coop")
+			Stop
+		Throw_11:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt11")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt11_Coop")
+			Stop
+		Throw_12:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt12")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt12_Coop")
+			Stop
+		Throw_13:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt13")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt13_Coop")
+			Stop
+		Throw_14:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt14")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt14_Coop")
+			Stop
+		Throw_15:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt15")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt15_Coop")
+			Stop
+		Throw_16:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt16")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt16_Coop")
+			Stop
+		Throw_17:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt17")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt17_Coop")
+			Stop
+		Throw_18:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt18")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt18_Coop")
+			Stop
+		Throw_19:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt19")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt19_Coop")
+			Stop
+		Throw_20:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt20")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt20_Coop")
+			Stop
+		Throw_21:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt21")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt21_Coop")
+			Stop
+		Throw_22:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt22")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt22_Coop")
+			Stop
+		Throw_23:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt23")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt23_Coop")
+			Stop
+		Throw_24:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt24")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt24_Coop")
+			Stop
+		Throw_25:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt25")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt25_Coop")
+			Stop
+		Throw_26:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt26")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt26_Coop")
+			Stop
+		Throw_27:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt27")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt27_Coop")
+			Stop
+		Throw_28:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt28")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt28_Coop")
+			Stop
+		Throw_29:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt29")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt29_Coop")
+			Stop
+		Throw_30:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt30")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt30_Coop")
+			Stop
+		Throw_31:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt31")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt31_Coop")
+			Stop
+		Throw_32:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt32")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt32_Coop")
+			Stop
+		Throw_33:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt33")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt33_Coop")
+			Stop
+		Throw_34:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt34")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt34_Coop")
+			Stop
+		Throw_35:
+			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt35")
+			Stop
+			TNT1 A 0 A_FireCustomMissile("SprayCanAlt35_Coop")
+			Stop
+	}
 }
-Actor SprayCanAlt1 : SprayCanAlt { Speed 6 }	
-Actor SprayCanAlt2 : SprayCanAlt { Speed 7 }	
-Actor SprayCanAlt3 : SprayCanAlt 
-{ 
-Speed 8 
-States {
-		Spawn:      
+
+ACTOR SprayCanAlt
+{
+	Decal Scorch
+	Radius 3
+	Height 4
+	Speed 5
+	Scale 0.5
+	Damage (0)
+	PROJECTILE
+	-NOGRAVITY
+	+DONTSPLASH
+	+ThruGhost
+	+NoDamageThrust
+	damagetype "CalebFire"
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
+		TNT1 A 0 ThrustThingZ(0, 15, 0, 1)
+	SpawnLoop:
+		STOS ABCDEF 2 Bright
+		STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
+		STOS H 2 Bright
+		Loop
+	Death:
+		TNT1 A 0 A_StopSound(CHAN_BODY)
+		TNT1 A 1 Bright A_PlayWeaponSound("Flare/Explode2")
+		TNT1 A 3 Bright A_Explode(100, 100)
+
+		//I made it burn the area.. oh well until somoene ACS burning
+		BFE1 A 0 A_SpawnItem("FlareKaboom5", 0, 16)
+		TNT1 B 3 Bright A_Explode(5,104)
+		TNT1 B 2 Bright A_Explode(5,114)
+		TNT1 B 2 Bright A_Explode(5,124)
+		TNT1 B 3 Bright A_Explode(5,134)
+		TNT1 B 2 Bright A_Explode(5,154)
+		TNT1 B 2 Bright A_Explode(5,164)
+		TNT1 B 3 Bright A_Explode(5,174)
+		TNT1 B 3 Bright A_Explode(5,184)
+		TNT1 B 3 Bright A_Explode(5,194)
+		TNT1 B 2 Bright A_Explode(5,204)
+		TNT1 B 2 Bright A_Explode(5,184)
+		TNT1 B 3 Bright A_Explode(5,164)
+		TNT1 B 2 Bright A_Explode(5,144)
+		TNT1 B 2 Bright A_Explode(5,124)
+		TNT1 B 3 Bright A_Explode(5,104)
+		TNT1 B 3 Bright A_Explode(5, 84)
+		TNT1 BBBBBBBBBBBBB 3 Bright A_Explode(3, 64)
+		Stop
+	 }
+}
+Actor SprayCanAlt1 : SprayCanAlt { Speed 6 }
+Actor SprayCanAlt2 : SprayCanAlt { Speed 7 }
+Actor SprayCanAlt3 : SprayCanAlt
+{
+	Speed 8
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 15, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt4 : SprayCanAlt3 { Speed 9 }
 Actor SprayCanAlt5 : SprayCanAlt3 { Speed 10 }
-Actor SprayCanAlt6 : SprayCanAlt3 
-{ 
-Speed 8 
-States {
-		Spawn:      
+Actor SprayCanAlt6 : SprayCanAlt3
+{
+	Speed 8
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 19, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
-Actor SprayCanAlt7 : SprayCanAlt6 { Speed 12 }	
+Actor SprayCanAlt7 : SprayCanAlt6 { Speed 12 }
 Actor SprayCanAlt8 : SprayCanAlt6 { Speed 13 }
 Actor SprayCanAlt9 : SprayCanAlt6
-{ 
-Speed 14 
-States {
-		Spawn:      
+{
+	Speed 14
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 21, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
-Actor SprayCanAlt10 : SprayCanAlt9 { Speed 15 }	
+Actor SprayCanAlt10 : SprayCanAlt9 { Speed 15 }
 Actor SprayCanAlt11 : SprayCanAlt9 { Speed 16 }
 Actor SprayCanAlt12 : SprayCanAlt9
-{ 
-Speed 17 
-States {
-		Spawn:      
+{
+	Speed 17
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 23, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
-}	
+}
 Actor SprayCanAlt13 : SprayCanAlt12 { Speed 18 }
 Actor SprayCanAlt14 : SprayCanAlt12 { Speed 19 }
 Actor SprayCanAlt15 : SprayCanAlt12
-{ 
-Speed 20 
-States {
-		Spawn:      
+{
+	Speed 20
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 25, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt16 : SprayCanAlt15 { Speed 21 }
 Actor SprayCanAlt17 : SprayCanAlt15 { Speed 22 }
 Actor SprayCanAlt18 : SprayCanAlt15
-{ 
-Speed 23
-States {
-		Spawn:      
+{
+	Speed 23
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 27, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt19 : SprayCanAlt18 { Speed 24 }
 Actor SprayCanAlt20 : SprayCanAlt18 { Speed 25 }
 Actor SprayCanAlt21 : SprayCanAlt18
-{ 
-Speed 26
-States {
-		Spawn:      
+{
+	Speed 26
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 29, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt22 : SprayCanAlt21 { Speed 27 }
 Actor SprayCanAlt23 : SprayCanAlt21 { Speed 28 }
 Actor SprayCanAlt24 : SprayCanAlt21
-{ 
-Speed 29
-States {
-		Spawn:      
+{
+	Speed 29
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 31, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt25 : SprayCanAlt24 { Speed 30 }
 Actor SprayCanAlt26 : SprayCanAlt24 { Speed 31 }
 Actor SprayCanAlt27 : SprayCanAlt24
-{ 
-Speed 32
-States {
-		Spawn:      
+{
+	Speed 32
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 33, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt28 : SprayCanAlt27 { Speed 33 }
 Actor SprayCanAlt29 : SprayCanAlt27 { Speed 34 }
 Actor SprayCanAlt30 : SprayCanAlt27
-{ 
-Speed 35
-States {
-		Spawn:      
+{
+	Speed 35
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 35, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt31 : SprayCanAlt30 { Speed 36 }
 Actor SprayCanAlt32 : SprayCanAlt30 { Speed 37 }
 Actor SprayCanAlt33 : SprayCanAlt30
-{ 
-Speed 38
-States {
-		Spawn:      
+{
+	Speed 38
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 37, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt34 : SprayCanAlt33 { Speed 39 }
 Actor SprayCanAlt35 : SprayCanAlt33 { Speed 40 }
 
 ACTOR SprayCanAlt_Coop : SprayCanAlt { Species "Player" +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES }
-Actor SprayCanAlt1_Coop : SprayCanAlt_Coop { Speed 6 }	
-Actor SprayCanAlt2_Coop : SprayCanAlt_Coop { Speed 7 }	
-Actor SprayCanAlt3_Coop : SprayCanAlt_Coop 
-{ 
-Speed 8 
-States {
-		Spawn:      
+Actor SprayCanAlt1_Coop : SprayCanAlt_Coop { Speed 6 }
+Actor SprayCanAlt2_Coop : SprayCanAlt_Coop { Speed 7 }
+Actor SprayCanAlt3_Coop : SprayCanAlt_Coop
+{
+	Speed 8
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 15, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt4_Coop : SprayCanAlt3_Coop { Speed 9 }
 Actor SprayCanAlt5_Coop : SprayCanAlt3_Coop { Speed 10 }
-Actor SprayCanAlt6_Coop : SprayCanAlt3_Coop 
-{ 
-Speed 8 
-States {
-		Spawn:      
+Actor SprayCanAlt6_Coop : SprayCanAlt3_Coop
+{
+	Speed 8
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 19, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
-Actor SprayCanAlt7_Coop : SprayCanAlt6_Coop { Speed 12 }	
+Actor SprayCanAlt7_Coop : SprayCanAlt6_Coop { Speed 12 }
 Actor SprayCanAlt8_Coop : SprayCanAlt6_Coop { Speed 13 }
 Actor SprayCanAlt9_Coop : SprayCanAlt6_Coop
-{ 
-Speed 14 
-States {
-		Spawn:      
+{
+	Speed 14
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 21, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
-Actor SprayCanAlt10_Coop : SprayCanAlt9_Coop { Speed 15 }	
+Actor SprayCanAlt10_Coop : SprayCanAlt9_Coop { Speed 15 }
 Actor SprayCanAlt11_Coop : SprayCanAlt9_Coop { Speed 16 }
 Actor SprayCanAlt12_Coop : SprayCanAlt9_Coop
-{ 
-Speed 17 
-States {
-		Spawn:      
+{
+	Speed 17
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 23, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
-}	
+}
 Actor SprayCanAlt13_Coop : SprayCanAlt12_Coop { Speed 18 }
 Actor SprayCanAlt14_Coop : SprayCanAlt12_Coop { Speed 19 }
 Actor SprayCanAlt15_Coop : SprayCanAlt12_Coop
-{ 
-Speed 20 
-States {
-		Spawn:      
+{
+	Speed 20
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 25, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt16_Coop : SprayCanAlt15_Coop { Speed 21 }
 Actor SprayCanAlt17_Coop : SprayCanAlt15_Coop { Speed 22 }
 Actor SprayCanAlt18_Coop : SprayCanAlt15_Coop
-{ 
-Speed 23
-States {
-		Spawn:      
+{
+	Speed 23
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 27, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt19_Coop : SprayCanAlt18_Coop { Speed 24 }
 Actor SprayCanAlt20_Coop : SprayCanAlt18_Coop { Speed 25 }
 Actor SprayCanAlt21_Coop : SprayCanAlt18_Coop
-{ 
-Speed 26
-States {
-		Spawn:      
+{
+	Speed 26
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 29, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt22_Coop : SprayCanAlt21_Coop { Speed 27 }
 Actor SprayCanAlt23_Coop : SprayCanAlt21_Coop { Speed 28 }
 Actor SprayCanAlt24_Coop : SprayCanAlt21_Coop
-{ 
-Speed 29
-States {
-		Spawn:      
+{
+	Speed 29
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 31, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt25_Coop : SprayCanAlt24_Coop { Speed 30 }
 Actor SprayCanAlt26_Coop : SprayCanAlt24_Coop { Speed 31 }
 Actor SprayCanAlt27_Coop : SprayCanAlt24_Coop
-{ 
-Speed 32
-States {
-		Spawn:      
+{
+	Speed 32
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 33, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt28_Coop : SprayCanAlt27_Coop { Speed 33 }
 Actor SprayCanAlt29_Coop : SprayCanAlt27_Coop { Speed 34 }
 Actor SprayCanAlt30_Coop : SprayCanAlt27_Coop
-{ 
-Speed 35
-States {
-		Spawn:      
+{
+	Speed 35
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 35, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt31_Coop : SprayCanAlt30_Coop { Speed 36 }
 Actor SprayCanAlt32_Coop : SprayCanAlt30_Coop { Speed 37 }
 Actor SprayCanAlt33_Coop : SprayCanAlt30_Coop
-{ 
-Speed 38
-States {
-		Spawn:      
+{
+	Speed 38
+	States
+	{
+		Spawn:
 			TNT1 A 0 NoDelay A_PlaySound("TNT/FUSE", CHAN_BODY, 1.0, true)
 			TNT1 A 0 ThrustThingZ(0, 37, 0, 1)
-		SpawnLoop:
-			STOS ABCDEF 2 Bright
-			STOS G 2 Bright A_SpawnItem("TNTSmoke",5)
-			STOS H 2 Bright
-			LOOP
+			Goto Super::SpawnLoop
 	}
 }
 Actor SprayCanAlt34_Coop : SprayCanAlt33_Coop { Speed 39 }
@@ -1231,49 +1017,49 @@ Actor SprayCanAlt35_Coop : SprayCanAlt33_Coop { Speed 40 }
 
 actor SprayCanFire
 {
-  radius 13
-  height 8
-  speed 12
-  //RENDERSTYLE ADD
-  Scale 0.120
-  damage (6)
-  //alpha 0.9
-  //deathsound "weapons/plasmax"
-  //SeeSound "Spray/Can"
-  PROJECTILE
-  +RANDOMIZE
-  +CANNOTPUSH
-  +NODAMAGETHRUST
-  +RIPPER
-  +BLOODLESSIMPACT
-  damagetype "CalebFire"
-  states
-  {
-  Spawn:
-    //NSMK G 0 A_JumpIf (waterlevel < 1, 13)
-    NSMK G 0 A_Jump(128,6)
-    SPFI AABBCCDD 1 Bright //A_SpawnItem ("BFireTrail",8+random(-7,7),8+random(-7,7),0,0)
-	TNT1 A 0 ThrustThingZ(0, 4, 0, 1)
-	SPFI EFGHI 2 bright //A_SpawnItem ("BFireTrail2",8+random(-5,5),8+random(-7,7),0,0)
-    goto Death
-    SPFI ABCD 2 //A_SpawnItem ("BFireTrail",8+random(-5,5),8+random(-7,7),0,0)
-	TNT1 A 0 ThrustThingZ(0, 4, 0, 1)
-	SPFI EF 2 bright //A_SpawnItem ("BFireTrail2",8+random(-5,5),8+random(-5,5),0,0)
-    goto Death
-    NSMK G 0
-    goto XDeath
-  Death:
-    NSMK A 0 A_Jump(128,15)
-    SPFI GHI 2 bright A_SpawnItem ("BFireTrail",8+random(-5,5),8+random(-5,5),0,0)
-    SFIR ABCDEFGH 2 bright
-    stop
-    SPFI GHI 2 bright A_SpawnItem ("BFireTrail2",8+random(-5,5),8+random(-5,5),0,0)
-    SFIR IJKLMNOP 2 bright
-    stop
-  XDeath:
-    FTRL H 0 bright
-    stop
-  }
+	radius 13
+	height 8
+	speed 12
+	//RENDERSTYLE ADD
+	Scale 0.120
+	damage (6)
+	//alpha 0.9
+	//deathsound "weapons/plasmax"
+	//SeeSound "Spray/Can"
+	PROJECTILE
+	+RANDOMIZE
+	+CANNOTPUSH
+	+NODAMAGETHRUST
+	+RIPPER
+	+BLOODLESSIMPACT
+	damagetype "CalebFire"
+	states
+	{
+	Spawn:
+		//NSMK G 0 A_JumpIf (waterlevel < 1, 13)
+		NSMK G 0 A_Jump(128,6)
+		SPFI AABBCCDD 1 Bright //A_SpawnItem ("BFireTrail",8+random(-7,7),8+random(-7,7),0,0)
+		TNT1 A 0 ThrustThingZ(0, 4, 0, 1)
+		SPFI EFGHI 2 bright //A_SpawnItem ("BFireTrail2",8+random(-5,5),8+random(-7,7),0,0)
+		Goto Death
+		SPFI ABCD 2 //A_SpawnItem ("BFireTrail",8+random(-5,5),8+random(-7,7),0,0)
+		TNT1 A 0 ThrustThingZ(0, 4, 0, 1)
+		SPFI EF 2 bright //A_SpawnItem ("BFireTrail2",8+random(-5,5),8+random(-5,5),0,0)
+		Goto Death
+		NSMK G 0
+		Goto XDeath
+	Death:
+		NSMK A 0 A_Jump(128,15)
+		SPFI GHI 2 bright A_SpawnItem ("BFireTrail",8+random(-5,5),8+random(-5,5),0,0)
+		SFIR ABCDEFGH 2 bright
+		Stop
+		SPFI GHI 2 bright A_SpawnItem ("BFireTrail2",8+random(-5,5),8+random(-5,5),0,0)
+		SFIR IJKLMNOP 2 bright
+		Stop
+	XDeath:
+		FTRL H 0 bright
+		Stop
+	}
 }
 
 actor SprayCanFireCoop : SprayCanFire { +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES Species "Player" }
