@@ -747,9 +747,11 @@ script "Freeman_Loop" (void)
 	int longJumpCharges = 0;
 	int longJumpChargeFade = 0;
 	ACS_NamedExecuteWithResult("Freeman_HEV_Enter",0,0,0,0);
-	
+
 	while(CheckInventory("HalfLifeClass"))
 	{
+        int hgunregentimer, shockregentimer;
+
 		if(!CheckInventory("HalfLifeOpposingForce"))
 		{
 			if(CheckInventory("HLOPHasBarnacleLongJump") && !GetCvar("samsara_banjetpack"))
@@ -770,7 +772,9 @@ script "Freeman_Loop" (void)
 				}
 			}
 		}
+
 		Delay(1);
+
 		if(longJumpCharges > 0)
 		{
 			if(longJumpChargeFade >= 17)
@@ -781,6 +785,31 @@ script "Freeman_Loop" (void)
 		}
 		longJumpChargeFade++;
 		longJumpDelay--;
+
+        if (CheckInventory("SamsaraHasInfiniteAmmo") || !CheckInventory("HLHornetGunRegenLock") || !CheckWeapon("Hornetgun"))
+        {
+            hgunregentimer++;
+
+            if (hgunregentimer > 19)
+            {
+                hgunregentimer = 8;
+                GiveInventory("HornetGunAmmo", 1);
+            }
+        }
+        else { hgunregentimer = 0; }
+
+        if (CheckInventory("SamsaraHasInfiniteAmmo") || !CheckInventory("HLShockRoachRegenLock") || !CheckWeapon("Hornetgun"))
+        {
+            shockregentimer++;
+
+            if (shockregentimer > 19)
+            {
+                shockregentimer = 8;
+                if (CheckWeapon("Hornetgun") && CheckInventory("HalfLifeOpposingForce") && CheckInventory("ShockRoachAmmo") < GetAmmoCapacity("ShockRoachAmmo") && !isDead(0)) { PlaySound(0, "HLShockRoach/Recharge", CHAN_6); }
+                GiveInventory("ShockRoachAmmo", 1);
+            }
+        }
+        else { shockregentimer = 0; }
 	}
 }
 
@@ -1171,19 +1200,6 @@ Script "HL_HUD_Pickups" (int cause)
 		SetFont(HLPickupIDsNew[CheckInventory("HalfLifeOpposingForce")][cause]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_FADEINOUT, 23781, 0, 720.2, 400.2, 0.333,1.0,3.0);
 		SetHUDSize(0,0,0);		
 	}
-}	
-
-Script "Freeman_HoldAlt" (void)
-{
-	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS); // Checks what keys the player is pressing
-	if (buttonPress & BT_ALTATTACK)
-	{
-		SetResultValue (1);
-	}
-	else
-	{
-		SetResultValue (0);
-	}
 }
 
 Script "HalfLifeRecoil" (int weapon) clientside
@@ -1267,30 +1283,8 @@ script "HalfLifeLaserSight" (int mode)
     }
 }
 
-Script "HalfLifeHiveHandRecharge" (void)
-{
-	if(!CheckWeapon("Hornetgun"))
-	{
-		terminate;
-	}
-	else
-		{
-			if(!CheckInventory("HLHiveHandFiring"))
-			{
-				Delay(12);
-				GiveInventory("HornetGunAmmo", 1);
-				GiveInventory("ShockRoachAmmo", 1);
-			}
-			else
-			{
-				Delay(7);
-			}
-			restart;
-		}
-}
-
-str HLWeaponSelectedTokens[11] = { "freeman_fistselected", "freeman_pistolselected", "freeman_slot1selected", "freeman_slot2selected", "freeman_slot3selected"
-, "freeman_slot4selected", "freeman_slot5selected", "freeman_slot6selected", "freeman_slot7selected", "freeman_uniqueselected", "freeman_unique2selected" };
+str HLWeaponSelectedTokens[11] = { "freeman_fistselected", "freeman_pistolselected", "freeman_slot1selected", "freeman_slot2selected", "freeman_slot3selected",
+                                   "freeman_slot4selected", "freeman_slot5selected", "freeman_slot6selected", "freeman_slot7selected", "freeman_uniqueselected", "freeman_unique2selected" };
 
 Script "HalfLifeWeaponSkin" (int token) clientside
 {
@@ -2019,4 +2013,17 @@ Script "HLLongJumpSlowedThrust" (int maxThrust, int speed)
 		Delay(2);
 	}
 	SetPlayerProperty(0,0,PROP_FROZEN);
+}
+
+script "HLShockRoachDischargeAmountCalc" (int mode)
+{
+    if (mode >= 1) // get discharge amount
+    {
+        SetActivatorToTarget(0);
+
+        SetResultValue(CheckInventory("SamsaraHalfLifeShockRoachDischargeAmount"));
+    } else { // set discharge amount
+        if (CheckInventory("SamsaraHasInfiniteAmmo")) { SetInventory("SamsaraHalfLifeShockRoachDischargeAmount", GetAmmoCapacity("ShockRoachAmmo")); }
+        else { SetInventory("SamsaraHalfLifeShockRoachDischargeAmount", CheckInventory("ShockRoachAmmo")); }
+    }
 }

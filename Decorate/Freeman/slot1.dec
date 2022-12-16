@@ -1,3 +1,8 @@
+actor freeman_slot1selected : Boolean { Inventory.InterHubAmount 0 }
+actor HLHornetGunRegenLock : Boolean {}
+actor HLShockRoachRegenLock : Boolean {}
+actor SamsaraHalfLifeShockRoachDischargeAmount : Counter {}
+
 Actor "Hornetgun" : HLWeapon
 {
 	Weapon.Slotnumber 1
@@ -9,12 +14,9 @@ Actor "Hornetgun" : HLWeapon
 	Inventory.Pickupmessage "You got the hornetgun!"
 	Inventory.Pickupsound "halflife/weaponpickup"
 	Weapon.AmmoType1 "HornetGunAmmo"
-    Weapon.AmmoUse1 0
-    Weapon.AmmoGive1 8
+    Weapon.AmmoUse1 1
 	Weapon.AmmoType2 "ShockRoachAmmo"
-    Weapon.AmmoUse2 0
-    Weapon.AmmoGive2 10
-	-WEAPON.NOALERT
+    Weapon.AmmoUse2 1
 	Inventory.RestrictedTo "HalfLifePlayer"
     Tag "Hivehand"
 	states
@@ -22,6 +24,48 @@ Actor "Hornetgun" : HLWeapon
 	Spawn:
 		HW10 Z -1
 		stop
+
+    // Gordon Freeman
+	ReadyActual:
+		HW12 A 0 A_TakeInventory("HLHornetGunRegenLock")
+		HW12 A 0 A_TakeInventory("HLShockRoachRegenLock")
+		HW12 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualOpp")
+		HW12 A 2 A_WeaponReady
+        goto ReadyActualJump
+
+    ReadyActualJump:
+		HW12 A 0 A_Jump(4,"ReadyActual")
+		HW12 A 0 A_Jump(3,"ReadyActual")
+		HW12 A 0 A_Jump(2,"ReadyActual")
+		HW12 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualJumpOpp")
+		HW12 A 0 A_Jump(1,"ReadyActualIdle1","ReadyActualIdle2","ReadyActualIdle3")
+		goto ReadyActual
+
+	ReadyActualIdle1:
+		HW12 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		HW21 ABCDEF 1 A_WeaponReady
+		goto ReadyActual
+
+	ReadyActualIdle2:
+		HW21 GHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		HW22 ABCDEFGHIJKLMNOPQRSTU 1 A_WeaponReady
+		goto ReadyActual
+
+	ReadyActualIdle3:
+		HW22 VWXYZ 1 A_WeaponReady
+		HW23 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		HW24 ABCDE 1 A_WeaponReady
+		goto ReadyActual
+
+	Deselect:
+		TNT1 A 0 A_TakeInventory("freeman_slot1selected",1)
+		TNT1 A 0 A_TakeInventory("HLHornetGunRegenLock")
+		TNT1 A 0 A_TakeInventory("HLShockRoachRegenLock")
+	DeselectLoop:	
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+		TNT1 A 1 A_Lower
+		loop
+
 	Select:
 		TNT1 A 0 A_TakeInventory("freeman_fistselected",1)	
 		TNT1 A 0 A_TakeInventory("freeman_pistolselected",1)
@@ -35,156 +79,233 @@ Actor "Hornetgun" : HLWeapon
 	SelectLoop:	
 		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
 		TNT1 A 1 A_Raise
-		loop	
-	Deselect:
-		TNT1 A 0 A_StopSound(CHAN_6)
-		TNT1 A 0 A_TakeInventory("freeman_slot1selected",1)
-	DeselectLoop:	
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
-		TNT1 A 1 A_Lower
 		loop
-	Ready:
-		TNT1 A 1
-		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeHiveHandRecharge")
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReadyOpp")
-		TNT1 A 0 A_StopSound(CHAN_6)
-		TNT1 A 0 A_PlaySound("halflife/weaponselect",CHAN_WEAPON)
+
+	Ready: // our "Select" state
+		HW10 A 0 A_PlaySound("halflife/weaponselect",CHAN_7)
+		HW10 A 0 A_TakeInventory("HLHornetGunRegenLock")
+		HW10 A 0 A_TakeInventory("HLShockRoachRegenLock")
+		HW10 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyOpp")
 		HW10 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
 		HW11 ABCD 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
-		goto WIdle
+		goto ReadyActual
+
+    Fire:
+        HW13 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+        HW13 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireOpp")
+        HW13 A 0 A_JumpIfInventory("HornetGunAmmo",1,"FireStart")
+        goto FireDry
+
+    FireDry:
+        HW12 A 0 A_ClearReFire
+		HW12 A 0 A_TakeInventory("HLHornetGunRegenLock")
+		HW12 A 0 A_TakeInventory("HLShockRoachRegenLock")
+        HW12 A 4 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireDryOpp")
+        goto ReadyActual
+
+    Hold:
+        HW13 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+        HW13 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"HoldOpp")
+        HW13 A 0 A_JumpIfInventory("HornetGunAmmo",1,"FireStart")
+        goto HoldDry
+
+    HoldDry:
+        HW13 G 0 A_ClearReFire
+        // technically still in fire animation, no lock removal is done here
+        HW13 G 2 A_JumpIfInventory("HalfLifeOpposingForce",1,"HoldDryOpp")
+        HW13 H 2
+        HW13 I 2 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+        goto ReadyActual
+
+    FireStart:
+        HW13 A 0 A_AlertMonsters
+		HW13 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireStartOpp")
+		HW13 A 0 A_TakeInventory("HLShockRoachRegenLock")
+		HW13 A 0 A_GiveInventory("HLHornetGunRegenLock")
+        HW13 A 1 A_GiveInventory("SamsaraHalfLifeHornetGunPrimaryAttackHandler")
+		HW13 BC 1
+		HW13 DEF 2
+		HW13 GHI 2 A_ReFire
+		goto ReadyActual
+
+    AltFire:
+        HW13 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireStart")
+        HW13 A 0 A_JumpIfInventory("HornetGunAmmo",1,"AltFireStart")
+        goto FireDry
+
+    AltHold:
+        HW13 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireStart")
+        HW13 A 0 A_JumpIfInventory("HornetGunAmmo",1,"AltFireStart")
+        goto AltHoldDry
+
+    AltHoldDry:
+        // technically still in fire animation, no lock removal is done here
+        HW13 D 1 A_ClearReFire
+        HW13 EFG 1
+        HW13 HI 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+        goto ReadyActual
+
+    AltFireStart:
+        HW13 A 0 A_AlertMonsters
+		HW13 A 0 A_TakeInventory("HLShockRoachRegenLock")
+		HW13 A 0 A_GiveInventory("HLHornetGunRegenLock")
+		HW13 A 1 A_GiveInventory("SamsaraHalfLifeHornetGunSecondaryAttackHandler")
+		HW13 BC 1
+        HW13 D 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
+        HW13 D 0 A_ReFire
+        HW13 D 1 A_ClearReFire
+        HW13 E 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
+        HW13 E 0 A_ReFire
+        HW13 E 1 A_ClearReFire
+        HW13 F 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
+        HW13 F 0 A_ReFire
+        HW13 F 1 A_ClearReFire
+        HW13 G 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
+        HW13 G 0 A_ReFire
+        HW13 G 1 A_ClearReFire
+        HW13 H 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
+        HW13 H 0 A_ReFire
+        HW13 H 1 A_ClearReFire
+        HW13 I 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
+        HW13 I 0 A_ReFire
+        HW13 I 1 A_ClearReFire
+		goto ReadyActual
+
+    // Adrian Shephard (Shock Roach)
+	ReadyActualOpp:
+		OP00 A 2 A_WeaponReady(WRF_NOSECONDARY)
+		goto ReadyActualJump
+
+    ReadyActualJumpOpp:
+		OP00 A 0 A_Jump(1,"ReadyActualIdle1Opp","ReadyActualIdle2Opp")
+		goto ReadyActual
+
+	ReadyActualIdle1Opp:
+		OP00 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_NOSECONDARY)
+		OP01 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_NOSECONDARY)
+		OP02 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_NOSECONDARY)
+		OP03 ABCDEFGHIJKLMNOPQRSTUVW 1 A_WeaponReady(WRF_NOSECONDARY)
+		goto ReadyActual
+
+	ReadyActualIdle2Opp:
+		OP08 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_NOSECONDARY)
+		OP09 ABCDEFGHIJKLMNOPQRSTUVWX 1 A_WeaponReady(WRF_NOSECONDARY)
+		goto ReadyActual
+
 	ReadyOpp:
-		TNT1 A 0 A_PlaySound("halflife/weaponselect",CHAN_WEAPON)
-		TNT1 A 0 A_PlaySound("HLShockRoach/Draw", CHAN_7)
+		OP05 A 0 A_PlaySound("HLShockRoach/Draw")
 		OP05 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
 		OP06 ABC 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
-		goto WIdle
-	WIdle:
-		TNT1 A 0 A_TakeInventory("HLHiveHandFiring", 1)
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "WIdleOpp")
-		TNT1 A 0 A_StopSound(CHAN_6)
-		HW12 A 2 A_WeaponReady
-		TNT1 A 0 A_Jump(4,"WIdle")
-		TNT1 A 0 A_Jump(3,"WIdle")
-		TNT1 A 0 A_Jump(2,"WIdle")				
-		TNT1 A 0 A_Jump(1,"Idle1","Idle2","Idle3")
-		loop
-	Idle1:
-		HW12 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-		HW21 ABCDEF 1 A_WeaponReady
-		Goto WIdle
-	Idle2:
-		HW21 GHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-		HW22 ABCDEFGHIJKLMNOPQRSTU 1 A_WeaponReady
-		Goto WIdle
-	Idle3:
-		HW22 VWXYZ 1 A_WeaponReady
-		HW23 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-		HW24 ABCDE 1 A_WeaponReady		
-		Goto WIdle	
-	WIdleOpp:
-		TNT1 A 0 A_JumpIfInventory("ShockRoachAmmo", 0, "StopRechargeSound")
-		Goto PlayRechargeSound
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
-		Goto WIdle+1
-		OP00 A 2 A_WeaponReady
-		TNT1 A 0 A_Jump(4,"WIdleOpp")
-		TNT1 A 0 A_Jump(3,"WIdleOpp")
-		TNT1 A 0 A_Jump(2,"WIdleOpp")				
-		TNT1 A 0 A_Jump(1,"Idle1Opp","Idle2Opp")
-		loop
-	PlayRechargeSound:
-		TNT1 A 0 A_PlaySound("HLShockRoach/Recharge", CHAN_6, 1.0, true)
-		Goto WIdleOpp+1
-	StopRechargeSound:
-		TNT1 A 0 A_StopSound(CHAN_6)
-		Goto WIdleOpp+1
-	Idle1Opp:
-		OP00 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-		OP01 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-		OP02 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-		OP03 ABCDEFGHIJKLMNOPQRSTUVW 1 A_WeaponReady
-		Goto WIdle
-	Idle2Opp:
-		OP08 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-		OP09 ABCDEFGHIJKLMNOPQRSTUVWX 1 A_WeaponReady
-		Goto WIdle
-	Fire:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "FireOpp")
-		TNT1 A 0 A_JumpIfInventory("HornetGunAmmo",1,"FireAmmo")
-		goto Nope
-	FireAmmo:
-		TNT1 A 0 A_GiveInventory("HLHiveHandFiring", 1)
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "FireAmmoOpp")
-		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
-		HW13 A 1 A_PlaySound("halflife/hornet_shoot",CHAN_WEAPON)
-		HW13 B 0 A_TakeInventory("HornetGunAmmo",1)
-		TNT1 A 0 A_JumpIfInventory("DMModeOn", 1, "FireDM")
-		HW13 B 0 A_JumpIfInventory("CoopModeOn",1,"FireCoop")
-		HW13 B 1 A_FireCustomMissile("HLHornetSeeker",0,0,6,4)
-		goto FireFinish
-	FireCoop:
-		HW13 B 1 A_FireCustomMissile("HLHornetSeekerCoop",0,0,6,4)
-		goto FireFinish
-	FireDM:
-		HW13 B 1 A_FireCustomMissile("HLHornetSeekerDM",0,0,6,4)
-		goto FireFinish
-	FireFinish:
-		HW13 C 1
-		HW13 DEF 2
-		HW13 GHI 2 A_Refire
-		TNT1 A 0 A_TakeInventory("HLHiveHandFiring", 1)
-		goto WIdle
-	FireOpp:
-		TNT1 A 0 A_JumpIfInventory("ShockRoachAmmo",1,"FireAmmoOpp")
-		goto NopeOpp
-	FireAmmoOpp:
-		TNT1 A 0 A_GiveInventory("HLHiveHandFiring", 1)
-		OP04 A 1 A_PlaySound("HLShockRoach/Fire",CHAN_WEAPON)
-		OP04 B 0 A_TakeInventory("ShockRoachAmmo",1)
-		OP04 B 0 A_JumpIfInventory("CoopModeOn",1,"FireCoopOpp")
-		OP04 B 1 A_FireCustomMissile("HLShockProjectile",0,0,5,3)
-		goto FireFinishOpp
-	FireCoopOpp:
-		OP04 B 1 A_FireCustomMissile("HLShockProjectile",0,0,5,3)
-		goto FireFinishOpp
-	FireFinishOpp:
+		goto ReadyActual
+
+    FireOpp:
+        OP04 A 0 A_JumpIfInventory("ShockRoachAmmo",1,"FireStart")
+        goto FireDry
+
+    FireDryOpp:
+        OP00 A 4
+        goto ReadyActual
+
+    HoldOpp:
+        OP04 A 0 A_JumpIfInventory("ShockRoachAmmo",1,"FireStart")
+        goto HoldDry
+
+    HoldDryOpp:
+        OP04 GHIJ 1
+        goto ReadyActual
+
+    FireStartOpp:
+		OP04 A 0 A_TakeInventory("HLHornetGunRegenLock")
+		OP04 A 0 A_GiveInventory("HLShockRoachRegenLock")
+        OP04 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"FireDischargeOpp")
+		OP04 A 1 A_GiveInventory("SamsaraHalfLifeShockRoachAttackHandler")
+		OP04 B 1
 		OP04 C 2
 		OP04 DEF 1
-		OP04 GHIJ 1 A_Refire
-		TNT1 A 0 A_TakeInventory("HLHiveHandFiring", 1)
-		goto WIdle
-	AltFire:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "Nope")
-		TNT1 A 0 A_JumpIfInventory("HornetGunAmmo",1,"AltFireAmmo")
-		goto Nope
-	AltFireAmmo:
-		TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
-		TNT1 A 0 A_GiveInventory("HLHiveHandFiring", 1)
-		HW13 A 1 A_PlaySound("halflife/hornet_shoot",CHAN_WEAPON)
-		TNT1 A 0 A_TakeInventory("HornetGunAmmo",1)
-		TNT1 A 0 A_JumpIfInventory("DMModeOn",1,"AltFireDM")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"AltFireCoop")
-		HW13 B 1 A_FireCustomMissile("HLHornet",0,0,6,4)
-		goto AltFireFinish
-	AltFireCoop:
-		HW13 B 1 A_FireCustomMissile("HLHornetCoop",0,0,6,4)
-		goto AltFireFinish
-	AltFireDM:
-		HW13 B 1 A_FireCustomMissile("HLHornetDM",0,0,6,4)
-		goto AltFireFinish
-	AltFireFinish:
-		HW13 C 1
-		HW13 DEFGHI 1 A_Refire
-		TNT1 A 0 A_TakeInventory("HLHiveHandFiring", 1)
-		goto WIdle
-	Nope:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "NopeOpp")
-		HW12 A 6
-		goto WIdle
-	NopeOpp:
-		OP00 A 6
-		goto WIdle
+		OP04 GHIJ 1 A_ReFire
+		goto ReadyActual
+
+    FireDischargeOpp:
+        OP00 A 0 A_ClearReFire
+        OP00 A 55 A_GiveInventory("SamsaraHalfLifeShockRoachDischargeAttackHandler")
+        goto ReadyActual
 	}
+}
+
+actor SamsaraHalfLifeHornetGunPrimaryAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("HornetGunAmmo",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("HornetGunAmmo",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("halflife/hornet_shoot",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("HLHornetSeekerDM",0,false,6,4)
+        goto PickupFinish
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("HLHornetSeekerCoop",0,false,6,4)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
+        stop
+    }
+}
+
+actor SamsaraHalfLifeHornetGunSecondaryAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("HornetGunAmmo",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("HornetGunAmmo",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("halflife/hornet_shoot",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("HLHornetDM",0,false,6,4)
+        goto PickupFinish
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("HLHornetCoop",0,false,6,4)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 ACS_NamedExecuteAlways("HalfLifeRecoil", 0, 1)
+        stop
+    }
+}
+
+actor HornetGunAmmo : Ammo
+{
+    Inventory.MaxAmount 8
+    +IGNORESKILL
 }
 
 Actor HLHornet
@@ -199,7 +320,7 @@ Actor HLHornet
 	+HITTRACER
 	+NODAMAGETHRUST
 	+FORCERADIUSDMG
-	BounceCount 5
+	BounceCount 10
 	Speed 30
 	Radius 2
 	Height 4
@@ -258,6 +379,9 @@ Actor HLHornet
 		stop
 	}
 }
+
+actor HLHornetCoop : HLHornet { +THRUSPECIES Species "Player" +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES }
+actor HLHornetDM : HLHornet { Speed 18 BounceCount 5 }
 
 Actor HLHornetTrail
 {
@@ -318,7 +442,7 @@ Actor HLHornetSeeker
 	scale 0.08
 	DeathSound ""
 	ActiveSound "halflife/hornet_buzz"
-	Obituary "%o died."
+	//Obituary "%o died."
 	States
 	{
 	Spawn:
@@ -374,6 +498,9 @@ Actor HLHornetSeeker
 	}
 }
 
+actor HLHornetSeekerCoop : HLHornetSeeker { +THRUSPECIES Species "Player" +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES }
+actor HLHornetSeekerDM : HLHornetSeeker { Speed 12 }
+
 Actor HLHornetSeekerTrail
 {
 	+NOGRAVITY
@@ -417,31 +544,75 @@ Actor HLHornetSeekerDeath
 	}
 }
 
-Actor HLHornetSeekerCoop : HLHornetSeeker { +THRUSPECIES Species "Player" +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES }
-Actor HLHornetCoop : HLHornet { +THRUSPECIES Species "Player" +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES BounceCount 10 }
-
-Actor HLHornetSeekerDM : HLHornetSeeker { Speed 12 }
-Actor HLHornetDM : HLHornet { Speed 18 }
-
-Actor freeman_slot1selected : Inventory
+actor SamsaraHalfLifeShockRoachAttackHandler : Trigger
 {
-	Inventory.MaxAmount 1
-	Inventory.InterhubAmount 0
-	+INVENTORY.IGNORESKILL
-	+INVENTORY.UNDROPPABLE
-	-INVENTORY.INVBAR
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("ShockRoachAmmo",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("ShockRoachAmmo",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("HLShockRoach/Fire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("HLShockProjectile",0,false,5,3)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("HLShockProjectileCoop",0,false,5,3)
+        stop
+    }
 }
 
-Actor HornetGunAmmo : Ammo
+actor SamsaraHalfLifeShockRoachDischargeAttackHandler : Trigger
 {
-	Inventory.amount 8
-	inventory.maxamount 8
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupDischargeAmountCalc")
+        TNT1 A 0 A_JumpIfInventory("ShockRoachAmmo",1,"PickupDischargeAmountCalc")
+        stop
+
+      // Discharge damage/radius calculation stuff
+      PickupDischargeAmountCalc:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HLShockRoachDischargeAmountCalc")
+        goto PickupTakeAmmo
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("ShockRoachAmmo",0,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("HLShockRoach/Discharge",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("HLShockRoachDischarge",0,false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("HLShockRoachDischargeCoop",0,false)
+        stop
+    }
 }
 
-Actor ShockRoachAmmo : Ammo
+actor ShockRoachAmmo : Ammo
 {
-	Inventory.amount 10
-	inventory.maxamount 10
+    Inventory.MaxAmount 10
+    +IGNORESKILL
 }
 
 Actor HLShockProjectile : FastProjectile
@@ -464,8 +635,9 @@ Actor HLShockProjectile : FastProjectile
 		TNT1 A 0 A_SetDamageType("HLEgon")
 	SpawnLoop:
 		TNT1 A 0
-		HPI0 E 1 bright
+		HPI0 E 1 bright A_JumpIf(waterlevel >= 3, "FuckWater")
 		loop
+
 	Crash:
 	XDeath:	
 		TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",25),8,!XF_HURTSOURCE,0,8)	
@@ -477,6 +649,7 @@ Actor HLShockProjectile : FastProjectile
 		TNT1 A 0 A_SpawnItemEx("HLPuffSpark",0,0,0,FRandom(1,4),0,Random(0,3),Random(-90,90))
 		TNT1 A 0 A_SpawnItemEx("HLPuffSpark",0,0,0,FRandom(1,4),0,Random(0,3),Random(-90,90))
 		stop		
+
 	Death:
 		TNT1 A 0 A_PlaySound("HLShockRoach/Impact",CHAN_BODY)
 		HWX4 A 2 bright
@@ -486,9 +659,51 @@ Actor HLShockProjectile : FastProjectile
 		TNT1 A 0 A_SpawnItemEx("HLPuffSpark",0,0,0,FRandom(1,4),0,Random(0,3),Random(-90,90))
 		TNT1 A 0 A_SpawnItemEx("HLPuffSpark",0,0,0,FRandom(1,4),0,Random(0,3),Random(-90,90))
 		stop
+
+    FuckWater:
+        TNT1 A 0 A_Stop
+        TNT1 A 0 A_ChangeFlag("NODAMAGETHRUST",true)
+        TNT1 A 0 A_Explode(100,150)
+        TNT1 A 0 A_ChangeFlag("NODAMAGETHRUST",false)
+        TNT1 A 0 A_Die
+        goto Death
 	}
 }
 
 Actor HLShockProjectileCoop : HLShockProjectile { +THRUSPECIES Species "Player" +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES }
 
-Actor HLHiveHandFiring : Boolean {}
+actor HLShockRoachDischarge
+{
+    Projectile
+    Radius 8
+    Height 8
+    DamageType "HLLaser"
+    +NODAMAGETHRUST
+    +FORCERADIUSDMG
+    +NOTIMEFREEZE
+    +DONTBLAST
+    +DONTREFLECT
+    +DONTSPLASH
+    +NOTRIGGER
+    +NOTONAUTOMAP
+    +SKYEXPLODE
+    +BLOODLESSIMPACT
+    +EXTREMEDEATH
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        TNT1 A 0 A_Jump(128,"Death")
+        TNT1 A 0 A_SetDamageType("HLEgon")
+      Death:
+        TNT1 A 0 A_Stop
+        TNT1 A 1 A_Explode(100 * (ACS_NamedExecuteWithResult("HLShockRoachDischargeAmountCalc", 1)), 150 * (ACS_NamedExecuteWithResult("HLShockRoachDischargeAmountCalc", 1)))
+        stop
+    }
+}
+
+actor HLShockRoachDischargeCoop : HLShockRoachDischarge
+{
+    Species "Player"
+    +THRUSPECIES
+}
