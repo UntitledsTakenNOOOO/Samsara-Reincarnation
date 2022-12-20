@@ -1,4 +1,7 @@
-Actor HLCrowHit : HLBoolean {}
+actor freeman_fistselected : Boolean { Inventory.InterHubAmount 0 }
+actor SamsaraHalfLifeCrowbarFireState : Counter { Inventory.MaxAmount 3 }
+actor HLCrowHit : HLBoolean {}
+
 Actor "Crowbar" : HLWeapon
 {
 	Inventory.PickupSound "halflife/weaponpickup"
@@ -18,6 +21,33 @@ Actor "Crowbar" : HLWeapon
 	Spawn:
 		HWF0 Z -1
 		stop
+
+    // Gordon Freeman
+	ReadyActual:
+		HWF1 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualOpp")
+		HWF1 A 2 A_WeaponReady
+        goto ReadyActualJump
+
+    ReadyActualJump:
+		HWF1 A 0 A_Jump(4,"ReadyActual")
+		HWF1 A 0 A_Jump(3,"ReadyActual")
+		HWF1 A 0 A_Jump(2,"ReadyActual")
+		HWF1 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualJumpOpp")
+		HWF1 A 0 A_Jump(1,"ReadyActualIdle")
+		goto ReadyActual
+
+	ReadyActualIdle:
+		HWF1 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+		HWF0 MNOPQRSTUV 1 A_WeaponReady
+		goto ReadyActual
+
+	Deselect:
+		TNT1 A 0 A_TakeInventory("freeman_fistselected",1)
+	DeselectLoop:
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+		TNT1 A 1 A_Lower
+		loop		
+
 	Select:
 		TNT1 A 0 A_TakeInventory("freeman_pistolselected",1)	
 		TNT1 A 0 A_TakeInventory("freeman_slot1selected",1)		
@@ -32,192 +62,178 @@ Actor "Crowbar" : HLWeapon
 		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
 		TNT1 A 1 A_Raise
 		loop
-	Deselect:
-		TNT1 A 0 A_TakeInventory("freeman_fistselected",1)
-	DeselectLoop:
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
-		TNT1 A 1 A_Lower
-		loop		
-	Ready:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "ReadyOpp")
-		TNT1 A 1 A_PlaySound("halflife/weaponselect",CHAN_WEAPON)
+
+	Ready: // our "Select" state
+		HWF0 A 0 A_PlaySound("halflife/weaponselect",CHAN_7)
+		HWF0 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyOpp")
 		HWF0 ABCDEFGHIJKL 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
-		goto WIdle
-	ReadyOpp:
-		TNT1 A 1 A_PlaySound("halflife/weaponselect",CHAN_WEAPON)
-		OP02 ABCDEFGHIJK 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
-		goto WIdle
-	WIdle:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, "WIdleOpp")
-		HWF1 A 2 A_WeaponReady
-		TNT1 A 0 A_Jump(4,"WIdle")
-		TNT1 A 0 A_Jump(3,"WIdle")
-		TNT1 A 0 A_Jump(2,"WIdle")				
-		TNT1 A 0 A_Jump(1,"Idle1")
-		loop
-	Idle1:
-		HWF1 BCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-		HWF0 MNOPQRSTUV 1 A_WeaponReady
-		Goto WIdle
-	WIdleOpp:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
-		Goto WIdle+1
+		goto ReadyActual
+
+    // lotta speed parity to be done here
+	Fire:
+        HWF3 A 0 A_TakeInventory("HLCrowHit")
+        HWF3 A 0 A_TakeInventory("SamsaraHalfLifeCrowbarFireState")
+        HWF3 A 0 A_GiveInventory("SamsaraHalfLifeCrowbarFireState",random(1,3))
+		HWF3 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireOpp")
+		HWF3 A 0 A_PlaySound("halflife/crow_swing",CHAN_WEAPON)
+        HWF3 A 0 A_JumpIfInventory("SamsaraHalfLifeCrowbarFireState",0,"FireAnim3")
+        HWF3 A 0 A_JumpIfInventory("SamsaraHalfLifeCrowbarFireState",2,"FireAnim2")
+	FireAnim1:
+		HWF3 AB 2
+		HWF3 C 1 A_GiveInventory("SamsaraHalfLifeCrowbarAttackHandler")
+		HWF3 D 1
+		HWF4 A 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim1Hit")
+		HWF4 ABBCCDDEEFF 1
+		HWF4 GG 1 A_ReFire
+		HWF1 AA 1 A_ReFire
+		goto ReadyActual
+
+	FireAnim1Hit:
+		HWF3 EFG 1
+		HWF3 H 1 A_ReFire
+		HWF1 A 1 A_ReFire
+		goto ReadyActual
+
+	FireAnim2:
+		HWF5 AB 2
+		HWF5 C 1 A_GiveInventory("SamsaraHalfLifeCrowbarAttackHandler")
+		HWF5 D 1
+		HWF5 E 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim2Hit")
+		HWF5 FGHIJKLMN 1
+		HWF1 AA 1
+		HWF1 AAAA 1 A_ReFire
+		goto ReadyActual
+
+	FireAnim2Hit:
+		HWF6 ABC 1
+		HWF6 D 1 A_ReFire
+		HWF1 A 1 A_ReFire
+		goto ReadyActual
+
+	FireAnim3:
+		HWF7 A 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
+		HWF7 A 1
+		HWF7 B 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
+		HWF7 B 1
+		HWF7 C 1 A_GiveInventory("SamsaraHalfLifeCrowbarAttackHandler")
+		HWF7 D 1
+		HWF7 E 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim3Hit")
+		HWF7 FGHI 1
+		HWF7 JKLMMNO 1
+		HWF7 PQRS 1 A_ReFire
+		goto ReadyActual
+
+	FireAnim3Hit:
+		HWF7 E 1
+		HWF8 AB 1
+		HWF8 CD 1 A_ReFire
+		HWF8 E 1 A_WeaponReady(WRF_NOBOB)
+		goto ReadyActual
+
+    // Adrian Shephard (Combat Knife)
+	ReadyActualOpp:
 		OP00 A 2 A_WeaponReady
-		TNT1 A 0 A_Jump(4,"WIdleOpp")
-		TNT1 A 0 A_Jump(3,"WIdleOpp")
-		TNT1 A 0 A_Jump(2,"WIdleOpp")
-		TNT1 A 0 A_Jump(1,"Idle1Opp","Idle2Opp","Idle3Opp")
-		loop
-	Idle1Opp:
+		goto ReadyActualJump
+
+    ReadyActualJumpOpp:
+		OP00 A 0 A_Jump(1,"ReadyActualIdle1Opp","ReadyActualIdle2Opp","ReadyActualIdle3Opp")
+		goto ReadyActual
+
+	ReadyActualIdle1Opp:
 		OP00 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
 		OP01 ABCDEFGHI 1 A_WeaponReady
-		Goto WIdleOpp
-	Idle2Opp:
+		goto ReadyActual
+
+	ReadyActualIdle2Opp:
 		OP10 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
 		OP11 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
 		OP12 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
 		OP13 AB 1 A_WeaponReady
-		Goto WIdleOpp
-	Idle3Opp:
+		goto ReadyActual
+
+	ReadyActualIdle3Opp:
 		OP14 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
 		OP15 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
 		OP16 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
 		OP17 AB 1 A_WeaponReady
-		Goto WIdleOpp
-	Fire:
-		HWF1 A 1 A_JumpIfInventory("HalfLifeOpposingForce", 1, "FireOpp")
-		HWF1 A 0 A_PlaySound("halflife/crow_swing",CHAN_WEAPON)
-		goto Attack1
-	Attack1:
-		HWF3 A 2 A_Jump(128,"Attack2","Attack3")	
-		HWF3 B 2
-		HWF3 C 0 A_JumpIfInventory("CoopModeOn",1,2)
-		HWF3 C 1 A_FireCustomMissile("HLCrowbarMissile",0,0,0,4)
-		goto Attack1End
-		HWF3 C 1 A_FireCustomMissile("HLCrowbarMissileCoop",0,0,0,4)
-		goto Attack1End
-	Attack1End:
-		HWF3 D 1
-		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack1Hit")
-		goto Attack1Fail
-	Attack1Fail:
-		HWF4 ABCD 2
-		HWF4 EFG 2 A_Refire
-		goto WIdle
-	Attack1Hit:
-		HWF3 E 1 A_TakeInventory("HLCrowHit",999)
-		HWF3 F 1
-		HWF3 GH 1 A_Refire
-		goto WIdle
-	Attack2:
-		HWF5 AB 2
-		HWF5 C 0 A_JumpIfInventory("CoopModeOn",1,2)
-		HWF5 C 1 A_FireCustomMissile("HLCrowbarMissile",0,0,0,4)
-		goto Attack2End
-		HWF5 C 1 A_FireCustomMissile("HLCrowbarMissileCoop",0,0,0,4)
-		goto Attack2End
-	Attack2End:
-		HWF5 D 1
-		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack2Hit")
-		goto Attack2Fail
-	Attack2Fail:
-		HWF5 EFGH 1
-		HWF5 IJKLMN 1 A_Refire
-		goto WIdle
-	Attack2Hit:
-		HWF6 A 1 A_TakeInventory("HLCrowHit",999)
-		HWF6 B 1
-		HWF6 CD 1 A_Refire
-		goto WIdle
-	Attack3:
-		HWF7 AB 2
-		HWF7 C 1
-		HWF7 D 0 A_JumpIfInventory("CoopModeOn",1,2)
-		HWF7 D 1 A_FireCustomMissile("HLCrowbarMissile",0,0,0,4)
-		goto Attack3End
-		HWF7 D 1 A_FireCustomMissile("HLCrowbarMissileCoop",0,0,0,4)
-		goto Attack3End
-	Attack3End:
-		HWF7 E 1
-		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack3Hit")
-		goto Attack3Fail
-	Attack3Fail:
-		HWF7 FGHI 1
-		HWF7 JKLMMNOPQRS 1 A_Refire
-		goto WIdle
-	Attack3Hit:
-		HWF8 A 1 A_TakeInventory("HLCrowHit",999)
-		HWF8 B 1
-		HWF8 CDE 1 A_Refire
-		goto WIdle
+		goto ReadyActual
+
+	ReadyOpp:
+		OP02 ABCDEFGHIJK 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		OP00 A 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+		goto ReadyActual
+
 	FireOpp:
-		TNT1 A 0 A_JumpIfInventory("HalfLifeOpposingForce", 1, 1)
-		Goto Fire+1
-		OP00 A 1
-		OP00 A 0 A_PlaySound("HLKnife/Swing",CHAN_WEAPON)
-		goto Attack1Opp
-	Attack1Opp:
-		OP04 A 2 A_Jump(128,"Attack2Opp","Attack3Opp")	
-		OP04 B 2
-		OP04 C 0 A_JumpIfInventory("CoopModeOn",1,2)
-		OP04 C 1 A_FireCustomMissile("HLKnifeMissile",0,0,0,4)
-		goto Attack1OppEnd
-		OP04 C 1 A_FireCustomMissile("HLKnifeMissileCoop",0,0,0,4)
-		goto Attack1OppEnd
-	Attack1OppEnd:
+		OP04 A 0 A_PlaySound("HLKnife/Swing",CHAN_WEAPON)
+        OP04 A 0 A_JumpIfInventory("SamsaraHalfLifeCrowbarFireState",0,"FireAnim3Opp")
+        OP04 A 0 A_JumpIfInventory("SamsaraHalfLifeCrowbarFireState",2,"FireAnim2Opp")
+    FireAnim1Opp:
+		OP04 AB 2
+		OP04 C 1 A_GiveInventory("SamsaraHalfLifeKnifeAttackHandler")
 		OP04 D 1
-		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack1HitOpp")
-		goto Attack1FailOpp
-	Attack1FailOpp:
-		OP05 EFGH 2
-		OP05 IJ 2 A_Refire
-		goto WIdle
-	Attack1HitOpp:
-		OP04 E 1 A_TakeInventory("HLCrowHit",999)
-		OP04 F 1
-		OP04 GH 1 A_Refire
-		goto WIdle
-	Attack2Opp:
+		OP05 E 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim1HitOpp")
+		OP05 EFFGGHHIIJJ 1
+		OP00 AAAA 1 A_ReFire
+		goto ReadyActual
+
+	FireAnim1HitOpp:
+		OP04 EFG 1
+		OP04 H 1 A_ReFire
+		OP00 A 1 A_ReFire
+		goto ReadyActual
+
+	FireAnim2Opp:
 		OP06 AB 2
-		OP06 C 0 A_JumpIfInventory("CoopModeOn",1,2)
-		OP06 C 1 A_FireCustomMissile("HLKnifeMissile",0,0,0,4)
-		goto Attack2OppEnd
-		OP06 C 1 A_FireCustomMissile("HLKnifeMissileCoop",0,0,0,4)
-		goto Attack2OppEnd
-	Attack2OppEnd:
+		OP06 C 1 A_GiveInventory("SamsaraHalfLifeKnifeAttackHandler")
 		OP06 D 1
-		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack2HitOpp")
-		goto Attack2FailOpp
-	Attack2FailOpp:
-		OP06 EFGH 1
-		OP06 IJKLM 1 A_Refire
-		goto WIdle
-	Attack2HitOpp:
-		OP07 A 1 A_TakeInventory("HLCrowHit",999)
-		OP07 B 1
-		OP07 CDEFG 1 A_Refire
-		goto WIdle
-	Attack3Opp:
-		OP08 ABC 1
-		OP08 D 0 A_JumpIfInventory("CoopModeOn",1,2)
-		OP08 D 1 A_FireCustomMissile("HLKnifeMissile",0,0,0,4)
-		goto Attack3OppEnd
-		OP08 D 1 A_FireCustomMissile("HLKnifeMissileCoop",0,0,0,4)
-		goto Attack3OppEnd
-	Attack3OppEnd:
-		OP08 E 1
-		TNT1 A 0 A_JumpIfInventory("HLCrowHit",1,"Attack3HitOpp")
-		goto Attack3FailOpp
-	Attack3FailOpp:
-		OP08 FGHI 1
-		OP08 IJKLMNOPQR 1 A_Refire
-		goto WIdle
-	Attack3HitOpp:
-		TNT1 A 0 A_TakeInventory("HLCrowHit",999)
-		OP09 AB 1
-		OP09 CDEFGHIJ 1 A_Refire
-		goto WIdle
+		OP06 E 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim2HitOpp")
+		OP06 FGHIJKLM 1
+		OP00 AAA 1
+		OP00 AAAA 1 A_ReFire
+		goto ReadyActual
+
+	FireAnim2HitOpp:
+		OP07 CDE 1
+		OP07 FG 1 A_ReFire
+		goto ReadyActual
+
+	FireAnim3Opp:
+		OP08 A 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
+		OP08 B 1
+		OP08 C 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
+		OP08 D 1
+		OP08 E 1 A_GiveInventory("SamsaraHalfLifeKnifeAttackHandler")
+		OP08 F 1
+		OP08 G 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim3HitOpp")
+		OP08 HIIJKLMNOPQ 1
+		OP08 R 1 A_ReFire
+		OP00 AAA 1 A_ReFire
+		goto ReadyActual
+
+	FireAnim3HitOpp:
+		OP09 EFG 1
+		OP09 HI 1 A_ReFire
+		OP09 J 1 A_WeaponReady(WRF_NOBOB)
+		goto ReadyActual
 	}
+}
+
+actor SamsaraHalfLifeCrowbarAttackHandler : Trigger
+{
+    States
+    {
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
+        TNT1 A 0 A_FireCustomMissile("HLCrowbarMissile",0,false,0,4)
+        stop
+
+      PickupCoop:
+        TNT1 A 0 A_FireCustomMissile("HLCrowbarMissileCoop",0,false,0,4)
+        stop
+    }
 }
 
 Actor HLCrowbarMissile : FastProjectile
@@ -250,9 +266,28 @@ Actor HLCrowbarMissile : FastProjectile
 	}
 }
 
+Actor HLCrowbarMissileCoop : HLCrowbarMissile { +THRUSPECIES Species "Player" }
+
+actor SamsaraHalfLifeKnifeAttackHandler : Trigger
+{
+    States
+    {
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
+        TNT1 A 0 A_FireCustomMissile("HLKnifeMissile",0,false,0,4)
+        stop
+
+      PickupCoop:
+        TNT1 A 0 A_FireCustomMissile("HLKnifeMissileCoop",0,false,0,4)
+        stop
+    }
+}
+
 Actor HLKnifeMissile : HLCrowbarMissile
 {
-	Damage (15)
 	//Obituary "%o died....somehow?"
 	States
 	{
@@ -271,14 +306,4 @@ Actor HLKnifeMissile : HLCrowbarMissile
 	}
 }
 
-Actor HLCrowbarMissileCoop : HLCrowbarMissile { +THRUSPECIES Species "Player" }
 Actor HLKnifeMissileCoop : HLKnifeMissile { +THRUSPECIES Species "Player" }
-
-Actor freeman_fistselected : Inventory
-{
-	Inventory.MaxAmount 1
-	Inventory.InterhubAmount 0
-	+INVENTORY.IGNORESKILL
-	+INVENTORY.UNDROPPABLE
-	-INVENTORY.INVBAR
-}
