@@ -79,7 +79,7 @@ Script "DescentMovement" (void)
 	{
 		if(ClassifyActor(0) & ACTOR_ALIVE)
 		{
-			int descentFlight = GetCvar("samsara_descentflight") && !isNetworkGame();
+			int descentFlight = GetCvar("samsara_descentflight");
 			if(!descentFlight)
 				GiveInventory("DescentGravityGiver",1);
 			else
@@ -138,8 +138,8 @@ Script "DescentMovement" (void)
 			pitch = GetActorPitch(0);
 			roll = GetActorRoll(0) - tiltRoll;
 
-			angle += FixedMul(mouseYaw,sensitivityX+1.0) * gimbalLock;
-			pitch -= FixedMul((invertedMouse ? -mousePitch : mousePitch),sensitivityY+2.0) * gimbalLock;
+			angle += FixedMul(mouseYaw,sensitivityX+1.0 + (isNetWorkGame() * 1.0)) * gimbalLock;
+			pitch -= FixedMul((invertedMouse ? -mousePitch : mousePitch),sensitivityY+2.0 + (isNetWorkGame() * 1.0)) * gimbalLock;
 
 			if(rollBack || CheckInventory("DescentRollToken")) { TakeInventory("DescentRollToken",1); rolling = -gimbalLock; }
 			if(rolling != 0)
@@ -231,8 +231,8 @@ Script "DescentMovement" (void)
 			//Set the rotation to the new ones
 			if(descentFlight)
 			{
-				SetActorAngle(0,angle);
-				SetActorPitch(0,pitch);
+				if(mouseYaw != 0) SetActorAngle(0,angle);
+				if(mousePitch != 0) SetActorPitch(0,pitch);
 				SetActorRoll(0,roll + tiltRoll);
 			}
 		
