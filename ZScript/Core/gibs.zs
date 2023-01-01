@@ -9,7 +9,6 @@ Class Bolognese_WallBlood_ZScript : Actor
 		height 1;
 		Gravity 0.7;
 		damage 0;
-		DamageType 'Blood';
 		+MISSILE;
 		+CLIENTSIDEONLY;
 		+NOTELEPORT;
@@ -24,7 +23,7 @@ Class Bolognese_WallBlood_ZScript : Actor
 			TNT1 A 0
 			{
 				CopyBloodColor(master);
-				for(int i = 8; i >= 0; i--)
+				for(int i = 32; i >= 0; i--)
 				{
 					A_SetAngle(random(0, 360));
 					A_SetPitch(random(-50, 50));
