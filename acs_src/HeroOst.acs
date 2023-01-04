@@ -255,10 +255,15 @@ str RTCWSongs[16] = { "RTCWTR01", "RTCWTR02", "RTCWTR03", "RTCWTR04", "RTCWTR05"
 str Quake3Songs[18] = { "Q3TRAK00", "Q3TRAK01", "Q3TRAK02", "Q3TRAK03", "Q3TRAK04", "Q3TRAK05", "Q3TRAK06", "Q3TRAK07", "Q3TRAK08", "Q3TRAK09", "Q3TRAK10", "Q3TRAK11", "Q3TRAK12", 
 	"Q3TRAK13", "Q3TRAK14", "Q3TRAK15", "Q3TRAK16", "Q3TRAK17" };
 	
-str DescentMusic[26] = {"DSTRAK00","DSTRAK01","DSTRAK02","DSTRAK03","DSTRAK04",
+str DescentMIDIMusic[26] = {"DSTRAK00","DSTRAK01","DSTRAK02","DSTRAK03","DSTRAK04",
 "DSTRAK05","DSTRAK06","DSTRAK07","DSTRAK08","DSTRAK09","DSTRAK10","DSTRAK11",
 "DSTRAK12","DSTRAK13","DSTRAK14","DSTRAK15","DSTRAK16","DSTRAK17","DSTRAK18",
 "DSTRAK19","DSTRAK20","DSTRAK21","DSTRAK22","DSTRAK23","DSTRAK24","DSTRAK25"};
+
+str DescentCDMusic[21] = {"DSCDTR00","DSCDTR01","DSCDTR02","DSCDTR03","DSCDTR04",
+"DSCDTR05","DSCDTR06","DSCDTR07","DSCDTR08","DSCDTR09","DSCDTR10","DSCDTR11",
+"DSCDTR12","DSCDTR13","DSCDTR14","DSCDTR15","DSCDTR16","DSCDTR17","DSCDTR18",
+"DSCDTR19","DSCDTR20"};
 
 int thememaxdx = 22;
 int songseedmaxdx = 4;
@@ -303,15 +308,16 @@ Script "SamsaraOST_Enter" Enter
     int i;
     int choices;
 
-	int altskin, settrack, lastmode, lastgame, lastblud, lasthex, pln = PlayerNumber();
+	int altskin, settrack, lastmode, lastgame, lastblud, lasthex, lastdescent, pln = PlayerNumber();
 	int herosoundtrack = GetUserCVAR(pln,"samsara_cl_heromusic");
 	int gameoverride;
 	int	bloodcd  = GetUserCVAR(pln,"samsara_cl_bloodcd");
 	int hexen2cd = GetUserCVAR(pln,"samsara_cl_hex2cd");
+	int	descentcd  = GetUserCVAR(pln,"samsara_cl_descentcd");
 
 	If(herosoundtrack > 0 && (GetUserCVAR(pln,"samsara_cl_xmasmusic") == false || GetCVAR("samsara_merrychristmas") == false))
 	{
-		if(herosoundtrack != lastmode || CheckInventory("SamsaraModeCounter") != altskin || bloodcd != lastblud || hexen2cd != lasthex || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel") || CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
+		if(herosoundtrack != lastmode || CheckInventory("SamsaraModeCounter") != altskin || descentcd != lastdescent || bloodcd != lastblud || hexen2cd != lasthex || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel") || CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
 		{
             LocalSetMusic("");
 
@@ -508,8 +514,14 @@ Script "SamsaraOST_Enter" Enter
                 SetTrack = Random(0, 17);
                 LocalSetMusic(Quake3Songs[SetTrack]);
             } else if (gameoverride == 36) {
-                SetTrack = Random(0, 25);
-                LocalSetMusic(DescentMusic[SetTrack]);
+				if (GetUserCVar(pln, "samsara_cl_descentcd"))
+                {
+                    SetTrack = Random(0, 20);
+                    LocalSetMusic(DescentCDMusic[SetTrack]);
+                } else {
+                    SetTrack = Random(0, 25);
+                    LocalSetMusic(DescentMIDIMusic[SetTrack]);
+                }
             } else if (gameoverride == 37) {
                 if (!CheckInventory("SamsaraHeroMusicDeusExActive")) { ACS_NamedExecuteWithResult("SamsaraOST_DeusExScriptedMusic"); }
             }
@@ -558,6 +570,7 @@ Script "SamsaraOST_Enter" Enter
 	lastmode = GetUserCvar(pln,"samsara_cl_heromusic");
 	lastblud = GetUserCvar(pln,"samsara_cl_bloodcd");
 	lasthex  = GetUserCvar(pln,"samsara_cl_hex2cd");
+	lastdescent = GetUserCvar(pln,"samsara_cl_descentcd");
 	Delay(1);
 	restart;
 }
