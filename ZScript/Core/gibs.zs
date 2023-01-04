@@ -27,13 +27,10 @@ Class Bolognese_WallBlood_ZScript : Actor
 				{
 					A_SetAngle(random(0, 360));
 					A_SetPitch(random(-50, 50));
-					A_SprayDecal("BloodSmear", 172, (0, 0, 0), (0, 0, 0), true, 0);
+					A_SprayDecal("BologneseBloodDecal1", 172, (0, 0, 0), (0, 0, 0), true, 0);
 					A_SetAngle(random(0, 360));
 					A_SetPitch(random(-50, 50));
-					A_SprayDecal("BloodSplat", 172, (0, 0, 0), (0, 0, 0), true, 0);
-					A_SetAngle(random(0, 360));
-					A_SetPitch(random(-50, 50));
-					A_SprayDecal("BloodSplat", 172, (0, 0, 0), (0, 0, 0), true, 0);
+					A_SprayDecal("BologneseBloodDecal2", 172, (0, 0, 0), (0, 0, 0), true, 0);
 				}
 			}
 			stop;
