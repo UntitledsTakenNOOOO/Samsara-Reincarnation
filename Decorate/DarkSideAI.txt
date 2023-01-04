@@ -4618,3 +4618,292 @@ Actor RMR_AI : SamsaraMonsterDarkSideAIRegularTotalGib
 		Stop
 	}
 }
+
+// Dark Forces
+Actor Katarn_AI : SamsaraMonsterDarkSideAIRegularTotalGib
+{
+	obituary "Kyle Katarn showed %o the power of the dark side."
+    radius 16
+    height 56
+    health 1000	
+    mass 100
+    speed 8
+	monster
+	+FLOORCLIP
+	-FRIENDLY
+	+NOINFIGHTING
+	Maxstepheight 8
+	cameraheight 45
+	Scale 0.8
+	Tag "Kyle Katarn"
+    painsound "DarkSideAI/Katarn/Pain"
+    deathsound "DarkSideAI/Katarn/Death"
+    activesound "DarkSideAI/Katarn/Taunt"
+	var int user_scalex;
+	var int user_scaley;
+	States
+    {	
+    Spawn:
+		69DG A 5 A_Look
+		loop
+	See:
+		69DG BBBBCCCCDDDDEEEEFFFFGGGG 1 A_FastChase
+		Loop
+    Missile:
+		TNT1 A 0 A_Jump(48, "FireSlot4")
+		69DG A 2 A_FaceTarget
+		69DG T 0 A_PlayWeaponSound("katarn/conshot")
+		69DG T 2 Bright A_CustomMissile("concussion_projectile",32,0,frandom(-4.00,4.00),0,frandom(-4,4))
+		69DG A 37 A_FaceTarget
+		TNT1 A 0 A_Jump(128, "See")
+		goto Missile
+	FireSlot4:
+		69DG A 4 A_FaceTarget
+		69DG T 1 Bright A_CustomMissile("blaster_laser",32,6,frandom(-2,2),0,frandom(-2,2))
+		69DG T 1 A_PlayWeaponSound("katarn/rifshot")
+		69DG A 0 A_Jump(8,"See")
+		69DG A 4 A_FaceTarget
+		69DG T 1 Bright A_CustomMissile("blaster_laser",32,6,frandom(-2,2),0,frandom(-2,2))
+		69DG T 1 A_PlayWeaponSound("katarn/rifshot")
+		69DG A 0 A_Jump(8,"See")
+		69DG A 4 A_FaceTarget
+		69DG T 1 Bright A_CustomMissile("blaster_laser",32,6,frandom(-2,2),0,frandom(-2,2))
+		69DG T 1 A_PlayWeaponSound("katarn/rifshot")
+		69DG A 0 A_Jump(8,"See")
+		69DG A 4 A_FaceTarget
+		69DG T 1 Bright A_CustomMissile("blaster_laser",32,6,frandom(-2,2),0,frandom(-2,2))
+		69DG T 1 A_PlayWeaponSound("katarn/rifshot")
+		69DG A 0 A_Jump(8,"See")
+		69DG A 4 A_FaceTarget
+		69DG T 1 Bright A_CustomMissile("blaster_laser",32,6,frandom(-2,2),0,frandom(-2,2))
+		69DG T 1 A_PlayWeaponSound("katarn/rifshot")
+		69DG A 0 A_Jump(8,"See")
+		69DG A 4 A_FaceTarget
+		69DG T 1 Bright A_CustomMissile("blaster_laser",32,6,frandom(-2,2),0,frandom(-2,2))
+		69DG T 1 A_PlayWeaponSound("katarn/rifshot")
+		69DG A 0 A_CPOSRefire
+		goto FireSlot4	
+	Pain:
+		69DG U 4 A_Pain
+		goto See	
+	Death:
+		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0) 
+		TNT1 A 0 A_SpawnItem("UniversalBloodyHellGoreDeathEffect")
+		TNT1 A 0 A_Jump(128,"Style2")
+		69DG H 6 A_Scream	  
+		69DG I 6 A_NoBlocking
+		69DG J 6
+		69DG KL 6
+		69DG M -1
+		Stop
+	Style2:  
+		69DG N 6 A_Scream  
+		69DG O 6 A_NoBlocking
+		69DG P 6
+		69DG Q 6
+		69DG RS 6
+		69DG S -1
+		Stop
+	Death.ExpanderDMG:
+	XDeath.ExpanderDMG:
+		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+		"####" "#" 0 A_PlaySound("duke/expand")
+		Goto ExpanderLoop
+	ExpanderLoop:
+		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
+		loop
+	ExpanderPop:	
+		"####" "#" 10
+		"####" A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+		"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+		"####" A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		"####" A 0 A_Jump(96,2)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+		"####" A 0 A_SetScale (1.0, 1.0)
+		"####" A 0 A_UnsetSolid
+		"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+		TNT1 A -1 A_UnsetSolid
+		Stop
+	Death.ExpanderDMGCoop:
+	XDeath.ExpanderDMGCoop:
+		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+		"####" "#" 0 A_PlaySound("duke/expand")
+		Goto ExpanderLoopCoop
+	ExpanderLoopCoop:
+		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
+		loop
+	ExpanderPopCoop:	
+		"####" "#" 10
+		"####" A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+		"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+		"####" A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		"####" A 0 A_Jump(96,2)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+		"####" A 0 A_SetScale (1.0, 1.0)
+		"####" A 0 A_UnsetSolid
+		"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+		TNT1 A -1 A_UnsetSolid
+		Stop
+	}
+}
+
+// In Pursuit of Greed
+Actor POGreed_AI : SamsaraMonsterDarkSideAIRegularTotalGib
+{
+	obituary "%o was smoked by an evil Aldus Kaden."
+    radius 16
+    height 56
+    health 1000	
+    mass 100
+    speed 8
+	monster
+	+FLOORCLIP
+	-FRIENDLY
+	+NOINFIGHTING
+	Maxstepheight 8
+	cameraheight 45
+	Scale 0.42
+	Tag "Aldus Kaden"
+    painsound "DarkSideAI/Mooman/Pain"
+    deathsound "DarkSideAI/Mooman/Death"
+    activesound "DarkSideAI/Mooman/Taunt"
+	BloodType "IPOGBloodMonster"
+	var int user_scalex;
+	var int user_scaley;
+	States
+    {	
+    Spawn:
+		GPL0 B 5 A_Look
+		loop
+	See:
+		GPL0 CCCCBBBBAAAABBBB 1 A_FastChase
+		Loop
+    Missile:
+		TNT1 A 0 A_Jump(48, "FireSlot2")
+		GPL0 C 10 A_FaceTarget
+		GPL0 F 0 A_PlayWeaponSound("greed/plasmashot")
+		GPL0 F 0 A_FaceTarget
+		GPL0 F 0 Bright A_CustomMissile("PGShotgunPlasmaBall",32,-2,-8)
+		GPL0 F 0 Bright A_CustomMissile("PGShotgunPlasmaBall",32,-1,-4)
+		GPL0 F 0 Bright A_CustomMissile("PGShotgunPlasmaBall",32,0,0)
+		GPL0 F 0 Bright A_CustomMissile("PGShotgunPlasmaBall",32,1,4)
+		GPL0 F 2 Bright A_CustomMissile("PGShotgunPlasmaBall",32,2,8)
+		GPL0 C 19 A_FaceTarget
+		TNT1 A 0 A_Jump(128, "See")
+		goto Missile
+	FireSlot2:
+		GPL0 C 2 A_FaceTarget
+		GPL0 F 0 A_PlayWeaponSound("greed/flameburn")
+		GPL0 F 2 Bright A_CustomMissile("PGFireBall",32,0,FRandom(-2.5, 2.5))
+		GPL0 C 0 A_Jump(8,"See")
+		GPL0 C 2 A_FaceTarget
+		GPL0 F 0 A_PlayWeaponSound("greed/flameburn")
+		GPL0 F 2 Bright A_CustomMissile("PGFireBallPainless",32,0,FRandom(-2.5, 2.5))
+		GPL0 C 0 A_Jump(8,"See")
+		GPL0 C 2 A_FaceTarget
+		GPL0 F 0 A_PlayWeaponSound("greed/flameburn")
+		GPL0 F 2 Bright A_CustomMissile("PGFireBall",32,0,FRandom(-2.5, 2.5))
+		GPL0 C 0 A_Jump(8,"See")
+		GPL0 C 2 A_FaceTarget
+		GPL0 F 0 A_PlayWeaponSound("greed/flameburn")
+		GPL0 F 2 Bright A_CustomMissile("PGFireBallPainless",32,0,FRandom(-2.5, 2.5))
+		GPL0 C 0 A_Jump(8,"See")
+		GPL0 C 2 A_FaceTarget
+		GPL0 F 0 A_PlayWeaponSound("greed/flameburn")
+		GPL0 F 2 Bright A_CustomMissile("PGFireBall",32,0,FRandom(-2.5, 2.5))
+		GPL0 C 0 A_Jump(8,"See")
+		GPL0 C 2 A_FaceTarget
+		GPL0 F 0 A_PlayWeaponSound("greed/flameburn")
+		GPL0 F 2 Bright A_CustomMissile("PGFireBallPainless",32,0,FRandom(-2.5, 2.5))
+		GPL0 C 0 A_CPOSRefire
+		goto FireSlot2	
+	Pain:
+		GPL0 F 4 A_Pain
+		goto See	
+	Death:
+		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0) 
+		TNT1 A 0 A_SpawnItem("UniversalBloodyHellGoreDeathEffect")
+		GPL0 G 5 A_Scream
+		GPL0 H 5 A_NoBlocking
+		GPL0 IJKLM 5
+		GPL0 N -1
+		Stop
+	Death.ExpanderDMG:
+	XDeath.ExpanderDMG:
+		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+		"####" "#" 0 A_PlaySound("duke/expand")
+		Goto ExpanderLoop
+	ExpanderLoop:
+		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
+		loop
+	ExpanderPop:	
+		"####" "#" 10
+		"####" A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+		"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+		"####" A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		"####" A 0 A_Jump(96,2)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+		"####" A 0 A_SetScale (1.0, 1.0)
+		"####" A 0 A_UnsetSolid
+		"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+		TNT1 A -1 A_UnsetSolid
+		Stop
+	Death.ExpanderDMGCoop:
+	XDeath.ExpanderDMGCoop:
+		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+		"####" "#" 0 A_PlaySound("duke/expand")
+		Goto ExpanderLoopCoop
+	ExpanderLoopCoop:
+		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
+		loop
+	ExpanderPopCoop:	
+		"####" "#" 10
+		"####" A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+		"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+		"####" A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		"####" A 0 A_Jump(96,2)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+		"####" A 0 A_SetScale (1.0, 1.0)
+		"####" A 0 A_UnsetSolid
+		"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+		TNT1 A -1 A_UnsetSolid
+		Stop
+	}
+}
+
