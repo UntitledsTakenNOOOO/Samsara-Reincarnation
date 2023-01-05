@@ -121,14 +121,6 @@ script "HeroOnMap" Open
 						default:
 							activetokenselectors[b] = 1;
 							break;
-						case 0: 
-							if(!(activetokenselectors[b] & 1<<GetUserCvar(p,"samsara_cl_doommode"))) 
-								activetokenselectors[b] += 1<<GetUserCvar(p,"samsara_cl_doommode");	
-							break;
-						case 3: 
-							if(!(activetokenselectors[b] & 1<<GetUserCvar(p,"samsara_cl_wolfmode")))
-								activetokenselectors[b] += 1<<GetUserCvar(p,"samsara_cl_wolfmode");
-							break;
 						case 5: 
 							if(!(activetokenselectors[b] & 1<<GetUserCvar(p,"samsara_cl_dukemode")))
 								activetokenselectors[b] += 1<<GetUserCvar(p,"samsara_cl_dukemode");
@@ -139,7 +131,7 @@ script "HeroOnMap" Open
 							break;
 					}
 				}
-				else if(GetCvar(miscCharGameTypesStr[b]) == 1 && setBasedSpawns)
+				else if(GetCvar(miscCharGameTypesStr[b]) >= 1 && setBasedSpawns)
 				{
 					activetokenselectors[b] = 31;
 					pickrandos = 1;
@@ -171,6 +163,10 @@ Script "Samsara2689" (void)  //2689
 	Thing_ChangeTid(0,myTid);
 	int maxAttempts = 0;
 	
+	int setBasedSpawns = GetCvar("samsara_misccharacterspawnmode");
+	int dukeMode = GetCvar("samsara_misccharspawn_duke3d");
+	int HLMode = GetCvar("samsara_misccharspawn_halflife");
+	
 	int newX = GetActorX(0)/1.0;
 	int newY = GetActorY(0)/1.0;
 	
@@ -193,11 +189,30 @@ Script "Samsara2689" (void)  //2689
 				default:
 					break;
 				case 5:
-					if(activetokenselectors[a] & MISC_LIFESABEACH)
+					if (dukeMode == 1)
+					{
+						if(activetokenselectors[a] & MISC_LIFESABEACH)
+							SpawnSpotFacing("Duke3DBeachBabeSpawner", 0, 0);
+						else
+							SpawnSpotFacing("Duke3DBabe", 0, 0);	
+						break;
+					}
+					else if (dukeMode == 2)
+					{
+						SpawnSpotFacing("Duke3DBabe", 0, 0);
+					}
+					else if (dukeMode == 3)
+					{
 						SpawnSpotFacing("Duke3DBeachBabeSpawner", 0, 0);
-					else
-						SpawnSpotFacing("Duke3DBabe", 0, 0);	
-					break;
+					}
+					else if (dukeMode == 4)
+					{
+						if(random(0,2) <= 1)
+							SpawnSpotFacing("Duke3DBeachBabeSpawner", 0, 0);	
+						else
+							SpawnSpotFacing("Duke3DBabe", 0, 0);
+						break;
+					}
 				case 8:
 					if(onLiquid(0) > 0)
 					{
