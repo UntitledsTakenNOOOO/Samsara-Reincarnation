@@ -442,3 +442,10 @@ sw/rabbit/die1		"Sounds/ShadowWarrior/Randoms/SW_RABDIE1.wav"
 sw/rabbit/die2		"Sounds/ShadowWarrior/Randoms/SW_RABDIE2.wav"
 sw/rabbit/die3		"Sounds/ShadowWarrior/Randoms/SW_RABDIE3.wav"
 sw/rabbit/screw		"Sounds/ShadowWarrior/Randoms/SW_RABATK1.wav"
+
+$Random DarkSideAI/LoWang/Taunt { LoWang/BossW SW/KillTauntF OlWang/BossB LoWang/BossV SW/Taunt17 SW/GibTauntF SW/Taunt19 SW/Taunt26 SW/Taunt27 SW/Taunt29 SW/Taunt30 
+					   SW/Taunt16 SW/Taunt15 SW/Taunt14 SW/Taunt13 SW/Taunt1 SW/Taunt2 SW/Taunt3 SW/Taunt4 SW/Taunt25 SW/Taunt28 SW/Taunt31	SW/Taunt33
+					   SW/Taunt5 SW/Taunt6 SW/Taunt7 SW/Taunt8 SW/Taunt9 SW/Taunt11 SW/Taunt12 SW/Taunt18 SW/Taunt21 SW/Taunt22 SW/Taunt24 SW/Taunt32 SW/Taunt44 }
+$random  DarkSideAI/LoWang/Pain { SWPAIN1  SWPAIN2  SWPAIN3 SWPAIN4 }
+$random  DarkSideAI/LoWang/Death { SWYELL1  SWYELL2 SWYELL3 SWYELL4  SWYELL5 }
+DarkSideAI/LoWang/XDeath	SWGIBSTR
