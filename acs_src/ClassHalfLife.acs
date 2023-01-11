@@ -1881,10 +1881,9 @@ script "HLBarnacleTether" (int query, int organic) //2679
 		
 		for (i = 16; i < magI; i += 16)
 		{
-			if(CheckInventory("HLOPBarnacleKillTether"))
+			if (!CheckInventory("HLOPBarnacleTetherActive"))
 			{
 				GiveInventory("HLOPBarnacleReleaseTether",1);
-				TakeInventory("HLOPBarnacleKillTether",1);
 				TakeInventory("HLOPBarnacleLatchedTether",1);
 				Thing_Remove(startingTid);
 				break;
@@ -1900,36 +1899,27 @@ script "HLBarnacleTether" (int query, int organic) //2679
 	else
 	{
 		if(organic)
-		{	
+		{
 			SetActivator(0,AAPTR_Tracer);
 		
 			int monsterIsSmall = GetActorProperty(0,APROP_Mass) <= 50 && ClassifyActor(0) & ACTOR_MONSTER;
 			
-			while(!CheckInventory("HLOPBarnacleKillTether") && (ClassifyActor(startingTid) > 1))
+			while (ClassifyActor(startingTid) > 1)
 			{
+				SetActivator(startingtid,AAPTR_Target);
+
+				if (!CheckInventory("HLOPBarnacleTetherActive")) { break; }
+
 				SetActivator(startingTid,AAPTR_Tracer);
 				ACS_NamedExecuteWithResult("HLBarnacleMonsterBlocker",0,0,0,0);
 				
-				if(!(ClassifyActor(0) & ACTOR_ALIVE))
-				{
-					SetActivator(startingTid,AAPTR_Target);
-					Thing_Remove(tongueTid);
-					GiveInventory("HLOPBarnacleReleaseTether",1);
-					TakeInventory("HLOPBarnacleLatchedTether",1);
-					terminate;
-				}
+				if (!(ClassifyActor(0) & ACTOR_ALIVE)) { break; }
 				
 				tx = GetActorX(0); ty = GetActorY(0); tz = GetActorZ(0) + GetActorProperty(0,APROP_Height)/2;
 		
 				SetActivatorToTarget(startingTid);
 				
-				if(!(ClassifyActor(0) & ACTOR_ALIVE))
-				{
-					Thing_Remove(tongueTid);
-					GiveInventory("HLOPBarnacleReleaseTether",1);
-					TakeInventory("HLOPBarnacleLatchedTether",1);
-					terminate;
-				}
+				if (!(ClassifyActor(0) & ACTOR_ALIVE)) { break; }
 					
 				xoff = sin(GetActorAngle(0)) * 4;
 				yoff = cos(GetActorAngle(0)) * 4;
@@ -1967,8 +1957,7 @@ script "HLBarnacleTether" (int query, int organic) //2679
 				ThrustThing(angle>>8,1,0,0);							
 				ThrustThingZ(0,sign(vectorz)*4,0,0);
 					
-				if(monsterIsSmall)
-					SetActivator(startingTid,AAPTR_Target);
+				if(monsterIsSmall) { SetActivator(startingTid,AAPTR_Target); }
 				
 				Delay(2);
 				
@@ -1978,8 +1967,8 @@ script "HLBarnacleTether" (int query, int organic) //2679
 		SetActivator(startingTid,AAPTR_Target);
 		Thing_Remove(tongueTid);
 		GiveInventory("HLOPBarnacleReleaseTether",1);
-		TakeInventory("HLOPBarnacleKillTether",1);
 		TakeInventory("HLOPBarnacleLatchedTether",1);
+		TakeInventory("HLOPBarnacleTetherActive",1);
 	}
 }
 

@@ -1569,6 +1569,22 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				SetActorProperty(0,APROP_SpawnHealth,100+(20*CheckInventory("WTLevel")-(20*(CheckInventory("WTLevel")>=6))));
 				break;
 			case CLASS_HALFLIFE:
+                if (CheckInventory("HLXBowIsZoomed") && !CheckWeapon("HL Crossbow")) { SetInventory("HLXBowIsZoomed", 0); }
+
+                if (!CheckWeapon("HLOPBarnacle"))
+                {
+                    if (CheckInventory("SamsaraHalfLifeBarnacleGrappleSoundLoop"))
+                    {
+                        StopSound(0, CHAN_WEAPON);
+
+                        SetInventory("SamsaraHalfLifeBarnacleGrappleSoundLoop", 0);
+                    }
+
+                    SetInventory("HLOPBarnacleReleaseTether", 0);
+                    SetInventory("HLOPBarnacleLatchedTether", 0);
+                    SetInventory("HLOPBarnacleTetherActive", 0);
+                }
+
 				halflifemode = GetUserCvar(pln,"samsara_cl_shephardmode");
 				if(halflifemode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
 				{
@@ -1579,24 +1595,22 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					else 
 						TakeInventory("HalfLifeOpposingForce", 0x7FFFFFFF); 
 						
-					if(CheckInventory("HLOPHasBarnacleLongJump") && !GetCvar("samsara_banjetpack"))
+					if(CheckInventory("HLOPHasBarnacleLongJump"))
 					{
-						if(halflifemode) 
-							GiveInventory("HLOPBarnacle",1);
+						if (halflifemode && !GetCVar("samsara_banjetpack")) { GiveInventory("HLOPBarnacle", 1); }
 						else
 						{
-							TakeInventory("freeman_unique3selected",1);
-							TakeInventory("HLOPBarnacleReleaseTether",1);
-							TakeInventory("HLOPBarnacleLatchedTether",1);
-							GiveInventory("HLOPBarnacleKillTether",1);
-							TakeInventory("HLOPBarnacle",1);
+							TakeInventory("freeman_unique3selected", 1);
+							TakeInventory("HLOPBarnacleReleaseTether", 1);
+							TakeInventory("HLOPBarnacleLatchedTether", 1);
+							TakeInventory("HLOPBarnacleTetherActive", 1);
+							TakeInventory("HLOPBarnacle", 1);
 						}
 					}
 					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, halflifemode, pln); 
 					previousvalue = halflifemode;
 				}
 
-                if (CheckInventory("HLXBowIsZoomed") && !CheckWeapon("HL Crossbow")) { SetInventory("HLXBowIsZoomed", 0); }
 				break;
 				
 			case CLASS_RR:
