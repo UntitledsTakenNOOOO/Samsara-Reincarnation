@@ -9,11 +9,11 @@ Script "CalebUnique" (void) //599
 
 script "CalebTauntCooldown" (void) //600
 {
-    while (CheckInventory("CalebTauntCooldown") > 0)
-    {
-        Delay(35);
-        TakeInventory("CalebTauntCooldown", 1);
-    }
+	while (CheckInventory("CalebTauntCooldown") > 0)
+	{
+		Delay(35);
+		TakeInventory("CalebTauntCooldown", 1);
+	}
 }
 
 Script "CalebBallGag" (int type) NET //601
@@ -41,7 +41,7 @@ Script "Caleb602" (void) //602
 Script "CalebLifeLeech" (void) //603
 {
 	int LifeLeechAmmo = CheckInventory("Cell");
-	
+
 	if(CheckWeapon("LifeLeech") && !GetCVar("sv_infiniteammo"))
 	{
 		if(LifeLeechAmmo >= 1)
@@ -55,7 +55,7 @@ Script "CalebLifeLeech" (void) //603
 
 Script "CalebCoopCheck" (void) //604
 {
-	if( GameType() == GAME_NET_COOPERATIVE || GetCVar("cooperative") || GetCVar("invasion") || GetCVar("survival") )
+	if(GameType() == GAME_NET_COOPERATIVE || GetCVar("cooperative") || GetCVar("invasion") || GetCVar("survival"))
 		SetResultValue(1);
 	else
 		SetResultValue(0);
@@ -63,20 +63,10 @@ Script "CalebCoopCheck" (void) //604
 
 Script "CalebDeathmatchCheck" (void) //604
 {
-	if( GameType() == GAME_NET_Deathmatch )
+	if(GameType() == GAME_NET_Deathmatch)
 		SetResultValue(1);
 	else
 		SetResultValue(0);
-}
-
-Script 3605 (int stid) //605
-{
-	if(CheckInventory("CalebClass") && GetActorProperty(stid, APROP_HEALTH) >= 1)
-	{
-		GiveInventory("Lifeleech", 1);
-		Thing_Damage(stid, 10000000000000, MOD_EXIT);
-		GiveInventory("GotWeapon7",1);
-	}
 }
 
 Script "FlareGunPitch" (void)
@@ -95,54 +85,52 @@ Script "Caleb_BurningManVoice" (int mode)
 	master = UniqueTID();
 	Thing_ChangeTID(0, master);
 	SetActivator(0, AAPTR_Master);
-	
+
 	if(GetCvar("samsara_CrashDebugger") == true)
 	{
 		Log(s:"Debugger: Burning Enemy: ", s:GetActorClass(0));
 	}
-	
+
 	Switch(mode)
 	{
-		case 1:		
+		case 1:
 			speed = GetActorProperty(0, APROP_Speed);
-			
+
 			painsound = GetActorProperty(0, APROP_PainSound);
 			deathsound = GetActorProperty(0, APROP_DeathSound);
 			SetActivator(master);
-			
+
 			if(painsound != "")
 				SetActorProperty(0, APROP_PainSound, painsound);
-				
+
 			if(deathsound != "")
 				SetActorProperty(0, APROP_DeathSound, deathsound);
-			
+
 			if(GetCvar("samsara_CrashDebugger") == true)
 			{
 				Log(s:"Debugger: Pass");
 			}
-			
+
 			SetActorProperty(0, APROP_Speed, speed/2);
 			break;
-		
+
 		case 2:
 			speed = GetActorProperty(0, APROP_Speed);
 
 			deathsound = GetActorProperty(0, APROP_DeathSound);
 			SetActivator(master);
-			
+
 			if(deathsound != "")
 				SetActorProperty(0, APROP_DeathSound, deathsound);
-			
+
 			if(GetCvar("samsara_CrashDebugger") == true)
 			{
 				Log(s:"Debugger: Pass");
 			}
-			
+
 			SetActorProperty(0, APROP_Speed, speed/2);
 			break;
-		
 	}
-	
 }
 
 Script "BurningManSpeed" (void) // will just have to wait until 4.0 before you can use a_setspeed I guess
@@ -163,7 +151,7 @@ Script "CalebAkimboCooldown" (void)
 {
 	if(CheckInventory("BloodGunsAkimboCooldown")) { GiveInventory("BloodGunsAkimboCooldown",120); terminate; }
 	GiveInventory("BloodGunsAkimboCooldown",120);
-	
+
 	while(1)
 	{
 		if(CheckInventory("BloodGunsAkimboCooldown") > 0 && !GetCvar("samsara_permakimbo"))
@@ -176,22 +164,38 @@ Script "CalebAkimboCooldown" (void)
 	}
 }
 
+Script "CalebRetrieveLifeLeech" (void)
+{
+	int isAlive = GetActorProperty(0, APROP_HEALTH) >= 1;
+	int lifeLeechTid = UniqueTID();
+
+	Thing_ChangeTid(0,lifeLeechTid);
+
+	SetActivator(0,AAPTR_Master);
+
+	if(CheckInventory("CalebClass") && isAlive)
+	{
+		GiveInventory("LifeLeech", 1);
+		SetActorState(lifeLeechTid,"Death",1);
+		GiveInventory("GotWeapon7",1);
+	}
+}
+
 Script "CalebLifeLeechTurretMarkForDeath" (void)
 {
 	if(CheckInventory("LifeLeechMarkedForDeath"))
 		terminate;
-		
-	int oldTid = ActivatorTid();
-	int myTid = UniqueTid();
-	Thing_ChangeTid(0,myTid);
+
+	int lifeLeechTid = UniqueTID();
+	Thing_ChangeTid(0,lifeLeechTid);
+
 	SetActivator(0,AAPTR_Master);
+
 	if(!(ClassifyActor(0) & ACTOR_Alive))
 	{
-		SetActivator(myTid,AAPTR_Default);
+		SetActivator(lifeLeechTid,AAPTR_Default);
 		GiveInventory("LifeLeechMarkedForDeath",1);
 		Delay(175);
 		SetActorState(0,"Death",1);
-		terminate;
 	}
-	Thing_ChangeTid(myTid,oldTid);
 }
