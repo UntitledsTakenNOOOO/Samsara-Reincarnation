@@ -1,4 +1,26 @@
-//Look at crashes, weapon taking crashes!
+Script "CalebLoop" (void)
+{
+	while (CheckInventory("CalebClass"))
+	{
+		if (ClassifyActor(0) & ACTOR_Alive)
+		{
+			GiveInventory("BeastVisionController",1);
+		}
+
+		if (isCrouching(28.0))
+		{
+			GiveInventory("IsCrouching",1);
+			TakeInventory("IsNotCrouching",1);
+		}
+		else
+		{
+			GiveInventory("IsNotCrouching",1);
+			TakeInventory("IsCrouching",1);
+		}
+
+		Delay(1);
+	}
+}
 
 Script "CalebUnique" (void) //599
 {
@@ -55,18 +77,12 @@ Script "CalebLifeLeech" (void) //603
 
 Script "CalebCoopCheck" (void) //604
 {
-	if(GameType() == GAME_NET_COOPERATIVE || GetCVar("cooperative") || GetCVar("invasion") || GetCVar("survival"))
-		SetResultValue(1);
-	else
-		SetResultValue(0);
+	SetResultValue(isCoop());
 }
 
 Script "CalebDeathmatchCheck" (void) //604
 {
-	if(GameType() == GAME_NET_Deathmatch)
-		SetResultValue(1);
-	else
-		SetResultValue(0);
+	SetResultValue(isDeathMatch());
 }
 
 Script "FlareGunPitch" (void)
@@ -138,15 +154,6 @@ Script "BurningManSpeed" (void) // will just have to wait until 4.0 before you c
 	SetActorProperty(0, APROP_Speed, 7 << 16);
 }
 
-Script "BurningManContinue" (void) // bleh
-{
-	SetActivatorToTarget(0);
-	if(!(ClassifyActor(0) & ACTOR_PLAYER))
-		SetResultValue(false);
-	else
-		SetResultValue(true);
-}
-
 Script "CalebAkimboCooldown" (void)
 {
 	if(CheckInventory("BloodGunsAkimboCooldown")) { GiveInventory("BloodGunsAkimboCooldown",120); terminate; }
@@ -166,14 +173,12 @@ Script "CalebAkimboCooldown" (void)
 
 Script "CalebRetrieveLifeLeech" (void)
 {
-	int isAlive = GetActorProperty(0, APROP_HEALTH) >= 1;
-	int lifeLeechTid = UniqueTID();
-
-	Thing_ChangeTid(0,lifeLeechTid);
+	int isAlive = ClassifyActor(0) & ACTOR_Alive;
+	int lifeLeechTid = ActivatorTID();
 
 	SetActivator(0,AAPTR_Master);
 
-	if(CheckInventory("CalebClass") && isAlive)
+	if (CheckInventory("CalebClass") && isAlive)
 	{
 		GiveInventory("LifeLeech", 1);
 		SetActorState(lifeLeechTid,"Death",1);
@@ -183,15 +188,14 @@ Script "CalebRetrieveLifeLeech" (void)
 
 Script "CalebLifeLeechTurretMarkForDeath" (void)
 {
-	if(CheckInventory("LifeLeechMarkedForDeath"))
+	if (CheckInventory("LifeLeechMarkedForDeath"))
 		terminate;
 
-	int lifeLeechTid = UniqueTID();
-	Thing_ChangeTid(0,lifeLeechTid);
+	int lifeLeechTid = ActivatorTID();
 
 	SetActivator(0,AAPTR_Master);
 
-	if(!(ClassifyActor(0) & ACTOR_Alive))
+	while (!(ClassifyActor(0) & ACTOR_Alive))
 	{
 		SetActivator(lifeLeechTid,AAPTR_Default);
 		GiveInventory("LifeLeechMarkedForDeath",1);
