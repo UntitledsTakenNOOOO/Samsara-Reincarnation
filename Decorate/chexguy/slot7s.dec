@@ -20,11 +20,8 @@ Actor "Liquid Zorcher" : Weapon
     {
 
       Ready:
-		CFGG I 0 A_PlaySound("chex/bfg10kidle")
-		CFGG III 1 A_WeaponReady
-		CFGG JJJ 1 A_WeaponReady
-		CFGG KKK 1 A_WeaponReady
-		CFGG LLL 1 A_WeaponReady
+		TNT1 A 0 A_PlaySound("chex/bfg10kidle")
+		CFGG IIIJJJKKKLLL 1 A_WeaponReady
         loop
 
       Deselect:
@@ -38,32 +35,19 @@ Actor "Liquid Zorcher" : Weapon
       Fire:
  		CFGG M 20 A_PlaySound("chex/bfg10kfire")
 		CFGG N 4
-		CFGG O 1
-		CFGG P 1
-		CFGG Q 1
-		CFGG R 1
-		Goto Hold
+		CFGG OPQR 1
 	  Hold:
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopHold")
 		CFGG S 2 A_GunFlash
-		CFGG T 2 A_FireBullets(0,0,1,0,"LiquidZorcherShot")
+		CFGG T 2 A_GiveInventory("SamsaraChexLiquidZorcherAttackHandler")
 		CFGG U 2
-		CFGG V 0 A_ReFire
+		TNT1 A 0 A_ReFire
 		CFGG V 35 A_PlaySound("chex/bfg10kcool")
-		Goto Ready
-		
-	  CoopHold:
-		CFGG S 2 A_GunFlash
-		CFGG T 2 A_FireBullets(0,0,1,0,"LiquidZorcherShot2")
-		CFGG U 2
-		CFGG V 0 A_ReFire
-		CFGG V 35 A_PlaySound("chex/bfg10kcool")
-		Goto Ready
+		goto Ready
 
       Flash:
 	    TNT1 A 2 Bright A_Light1
 		TNT1 A 3 Bright
-        Goto LightDone
+        goto LightDone
 
       Spawn:
         CFUG B -1
@@ -71,12 +55,40 @@ Actor "Liquid Zorcher" : Weapon
     }
 }
 
-ACTOR LiquidZorcherShot
+actor SamsaraChexLiquidZorcherAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Cell",5,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",5,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(0,0,1,0,"LiquidZorcherShot",FBF_NOFLASH)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(0,0,1,0,"LiquidZorcherShot2",FBF_NOFLASH)
+        stop
+    }
+}
+
+actor LiquidZorcherShot
 {
 	Radius 11
 	Height 8
 	Speed 20
-	Damage 160
 	DamageType "Zorch"
 	+NOBLOCKMAP
 	+NOGRAVITY
@@ -86,22 +98,23 @@ ACTOR LiquidZorcherShot
 	+PUFFONACTORS	
 	+PUFFGETSOWNER
 	+FORCERADIUSDMG
+    +NOTIMEFREEZE
 	+BLOODLESSIMPACT
 	+NOEXTREMEDEATH
 	Renderstyle Add
 	Alpha 0.75
 	SeeSound "chex/bfg10kx"
 	AttackSound "chex/bfg10kx"
-	Obituary "$SAMSARA_CHEX_OB_SLOT7S"
-	Game Chex
+    //SelfObituary "%o got reckless with %p Liquid Zorcher."
 	States
 	{
 	Spawn:
 		CFE1 A 0 Bright
-		CFE1 A 3 Bright A_Explode(160,160,0)
+		TNT1 A 0 A_Explode(160,160,0)
+		CFE1 A 3 Bright A_ChangeFlag("NOTIMEFREEZE",false)
 		CFE1 BCDEF 3 Bright
 		Stop
 	}
 }
 
-Actor LiquidZorcherShot2 : LiquidZorcherShot { Species "Player" +THRUSPECIES +MTHRUSPECIES }
+actor LiquidZorcherShot2 : LiquidZorcherShot { +MTHRUSPECIES }
