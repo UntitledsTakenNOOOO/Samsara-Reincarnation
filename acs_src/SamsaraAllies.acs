@@ -1,5 +1,6 @@
 int activetokenselectors[CLASSCOUNT];
 int pickrandos = 0;
+int pickrandomitems = 0;
 
 #DEFINE MISC_LIFESABEACH 2
 #DEFINE MISC_HLOP 2
@@ -662,5 +663,112 @@ Script "Samsara_AllyHealthRegen" (void)
 	{
 		HealThing(1);
 		Delay(35);
+	}
+}
+
+Script "DetermineValidSpawnItems" (void)
+{
+	for(int a = 512; a <= 0.5; a+=1024)
+	{
+		for(int b = 512; b <= 0.5; b+=1024)
+		{
+			if(GetCVar("samsara_zscriptready") == 1)
+				SpawnForced("DetermineValidCellItemsZS",a*1.0,b*1.0,0,0);
+			else
+				SpawnForced("DetermineValidCellItems",a*1.0,b*1.0,0,0);
+			if(b > 0)
+				b = -b - 1024;
+			else
+				b = -b;			
+		}
+		if(a > 0)
+			a = -a - 1024;
+		else
+			a = -a;	
+	}	
+}
+
+script "CellDoneScanningItems" (void)
+{
+	int newtid = UniqueTid();
+	for(int a = -512; a < 512; a+=64)
+	{
+		for(int b = -512; b < 512; b+=64)
+		{
+			if(random(1,1500) <= (GetCvar("samsara_randomitems")*GetCvar("samsara_randomitems"))/10)
+			{	
+				SpawnForced("DetermineValidSpawnTestObject",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),0,newtid);
+				if(GetCVar("samsara_zscriptready") == 1)
+					Spawn("DetermineValidSpawnItemsZS",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
+				else
+					Spawn("DetermineValidSpawnItems",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
+			}
+		}
+	}
+}
+
+script "ItemsOnMap" Open
+{
+	// Unlike the misc. characters, we only need to check for the titlemap
+	if(GameType () == GAME_TITLE_MAP) { terminate; }
+
+	int clients = PlayerCount();
+	int playervalue;
+	//int setBasedSpawns = GetCvar("samsara_misccharacterspawnmode");
+	
+	for(int a = 0; a < CLASSCOUNT; a++)
+	{
+		activetokenselectors[a] = 0;
+	}
+	
+	for(int p = 0; p < clients; p++)
+	{	
+		if(PlayerInGame(p) == true)
+		{
+			pickrandomitems = 1;
+		}
+		else
+		{
+			clients += 1;
+		}
+	}
+	
+	if(pickrandomitems == true)
+		ACS_NamedExecuteWithResult("DetermineValidSpawnItems",0,0,0,0);
+}
+
+Script "Samsara2689_Items" (void)
+{
+	int myPosX = GetActorX(0);
+	int myPosY = GetActorY(0);
+	int myPosZ = GetActorZ(0);
+	
+	int randomAngle = random(0,256);
+	int randomPick = random(0,256);
+	SetActorAngle(0,randomAngle<<8);
+	ThrustThing(randomAngle,random(16,32),0,0);
+	Delay(1);
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0,myTid);
+	int maxAttempts = 0;
+	
+	int newX = GetActorX(0)/1.0;
+	int newY = GetActorY(0)/1.0;
+	
+	int floor1 = GetSectorFloorZ(0,newX-32,newY);
+	int floor2 = GetSectorFloorZ(0,newX+32,newY);
+	int floor3 = GetSectorFloorZ(0,newX,newY-32);
+	int floor4 = GetSectorFloorZ(0,newX,newY+32);
+	
+	if(floor1 != floor2 || floor1 != floor3 || floor1 != floor4)
+		terminate;
+	
+	while(maxAttempts <= 100)
+	{
+		SpawnSpotFacing("Hexen2_Sheep", 0, 0); // Placeholder actor used for testing
+		Thing_Remove(0);
+		terminate;
+		
+		maxAttempts++;
 	}
 }
