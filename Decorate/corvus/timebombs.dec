@@ -1,335 +1,371 @@
-actor PermaRemoteBomb : CustomInventory
+actor SamsaraHereticPermaBombBase : CustomInventory
 {
-    tag "Mine of the Ancients"
-    +FLOATBOB
-    Inventory.Amount 1
-    Inventory.MaxAmount 1
-    +INVBAR
-    +INVENTORY.UNDROPPABLE
-    Inventory.Icon "ARTIRBMB"
     Inventory.PickupSound "heretic/itemget"
-    Inventory.UseSound "heretic/artiuse"
-    Inventory.PickupMessage "You picked up the Mine of the Ancients!"
-	Inventory.RestrictedTo "CorvusPlayer"
+    Inventory.UseSound ""
+    Inventory.MaxAmount 1
+    Inventory.RestrictedTo "CorvusPlayer"
+    +FLOATBOB
+    +INVBAR
+    +UNDROPPABLE
     States
     {
-      Spawn:
-        FBMB L 1 Bright
-        Loop
-
       Use:
-        TNT1 A 1 A_TakeInventory("CorvusRemoteDetonate",1)
-        TNT1 A 0 A_JumpIfInventory("CorvusRemoteActive",1,"Use2")
-        TNT1 A 0 A_PlaySound("heretic/artiuse")
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"SPUse")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"SPUse")
-	DMUse:
-		TNT1 A 0 A_FireCustomMissile("RemoteOfTheAncients",0,0,0,-24,0,0)
-		goto PostUse
-	SPUse:
-		TNT1 A 0 A_FireCustomMissile("RemoteOfTheAncientsSP",0,0,0,-24,0,0)
-		goto PostUse
-	  PostUse:
-        TNT1 A 1 A_GiveInventory("CorvusRemoteActive",1)
-        fail
-      Use2:
-        TNT1 A 1 A_GiveInventory("CorvusRemoteDetonate",1)
-        TNT1 A 1 A_PlaySound("heretic/remoteancient")
-        TNT1 A 1 A_TakeInventory("CorvusRemoteActive",1)
-        fail
-    }
-}
-
-actor TimeBombPause: Boolean {}
-actor TimeBombCount: Counter { Inventory.MaxAmount 3 }
-
-actor PermaTimeBomb : CustomInventory
-{
-    tag "Time Bomb of the Ancients"
-    +FLOATBOB
-    Inventory.Amount 1
-    Inventory.MaxAmount 1
-    +INVBAR
-    +INVENTORY.UNDROPPABLE
-    Inventory.Icon "ARTIFBMB"
-    Inventory.PickupSound "heretic/itemget"
-    Inventory.UseSound "heretic/artiuse"
-    Inventory.PickupMessage "You picked up the Time Bomb of the Ancients!"
-	Inventory.RestrictedTo "CorvusPlayer"
-    States
-    {
-      Spawn:
-        FBMB E 1 Bright
-        Loop
-
-      Use:
-        TNT1 A 0 A_JumpIfInventory("TimeBombCount", 0, "UseFail")
-        TNT1 A 0 A_JumpIfInventory("TimeBombPause", 1, "UseFail")
-        TNT1 A 0 A_PlaySound("heretic/artiuse")
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"SPUse")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"SPUse")
-	DMUse:
-		TNT1 A 0 A_FireCustomMissile("TimeBombOfTheAncients",0,0,0,-24,0,0)
-		goto PostUse
-	SPUse:
-		TNT1 A 0 A_FireCustomMissile("TimeBombOfTheAncientsSP",0,0,0,-24,0,0)
-		goto PostUse
-	  PostUse:
-        TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate", 23, 15)
-        fail
       UseFail:
-        TNT1 A 1
+        TNT1 A 0
         fail
     }
 }
 
-actor PermaProxyBomb : CustomInventory
+actor SamsaraHereticBomb
 {
-    tag "Eye of the Ancients"
-    +FLOATBOB
-    Inventory.Amount 1
-    Inventory.MaxAmount 1
-    +INVBAR
-    +INVENTORY.UNDROPPABLE
-    Inventory.Icon "ARTIPBMB"
-    Inventory.PickupSound "heretic/itemget"
-    Inventory.UseSound "heretic/artiuse"
-    Inventory.PickupMessage "You picked up the Eye of the Ancients!"
-	Inventory.RestrictedTo "CorvusPlayer"
-    States
-    {
-      Spawn:
-        FBMB MNOPQ 8 Bright
-        Loop
-
-      Use:
-        TNT1 A 1 A_JumpIfInventory("CorvusCanProxy",1,1)
-		Goto UseFail
-		TNT1 A 0 A_PlaySound("heretic/artiuse")
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1, "UseCoop")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1, "UseCoop")
-		TNT1 A 1 A_SpawnItemEx("ProxyOfTheAncients2",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_TRANSFERPOINTERS|SXF_TRANSFERAMBUSHFLAG) //A_FireCustomMissile("C7ProxyMine",0,0,0,-24,CMF_TRACKOWNER,0) 
-         //ACS_NamedExecuteAlways("SamsaraClientDecorate",0,27)
-        Goto PostUse
-
-      UseCoop:
-        TNT1 A 1 A_SpawnItemEx("ProxyOfTheAncients",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_TRANSFERPOINTERS|SXF_TRANSFERAMBUSHFLAG)
-        Goto PostUse
-		
-	  PostUse:
-        TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate", 44, 44)
-        fail		
-		
-	 UseFail:
-		TNT1 A 1 A_Print("You cannot use the Eye of the Ancients yet.", 2, "CMPSHERE")
-		fail
-    }
-}
-
-actor TimeBombOfTheAncients
-{
-    DamageType "Explosive"
-    Speed 24
+    Projectile
     Radius 10
     Height 8
+    Speed 24
+    DamageType "Explosive"
+    BounceType "Doom"
     RenderStyle Translucent
     Alpha 0.4
-    // Health 5
     Obituary "$SAMSARA_CORVUS_OB_BOMB"
-    //DeathSound "heretic/phoenixhit"
-    PROJECTILE
-    +FLOATBOB
-    +NOBLOOD
-    -SOLID
-    -SHOOTABLE
-    -NOBLOCKMAP
-    +DOOMBOUNCE
-    -NOLIFTDROP
-    +NOGRAVITY
-    -NOTELEPORT
-    +MOVEWITHSECTOR
-    -EXPLODEONWATER
+    //SelfObituary "%o decided to become a martyr."
+    +BLOODLESSIMPACT
     +CANBOUNCEWATER
+    +DONTBLAST
+    +DONTREFLECT
+    +DONTSPLASH
+    +FLOATBOB
     +FORCERADIUSDMG
+    +MOVEWITHSECTOR
+    -NOBLOCKMAP
+    +NOTRIGGER
+    +THRUACTORS
+}
+
+// Time Bomb of the Ancients
+
+actor TimeBombCount: Counter { Inventory.MaxAmount 3 }
+actor TimeBombPause: Boolean {}
+
+actor PermaTimeBomb : SamsaraHereticPermaBombBase
+{
+    Inventory.PickupMessage "You picked up the Time Bomb of the Ancients!"
+    Inventory.Icon "ARTIFBMB"
+    Tag "Time Bomb of the Ancients"
     States
     {
-      Spawn:	
-        TNT1 A 1 A_Gravity
-        goto Death
+      Spawn:
+        FBMB E -1 Bright
+        stop
+
+      Use:
+        TNT1 A 0 A_JumpIfInventory("TimeBombCount",0,"UseFail")
+        TNT1 A 0 A_JumpIfInventory("TimeBombPause",1,"UseFail")
+        TNT1 A 0 A_PlaySound("heretic/artiuse",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("TimeBombCount")
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraDecorate", 23, 15)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"UseCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"UseCoop")
+      UseDM:
+        TNT1 A 0 A_FireCustomMissile("TimeBombOfTheAncients",0,false,0,-24)
+        fail
+
+      UseCoop:
+        TNT1 A 0 A_FireCustomMissile("TimeBombOfTheAncientsSP",0,false,0,-24)
+        fail
+    }
+}
+
+actor TimeBombOfTheAncients : SamsaraHereticBomb
+{
+    States
+    {
+      Spawn:
+        TNT1 A 1
       Death:
-        TNT1 A 0 A_GiveToTarget("TimeBombCount")
         TNT1 A 0 A_Stop
-        FBMB ABCDE 14
+        FBMB A 14 A_ChangeFlag("THRUACTORS",false)
+        FBMB BCDE 14
         TNT1 A 0 A_SetTranslucent(0.9,1)
-        TNT1 A 0 A_ChangeFlag("FLOATBOB",0)
-        TNT1 A 0 A_NoGravity
+        TNT1 A 0 A_ChangeFlag("BLOODLESSIMPACT",false)
+        TNT1 A 0 A_ChangeFlag("FLOATBOB",false)
+        TNT1 A 0 A_PlaySound("heretic/timebomb",CHAN_VOICE)
         TNT1 A 0 A_AlertMonsters
-        TNT1 A 0 A_PlaySound("heretic/phoenixhit")
-        TNT1 A 0 A_SetTranslucent(0.9,1)
         TNT1 A 0 A_Explode(128,128)
-        TNT1 A 0 A_TakeFromTarget("TimeBombCount", 1)
-        FBMB FGHIJK 4 BRIGHT
-        Stop
+        FBMB F 4 Bright A_TakeFromTarget("TimeBombCount",1)
+        FBMB GHIJK 4 Bright
+        stop
     }
 }
 
 actor TimeBombOfTheAncientsSP : TimeBombOfTheAncients
 {
-        Alpha 0.75
+    Alpha 0.75
+    Species "Player"
+    +THRUSPECIES
 }
 
-actor RemoteOfTheAncients
+// Remote of the Ancients
+
+actor CorvusRemoteActive : Boolean {}
+actor CorvusRemoteDetonate : Boolean {}
+
+actor PermaRemoteBomb : SamsaraHereticPermaBombBase
 {
-    DamageType "Explosive"
-    Speed 24
-    Radius 10
-    Height 8
-    RenderStyle Translucent
-    Alpha 0.4
-    // Health 5
-    Obituary "$SAMSARA_CORVUS_OB_BOMB"
-    //DeathSound "heretic/phoenixhit"
-    PROJECTILE
-    +FLOATBOB
-    +NOBLOOD
-    -SOLID
-    -SHOOTABLE
-    -NOBLOCKMAP
-    +DOOMBOUNCE
-    -NOLIFTDROP
-    +NOGRAVITY
-    -NOTELEPORT
-    +MOVEWITHSECTOR
-    -EXPLODEONWATER
-    +CANBOUNCEWATER
-    +FORCERADIUSDMG
+    Inventory.PickupMessage "You picked up the Mine of the Ancients!"
+    Inventory.Icon "ARTIRBMB"
+    Tag "Mine of the Ancients"
     States
     {
       Spawn:
-        TNT1 A 1 A_Gravity
-        goto Death
+        FBMB L -1 Bright
+        stop
 
+      Use:
+        TNT1 A 0 A_JumpIfInventory("CorvusRemoteActive",1,"UseDetonate")
+      UseArm:
+        TNT1 A 0 A_PlaySound("heretic/artiuse",CHAN_ITEM)
+        TNT1 A 0 A_TakeInventory("CorvusRemoteDetonate")
+        TNT1 A 0 A_GiveInventory("CorvusRemoteActive")
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"UseArmCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"UseArmCoop")
+      UseArmDM:
+        TNT1 A 0 A_FireCustomMissile("RemoteOfTheAncients",0,false,0,-24)
+        fail
+
+      UseArmCoop:
+        TNT1 A 0 A_FireCustomMissile("RemoteOfTheAncientsSP",0,false,0,-24)
+        fail
+
+      UseDetonate:
+        TNT1 A 0 A_PlaySound("heretic/remoteancient",CHAN_ITEM)
+        TNT1 A 0 A_TakeInventory("CorvusRemoteActive")
+        TNT1 A 0 A_GiveInventory("CorvusRemoteDetonate")
+        fail
+    }
+}
+
+actor RemoteOfTheAncients : SamsaraHereticBomb
+{
+    States
+    {
+      Spawn:
+        TNT1 A 1
       Death:
         TNT1 A 0 A_Stop
+        TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
+      DeathLoop:
         FBRE BBBAAACCCAAA 1 A_JumpIfInTargetInventory("CorvusRemoteDetonate",1,"Explode")
-        Loop
+        loop
 
       Explode:
         TNT1 A 0 A_SetTranslucent(0.9,1)
-        TNT1 A 0 A_ChangeFlag("FLOATBOB",0)
-        TNT1 A 0 A_NoGravity
+        TNT1 A 0 A_ChangeFlag("BLOODLESSIMPACT",false)
+        TNT1 A 0 A_ChangeFlag("FLOATBOB",false)
+        TNT1 A 0 A_PlaySound("heretic/remotebomb",CHAN_VOICE)
         TNT1 A 0 A_AlertMonsters
-        TNT1 A 0 A_PlaySound("heretic/phoenixhit")
-        TNT1 A 0 A_SetTranslucent(0.9,1)
-        TNT1 A 0 A_Explode(128,128)
-        FBMB FGHIJK 4 BRIGHT A_SetTranslucent(0.9,1)
-        Stop
+        FBMB F 4 Bright A_Explode(128,128)
+        FBMB GHIJK 4 Bright
+        stop
     }
 }
 
 actor RemoteOfTheAncientsSP : RemoteOfTheAncients
 {
-        Alpha 0.75
+    Alpha 0.75
+    Species "Player"
+    +THRUSPECIES
+}
+
+// Eye of the Ancients
+
+actor SamsaraHereticProxyBombCount : Counter { Inventory.MaxAmount 3 }
+actor SamsaraHereticProxyBombTime : Counter { Inventory.MaxAmount 30 } // 2:00 (4200 tics) in the SpawnLoop state
+
+actor PermaProxyBomb : SamsaraHereticPermaBombBase
+{
+    Inventory.PickupMessage "You picked up the Eye of the Ancients!"
+    Inventory.Icon "ARTIPBMB"
+    Tag "Eye of the Ancients"
+    States
+    {
+      Spawn:
+        FBMB MNOPQ 8 Bright
+        loop
+
+      Use:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHereticProxyBombCount",0,"UseFail")
+        TNT1 A 0 A_PlaySound("heretic/artiuse",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("SamsaraHereticProxyBombCount")
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"UseCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"UseCoop")
+      UseDM:
+        TNT1 A 0 A_SpawnItemEx("ProxyOfTheAncients",0,0,0,0,0,0,0,SXF_ABSOLUTEANGLE|SXF_ABSOLUTEVELOCITY|SXF_SETMASTER) // SXF_SETMASTER|SXF_TRANSFERPOINTERS|SXF_TRANSFERAMBUSHFLAG
+        fail
+
+      UseCoop:
+        TNT1 A 0 A_SpawnItemEx("ProxyOfTheAncientsSP",0,0,0,0,0,0,0,SXF_ABSOLUTEANGLE|SXF_ABSOLUTEVELOCITY|SXF_SETMASTER)
+        fail
+
+      UseFail:
+        TNT1 A 0 A_Print("You cannot have more than 3 mines active at once.") //A_Print("You cannot use the Eye of the Ancients yet.", 2, "CMPSHERE")
+        fail
+    }
 }
 
 actor ProxyOfTheAncients
 {
-    DamageType "Explosive"
-    Speed 0
     Radius 10
-    Height 8
+    Height 16
+    Damage (0)
+    DamageType "Explosive"
+    ReactionTime 1
+    BounceType "Doom"
     RenderStyle Translucent
     Alpha 0.4
-    // Health 5
     Obituary "$SAMSARA_CORVUS_OB_BOMB"
-	MeleeRange 64
-	Monster
-    //DeathSound "heretic/phoenixhit"
-    //PROJECTILE
-	-COUNTKILL
-	+NOBLOCKMAP
-	+NOBLOCKMONST
-	+DROPOFF
-	+MOVEWITHSECTOR
-	-SOLID	
-	+VULNERABLE
-	+THRUACTORS
-	-SHOOTABLE	
-	+FRIENDLY
-	+NOTARGET
-	+NOBLOOD
-	+FLOATBOB
-	+LOOKALLAROUND
-	+FORCERADIUSDMG
-    //-EXPLODEONWATER
-    //+CANBOUNCEWATER
+    //SelfObituary "%o decided to become a martyr."
+    +BLOODLESSIMPACT
+    +CANBOUNCEWATER
+    +DONTBLAST
+    +DONTREFLECT
+    +DONTSPLASH
+    +FLOATBOB
+    +FORCERADIUSDMG
+    +MISSILE
+    +MOVEWITHSECTOR
+    +NOGRAVITY
+    +NOTRIGGER
+    +THRUACTORS
     States
     {
       Spawn:
-        TNT1 A 1 A_Gravity
-        goto Spawn2
-
-      Spawn2:
-        //TNT1 A 0 A_Stop
-		//TNT1 A 0 A_ClearTarget //A_RearrangePointers(AAPTR_DEFAULT, AAPTR_TARGET, AAPTR_DEFAULT)
-        FBMB QPN 14 
-        Goto SpawnLoop
-		
-	 SpawnLoop:
-		//TNT1 A 0 A_GiveToTarget("Clip", 1) //sets target as player. don't know why, all other Proxy mine items work just fine
-		FBMB RSTUV 14 A_LookEx(LOF_NOSOUNDCHECK, 0, 64)
-		FBMB TSRUV 14 A_LookEx(LOF_NOSOUNDCHECK, 0, 64)
-		Loop
-
-      See:
-        TNT1 A 0 A_SetTranslucent(0.9,0)
-        FBMB N 4 A_PlaySound("heretic/proxancient", CHAN_AUTO)
-		FBMB U 4
-		FBMB V 4
-		FBMB V 4
-        TNT1 A 0 A_Die
+        TNT1 A 1
+        FBMB Q 1 A_Stop
+        FBMB Q 13 A_Stop // hack
+        FBMB PN 14
+        TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
+      SpawnLoop:
+        FBMB RSTUVTSRUV 14 // 140 tics total
+        TNT1 A 0 A_GiveInventory("SamsaraHereticProxyBombTime")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHereticProxyBombTime",0,1)
+        loop
+        TNT1 A 0 A_Countdown
+        loop
 
       Death:
+        //TNT1 A 0 A_SetTranslucent(0.9,0)
+        FBMB N 4 A_PlaySound("heretic/proxancient")
+        FBMB P 4
+        FBMB Q 8
         TNT1 A 0 A_SetTranslucent(0.9,1)
-        TNT1 A 0 A_Fall
-        TNT1 A 0 A_ChangeFlag("FLOATBOB",0)
-        TNT1 A 0 A_NoGravity
+        TNT1 A 0 A_NoBlocking
+        TNT1 A 0 A_ChangeFlag("BLOODLESSIMPACT",false)
+        TNT1 A 0 A_ChangeFlag("FLOATBOB",false)
+        TNT1 A 0 A_PlaySound("heretic/proxbomb",CHAN_VOICE)
         TNT1 A 0 A_AlertMonsters
-        TNT1 A 0 A_PlaySound("heretic/phoenixhit")
-        TNT1 A 0 A_SetTranslucent(0.9,1)
-		TNT1 A 0 A_CustomMissile("ProxyOfTheAncientsExplosion",0,0,0,CMF_TRACKOWNER)
-        FBMB FGHIJK 4 BRIGHT
-        Stop
+        TNT1 A 0 A_JumpIfInventory("SamsaraHereticProxyBombTime",0,2)
+        TNT1 A 0 A_Explode(128,128)
+        goto DeathFinish
+        TNT1 A 0 A_Explode(64,128,0)
+        goto DeathFinish
+
+      DeathFinish:
+        FBMB F 4 Bright A_TakeFromTarget("SamsaraHereticProxyBombCount",1)
+        FBMB GHIJK 4 Bright
+        stop
     }
 }
 
-Actor ProxyOfTheAncients2 : ProxyOfTheAncients
+actor ProxyOfTheAncientsSP : ProxyOfTheAncients
 {
-	-FRIENDLY
-}	
+    Alpha 0.75
+    Species "Player"
+    +THRUSPECIES
+}
+
+// old code
+
+/*actor ProxyOfTheAncients
+{
+    Monster
+    Radius 10
+    Height 8
+    DamageType "Explosive"
+    MeleeRange 64
+    RenderStyle Translucent
+    Alpha 0.4
+    Obituary "$SAMSARA_CORVUS_OB_BOMB"
+    +BLOODLESSIMPACT
+    -COUNTKILL
+    +DROPOFF
+    +FLOATBOB
+    +FORCERADIUSDMG
+    +LOOKALLAROUND
+    +MOVEWITHSECTOR
+    +NOBLOCKMAP
+    +NOBLOCKMONST
+    +NOBLOOD
+    +NOGRAVITY
+    +NOTARGET
+    -SHOOTABLE
+    -SOLID
+    +THRUACTORS
+    +VULNERABLE
+    States
+    {
+      Spawn:
+        TNT1 A 1
+        //TNT1 A 0 A_Stop
+        //TNT1 A 0 A_ClearTarget //A_RearrangePointers(AAPTR_DEFAULT,AAPTR_TARGET,AAPTR_DEFAULT)
+        FBMB QPN 14
+      SpawnLoop:
+        //TNT1 A 0 A_GiveToTarget("Clip",1) //sets target as player. don't know why, all other Proxy mine items work just fine
+        FBMB RSTUVTSRUV 14 A_LookEx(LOF_NOSOUNDCHECK,0,64)
+        loop
+
+      See:
+        //TNT1 A 0 A_SetTranslucent(0.9,0)
+        FBMB N 4 A_PlaySound("heretic/proxancient")
+        FBMB P 4
+        FBMB Q 8
+        TNT1 A 0 A_Die
+      Death:
+        TNT1 A 0 A_SetTranslucent(0.9,1)
+        TNT1 A 0 A_NoBlocking
+        TNT1 A 0 A_ChangeFlag("BLOODLESSIMPACT",false)
+        TNT1 A 0 A_ChangeFlag("FLOATBOB",false)
+        TNT1 A 0 A_PlaySound("heretic/proxbomb",CHAN_VOICE)
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_CustomMissile("ProxyOfTheAncientsExplosion",0,0,0,CMF_TRACKOWNER)
+        FBMB F 4 Bright A_TakeFromTarget("SamsaraHereticProxyBombCount",1)
+        FBMB GHIJK 4 Bright
+        stop
+    }
+}
+
+actor ProxyOfTheAncientsSP : ProxyOfTheAncients
+{
+    Alpha 0.75
+    Species "Player"
+    +FRIENDLY
+    +THRUSPECIES
+}    
 
 actor ProxyOfTheAncientsExplosion
 {
+    Projectile
     Radius 1
     Height 1
-    Speed 0
-    Damage 0
-    Projectile
-    +FORCERADIUSDMG
+    DamageType "Explosive"
     Decal Scorch
     Obituary "%o didn't see %k's proximity mine."
+    +FORCERADIUSDMG
     States
     {
       Spawn:
         TNT1 A 1 A_Die
-        Goto Death
-
       Death:
         TNT1 A 2 Bright A_Explode(128,128,0)
         Stop
     }
-}
-
-actor CorvusRemoteActive : inventory { -INVBAR +INVENTORY.UNDROPPABLE inventory.maxamount 1 }
-actor CorvusRemoteDetonate : inventory { -INVBAR +INVENTORY.UNDROPPABLE inventory.maxamount 1 }
-actor CorvusCanProxy : inventory { -INVBAR +INVENTORY.UNDROPPABLE inventory.maxamount 1 }
+}*/

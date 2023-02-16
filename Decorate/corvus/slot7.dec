@@ -1,708 +1,838 @@
+// Lightning mode
+
 actor DSparilStaff : Weapon
 {
-	Weapon.ammouse 1
-	Weapon.ammogive 60
-	Weapon.ammotype "Cell"
-	Weapon.SlotNumber 7
-	Weapon.SlotPriority 2
-	Inventory.pickupmessage "staff of d'sparil"
-	Obituary "%o was no match for %k"
-	Inventory.RestrictedTo "CorvusPlayer"
-	Tag "Staff of D'Sparil (Lightning Mode)"
-	+NOALERT
-	+WEAPON.BFG
-	States
-	{
-	Ready:
-		TNT1 A 0 A_TakeInventory("CorvusHoldingSlot",7)
-		TNT1 A 0 A_GiveInventory("CorvusHoldingSlot",6)
-		DSPS A 1 A_WeaponReady
-		loop
-	Select:
-		DSPS A 1 A_Raise
-		loop
-	Deselect:
-		DSPS A 1 A_Lower
-		loop
-	Fire:
-		TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"FireTomed")
-		TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"FireTomed")
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo", 1, 2)
-		TNT1 A 0 A_JumpIfInventory("Cell", 5, 1)
-		goto OutOfAmmo
-		DSPS A 4
-		DSPS A 4 A_PlayWeaponSound("dsparil/attack")
-		TNT1 A 0 A_GunFlash
-		DSPS B 4 bright
-		TNT1 A 0 A_AlertMonsters
-		TNT1 A 0 A_TakeInventory("Cell", 5, TIF_NOTAKEINFINITE)
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
-		DSPS C 4 bright A_FireCustomMissile("Sorcerer2FX4", 0, 0)
-		DSPS B 4 bright
-		DSPS B 4
-		DSPS A 8
-		DSPS A 4 A_ReFire
-		Goto Ready
-	CoopFire:
-		DSPS C 4 bright A_FireCustomMissile("Sorcerer2FX4_Coop", 0, 0)
-		DSPS B 4 bright
-		DSPS B 4
-		DSPS A 8
-		DSPS A 4 A_ReFire
-		Goto Ready
-	FireTomed:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo", 1, 2)
-		TNT1 A 0 A_JumpIfInventory("Cell", 1, 1)
-		goto OutOfAmmo
-		DSPS A 4
-		DSPS A 4 A_PlayWeaponSound("DSparil/Attack")
-		TNT1 A 0 A_GunFlash
-		DSPS B 4 bright
-		TNT1 A 0 A_AlertMonsters
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFireTomedLoop")
-	FireTomedLoop:
-		TNT1 A 0 A_PlayWeaponSound("dsparil/zap")
-		TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix",0,0,2,4)
-		TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix2",0,0,-2,4)
-		TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
-		DSPS B 2 bright 
-		TNT1 A 0 A_ReFire(1)
-		goto FireTomedFinish
-		TNT1 A 0 A_AlertMonsters
-		loop
-	CoopFireTomedLoop:
-		TNT1 A 0 A_PlayWeaponSound("dsparil/zap")
-		TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix_Coop",0,0,2,4)
-		TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix2_Coop",0,0,-2,4)
-		TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
-		DSPS B 2 bright 
-		TNT1 A 0 A_ReFire(1)
-		goto FireTomedFinish
-		TNT1 A 0 A_AlertMonsters
-		loop
-	FireTomedFinish:
-		DSPS B 0 A_PlayWeaponSound("DSparil/Attack")
-		DSPS B 4 bright
-		DSPS B 4
-		DSPS A 8
-		DSPS A 4 A_ReFire
-		goto ready
-	AltFire:
-		TNT1 A 0 A_SelectWeapon("DSparilStaffMinion")
-		goto Ready
-	OutOfAmmo:
-		TNT1 A 0 A_SelectWeapon("Elven Wand")
-		Goto Deselect
-	Flash:
-		TNT1 A 4 A_Light1
-		TNT1 A 4 A_Light2
-		TNT1 A 4 A_Light1
-		Goto LightDone
-	Spawn:
-		DSTF A -1
-		stop
-	}
+    Inventory.PickupMessage "Staff of D'Sparil"
+    Inventory.RestrictedTo "CorvusPlayer"
+    Weapon.SlotNumber 7
+    Weapon.SlotPriority 2
+    Weapon.AmmoType "Cell"
+    Weapon.AmmoGive 60
+    Weapon.AmmoUse 1
+    Obituary "%o was no match for %k."
+    Tag "Staff of D'Sparil (Lightning Mode)"
+    +BFG
+    +EXPLOSIVE
+    +NOALERT
+    +NOAUTOFIRE
+    +UNDROPPABLE
+    States
+    {
+      Spawn:
+        DSTF A -1
+        stop
+
+      Ready:
+        TNT1 A 0 A_TakeInventory("CorvusHoldingSlot")
+        TNT1 A 0 A_GiveInventory("CorvusHoldingSlot",6)
+        DSPS A 1 A_WeaponReady
+        loop
+
+      Select:
+        DSPS A 1 A_Raise
+        loop
+
+      Deselect:
+        DSPS A 1 A_Lower
+        loop
+
+      // Unpowered
+      Fire:
+        TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"FirePowered")
+        TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"FirePowered")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",5,1)
+        goto Nothing
+        TNT1 A 0 A_AlertMonsters
+        DSPS A 4 A_GiveInventory("CorvusShootCloneTrigger")
+        DSPS A 4 A_PlaySound("dsparil/attack",CHAN_WEAPON)
+        DSPS B 4 Bright A_GunFlash
+        DSPS C 4 Bright A_GiveInventory("SamsaraHereticDSparilStaffLightningAttackHandler")
+        DSPS B 4 Bright
+        DSPS B 4
+        DSPS A 8
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",5,1)
+        goto Nothing
+        DSPS A 4 A_ReFire
+        goto Ready
+
+      Flash:
+        TNT1 A 4 A_Light1
+        TNT1 A 4 A_Light2
+        TNT1 A 4 A_Light1
+        goto LightDone
+
+      // Powered
+      FirePowered:
+        TNT1 A 0 A_AlertMonsters
+        DSPS A 4 A_GiveInventory("CorvusShootCloneTrigger")
+        DSPS A 4 A_PlaySound("dsparil/attack",CHAN_WEAPON)
+        DSPS B 4 Bright A_GunFlash
+        goto FireLoopStartPowered
+
+      FireLoopPowered:
+        TNT1 A 0 A_AlertMonsters
+      FireLoopStartPowered:
+        DSPS B 2 Bright A_GiveInventory("SamsaraHereticDSparilStaffPoweredLightningAttackHandler")
+        TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,3)
+        TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,2)
+        TNT1 A 0 A_CheckReload
+        goto FireFinishPowered
+        TNT1 A 0 A_ReFire("FireLoopPowered")
+        goto FireFinishPowered
+
+      FireFinishPowered:
+        DSPS B 4 Bright A_PlaySound("dsparil/attack",CHAN_WEAPON)
+        DSPS B 4
+        DSPS A 8
+        TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,3)
+        TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,2)
+        TNT1 A 0 A_CheckReload
+        goto FireFinish2Powered
+        TNT1 A 0 A_ReFire
+        goto FireFinish2Powered
+
+      FireFinish2Powered:
+        DSPS A 4
+        goto Ready
+
+      Nothing:
+        TNT1 A 0 A_ClearReFire
+        TNT1 A 0 A_SelectWeapon("Elven Wand")
+        goto Deselect
+
+      AltFire:
+        TNT1 A 0 A_SelectWeapon("DSparilStaffMinion")
+        goto Ready
+    }
 }
 
-actor DSparilStaffMinion : DSparilStaff
+actor SamsaraHereticDSparilStaffLightningAttackHandler : Trigger
 {
-	Weapon.AmmoGive 0
-	Weapon.SlotPriority 1
-	Tag "Staff of D'Sparil (Summon Mode)"
-	States
-	{
-	Fire:
-		TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"FireTomed")
-		TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"FireTomed")
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo", 1, 2)
-		TNT1 A 0 A_JumpIfInventory("Cell", 10, 1)
-		goto AltFire
-		DSPS A 4
-		DSPS A 4 A_PlayWeaponSound("dsparil/attack")
-		TNT1 A 0 A_GunFlash
-		DSPS B 4 bright
-		TNT1 A 0 A_AlertMonsters
-		TNT1 A 0 A_TakeInventory("Cell", 10, TIF_NOTAKEINFINITE)
-		DSPS C 0 bright A_FireCustomMissile("Sorcerer2FX5", 25, 0)
-		DSPS C 4 bright A_FireCustomMissile("Sorcerer2FX5", -25, 0)
-		DSPS E 4 bright 
-		DSPS D 4 bright
-		DSPS D 4
-		DSPS A 8
-		DSPS A 4 A_ReFire
-		Goto Ready
-	FireTomed:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo", 1, 2)
-		TNT1 A 0 A_JumpIfInventory("Cell", 40, 1)
-		goto AltFire
-		DSPS A 4 A_PlayWeaponSound("dsparil/attack")
-		TNT1 A 0 A_GunFlash
-		DSPS B 4 bright
-		TNT1 A 0 A_AlertMonsters
-		TNT1 A 0 A_TakeInventory("Cell", 40, TIF_NOTAKEINFINITE)
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
-		TNT1 A 0 A_FireCustomMissile("HereticCloneSpawner", 0, 0)	// I don't think two clones are necessary
-		DSPS E 4 bright 
-		DSPS D 4 bright
-		DSPS D 4
-		DSPS A 8
-		DSPS A 4 A_ReFire
-		Goto Ready
-	CoopFireTomed:
-		TNT1 A 0 A_FireCustomMissile("HereticCloneSpawnerCoop", 0, 0)	// I don't think two clones are necessary
-		DSPS E 4 bright 
-		DSPS D 4 bright
-		DSPS D 4
-		DSPS A 8
-		DSPS A 4 A_ReFire
-		Goto Ready
-	AltFire:
-		TNT1 A 0 A_SelectWeapon("DSparilStaff")
-		goto Ready
-	}
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",5,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",5)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("Sorcerer2FX4",0,false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("Sorcerer2FX4_Coop",0,false)
+        stop
+    }
 }
 
 actor Sorcerer2FX4 : Sorcerer2FX1
 {
-	Speed 30
-	DamageType "Electric"
-	Damage 50
-	States
-	{
-		Death:
-			FX16 G 5 Bright A_Explode(200, 128, XF_HURTSOURCE)
-			FX16 HIJKL 5 Bright
-			Stop
-	}
+    Speed 30
+    Damage 50
+    DamageType "Electric"
+    States
+    {
+      Death:
+        FX16 G 5 Bright A_Explode(200,128)
+        FX16 HIJKL 5 Bright
+        stop
+    }
 }
 
 actor Sorcerer2FX4_Coop : Sorcerer2FX4 
-{ 
-	+THRUSPECIES
-	+DONTHARMCLASS
-	+DONTHARMSPECIES
-	+MTHRUSPECIES
-	Species "Player" 
-} 
+{
+    Species "Player"
+    +DONTHARMCLASS
+    +DONTHARMSPECIES
+    +THRUSPECIES
+}
+
+actor SamsaraHereticDSparilStaffPoweredLightningAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("dsparil/zap",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix",0,false,2,4)
+        TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix2",0,false,-2,4)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix_Coop",0,false,2,4)
+        TNT1 A 0 A_FireCustomMissile("DSparilStaff_LightningHelix2_Coop",0,false,-2,4)
+        stop
+    }
+}
 
 actor DSparilStaff_LightningHelix : FastProjectile
 {
-	Radius 2
-	Height 4
-	Speed 24
-	DamageType "Electric"
-	Damage 3
-	+EXTREMEDEATH
-	States
-	{
-		Spawn:
-			TNT1 A 1 A_Weave(3, 3, 1.25, 1.25)
-			TNT1 A 0 A_SpawnItemEx("DSparilStaff_LightningHelixParticle",0,0,0,frandom(-0.5,-0.5),frandom(-0.5,0.5),frandom(-0.5,0.5))
-			loop
-		Death:
-			TNT1 A 0 A_Jump(192,2)
-			TNT1 A 0 A_Playsound("heretic/staffcrackle")
-			TNT1 A 0 A_SetScale(0.175)
-			FX16 G 3 Bright A_Explode(10, 10, 0)
-			FX16 HIJKL 3 Bright
-			Stop
-	}
-}
+    Radius 2
+    Height 4
+    Speed 24
+    Damage 3
+    DamageType "Electric"
+    +EXTREMEDEATH
+    States
+    {
+      Spawn:
+        TNT1 A 1 A_Weave(3,3,1.25,1.25)
+        TNT1 A 0 A_SpawnItemEx("DSparilStaff_LightningHelixParticle",0,0,0,frandom(-0.5,-0.5),frandom(-0.5,0.5),frandom(-0.5,0.5))
+        loop
 
-actor DSparilStaff_LightningHelix2 : DSparilStaff_LightningHelix  { WeaveIndexXY 32 WeaveIndexZ 32 }
-
-actor DSparilStaff_LightningHelixParticle
-{
-	Radius 2
-	Height 4
-	Scale 0.175
-	+NOGRAVITY
-	+NOINTERACTION
-	States
-	{
-		Spawn:
-			FAXE RSTUVWX 2 Bright
-			Stop
-	}
+      Death:
+        TNT1 A 0 A_Jump(192,2)
+        TNT1 A 0 A_PlaySound("heretic/staffcrackle",CHAN_VOICE)
+        TNT1 A 0 A_SetScale(0.175)
+        FX16 G 3 Bright A_Explode(10,10,0)
+        FX16 HIJKL 3 Bright
+        stop
+    }
 }
 
 actor DSparilStaff_LightningHelix_Coop : DSparilStaff_LightningHelix 
 {
-	+THRUSPECIES
-	+DONTHARMCLASS
-	+DONTHARMSPECIES
-	+MTHRUSPECIES
-	Species "Player" 
+    Species "Player"
+    +DONTHARMCLASS
+    +DONTHARMSPECIES
+    +THRUSPECIES
+}
+
+actor DSparilStaff_LightningHelix2 : DSparilStaff_LightningHelix
+{
+    WeaveIndexXY 32
+    WeaveIndexZ 32
 }
 
 actor DSparilStaff_LightningHelix2_Coop : DSparilStaff_LightningHelix2 
 {
-	+THRUSPECIES
-	+DONTHARMCLASS
-	+DONTHARMSPECIES
-	+MTHRUSPECIES
-	Species "Player" 
+    Species "Player"
+    +DONTHARMCLASS
+    +DONTHARMSPECIES
+    +THRUSPECIES
 }
+
+actor DSparilStaff_LightningHelixParticle
+{
+    Radius 2
+    Height 4
+    Scale 0.175
+    +NOINTERACTION
+    States
+    {
+      Spawn:
+        FAXE RSTUVWX 2 Bright
+        stop
+    }
+}
+
+// Summon mode
+
+actor DSparilStaffMinion : DSparilStaff
+{
+    Weapon.SlotPriority 1
+    Weapon.AmmoGive 0
+    Weapon.AmmoUse 10
+    Tag "Staff of D'Sparil (Summon Mode)"
+    -EXPLOSIVE
+    States
+    {
+      // Unpowered
+      Fire:
+        TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"FirePowered")
+        TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"FirePowered")
+        TNT1 A 0 A_AlertMonsters
+        DSPS A 4 A_GiveInventory("CorvusShootCloneTrigger")
+        DSPS A 4 A_PlaySound("dsparil/attack",CHAN_WEAPON)
+        DSPS D 4 Bright A_GunFlash
+        DSPS E 4 Bright A_GiveInventory("SamsaraHereticDSparilStaffSummonAttackHandler")
+        DSPS D 4 Bright
+        DSPS D 4
+        DSPS A 8
+        DSPS A 4 A_ReFire
+        goto Ready
+
+      // Powered
+      FirePowered:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",40,1)
+        goto Nothing
+        TNT1 A 0 A_AlertMonsters
+        DSPS A 4 A_GiveInventory("CorvusShootCloneTrigger")
+        DSPS A 4 A_PlaySound("dsparil/attack",CHAN_WEAPON)
+        DSPS D 4 Bright A_GunFlash
+        DSPS E 4 Bright A_GiveInventory("SamsaraHereticDSparilStaffPoweredSummonAttackHandler")
+        DSPS D 4 Bright
+        DSPS D 4
+        DSPS A 8
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",40,1)
+        goto Nothing
+        DSPS A 4 A_ReFire
+        goto Ready
+
+      AltFire:
+        TNT1 A 0 A_SelectWeapon("DSparilStaff")
+        goto Ready
+    }
+}
+
+actor SamsaraHereticDSparilStaffSummonAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",10,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",10)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("Sorcerer2FX5",-25,false)
+        TNT1 A 0 A_FireCustomMissile("Sorcerer2FX5",25,false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("Sorcerer2FX5_Coop",-25,false)
+        TNT1 A 0 A_FireCustomMissile("Sorcerer2FX5_Coop",25,false)
+        stop
+    }
+}
+
+actor SamsaraHereticDSparilStaffSummonProjectileCountdown : Counter { Inventory.MaxAmount 4 }
 
 actor Sorcerer2FX5
 {
-	Radius 10
-	Height 6
-	Speed 6
-	Damage 10
-	PROJECTILE
-	renderstyle add
-	states
-	{
-	Spawn:
-		FX11 ABABABAB 5 bright
-		goto Summon
-	Summon:
-		TNT1 A 0 A_SpawnItemEx("HereticDiscipleSpawnFog",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		TNT1 A 0 A_SpawnItemEx("FWizard",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		stop
-	Death:
-		FX11 CDEFG 5 BRIGHT
-		Stop
-	}
+    Projectile
+    Radius 10
+    Height 6
+    Speed 6
+    Damage 10
+    ReactionTime 4
+    RenderStyle "Add"
+    States
+    {
+      Spawn:
+        FX11 AB 5 Bright
+        TNT1 A 0 A_GiveInventory("SamsaraHereticDSparilStaffSummonProjectileCountdown")
+        TNT1 A 0 A_Countdown
+        loop
+
+      Death:
+        FX11 C 5 Bright A_JumpIfInventory("SamsaraHereticDSparilStaffSummonProjectileCountdown",0,"DeathSummon")
+        FX11 DEFG 5 Bright
+        stop
+
+      DeathSummon:
+        TNT1 A 0 A_SpawnItemEx("HereticDiscipleSpawnFog",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+        TNT1 A 1 A_SpawnItemEx("FWizard",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+        stop
+    }
 }
 
-actor HereticCloneSpawner
+actor Sorcerer2FX5_Coop : Sorcerer2FX5
 {
-	Radius 10
-	Height 6
-	Speed 6
-	Damage 10
-	PROJECTILE
-	renderstyle add
-	states
-	{
-	Spawn:
-		FX11 ABABABAB 5 bright
-		goto Summon
-	Summon:
-		TNT1 A 0 A_SpawnItemEx("HereticDiscipleSpawnFog",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		TNT1 A 0 ACS_NamedExecuteWithResult("HereticCloneSpawner")
-		stop
-	Death:
-		FX11 CDEFG 5 BRIGHT
-		Stop
-	}
+    Species "Player"
+    +THRUSPECIES
+    States
+    {
+      DeathSummon:
+        TNT1 A 0 A_SpawnItemEx("HereticDiscipleSpawnFog",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+        TNT1 A 1 A_SpawnItemEx("FWizardCoop",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+        stop
+    }
 }
 
-actor HereticCloneSpawnerCoop
+actor HereticDiscipleSpawnFog
 {
-	Radius 10
-	Height 6
-	Speed 6
-	Damage 10
-	PROJECTILE
-	renderstyle add
-	states
-	{
-	Spawn:
-		FX11 ABABABAB 5 bright
-		goto Summon
-	Summon:
-		TNT1 A 0 A_SpawnItemEx("HereticDiscipleSpawnFog",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		TNT1 A 0 ACS_NamedExecuteWithResult("HereticCloneSpawnerCoop")
-		stop
-	Death:
-		FX11 CDEFG 5 BRIGHT
-		Stop
-	}
-}
-
-ACTOR HereticDiscipleSpawnFog
-{
-	+NOBLOCKMAP
-	+NOTELEPORT
-	+NOGRAVITY
-	RenderStyle Add
-	States
-	{
-		Spawn:
-			TNT1 A 0 NoDelay A_PlaySound("hereticsamsara/teleport",CHAN_BODY)
-			HR60 ABCDEFGHGFEDC 6 Bright
-			Stop
-	}
+    RenderStyle "Add"
+    +NOBLOCKMAP
+    +NOGRAVITY
+    +NOTELEPORT
+    States
+    {
+      Spawn:
+        HR60 A 6 Bright NoDelay A_PlaySound("hereticsamsara/teleport",CHAN_VOICE)
+        HR60 BCDEFGHGFEDC 6 Bright
+        stop
+    }
 }
 
 actor FWizard : SamsaraMonsterReincWizardFriend
-{ 
-	+FRIENDLY 
-	+NOTDMATCH
-	+NOICEDEATH
-	SeeSound "wizardfriend/sight"
-	AttackSound "wizardfriend/attack"
-	PainSound "wizardfriend/pain"
-	DeathSound "wizardfriend/death"
-	ActiveSound "wizardfriend/active"
-	DamageFactor "CorvusCrossbow", 1.15
-	DamageFactor "DragonClaw", 1.5
-	PainChance "MightyBoot", 255
-	DropItem "BlasterAmmo2", 84
-	DropItem "ArtiHealth", 4, 0
-	BloodColor Purple
-	Tag "Wizard"
-	var int user_scalex;
-	var int user_scaley;
-	States
-	{
-	Spawn:
-		ZZRD A 0 NoDelay A_GiveInventory("IsAFlyingActor")
-	Spawn2:
-		ZZRD AB 10 A_Look
-		Loop
-	Death:
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		goto "Super::Death"
-	StakeDeath:
-		ZZRD E 2
-		Loop
-	Pain.MightyBoot:
-		TNT1 A 0 A_ChangeFlag("NOPAIN",1)
-		TNT1 A 0 A_PlaySoundEx("duke/kickhit","body",0,0)
-		ZZRD E 2 A_FaceTarget
-		TNT1 A 0 A_Recoil(14)
-		ZZRD E 16 A_Pain
-		Goto See
-	Missile:
-		TNT1 A 0 A_ChangeFlag("NOPAIN",0)
-		goto "Super::Missile"
-	Death.ExpanderDMG:
-	XDeath.ExpanderDMG:
-		ZZRD E 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto ExpanderLoop
-	ExpanderLoop:
-		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
-		loop
-	ExpanderPop:	
-		"####" "#" 10
-		TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
-		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-		TNT1 A 0 A_Jump(96,2)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
-		TNT1 A 0 A_SetScale (1.0, 1.0)
-		TNT1 A 0 A_UnsetSolid
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
-		TNT1 A 1
-		Stop
-	Death.ExpanderDMGCoop:
-	XDeath.ExpanderDMGCoop:
-		ZZRD E 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto ExpanderLoopCoop
-	ExpanderLoopCoop:
-		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
-		loop
-	ExpanderPopCoop:	
-		"####" "#" 10
-		TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
-		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-		TNT1 A 0 A_Jump(96,2)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
-		TNT1 A 0 A_SetScale (1.0, 1.0)
-		TNT1 A 0 A_UnsetSolid
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
-		TNT1 A 1
-		Stop
-	}
+{
+    var int user_scalex;
+    var int user_scaley;
+    SeeSound "wizardfriend/sight"
+    ActiveSound "wizardfriend/active"
+    AttackSound "wizardfriend/attack"
+    PainSound "wizardfriend/pain"
+    DeathSound "wizardfriend/death"
+    DamageFactor "CorvusCrossbow", 1.15
+    DropItem "BlasterAmmo2", 84
+    DropItem "ArtiHealth", 4
+    BloodColor "Purple"
+    Tag "Wizard"
+    Species "Player"
+    +FRIENDLY
+    States
+    {
+      Spawn:
+        ZZRD A 0 NoDelay A_GiveInventory("IsAFlyingActor")
+      Spawn2:
+        ZZRD AB 10 A_Look
+        loop
+
+      Death:
+        TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+        goto Super::Death
+
+      StakeDeath:
+        ZZRD E 2
+        loop
+
+      Pain.MightyBoot:
+        TNT1 A 0 A_ChangeFlag("NOPAIN",1)
+        TNT1 A 0 A_PlaySoundEx("duke/kickhit","body",0,0)
+        ZZRD E 2 A_FaceTarget
+        TNT1 A 0 A_Recoil(14)
+        ZZRD E 16 A_Pain
+        goto See
+
+      Missile:
+        TNT1 A 0 A_ChangeFlag("NOPAIN",0)
+        goto Super::Missile
+
+      Death.ExpanderDMG:
+      XDeath.ExpanderDMG:
+        ZZRD E 0
+        "####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+        "####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+        "####" "#" 0 A_PlaySound("duke/expand")
+        goto ExpanderLoop
+
+      ExpanderLoop:
+        "####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+        "####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+        "####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+        "####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+        "####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+        "####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
+        loop
+
+      ExpanderPop:
+        "####" "#" 10
+        TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+        TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
+        TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+        TNT1 A 0 A_Jump(96,2)
+        TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
+        TNT1 A 0 A_SetScale (1.0, 1.0)
+        TNT1 A 0 A_UnsetSolid
+        TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+        TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+        TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
+        TNT1 A 1
+        stop
+
+      Death.ExpanderDMGCoop:
+      XDeath.ExpanderDMGCoop:
+        ZZRD E 0
+        "####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+        "####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+        "####" "#" 0 A_PlaySound("duke/expand")
+        goto ExpanderLoopCoop
+
+      ExpanderLoopCoop:
+        "####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+        "####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+        "####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+        "####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+        "####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+        "####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
+        loop
+
+      ExpanderPopCoop:
+        "####" "#" 10
+        TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+        TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
+        TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+        TNT1 A 0 A_Jump(96,2)
+        TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
+        TNT1 A 0 A_SetScale (1.0, 1.0)
+        TNT1 A 0 A_UnsetSolid
+        TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+        TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+        TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
+        TNT1 A 1
+        stop
+    }
 }
+
+actor FWizardCoop : FWizard { +THRUSPECIES }
+
+actor SamsaraHereticDSparilStaffPoweredSummonAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",40,"PickupTakeAmmo")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmo:
+        TNT1 A 0 A_TakeInventory("Cell",40)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("HereticCloneSpawner",0,false) // I don't think two clones are necessary
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("HereticCloneSpawnerCoop",0,false)
+        stop
+    }
+}
+
+actor HereticCloneSpawner : Sorcerer2FX5
+{
+    States
+    {
+      DeathSummon:
+        TNT1 A 0 A_SpawnItemEx("HereticDiscipleSpawnFog",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+        TNT1 A 1 ACS_NamedExecuteWithResult("HereticCloneSpawner")
+        stop
+    }
+}
+
+actor HereticCloneSpawnerCoop : HereticCloneSpawner
+{
+    Species "Player"
+    +THRUSPECIES
+    States
+    {
+      DeathSummon:
+        TNT1 A 0 A_SpawnItemEx("HereticDiscipleSpawnFog",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+        TNT1 A 1 ACS_NamedExecuteWithResult("HereticCloneSpawner", 1)
+        stop
+    }
+}
+
+actor SamsaraHereticCorvusCloneAttackAmount : Counter {} // no real max since other attacks can define that instead
 
 actor HereticCorvusClone : SamsaraMiscCharHumanoidStatic
 {
-	Health 500
-	Radius 16
-	Height 56
-	Mass 100
-	Painchance 60
-	Speed 12
-	MaxStepHeight 24
-	MaxDropoffHeight 24
-	MaxTargetRange 640
-	SeeSound "heretic/weaponget"
-	PainSound "corvusclone/pain"
-	DeathSound "corvusclone/death"
-	ActiveSound "heretic/weaponget"
-	Monster
-	+FLOORCLIP
-	+FRIENDLY
-	+NOTDMATCH
-	+NOICEDEATH
-	+DONTMORPH
-	+DONTRIP
-	+DONTHARMSPECIES
-	+ISMONSTER
-	+MISSILEMORE
-	-COUNTKILL
-	-SOLID
-	Species "Player"
-	PainChance "ShrinkerDMG", 0
-	PainChance "PainkillerIce", 0
-	var int user_scalex;
-	var int user_scaley;
-	Tag "Corvus Clone"
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_CopyFriendliness(AAPTR_Master)
-	Spawn2:
-		//CORV AB 10 A_Look
-		//Loop
-	See:
-		CORV A 4 A_FastChase	
-		CORV B 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_Master)
-		CORV B 4 A_FastChase	
-		CORV C 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_Master)
-		CORV C 4 A_FastChase	
-		CORV D 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_Master)
-		CORV D 4 A_FastChase	
-		CORV A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_Master)
-		Loop
-	Missile:
-		CORV F 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget")
-		CORV F 0 A_AlertMonsters(1024, AMF_TARGETEMITTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 7, "MissileUseGrimBallista", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 6, "MissileUseDSparilStaff", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 5, "MissileUseHellstaff", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 4, "MissileUsePheonixRod", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 3, "MissileUseDragonClaw", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 2, "MissileUseCrossbow", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 1, "MissileUseFiremace", AAPTR_MASTER)
-		Goto MissileUsePistol
-	MissileUsePistol:
-		CORV E 0 A_PlayWeaponSound("heretic/wand")
-		CORV F 3 BRIGHT A_CustomBulletAttack(5.625, 0, 1, random(1,8)+6, "GoldWandPuff3", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 6
-		CORV E 0 A_PlayWeaponSound("heretic/wand")
-		CORV F 3 BRIGHT A_CustomBulletAttack(5.625, 0, 1, random(1,8)+6, "GoldWandPuff3", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 6
-		CORV E 0 A_PlayWeaponSound("heretic/wand")
-		CORV F 3 BRIGHT A_CustomBulletAttack(5.625, 0, 1, random(1,8)+6, "GoldWandPuff3", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 6
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseFiremace:
-		CORV FFFFFFF 3 A_CustomMissile("MaceFX12",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV F 3 A_CustomMissile("MaceFX22",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV E 9
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseCrossbow:
-		CORV F 0 A_CustomMissile("CrossbowFX1B",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV F 0 A_CustomMissile("CrossbowFX3B",32,0,angle+4.5,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV F 0 A_CustomMissile("CrossbowFX3B",32,0,angle-4.5,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV F 3 BRIGHT
-		CORV E 12
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseDragonClaw:
-		CORV F 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",1)
-		CORV E 0 A_PlayWeaponSound("heretic/dragonclaw")
-		CORV F 6 BRIGHT A_CustomBulletAttack(3.6, 0, 1, random(17,30), "BlasterPuff2", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 0 A_PlayWeaponSound("heretic/dragonclaw")
-		CORV F 6 BRIGHT A_CustomBulletAttack(3.6, 0, 1, random(17,30), "BlasterPuff2", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 0 A_PlayWeaponSound("heretic/dragonclaw")
-		CORV F 6 BRIGHT A_CustomBulletAttack(3.6, 0, 1, random(17,30), "BlasterPuff2", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 0 A_PlayWeaponSound("heretic/dragonclaw")
-		CORV F 6 BRIGHT A_CustomBulletAttack(3.6, 0, 1, random(17,30), "BlasterPuff2", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 0 A_PlayWeaponSound("heretic/dragonclaw")
-		CORV F 6 BRIGHT A_CustomBulletAttack(3.6, 0, 1, random(17,30), "BlasterPuff2", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 6
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUsePheonixRod:
-		CORV F 5 BRIGHT A_CustomMissile("PhoenixShot",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV E 10
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseHellstaff:
-		CORV FFFFFF 4 BRIGHT A_CustomMissile("HellstaffShot",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV E 4
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseDSparilStaff:
-		CORV E 8 A_PlayWeaponSound("DSparil/Attack")
-		CORV F 4 BRIGHT A_CustomMissile("Sorcerer2FX4",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV E 12
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseGrimBallista:
-		CORV EEEE 0 A_CustomMissile("GrimSpittle",32,0,angle+frandom(-10.0,10.0),CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch+frandom(-7.0,7.0))
-		CORV F 12 Bright A_CustomMissile("GrimBolt",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV E 8
-		CORV E 6 
-		CORV EEE 2
-		CORV EEE 3
-		CORV E 6
-		CORV E  0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	Pain:
-		CORV G 3
-		CORV G 3 A_Pain
-		Goto See
-	Pain.MightyBoot:
-		TNT1 A 0 A_ChangeFlag("NOPAIN",1)
-		TNT1 A 0 A_PlaySoundEx("duke/kickhit","body",0,0)
-		CORV G 2 A_FaceTarget
-		TNT1 A 0 A_Recoil(14)
-		CORV G 16 A_Pain
-		Goto See
-	Pain.Shock:
-	Pain.Tesla:
-		CBGS A 4 A_Pain
-		CBGS A 4
-		Goto See
-	Death:
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		CORV H 6
-		CORV I 6 A_Scream
-		CORV JK 6
-		CORV L 6 A_NoBlocking
-		CORV MNO 6
-		CORV P -1
-		Stop
-	Death.CalebFire:
-	Death.LifeLeech:
-		TNT1 A 0 A_Jump(218, 2)
-		TNT1 A 0 A_GiveToTarget("CalebDMTaunt1", 1)
-		TNT1 A 0 A_SpawnItemEx("BloodBurningCorpse_Generic", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 5 A_NoBlocking
-		stop
-	Death.PainkillerStake:
-		TNT1 A 0 ACS_NamedExecuteAlways("Painkiller_MonsterKill")
-		TNT1 A 0 A_JumpIf(CallACS("Painkiller_IsItGibbed")==1,"PainkillerGib")
-		TNT1 A 0 A_GiveInventory("Painkiller_RunStake",1)
-		TNT1 A 0 A_Scream
-		TNT1 A 0 A_NoBlocking
-		TNT1 A 0 A_FaceTarget
-	StakeDeath:
-		CORV H 2
-		Loop
-	XDeath:
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		CORV Q 5 A_PlaySound("corvusclone/xdeath", CHAN_VOICE)
-		CORV R 5 A_NoBlocking
-		CORV STUVWX 5
-		CORV Y -1
-		Stop
-	}
+    var int user_scalex;
+    var int user_scaley;
+    Monster
+    Health 500
+    Radius 16
+    Height 56
+    Speed 12
+    MaxStepHeight 24
+    MaxDropOffHeight 24
+    MaxTargetRange 640
+    PainChance 60
+    PainChance "PainkillerIce", 0
+    PainChance "ShrinkerDMG", 0
+    SeeSound "heretic/weaponget"
+    ActiveSound "heretic/weaponget"
+    PainSound "corvusclone/pain"
+    DeathSound "corvusclone/death"
+    Tag "Corvus Clone"
+    Species "Player"
+    +DONTHARMSPECIES
+    +DONTMORPH
+    +DONTRIP
+    +FLOORCLIP
+    +FRIENDLY
+    +MISSILEMORE
+    -SOLID
+    States
+    {
+      Spawn:
+        CORV A 0
+        CORV A 0 A_CopyFriendliness(AAPTR_MASTER)
+      Spawn2: // goes to See
+        /*CORV AB 10 A_Look
+        loop*/
+
+      See:
+        CORV A 4 A_FastChase
+        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_MASTER)
+        CORV B 4 A_FastChase
+        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_MASTER)
+        CORV C 4 A_FastChase
+        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_MASTER)
+        CORV D 4 A_FastChase
+        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_MASTER)
+        loop
+
+      Missile:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget")
+        TNT1 A 0 A_AlertMonsters(1024,AMF_TARGETEMITTER)
+        TNT1 A 0 A_TakeInventory("SamsaraHereticCorvusCloneAttackAmount") // reset
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",0,"MissileUseGrimBallista",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",6,"MissileUseDSparilStaff",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",5,"MissileUseHellstaff",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",4,"MissileUsePhoenixRod",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",3,"MissileUseDragonClaw",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",2,"MissileUseCrossbow",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",1,"MissileUseFiremace",AAPTR_MASTER)
+        goto MissileUseWand
+
+      MissileUseWand:
+        TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
+        TNT1 A 0 A_PlaySound("heretic/wand",CHAN_WEAPON)
+        CORV F 3 Bright A_CustomBulletAttack(5.6,0,1,random(1,6)+12,"GoldWandPuff3",0,CBAF_NORANDOM|CBAF_AIMFACING)
+        CORV E 6
+        TNT1 A 0 A_JumpIfInventory("SamsaraHereticCorvusCloneAttackAmount",3,"MissileFinish")
+        loop
+
+      MissileUseFiremace:
+        TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
+        TNT1 A 0 A_Jump(28,2)
+        CORV F 3 Bright A_CustomMissile("MaceFX12",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        goto MissileUseFiremaceCheck
+        CORV F 3 Bright A_CustomMissile("MaceFX22",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        goto MissileUseFiremaceCheck
+
+      MissileUseFiremaceCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHereticCorvusCloneAttackAmount",8,1)
+        goto MissileUseFiremace
+        CORV E 9
+        goto MissileFinish
+
+      MissileUseCrossbow:
+        TNT1 A 0 A_CustomMissile("CrossbowFX1B",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        TNT1 A 0 A_CustomMissile("CrossbowFX3B",32,0,angle-4.5,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV F 3 Bright A_CustomMissile("CrossbowFX3B",32,0,angle+4.5,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV E 12
+        goto MissileFinish
+
+      MissileUseDragonClaw:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",1)
+      MissileUseDragonClawLoop:
+        TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
+        TNT1 A 0 A_PlaySound("heretic/dragonclaw",CHAN_WEAPON)
+        CORV F 6 Bright A_CustomBulletAttack(3.6,0,1,random(17,30),"BlasterPuff2",0,CBAF_NORANDOM|CBAF_AIMFACING)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHereticCorvusCloneAttackAmount",5,1)
+        loop
+        CORV E 6
+        goto MissileFinish
+
+      MissileUsePhoenixRod:
+        CORV F 5 Bright A_CustomMissile("PhoenixShot",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV E 10
+        goto MissileFinish
+
+      MissileUseHellstaff:
+        TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
+        CORV F 4 Bright A_CustomMissile("HellstaffShot",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHereticCorvusCloneAttackAmount",6,1)
+        loop
+        CORV E 4
+        goto MissileFinish
+
+      MissileUseDSparilStaff:
+        CORV E 8 A_PlaySound("dsparil/attack",CHAN_WEAPON)
+        CORV F 4 Bright A_CustomMissile("Sorcerer2FX4",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV E 12
+        goto MissileFinish
+
+      MissileUseGrimBallista:
+        TNT1 A 0 A_PlaySound("heretic/grimbshot",CHAN_WEAPON)
+        TNT1 AAAA 0 A_CustomMissile("GrimSpittle",32,0,angle+frandom(-10.0,10.0),CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch+frandom(-7.0,7.0))
+        CORV F 12 Bright A_CustomMissile("GrimBolt",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV E 26
+        CORV E 9 A_PlaySound("heretic/grimbload")
+        goto MissileFinish
+
+      MissileFinish:
+        TNT1 A 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_MASTER)
+        goto See
+
+      Pain:
+        CORV G 3
+        CORV G 3 A_Pain
+        goto See
+
+      Pain.MightyBoot:
+        TNT1 A 0 A_ChangeFlag("NOPAIN",1)
+        TNT1 A 0 A_PlaySoundEx("duke/kickhit","body",0,0)
+        CORV G 2 A_FaceTarget
+        TNT1 A 0 A_Recoil(14)
+        CORV G 16 A_Pain
+        goto See
+
+      Pain.Shock:
+      Pain.Tesla:
+        CBGS A 4 A_Pain
+        CBGS A 4
+        goto See
+
+      Death:
+        TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+        CORV H 6
+        CORV I 6 A_Scream
+        CORV JK 6
+        CORV L 6 A_NoBlocking
+        CORV MNO 6
+        CORV P -1
+        stop
+
+      Death.CalebFire:
+      Death.LifeLeech:
+        TNT1 A 0 A_Jump(218, 2)
+        TNT1 A 0 A_GiveToTarget("CalebDMTaunt1", 1)
+        TNT1 A 0 A_SpawnItemEx("BloodBurningCorpse_Generic", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_SETMASTER)
+        TNT1 A 5 A_NoBlocking
+        stop
+
+      Death.PainkillerStake:
+        TNT1 A 0 ACS_NamedExecuteAlways("Painkiller_MonsterKill")
+        TNT1 A 0 A_JumpIf(CallACS("Painkiller_IsItGibbed")==1,"PainkillerGib")
+        TNT1 A 0 A_GiveInventory("Painkiller_RunStake",1)
+        TNT1 A 0 A_Scream
+        TNT1 A 0 A_NoBlocking
+        TNT1 A 0 A_FaceTarget
+      StakeDeath:
+        CORV H 2
+        loop
+
+      XDeath:
+        TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+        CORV Q 5 A_PlaySound("corvusclone/xdeath",CHAN_VOICE)
+        CORV R 5 A_NoBlocking
+        CORV STUVWX 5
+        CORV Y -1
+        stop
+    }
 }
 
 actor HereticCorvusCloneCoop : HereticCorvusClone
 {
-	States
-	{
-	See:
-		CORV A 4 A_FastChase	
-		CORV B 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_Master)
-		CORV B 4 A_FastChase	
-		CORV C 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_Master)
-		CORV C 4 A_FastChase	
-		CORV D 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_Master)
-		CORV D 4 A_FastChase	
-		CORV A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_Master)
-		Loop
-	Missile:
-		CORV F 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget")
-		CORV F 0 A_AlertMonsters(1024, AMF_TARGETEMITTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 7, "MissileUseGrimBallista", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 6, "MissileUseDSparilStaff", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 5, "MissileUseHellstaff", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 4, "MissileUsePheonixRod", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 3, "MissileUseDragonClaw", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 2, "MissileUseCrossbow", AAPTR_MASTER)
-		CORV F 0 A_JumpIfInventory("CorvusHoldingSlot", 1, "MissileUseFiremace", AAPTR_MASTER)
-		Goto MissileUsePistol
-	MissileUsePistol:
-		CORV E 0 A_PlayWeaponSound("heretic/wand")
-		CORV F 3 BRIGHT A_CustomBulletAttack(5.625, 0, 1, random(1,8)+6, "GoldWandPuff3Coop", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 6
-		CORV E 0 A_PlayWeaponSound("heretic/wand")
-		CORV F 3 BRIGHT A_CustomBulletAttack(5.625, 0, 1, random(1,8)+6, "GoldWandPuff3Coop", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 6
-		CORV E 0 A_PlayWeaponSound("heretic/wand")
-		CORV F 3 BRIGHT A_CustomBulletAttack(5.625, 0, 1, random(1,8)+6, "GoldWandPuff3Coop", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 6
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseFiremace:
-		CORV FFFFFFF 3 A_CustomMissile("MaceFX1Coop",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV F 3 A_CustomMissile("MaceFX2Coop",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV E 9
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseCrossbow:
-		CORV F 0 A_CustomMissile("CrossbowFX12",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV F 0 A_CustomMissile("CrossbowFX32",32,0,angle+4.5,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV F 0 A_CustomMissile("CrossbowFX32",32,0,angle-4.5,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV F 3 BRIGHT
-		CORV E 12
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseDragonClaw:
-		CORV F 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",1)
-		CORV E 0 A_PlayWeaponSound("heretic/dragonclaw")
-		CORV F 6 BRIGHT A_CustomBulletAttack(3.6, 0, 1, random(17,30), "BlasterPuff2Coop", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 0 A_PlayWeaponSound("heretic/dragonclaw")
-		CORV F 6 BRIGHT A_CustomBulletAttack(3.6, 0, 1, random(17,30), "BlasterPuff2Coop", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 0 A_PlayWeaponSound("heretic/dragonclaw")
-		CORV F 6 BRIGHT A_CustomBulletAttack(3.6, 0, 1, random(17,30), "BlasterPuff2Coop", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 0 A_PlayWeaponSound("heretic/dragonclaw")
-		CORV F 6 BRIGHT A_CustomBulletAttack(3.6, 0, 1, random(17,30), "BlasterPuff2Coop", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 0 A_PlayWeaponSound("heretic/dragonclaw")
-		CORV F 6 BRIGHT A_CustomBulletAttack(3.6, 0, 1, random(17,30), "BlasterPuff2Coop", 0, CBAF_NORANDOM|CBAF_AIMFACING)
-		CORV E 6
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUsePheonixRod:
-		CORV F 5 BRIGHT A_CustomMissile("PhoenixShot2",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV E 10
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseHellstaff:
-		CORV FFFFFF 4 BRIGHT A_CustomMissile("HellstaffShot2",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV E 4
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseDSparilStaff:
-		CORV E 8 A_PlayWeaponSound("DSparil/Attack")
-		CORV F 4 BRIGHT A_CustomMissile("Sorcerer2FX4_Coop",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV E 12
-		CORV E 0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	MissileUseGrimBallista:
-		CORV EEEE 0 A_CustomMissile("GrimSpittleCoop",32,0,angle+frandom(-10.0,10.0),CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,frandom(-7.0,7.0))
-		CORV F 12 Bright A_CustomMissile("GrimBolt",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
-		CORV E 8
-		CORV E 6 
-		CORV EEE 2
-		CORV EEE 3
-		CORV E 6
-		CORV E  0 A_TakeInventory("CorvusShootCloneTrigger",1,0,AAPTR_Master)
-		Goto See
-	}
+    +THRUSPECIES
+    States
+    {
+      Missile:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget")
+        TNT1 A 0 A_AlertMonsters(1024,AMF_TARGETEMITTER)
+        TNT1 A 0 A_TakeInventory("SamsaraHereticCorvusCloneAttackAmount") // reset
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",0,"MissileUseGrimBallista",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",6,"MissileUseDSparilStaff",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",5,"MissileUseHellstaff",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",4,"MissileUsePhoenixRod",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",3,"MissileUseDragonClaw",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",2,"MissileUseCrossbow",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",1,"MissileUseFiremace",AAPTR_MASTER)
+        goto MissileUseWand
+
+      MissileUseWand:
+        TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
+        TNT1 A 0 A_PlaySound("heretic/wand",CHAN_WEAPON)
+        CORV F 3 Bright A_CustomBulletAttack(5.6,0,1,random(1,8)+6,"GoldWandPuff3Coop",0,CBAF_NORANDOM|CBAF_AIMFACING)
+        CORV E 6
+        TNT1 A 0 A_JumpIfInventory("SamsaraHereticCorvusCloneAttackAmount",3,"MissileFinish")
+        loop
+
+      MissileUseFiremace:
+        TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
+        TNT1 A 0 A_Jump(28,2)
+        CORV F 3 Bright A_CustomMissile("MaceFX1Coop",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        goto MissileUseFiremaceCheck
+        CORV F 3 Bright A_CustomMissile("MaceFX2Coop",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        goto MissileUseFiremaceCheck
+
+      MissileUseFiremaceCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHereticCorvusCloneAttackAmount",8,1)
+        goto MissileUseFiremace
+        CORV E 9
+        goto MissileFinish
+
+      MissileUseCrossbow:
+        TNT1 A 0 A_CustomMissile("CrossbowFX12",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        TNT1 A 0 A_CustomMissile("CrossbowFX32",32,0,angle-4.5,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV F 3 Bright A_CustomMissile("CrossbowFX32",32,0,angle+4.5,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV E 12
+        goto MissileFinish
+
+      MissileUseDragonClaw:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",1)
+      MissileUseDragonClawLoop:
+        TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
+        TNT1 A 0 A_PlaySound("heretic/dragonclaw",CHAN_WEAPON)
+        CORV F 6 Bright A_CustomBulletAttack(3.6,0,1,random(4,11),"BlasterPuff2Coop",0,CBAF_AIMFACING)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHereticCorvusCloneAttackAmount",5,1)
+        loop
+        CORV E 6
+        goto MissileFinish
+
+      MissileUsePhoenixRod:
+        CORV F 5 Bright A_CustomMissile("PhoenixShot2",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV E 10
+        goto MissileFinish
+
+      MissileUseHellstaff:
+        TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
+        CORV F 4 Bright A_CustomMissile("HellstaffShot2",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHereticCorvusCloneAttackAmount",6,1)
+        loop
+        CORV E 4
+        goto MissileFinish
+
+      MissileUseDSparilStaff:
+        CORV E 8 A_PlaySound("dsparil/attack",CHAN_WEAPON)
+        CORV F 4 Bright A_CustomMissile("Sorcerer2FX4_Coop",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV E 12
+        goto MissileFinish
+
+      MissileUseGrimBallista:
+        TNT1 A 0 A_PlaySound("heretic/grimbshot",CHAN_WEAPON)
+        TNT1 AAAA 0 A_CustomMissile("GrimSpittleCoop",32,0,angle+frandom(-10.0,10.0),CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch+frandom(-7.0,7.0))
+        CORV F 12 Bright A_CustomMissile("GrimBoltCoop",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV E 26
+        CORV E 9 A_PlaySound("heretic/grimbload")
+        goto MissileFinish
+    }
 }

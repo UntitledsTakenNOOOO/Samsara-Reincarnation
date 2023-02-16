@@ -1,0 +1,78 @@
+actor PowerHereticTomePerma : Boolean {}
+
+actor TomeOfPowerCooldown : Counter { Inventory.MaxAmount 1800 }
+
+/*actor PortTome : PowerupGiver
+{
+    Inventory.UseSound "heretic/itemuse"
+    Inventory.Icon "ARTIPWBK"
+    Inventory.MaxAmount 16
+    Inventory.InterHubAmount 16
+    Powerup.Type "HereticTome"
+    +INVBAR
+    +UNDROPPABLE
+}*/
+
+actor PortTome : CustomInventory
+{
+    Tag "Tome of Power"
+    Inventory.UseSound ""
+    Inventory.Icon "ARTIPWBK"
+    Inventory.MaxAmount 16
+    Inventory.InterHubAmount 16
+    Inventory.RestrictedTo "CorvusPlayer"
+    +INVBAR
+    +UNDROPPABLE
+    States
+    {
+      Use:
+        TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"UseFail")
+        TNT1 A 0 A_PlaySound("heretic/itemuse",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("PowerHereticTome")
+        TNT1 A 0 A_GiveInventory("TomeOfPowerCooldown",CallACS("HereticTomeChargeRate"))
+        stop
+
+      UseFail:
+        TNT1 A 0
+        fail
+    }
+}
+
+actor PortTomeCoOp : PortTome
+{
+    Inventory.MaxAmount 1
+    Inventory.InterHubAmount 1
+    States
+    {
+      /*Pickup:
+        TNT1 A 0 A_JumpIf(CallACS("TomeOfPowerCooldownReduction") == 1, 1)
+        TNT1 A 0 A_RailWait
+        stop*/
+
+      Use:
+        TNT1 A 0 A_JumpIfInventory("TomeOfPowerCooldown",1,"UseFail")
+        TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"UseFail2")
+        TNT1 A 0 A_PlaySound("heretic/itemuse",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("PowerHereticTome")
+        TNT1 A 0 A_GiveInventory("TomeOfPowerCooldown",CallACS("HereticTomeChargeRate"))
+        fail
+
+      UseFail:
+        TNT1 A 0 A_Print("$TOMECOOLDOWN")
+        fail
+
+      UseFail2:
+        TNT1 A 0 A_Print("$TOMECOOLDOWN2")
+        fail
+    }
+}
+
+actor PowerHereticTome : Powerup //PowerWeaponLevel2
+{
+    Inventory.Icon "SPINBK0"
+    Powerup.Duration -90
+    Powerup.Color Red, 0.1
+}
+
+actor PowerHereticTomeCoOp : PowerHereticTome { Powerup.Duration -120 }
+actor PowerHereticTomeDM : PowerHereticTome { Powerup.Duration -60 }
