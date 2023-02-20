@@ -28,45 +28,39 @@ actor "Machine Gun": InstantSwitchWeapon
       Ready:
         TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"ReadyCTK")
         TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"ReadyLost")
+      ReadyOriginal:
         WMGN A 1 A_WeaponReady(WRF_NOSECONDARY)
-        loop
+        goto Ready
 
       Fire:
         TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireCTK")
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"FireStart")
-      FireNoAmmo:
-        TNT1 A 0 A_ClearReFire
-        TNT1 A 0 A_SelectWeapon("Luger")
-        goto Deselect
-
-      FireStart:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+        goto NoAmmoSwitch
         TNT1 A 0 A_AlertMonsters
-        WMGN A 2 A_JumpIfInventory("WolfenClassMode",1,"FireLost")
-        WMGN B 2
-      FireStartAmmoCheck:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireAttack")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"FireAttack")
-        goto HoldStart
-
-      FireAttack:
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"FireLost")
+      FireOriginal:
+        WMGN AB 2
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+        goto HoldOriginal
         TNT1 A 0 A_GunFlash
-        goto HoldStart
+        goto HoldOriginal
 
       Hold:
         TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireCTK")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-        goto FireNoAmmo
+        goto NoAmmoSwitch
         TNT1 A 0 A_AlertMonsters
         TNT1 A 0 A_GunFlash
         TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"HoldLost")
-      HoldStart:
+      HoldOriginal:
         WMGN C 3 Bright A_GiveInventory("SamsaraWolfenMachineGunAttackHandler")
         WMGN D 3
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-        goto FireNoAmmo
+        goto NoAmmoSwitch
         WMGN E 3 A_ReFire
         goto Ready
 
@@ -77,12 +71,9 @@ actor "Machine Gun": InstantSwitchWeapon
 
       FireLost:
         WMGN FG 2
-      FireStartLostAmmoCheck:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireLostAttack")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"FireLostAttack")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
         goto HoldLost
-
-      FireLostAttack:
         TNT1 A 0 A_GunFlash
         goto HoldLost
 
@@ -91,7 +82,7 @@ actor "Machine Gun": InstantSwitchWeapon
         WMGN I 3
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-        goto FireNoAmmo
+        goto NoAmmoSwitch
         WMGN J 3 A_ReFire
         goto Ready
 
@@ -104,36 +95,42 @@ actor "Machine Gun": InstantSwitchWeapon
         goto Ready
 
       FireCTK:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStartCTK")
-        TNT1 A 0 A_JumpIfInventory("Shell",1,"FireStartCTK")
-        goto FireNoAmmo
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+        goto NoAmmoSwitch
+        TNT1 A 0 A_AlertMonsters
+        TK03 A 0 A_JumpIfInventory("Totenkopf_Sniper",1,1)
+        goto FireStartCTK
+        TK12 A 0
+        goto FireStartCTK
 
       FireStartCTK:
-        TNT1 A 0 A_AlertMonsters
-        TK03 A 0 A_JumpIfInventory("Totenkopf_Sniper",1,"FireStartCTKScope")
-        goto FireContinueCTK
-
-      FireStartCTKScope:
-        TK12 A 0
-        goto FireContinueCTK
-
-      FireContinueCTK:
         "####" B 3
         "####" C 3 Bright A_GiveInventory("SamsaraTotenkopfKar98kAttackHandler")
         "####" D 5
         "####" A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         "####" A 0 A_JumpIfInventory("Shell",1,1)
-        goto FireNoAmmo
+        goto NoAmmoSwitch
         "####" E 5 A_PlaySound("Totenkopf/kar98bolt")
         "####" F 5
         "####" GHI 2
         "####" JK 5
         "####" L 3
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+        goto NoAmmoSwitch
+        TNT1 A 0 A_ReFire
         goto Ready
 
 	  AltFire:
         TK12 A 8
         TNT1 A 0 A_SelectWeapon("Totenkopf_Sniper")
+        goto Deselect
+
+      // "No ammo" switch
+      NoAmmoSwitch:
+        TNT1 A 0 A_ClearReFire
+        TNT1 A 0 A_SelectWeapon("Luger")
         goto Deselect
     }
 }
@@ -144,15 +141,12 @@ actor SamsaraWolfenMachineGunAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
-        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("Clip",1)
         goto PickupAttack
 
       // Attack stuff
@@ -180,15 +174,12 @@ actor SamsaraWolfenLostMachineGunAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
-        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("Clip",1)
         goto PickupAttack
 
       // Attack stuff
@@ -216,15 +207,12 @@ actor SamsaraTotenkopfKar98kAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-        TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
-        TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("Shell",1)
         goto PickupAttack
 
       // Attack stuff
