@@ -1,20 +1,12 @@
 actor SamsaraGoldenEyePermanentTankCannon : Boolean {}
-actor SamsaraGoldenEyeTankProtection : PowerProtection { Powerup.Duration -0x7FFFFFFD DamageFactor "Normal", 0.1 }
 
-actor SamsaraGoldenEyeTankProtectionGiver : PowerupGiver
+actor SamsaraGoldenEyeTankProtection : SamsaraPowerupGiver
 {
-	Inventory.MaxAmount 0
-	Powerup.Duration -0x7FFFFFFD
-	Powerup.Type SamsaraGoldenEyeTankProtection
-	+INVENTORY.AUTOACTIVATE
-	+INVENTORY.ALWAYSPICKUP
-	States
-	{
-		Spawn:
-			TNT1 A 2
-			Loop
-	}
+    Powerup.Type SamsaraGoldenEyeTankProtection
+    Powerup.Duration 0x7FFFFFFF
 }
+
+actor PowerSamsaraGoldenEyeTankProtection : PowerProtection { DamageFactor "Normal", 0.1 }
 
 Actor Goldeneye_Tank
 {
@@ -342,6 +334,10 @@ Actor Goldeneye_TankWeapon : Weapon
 	Weapon.AmmoUse2 0
 	Weapon.AmmoType2 "RocketAmmo"
 	Weapon.SlotNumber 0
+    Weapon.BobStyle InverseSmooth
+    Weapon.BobSpeed 1.6
+    Weapon.BobRangeX 0.3
+    Weapon.BobRangeY 0.4
 	Obituary "%o was blown up by %k's tank cannon."
 	Inventory.RestrictedTo "JamesBond"
 	Tag "Tank Cannon"
@@ -457,9 +453,10 @@ Actor Goldeneye_TankWeapon : Weapon
 			goto Ready
 
 		ReloadStart:
+            TNT1 A 35
 			TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
 		ReloadDone:
-			TNT1 A 35
+			TNT1 A 0
 			goto Ready
 
 		ReloadAmmo:
@@ -521,46 +518,49 @@ Actor Goldeneye_TankWeapon : Weapon
 
 actor SamsaraGoldenEyeTankCannonAttackHandler : Trigger
 {
-	States
-	{
-	// Ammo check stuff
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
-	PickupCheckAmmoNonReloadable:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
-		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"PickupTakeAmmoNonReloadable")
-		stop
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupReloadable")
+      PickupNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
+        goto PickupAttack
 
-	PickupCheckAmmoReloadable:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
-		TNT1 A 0 A_JumpIfInventory("Goldeneye_TankMagazine",1,"PickupTakeAmmoReloadable")
-		stop
+      PickupReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Goldeneye_TankMagazine",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Goldeneye_TankMagazine",1)
+        goto PickupAttack
 
-	// Ammo taking stuff
-	PickupTakeAmmoNonReloadable:
-		TNT1 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
-		goto PickupAttack
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Goldeneye/Tank/Fire",CHAN_WEAPON)
+        goto PickupAttackCenter
 
-	PickupTakeAmmoReloadable:
-		TNT1 A 0 A_TakeInventory("Goldeneye_TankMagazine",1)
-		goto PickupAttack
+      PickupAttackCenter:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCenterCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCenterCoop")
+      PickupAttackCenterDM:
+        TNT1 A 0 A_SpawnItemEx("Goldeneye_TankShell",148,-7,20,20*cos(pitch),0,20*sin(-pitch))
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasSpread",1,1)
+        stop
+        TNT1 A 0 A_SpawnItemEx("Goldeneye_TankShell",148,-7,20,20*cos(pitch),0,20*sin(-pitch),-15)
+        TNT1 A 0 A_SpawnItemEx("Goldeneye_TankShell",148,-7,20,20*cos(pitch),0,20*sin(-pitch),15)
+        stop
 
-	// Attack stuff
-	PickupAttack:
-		TNT1 A 0 A_PlaySound("Goldeneye/Tank/Fire",CHAN_WEAPON)
-		goto PickupAttackCenter
-
-	PickupAttackCenter:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCenterCoop")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCenterCoop")
-	PickupAttackCenterDM:
-		TNT1 A 0 A_SpawnItemEx("Goldeneye_TankShell",148,-7,20,20*cos(pitch),0,20*sin(-pitch))
-		stop
-
-	PickupAttackCenterCoop:
-		TNT1 A 0 A_SpawnItemEx("Goldeneye_TankShellCoop",148,-7,20,20*cos(pitch),0,20*sin(-pitch))
-		stop
-	}
+      PickupAttackCenterCoop:
+        TNT1 A 0 A_SpawnItemEx("Goldeneye_TankShellCoop",148,-7,20,20*cos(pitch),0,20*sin(-pitch))
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasSpread",1,1)
+        stop
+        TNT1 A 0 A_SpawnItemEx("Goldeneye_TankShellCoop",148,-7,20,20*cos(pitch),0,20*sin(-pitch),-15)
+        TNT1 A 0 A_SpawnItemEx("Goldeneye_TankShellCoop",148,-7,20,20*cos(pitch),0,20*sin(-pitch),15)
+        stop
+    }
 }
 
 actor Goldeneye_TankMagazine : Ammo
