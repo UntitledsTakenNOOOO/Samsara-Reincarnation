@@ -16,6 +16,10 @@ actor "Super Large Zorcher" : Weapon
     Tag "Super Large Zorcher"
     States
     {
+      Spawn:
+        WSLZ A -1
+        stop
+
       Ready:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyAmmo")
         TNT1 A 0 A_JumpIfInventory("Shell",4,"ReadyAmmo")
@@ -64,14 +68,15 @@ actor "Super Large Zorcher" : Weapon
 
       Fire:
         TNT1 A 0 A_JumpIfInventory("SamsaraImprovedDoomguyBalance",1,"FireImproved")
+      // Vanilla
       FireVanilla:
         CSLZ A 1 // 1
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireAttackVanilla")
-        TNT1 A 0 A_JumpIfInventory("Shell",4,"FireAttackVanilla")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("Shell",4,1)
+        goto FireContinueVanilla
+        TNT1 A 0 A_GunFlash
         goto FireContinueVanilla
 
-      FireAttackVanilla:
-        TNT1 A 0 A_GunFlash
       FireContinueVanilla:
         CSLZ F 3 Bright A_GiveInventory("SamsaraChexSuperLargeZorcherAttackHandler") // 4
         CSLZ GH 3 Bright // 10
@@ -96,6 +101,7 @@ actor "Super Large Zorcher" : Weapon
         CSLZ A 2 A_ReFire // 106
         goto Ready
 
+      // Improved
       FireImproved:
         TNT1 A 0 A_GunFlash
         CSLZ F 2 Bright A_GiveInventory("SamsaraChexSuperLargeZorcherAttackHandler") // 2
@@ -122,11 +128,7 @@ actor "Super Large Zorcher" : Weapon
       Flash:
         TNT1 A 2 Bright A_Light1
         TNT1 A 3 Bright A_Light2
-        Goto LightDone
-
-      Spawn:
-        WSLZ A -1
-        Stop
+        goto LightDone
     }
 }
 
@@ -134,15 +136,12 @@ actor SamsaraChexSuperLargeZorcherAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-        TNT1 A 0 A_JumpIfInventory("Shell",4,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",4,1)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
-        TNT1 A 0 A_TakeInventory("Shell",4,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("Shell",4)
         goto PickupAttack
 
       // Attack stuff
