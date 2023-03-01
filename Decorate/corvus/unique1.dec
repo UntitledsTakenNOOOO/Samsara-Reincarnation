@@ -78,14 +78,11 @@ actor SamsaraHereticGrimBallistaAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("Shell",2,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Shell",2,1)
         goto PickupFinish
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
         TNT1 A 0 A_TakeInventory("Shell",2)
         goto PickupAttack
 
@@ -134,6 +131,8 @@ actor SamsaraHereticGrimBallistaAttackHandler : Trigger
     }
 }
 
+// Unpowered
+
 actor GrimBolt 
 {
 	Radius 8
@@ -163,7 +162,7 @@ actor GrimBolt
         GPF2 ABC 2 bright
         Stop	
 	}
-}	
+}
 
 actor GrimBoltCoop : GrimBolt
 {
@@ -171,7 +170,34 @@ actor GrimBoltCoop : GrimBolt
     Damage 15
     Species "Player"
     +THRUSPECIES
-}	
+}
+
+actor DamnedSoul
+{
+    Radius 2
+    Height 2
+    Speed 1
+    Alpha 1
+    Scale 0.4
+    Projectile
+	RenderStyle Add
+    +CLIENTSIDEONLY
+    +NOINTERACTION
+    States
+    {
+    Spawn:
+        DAMD A 0 Bright
+        TNT1 A 0 A_PlaySound("SoulScream",CHAN_VOICE)
+        TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("GrimSpittleTrail2",0,0,random(0,16),random(-400,400)/100.00,random(-400,400)/100.00,random(-400,400)/100.00,random(0,360),180)
+        TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("GrimSpittleTrail2",0,0,random(0,16),random(-400,400)/100.00,random(-400,400)/100.00,random(-400,400)/100.00,random(0,360),180)
+        DAMD A 3 Bright A_CStaffMissileSlither
+    FadeOut:
+        DAMD AA 1 Bright A_FadeOut(0.025)
+        TNT1 A 0 A_FadeOut(0.025)
+        DAMD A 1 Bright A_CStaffMissileSlither
+        loop
+    }
+}
 
 actor GrimSpittle
 {
@@ -204,19 +230,6 @@ actor GrimSpittleCoop : GrimSpittle
     +THRUSPECIES
 }
 
-actor GrimSpittle2 : GrimSpittle
-{
-    Damage (6)
-    Speed 16
-}
-
-actor GrimSpittle2Coop : GrimSpittle2
-{
-    Damage 3
-    Species "Player"
-    +THRUSPECIES
-}
-
 actor GrimSpittleTrail
 {
     Speed 12
@@ -235,6 +248,11 @@ actor GrimSpittleTrail
         stop
     }
 }
+
+actor GrimSpittleTrail2 : GrimSpittleTrail { Scale 0.25 }
+actor GrimSpittleTrail3 : GrimSpittleTrail { Scale 1 }
+
+// Powered
 
 actor SoulPuff : BulletPuff
 {
@@ -266,35 +284,20 @@ actor SoulPuff : BulletPuff
 
 actor SoulPuffCoop : SoulPuff { +MTHRUSPECIES }	
 
-actor GrimSpittleTrail2 : GrimSpittleTrail { Scale 0.25 }
-actor GrimSpittleTrail3 : GrimSpittleTrail { Scale 1.0 }
-
-actor DamnedSoul
+actor GrimSpittle2 : GrimSpittle
 {
-    Radius 2
-    Height 2
-    Speed 1
-    Alpha 1
-    Scale 0.4
-    Projectile
-	RenderStyle Add
-    +CLIENTSIDEONLY
-    +NOINTERACTION
-    States
-    {
-    Spawn:
-        DAMD A 0 Bright
-        TNT1 A 0 A_PlaySound("SoulScream",CHAN_VOICE)
-        TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("GrimSpittleTrail2",0,0,random(0,16),random(-400,400)/100.00,random(-400,400)/100.00,random(-400,400)/100.00,random(0,360),180)
-        TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("GrimSpittleTrail2",0,0,random(0,16),random(-400,400)/100.00,random(-400,400)/100.00,random(-400,400)/100.00,random(0,360),180)
-        DAMD A 3 Bright A_CStaffMissileSlither
-    FadeOut:
-        DAMD AA 1 Bright A_FadeOut(0.025)
-        TNT1 A 0 A_FadeOut(0.025)
-        DAMD A 1 Bright A_CStaffMissileSlither
-        loop
-    }
+    Damage (6)
+    Speed 16
 }
+
+actor GrimSpittle2Coop : GrimSpittle2
+{
+    Damage 3
+    Species "Player"
+    +THRUSPECIES
+}
+
+// Lesser powered (unused)
 
 actor GrimGhostFX1 : MummyFX1
 {
@@ -314,7 +317,7 @@ actor GrimGhostFX1 : MummyFX1
 			FX15 LMNO 5 Bright
 			Stop
 	}
-}	
+}
 
 actor GrimGhostFX1B : GrimGhostFX1
 {

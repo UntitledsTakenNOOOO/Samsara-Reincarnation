@@ -50,7 +50,9 @@ actor "Phoenix Rod" : Weapon
       Fire:
         TNT1 A 0 A_GiveInventory("CorvusShootCloneTrigger")
         TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"FirePowered")
-        PHNX B 5 Bright A_JumpIfInventory("PowerHereticTomePerma",1,"FirePowered")
+        TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"FirePowered")
+      FireUnpowered:
+        PHNX B 5 Bright
         PHNX C 7 Bright A_GiveInventory("SamsaraHereticPhoenixRodAttackHandler")
         PHNX DB 4
         TNT1 A 0 A_ReFire
@@ -72,6 +74,7 @@ actor "Phoenix Rod" : Weapon
       HoldInitPowered:
         TNT1 A 0 A_JumpIfInventory("SamsaraHereticPhoenixRodPoweredActive",1,1)
         goto HoldPowered
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"HoldPowered")
         TNT1 A 0 A_JumpIfInventory("SamsaraHereticPhoenixRodPoweredFlameCount",0,1)
         goto HoldPowered
         TNT1 A 0 A_GiveInventory("SamsaraHereticPhoenixRodPoweredPowerdownHandler")
@@ -93,18 +96,17 @@ actor "Phoenix Rod" : Weapon
 	}
 }
 
+// Unpowered
+
 actor SamsaraHereticPhoenixRodAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
         TNT1 A 0 A_TakeInventory("RocketAmmo",1)
         goto PickupAttack
 
@@ -145,6 +147,8 @@ actor PhoenixShot2 : PhoenixShot
     +THRUSPECIES
 }
 
+// Powered
+
 actor SamsaraHereticPhoenixRodPoweredAttackHandler : Trigger
 {
     States
@@ -166,6 +170,7 @@ actor SamsaraHereticPhoenixRodPoweredAttackHandler : Trigger
       PickupFinish:
         TNT1 A 0 A_GiveInventory("SamsaraHereticPhoenixRodPoweredActive")
         TNT1 A 0 A_GiveInventory("SamsaraHereticPhoenixRodPoweredPlayingSound")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupStop")
         TNT1 A 0 A_GiveInventory("SamsaraHereticPhoenixRodPoweredFlameCount")
         stop
     }
@@ -175,16 +180,13 @@ actor SamsaraHereticPhoenixRodPoweredPowerdownHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
         TNT1 A 0 A_JumpIfInventory("SamsaraHereticPhoenixRodPoweredActive",1,1)
         stop
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupFinish")
-        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
         goto PickupFinish
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
         TNT1 A 0 A_TakeInventory("RocketAmmo",1)
         goto PickupFinish
 
@@ -248,7 +250,9 @@ actor PhoenixFX2A : PhoenixFX2DM
 
 actor PhoenixPuff2 : PhoenixPuff replaces PhoenixPuff { +CLIENTSIDEONLY }
 
-Actor PheonixBlastFX : VolcanoBlast
+// Lesser powered (unused)
+
+Actor PhoenixBlastFX : VolcanoBlast
 {
 	Damage 12
 	Gravity 0.525

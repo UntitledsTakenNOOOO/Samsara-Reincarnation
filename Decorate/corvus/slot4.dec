@@ -42,17 +42,19 @@ actor "Dragon Claw" : Weapon
       Fire:
         TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"FirePowered")
         TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"FirePowered")
+      FireUnpowered:
         TNT1 A 0 A_AlertMonsters
         BLSR B 3 A_GiveInventory("CorvusShootCloneTrigger")
         BLSR C 3
-        goto HoldStart
+        goto HoldStartUnpowered
 
       Hold:
         TNT1 A 0 A_JumpIfInventory("PowerHereticTome",1,"FirePowered")
         TNT1 A 0 A_JumpIfInventory("PowerHereticTomePerma",1,"FirePowered")
+      HoldUnpowered:
         TNT1 A 0 A_AlertMonsters
         TNT1 A 0 A_GiveInventory("CorvusShootCloneTrigger")
-      HoldStart:
+      HoldStartUnpowered:
         BLSR D 2 A_GiveInventory("SamsaraHereticBlasterAttackHandler")
         BLSR CB 2
         BLSR A 1 A_ReFire
@@ -62,36 +64,36 @@ actor "Dragon Claw" : Weapon
       FirePowered:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_JumpIfInventory("Clip",5,1)
-        goto Nothing
+        goto NoAmmoSwitch
         TNT1 A 0 A_AlertMonsters
         TNT1 A 0 A_GiveInventory("CorvusShootCloneTrigger")
         BLSR D 3 A_GiveInventory("SamsaraHereticBlasterPoweredAttackHandler")
         BLSR CB 4
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_JumpIfInventory("Clip",5,1)
-        goto Nothing
+        goto NoAmmoSwitch
         TNT1 A 0 A_ReFire
         goto Ready
 
-      Nothing:
+      // "No ammo" switch
+      NoAmmoSwitch:
         TNT1 A 0 A_ClearReFire
         TNT1 A 0 A_SelectWeapon("Elven Wand")
         goto Deselect
     }
 }
 
+// Unpowered
+
 actor SamsaraHereticBlasterAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
         TNT1 A 0 A_TakeInventory("Clip",1)
         goto PickupAttack
 
@@ -119,18 +121,17 @@ actor BlasterPuff2 : BlasterPuff
 
 actor BlasterPuff2Coop : BlasterPuff2 { +MTHRUSPECIES }
 
+// Powered
+
 actor SamsaraHereticBlasterPoweredAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("Clip",5,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("Clip",5,1)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
         TNT1 A 0 A_TakeInventory("Clip",5)
         goto PickupAttack
 
@@ -182,8 +183,6 @@ actor BlasterFX1B : BlasterFX1
     }
 }
 
-actor SamsaraBlasterSmoke : BlasterSmoke replaces BlasterSmoke { +CLIENTSIDEONLY }
-
 actor BlasterFX1C : BlasterFX1B
 {
     Species "Player"
@@ -202,6 +201,8 @@ actor BlasterFX1C : BlasterFX1B
         goto DeathFinish
     }
 }
+
+actor SamsaraBlasterSmoke : BlasterSmoke replaces BlasterSmoke { +CLIENTSIDEONLY }
 
 actor Ripper2 : Ripper
 {
