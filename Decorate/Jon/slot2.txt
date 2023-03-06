@@ -51,7 +51,7 @@ Actor ExShotgun : Weapon
   FireNonReloadable:
     TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireActual")
     TNT1 A 0 A_JumpIfInventory("Shell",1,"FireActual")
-    goto Nothing
+    goto NoAmmoSwitch
 
   FireReloadable:
     TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireActual")
@@ -59,7 +59,7 @@ Actor ExShotgun : Weapon
   FireReloadableDryCheck:
     TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
     TNT1 A 0 A_JumpIfInventory("Shell",1,"Reload")
-    goto Nothing
+    goto NoAmmoSwitch
 
   FireActual:
     EXSH A 1 A_AlertMonsters
@@ -79,7 +79,7 @@ Actor ExShotgun : Weapon
   FireContinueNonReloadable:
     TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireContinue")
     TNT1 A 0 A_JumpIfInventory("Shell",1,"FireContinue")
-    goto Nothing
+    goto NoAmmoSwitch
 
   FireContinueReloadable:
     TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireContinue")
@@ -87,7 +87,7 @@ Actor ExShotgun : Weapon
   FireContinueReloadableSwitchCheck:
     TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
     TNT1 A 0 A_JumpIfInventory("Shell",1,"Reload")
-    goto Nothing
+    goto NoAmmoSwitch
 
   FireContinue:
 	EXSH F 4
@@ -99,7 +99,7 @@ Actor ExShotgun : Weapon
   FireFinishNonReloadable:
     TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireFinish")
     TNT1 A 0 A_JumpIfInventory("Shell",1,"FireFinish")
-    goto Nothing
+    goto NoAmmoSwitch
 
   FireFinishReloadable:
     TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireFinish")
@@ -107,7 +107,7 @@ Actor ExShotgun : Weapon
   FireFinishReloadableSwitchCheck:
     TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireFinish")
     TNT1 A 0 A_JumpIfInventory("Shell",1,"FireFinish")
-    goto Nothing
+    goto NoAmmoSwitch
 
   FireFinish:
     EXSH A 1 A_ReFire
@@ -174,7 +174,8 @@ Actor ExShotgun : Weapon
     TNT1 A 0 A_GiveInventory("PSShotgunReload")
     loop
 
-  Nothing:
+  // "No ammo" switch
+  NoAmmoSwitch:
     TNT1 A 0 A_ClearReFire
     TNT1 A 0 A_SelectWeapon("PSMagnum")
     goto Deselect
@@ -185,25 +186,20 @@ actor SamsaraPowerSlaveShotgunAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
-      PickupCheckAmmoNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
-        TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupReloadable")
+      PickupNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
         stop
-
-      PickupCheckAmmoReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("PSShotgunReload",1,"PickupTakeAmmoReloadable")
-        stop
-
-      // Ammo taking stuff
-      PickupTakeAmmoNonReloadable:
-        TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("Shell",1)
         goto PickupAttack
 
-      PickupTakeAmmoReloadable:
+      PickupReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("PSShotgunReload",1,1)
+        stop
         TNT1 A 0 A_TakeInventory("PSShotgunReload",1)
         TNT1 A 0 A_GiveInventory("PSShotgunShellsUsed")
         goto PickupAttack
