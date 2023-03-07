@@ -1,0 +1,501 @@
+actor RTCW_K43GrenadeModeSelected : Boolean {}
+actor RTCW_K43GrenadeNotLoaded : Boolean {}
+
+Actor RTCW_K43 : RTCW_Weapon
+{
+	Weapon.SlotNumber 5
+	Weapon.SlotPriority 1
+	Weapon.SelectionOrder 1000
+	Weapon.AmmoType1 "RTCW_K43Magazine"
+	Weapon.AmmoUse1 1
+	Weapon.AmmoType2 "Shell"
+	Weapon.AmmoGive2 5
+	Obituary "%o was killed (k43) by %k."
+	Inventory.Pickupmessage "K43"
+	Inventory.PickupSound "RTCW/WeaponPickup"
+	Tag "K43"
+	+WEAPON.NOALERT
+	+WEAPON.AMMO_OPTIONAL
+	+WEAPON.NOAUTOFIRE
+	States
+	{
+		Spawn:
+			RW98 A -1
+			Stop
+
+        ReadyActual:
+			TNT1 A 0 A_JumpIfInventory("RTCW_K43GrenadeModeSelected",1,"ReadyActualGrenade")
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyActualReloadable")
+        ReadyActualNonReloadable:
+			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,3)
+            RW00 A 0 A_JumpIfInventory("RocketAmmo",1,2)
+			RW00 A 1 A_WeaponReady(WRF_NOSECONDARY)
+			goto ReadyActualAmmoCheck
+			RW00 A 1 A_WeaponReady
+			goto ReadyActualAmmoCheck
+
+        ReadyActualReloadable:
+			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,4)
+            RW00 A 0 A_JumpIfInventory("RTCW_K43Grenade",1,3)
+            RW00 A 0 A_JumpIfInventory("RocketAmmo",1,2)
+			RW00 A 1 A_WeaponReady(WRF_NOSECONDARY|WRF_ALLOWRELOAD)
+			goto ReadyActualAmmoCheck
+			RW00 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+			goto ReadyActualAmmoCheck
+
+        ReadyActualAmmoCheck:
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
+            goto ReadyActual
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"ReadyActual")
+            TNT1 A 0 A_JumpIfInventory("RTCW_K43Magazine",1,"ReadyActual")
+            goto ReloadCheck
+
+        ReadyActualGrenade:
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyActualGrenadeReloadable")
+		ReadyActualGrenadeNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("RTCW_K43GrenadeNotLoaded",1,"ReadyActualGrenadeNonReloadableNoAmmo")
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyActualGrenadeNonReloadableAmmo")
+            TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"ReadyActualGrenadeNonReloadableAmmo")
+            goto ReadyActualGrenadeNonReloadableNoAmmo
+
+        ReadyActualGrenadeNonReloadableNoAmmo:
+			RW00 A 0 A_GiveInventory("RTCW_K43GrenadeNotLoaded")
+			RW00 A 0 A_TakeInventory("RTCW_K43GrenadeModeSelected")
+			goto ReadyActual
+
+        ReadyActualGrenadeNonReloadableAmmo:
+			RW04 J 0 A_TakeInventory("RTCW_K43GrenadeNotLoaded")
+			RW04 J 0 A_JumpIfInventory("RTCW_Kicking",1,"KickingGrenade")
+			RW04 J 1 A_WeaponReady
+			goto ReadyActual
+
+        ReadyActualGrenadeReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"ReadyActualGrenadeReloadableAmmo")
+            TNT1 A 0 A_JumpIfInventory("RTCW_K43Grenade",1,"ReadyActualGrenadeReloadableAmmo")
+            goto ReadyActualGrenadeReloadableNoAmmo
+
+        ReadyActualGrenadeReloadableNoAmmo:
+			RW00 A 0 A_GiveInventory("RTCW_K43GrenadeNotLoaded")
+			RW00 A 0 A_TakeInventory("RTCW_K43GrenadeModeSelected")
+			goto ReadyActual
+
+        ReadyActualGrenadeReloadableAmmo:
+			RW04 J 0 A_TakeInventory("RTCW_K43GrenadeNotLoaded")
+			RW04 J 0 A_JumpIfInventory("RTCW_Kicking",1,"KickingGrenade")
+			RW04 J 1 A_WeaponReady(WRF_ALLOWRELOAD)
+			goto ReadyActual
+
+		Deselect:
+			RW01 A 2 A_PlaySound("RTCW/Change",CHAN_7)
+			RW01 BCDE 2
+			Goto Super::Deselect
+
+		Ready: // our "Select" state
+			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			RW01 F 0 A_GiveInventory("RTCW_WeaponToken",10)
+			RW01 FGHIJKL 2
+            goto ReadyActual
+
+		Fire:
+			RW00 B 0 A_JumpIfInventory("RTCW_K43GrenadeModeSelected",1,"FireGrenade")
+            RW00 B 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireReloadable")
+        FireNonReloadable:
+            RW00 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+            RW00 B 0 A_JumpIfInventory("Shell",1,"FireStart")
+            goto FireDry
+
+        FireReloadable:
+            RW00 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStart")
+            RW00 B 0 A_JumpIfInventory("RTCW_K43Magazine",1,"FireStart")
+        FireReloadableDryCheck:
+            RW00 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStart")
+            RW00 B 0 A_JumpIfInventory("Shell",1,"ReloadStart")
+            goto FireDry
+
+        FireDry:
+            RW00 A 17 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
+			Goto Deselect
+
+        FireUnderwater:
+            RW00 A 17 A_PlaySound("RTCW/UnderwaterFire",CHAN_5)
+            goto ReadyActual
+
+		FireStart:
+            RW00 B 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"FireUnderwater")
+			RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
+			RW00 B 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
+			RW00 B 0 A_SpawnItemEx("RTCW_Casing",4,-6*cos(-pitch),38+(6*sin(-pitch)),1,0,2*cos(-pitch),-random(85,95),SXF_TRANSFERPITCH)
+			RW00 B 0 A_GunFlash("FireFlash")
+			RW00 B 2 A_GiveInventory("SamsaraRTCWK43AttackHandler")
+			RW00 CDE 2
+        FireFinish:
+			RW00 F 0 A_ReFire("FireFinishAuto")
+            RW00 FGHIJK 3 A_WeaponReady(WRF_NOBOB|WRF_NOSWITCH|WRF_NOSECONDARY)
+            RW00 A 0
+            goto ReadyActual
+
+		FireFinishAuto:
+			RW00 FG 3
+			RW00 HIJK 3 A_ReFire
+            RW00 A 0
+			goto ReadyActual
+
+		FireFlash:
+			RW07 B 0 A_Jump(256,1,2)
+			RW07 B 2 Bright
+			stop
+			RW08 B 2 Bright
+			stop
+
+		FireGrenade:
+            RW02 O 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireGrenadeReloadable")
+        FireGrenadeNonReloadable:
+            RW02 O 0 A_JumpIfInventory("RTCW_K43GrenadeNotLoaded",1,"FireDryGrenade")
+            RW02 O 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStartGrenade")
+            RW02 O 0 A_JumpIfInventory("RocketAmmo",1,"FireStartGrenade")
+            goto FireDryGrenade
+
+        FireGrenadeReloadable:
+            RW02 O 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStartGrenade")
+            RW02 O 0 A_JumpIfInventory("RTCW_K43Grenade",1,"FireStartGrenade")
+            goto FireDryGrenade
+
+        FireDryGrenade:
+            RW00 A 17 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+            TNT1 A 0 A_TakeInventory("RTCW_K43GrenadeModeSelected")
+			goto ReadyActual
+
+		FireStartGrenade:
+            RW02 O 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"FireUnderwater")
+			//RW02 O 0 A_GiveInventory("RTCW_FiringToken",1)
+			RW02 O 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
+        FireLastShotCalcGrenade:
+            RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
+            goto FireContinueGrenadeLast
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireContinueGrenade")
+            RW00 A 0 A_JumpIfInventory("RTCW_K43Grenade",2,"FireContinueGrenade")
+            goto FireContinueGrenadeLast
+
+        FireContinueGrenade:
+			RW02 O 2 A_GiveInventory("SamsaraRTCWK43GrenadeAttackHandler")
+			RW02 PQRS 2
+            RW00 A 0
+			goto ReadyActual
+
+        FireContinueGrenadeLast:
+			RW02 O 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+			RW02 O 2 A_GiveInventory("SamsaraRTCWK43GrenadeAttackHandler")
+			RW02 PQRS 2
+            RW00 A 0 A_TakeInventory("RTCW_K43GrenadeModeSelected")
+			goto ReadyActual
+
+		//-_-
+		AltFire:
+			RW02 U 0 A_JumpIfInventory("RTCW_K43GrenadeModeSelected",1,"AltFireRemove")
+        AltFireAttach:
+            RW02 U 0 A_PlaySound("RTCW/K43/GrenadeOn",CHAN_6)
+			RW02 V 1 A_GiveInventory("RTCW_K43GrenadeModeSelected")
+			RW02 W 2
+			RW02 X 1
+			RW02 Y 2
+			RW02 Z 1
+			RW02 "[" 2
+			RW02 "\" 1
+			RW02 "]" 2
+			RW03 A 1
+			RW03 B 2
+			RW03 C 1
+			RW03 D 2
+			RW03 E 1
+			RW03 F 2
+			RW03 G 1
+			RW03 H 2
+			RW03 I 1
+			RW03 J 2
+			RW03 K 1
+			RW03 L 2
+			RW03 M 1
+			RW03 N 2
+			RW03 O 1
+			RW03 P 2
+			RW03 Q 1
+			RW03 R 2
+			RW03 S 1
+			RW03 T 2
+			RW03 U 1
+			RW03 V 2
+			RW03 W 1
+			RW03 X 2
+			RW03 Y 1
+			RW03 Z 2
+			RW03 "[" 1
+			RW03 "\" 2
+			RW03 "]" 1
+			RW04 A 2
+			RW04 B 1
+			RW04 C 2
+			RW04 D 1
+			RW04 E 2
+			RW04 F 1
+			RW04 G 2
+			RW04 H 1
+			RW04 I 2
+			RW04 J 0 A_TakeInventory("RTCW_K43GrenadeNotLoaded")
+            RW04 J 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmoGrenade")
+			goto ReloadDoneGrenade
+
+		AltFireRemove:
+			RW05 C 0 A_PlaySound("RTCW/K43/GrenadeOff",CHAN_6)
+			RW05 C 1 A_TakeInventory("RTCW_K43GrenadeModeSelected")
+			RW05 D 2
+			RW05 E 1
+			RW05 F 2
+			RW05 G 1
+			RW05 H 2
+			RW05 I 1
+			RW05 J 2
+			RW05 K 1
+			RW05 L 2
+			RW05 M 1
+			RW05 N 2
+			RW05 O 1
+			RW05 P 2
+			RW05 Q 1
+			RW05 R 2
+			RW05 S 1
+			RW05 T 2
+			RW05 U 1
+			RW05 V 2
+			RW05 W 1
+			RW05 X 2
+			RW05 Y 1
+			RW05 Z 2
+			RW05 "[" 1
+			RW05 "\" 2
+			RW05 "]" 1
+			RW06 A 2
+            RW00 A 0
+			goto ReadyActual
+
+        Reload:
+            RW00 A 0 A_JumpIfInventory("RTCW_K43GrenadeModeSelected",1,"ReloadCheckGrenade")
+        ReloadCheck:
+            RW00 A 0 A_JumpIfInventory("RTCW_K43Magazine",0,"ReadyActual")
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStart")
+            RW00 A 0 A_JumpIfInventory("Shell",1,"ReloadStart")
+            goto ReadyActual
+
+		ReloadStart:
+			RW01 M 2 A_PlaySound("RTCW/K43/Reload",CHAN_6)
+			RW01 "NOPQRSTUVWXYZ[\]" 2
+			RW02 ABCDEF 2
+			RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
+            goto ReloadDone
+
+        ReloadDone:
+            RW00 A 0
+			goto ReadyActual
+
+        ReloadAmmo:
+            TNT1 A 0 A_JumpIfInventory("RTCW_K43Magazine",0,"ReloadDone")
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+            goto ReloadDone
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            TNT1 A 0 A_TakeInventory("Shell",1)
+            TNT1 A 0 A_GiveInventory("RTCW_K43Magazine")
+            loop
+
+        ReloadCheckGrenade:
+            RW04 J 0 A_JumpIfInventory("RTCW_K43Grenade",0,"ReadyActual")
+            RW04 J 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW04 J 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireAttach")
+            RW04 J 0 A_JumpIfInventory("RocketAmmo",1,"AltFireAttach")
+            goto ReadyActual
+
+        ReloadDoneGrenade:
+            RW04 J 0
+			goto ReadyActual
+
+        ReloadAmmoGrenade:
+            TNT1 A 0 A_JumpIfInventory("RTCW_K43Grenade",0,"ReloadDoneGrenade")
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+            goto ReloadDoneGrenade
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            TNT1 A 0 A_TakeInventory("RocketAmmo",1)
+            TNT1 A 0 A_GiveInventory("RTCW_K43Grenade")
+            loop
+
+		Kicking:
+			TNT1 A 0 A_GunFlash("KickingFoot")
+		KickingDelay:
+			RW00 A 18
+			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
+			goto ReadyActual
+
+		KickingGrenade:
+			TNT1 A 0 A_GunFlash("KickingFoot")
+		KickingDelayGrenade:
+			RW04 J 18
+			RW04 J 0 A_TakeInventory("RTCW_Kicking",1)
+			goto ReadyActual
+	}
+}
+
+actor SamsaraRTCWK43AttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+      PickupCheckAmmoNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupTakeAmmoNonReloadable")
+        stop
+
+      PickupCheckAmmoReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RTCW_K43Magazine",1,"PickupTakeAmmoReloadable")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmoNonReloadable:
+        TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("RTCW_K43Magazine",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("RTCW/K43/Fire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("RTCW_K43Tracer",frandom(-2.5,2.5),false,4,4,0,frandom(-2.5,2.5))
+        goto PickupFinish
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("RTCW_K43TracerCoop",frandom(-2.5,2.5),false,4,4,0,frandom(-2.5,2.5))
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil", 2)
+        stop
+    }
+}
+
+actor SamsaraRTCWK43GrenadeAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo check stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
+      PickupCheckAmmoNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"PickupTakeAmmoNonReloadable")
+        stop
+
+      PickupCheckAmmoReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RTCW_K43Grenade",1,"PickupTakeAmmoReloadable")
+        stop
+
+      // Ammo taking stuff
+      PickupTakeAmmoNonReloadable:
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
+        goto PickupAttack
+
+      PickupTakeAmmoReloadable:
+        TNT1 A 0 A_TakeInventory("RTCW_K43Grenade",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("RTCW/K43/FireGrenade",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("RTCW_RifleGrenadeProjectile",0,false,8,4)
+        goto PickupFinish
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("RTCW_RifleGrenadeProjectileCoop",0,false,8,4)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_GiveInventory("RTCW_K43GrenadeNotLoaded")
+        TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil", 2)
+        stop
+    }
+}
+
+actor RTCW_K43Magazine : Ammo
+{
+    Inventory.MaxAmount 10
+    +IGNORESKILL
+}
+
+actor RTCW_K43Grenade : Ammo
+{
+    Inventory.MaxAmount 1
+    +IGNORESKILL
+}
+
+Actor RTCW_K43Tracer : RTCW_Tracer
+{ 
+	States
+	{
+		Crash:
+		Death:
+			TNT1 A 0 A_Explode(CallACS("RTCW_BulletDamage",80),8,!XF_HURTSOURCE,0,8)
+			Goto Super::Death
+		XDeath:
+			TNT1 A 0 A_Explode(CallACS("RTCW_BulletDamage",80),8,!XF_HURTSOURCE,0,8)
+			Goto Super::XDeath
+	}
+}
+
+Actor RTCW_K43TracerCoop : RTCW_K43Tracer { +THRUSPECIES Species "Player" }
+
+Actor RTCW_RifleGrenadeProjectile : RTCW_GrenadeProjectile 
+{ 
+	Speed 24 
+	ReactionTime 0
+	SeeSound "RTCW/K43/GrenadeFly"
+	States
+	{
+		Bounce.Actor.Creature:
+			TNT1 A 0 A_GiveInventory("RTCW_GrenadeTimer",4)
+			TNT1 A 0 A_CountDown
+			Goto Detonate
+	}
+}
+
+Actor RTCW_RifleGrenadeProjectileCoop : RTCW_GrenadeProjectileCoop
+{ 
+	Speed 24 
+	ReactionTime 0
+	SeeSound "RTCW/K43/GrenadeFly"
+	States
+	{
+		Bounce.Actor.Creature:
+			TNT1 A 0 A_GiveInventory("RTCW_GrenadeTimer",4)
+			TNT1 A 0 A_CountDown
+			Goto Detonate
+	}
+}
