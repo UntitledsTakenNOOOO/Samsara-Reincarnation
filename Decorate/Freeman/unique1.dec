@@ -235,15 +235,12 @@ actor SamsaraHalfLifeSqueakAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-        TNT1 A 0 A_JumpIfInventory("HLSqueakAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("HLSqueakAmmo",1,1)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
-        TNT1 A 0 A_TakeInventory("HLSqueakAmmo",1,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("HLSqueakAmmo",1)
         goto PickupAttack
 
       // Attack stuff
@@ -271,6 +268,7 @@ actor SamsaraHalfLifeSqueakAttackHandler : Trigger
 Actor HLSqueakSpawned : Boolean {}
 Actor HLSqueakHitWall : Boolean {}
 Actor HLSqueakIsEvil : Boolean {}
+
 Actor HLSqueak
 {
 	MONSTER
@@ -295,21 +293,21 @@ Actor HLSqueak
 	Tag "Snark"
 	SeeSound "halflife/squeak_active"
 	ActiveSound "halflife/squeak_active"
-	DeathSound "halflife/squeak_die"
 	Obituary "%o was killed by a Snark."
 	BloodColor "99 FF 33"
 	states
 	{
 	Spawn:
 		HL03 A 0
-		TNT1 A 0 A_JumpIfInventory("HLSqueakSpawned",1,"SpawnDeploy")
-		TNT1 A 0 A_GiveInventory("HLSqueakSpawned")
-		TNT1 A 0 A_PlaySound("halflife/squeak_deploy",CHAN_VOICE)
+		HL03 A 0 A_JumpIfInventory("HLSqueakSpawned",1,"SpawnDeploy")
+		HL03 A 0 A_GiveInventory("HLSqueakSpawned")
+		HL03 A 0 A_PlaySound("halflife/squeak_deploy",CHAN_VOICE)
 		HL03 ABCDEFGH 2 A_Recoil(-1)
 		goto SpawnDeploy
 	SpawnDeploy:
-		TNT1 A 0 A_LookEx(LOF_NOSOUNDCHECK,0,512)
-		TNT1 A 0 A_Countdown
+		HL00 A 0 A_LookEx(LOF_NOSOUNDCHECK,0,512)
+        HL00 A 0 A_JumpIf(CallACS("SamsaraReactionTimeChecker") <= 1, "ForceDeath")
+		HL00 A 0 A_Countdown
 		HL00 ABCD 1 A_Recoil(-1)
 		HL00 E 0 A_CustomMissile("HLSqueakCheckHitObject",3,0,0,CMF_AIMDIRECTION,0)
 		HL00 EFGH 1 A_Recoil(-1)
@@ -321,30 +319,34 @@ Actor HLSqueak
 		HL00 A 0 A_JumpIfInventory("HLSqueakHitWall",1,"SpawnFlip")
 		loop
 	SpawnFlip:
-		TNT1 A 0 A_SetAngle(angle+180)
-		//TNT1 A 0 A_ChangeFlag("FRIENDLY",0)
-		//TNT1 A 0 A_GiveInventory("HLSqueakIsEvil")
-		TNT1 A 0 A_TakeInventory("HLSqueakHitWall")
+		HL00 A 0 A_SetAngle(angle+180)
+		//HL00 A 0 A_ChangeFlag("FRIENDLY",0)
+		//HL00 A 0 A_GiveInventory("HLSqueakIsEvil")
+		HL00 A 0 A_TakeInventory("HLSqueakHitWall")
 		goto SpawnDeploy
 	See:
 		HL02 ABCDEFGH 1 A_Chase
 		HL02 A 0 A_ChangeFlag("FRIENDLY",0)
-		TNT1 A 0 A_GiveInventory("HLSqueakIsEvil")
-		TNT1 A 0 A_Countdown
+		HL02 A 0 A_GiveInventory("HLSqueakIsEvil")
+        HL02 A 0 A_JumpIf(CallACS("SamsaraReactionTimeChecker") <= 1, "ForceDeath")
+		HL02 A 0 A_Countdown
 		loop
 	Melee:
-		TNT1 A 0 A_JumpIfInventory("HLSqueakIsEvil",1,2)
-		TNT1 A 0 A_ChangeFlag("FRIENDLY",1) //Keep seeking targets if enemy successfully attacked
+		HL00 A 0 A_JumpIfInventory("HLSqueakIsEvil",1,2)
+		HL00 A 0 A_ChangeFlag("FRIENDLY",1) //Keep seeking targets if enemy successfully attacked
 		HL00 A 0 A_FaceTarget
 		HL00 A 0 A_CustomMeleeAttack(30,"halflife/squeak_attack","halflife/squeak_attack","HLSqueak",1)
 		HL00 A 0 A_Stop
 		HL00 ABCD 1 ThrustThingZ(0,7,0,1)
 		HL00 EFGHIJKLM 1 A_Recoil(random(10.0,15.0)/10.0)
+        HL00 A 0 A_JumpIf(CallACS("SamsaraReactionTimeChecker") <= 1, "ForceDeath")
 		HL00 A 0 A_Countdown
 		goto See
+    ForceDeath:
+        HL00 A 0 A_PlaySound("halflife/squeak_die",CHAN_VOICE)
+        HL00 A 1 A_Countdown
+        wait
 	Death:
-	XDeath:
-		TNT1 A 0 A_Scream
 		TNT1 A 5 A_SpawnItemEx("HLSqueakSplat",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
 		stop
 	}
@@ -356,21 +358,22 @@ Actor HLSqueakCoop : HLSqueak
 	+DONTHARMCLASS
 	+DONTHARMSPECIES
 	+MTHRUSPECIES
-	ReactionTime 2450	
-	Speed 14	
-	Health 1550	
+	ReactionTime 2450
+	Speed 14
+	Health 1550
 	states
 	{
 	Spawn:
 		HL03 A 0
-		TNT1 A 0 A_JumpIfInventory("HLSqueakSpawned",1,"SpawnDeploy")
-		TNT1 A 0 A_GiveInventory("HLSqueakSpawned")
-		TNT1 A 0 A_PlaySound("halflife/squeak_deploy",CHAN_VOICE)
+		HL03 A 0 A_JumpIfInventory("HLSqueakSpawned",1,"SpawnDeploy")
+		HL03 A 0 A_GiveInventory("HLSqueakSpawned")
+		HL03 A 0 A_PlaySound("halflife/squeak_deploy",CHAN_VOICE)
 		HL03 ABCDEFGH 2 A_Recoil(-1)
 		goto SpawnDeploy
 	SpawnDeploy:
-		TNT1 A 0 A_LookEx(LOF_NOSOUNDCHECK,0,512)
-		TNT1 A 0 A_Countdown
+		HL00 A 0 A_LookEx(LOF_NOSOUNDCHECK,0,512)
+        HL00 A 0 A_JumpIf(CallACS("SamsaraReactionTimeChecker") <= 1, "ForceDeath")
+		HL00 A 0 A_Countdown
 		HL00 ABCD 1 A_Recoil(-1)
 		HL00 E 0 A_CustomMissile("HLSqueakCheckHitObjectCoop",3,0,0,CMF_AIMDIRECTION,0)
 		HL00 EFGH 1 A_Recoil(-1)
@@ -382,11 +385,12 @@ Actor HLSqueakCoop : HLSqueak
 		HL00 A 0 A_JumpIfInventory("HLSqueakHitWall",1,"SpawnFlip")
 		loop
 	SpawnFlip:
-		TNT1 A 0 A_SetAngle(angle+180)
-		TNT1 A 0 A_TakeInventory("HLSqueakHitWall")
+		HL00 A 0 A_SetAngle(angle+180)
+		HL00 A 0 A_TakeInventory("HLSqueakHitWall")
 		goto SpawnDeploy
 	See:
 		HL02 ABCDEFGH 1 A_Chase
+        HL02 A 0 A_JumpIf(CallACS("SamsaraReactionTimeChecker") <= 1, "ForceDeath")
 		HL02 A 0 A_Countdown
 		loop
 	Melee:
@@ -395,13 +399,16 @@ Actor HLSqueakCoop : HLSqueak
 		HL00 A 0 A_Stop
 		HL00 ABCD 1 ThrustThingZ(0,7,0,1)
 		HL00 EFGHIJKLM 1 A_Recoil(random(10.0,15.0)/10.0)
+        HL00 A 0 A_JumpIf(CallACS("SamsaraReactionTimeChecker") <= 1, "ForceDeath")
 		HL00 A 0 A_Countdown
 		goto See
+    ForceDeath:
+        HL00 A 0 A_PlaySound("halflife/squeak_die",CHAN_VOICE)
+        HL00 A 1 A_Countdown
+        wait
 	Death:
-	XDeath:
-		TNT1 A 0 A_Scream
 		TNT1 A 0 A_Explode(15,15)
-		TNT1 A 1 A_SpawnItemEx("HLSqueakSplat",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+		TNT1 A 5 A_SpawnItemEx("HLSqueakSplat",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
 		stop
 	}
 }
@@ -461,15 +468,12 @@ actor SamsaraHalfLifeGrenadeAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
-        TNT1 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
         goto PickupAttack
 
       // Attack stuff

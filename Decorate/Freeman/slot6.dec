@@ -164,7 +164,7 @@ Actor "Gauss Cannon" : HLWeapon
 
     FireStart:
 		HW67 A 0 A_AlertMonsters
-		HW67 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireStartOpp")
+		HW67 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireInitOpp")
 		HW67 A 1 Bright A_GiveInventory("SamsaraHalfLifeGaussGunPrimaryAttackHandler")
 		HW67 B 1 Bright
 		HW67 CDEFG 1
@@ -210,7 +210,8 @@ Actor "Gauss Cannon" : HLWeapon
 		goto AltFireCharge
 		HW64 A 0 A_TakeInventory("HLGaussChargeAddCounter")
 		HW64 A 0 A_GiveInventory("HLGaussCounter")
-		HW64 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
+        HW64 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+		HW64 A 0 A_TakeInventory("Cell",1)
 		HW64 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireCharge")
 		HW64 A 0 A_JumpIfInventory("Cell",1,"AltFireCharge")
 		goto AltFireStart
@@ -964,6 +965,13 @@ Actor "Gauss Cannon" : HLWeapon
         OP22 CDEF 1
         goto ReadyActualAmmoCheck
 
+    FireInitOpp:
+        OP00 A 0 A_JumpIfInventory("HLSawSkipFire",1,2)
+        OP00 A 0 A_GiveInventory("HLSawSkipFire")
+        goto FireStartOpp
+        OP00 A 0 A_TakeInventory("HLSawSkipFire")
+        goto FireStartOpp
+
 	FireStartOpp:
 		OP00 A 0 A_FireCustomMissile("HLBrassShellCaser",0,false,0,0,0,pitch)
 		OP00 A 1 Bright A_GiveInventory("SamsaraHalfLifeSAWAttackHandler")
@@ -973,11 +981,7 @@ Actor "Gauss Cannon" : HLWeapon
         OP21 A 0 A_JumpIfInventory("SamsaraHalfLifeSAWFireState",2,"FireAnim2Opp")
 	FireAnim1Opp:
 		OP21 A 1 Bright A_GunFlash("FireOpp1Belt",GFF_NOEXTCHANGE)
-		OP21 B 0 A_JumpIfInventory("HLSawSkipFire",1,2)
-		OP21 B 0 A_GiveInventory("HLSawSkipFire")
-		goto FireAnim1FinishOpp
-		OP21 B 1 A_TakeInventory("HLSawSkipFire")
-    FireAnim1FinishOpp:
+		OP21 B 1 A_JumpIfInventory("HLSawSkipFire",1,1)
 		OP21 CDEF 1 A_ReFire
 		goto ReadyActual
 
@@ -1054,11 +1058,7 @@ Actor "Gauss Cannon" : HLWeapon
 
 	FireAnim2Opp:
 		OP22 A 1 Bright A_GunFlash("FireOpp2Belt",GFF_NOEXTCHANGE)
-		OP22 B 0 A_JumpIfInventory("HLSawSkipFire",1,2)
-		OP22 B 0 A_GiveInventory("HLSawSkipFire")
-		goto FireAnim2FinishOpp
-		OP22 B 1 A_TakeInventory("HLSawSkipFire")
-    FireAnim2FinishOpp:
+		OP22 B 1 A_JumpIfInventory("HLSawSkipFire",1,1)
 		OP22 CDEF 1 A_ReFire
 		goto ReadyActual
 
@@ -1135,11 +1135,7 @@ Actor "Gauss Cannon" : HLWeapon
 
 	FireAnim3Opp:
 		OP23 A 1 Bright A_GunFlash("FireOpp3Belt",GFF_NOEXTCHANGE)
-		OP23 B 0 A_JumpIfInventory("HLSawSkipFire",1,2)
-		OP23 B 0 A_GiveInventory("HLSawSkipFire")
-		goto FireAnim3FinishOpp
-		OP23 B 1 A_TakeInventory("HLSawSkipFire")
-    FireAnim3FinishOpp:
+		OP23 B 1 A_JumpIfInventory("HLSawSkipFire",1,1)
 		OP23 CDEF 1 A_ReFire
 		goto ReadyActual
 
@@ -1427,15 +1423,12 @@ actor SamsaraHalfLifeGaussGunPrimaryAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-        TNT1 A 0 A_JumpIfInventory("Cell",2,"PickupTakeAmmo")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",2,1)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
-        TNT1 A 0 A_TakeInventory("Cell",2,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("Cell",2)
         goto PickupAttack
 
       // Attack stuff
@@ -2380,25 +2373,20 @@ actor SamsaraHalfLifeSAWAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
-      PickupCheckAmmoNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
-        TNT1 A 0 A_JumpIfInventory("Cell",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupReloadable")
+      PickupNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,1)
         stop
-
-      PickupCheckAmmoReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("HLSawCounter",1,"PickupTakeAmmoReloadable")
-        stop
-
-      // Ammo taking stuff
-      PickupTakeAmmoNonReloadable:
-        TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("Cell",1)
         goto PickupAttack
 
-      PickupTakeAmmoReloadable:
+      PickupReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("HLSawCounter",1,1)
+        stop
         TNT1 A 0 A_TakeInventory("HLSawCounter",1)
         goto PickupAttack
 
