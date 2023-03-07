@@ -460,6 +460,7 @@ Script "RTCW_Enter" (void)
 		int buttons = GetPlayerInput(-1,INPUT_BUTTONS);
 		int sidemove =  GetPlayerInput(-1,INPUT_SIDEMOVE);
 		int venomheattimer;
+		int mg42heattimer;
 		int stenheattimer;
 
 		steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
@@ -489,6 +490,18 @@ Script "RTCW_Enter" (void)
 			}
 		}
         else { stenheattimer = 0; }
+		
+		if(CheckInventory("SamsaraHasInfiniteAmmo") >= 2 || !CheckInventory("RTCW_MG42CoolLock") || !CheckWeapon("RTCW_MG42"))
+		{
+			mg42heattimer += 1 + CheckInventory("SamsaraHasDoubleFiringSpeed");
+
+			if(mg42heattimer > 1)
+			{
+				mg42heattimer = 0;
+				TakeInventory("RTCW_MG42Heat",3);
+			}
+		}
+        else { mg42heattimer = 0; }
 	}
 	TakeInventory("RTCW_Detection",1);
 }
@@ -877,6 +890,27 @@ Script "RTCW_OverHeat" (void) clientside
 				SetHudClipRect(588-(60*FixedDiv(CheckInventory("RTCW_StenHeat"),100)>>16),390,60*FixedDiv(CheckInventory("RTCW_StenHeat"),100)>>16,12,0);
 				SetFont("RTCWBAR1");
 				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 1500, CR_UNTRANSLATED, 588.2, 390.1, 0, 0.2 + FixedMul(0.01,(30*FixedDiv(CheckInventory("RTCW_StenHeat"),120))));
+			}
+			else
+			{
+				SetHudClipRect(0,0,0,0,0);
+				SetHudSize(0,0,0);
+				SetFont("smallfont");
+				HudMessage(s:""; HUDMSG_PLAIN, 1500, CR_UNTRANSLATED, 0, 0, 0, 0);
+				HudMessage(s:""; HUDMSG_PLAIN, 1501, CR_UNTRANSLATED, 0, 0, 0, 0);
+			}
+		}
+		else if(CheckWeapon("RTCW_MG42"))
+		{
+			if(GetCvar("screenblocks") < 12 && CheckInventory("RTCW_MG42Heat"))
+			{
+				SetHudClipRect(0,0,0,0,0);
+				SetHudSize(640,480,1);
+				SetFont("RTCWBAR0");
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 1501, CR_UNTRANSLATED, 590.2, 396.0, 0, 0.25);
+				SetHudClipRect(588-(60*FixedDiv(CheckInventory("RTCW_MG42Heat"),150)>>16),390,60*FixedDiv(CheckInventory("RTCW_MG42Heat"),150)>>16,12,0);
+				SetFont("RTCWBAR1");
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 1500, CR_UNTRANSLATED, 588.2, 390.1, 0, 0.2 + FixedMul(0.01,(30*FixedDiv(CheckInventory("RTCW_MG42Heat"),120))));
 			}
 			else
 			{
