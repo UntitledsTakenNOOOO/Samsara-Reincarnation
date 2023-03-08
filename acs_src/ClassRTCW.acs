@@ -432,6 +432,10 @@ Script "RTCW_Decorate" (int value, int arg1, int arg2, int arg3)
 			else
 				SetResultValue(GetActorProperty(0,APROP_Height)>>16);
 			break;
+		case 46:
+			SetActivator(0,AAPTR_Tracer);
+			SetResultValue(CheckInventory("RTCW_FlamethrowerStacker"));
+			break;
 		case 100:
 			SetActivator(0,AAPTR_Target);
 			PrintBold(s:GetActorClass(0));
@@ -461,6 +465,7 @@ Script "RTCW_Enter" (void)
 		int sidemove =  GetPlayerInput(-1,INPUT_SIDEMOVE);
 		int venomheattimer;
 		int mg42heattimer;
+		int browningheattimer;
 		int stenheattimer;
 
 		steptimer = ACS_NamedExecuteWithResult("RTCW_Decorate",23,0,steptimer,0.5/(magnitudeTwo_f(GetActorVelX(0),GetActorVelY(0))+1));
@@ -490,6 +495,18 @@ Script "RTCW_Enter" (void)
 			}
 		}
         else { mg42heattimer = 0; }
+		
+		if(CheckInventory("SamsaraHasInfiniteAmmo") >= 2 || !CheckInventory("RTCW_BrowningCoolLock") || !CheckWeapon("RTCW_Browning"))
+		{
+			browningheattimer += 1 + CheckInventory("SamsaraHasDoubleFiringSpeed");
+
+			if(browningheattimer > 1)
+			{
+				browningheattimer = 0;
+				TakeInventory("RTCW_BrowningHeat",3);
+			}
+		}
+        else { browningheattimer = 0; }
 
 		if(CheckInventory("SamsaraHasInfiniteAmmo") >= 2 || !CheckInventory("RTCW_StenCoolLock") || !CheckWeapon("RTCW_Sten"))
 		{
@@ -900,6 +917,27 @@ Script "RTCW_OverHeat" (void) clientside
 				HudMessage(s:""; HUDMSG_PLAIN, 1501, CR_UNTRANSLATED, 0, 0, 0, 0);
 			}
 		}
+		else if(CheckWeapon("RTCW_Browning"))
+		{
+			if(GetCvar("screenblocks") < 12 && CheckInventory("RTCW_BrowningHeat"))
+			{
+				SetHudClipRect(0,0,0,0,0);
+				SetHudSize(640,480,1);
+				SetFont("RTCWBAR0");
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 1501, CR_UNTRANSLATED, 590.2, 396.0, 0, 0.25);
+				SetHudClipRect(588-(60*FixedDiv(CheckInventory("RTCW_BrowningHeat"),150)>>16),390,60*FixedDiv(CheckInventory("RTCW_BrowningHeat"),150)>>16,12,0);
+				SetFont("RTCWBAR1");
+				HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 1500, CR_UNTRANSLATED, 588.2, 390.1, 0, 0.2 + FixedMul(0.01,(30*FixedDiv(CheckInventory("RTCW_BrowningHeat"),120))));
+			}
+			else
+			{
+				SetHudClipRect(0,0,0,0,0);
+				SetHudSize(0,0,0);
+				SetFont("smallfont");
+				HudMessage(s:""; HUDMSG_PLAIN, 1500, CR_UNTRANSLATED, 0, 0, 0, 0);
+				HudMessage(s:""; HUDMSG_PLAIN, 1501, CR_UNTRANSLATED, 0, 0, 0, 0);
+			}
+		}
 		else if(CheckWeapon("RTCW_Sten"))
 		{
 			if(GetCvar("screenblocks") < 12 && CheckInventory("RTCW_StenHeat"))
@@ -1163,36 +1201,62 @@ Script "RTCW_FlamethrowerTracer" (void)
 
 	SetActivator(0,AAPTR_Tracer);
 	
-	int requiredIgnition = ClassifyActor(0) & ACTOR_Player || ClassifyActor(0) & ACTOR_Bot ? 12 : 25;
+	int requiredIgnition = ClassifyActor(0) & ACTOR_Player || ClassifyActor(0) & ACTOR_Bot ? 6 : CheckFlag(0,"NOBLOOD") ? 18 : 9;
 
 	int actorClass = ClassifyActor(0);
 	if(!(actorClass & ACTOR_ALIVE) && !(actorClass & ACTOR_MONSTER || (!isSinglePlayer() && !isCoop() && (isPlayerOrBot(0) || GetActorProperty(0, APROP_FRIENDLY)))))
 		terminate;
 			
-	if(!CheckInventory("RTCW_FlamethrowerHitTarget") && !CheckInventory("RTCW_FlamethrowerBurnt"))
+	if(!CheckInventory("RTCW_FlamethrowerHitTarget"))
 	{
-		GiveInventory("RTCW_FlamethrowerHitTarget",1);
-		GiveInventory("RTCW_FlamethrowerIgnition",1);
-		
-		if(CheckInventory("RTCW_FlamethrowerIgnition") >= requiredIgnition && !CheckInventory("RTCW_FlamethrowerBurnt"))
+		if(!CheckInventory("RTCW_FlamethrowerBurnt"))
 		{
-			GiveInventory("RTCW_FlamethrowerBurnt",1);
-			int burnerTid = UniqueTid();
-			SpawnForced("RTCW_FlamethrowerBurner",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid);
-			SetActivator(myTid,AAPTR_Target);
-			SetPointerExt(AAPTR_Target,0,burnerTid);
-			SetActivator(myTid,AAPTR_Tracer);
-			SetPointerExt(AAPTR_Tracer,0,burnerTid);
-			Thing_ChangeTid(myTid, myOldTid);
-			terminate;
-		}
+			GiveInventory("RTCW_FlamethrowerHitTarget",1);
+			GiveInventory("RTCW_FlamethrowerIgnition",1);
 			
-		Thing_ChangeTid(myTid, myOldTid);
-		Delay(1);
-		TakeInventory("RTCW_FlamethrowerHitTarget",1);
-		
-		Delay(105);
-		TakeInventory("RTCW_FlamethrowerIgnition",1);
+			if(CheckInventory("RTCW_FlamethrowerIgnition") >= requiredIgnition && !CheckInventory("RTCW_FlamethrowerBurnt"))
+			{
+				TakeInventory("RTCW_FlamethrowerHitTarget",1);
+				TakeInventory("RTCW_FlamethrowerIgnition",50);
+				GiveInventory("RTCW_FlamethrowerBurnt",1);
+				GiveInventory("RTCW_FlamethrowerStacker",1);
+				int burnerTid = UniqueTid();
+				SpawnForced("RTCW_FlamethrowerBurner",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid);
+				SetActivator(myTid,AAPTR_Target);
+				SetPointerExt(AAPTR_Target,0,burnerTid);
+				SetActivator(myTid,AAPTR_Tracer);
+				SetPointerExt(AAPTR_Tracer,0,burnerTid);
+				Thing_ChangeTid(myTid, myOldTid);
+				terminate;
+			}
+				
+			Thing_ChangeTid(myTid, myOldTid);
+			Delay(1);
+			TakeInventory("RTCW_FlamethrowerHitTarget",1);
+			
+			Delay(105);
+			if(!CheckInventory("RTCW_FlamethrowerBurnt")) TakeInventory("RTCW_FlamethrowerIgnition",1);
+		}
+		else
+		{
+			GiveInventory("RTCW_FlamethrowerHitTarget",1);
+			GiveInventory("RTCW_FlamethrowerIgnition",1);
+			if(CheckInventory("RTCW_FlamethrowerIgnition") >= requiredIgnition)
+			{
+				TakeInventory("RTCW_FlamethrowerHitTarget",1);
+				TakeInventory("RTCW_FlamethrowerIgnition",50);
+				GiveInventory("RTCW_FlamethrowerStacker",1);
+				Thing_ChangeTid(myTid, myOldTid);
+				terminate;
+			}
+				
+			Thing_ChangeTid(myTid, myOldTid);
+			Delay(1);
+			TakeInventory("RTCW_FlamethrowerHitTarget",1);
+			
+			Delay(105);
+			if(!CheckInventory("RTCW_FlamethrowerBurnt")) TakeInventory("RTCW_FlamethrowerIgnition",1);
+		}
 	}
 	else
 		Thing_ChangeTid(myTid, myOldTid);
