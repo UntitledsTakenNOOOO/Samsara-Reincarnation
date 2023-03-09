@@ -88,25 +88,59 @@ Actor RTCW_M1Garand : RTCW_Weapon
 			goto ReadyActual
 
 		Deselect:
-			RW01 A 0 A_JumpIfInventory("RTCW_M1GarandGrenade",1,"DeselectGrenade")
-			RW01 A 2 A_PlaySound("RTCW/Change",CHAN_7)
+			TNT1 A 0 A_PlaySound("RTCW/Change",CHAN_7)
+			TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandGrenadeModeSelected",1,"DeselectGrenadeAmmoCheck")
+            goto DeselectNoGrenade
+
+        DeselectGrenadeAmmoCheck:
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"DeselectGrenadeAmmoCheckReloadable")
+		DeselectGrenadeAmmoCheckNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandGrenadeNotLoaded",1,"DeselectNoGrenade")
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"DeselectGrenade")
+            TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"DeselectGrenade")
+            goto DeselectNoGrenade
+
+        DeselectGrenadeAmmoCheckReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"DeselectGrenade")
+            TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandGrenade",1,"DeselectGrenade")
+            goto DeselectNoGrenade
+
+        DeselectNoGrenade:
+			RW01 A 2 A_GiveInventory("RTCW_M1GarandGrenadeNotLoaded")
 			RW01 BCDE 2
 			Goto Super::Deselect
-		
+
 		DeselectGrenade:
-			RW05 T 2 A_PlaySound("RTCW/Change",CHAN_7)
+			RW05 T 2 A_TakeInventory("RTCW_M1GarandGrenadeNotLoaded")
 			RW05 UVWX 2
 			Goto Super::Deselect
 
 		Ready: // our "Select" state
-			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
-			RW01 F 0 A_GiveInventory("RTCW_WeaponToken",21)
-			RW01 F 0 A_JumpIfInventory("RTCW_M1GarandGrenade",1,"RaiseGrenade")
-			RW01 FGHIJKL 2
+			TNT1 A 0 A_TakeInventory("RTCW_WeaponToken",256)
+			TNT1 A 0 A_GiveInventory("RTCW_WeaponToken",21)
+			TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandGrenadeModeSelected",1,"ReadyGrenadeAmmoCheck")
+            goto ReadyNoGrenade
+
+        ReadyGrenadeAmmoCheck:
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyGrenadeAmmoCheckReloadable")
+		ReadyGrenadeAmmoCheckNonReloadable:
+            TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandGrenadeNotLoaded",1,"ReadyNoGrenade")
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyGrenade")
+            TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"ReadyGrenade")
+            goto ReadyNoGrenade
+
+        ReadyGrenadeAmmoCheckReloadable:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"ReadyGrenade")
+            TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandGrenade",1,"ReadyGrenade")
+            goto ReadyNoGrenade
+
+        ReadyNoGrenade:
+			RW01 F 2 A_GiveInventory("RTCW_M1GarandGrenadeNotLoaded") // map change ignores this
+			RW01 GHIJKL 2
             goto ReadyActual
-		
-		RaiseGrenade:
-			RW05 "]" 2
+
+		ReadyGrenade:
+			RW05 "]" 2 A_TakeInventory("RTCW_M1GarandGrenadeNotLoaded") // map change ignores this
 			RW06 ABCD 2
             goto ReadyActual
 
@@ -127,12 +161,14 @@ Actor RTCW_M1Garand : RTCW_Weapon
             goto FireDry
 
         FireDry:
-            RW00 A 17 A_PlaySound("RTCW/NoAmmo",CHAN_5)
-			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
+			RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+            RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			TNT1 A 0 A_SelectWeapon("RTCW_Luger")
 			Goto Deselect
 
         FireUnderwater:
-            RW00 A 17 A_PlaySound("RTCW/UnderwaterFire",CHAN_5)
+            RW00 A 0 A_PlaySound("RTCW/UnderwaterFire",CHAN_5)
+			RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             goto ReadyActual
 
 		FireStart:
@@ -141,35 +177,61 @@ Actor RTCW_M1Garand : RTCW_Weapon
 			RW00 B 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
 			RW00 B 0 A_SpawnItemEx("RTCW_Casing",4,-16*cos(-pitch),38+(16*sin(-pitch)),1,0,2*cos(-pitch),-random(85,95),SXF_TRANSFERPITCH)
 			RW00 B 0 A_GunFlash("FireFlash")
-			RW00 B 0 A_JumpIfInventory("RTCW_M1GarandMagazine",2,1)
-			Goto FireLast
-			RW00 B 2 A_GiveInventory("SamsaraRTCWM1GarandAttackHandler")
-			RW00 CDEF 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        FireFinish:
-			RW00 A 0 A_ReFire("FireFinishAuto")
-            RW00 AAAAA 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOSECONDARY)
-            goto ReadyActual
-			
-		FireLast:
-			RW01 L 2 A_GiveInventory("SamsaraRTCWM1GarandAttackHandler")
-			RW01 MNOP 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-			Goto ReloadCheck
-			
+        FireLastShotCalc:
+            RW00 B 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireLastShotCalcReloadable")
+        FireLastShotCalcNonReloadable:
+            RW00 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireContinue")
+            RW00 B 0 A_JumpIfInventory("Shell",2,"FireContinue")
+            goto FireContinueLast
+
+        FireLastShotCalcReloadable:
+            RW00 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireContinue")
+            RW00 B 0 A_JumpIfInventory("RTCW_M1GarandMagazine",2,"FireContinue")
+            goto FireContinueLast
+
+        FireContinue:
+			RW00 B 0 A_GiveInventory("SamsaraRTCWM1GarandAttackHandler")
+			RW00 BCDEF 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         FireFinish:
 			RW00 A 0 A_ReFire("FireFinishAuto")
             RW00 AAAAA 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOSECONDARY)
             goto ReadyActual
 
 		FireFinishAuto:
-			RW00 A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOSECONDARY)
+			RW00 A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_ReFire
-			RW00 A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOSECONDARY)
-			RW00 A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOSECONDARY)
-			RW00 A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOSECONDARY)
+			RW00 A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW00 A 0 A_ReFire
+			RW00 A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW00 A 0 A_ReFire
+			RW00 A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW00 A 0 A_ReFire
+			RW00 A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			goto ReadyActual
+
+		FireContinueLast:
+			RW01 L 0 A_GiveInventory("SamsaraRTCWM1GarandAttackHandler")
+			RW01 LMNOP 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        FireFinishLast:
+			RW01 P 0 A_ReFire("FireFinishLastAuto")
+            RW01 PPPPP 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOSECONDARY)
+            goto ReadyActual
+
+		FireFinishLastAuto:
+			RW01 P 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW01 P 0 A_ReFire
+			RW01 P 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW01 P 0 A_ReFire
+			RW01 P 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW01 P 0 A_ReFire
+			RW01 P 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW01 P 0 A_ReFire
+			RW01 P 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW00 A 0
 			goto ReadyActual
 
 		FireFlash:
-			RW07 B 0 A_Jump(256,1,2)
+			TNT1 A 0 A_Jump(256,1,2)
 			RW07 B 2 Bright
 			stop
 			RW08 B 2 Bright
@@ -189,12 +251,18 @@ Actor RTCW_M1Garand : RTCW_Weapon
             goto FireDryGrenade
 
         FireDryGrenade:
-            RW00 A 17 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+			RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+            RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             TNT1 A 0 A_TakeInventory("RTCW_M1GarandGrenadeModeSelected")
 			goto ReadyActual
 
+        FireUnderwaterGrenade:
+            RW04 T 0 A_PlaySound("RTCW/UnderwaterFire",CHAN_5)
+			RW04 T 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+            goto ReadyActual
+
 		FireStartGrenade:
-            RW02 O 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"FireUnderwater")
+            RW02 O 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"FireUnderwaterGrenade")
 			//RW02 O 0 A_GiveInventory("RTCW_FiringToken",1)
 			RW02 O 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
         FireLastShotCalcGrenade:
@@ -205,15 +273,15 @@ Actor RTCW_M1Garand : RTCW_Weapon
             goto FireContinueGrenadeLast
 
         FireContinueGrenade:
-			RW02 S 2 A_GiveInventory("SamsaraRTCWM1GarandGrenadeAttackHandler")
-			RW02 "TUVWXYZ[" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW02 S 0 A_GiveInventory("SamsaraRTCWM1GarandGrenadeAttackHandler")
+			RW02 "STUVWXYZ[" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             RW00 A 0
 			goto ReadyActual
 
         FireContinueGrenadeLast:
-			RW02 O 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
-			RW02 S 2 A_GiveInventory("SamsaraRTCWM1GarandGrenadeAttackHandler")
-			RW02 "TUVWXYZ[" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW02 S 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+			RW02 S 0 A_GiveInventory("SamsaraRTCWM1GarandGrenadeAttackHandler")
+			RW02 "STUVWXYZ[" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             RW00 A 0 A_TakeInventory("RTCW_M1GarandGrenadeModeSelected")
 			goto ReadyActual
 
@@ -222,90 +290,92 @@ Actor RTCW_M1Garand : RTCW_Weapon
 			RW02 U 0 A_JumpIfInventory("RTCW_M1GarandGrenadeModeSelected",1,"AltFireRemove")
         AltFireAttach:
             RW02 U 0 A_PlaySound("RTCW/M1Garand/GrenadeOn",CHAN_6)
-			RW02 "\]" 1 A_GiveInventory("RTCW_M1GarandGrenadeModeSelected")
-			RW03 A 2
-			RW03 B 1
-			RW03 C 2
-			RW03 D 1
-			RW03 E 2
-			RW03 F 1
-			RW03 G 2
-			RW03 H 1
-			RW03 I 2
-			RW03 J 1
-			RW03 K 2
-			RW03 L 1
-			RW03 M 2
-			RW03 N 1
-			RW03 O 2
-			RW03 P 1
-			RW03 Q 2
-			RW03 R 1
-			RW03 S 2
-			RW03 T 1
-			RW03 U 2
-			RW03 V 1
-			RW03 W 2
-			RW03 X 1
-			RW03 Y 2
-			RW03 Z 1
-			RW03 "[" 2
-			RW03 "\" 1
-			RW03 "]" 2
-			RW04 A 1
-			RW04 B 2
-			RW04 C 1
-			RW04 D 2
-			RW04 E 1
-			RW04 F 2
-			RW04 G 1
-			RW04 H 2
-			RW04 I 1
-			RW04 J 2
-			RW04 K 1
-			RW04 L 2
-			RW04 M 1
-			RW04 N 2
-			RW04 O 1
-			RW04 P 2
-			RW04 Q 1
-			RW04 R 2
-			RW04 S 1
+            RW02 U 0 A_GiveInventory("RTCW_M1GarandGrenadeModeSelected")
+			RW02 "\]" 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 A 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 B 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 C 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 E 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 F 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 G 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 H 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 I 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 J 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 K 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 L 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 M 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 N 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 O 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 P 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 Q 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 R 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 S 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 T 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 U 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 V 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 W 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 X 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 Y 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 Z 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 "[" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 "\" 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW03 "]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 B 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 C 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 D 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 E 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 F 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 G 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 H 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 I 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 J 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 K 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 L 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 M 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 N 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 O 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 P 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 Q 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 R 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 S 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW04 T 0 A_TakeInventory("RTCW_M1GarandGrenadeNotLoaded")
             RW04 T 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmoGrenade")
 			goto ReloadDoneGrenade
 
 		AltFireRemove:
 			RW04 T 0 A_PlaySound("RTCW/M1Garand/GrenadeOff",CHAN_6)
-			RW04 T 1 A_TakeInventory("RTCW_M1GarandGrenadeModeSelected")
-			RW04 U 2
-			RW04 V 1
-			RW04 W 2
-			RW04 X 1
-			RW04 Y 2
-			RW04 Z 1
-			RW04 "[" 2
-			RW04 "\" 1
-			RW04 "]" 2
-			RW05 A 1
-			RW05 B 2
-			RW05 C 1
-			RW05 D 2
-			RW05 E 1
-			RW05 F 2
-			RW05 G 1
-			RW05 H 2
-			RW05 I 1
-			RW05 J 2
-			RW05 K 1
-			RW05 L 2
-			RW05 M 1
-			RW05 N 2
-			RW05 O 1
-			RW05 P 2
-			RW05 Q 1
-			RW05 R 2
-			RW05 S 1
+            RW04 T 0 A_TakeInventory("RTCW_M1GarandGrenadeModeSelected")
+			RW04 T 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 U 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 V 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 W 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 X 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 Y 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 Z 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 "[" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 "\" 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW04 "]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 B 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 C 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 D 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 E 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 F 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 G 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 H 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 I 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 J 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 K 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 L 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 M 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 N 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 O 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 P 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 Q 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 R 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW05 S 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             RW00 A 0
 			goto ReadyActual
 
@@ -319,8 +389,8 @@ Actor RTCW_M1Garand : RTCW_Weapon
             goto ReadyActual
 
 		ReloadStart:
-			RW01 P 2 A_PlaySound("RTCW/M1Garand/Reload",CHAN_6)
-			RW01 "QRSTUVWXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW01 P 0 A_PlaySound("RTCW/M1Garand/Reload",CHAN_6)
+			RW01 "PQRSTUVWXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW02 ABCDEF 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
             goto ReloadDone
@@ -374,7 +444,7 @@ Actor RTCW_M1Garand : RTCW_Weapon
 		KickingGrenade:
 			TNT1 A 0 A_GunFlash("KickingFoot")
 		KickingDelayGrenade:
-			RW04 J 18 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+			RW04 J 18 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW04 J 0 A_TakeInventory("RTCW_Kicking",1)
 			goto ReadyActual
 	}
@@ -384,34 +454,46 @@ actor SamsaraRTCWM1GarandAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
-      PickupCheckAmmoNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
-        TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupReloadable")
+      PickupNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupPlaySound")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
         stop
+        TNT1 A 0 A_TakeInventory("Shell",1)
+        goto PickupPlaySound
 
-      PickupCheckAmmoReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandMagazine",1,"PickupTakeAmmoReloadable")
+      PickupReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupPlaySound")
+        TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandMagazine",1,1)
         stop
+        TNT1 A 0 A_TakeInventory("RTCW_M1GarandMagazine",1)
+        goto PickupPlaySound
 
-      // Ammo taking stuff
-      PickupTakeAmmoNonReloadable:
-        TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
+      // Sound stuff
+      PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupPlaySoundReloadable")
+      PickupPlaySoundNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupPlaySoundNormal")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,"PickupPlaySoundNormal")
+        goto PickupPlaySoundLast
+
+      PickupPlaySoundReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupPlaySoundNormal")
+        TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandMagazine",1,"PickupPlaySoundNormal")
+        goto PickupPlaySoundLast
+
+      PickupPlaySoundNormal:
+        TNT1 A 0 A_PlaySound("RTCW/M1Garand/Fire",CHAN_WEAPON)
         goto PickupAttack
 
-      PickupTakeAmmoReloadable:
-        TNT1 A 0 A_TakeInventory("RTCW_M1GarandMagazine",1)
+      PickupPlaySoundLast:
+        TNT1 A 0 A_PlaySound("RTCW/M1Garand/FireLast",CHAN_WEAPON)
         goto PickupAttack
 
       // Attack stuff
       PickupAttack:
-		TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandMagazine",1,2)
-		TNT1 A 0 A_PlaySound("RTCW/M1Garand/FireLast",CHAN_WEAPON)
-		Goto PickupAttack+3
-        TNT1 A 0 A_PlaySound("RTCW/M1Garand/Fire",CHAN_WEAPON)
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
       PickupAttackDM:
@@ -433,25 +515,20 @@ actor SamsaraRTCWM1GarandGrenadeAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
-      PickupCheckAmmoNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
-        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupReloadable")
+      PickupNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
         stop
-
-      PickupCheckAmmoReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandGrenade",1,"PickupTakeAmmoReloadable")
-        stop
-
-      // Ammo taking stuff
-      PickupTakeAmmoNonReloadable:
-        TNT1 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
         goto PickupAttack
 
-      PickupTakeAmmoReloadable:
+      PickupReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RTCW_M1GarandGrenade",1,1)
+        stop
         TNT1 A 0 A_TakeInventory("RTCW_M1GarandGrenade",1)
         goto PickupAttack
 
@@ -508,7 +585,7 @@ Actor RTCW_RiflePineappleProjectile : RTCW_PineappleProjectile
 { 
 	Speed 24 
 	ReactionTime 0
-	SeeSound "RTCW/K43/GrenadeFly"
+	SeeSound "RTCW/M1Garand/GrenadeFly"
 	States
 	{
 		Bounce.Actor.Creature:
@@ -522,7 +599,7 @@ Actor RTCW_RiflePineappleProjectileCoop : RTCW_PineappleProjectileCoop
 { 
 	Speed 24 
 	ReactionTime 0
-	SeeSound "RTCW/K43/GrenadeFly"
+	SeeSound "RTCW/M1Garand/GrenadeFly"
 	States
 	{
 		Bounce.Actor.Creature:

@@ -59,13 +59,15 @@ Actor RTCW_Flamethrower : RTCW_Weapon
 
         FireDry:
             RW00 A 0 A_StopSound(CHAN_WEAPON)
-			RW00 A 17 A_PlaySound("RTCW/NoAmmo",CHAN_5)
-			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
+			RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+            RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			TNT1 A 0 A_SelectWeapon("RTCW_Luger")
 			Goto Deselect
 
         FireUnderwater:
             RW00 A 0 A_StopSound(CHAN_WEAPON)
-            RW00 A 17 A_PlaySound("RTCW/UnderwaterFire",CHAN_5)
+            RW00 A 0 A_PlaySound("RTCW/UnderwaterFire",CHAN_5)
+            RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             goto ReadyActual
 
         FireStart:
@@ -84,14 +86,15 @@ Actor RTCW_Flamethrower : RTCW_Weapon
             RW00 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"FireUnderwater")
 			RW00 A 0 A_GiveInventory("RTCW_BlazkoWeaponAlert")
 		FireHoldContinue:
-			RW00 A 1 A_GiveInventory("SamsaraRTCWFlamethrowerAttackHandler")
+			RW00 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerAttackHandler")
+            RW00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_ReFire("FireHold")
 			goto ReadyActual
 
 		Kicking:
 			TNT1 A 0 A_GunFlash("KickingFoot")
 		KickingDelay:
-			RW00 A 18 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+			RW00 A 18 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
 			RW00 A 0 A_GunFlash("Nozzle")
 			goto ReadyActual
@@ -102,19 +105,15 @@ actor SamsaraRTCWFlamethrowerAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmo")
-        TNT1 A 0 A_JumpIfInventory("Cell",1,"PickupTakeAmmo")
-        stop
-
-      // Ammo taking stuff
-      PickupTakeAmmo:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("RTCW_FlamethrowerStreamAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+        stop
+        TNT1 A 0 A_JumpIfInventory("RTCW_FlamethrowerStreamAmmo",1,2)
         TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerStreamAmmo")
         goto PickupAttack
-        TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("Cell",1)
         TNT1 A 0 A_TakeInventory("RTCW_FlamethrowerStreamAmmo")
         goto PickupAttack
 

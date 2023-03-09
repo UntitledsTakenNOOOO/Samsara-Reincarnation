@@ -70,13 +70,13 @@ Actor RTCW_Thompson : RTCW_Weapon
 
         FireDry:
 			RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
-            RW00 A 17 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-			TNT1 A 0 A_SelectWeapon("RTCW_Knife")
+            RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			TNT1 A 0 A_SelectWeapon("RTCW_Luger")
 			Goto Deselect
 
         FireUnderwater:
 			RW00 A 0 A_PlaySound("RTCW/UnderwaterFire",CHAN_5)
-            RW00 A 17 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+            RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             goto ReadyActual
 
 		FireStart:
@@ -85,9 +85,10 @@ Actor RTCW_Thompson : RTCW_Weapon
 			RW00 B 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1)
 			RW00 B 0 A_SpawnItemEx("RTCW_Casing",4,-10*cos(-pitch),38+(10*sin(-pitch)),1,0,2*cos(-pitch),-random(85,95),SXF_TRANSFERPITCH)
 			RW00 B 0 A_GunFlash("FireFlash")
-			RW00 B 1 A_GiveInventory("SamsaraRTCWThompsonAttackHandler")
-			RW00 C 2
-			RW00 D 1
+			RW00 B 0 A_GiveInventory("SamsaraRTCWThompsonAttackHandler")
+            RW00 B 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW00 C 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW00 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 B 0 A_ReFire
 			goto ReadyActual
 
@@ -109,20 +110,20 @@ Actor RTCW_Thompson : RTCW_Weapon
 		ReloadStart:
 			TNT1 A 0 A_PlaySound("RTCW/Thompson/Reload",CHAN_6)
 			//TNT1 A 0 A_JumpIfInventory("RTCW_ThompsonMagazine",1,1)
-			goto ReloadStartNoAmmo
-			RW00 "QRSTUVWXYZ[\]" 2
-			RW01 ABCDEFGHIJKLMNOPQR 2
-			RW02 FG 2
+			goto ReloadStartAmmoless
+			RW00 "QRSTUVWXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW01 ABCDEFGHIJKLMNOPQR 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW02 FG 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
             goto ReloadDone
 
-		ReloadStartNoAmmo:
-			RW00 "QRSTUVWXYZ[\]" 2
-			RW01 ABCDEFGHIJKLMNOPQR 2
-			RW01 STUV 1 
-			RW01 W 2 A_PlaySound("RTCW/Thompson/Reload2",CHAN_6)
-			RW01 "XYZ[\]" 2
-			RW02 ABCDEFG 2
+		ReloadStartAmmoless:
+			RW00 "QRSTUVWXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW01 ABCDEFGHIJKLMNOPQR 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW01 STUV 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW01 W 0 A_PlaySound("RTCW/Thompson/Reload2",CHAN_6)
+			RW01 "WXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW02 ABCDEFG 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
             goto ReloadDone
 
@@ -145,7 +146,7 @@ Actor RTCW_Thompson : RTCW_Weapon
 		Kicking:
 			TNT1 A 0 A_GunFlash("KickingFoot")
 		KickingDelay:
-			RW00 A 18 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+			RW00 A 18 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
 			goto ReadyActual
 	}
@@ -155,25 +156,20 @@ actor SamsaraRTCWThompsonAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
-      PickupCheckAmmoNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupReloadable")
+      PickupNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
         stop
-
-      PickupCheckAmmoReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("RTCW_ThompsonMagazine",1,"PickupTakeAmmoReloadable")
-        stop
-
-      // Ammo taking stuff
-      PickupTakeAmmoNonReloadable:
-        TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_TakeInventory("Clip",1)
         goto PickupAttack
 
-      PickupTakeAmmoReloadable:
+      PickupReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RTCW_ThompsonMagazine",1,1)
+        stop
         TNT1 A 0 A_TakeInventory("RTCW_ThompsonMagazine",1)
         goto PickupAttack
 
