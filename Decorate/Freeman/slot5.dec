@@ -436,8 +436,27 @@ Actor " RPG " : HLWeapon
 	ReloadOpp:
 		OP08 ABCDEFGHIJKLMNOPQRST 1
     ReloadLoopInitOpp:
-        OP09 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadLoopFireCheckOpp")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
         goto ReloadFinishOpp
+        // allow interrupting the sequence before ammo calculations take effect by firing either mode
+        TNT1 A 0 A_JumpIfInventory("SynthFireLeft",1,"ReloadLoopFireCheckPrimaryOpp")
+        TNT1 A 0 A_JumpIfInventory("SynthFireRight",1,"ReloadLoopFireCheckSecondaryOpp")
+    ReloadLoopAmmoCheckOpp:
+        TNT1 A 0 A_JumpIfInventory("HLSporeCounter",0,"ReloadFinishOpp")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadAmmoOpp")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"ReloadAmmoOpp")
+        goto ReloadFinishOpp
+
+    ReloadLoopFireCheckPrimaryOpp:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Fire")
+        TNT1 A 0 A_JumpIfInventory("HLSporeCounter",1,"Fire")
+        goto ReloadLoopAmmoCheckOpp
+
+    ReloadLoopFireCheckSecondaryOpp:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"AltFire")
+        TNT1 A 0 A_JumpIfInventory("HLSporeCounter",1,"AltFire")
+        goto ReloadLoopAmmoCheckOpp
 
 	ReloadLoopAnimOpp:
 		OP09 A 0 A_PlaySound("HLSporeLauncher/Reload")
@@ -451,27 +470,7 @@ Actor " RPG " : HLWeapon
 		OP11 ABCDEFGHIJKLMNOPQRSTUVWXY 1 A_WeaponReady(WRF_NOBOB)
 		goto ReadyActual
 
-    ReloadLoopFireCheckOpp: // allow interrupt before ammo calc
-        OP09 A 0 A_JumpIfInventory("SynthFireLeft",1,"ReloadLoopFireCheckPrimaryOpp")
-        OP09 A 0 A_JumpIfInventory("SynthFireRight",1,"ReloadLoopFireCheckSecondaryOpp")
-    ReloadLoopCheckOpp:
-        OP09 A 0 A_JumpIfInventory("HLSporeCounter",0,"ReloadFinishOpp")
-        OP09 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-        OP09 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadAmmoOpp")
-        OP09 A 0 A_JumpIfInventory("RocketAmmo",1,"ReloadAmmoOpp")
-        goto ReloadFinishOpp
-
-    ReloadLoopFireCheckPrimaryOpp:
-        OP09 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Fire")
-        OP09 A 0 A_JumpIfInventory("HLSporeCounter",1,"Fire")
-        goto ReloadLoopCheckOpp
-
-    ReloadLoopFireCheckSecondaryOpp:
-        OP09 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"AltFire")
-        OP09 A 0 A_JumpIfInventory("HLSporeCounter",1,"AltFire")
-        goto ReloadLoopCheckOpp
-
-    ReloadAmmoOpp:
+    ReloadAmmoOpp: // calculation timing is done in accordance to holding the reload button during the animation in opfor, this is reflected here as well
         OP09 A 0 A_TakeInventory("SamsaraReloadCalcs") // reset
     ReloadAmmoCalcOpp:
         OP09 A 0 A_JumpIfInventory("HLSporeCounter",0,"ReloadLoopAnimOpp")

@@ -126,15 +126,25 @@ Actor RTCW_Winchester : RTCW_Weapon
             RW02 "]" 1
             RW03 ABCDEFG 1
         ReloadLoopInit:
-            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadLoopCheck")
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
+            goto ReloadFinish
+            TNT1 A 0 A_JumpIfInventory("RTCW_ShotgunMagazine",0,"ReloadFinish")
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadLoopAnim")
+            TNT1 A 0 A_JumpIfInventory("RTCW_AlliedAmmo2",1,"ReloadLoopAnim")
             goto ReloadFinish
 
         ReloadLoopAnim:
+            TNT1 A 0 A_JumpIfInventory("RTCW_ShotgunMagazine",1,1)
+            goto ReloadLoopAnimAmmoless
             RW03 HJLNO 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             RW03 Q 0 A_PlaySound("RTCW/Shotgun/AddShell",CHAN_6)
             RW03 "QSUWY[]" 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
-            goto ReloadFinish
+        ReloadFinish:
+            RW04 ABCDEFGHIJ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+            RW04 K 8 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+            goto ReadyActual
 
         ReloadAmmo:
             TNT1 A 0 A_TakeInventory("SamsaraReloadCalcs") // reset
@@ -152,27 +162,26 @@ Actor RTCW_Winchester : RTCW_Weapon
             TNT1 A 0 A_GiveInventory("RTCW_ShotgunMagazine")
             loop
 
-        ReloadFinish:
-            RW04 ABCDEFGHIJ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-            RW04 K 8 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-            goto ReadyActual
-
-        ReloadLoopCheck:
-            TNT1 A 0 A_JumpIfInventory("RTCW_ShotgunMagazine",0,"ReloadFinish")
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadLoopAnim")
-            TNT1 A 0 A_JumpIfInventory("RTCW_AlliedAmmo2",1,"ReloadLoopAnim")
-            goto ReloadFinish
-
         ReloadLoopReFireCheck:
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",0,"ReloadLoopReFireCheckModern")
+        ReloadLoopReFireCheckClassic:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("RTCW_ShotgunMagazine",1,1)
+            goto ReloadLoopInit
             TNT1 A 0 A_ReFire("ReloadFinish")
+            goto ReloadLoopInit
+
+        ReloadLoopReFireCheckModern:
+            //TNT1 A 0 A_WeaponReady(WRF_NOFIRE) // works in gzdoom, but not zan. blah.
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("RTCW_ShotgunMagazine",1,1)
+            goto ReloadLoopInit
+            TNT1 A 0 A_ReFire
             goto ReloadLoopInit
 
         ReloadStartAmmoless:
             RW01 LMNOPQRST 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        ReloadLoopInitAmmoless:
-            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadLoopCheckAmmoless")
-            goto ReloadFinish // intentional jump
+            goto ReloadLoopInit
 
         ReloadLoopAnimAmmoless:
             RW01 UVWXY 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
@@ -183,7 +192,9 @@ Actor RTCW_Winchester : RTCW_Weapon
             RW02 N 0 A_SpawnItemEx("RTCW_CasingShell",4,-6*cos(-pitch),32+(6*sin(-pitch)),1,0,0,-random(85,95),SXF_TRANSFERPITCH)
             RW02 NOPQRSTUV 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmoAmmoless")
-            goto ReloadFinishAmmoless
+        ReloadFinishAmmoless:
+            RW02 W 8 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+            goto ReadyActual
 
         ReloadAmmoAmmoless:
             TNT1 A 0 A_TakeInventory("SamsaraReloadCalcs") // reset
@@ -201,19 +212,24 @@ Actor RTCW_Winchester : RTCW_Weapon
             TNT1 A 0 A_GiveInventory("RTCW_ShotgunMagazine")
             loop
 
-        ReloadFinishAmmoless:
-            RW02 W 8 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-            goto ReadyActual
-
-        ReloadLoopCheckAmmoless:
-            TNT1 A 0 A_JumpIfInventory("RTCW_ShotgunMagazine",0,"ReloadFinish") // intentional jump x2
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadLoopAnimAmmoless")
-            TNT1 A 0 A_JumpIfInventory("RTCW_AlliedAmmo2",1,"ReloadLoopAnimAmmoless")
-            goto ReloadFinish // intentional jump x3
-
         ReloadLoopReFireCheckAmmoless:
+            TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",0,"ReloadLoopReFireCheckAmmolessModern")
+        ReloadLoopReFireCheckAmmolessClassic:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("RTCW_ShotgunMagazine",1,1)
+            goto ReloadLoopReFireCheckTransitionAmmoless
             TNT1 A 0 A_ReFire("ReloadFinishAmmoless")
+            goto ReloadLoopReFireCheckTransitionAmmoless
+
+        ReloadLoopReFireCheckAmmolessModern:
+            //TNT1 A 0 A_WeaponReady(WRF_NOFIRE) // works in gzdoom, but not zan. blah.
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            TNT1 A 0 A_JumpIfInventory("RTCW_ShotgunMagazine",1,1)
+            goto ReloadLoopReFireCheckTransitionAmmoless
+            TNT1 A 0 A_ReFire
+            goto ReloadLoopReFireCheckTransitionAmmoless
+
+        ReloadLoopReFireCheckTransitionAmmoless:
             TNT1 A 0 A_JumpIfInventory("RTCW_ShotgunMagazine",0,"ReloadFinishAmmoless")
             TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
             TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
