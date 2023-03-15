@@ -646,10 +646,16 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	oldInstagib = GetCvar("instagib");
 
     ACS_NamedExecuteAlways("SamsaraScheduled", 0, respawning,0,0);
-	
+
     switch (samsaraClassNum())
     {
       case CLASS_DOOM:
+        if (!CheckInventory("Doom64StartingUnmakerArtifactsGiven"))
+        {
+            if (GetCVar("samsara_unmakerartifacts") > 0) { SetInventory("Doom64UnmakerArtifact", GetCVar("samsara_unmakerartifacts")); }
+            SetInventory("Doom64StartingUnmakerArtifactsGiven", 1);
+        }
+
         GiveInventory("SamsaraDoomguyRailgunReloader", 1);
         if (respawning) { GiveInventory("SamsaraDoomguyStrPistolLoaded", 1); }
         break;
@@ -661,7 +667,11 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
       case CLASS_DUKE:
         if (!respawning) { GiveInventory("DukeReady", 1); }
         break;
-        
+
+	  case CLASS_MARATHON:
+        if (isInvasion()) { GiveInventory("InvasionDualShottyCheck", 1); }
+        break;
+
       case CLASS_CALEB:
         if (!respawning) { GiveInventory("CalebReady", 1); }
 		if(!GetCvar("samsara_permakimbo")) TakeInventory("GunsAkimboP",1);
@@ -704,18 +714,6 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				SpawnSpotFacingForced("LeonardMotorcycle",0,0);
 			}
 		}
-        break;
-
-      case CLASS_DOOM:
-        if (!respawning)
-        {
-            if (GetCVar("samsara_unmakerartifacts") > 0 && !CheckInventory("Doom64StartingUnmakerArtifactsGiven")) { SetInventory("Doom64UnmakerArtifact", GetCVar("samsara_unmakerartifacts")); }
-            SetInventory("Doom64StartingUnmakerArtifactsGiven", 1);
-        }
-        break;		
-	  
-	  case CLASS_MARATHON:
-        if (isInvasion()) { GiveInventory("InvasionDualShottyCheck", 1); }
         break;
     }
 
