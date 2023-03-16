@@ -10,9 +10,10 @@ Actor Painkiller_DemonMorph : PainkillerWeapon
 	States
 	{
 		Ready:
-			TNT1 A 0 A_JumpIf(CallACS("Painkiller_DemonModeActive") == 1, 1)
-			TNT1 A 0 A_PlaySound("Painkiller/DemonMorph/Loop",CHAN_5|CHAN_NOPAUSE,1.0,true)
+			PK00 A 0 ACS_NamedExecuteWithResult("Painkiller_DemonModeActive")
+			TNT1 A 0 A_GiveInventory("Painkiller_BlockDemonMorph",1)
 		ReadyLoop:
+			TNT1 A 0 A_PlaySound("Painkiller/DemonMorph/Loop",CHAN_AUTO|CHAN_NOPAUSE,1.0,true)
 			TNT1 A 0 A_JumpIfInventory("Painkiller_DemonMorphRemove",1,"Remove")
 			TNT1 A 0 A_GiveInventory("PainkillerDemonMorphScreen")
 			TNT1 A 0 A_GiveInventory("PainkillerDemonMorphInvulnerability")
@@ -35,12 +36,13 @@ Actor Painkiller_DemonMorph : PainkillerWeapon
 			TNT1 A 1 A_Raise
 			loop
 		Remove:
+			TNT1 A 0 A_TakeInventory("Painkiller_BlockDemonMorph")
 			TNT1 A 0 A_TakeInventory("Painkiller_DemonMorphRemove")
 			//TNT1 A 0 A_TakeInventory("PainkillerDemonMorphSlower")
 			TNT1 A 0 A_TakeInventory("PainkillerDemonMorphTimerFreezer")
 			TNT1 A 0 A_TakeInventory("PainkillerDemonMorphScreen")
-			TNT1 A 0 A_StopSound(CHAN_5)
-			TNT1 A 0 A_PlaySound("Painkiller/DemonMorph/Stop",CHAN_5)
+			TNT1 A 0 A_StopSound(CHAN_AUTO)
+			TNT1 A 0 A_PlaySound("Painkiller/DemonMorph/Stop",CHAN_AUTO)
 			TNT1 A 0 A_TakeInventory("Painkiller_HoldingDemon",1)
 			TNT1 A 0 A_TakeInventory("Painkiller_DemonMorph")
 		Deselect:
@@ -109,12 +111,16 @@ Actor Painkiller_DemonMorphBlaster
 	+NOINTERACTION
 	+PUFFONACTORS
 	+ALWAYSPUFF
+	+HITTRACER
 	DamageType "PainkillerDemon"
 	States
 	{
 		Spawn:
 			TNT1 A 0
 			TNT1 A 0 A_RadiusGive("Painkiller_DemonMorphBlast",24,RGF_MONSTERS|RGF_NOSIGHT,24)
+			Stop
+		Death:
+			TNT1 A 1 A_GiveInventory("Painkiller_DamageCredit",1,AAPTR_TRACER)
 			Stop
 	}
 }

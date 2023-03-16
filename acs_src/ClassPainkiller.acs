@@ -122,13 +122,14 @@ Script "Painkiller_Loop" (void)
 			if(CheckInventory("Painkiller_SilverSlot2") != 0)
 				GiveInventory(Painkiller_Silver_CardGraphics[CheckInventory("Painkiller_SilverSlot2")-1][5],1);
 		}
-		if(CheckInventory("Painkiller_SoulCount") >= 64 && !CheckInventory("Painkiller_GoldActive"))
+		if(!CheckInventory("Painkiller_GoldActive"))
 		{
-			if((CheckInventory("Painkiller_SoulCount") >= 66) && !CheckInventory("Painkiller_NoDemonMorph"))
+			if((CheckInventory("Painkiller_SoulCount") >= 66) && !CheckInventory("Painkiller_BlockDemonMorph") && !CheckInventory("Painkiller_NoDemonMorph"))
 			{
 				TakeInventory("Painkiller_DemonMorphFlash1",1);
 				TakeInventory("Painkiller_DemonMorphFlash2",1);
-				TakeInventory("Painkiller_SoulCount",66);
+				TakeInventory("Painkiller_SoulCount",65536);
+				GiveInventory("Painkiller_BlockDemonMorph",1);
 				ACS_NamedExecuteAlways("Painkiller_StartDemonMorph",0,1050,0,0);
 			}
 			/*else if(CheckInventory("Painkiller_SoulCount") == 65 && !CheckInventory("Painkiller_DemonMorphFlash2") && !CheckInventory("Painkiller_NoDemonMorph"))
@@ -1063,6 +1064,7 @@ Script "Painkiller_DemonModeActive" (void)
 		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA|HUDMSG_ADDBLEND,1578,0,384.0,512.0,0.1,0.75);
 		Delay(1);
 	}
+	TakeInventory("Painkiller_BlockDemonMorph",1);
 	SetFont("none");
 	HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA,1578,0,160.0,100.0,0.2,0.0);
 	Delay(1);
@@ -1136,6 +1138,7 @@ Script "Painkiller_StartDemonMorph" (int duration)
 	GiveInventory("Painkiller_DemonMorph", 1);
 	SetWeapon("Painkiller_DemonMorph");
 	Delay(duration);
+	TakeInventory("Painkiller_SoulCount",65536);
 	HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,32600,0,0.0,0.0,0.5,0.1);
 	GiveInventory("Painkiller_DemonMorphRemove",1);
 }
@@ -1158,6 +1161,9 @@ Script "Painkiller_ItemRemoval" Unloading
 
 Script "Painkiller_BlackTarot_Initiate" (void) net
 {
+	if(CheckInventory("Painkiller_BlockDemonMorph"))
+		terminate;
+
 	if(!CheckInventory("Painkiller_TarotOpened"))
 	{
 		GiveInventory("Painkiller_TarotOpened",1);
@@ -1274,7 +1280,7 @@ Script "Painkiller_BlackTarotUI" (void)
 	int hudcenterx = hudboundsx/2;
 	int hudcentery = hudboundsy/2;
 
-	While(CheckInventory("Painkiller_TarotOpened"))
+	While(CheckInventory("Painkiller_TarotOpened") && !CheckInventory("Painkiller_BlockDemonMorph"))
 	{
 		int mousesensitivity = GetCvar("mouse_sensitivity");
 		if(mousesensitivity == 0.0)
@@ -1983,10 +1989,10 @@ Script "Painkiller_DropCoins" (int radius, int height, int spawnHealth)
 	if(chunks < 1)
 		chunks = 1;
 		
-	if(spawnHealth >= 500) healthTier = 15;
-	else if(spawnHealth >= 1000) healthTier = 10;
+	if(spawnHealth >= 4000) healthTier = 0;
 	else if(spawnHealth >= 2000) healthTier = 5;
-	else if(spawnHealth >= 4000) healthTier = 0;
+	else if(spawnHealth >= 1000) healthTier = 10;
+	else if(spawnHealth >= 500) healthTier = 15;
 	
 	for(a = 0; a < chunks; a++)
 	{
