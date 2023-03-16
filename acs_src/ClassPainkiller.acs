@@ -1095,16 +1095,18 @@ Script "Painkiller_MonsterKill" (int corpseActor)
 	int monsterY = GetActorY(0);
 	int monsterZ = GetActorZ(0);
 	int monsterHealth = GetActorProperty(0,APROP_SpawnHealth);
+	int coinDummyTid = UniqueTid();
 
 	if(CheckInventory("Painkiller_DeathQueue"))
 		terminate;
 	else
 		GiveInventory("Painkiller_DeathQueue",1);
-		
+	
+	SpawnForced("Painkiller_CoinTosser",monsterX,monsterY,monsterZ+((ACS_NamedExecuteWithResult("Painkiller_GibHeightCheck")<<16)/2),coinDummyTid);
+	ACS_NamedExecuteWithResult("Painkiller_DropCoins",GetActorProperty(0,APROP_Radius)>>16,ACS_NamedExecuteWithResult("Painkiller_GibHeightCheck"),monsterHealth,coinDummyTid);
 	Delay(104);
 	GiveInventory("Painkiller_CorpseRemover",1);
 	Delay(1);
-	ACS_NamedExecuteWithResult("Painkiller_DropCoins",GetActorProperty(0,APROP_Radius)>>16,ACS_NamedExecuteWithResult("Painkiller_GibHeightCheck"),monsterHealth);
 	if(corpseActor == 0)
 	{
 		if(!(ClassifyActor(0) & ACTOR_MONSTER))
@@ -1975,11 +1977,16 @@ Script "Painkiller_IsItGibbed" (void)
 	SetResultValue(GetActorProperty(0,APROP_Health) < -health);
 }
 
-Script "Painkiller_DropCoins" (int radius, int height, int spawnHealth)
+Script "Painkiller_DropCoins" (int radius, int height, int spawnHealth, int coinDummyTid)
 {
 	if(!(ClassifyActor(0) & ACTOR_MONSTER))
 		terminate;
 		
+	SetActivator(coinDummyTid);
+	Thing_ChangeTid(coinDummyTid,0);
+	
+	Delay(105);
+			
 	str type = "Painkiller_TossCoin";
 	int alive;
 	int a = 0;
@@ -2044,7 +2051,9 @@ Script "Painkiller_FreezeShatter" (Void)
 		SetActorVelocity(shardTid,random(-2.0,2.0),random(-2.0,2.0),random(2.0,4.0),0,0);
 		Thing_ChangeTid(shardTid,0);
 	}
-	ACS_NamedExecuteWithResult("Painkiller_DropCoins",radius>>16,height>>16,GetActorProperty(0,APROP_SpawnHealth));
+	int coinDummyTid = UniqueTid();
+	SpawnForced("Painkiller_CoinTosser",GetActorX(0),GetActorY(0),GetActorZ(0)+height/2,coinDummyTid);
+	ACS_NamedExecuteWithResult("Painkiller_DropCoins",radius>>16,height>>16,GetActorProperty(0,APROP_SpawnHealth),coinDummyTid);
 	Thing_Remove(0);
 }
 
