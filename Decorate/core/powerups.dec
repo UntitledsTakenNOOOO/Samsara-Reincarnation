@@ -1821,6 +1821,7 @@ Actor HereticTeleportPickup : CustomInventory replaces ArtiTeleport
 Actor SamsaraHereticTeleportPickupItem : ArtiTeleport
 {
 	Tag "Teleportation"
+	+INVENTORY.UNDROPPABLE
 	Inventory.Icon "ARTITEL1"
 	Inventory.MaxAmount 16
 	Inventory.InterHubAmount 16
@@ -1830,6 +1831,7 @@ Actor SamsaraHereticTeleportPickupItemCorvus : ArtiTeleport
 {
 	Inventory.RestrictedTo "CorvusPlayer"
 	Tag "Chaos Device"
+	+INVENTORY.UNDROPPABLE
 	Inventory.Icon "ARTITEL2"
 	Inventory.MaxAmount 16
 	Inventory.InterHubAmount 16
@@ -1839,7 +1841,95 @@ Actor SamsaraHereticTeleportPickupItemParias : ArtiTeleport
 {
 	Inventory.RestrictedTo "HexenPlayer"
 	Tag "Chaos Device"
+	+INVENTORY.UNDROPPABLE
 	Inventory.Icon "ARTITEL3"
+	Inventory.MaxAmount 16
+	Inventory.InterHubAmount 16
+}
+
+// Hexen Powerups
+Actor HexenTeleportPickup : CustomInventory replaces ArtiTeleportOther
+{
+	Scale 0.33
+	+FLOATBOB
+    +INVENTORY.PICKUPFLASH
+    +COUNTITEM
+	+INVENTORY.QUIET
+	+INVENTORY.HUBPOWER
+    //Inventory.PickupMessage "$SAMSARA_POWERUP_TELEPORTOTHER"
+    Inventory.PickupSound "nosoundforyoubitch"
+	States
+	{
+	Spawn:
+		SICN A -1
+		stop
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("CorvusClass", 1, "CheckRaven")
+		TNT1 A 0 A_JumpIfInventory("HexenClass", 1, "CheckRaven")
+		TNT1 A -1 A_Jump(256,"CheckNormal")
+		wait
+	CheckNormal:
+		TNT1 A 0 A_JumpIfInventory("SamsaraHexenTeleportPickupItem", 0, "PickupFail")
+		goto PickupActual
+	CheckRaven:
+		TNT1 A 0 A_JumpIfInventory("SamsaraHexenTeleportPickupItemRaven", 0, "PickupFail")
+		goto PickupActual
+	PickupActual:
+		TNT1 A 0 A_JumpIfInventory("CorvusClass", 1, "PickupRaven")
+		TNT1 A 0 A_JumpIfInventory("HexenClass", 1, "PickupRaven")
+		TNT1 A 0 A_JumpIfInventory("MarathonClass", 0, "PickupMarathon")
+		TNT1 A 0 A_JumpIfInventory("DeusExClass", 0, "PickupDeusEx")
+		TNT1 A -1 A_Jump(256,"PickupNormal")
+		wait
+	PickupNormal:
+		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 98, 0, 0)
+		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
+		TNT1 A 0 A_PlaySound("uselesspickup", CHAN_ITEM) // placeholder sound
+		TNT1 A 1 A_GiveInventory("SamsaraHexenTeleportPickupItem")
+		stop
+	PickupRaven:
+		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 98, 0, 0)
+		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
+		TNT1 A 0 A_PlaySound("hexen/artiget", CHAN_ITEM)
+		TNT1 A 1 A_GiveInventory("SamsaraHexenTeleportPickupItemRaven")
+		stop
+	PickupMarathon:
+		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 98, 0, 0)
+		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+		TNT1 A 0 A_SetBlend("Green",0.5,6)
+        TNT1 A 0 A_PlaySound("marathon/bigitemget", CHAN_ITEM)
+		TNT1 A 1 A_GiveInventory("SamsaraHexenTeleportPickupItem")
+		stop
+	PickupDeusEx:
+		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 98, 0, 0)
+		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
+		TNT1 A 0 A_PlaySound("uselesspickup", CHAN_ITEM) // placeholder sound
+		TNT1 A 0 A_GiveInventory("DeusEx_EnviroPoints", 150)
+		TNT1 A 1 A_GiveInventory("SamsaraHexenTeleportPickupItem")
+		stop
+	PickupFail:
+        SICN A 1 BRIGHT
+        fail
+	}
+}
+
+Actor SamsaraHexenTeleportPickupItem : ArtiTeleportOther
+{
+	Tag "Banishment"
+	+INVENTORY.UNDROPPABLE
+	Inventory.Icon "ARTIBAN1"
+	Inventory.MaxAmount 16
+	Inventory.InterHubAmount 16
+}
+
+Actor SamsaraHexenTeleportPickupItemRaven : ArtiTeleportOther
+{
+	Tag "Banishment Device"
+	+INVENTORY.UNDROPPABLE
+	Inventory.Icon "ARTIBAN2"
 	Inventory.MaxAmount 16
 	Inventory.InterHubAmount 16
 }
@@ -2065,7 +2155,6 @@ Actor SamsaraHereticFlightItem : PowerupGiver
 	}
 }
 
-// Hexen Powerups
 Actor HexenInvulnerability : CustomInventory replaces ArtiInvulnerability2
 {
 	RenderStyle Add
