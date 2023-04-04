@@ -230,3 +230,77 @@ Script "Q2ETFRifleShake" (int type) Clientside
 			break;
 	}
 }
+Script "Q2DrawLaser" (int type)
+{
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int z = GetActorZ(0);
+	SetActivatorToTarget(0);
+	switch(type)
+	{
+		case 0: ACS_NamedExecuteWithResult("Q2PlasmaBeam",x,y,z); break;
+	}
+}
+
+Script "Q2PlasmaBeam" (int tx, int ty, int tz) clientside
+{
+	int t, k = 0, l, angle, pitch, x, y, z, vx, vy, vz, mag, magI, spaceCounter;
+	
+	//Properties
+	int height = GetActorViewHeight(0);
+	int space = 16;
+	int horz = 4;
+	int i = 16;
+	int heightoffset = -6;
+
+	str segment = "Q2PlasmaBeamProjectileSegment";
+	str ringActor = "Q2PlasmaBeamProjectileRing";
+	
+	int newtid = UniqueTid();
+	
+	int xoff = (horz * sin(GetActorAngle(0))) - FixedMul(-i * cos(GetActorAngle(0)),cos(GetActorPitch(0)));
+	int yoff = (horz * cos(GetActorAngle(0))) + FixedMul(-i * sin(GetActorAngle(0)),cos(GetActorPitch(0)));
+				
+    x = GetActorX(0) + xoff + FixedMul(heightoffset * sin(GetActorPitch(0)),cos(GetActorAngle(0)));
+	y = GetActorY(0) - yoff + FixedMul(heightoffset * sin(GetActorPitch(0)),sin(GetActorAngle(0)));
+	z = GetActorZ(0) + height + (-i * sin(GetActorPitch(0))) + (heightoffset * cos(GetActorPitch(0)));
+	
+	int vectorx = tx - x;
+	int vectory = ty - y;
+	int vectorz = tz - z;
+	angle = VectorAngle(vectorx, vectory);
+	
+	int length = magnitudeTwo(vectorx>>16,vectory>>16);
+	pitch = VectorAngle(length<<16, vectorz);
+
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+	for(int j = 0; j < magI/64; j++)
+	{
+		int finalRingOffset = CheckInventory("Q2PlasmaBeamRingOffset") + 64 * j;
+		SpawnForced(ringActor, x+(vx*finalRingOffset), y+(vy*finalRingOffset), z+(vz*finalRingOffset), newtid);
+		SetActorPitch(newtid, pitch);
+		SetActorAngle(newtid, angle);
+    }
+	for (i = i; i < magI; i += space)
+    {
+        SpawnForced(segment, x+(vx*i), y+(vy*i), z+(vz*i), newtid);
+		Thing_SetTranslation(newtid,-1);
+		SetActorPitch(newtid, pitch);
+		SetActorAngle(newtid, angle);
+
+		if(i % 1500 == 0)
+			Delay(1);
+    }
+}
+
+Script "Q2PlasmaBeamTrigger" (void)
+{
+	int input = 1;
+	while(CheckInventory("Q2PlasmaBeamFiring"))
+	{
+		GiveInventory("Q2PlasamBeamTrigger",1);
+		Delay(1);
+	}
+}

@@ -1,0 +1,143 @@
+Actor Q2PlasmaBeamFiring : Boolean {}
+Actor Q2PlasmaBeamUseAmmo: Boolean {}
+Actor Q2PlasmaBeamRingOffset : Counter {}
+
+Actor Q2PlasmaBeam : Q2Weapon
+{
+	Tag "Plasma Beam"
+	Inventory.PickupMessage "Plasma Beam"
+	Weapon.AmmoGive 20
+	Weapon.AmmoType Cell
+	Weapon.AmmoUse 1
+	Weapon.SlotNumber 6
+	Inventory.RestrictedTo "Bitterman"		
+	States
+	{
+	Spawn:
+		Q2WP A -1
+		Stop
+	Select:
+		TNT1 A 0 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_TakeInventory(Q2WeaponIndex)
+		TNT1 A 0 A_GiveInventory(Q2WeaponIndex,6)
+		PLB0 ABCDEFGHI 3
+		Goto Ready
+	Deselect:
+		TNT1 A 0 A_TakeInventory("Q2PlasmaBeamFiring",1)
+		TNT1 A 0 A_StopSound(CHAN_WEAPON)
+		PLB4 ABCDE 3
+		Goto InstantDeselect
+	InstantDeselect:
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+		TNT1 A 1 A_Lower
+		Wait
+	Ready:
+		TNT1 A 0 A_TakeInventory("Q2PlasmaBeamFiring",1)
+		TNT1 A 0 A_StopSound(CHAN_WEAPON)
+		TNT1 A 0 A_Jump(32,2)
+		PLB2 A 1 A_WeaponReady
+		Loop
+		PLB2 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]" 4 A_WeaponReady
+		PLB3 A 4 A_WeaponReady
+		Loop
+	Fire:
+		PLB2 A 3 A_Light1
+		PLB1 A 0 A_GiveInventory("Q2PlasmaBeamFiring",1)
+		PLB1 A 0 ACS_NamedExecuteWithResult("Q2PlasmaBeamTrigger")
+		PLB1 A 0 A_PlaySound("Q2Weapons/BFG10KFly",CHAN_WEAPON,1.0,true)
+	FireLoop:
+		PLB1 A 3 Bright
+		PLB1 B 0 A_Refire(1)
+		Goto FireFinish
+		PLB1 B 3 Bright
+		PLB1 C 0 A_Refire(1)
+		Goto FireFinish
+		PLB1 C 3 Bright
+		PLB1 D 0 A_Refire(1)
+		Goto FireFinish
+		PLB1 D 3 Bright
+		PLB1 A 0 A_Refire("FireLoop")
+	FireFinish:
+		PLB2 A 0 A_TakeInventory("Q2PlasmaBeamRingOffset")
+		PLB2 A 3 A_Light0
+		Goto Ready
+	}
+}
+
+Actor Q2PlasamBeamTrigger : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_JumpIfInventory("Q2PlasmaBeamRingOffset",64,"AddRing")
+			TNT1 A 0 A_GiveInventory("Q2PlasmaBeamRingOffset")
+			Goto DrawBeam
+		AddRing:
+			TNT1 A 0 A_TakeInventory("Q2PlasmaBeamRingOffset")
+		DrawBeam:
+			TNT1 A 0 A_JumpIfInventory("Q2PlasmaBeamUseAmmo",1,"FinishBeam")
+			TNT1 A 0 A_GiveInventory("Q2PlasmaBeamUseAmmo")
+			TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
+			Goto FinishBeam+1
+		FinishBeam:
+			TNT1 A 0 A_TakeInventory("Q2PlasmaBeamUseAmmo")
+			TNT1 A 0 A_FireCustomMissile("Q2PlasmaBeamProjectile")
+			Stop
+	}
+}
+
+ACTOR Q2PlasmaBeamProjectile : FastProjectile
+{
+	Speed 256
+	Radius 5
+	Height 3
+	Damage (15)
+	DamageType "BittermanFire"
+	+EXTREMEDEATH
+	+BLOODSPLATTER
+	+SKYEXPLODE
+	+DONTSPLASH
+	+CANNOTPUSH
+	+NODAMAGETHRUST	
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 16
+			Goto Death	
+		Death:
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q2DrawLaser",0)
+			TNT1 A 5
+			stop
+	}
+}
+Actor Q2PlasmaBeamProjectileSegment : Q2EffectBase
+{
+	+CLIENTSIDEONLY
+	RenderStyle Translucent
+	Alpha 0.33
+	States
+	{
+	Spawn:
+		NULL AA 0
+	Fade:
+		"####" "#" 2 Bright
+		Stop
+	}
+}
+
+Actor Q2PlasmaBeamProjectileRing
+{
+	Projectile
+	-NOINTERACTION 
+	+NOGRAVITY
+	Renderstyle Translucent
+	Gravity 0.125
+	Alpha 0.33
+	States
+	{
+	Spawn:
+		NULL A 2 Bright
+		Stop
+	}
+}
