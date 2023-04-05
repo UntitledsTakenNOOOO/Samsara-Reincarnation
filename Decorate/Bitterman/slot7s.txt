@@ -1,0 +1,127 @@
+Actor Q2TrapCharge : Counter { Inventory.MaxAmount 32 }
+Actor Q2TrapFade : Boolean {}
+ACTOR Q2Trap : Q2Weapon
+{
+	Tag "The Trap"
+	Inventory.PickupMessage "You got the Trap!"
+	Weapon.AmmoType Cell
+	Weapon.AmmoGive 50
+	Weapon.AmmoUse 50
+	+WEAPON.BFG
+	Obituary "%o was sucked up by %k's Trap."
+	Weapon.SlotNumber 7
+	Inventory.RestrictedTo "Bitterman"		
+	States
+	{
+	Spawn:
+		Q2WP A -1
+		Stop
+	Select:
+		TNT1 A 0 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_TakeInventory(Q2WeaponIndex)
+		TNT1 A 0 A_GiveInventory(Q2WeaponIndex,7)
+		TRP0 ABCDEFGHIJK 3
+		Goto Ready
+	Ready:
+		TNT1 A 0 A_StopSound(CHAN_5)
+		TRP3 A 1 A_WeaponReady
+		TRP3 A 0 A_Jump(10,1)
+		Loop
+		TRP3 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]" 4 A_WeaponReady
+		TRP4 ABCD 4 A_WeaponReady
+		Goto Ready+1
+	Deselect:
+		TNT1 A 0 A_StopSound(CHAN_5)
+		TRP0 KJIHGFEDCBA 3
+		Goto InstantDeselect
+	InstantDeselect:
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
+		TNT1 A 1 A_Lower
+		Wait
+	Fire:
+		TRP0 A 0 A_PlaySound("Q2Weapons/TrapCock",CHAN_WEAPON)
+		TRP0 A 0 A_StopSound(CHAN_5)
+		TRP0 ABCDEFGHIJK 3
+	TrapHold:
+		TRP1 A 0 A_JumpIfInventory("Q2TrapCharge",0,"Boom")
+		TRP1 A 0 A_PlaySound("Q2Weapons/TrapLoop",CHAN_5,1,true)
+		TRP1 A 2 A_GiveInventory("Q2TrapCharge")
+		TRP1 A 0 A_Refire("TrapHold")
+	Release:
+		TRP2 ABCD 4
+		TNT1 A 0 A_StopSound(CHAN_5)
+		TNT1 A 0 A_TakeInventory("Q2TrapCharge")
+		TNT1 A 0 A_FireCustomMissile("Q2TrapProjectile")
+		Goto Ready
+	Boom:
+		TRP2 ABCD 4
+		TNT1 A 0 A_StopSound(CHAN_5)
+		TNT1 A 0 A_TakeInventory("Q2TrapCharge")
+		TNT1 A 0 A_FireCustomMissile("Q2TrapBoom")
+		Goto Ready
+	}
+}
+
+Actor Q2TrapBoom
+{
+	Height 4
+	Radius 2
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 0 A_PlaySound("Q2Weapons/GrenadeExplosion")
+			TNT1 A 0 A_SpawnItemEx(Q2Explosion,16,16)
+			TNT1 A 2 A_Explode(200,165,XF_HURTSOURCE)
+			Stop
+	}
+}
+
+Actor Q2TrapProjectile
+{
+	Height 16
+	Radius 8
+	Speed 20
+	Gravity 0.5
+	BounceType "Doom"
+	var int user_lifetime;
+	Projectile
+	DamageType "BittermanTrap"
+	BounceFactor 0.4
+	WallBounceFactor 0.3
+	-NOGRAVITY
+	+BLOODLESSIMPACT
+	States
+	{
+		Spawn:
+			TRP0 A 0
+			TRP0 A 0 A_PlaySound("Q2Weapons/TrapLoop",CHAN_BODY,1,true)
+			TRP0 A 0 ThrustThing(angle*256/360,CallACS("Q2TrapCharge"),0,0)
+			TRP0 A 0 ThrustThingZ(0,CallACS("Q2TrapCharge")/8,0,1)
+		SpawnLoop:
+			TRP0 A 2
+			Loop
+		Death:
+			TRP0 B 0 A_Gravity
+			TRP0 BCDE 2
+			TRP0 E 0 A_PlaySound("Q2Weapons/TrapSuck",CHAN_BODY,1.0,true)
+		DeathLoop:
+			TRP0 E 0 A_JumpIfInventory("Q2TrapFade",1,2)
+			TRP0 E 0 A_JumpIf(user_lifetime > 140, "Fade")
+			TRP0 E 0 A_JumpIf(user_lifetime > 175, "Finish")
+			TRP0 E 0 A_SetUserVar("user_lifetime",user_lifetime+1)
+			TRP0 E 0 A_Explode(20,24,0,0,24)
+			TRP0 EEEEEEEE 0 A_SpawnItemEx("Q2RocketTrail",frandom(0,4.0),0,0,0,0,frandom(2.0,4.0),frandom(1,360))
+			TRP0 EEEE 0 A_SpawnItemEx("Q2RocketTrail",frandom(0,4.0),0,frandom(46.0,50.0),frandom(0.25,1.0),0,frandom(-0.25,0.25),frandom(1,360))
+			TRP0 E 2 A_RadiusThrust(-2000,768,RTF_NOIMPACTDAMAGE|16)
+			Loop
+		Fade:
+			TRP0 E 0 A_PlaySound("Q2Weapons/TrapDown",CHAN_BODY)
+			TRP0 E 0 A_GiveInventory("Q2TrapFade")
+			Goto DeathLoop
+		Finish:
+			TRP1 ABCD 2
+			TRP1 D 2 A_Fadeout
+			wait
+	}
+}
