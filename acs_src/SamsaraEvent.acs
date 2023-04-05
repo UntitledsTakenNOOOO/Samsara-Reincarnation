@@ -1441,16 +1441,46 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
             case CLASS_MARATHON:
-                TakeInventory("SMGClicked", 1); // weapon fires for 1 tic each frame
+                if (!CheckWeapon(".44 Magnum Mega Class A1") && !CheckWeapon("WSTE-M5 Combat Shotgun"))
+                {
+                    SetInventory("SamsaraLevelSwitch_DualWielding", 0);
+                    SetInventory("SynthFireActive", 0);
+                }
 
-                TakeInventory("AssaultFiredS", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
-                TakeInventory("AssaultClicked", 1); // weapon fires for 1 tic each frame
-                TakeInventory("AssaultClicked2", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
-                if (CheckInventory("SamsaraMarathonRifleActive")) { GiveInventory("SamsaraMarathonRifleAltReload", 1); }
+                if (CheckWeapon("KKV-7 SMG Flechette")) { TakeInventory("SMGClicked", 1); } // weapon fires for 1 tic each frame
+                else { SetInventory("SMGClicked", 0); }
 
-                TakeInventory("AlienWeaponFired", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
-                TakeInventory("AlienWeaponFiredP", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
-                TakeInventory("AlienWeaponFiredS", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
+                if (CheckWeapon("MA-75B Assault Rifle"))
+                {
+                    TakeInventory("AssaultFiredS", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
+                    TakeInventory("AssaultClicked", 1); // weapon fires for 1 tic each frame
+                    TakeInventory("AssaultClicked2", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
+                    GiveInventory("SamsaraMarathonRifleAltReload", 1);
+                    GiveInventory("SamsaraMarathonRifleAltFire", 1);
+                } else {
+                    SetInventory("AssaultFiredS", 0);
+                    SetInventory("AssaultClicked", 0);
+                    SetInventory("AssaultClicked2", 0);
+                }
+
+                if (CheckWeapon("Alien Weapon"))
+                {
+                    TakeInventory("AlienWeaponFired", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
+                    TakeInventory("AlienWeaponFiredP", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
+                    TakeInventory("AlienWeaponFiredS", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
+                } else {
+                    SetInventory("AlienWeaponFired", 0);
+                    SetInventory("AlienWeaponFiredP", 0);
+                    SetInventory("AlienWeaponFiredS", 0);
+                    SetInventory("AlienWeaponSecondarySide", 0);
+                }
+
+                if (!CheckInventory("SamsaraHasInfiniteAmmo"))
+                {
+                    if (CheckInventory("Alien Weapon") && !CheckWeapon("Alien Weapon") && !CheckInventory("UnknownAmmo")) { TakeInventory("Alien Weapon", 1); }
+                    if (CheckInventory(" Alien Weapon ") && !CheckWeapon(" Alien Weapon ") && !CheckInventory("UnknownAmmo2")) { TakeInventory(" Alien Weapon ", 1); }
+                    if (CheckInventory("Talon Ceramic Combat Blade") && !CheckWeapon("Talon Ceramic Combat Blade") && !CheckInventory("KnifeAmmo")) { TakeInventory("Talon Ceramic Combat Blade", 1); }
+                }
                 break;
 			case CLASS_ROTT:
 				rottmode = GetUserCvar(pln,"samsara_cl_rottmode");
@@ -2402,15 +2432,11 @@ script "SamsaraPuke" (int values, int pln) net //226 - SAMSARA_PUKE
 script "SamsaraDeath" death //619 -- SAMSARA_DEATH
 {
 	int pln = PlayerNumber();
-	switch(PlayerClass(pln))
+	/*switch(PlayerClass(pln))
 	{
 		case 6:
-			TakeInventory("FusionChargan",7);
-			TakeInventory("FusionChargeLevel",35);
-			if(CheckInventory("FusionChargeLevel"))
-				GiveInventory("MarathonFusionShotItem",1);
 			break;
-	}
+	}*/
 
     if (CheckInventory("DoomguyClass"))
     {

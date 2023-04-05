@@ -1,24 +1,16 @@
-actor FusionChargeLevel: Counter { Inventory.MaxAmount 36 }
-actor FusionChargan: Counter { Inventory.MaxAmount 7 }
 actor UsingFusionPistol: Boolean {}
+actor FusionChargan: Counter { Inventory.MaxAmount 7 }
+actor FusionChargeLevel: Counter { Inventory.MaxAmount 36 }
 
-actor "Fusion Pistol" : Weapon
+actor "Fusion Pistol" : SamsaraMarathonWeapon
 {
-    Weapon.BobRangeX 0
-    Weapon.BobStyle Smooth
-    Weapon.SelectionOrder 1300
-    Weapon.SlotNumber 3
     Inventory.PickupMessage "You picked up a Zeus Class Fusion Pistol!"
+    Weapon.SlotNumber 3
+    Weapon.SelectionOrder 1300
     Weapon.AmmoType1 "FusionBullet"
-    Weapon.AmmoGive1 0
     Weapon.AmmoUse1 1
     Weapon.AmmoType2 "Cell"
     Weapon.AmmoGive2 20
-    Weapon.AmmoUse2 0	
-    +AMMO_OPTIONAL
-    +NOALERT
-    +INVENTORY.UNDROPPABLE
-	Inventory.RestrictedTo "MarathonPlayer"
     Tag "Zeus Class Fusion Pistol"
     States
     {
@@ -27,23 +19,25 @@ actor "Fusion Pistol" : Weapon
         stop
 
       Ready:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",0,"ReadyModernReloadable")
-      ReadyNonReloadable:
+        TNT1 A 0 A_TakeInventory("FusionChargan")
+        TNT1 A 0 A_TakeInventory("FusionChargeLevel")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",0,"ReadyAllowReload")
+      ReadyDisallowReload:
         FUSN A 1 A_WeaponReady
-      ReadyAmmoCheck:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyAmmoCheckReloadable")
-        goto Ready
+        goto ReadyAmmoCheck
 
-      ReadyModernReloadable:
-        TNT1 A 0 A_JumpIfInventory("FusionBullet",0,"ReadyNonReloadable")
+      ReadyAllowReload:
+        TNT1 A 0 A_JumpIfInventory("FusionBullet",0,"ReadyDisallowReload")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_JumpIfInventory("Cell",1,1)
-        goto ReadyNonReloadable
+        goto ReadyDisallowReload
         FUSN A 1 A_WeaponReady(WRF_ALLOWRELOAD)
         goto ReadyAmmoCheck
 
-      ReadyAmmoCheckReloadable:
+      ReadyAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
+        goto Ready
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Ready")
         TNT1 A 0 A_JumpIfInventory("FusionBullet",1,"Ready")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
@@ -51,11 +45,16 @@ actor "Fusion Pistol" : Weapon
         goto Ready
 
       Deselect:
+        TNT1 A 0 A_GiveInventory("SamsaraMarathonFusionPistolSecondaryDeathAttackHandler")
+      DeselectStart: // death attack handler is only checked once
+        TNT1 A 0 A_JumpIfHealthLower(1,"DeselectInstant")
         TNT1 A 0 A_Lower
         FUSN A 1 A_Lower
         loop
 
       Select:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"SelectReloadAmmoCheck")
+      SelectStart:
         TNT1 A 0 A_TakeInventory("UsingFists")
         TNT1 A 0 A_TakeInventory("UsingPistols")
         TNT1 A 0 A_TakeInventory("UsingDualPistols")
@@ -73,21 +72,21 @@ actor "Fusion Pistol" : Weapon
         //TNT1 A 0 A_TakeInventory("UsingMarathonInstagib")
 
         TNT1 A 0 A_GiveInventory("UsingFusionPistol")
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"SelectReloadAmmoCheck")
-      Select2:
+        TNT1 A 0 A_TakeInventory("FusionChargan")
+        TNT1 A 0 A_TakeInventory("FusionChargeLevel")
         TNT1 A 0 A_Raise
         FUSN A 1 A_Raise
         loop
 
       SelectReloadAmmoCheck:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Select2")
-        TNT1 A 0 A_JumpIfInventory("FusionBullet",1,"Select2")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"SelectStart")
+        TNT1 A 0 A_JumpIfInventory("FusionBullet",1,"SelectStart")
       SelectReloadAmmo:
-        TNT1 A 0 A_JumpIfInventory("FusionBullet",0,"Select2")
+        TNT1 A 0 A_JumpIfInventory("FusionBullet",0,"SelectStart")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_JumpIfInventory("Cell",1,1)
-        goto Select2
+        goto SelectStart
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_TakeInventory("Cell",1)
@@ -97,52 +96,57 @@ actor "Fusion Pistol" : Weapon
       Fire:
         TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireReloadable")
       FireNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireActual")
-        TNT1 A 0 A_JumpIfInventory("Cell",1,"FireActual")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,"FireStart")
         goto Ready
 
       FireReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireActual")
-        TNT1 A 0 A_JumpIfInventory("FusionBullet",1,"FireActual")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStart")
+        TNT1 A 0 A_JumpIfInventory("FusionBullet",1,"FireStart")
       FireReloadableDryCheck:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
         TNT1 A 0 A_JumpIfInventory("Cell",1,"Reload")
         goto Ready
 
-      FireActual:
-        FUSN A 1 A_AlertMonsters
+      FireStart:
+        TNT1 A 0 A_AlertMonsters
+        FUSN A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         TNT1 A 0 A_GiveInventory("SamsaraMarathonFusionPistolPrimaryAttackHandler")
-      FireFinish:
-        FUSN A 2 A_Light2
-        FUSN B 2 Bright A_Light1 
-        FUSN C 2 A_Light0
-        FUSN D 3
+        TNT1 A 0 A_Light2
+        FUSN A 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_Light1
+        FUSN B 2 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_Light0
+        FUSN C 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        FUSN D 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         TNT1 A 0 A_ReFire
         goto Ready
 
       AltFire:
         TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"AltFireReloadable")
       AltFireNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireChargeStart")
-        TNT1 A 0 A_JumpIfInventory("Cell",1,"AltFireChargeStart")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireChargeInit")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,"AltFireChargeInit")
         goto Ready
 
       AltFireReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"AltFireChargeStart")
-        TNT1 A 0 A_JumpIfInventory("FusionBullet",1,"AltFireChargeStart")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"AltFireChargeInit")
+        TNT1 A 0 A_JumpIfInventory("FusionBullet",1,"AltFireChargeInit")
       AltFireReloadableDryCheck:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Reload")
         TNT1 A 0 A_JumpIfInventory("Cell",1,"Reload")
         goto Ready
 
-      AltFireChargeStart:
-        FUSN A 1 A_PlaySound("marathon/fusion/charge",CHAN_7)
+      AltFireChargeInit:
+        TNT1 A 0 A_PlaySound("marathon/fusion/charge",CHAN_7)
+        FUSN A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         TNT1 A 0 A_GiveInventory("FusionChargan",5)
       AltFireCharge:
-        FUSN A 5 A_JumpIfInventory("FusionChargan",0,"AltFireChargeIncrement")
+        TNT1 A 0 A_JumpIfInventory("FusionChargan",0,"AltFireChargeIncrement")
+        FUSN A 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         TNT1 A 0 A_GiveInventory("FusionChargan")
         TNT1 A 0 A_ReFire("AltFireCharge")
-        TNT1 A 0 A_JumpIfInventory("FusionChargeLevel",1,"AltFireActual")
+        TNT1 A 0 A_JumpIfInventory("FusionChargeLevel",1,"AltFireStart")
         TNT1 A 0 A_StopSound(CHAN_7)
         TNT1 A 0 A_TakeInventory("FusionChargan")
         goto Ready
@@ -151,31 +155,33 @@ actor "Fusion Pistol" : Weapon
         TNT1 A 0 A_TakeInventory("FusionChargan")
         TNT1 A 0 A_GiveInventory("FusionChargeLevel")
         TNT1 A 0 A_JumpIfInventory("FusionChargeLevel",0,"AltFireOvercharge")
-        TNT1 A 0 A_JumpIfInventory("FusionChargeLevel",2,"AltFireChargeIncrementBeep")
-      AltFireChargeIncrementFinish:
-        FUSN E 2
-        goto AltFireCharge
-
-      AltFireChargeIncrementBeep:
+        TNT1 A 0 A_JumpIfInventory("FusionChargeLevel",2,1)
+        goto AltFireChargeIncrementFinish
         TNT1 A 0 A_PlaySound("marathon/fusion/beep",CHAN_WEAPON)
         goto AltFireChargeIncrementFinish
 
+      AltFireChargeIncrementFinish:
+        FUSN E 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto AltFireCharge
+
       AltFireOvercharge:
-        TNT1 A 0 A_TakeInventory("FusionChargan")
         TNT1 A 0 A_TakeInventory("FusionChargeLevel")
-        FUSN A 18 A_GiveInventory("SamsaraMarathonFusionPistolOverchargeAttackHandler")
+        TNT1 A 0 A_GiveInventory("SamsaraMarathonFusionPistolOverchargeAttackHandler")
+        FUSN A 18 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto Ready
 
-      AltFireActual:
-        FUSN A 1 A_AlertMonsters
+      AltFireStart:
+        TNT1 A 0 A_AlertMonsters
+        FUSN A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         TNT1 A 0 A_TakeInventory("FusionChargan")
         TNT1 A 0 A_TakeInventory("FusionChargeLevel")
         TNT1 A 0 A_GiveInventory("SamsaraMarathonFusionPistolSecondaryAttackHandler")
-      AltFireFinish:
-        FUSN A 4 A_Light2
-        FUSN B 4 Bright A_Light1
-        FUSN C 4 A_Light0
-        FUSN D 4
+        TNT1 A 0 A_Light2
+        FUSN A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_Light1
+        FUSN B 4 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_Light0
+        FUSN CD 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         TNT1 A 0 A_ReFire
         goto Ready
 
@@ -189,7 +195,7 @@ actor "Fusion Pistol" : Weapon
         FUSN A 1 Offset(0,116)
         FUSN A 17 Offset(0,128)
         TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"SelectReloadAmmo")
-        goto Select2
+        goto SelectStart
     }
 }
 
@@ -197,18 +203,22 @@ actor SamsaraMarathonFusionPistolPrimaryAttackHandler : Trigger
 {
     States
     {
-      // Ammo check stuff
+      // Ammo checking/taking stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupCheckAmmoReloadable")
-      PickupCheckAmmoNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupTakeAmmoNonReloadable")
-        TNT1 A 0 A_JumpIfInventory("Cell",1,"PickupTakeAmmoNonReloadable")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupReloadable")
+      PickupNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,1)
         stop
+        TNT1 A 0 A_TakeInventory("Cell",1)
+        goto PickupAttack
 
-      PickupCheckAmmoReloadable:
+      PickupReloadable:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("FusionBullet",1,"PickupTakeAmmoReloadable")
+        TNT1 A 0 A_JumpIfInventory("FusionBullet",1,1)
         stop
+        TNT1 A 0 A_TakeInventory("FusionBullet",1)
+        goto PickupAttack
 
       // Attack stuff
       PickupAttack:
@@ -221,7 +231,7 @@ actor SamsaraMarathonFusionPistolPrimaryAttackHandler : Trigger
         stop
 
       PickupAttackDMUnderwater:
-        TNT1 A 0 A_FireCustomMissile("FusionShotWater",random(-1,1),false,0,6,0,random(-1,1))
+        TNT1 A 0 A_FireCustomMissile("FusionShotWater",0,false)
         stop
 
       PickupAttackCoop:
@@ -230,24 +240,32 @@ actor SamsaraMarathonFusionPistolPrimaryAttackHandler : Trigger
         stop
 
       PickupAttackCoopUnderwater:
-        TNT1 A 0 A_FireCustomMissile("FusionShotWaterCoop",random(-1,1),false,0,6,0,random(-1,1))
+        TNT1 A 0 A_FireCustomMissile("FusionShotWaterCoop",0,false)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmoNonReloadable:
-        TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
-        goto PickupAttack
-
-      PickupTakeAmmoReloadable:
-        TNT1 A 0 A_TakeInventory("FusionBullet",1)
-        goto PickupAttack
     }
 }
 
-actor SamsaraMarathonFusionPistolSecondaryAttackHandler : SamsaraMarathonFusionPistolPrimaryAttackHandler
+actor SamsaraMarathonFusionPistolSecondaryAttackHandler : Trigger
 {
     States
     {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupReloadable")
+      PickupNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,1) // attack could be called with less than intended amount
+        stop
+        TNT1 A 0 A_TakeInventory("Cell",4)
+        goto PickupAttack
+
+      PickupReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("FusionBullet",1,1) // attack could be called with less than intended amount
+        stop
+        TNT1 A 0 A_TakeInventory("FusionBullet",4)
+        goto PickupAttack
+
       // Attack stuff
       PickupAttack:
         TNT1 A 0 A_PlaySound("marathon/fusion/super",CHAN_WEAPON)
@@ -259,7 +277,7 @@ actor SamsaraMarathonFusionPistolSecondaryAttackHandler : SamsaraMarathonFusionP
         stop
 
       PickupAttackDMUnderwater:
-        TNT1 A 0 A_FireCustomMissile("FusionShotWater2",random(-1,1),false,0,6,0,random(-1,1))
+        TNT1 A 0 A_FireCustomMissile("FusionShotWater2",0,false)
         stop
 
       PickupAttackCoop:
@@ -268,86 +286,149 @@ actor SamsaraMarathonFusionPistolSecondaryAttackHandler : SamsaraMarathonFusionP
         stop
 
       PickupAttackCoopUnderwater:
-        TNT1 A 0 A_FireCustomMissile("FusionShotWater2Coop",random(-1,1),false,0,6,0,random(-1,1))
+        TNT1 A 0 A_FireCustomMissile("FusionShotWater2Coop",0,false)
         stop
-
-      // Ammo taking stuff
-      PickupTakeAmmoNonReloadable:
-        TNT1 A 0 A_TakeInventory("Cell",4,TIF_NOTAKEINFINITE)
-        goto PickupAttack
-
-      PickupTakeAmmoReloadable:
-        TNT1 A 0 A_TakeInventory("FusionBullet",4)
-        goto PickupAttack
     }
 }
 
-actor SamsaraMarathonFusionPistolOverchargeAttackHandler : SamsaraMarathonFusionPistolPrimaryAttackHandler
+actor SamsaraMarathonFusionPistolSecondaryDeathAttackHandler : Trigger
 {
     States
     {
+      // Health/charge checking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfHealthLower(1,1)
+        goto PickupFinish
+        TNT1 A 0 A_JumpIfInventory("FusionChargeLevel",1,"PickupAmmoCheck")
+        goto PickupFinish
+
+      // Ammo checking/taking stuff
+      PickupAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupAmmoCheckReloadable")
+      PickupAmmoCheckNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,1) // attack could be called with less than intended amount
+        goto PickupFinish
+        TNT1 A 0 A_TakeInventory("Cell",4)
+        goto PickupAttack
+
+      PickupAmmoCheckReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("FusionBullet",1,1) // attack could be called with less than intended amount
+        goto PickupFinish
+        TNT1 A 0 A_TakeInventory("FusionBullet",4)
+        goto PickupAttack
+
       // Attack stuff
       PickupAttack:
-        TNT1 A 0 A_PlaySound("hunter/explode",CHAN_WEAPON)
-        TNT1 A 0 A_SetBlend("Blue",0.8,35)
+        TNT1 A 0 A_PlaySound("marathon/fusion/super",CHAN_WEAPON)
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
       PickupAttackDM:
-        TNT1 A 0 A_FireCustomMissile("FusionPistolOvercharge",random(-1,1),false,0,6,0,random(-1,1))
-        stop
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"PickupAttackDMUnderwater")
+        TNT1 A 0 A_CustomMissile("FusionSuper",25,0,random(-15,15),CMF_AIMDIRECTION,random(-10,10))
+        goto PickupFinish
+
+      PickupAttackDMUnderwater:
+        TNT1 A 0 A_CustomMissile("FusionShotWater2",32,0,0,CMF_AIMDIRECTION)
+        goto PickupFinish
 
       PickupAttackCoop:
-        TNT1 A 0 A_FireCustomMissile("FusionPistolOverchargeCoop",random(-1,1),false,0,6,0,random(-1,1))
-        stop
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"PickupAttackCoopUnderwater")
+        TNT1 A 0 A_CustomMissile("FusionSuperCoop",25,0,random(-15,15),CMF_AIMDIRECTION,random(-10,10))
+        goto PickupFinish
 
-      // Ammo taking stuff
-      PickupTakeAmmoNonReloadable:
-        TNT1 A 0 A_TakeInventory("Cell",20,TIF_NOTAKEINFINITE)
+      PickupAttackCoopUnderwater:
+        TNT1 A 0 A_CustomMissile("FusionShotWater2Coop",32,0,0,CMF_AIMDIRECTION)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_TakeInventory("FusionChargan")
+        TNT1 A 0 A_TakeInventory("FusionChargeLevel")
+        stop
+    }
+}
+
+actor SamsaraMarathonFusionPistolOverchargeAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"PickupReloadable")
+      PickupNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,1) // attack could be called with less than intended amount
+        stop
+        TNT1 A 0 A_TakeInventory("Cell",20)
         goto PickupAttack
 
-      PickupTakeAmmoReloadable:
+      PickupReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("FusionBullet",1,1) // attack could be called with less than intended amount
+        stop
         TNT1 A 0 A_TakeInventory("FusionBullet",20)
         goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("hunter/explode",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("FusionPistolOvercharge",0,false)
+        goto PickupFinish
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("FusionPistolOverchargeCoop",0,false)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_SetBlend("Blue",0.8,35)
+        stop
     }
 }
 
 actor FusionBullet : Ammo
 {
-    +IGNORESKILL
     Inventory.MaxAmount 20
+    Tag "Fusion Battery"
+    +IGNORESKILL
 }
 
 actor FusionShot
 {
-    Decal DoomImpScorch
+    Projectile
     Radius 12
     Height 16
     Speed 25
     Damage (random(40,50))
     DamageType "MarathonFusion"
+    ReactionTime 1
     Scale 0.35
     DeathSound "marathon/fusion/hit"
-    +FOILINVUL
-    +PIERCEARMOR
+    Decal "DoomImpScorch"
+    Obituary "$SAMSARA_MARATHON_OB_SLOT3_1"
     +BLOODLESSIMPACT
     +DONTREFLECT
+    +FOILINVUL
     +NOEXTREMEDEATH
-    Obituary "$SAMSARA_MARATHON_OB_SLOT3_1"
-    Projectile
+    +PIERCEARMOR
     States
     {
       Spawn:
-        MA00 ABC 2 Bright A_JumpIf(waterlevel >= 2, "FuckWater")
-        LOOP
+        MA00 AABBCC 1 Bright NoDelay A_JumpIf(waterlevel >= 2, "FuckWater")
+        loop
 
       FuckWater:
-        MA00 A 0 A_Stop
-        MA00 A 0 A_Die
-        goto Death
+        MA00 A 1 Bright A_Countdown
+        goto Spawn
 
       Death:
         MA01 ABCD 2 Bright
-        STOP
+        stop
     }
 }
 
@@ -356,83 +437,82 @@ actor FusionShotCoop : FusionShot
     Radius 6
     Height 8
     Speed 20
-    +THRUSPECIES
     Species "Player"
+    +THRUSPECIES
 }
 
 actor FusionShotWater : FusionShot
 {
+    Radius 8
+    Height 8
+    Speed 0
     Damage 0
+    Decal ""
+    +DONTBLAST
+    +DONTSPLASH
+    +FORCERADIUSDMG
+    +NODAMAGETHRUST
+    +NOTIMEFREEZE
+    +NOTONAUTOMAP
+    +NOTRIGGER
+    +SKYEXPLODE
     States
     {
       Spawn:
-        TNT1 A 0
+        TNT1 A 1 NoDelay A_Countdown
+        loop
+
       Death:
-        TNT1 A 0 A_Stop
-        TNT1 A 0 A_Explode(random(30,40),128)
-        MA01 ABCD 2 Bright
-        STOP
+        TNT1 A 1 A_Explode(random(40,50),128)
+        stop
     }
 }
 
 actor FusionShotWaterCoop : FusionShotWater
 {
-    Radius 6
-    Height 8
-    Speed 20
     Species "Player"
     +THRUSPECIES
 }
 
-actor FusionSuper
+actor FusionSuper : FusionShot
 {
-    Decal Scorch
     Radius 20
     Height 24
     Speed 35
     Damage (random(90,120))
-    DamageType "MarathonFusion"
     Scale 0.75
-    DeathSound "marathon/fusion/hit"
-    +FOILINVUL
-    +PIERCEARMOR
-    +BLOODLESSIMPACT
-    +NOEXTREMEDEATH
-    +DONTREFLECT
-    Obituary "$SAMSARA_MARATHON_OB_SLOT3_1"
-    Projectile
+    Decal "Scorch"
     States
     {
       Spawn:
-        MA02 A 0 A_JumpIf(waterlevel >= 2, "FuckWater")
-        MA02 A 1 Bright A_SpawnItem("FusionTrail")
-        MA02 A 0 A_JumpIf(waterlevel >= 2, "FuckWater")
-        MA02 A 1 Bright A_SpawnItem("FusionTrail")
-        MA02 A 0 A_JumpIf(waterlevel >= 2, "FuckWater")
-        MA02 A 1 Bright A_SpawnItem("FusionTrail")
-        MA02 B 0 A_JumpIf(waterlevel >= 2, "FuckWater")
-        MA02 B 1 Bright A_SpawnItem("FusionTrail")
-        MA02 B 0 A_JumpIf(waterlevel >= 2, "FuckWater")
-        MA02 B 1 Bright A_SpawnItem("FusionTrail")
-        MA02 B 0 A_JumpIf(waterlevel >= 2, "FuckWater")
-        MA02 B 1 Bright A_SpawnItem("FusionTrail")
-        MA02 C 0 A_JumpIf(waterlevel >= 2, "FuckWater")
-        MA02 C 1 Bright A_SpawnItem("FusionTrail")
-        MA02 C 0 A_JumpIf(waterlevel >= 2, "FuckWater")
-        MA02 C 1 Bright A_SpawnItem("FusionTrail")
-        MA02 C 0 A_JumpIf(waterlevel >= 2, "FuckWater")
-        MA02 C 1 Bright A_SpawnItem("FusionTrail")
-        LOOP
+        MA02 A 0 Bright NoDelay A_JumpIf(waterlevel >= 2, "FuckWater")
+        MA02 A 1 Bright A_SpawnItemEx("FusionTrail")
+        TNT1 A 0 A_JumpIf(waterlevel >= 2, "FuckWater")
+        MA02 A 1 Bright A_SpawnItemEx("FusionTrail")
+        TNT1 A 0 A_JumpIf(waterlevel >= 2, "FuckWater")
+        MA02 A 1 Bright A_SpawnItemEx("FusionTrail")
+        TNT1 A 0 A_JumpIf(waterlevel >= 2, "FuckWater")
+        MA02 B 1 Bright A_SpawnItemEx("FusionTrail")
+        TNT1 A 0 A_JumpIf(waterlevel >= 2, "FuckWater")
+        MA02 B 1 Bright A_SpawnItemEx("FusionTrail")
+        TNT1 A 0 A_JumpIf(waterlevel >= 2, "FuckWater")
+        MA02 B 1 Bright A_SpawnItemEx("FusionTrail")
+        TNT1 A 0 A_JumpIf(waterlevel >= 2, "FuckWater")
+        MA02 C 1 Bright A_SpawnItemEx("FusionTrail")
+        TNT1 A 0 A_JumpIf(waterlevel >= 2, "FuckWater")
+        MA02 C 1 Bright A_SpawnItemEx("FusionTrail")
+        TNT1 A 0 A_JumpIf(waterlevel >= 2, "FuckWater")
+        MA02 C 1 Bright A_SpawnItemEx("FusionTrail")
+        loop
 
       FuckWater:
-        MA00 A 0 A_Stop
-        MA00 A 0 A_Die
-        goto Death
+        MA02 A 1 Bright A_Countdown
+        goto Spawn
 
       Death:
         MA01 AB 5 Bright
         MA01 CD 4 Bright
-        STOP
+        stop
     }
 }
 
@@ -441,84 +521,88 @@ actor FusionSuperCoop : FusionSuper
     Radius 10
     Height 12
     Speed 30
-    +THRUSPECIES
     Species "Player"
+    +THRUSPECIES
 }
 
-actor FusionShotWater2
+actor FusionShotWater2 : FusionSuper
 {
+    Radius 8
+    Height 8
+    Speed 0
     Damage 0
+    Decal ""
+    +DONTBLAST
+    +DONTSPLASH
+    +FORCERADIUSDMG
+    +NODAMAGETHRUST
+    +NOTIMEFREEZE
+    +NOTONAUTOMAP
+    +NOTRIGGER
+    +SKYEXPLODE
     States
     {
       Spawn:
-        TNT1 A 0
+        TNT1 A 1 NoDelay A_Countdown
+        loop
+
       Death:
-        TNT1 A 0 A_Stop
-        TNT1 A 0 A_Explode(random(80,100),128)
-        MA01 AB 5 bright
-        MA01 CD 4 bright
-        STOP
+        TNT1 A 1 A_Explode(random(90,120),128)
+        stop
     }
 }
 
 actor FusionShotWater2Coop : FusionShotWater2
 {
-    Radius 10
-    Height 12
-    Speed 30
     Species "Player"
     +THRUSPECIES
 }
 
 actor FusionTrail
 {
-    +RANDOMIZE
-    +NOCLIP
-    +NOGRAVITY
-    Speed 0
     Scale 0.75
     +CLIENTSIDEONLY
-    states
+    +NOCLIP
+    +NOGRAVITY
+    +RANDOMIZE
+    States
     {
       Spawn:
         TNT1 A 2
-        FSCT ABC 2 BRIGHT
+        FSCT ABC 2 Bright
         stop
     }
 }
 
 actor FusionPistolOvercharge
 {
+    Projectile
     Radius 8
     Height 8
-
-    +NOTIMEFREEZE
+    DamageType "MarathonFusion"
+    ReactionTime 1
+    Obituary "$SAMSARA_MARATHON_OB_SLOT3_2"
+    +BLOODLESSIMPACT
     +DONTBLAST
     +DONTREFLECT
     +DONTSPLASH
-    +NOTRIGGER
-    +NOTONAUTOMAP
-    +SKYEXPLODE
     +FOILINVUL
-    +PIERCEARMOR
-    +BLOODLESSIMPACT
+    +FORCERADIUSDMG
     +NOEXTREMEDEATH
-
-    Projectile
-
-    DamageType "MarathonFusion"
-
-    Obituary "$SAMSARA_MARATHON_OB_SLOT3_2"
-
+    +NOTIMEFREEZE
+    +NOTONAUTOMAP
+    +NOTRIGGER
+    +PIERCEARMOR
+    +SKYEXPLODE
     States
     {
-        Spawn:
-          TNT1 A 0
-        Death:
-          TNT1 A 0 A_Stop
-          TNT1 A 0 A_Explode(512, 256)
-          TNT1 A 1
-          stop
+      Spawn:
+        TNT1 A 1 NoDelay A_Countdown
+        loop
+
+      Death:
+        TNT1 A 1 A_Explode(512,256)
+        stop
     }
 }
 
