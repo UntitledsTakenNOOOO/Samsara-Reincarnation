@@ -187,23 +187,29 @@ Actor RTCW_PineappleProjectile : RTCW_GrenadeProjectile
 	{
 		Spawn:
 			RW00 A 0 NoDelay A_GiveInventory("RTCW_GrenadeTimer",CallACS("RTCW_Decorate",7))
-            RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"Detonate")
+            RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"StopGrenade")
 			RW00 A 0 ThrustThingZ(0,20,0,1)
 		SpawnLoop:
 			RW00 AAAAAAAAAAAAAAAAAAAAAAAA 1
 			RW00 A 0 A_GiveInventory("RTCW_GrenadeTimer",1)
-			RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"Detonate")
+			RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"StopGrenade")
 			Goto SpawnLoop
 		Bounce:
-			RW00 A 0 A_ChangeFlag("USEBOUNCESTATE",0)
-			RW00 AAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("RTCW_GrenadeTrailSmoke")
+			RW00 A 0 A_GiveInventory("RTCW_GrenadeCounter",1)
+			RW00 A 0 A_JumpIfInventory("RTCW_GrenadeCounter",0,1)
+			Goto Bounce+5
 			RW00 A 0 A_GiveInventory("RTCW_GrenadeTimer",1)
-			RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"Detonate")
+			RW00 A 0 A_TakeInventory("RTCW_GrenadeCounter")
+			RW00 A 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"StopGrenade")
+			RW00 A 1 A_SpawnItemEx("RTCW_GrenadeTrailSmoke")
 			Goto Bounce
 		OnFloor:
 			RW00 B 0 A_GiveInventory("RTCW_GrenadeTimer",1)
-			RW00 B 17 A_JumpIfInventory("RTCW_GrenadeTimer",0,"Detonate")
+			RW00 B 17 A_JumpIfInventory("RTCW_GrenadeTimer",0,"StopGrenade")
 			Loop
+		StopGrenade:
+			RW00 A 0 A_CountDown
+			Goto Detonate
 		Crash:
 		Death:
 		XDeath:
