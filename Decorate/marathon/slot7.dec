@@ -888,8 +888,14 @@ actor WMCRailLevel2 : WMCRailLevel1
     States
     {
       Death:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 47), 3)
         TNT1 A 0 A_Explode(random(250,350),128,0)
         TNT1 A 0 A_Explode(random(200,250),128)
+        goto DeathFinish
+        TNT1 A 0 A_Explode(random(250,350),128,0,false,128)
+        TNT1 A 0 A_Explode(random(200,250),128,XF_HURTSOURCE,false,128)
+        goto DeathFinish
+
       DeathFinish:
         TNT1 AAAAAAAA 0 A_SpawnItemEx("WMCGrenadeExplosion",random(-5,5),random(-5,5),random(-5,5),0.4*random(2,5),0.4*random(2,5),0.4*random(2,5),random(0,359))
         goto Super::Death
@@ -901,7 +907,10 @@ actor WMCRailLevel2DM : WMCRailLevel2
     States
     {
       Death:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 47), 2)
         TNT1 A 0 A_Explode(random(100,150),128)
+        goto DeathFinish
+        TNT1 A 0 A_Explode(random(100,150),128,XF_HURTSOURCE,false,128)
         goto DeathFinish
     }
 }
@@ -920,7 +929,13 @@ actor WMCRailLevel3 : WMCRailLevel1
     States
     {
       Death:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 47), 2)
         TNT1 A 0 A_Explode(random(250,300),196)
+        goto DeathContinue
+        TNT1 A 0 A_Explode(random(250,300),196,XF_HURTSOURCE,false,196)
+        goto DeathContinue
+
+      DeathContinue:
         TNT1 A 0 A_CustomMissile("WMCBeamMissileBaby",1,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER)
         TNT1 A 0 A_CustomMissile("WMCBeamMissileBaby",1,0,22,CMF_AIMDIRECTION|CMF_TRACKOWNER)
         TNT1 A 0 A_CustomMissile("WMCBeamMissileBaby",1,0,45,CMF_AIMDIRECTION|CMF_TRACKOWNER)
@@ -980,8 +995,15 @@ actor WMCRailLevel3DM : WMCRailLevel3
     States
     {
       Death:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 47), 3)
         TNT1 A 0 A_Explode(50,196,0)
         TNT1 A 0 A_Explode(100,128)
+        goto DeathContinue
+        TNT1 A 0 A_Explode(50,196,0,false,196)
+        TNT1 A 0 A_Explode(100,128,XF_HURTSOURCE,false,128)
+        goto DeathContinue
+
+      DeathContinue:
         TNT1 A 0 A_CustomMissile("WMCBeamMissileBaby",1,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER)
         TNT1 A 0 A_CustomMissile("WMCBeamMissileBaby",1,0,22,CMF_AIMDIRECTION|CMF_TRACKOWNER)
         TNT1 A 0 A_CustomMissile("WMCBeamMissileBaby",1,0,45,CMF_AIMDIRECTION|CMF_TRACKOWNER)
@@ -1025,7 +1047,13 @@ actor WMCRailLevel3Coop : WMCRailLevel3
     States
     {
       Death:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 47), 2)
         TNT1 A 0 A_Explode(random(250,300),196)
+        goto DeathContinue
+        TNT1 A 0 A_Explode(random(250,300),196,XF_HURTSOURCE,false,196)
+        goto DeathContinue
+
+      DeathContinue:
         TNT1 A 0 A_CustomMissile("WMCBeamMissileBabyCoop",1,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER)
         TNT1 A 0 A_CustomMissile("WMCBeamMissileBabyCoop",1,0,22,CMF_AIMDIRECTION|CMF_TRACKOWNER)
         TNT1 A 0 A_CustomMissile("WMCBeamMissileBabyCoop",1,0,45,CMF_AIMDIRECTION|CMF_TRACKOWNER)
@@ -1192,7 +1220,12 @@ actor WMCRailLevel3Baby : WMCRailLevel1
         loop
 
       Death:
-        TNT1 A 0 A_Explode(64,96,0)
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 47), 2)
+        TNT1 A 0 A_Explode(64,96)
+        goto DeathFinish
+        TNT1 A 0 A_Explode(64,96,XF_HURTSOURCE,false,96)
+        goto DeathFinish
+
       DeathFinish:
         TNT1 A 0 A_Jump(256,"DeathFinish1","DeathFinish2","DeathFinish3","DeathFinish4")
       DeathFinish1:
@@ -1295,6 +1328,7 @@ actor WMCBeamExplode : FastProjectile
     Height 5
     Speed 20
     DamageType "WMCBeam"
+    ReactionTime 24
     Decal "Scorch"
     Obituary "$SAMSARA_MARATHON_OB_SLOT7_1"
     +BLOODLESSIMPACT
@@ -1305,9 +1339,21 @@ actor WMCBeamExplode : FastProjectile
     States
     {
       Spawn:
-        TNT1 AAAAAAAAAAAAAAAAAAAAAAAA 1 A_Explode(48,128,0)
+        TNT1 A 0 NoDelay A_JumpIf(CallACS("SamsaraDecorate", 47), 2)
+        TNT1 A 1 A_Explode(48,128,0)
+        goto SpawnCountdown
+        TNT1 A 1 A_Explode(48,128,0,false,128)
+        goto SpawnCountdown
+
+      SpawnCountdown:
+        TNT1 A 0 A_Countdown
+        goto Spawn
+
       Death:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 47), 2)
         TNT1 A 1 A_Explode(64,128,0)
+        stop
+        TNT1 A 1 A_Explode(64,128,0,false,128)
         stop
     }
 }
@@ -1344,7 +1390,13 @@ actor WMCGrenade
 
       Death:
         TNT1 A 0 A_NoGravity
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 47), 2)
         TNT1 A 0 A_Explode(random(100,150),128)
+        goto DeathContinue
+        TNT1 A 0 A_Explode(random(100,150),128,XF_HURTSOURCE,false,128)
+        goto DeathContinue
+
+      DeathContinue:
         TNT1 AAAAAAA 0 A_CustomMissile("WMCGrenade2",0,0,random(-180,180),CMF_AIMDIRECTION,random(16,65))
         TNT1 AAAAAAA 0 A_CustomMissile("WMCGrenade2",0,0,random(-180,180),CMF_AIMDIRECTION,random(16,65))
       DeathFinish:
@@ -1362,7 +1414,13 @@ actor WMCGrenadeCoop : WMCGrenade
     {
       Death:
         TNT1 A 0 A_NoGravity
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 47), 2)
         TNT1 A 0 A_Explode(random(150,200),128)
+        goto DeathContinue
+        TNT1 A 0 A_Explode(random(150,200),128,XF_HURTSOURCE,false,128)
+        goto DeathContinue
+
+      DeathContinue:
         TNT1 AAAAAAA 0 A_CustomMissile("WMCGrenadeCoop2",0,0,random(-180,180),CMF_AIMDIRECTION,random(16,65))
         TNT1 AAAAAAA 0 A_CustomMissile("WMCGrenadeCoop2",0,0,random(-180,180),CMF_AIMDIRECTION,random(16,65))
         goto DeathFinish
@@ -1417,7 +1475,12 @@ actor WMCGrenade2 : WMCGrenade
 
       Death:
         TNT1 A 0 A_NoGravity
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 47), 2)
         TNT1 A 0 A_Explode(random(50,70),96)
+        goto DeathFinish
+        TNT1 A 0 A_Explode(random(50,70),96,XF_HURTSOURCE,false,96)
+        goto DeathFinish
+
       DeathFinish:
         TNT1 A 1 A_SpawnItemEx("WMCGrenadeExplosion2")
         stop
@@ -1432,7 +1495,10 @@ actor WMCGrenadeCoop2 : WMCGrenade2
     {
       Death:
         TNT1 A 0 A_NoGravity
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 47), 2)
         TNT1 A 0 A_Explode(random(100,120),96)
+        goto DeathFinish
+        TNT1 A 0 A_Explode(random(100,120),96,XF_HURTSOURCE,false,96)
         goto DeathFinish
     }
 }
