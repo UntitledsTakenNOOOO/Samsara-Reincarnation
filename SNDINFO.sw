@@ -195,6 +195,7 @@ $playersounddup	LoWang	 male	*crazydeath		*death
 $playersounddup LoWang	 male   *wimpydeath 	*death
 $playersounddup	LoWang	 male	*gibbed			*xdeath
 $playersound	LoWang	 male	*falling		SPKILL0
+$playersound	LoWang	 male	*burndeath		SPKILL0
 $playeralias	LoWang	 male	*pain100		SWPAIN100
 $playeralias	LoWang	 male	*pain75			SWPAIN100
 $playeralias	LoWang	 male	*pain50			SWPAIN50
