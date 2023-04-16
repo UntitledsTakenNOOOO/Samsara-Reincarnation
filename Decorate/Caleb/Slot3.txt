@@ -1,19 +1,19 @@
 ACTOR Sawedoff : CalebWeapon
 {
-	obituary "%k gave %o a heap of buckshot."
+	Obituary "%k gave %o a heap of buckshot."
 	Weapon.AmmoType "Shell"
 	Weapon.AmmoType2 "Shell"
-	inventory.pickupmessage "You got the Sawed off!"
+	Inventory.PickupMessage "You got the Sawed off!"
 	Inventory.PickupSound "Caleb/Weaponup"
-	weapon.selectionorder 80
+	Weapon.SelectionOrder 80
 	Tag "Sawed-Off Shotgun"
 	Weapon.AmmoGive 8
 	Weapon.AmmoUse 1
-	Weapon.AmmoUse2 2
+	Weapon.AmmoUse2 1
 	Weapon.SlotNumber 3
 	+THRUGHOST
 	Decal ZBloodBulletChip1
-	states
+	States
 	{
 	Spawn:
 		BSOP A -1
@@ -147,18 +147,13 @@ ACTOR Sawedoff : CalebWeapon
 		TNT1 A 0 A_JumpIfInventory("SamsaraRecoilIsDisabled", 1, 2)
 		TNT1 A 0 A_SetPitch(pitch+0.25)
 		TNT1 A 0 A_JumpIfNoAmmo("NoAmmo")
-		TNT1 A 0 A_PlaySound("SawnOff/Load",6)
-		WP01 EFG 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		TNT1 A 0 A_FireCustomMissile("ZBShotgunCasing",-45+random(-8,8),0,1,8,0)
-		TNT1 A 0 A_FireCustomMissile("ZBShotgunCasing",-45+random(-8,8),0,0,8,0)
-		TNT1 A 0 A_TakeInventory("SawedOffCheck",2)
-		WP01 HIJKLMNOPQRSTU 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		Stop
+		Goto FlashReload
 	AltFlash:
 		TNT1 A 0 A_JumpIfInventory("SawedOffCheck",1,"Flash2")
 		TNT1 A 0 A_JumpIfInventory("Shell", 2, 1)
 		Goto Flash
 		TNT1 A 0 A_PlayWeaponSound("SawnOff/AltFire")
+		TNT1 A 0 A_TakeInventory("Shell", 1, TIF_NOTAKEINFINITE)
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, 2)
 		TNT1 A 0 A_FireBullets(5.8, 5.2, 30, 5, "ZBBulletPuff", FBF_NORANDOM|FBF_USEAMMO)
 		Goto AltFlashEnd
@@ -195,14 +190,8 @@ ACTOR Sawedoff : CalebWeapon
 		TNT1 A 0 A_JumpIfInventory("SamsaraRecoilIsDisabled", 1, 2)
 		TNT1 A 0 A_SetPitch(pitch+0.5)
 		ANIM GYC 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		TNT1 A 0 A_JumpIfNoAmmo("NoAmmo")
-		TNT1 A 0 A_PlaySound("SawnOff/Load",6)
-		WP01 EF 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		TNT1 A 0 A_FireCustomMissile("ZBShotgunCasing",-45+random(-8,8),0,1,8,0)
-		TNT1 A 0 A_FireCustomMissile("ZBShotgunCasing",-45+random(-8,8),0,0,8,0)
-		TNT1 A 0 A_TakeInventory("SawedOffCheck",2)
-		WP01 GHIJKLMNOPQRTV 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		Stop
+		TNT1 A 0 A_JumpIfInventory("Shell", 2, "FlashReload")
+		Goto NoAmmo
 	NoAmmo:
 		WP01 A 20 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		Stop
@@ -267,12 +256,12 @@ ACTOR Sawedoff : CalebWeapon
 		SAKM C 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		SAKF EFG 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		SAKF H 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		stop
+		Stop
 	AkimboAltFlash:
 		TNT1 A 0 A_JumpIfInventory("Shell", 4, 1)
 		Goto Flash
 		SAKM BB 1 Bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		TNT1 A 0 A_TakeInventory("Shell", 2, TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_TakeInventory("Shell", 3, TIF_NOTAKEINFINITE)
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, 2)
 		TNT1 A 0 A_FireBullets (6.1, 5.6, 60, 5, "ZBBulletPuff", FBF_NORANDOM|FBF_USEAMMO)
 		Goto AkimboAltPitchCheck
@@ -317,16 +306,24 @@ ACTOR Sawedoff : CalebWeapon
 		TNT1 A 0 A_SetPitch(pitch+2.5)
 		SAKM CCFF 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		SAKM A 5 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		stop
-	Reload:
-		TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-		Goto Ready
-		TNT1 A 0 A_PlaySound("SawnOff/Load",6)
-		WP01 EF 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		Stop
+	FlashReload:
+		TNT1 A 0 A_PlaySound("SawnOff/Load",CHAN_6)
+		WP01 EFG 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_FireCustomMissile("ZBShotgunCasing",-45+random(-8,8),0,1,8,0)
 		TNT1 A 0 A_FireCustomMissile("ZBShotgunCasing",-45+random(-8,8),0,0,8,0)
 		TNT1 A 0 A_TakeInventory("SawedOffCheck",2)
-		WP01 GHIJKLMNOPQRTV 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		WP01 HIJKLMNOPQRSTUV 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		Stop
+	Reload:
+		TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+		Goto Ready
+		TNT1 A 0 A_PlaySound("SawnOff/Load",CHAN_6)
+		WP01 EFG 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_FireCustomMissile("ZBShotgunCasing",-45+random(-8,8),0,1,8,0)
+		TNT1 A 0 A_FireCustomMissile("ZBShotgunCasing",-45+random(-8,8),0,0,8,0)
+		TNT1 A 0 A_TakeInventory("SawedOffCheck",2)
+		WP01 HIJKLMNOPQRSTUV 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		Goto Ready
 	}
 }
