@@ -65,8 +65,16 @@ Actor DeusEx_10mmPistol : DeusExWeapon
 
 		Deselect:
 			DX01 U 0 A_TakeInventory("DeusEx_GlockSpread")
-			DX01 U 2 A_GiveInventory("DeusEx_Reloading")
+			DX01 U 0 A_GiveInventory("DeusEx_Reloading")
+			DX01 U 2 A_JumpIfHealthLower(1,"DeathDeselect")
 			DX01 V 2
+            goto DeselectFinish
+
+        DeathDeselect:
+            TNT1 AA 2
+            goto DeselectFinish
+
+        DeselectFinish:
 			TNT1 A 0 A_TakeInventory("DeusEx_GlockEquipped")
 			goto InstantDeselect
 
@@ -135,7 +143,9 @@ Actor DeusEx_10mmPistol : DeusExWeapon
 			DX01 L 0 A_JumpIfInventory("DeusEx_PistolSkill",0,"ReloadContinueMaster")
 			DX01 L 0 A_JumpIfInventory("DeusEx_PistolSkill",3,"ReloadContinueAdvanced")
 			DX01 L 0 A_JumpIfInventory("DeusEx_PistolSkill",2,"ReloadContinueProficient")
-        ReloadContinueUntrained:
+			DX01 L 0 A_JumpIfInventory("DeusEx_PistolSkill",1,"ReloadContinueTrained")
+        ReloadContinueUntrained: // never called, but here just in case
+			DX01 LMNOP 4 A_WeaponReady(WRF_NOFIRE)
         ReloadContinueTrained:
 			DX01 LMNOP 4 A_WeaponReady(WRF_NOFIRE)
         ReloadContinueProficient:
@@ -220,6 +230,7 @@ actor SamsaraDeusExGlockAttackHandler : Trigger
 Actor DeusEx_GlockMagazine : Ammo
 {
     Inventory.MaxAmount 6
+    Tag "Pistol Magazine"
     +IGNORESKILL
 }
 
