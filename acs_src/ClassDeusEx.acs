@@ -199,79 +199,46 @@ Script "DeusEx_Enter" (void)
 		
 	while(CheckInventory("DeusExClass"))
 	{
+		bool isPVEGame = isSinglePlayer() || isCoop();
 		int speedx, speedy, lasttimer, velocity, movement;
 		int forward = GetPlayerInput(-1, INPUT_FORWARDMOVE);
 		int running = abs(GetPlayerInput(-1, INPUT_FORWARDMOVE)) > 6400 || abs(GetPlayerInput(-1, INPUT_SIDEMOVE)) > 6144;
-		int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
 		int speedmod;
-		
-		while((ClassifyActor(0) & ACTOR_ALIVE))
+
+		while ((ClassifyActor(0) & ACTOR_ALIVE))
 		{
-			//we'll handle crouch here too
-/*			if(GetActorViewHeight(0) <=  GetActorViewHeight(0) / 2 << 16)
-				GiveInventory("DeusEx_Crouching",1);
-			else
-				TakeInventory("DeusEx_Crouching",1);*/		
-			If(buttons & BT_FORWARD && running)
-				GiveInventory("DeusEx_Running", 1);
-			else
-				
-			if (buttons & BT_JUMP)
-				GiveInventory("DeusEx_Jumping", 1);
-			else
-				TakeInventory("DeusEx_Jumping", 1);
-			
-			if (buttons & BT_CROUCH)
-				GiveInventory("DeusEx_Crouching", 1);
-			else
-				TakeInventory("DeusEx_Crouching", 1);
-			
-		if (buttons & BT_MOVELEFT)
-				GiveInventory("DeusEx_StrafeLeft", 1);
-		else if (buttons & BT_MOVERIGHT)
-				GiveInventory("DeusEx_StrafeRight", 1);
-		else
-				TakeInventory("DeusEx_StrafeLeft", 1);
-				TakeInventory("DeusEx_StrafeRight", 1);
-				
-			if (buttons & !BT_ATTACK);
-			{
-				TakeInventory("DeusEx_GlockSpread", 1);
-				TakeInventory("DeusEx_StealthSpread", 1);
-				TakeInventory("DeusEx_SawedOffSpread", 1);
-				TakeInventory("DeusEx_ShotgunSpread", 1);
-				TakeInventory("DeusEx_AssaultGunSpread", 1);
-				TakeInventory("DeusEx_PlasmaRifleSpread", 1);
-			}	
-				
-			if(!isDeathMatch() && !isFreeForAll() && !isTeamGame())
-			{
-				if(CheckInventory("DeusEx_MovementPenaltyEnabled"))
-				{
-					If(CheckInventory("DeusEx_GEPGunEquipped") || CheckInventory("DeusEx_FlameThrowerEquipped") || CheckInventory("DeusEx_PREquipped") || CheckInventory("DeusEx_LAWEquipped"))
-					{
-						If(CheckInventory("DeusEx_HeavyWeaponSkill") == 0)
-						{
-							SetActorProperty(0, APROP_SPEED, 0.45);
-						}
-						Else If(CheckInventory("DeusEx_HeavyWeaponSkill") == 1)
-						{
-							SetActorProperty(0, APROP_SPEED, 0.75);
-						}	
-						Else 
-						{
-							SetActorProperty(0, APROP_SPEED, 1.0);
-						}
-					}
-					Else
-					{
-						SetActorProperty(0, APROP_SPEED, 1.0);
-					}
-				}
-			}		
-				
+            SetInventory("DeusEx_Running", keyDown(BT_FORWARD) && running);
+            SetInventory("DeusEx_Jumping", keyDown(BT_JUMP));
+            SetInventory("DeusEx_Crouching", keyDown(BT_CROUCH)); //GetActorViewHeight(0) <= GetActorViewHeight(0) / 2 << 16
+            SetInventory("DeusEx_StrafeLeft", keyDown(BT_MOVELEFT) && !keyDown(BT_MOVERIGHT));
+            SetInventory("DeusEx_StrafeRight", keyDown(BT_MOVERIGHT) && !keyDown(BT_MOVELEFT));
+
+            if (!keyDown(BT_ATTACK))
+            {
+                TakeInventory("DeusEx_GlockSpread", 1);
+                TakeInventory("DeusEx_StealthSpread", 1);
+                TakeInventory("DeusEx_SawedOffSpread", 1);
+                TakeInventory("DeusEx_ShotgunSpread", 1);
+                TakeInventory("DeusEx_AssaultGunSpread", 1);
+                TakeInventory("DeusEx_PlasmaRifleSpread", 1);
+            }
+
+            if (isPVEGame)
+            {
+                if (CheckInventory("DeusEx_MovementPenaltyEnabled"))
+                {
+                    if (CheckInventory("DeusEx_GEPGunEquipped") || CheckInventory("DeusEx_FlameThrowerEquipped") || CheckInventory("DeusEx_PREquipped") || CheckInventory("DeusEx_LAWEquipped"))
+                    {
+                        if (CheckInventory("DeusEx_HeavyWeaponSkill") >= 2) { SetActorProperty(0, APROP_Speed, 1.0); }
+                        else if (CheckInventory("DeusEx_HeavyWeaponSkill") == 1) { SetActorProperty(0, APROP_Speed, 0.75); }
+                        else { SetActorProperty(0, APROP_Speed, 0.45); }
+                    }
+                    else { SetActorProperty(0, APROP_Speed, 1.0); }
+                }
+            }
+
 			HudMessage(d:CheckInventory("DeusEx_PistolPoints"); 8891, HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP, "ec1c24", 46.1, 560.1, 0.031);
-		
+
 			speedx = GetActorVelX(0);
 			speedy = GetActorVelY(0);
 			
@@ -286,9 +253,10 @@ Script "DeusEx_Enter" (void)
 				SpawnSpotForced("DXStep",0,0,0);
 				lasttimer = Timer();
 			}
-			
+
 			Delay(1);
-		   If(CheckInventory("DeusEx_LowTechSkill") < 4 || CheckInventory("DeusEx_PistolSkill") < 4 || CheckInventory("DeusEx_RifleSkill") < 4 || CheckInventory("DeusEx_HeavyWeaponSkill") < 4 )	
+
+		    If(CheckInventory("DeusEx_LowTechSkill") < 4 || CheckInventory("DeusEx_PistolSkill") < 4 || CheckInventory("DeusEx_RifleSkill") < 4 || CheckInventory("DeusEx_HeavyWeaponSkill") < 4 )	
 			{
 				if(CheckInventory("DeusEx_LowTechPoints") > NXTPointsLowTech[CheckInventory("DeusEx_LowTechSkill")] && CheckInventory("DeusEx_LowTechSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 1 && CheckInventory("DeusEx_LowTechSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_LowTechSkill") < 4)
 				{
@@ -301,21 +269,21 @@ Script "DeusEx_Enter" (void)
 				{
 					GiveInventory("DeusEx_PistolSkill", 1);
 					SetAmmoCapacity("DeusEx_GlockSpread", GetAmmoCapacity("DeusEx_GlockSpread")-25);
-					SetAmmoCapacity("DeusEx_StealthSpread", GetAmmoCapacity("DeusEx_StealthSpread")-30);
 					SetAmmoCapacity("DeusEx_XBowSpread", GetAmmoCapacity("DeusEx_XBowSpread")-5);
 					SetAmmoCapacity("DeusEx_SawedOffSpread", GetAmmoCapacity("DeusEx_SawedOffSpread")-20);
+					SetAmmoCapacity("DeusEx_StealthSpread", GetAmmoCapacity("DeusEx_StealthSpread")-30);
 					SetAmmoCapacity("DeusEx_GlockMagazine", GetAmmoCapacity("DeusEx_GlockMagazine")+2);
 					SetAmmoCapacity("DeusEx_MiniXBowMagazine", GetAmmoCapacity("DeusEx_MiniXBowMagazine")+2);
-					SetAmmoCapacity("DeusEx_StealthMagazine", GetAmmoCapacity("DeusEx_StealthMagazine")+3);
 					SetAmmoCapacity("DeusEx_ShotgunMagazine", GetAmmoCapacity("DeusEx_ShotgunMagazine")+1);
+					SetAmmoCapacity("DeusEx_StealthMagazine", GetAmmoCapacity("DeusEx_StealthMagazine")+3);
 					int glockmax = GetAmmoCapacity("DeusEx_GlockMagazine");
-					int stealthmax = GetAmmoCapacity("DeusEx_StealthMagazine");
 					int xbowmax = GetAmmoCapacity("DeusEx_MiniXBowMagazine");
 					int shotgunmax = GetAmmoCapacity("DeusEx_ShotgunMagazine");
+					int stealthmax = GetAmmoCapacity("DeusEx_StealthMagazine");
 					GiveInventory("DeusEx_GlockMagazine", glockmax);
-					GiveInventory("DeusEx_StealthMagazine", stealthmax);
 					GiveInventory("DeusEx_MiniXBowMagazine", xbowmax);
 					GiveInventory("DeusEx_ShotgunMagazine", shotgunmax);
+					GiveInventory("DeusEx_StealthMagazine", stealthmax);
 					TakeInventory("DeusEx_PistolPoints", 9999);
 					if(CheckInventory("DeusEx_PistolSkill") > CheckInventory("DeusEx_StartingSkills"))
 						ACS_NamedExecuteAlways("DeusEx_Decorate", 0, 7, 3+CheckInventory("DeusEx_PistolSkill"));
@@ -328,11 +296,11 @@ Script "DeusEx_Enter" (void)
 					SetAmmoCapacity("DeusEx_AssShotgunMagazine", GetAmmoCapacity("DeusEx_AssShotgunMagazine")+3);
 					SetAmmoCapacity("DeusEx_AssaultGunMagazine", GetAmmoCapacity("DeusEx_AssaultGunMagazine")+10);
 					SetAmmoCapacity("DeusEx_SniperMagazine", GetAmmoCapacity("DeusEx_SniperMagazine")+2);
-					int assgunmax = GetAmmoCapacity("DeusEx_AssaultGunMagazine");
 					int assshitmax = GetAmmoCapacity("DeusEx_AssShotgunMagazine"); // lol
+					int assgunmax = GetAmmoCapacity("DeusEx_AssaultGunMagazine");
 					int snipermax = GetAmmoCapacity("DeusEx_SniperMagazine");
-					GiveInventory("DeusEx_AssaultGunMagazine", assgunmax);
 					GiveInventory("DeusEx_AssShotgunMagazine", assshitmax);
+					GiveInventory("DeusEx_AssaultGunMagazine", assgunmax);
 					GiveInventory("DeusEx_SniperMagazine", snipermax);
 					TakeInventory("DeusEx_RiflePoints", 9999);
 					if(CheckInventory("DeusEx_RifleSkill") > CheckInventory("DeusEx_StartingSkills"))
@@ -345,11 +313,11 @@ Script "DeusEx_Enter" (void)
 					SetAmmoCapacity("DeusEx_FlameThrowerMagazine", GetAmmoCapacity("DeusEx_FlameThrowerMagazine")+25);
 					SetAmmoCapacity("DeusEx_PlasmaRifleMagazine", GetAmmoCapacity("DeusEx_PlasmaRifleMagazine")+4);
 					SetAmmoCapacity("DeusEx_LAWAmmo", GetAmmoCapacity("DeusEx_LAWAmmo")+2);
-					int plasmamax = GetAmmoCapacity("DeusEx_PlasmaRifleMagazine");
 					int flamemax = GetAmmoCapacity("DeusEx_FlameThrowerMagazine");
+					int plasmamax = GetAmmoCapacity("DeusEx_PlasmaRifleMagazine");
 					int lawmax = GetAmmoCapacity("DeusEx_LAWAmmo");
-					GiveInventory("DeusEx_PlasmaRifleMagazine", plasmamax);
 					GiveInventory("DeusEx_FlameThrowerMagazine", flamemax);
+					GiveInventory("DeusEx_PlasmaRifleMagazine", plasmamax);
 					GiveInventory("DeusEx_LAWAmmo", lawmax);
 					TakeInventory("DeusEx_HeavyPoints", 9999);
 					if(CheckInventory("DeusEx_HeavyWeaponSkill") > CheckInventory("DeusEx_StartingSkills"))
@@ -652,9 +620,9 @@ Script "DeusExIsMasterDead" (void)
 
 Script "DeusExGEPTargetter" (void)
 {
-	while(CheckWeapon("DeusEx_GEPGun") && ClassifyActor(0) & ACTOR_ALIVE && !(ClassifyActor(0) & ACTOR_PLAYER && isCoop()))
+	while (CheckWeapon("DeusEx_GEPGun") && !isDead(0))
 	{
-		GiveInventory("DeusEx_GEPTargeter",1);
+		GiveInventory("SamsaraDeusExGEPGunTargetingHandler", 1);
 		Delay(6);
 	}
 }
