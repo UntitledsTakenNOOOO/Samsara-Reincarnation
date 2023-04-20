@@ -526,7 +526,7 @@ function bool isTeamGame(void)
 	return GetCVar("teamplay") || GetCVar("teamgame") || GetCVar("teamlms");
 }
 
-function int spawnDistance(int item, int dist, int tid)
+function int spawnDistance(str actorName, int dist, int tid)
 {
 	int myX, myY, myZ, myAng, myPitch, spawnX, spawnY, spawnZ;
 
@@ -539,33 +539,36 @@ function int spawnDistance(int item, int dist, int tid)
 	spawnY += myY;
 	spawnZ = myZ + (-sin(myPitch) * dist);
 
-	return Spawn(item, spawnX, spawnY, spawnZ, tid, myAng >> 8);
+	return Spawn(actorName, spawnX, spawnY, spawnZ, tid, myAng >> 8);
 }
 
-function void SetInventory(int item, int amount)
+function void SetInventory(str item, int amount)
 {
 	int count = CheckInventory(item);
 
-	if (count < amount) { GiveInventory(item, amount - count); }
-
-	int count2 = CheckInventory(item);
-
-	if (count2 > amount) { TakeInventory(item, count2 - amount); } // ensuring the correct amount is given
+	if (count < amount)
+	{
+		GiveInventory(item, amount - count);
+	}
+	else if (count > amount)
+	{
+		TakeInventory(item, count - amount); // ensuring the correct amount is given
+	}
 }
 
-function void ToggleInventory(int inv)
+function void ToggleInventory(str item)
 {
-	if (CheckInventory(inv))
+	if (CheckInventory(item))
 	{
-		TakeInventory(inv, INTMAX);
+		TakeInventory(item, INTMAX);
 	}
 	else
 	{
-		GiveInventory(inv, 1);
+		GiveInventory(item, 1);
 	}
 }
 
-function void GiveAmmo(int type, int amount)
+function void GiveAmmo(str type, int amount)
 {
 	if (GetCVar("sv_doubleammo"))
 	{
@@ -581,7 +584,7 @@ function void GiveAmmo(int type, int amount)
 	}
 }
 
-function void GiveActorAmmo(int tid, int type, int amount)
+function void GiveActorAmmo(int tid, str type, int amount)
 {
 	if (GetCVar("sv_doubleammo"))
 	{
