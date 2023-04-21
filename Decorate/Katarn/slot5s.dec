@@ -95,7 +95,7 @@ Actor "I.M. Mines" : Weapon
 	  KHAN C 1 Offset(0,75)
       TNT1 AAAAAAAA 1 A_WeaponReady(14)
 	  TNT1 A 2 A_WeaponReady(14)
-      TNT1 A 5 A_SpawnItemEx("DarkForcesIMMine",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
+      TNT1 A 5 A_SpawnItemEx("DarkForcesIMMineProxy",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
 	  TNT1 A 0 A_JumpIfNoAmmo("ReadyAmmoLess")
 	  KHAN B 1 Offset(0,75)
 	  KHAN B 1 Offset(0,50)
@@ -110,7 +110,7 @@ Actor "I.M. Mines" : Weapon
 	  KHAN C 1 Offset(0,75)
       TNT1 AAAAAAAA 1 A_WeaponReady(14)
 	  KHAN C 2 A_WeaponReady(14)
-      TNT1 A 5 A_SpawnItemEx("DarkForcesIMMineCoop",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
+      TNT1 A 5 A_SpawnItemEx("DarkForcesIMMineProxyCoop",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
 	  TNT1 A 0 A_JumpIfNoAmmo("ReadyAmmoLess")
 	  KHAN B 1 Offset(0,75)
 	  KHAN B 1 Offset(0,50)
@@ -129,12 +129,13 @@ Actor DarkForcesIMMine
 {
 	Radius      8
 	Height      5
-	Damage      (60)
-	Damagetype  "Explosive"
+	Damage      (0)
 	Mass        100000
+	Scale		0.75
 	PROJECTILE
 	-NOGRAVITY
 	-NOBLOCKMAP
+	-MISSILE
     +MOVEWITHSECTOR
     +NEVERTARGET
 	+FORCERADIUSDMG
@@ -153,6 +154,44 @@ Actor DarkForcesIMMine
 }
 
 Actor DarkForcesIMMineCoop : DarkForcesIMMine { +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES Species "Player" }
+
+Actor DarkForcesIMMineProxy
+{
+	Radius      8
+	Height      5
+	Damage      (0)
+	Mass        100000
+	Scale		0.75
+	PROJECTILE
+	-NOGRAVITY
+	-NOBLOCKMAP
+	-MISSILE
+    +MOVEWITHSECTOR
+    +NEVERTARGET
+	+FORCERADIUSDMG
+	+LOOKALLAROUND
+	+QUICKTORETALIATE
+	Obituary              "%k tripped %o's I.M. mine."
+	States
+	{
+	Spawn:
+      PMIN B 0 NoDelay A_PlaySound("katarn/minplce", CHAN_BODY)
+	  PMIN B 35
+	SpawnLoop:
+	  PMIN B 0 A_JumpIfCloser(96, "Death")
+	  PMIN B 1 A_LookEx(LOF_NOSIGHTCHECK|LOF_NOSOUNDCHECK, 0, 96, 0, 0, "Death")
+	  Loop
+    Death:
+	  PMIN B 35 A_PlaySound("katarn/minbeep",6,1.0,0,ATTN_NORM)
+	  TNT1 A 0 A_PlaySound("katarn/exmiss",6,1.0,0,ATTN_NORM)
+      TNT1 A 0 A_AlertMonsters
+	  TNT1 A 0 BRIGHT A_Explode(200,200)
+      TNT1 A 5 A_SpawnItemEx("explosion_immine",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+      Stop
+  }
+}
+
+Actor DarkForcesIMMineProxyCoop : DarkForcesIMMineProxy { +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES +NOTARGETSWITCH Species "Player" }
 
 ACTOR explosion_immine
 {
