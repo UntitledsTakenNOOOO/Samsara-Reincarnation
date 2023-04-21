@@ -1,0 +1,94 @@
+// I.M. Mines: The primary mode has a 3 second delay until detonation, so drop it and get out of the way fast! The secondary mode is a proximity trigger with a motion sensor. It has a 1 second delay after placement before it is armed, but then immediately detonates when there is a moving object in its activation radius. Needless to say, you don't want to hang around after these are placed.
+
+Actor "I.M. Mines" : Weapon
+{
+  Weapon.SelectionOrder 2000
+  Weapon.AmmoUse        1
+  Weapon.BobStyle		Inverse
+  Weapon.BobSpeed		1.05
+  Weapon.BobRangeX	  	1.0
+  Weapon.BobRangeY	  	0.55  
+  Weapon.AmmoUse2       1
+  Weapon.AmmoGive       5
+  Weapon.AmmoType       "RocketAmmo"
+  Weapon.AmmoType2      "RocketAmmo"
+  Weapon.SlotNumber     5
+  Weapon.SlotPriority 	1
+  Obituary              "%k tripped %o's I.M. mine."
+  +NOALERT
+  +THRUGHOST
+  +WEAPON.NOAUTOAIM
+  +WEAPON.NOAUTOFIRE
+  +WEAPON.EXPLOSIVE
+  +INVENTORY.UNDROPPABLE
+  Inventory.RestrictedTo "KatarnPlayer"
+  Tag "I.M. Mines"
+  States
+  {
+    Ready:
+      TNT1 A 0 A_JumpIfNoAmmo("ReadyAmmoLess")
+	  KHAN A 2 A_WeaponReady
+      Loop
+	  
+    ReadyAmmoLess:
+	  TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"Ready")
+	  KDET B 1 A_WeaponReady
+	  Loop
+
+    Deselect:
+      TNT1 A 0 A_JumpIfNoAmmo("DeselectAmmoLess")
+	  TNT1 A 0 A_Lower
+      KHAN A 1 A_Lower
+      Goto Deselect+1
+	  
+	DeselectAmmoLess:
+      KDET A 0 A_Lower
+      KDET B 1 A_Lower
+	  Loop
+
+    Select:
+      TNT1 A 0 A_JumpIfNoAmmo("SelectAmmoLess")
+	  TNT1 A 0 A_Raise
+      KHAN A 1 A_Raise
+      Goto Select+1
+	  
+	SelectAmmoLess:
+      KDET A 0 A_Raise
+      KDET B 1 A_Raise
+	  Loop
+	  
+	Fire:
+      TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
+      KHAN B 0 A_Lower
+      KHAN B 1 Offset(0,75)
+      TNT1 AAAAAAAA 1 A_WeaponReady(14)
+	  KHAN B 2 A_WeaponReady(14)
+      TNT1 A 0 A_SpawnItemEx("DarkForcesIMMine",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
+	  KHAN BCDDDDDDDD 1 A_WeaponReady(14)
+      TNT1 A 1 A_ReFire
+      TNT1 AAAAAAAAAA 0 A_Lower
+	  Goto Ready
+	  
+	CoopFire:
+      KHAN B 0 A_Lower
+      KHAN B 1 Offset(0,75)
+      TNT1 AAAAAAAA 1 A_WeaponReady(14)
+	  KHAN B 2 A_WeaponReady(14)
+      TNT1 A 0 A_SpawnItemEx("DarkForcesIMMineCoop",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
+	  KHAN BCDDDDDDDD 1 A_WeaponReady(14)
+      TNT1 A 1 A_ReFire
+      TNT1 AAAAAAAAAA 0 A_Lower
+	  Goto Ready
+
+    Spawn:
+      IMOR A -1
+      Stop
+  }
+}
+
+Actor DarkForcesIMMine
+{
+
+}
+
+Actor DarkForcesIMMineCoop : DarkForcesIMMine { +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES Species "Player" }
