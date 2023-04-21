@@ -636,16 +636,19 @@ script "SamsaraClientAccuracy" (int soundmode) clientside //314 -- SAMSARA_CLIEN
     int pclass = samsaraClassNum();
     int i, j, quoteCount = 0;
     int logMsg;
-    
-    if (cpln == pln)
+    int pickupsound;
+
+    pickupsound = ClassUniqueSounds[pclass][SamsaraAlternativeClass];
+
+    if (cpln == pln && GetCVar("msg") == 0)
     {
         if (GetCVar("samsara_cl_moremessages"))
         {
             for (i = 0; i < MSGCOUNT; i++)
             {
                 j = AccuracyMessages[pclass][SamsaraAlternativeClass][i];
+
                 if (!StrLen(j)) { continue; }
-                
                 QuoteStorage[quoteCount++] = j;
             }
             
@@ -660,14 +663,17 @@ script "SamsaraClientAccuracy" (int soundmode) clientside //314 -- SAMSARA_CLIEN
         }
 
         if (GetCVar("samsara_cl_printpickup")) { Print(s:logMsg); }
-        else { Log(s:logMsg); }
+        else { Log(s:msgColors[GetCVar("msg0color")], s:logMsg); }
     }
     
-    if (soundmode == 1) { LocalAmbientSound(ClassUniqueSounds[pclass][SamsaraAlternativeClass], 127); }
-    else { ActivatorSound(ClassUniqueSounds[pclass][SamsaraAlternativeClass], 127); }
-    
-    FadeRange(ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], ClassFades[pclass][3],
-    ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], 0.0, itof(ClassFades[pclass][4]) / 35);
+    if (soundmode == 1) { LocalAmbientSound(pickupsound, 127); }
+    else { ActivatorSound(pickupsound, 127); }
+
+    if (!CheckInventory("PickupFlashesAreDisabled"))
+	{
+        FadeRange(ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], ClassFades[pclass][3],
+        ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], 0.0, itof(ClassFades[pclass][4]) / 35);
+	}
 }
 
 script "SamsaraBeacon" (int noloop) //315 -- SAMSARA_BEACON
@@ -907,42 +913,110 @@ script "SamsaraStrifeMinesTransmitterUniqueGiver" ENTER
 script "SamsaraStrifeAccuracyAmmoFiller" (int ammotype)
 {
     str ammoname = "Placeholder";
+    int ammoamount = 0;
+
+    int maxClip = GetCvar("samsara_max_clip");
+    int maxShell = GetCvar("samsara_max_shell");
+    int maxRocket = GetCvar("samsara_max_rockets");
+    int maxCell = GetCvar("samsara_max_cell");
+    int hasBackpack = 1 + (CheckInventory("Backpack") || CheckInventory("BagOfHolding") || CheckInventory("AmmoSatchel") || CheckInventory("Zorchpack"));
 
     switch (ammotype)
     {
       // Standard ammo
-      case 0: ammoname = "Clip"; break;
-      case 1: ammoname = "Shell"; break;
-      case 2: ammoname = "RocketAmmo"; break;
-      case 3: ammoname = "Cell"; break;
+      case 0:
+        ammoname = "Clip";
+        if (CheckInventory("Hexen2Class")) { ammoamount = ((maxClip * 5) / 4) * hasBackpack + CheckInventory("Hexen2BlueManaAdd"); }
+        else { ammoamount = maxClip * hasBackpack; }
+        break;
+
+      case 1:
+        ammoname = "Shell";
+        ammoamount = maxShell * hasBackpack;
+        break;
+
+      case 2:
+        ammoname = "RocketAmmo";
+        ammoamount = maxRocket * hasBackpack;
+        break;
+
+      case 3:
+        ammoname = "Cell";
+        if (CheckInventory("Hexen2Class")) { ammoamount = ((maxCell * 5) / 6) * hasBackpack + CheckInventory("Hexen2GreenManaAdd"); }
+        else { ammoamount = maxCell * hasBackpack; }
+        break;
 
       // B.J. Blazkowicz (Castle Totenkopf SDL)
-      case 4: ammoname = "Totenkopf_FlameThrowerFuel"; break;
+      case 4:
+        ammoname = "Totenkopf_FlameThrowerFuel";
+        ammoamount = ((maxCell * hasBackpack) / 3) * 2;
+        break;
 
       // Duke Nukem (Original/Life's A Beach)
-      case 5: ammoname = "ShrinkerAmmo"; break;
-      case 6: ammoname = "ExpanderAmmo"; break;
+      case 5:
+        ammoname = "ShrinkerAmmo";
+        ammoamount = (maxCell * hasBackpack) / 10;
+        break;
+
+      case 6:
+        ammoname = "ExpanderAmmo";
+        ammoamount = (maxCell * hasBackpack) / 3;
+        break;
 
       // H.U.N.T. Team Members
-      case 7: ammoname = "BMissiles"; break;
-      case 8: ammoname = "DSEnergy"; break;
-      case 9: ammoname = "SMissiles"; break;
+      case 7:
+        ammoname = "BMissiles";
+        ammoamount = (maxCell) / 30;
+        break;
+
+      case 8:
+        ammoname = "DSEnergy";
+        ammoamount = (maxCell) / 30;
+        break;
+
+      case 9:
+        ammoname = "SMissiles";
+        ammoamount = (maxCell * hasBackpack) / 3;
+        break;
 
       // Caleb
-      case 10: ammoname = "SprayCanAmmo"; break;
+      case 10:
+        ammoname = "SprayCanAmmo";
+        ammoamount = ((maxCell * hasBackpack) / 48) * 48;
+        break;
 
       // B.J. Blazkowicz (Return To Castle Wolfenstein)
-      case 11: ammoname = "RTCW_AlliedAmmo1"; break;
-      case 12: ammoname = "RTCW_AlliedAmmo2"; break;
-      case 13: ammoname = "RTCW_AlliedAmmo3"; break;
+      case 11:
+        ammoname = "RTCW_AlliedAmmo1";
+        ammoamount = (maxClip * hasBackpack) / 2;
+        break;
+
+      case 12:
+        ammoname = "RTCW_AlliedAmmo2";
+        ammoamount = (maxShell * hasBackpack) / 2;
+        break;
+
+      case 13:
+        ammoname = "RTCW_AlliedAmmo3";
+        ammoamount = (maxRocket * hasBackpack) / 2;
+        break;
 
       // Sarge
-      case 14: ammoname = "Q3ChaingunAmmo"; break;
-      case 15: ammoname = "Q3GrenadeLauncherAmmo"; break;
+      case 14:
+        ammoname = "Q3ChaingunAmmo";
+        ammoamount = (maxClip * hasBackpack / 2) * 3;
+        break;
+
+      case 15:
+        ammoname = "Q3GrenadeLauncherAmmo";
+        ammoamount = (maxRocket * hasBackpack / 2) * 3;
+        break;
 
       // Default
-      default: terminate;
+      default:
+        terminate;
     }
 
-    SetInventory(ammoname, GetAmmoCapacity(ammoname));
+    if (GetCVar("samsara_noammocap")) { SetInventory(ammoname, CheckInventory(ammoname) + ammoamount); }
+    else { SetInventory(ammoname, GetAmmoCapacity(ammoname)); }
 }
