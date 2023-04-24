@@ -677,7 +677,7 @@ int SamsaraOriginalSlotDelays[CLASSCOUNT][MAXMODES] =
 	{ 17 },
 	{ 17 },
 	{ 5 },
-	{ 17 },
+	{ 12 },
 	{ 17 },
 };
 
@@ -700,7 +700,30 @@ Script "Samsara_OriginalSlots" (int mode)
 		SetInventory("SamsaraOriginalKeyCounter", 0);
 	
 	SetInventory("SamsaraOriginalSlotCounter", mode);
-	SetWeapon(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]);
+	switch(PlayerClass(pln))
+	{
+		default:
+			SetWeapon(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]);
+			break;
+		case CLASS_DESCENT:
+			switch(mode)
+			{
+				default:
+					TakeInventory("DescentSecondaryKeySwitcher",1);
+					SetWeapon(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]);
+					break;
+				case 5:	
+				case 6:
+				case 7:
+				case 8:
+				case 9:
+					GiveInventory("DescentSecondaryKeySwitcher",1);
+					SetWeapon(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]);
+					break;
+			}
+			break;
+	}
+	
 	//Log(d:CheckInventory("SamsaraOriginalSlotCounter"), s:" ", d:CheckInventory("SamsaraOriginalKeyCounter"), s:" ", s:OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]);
 	GiveInventory("SamsaraOriginalKeyCounter", 1);
 	
@@ -709,6 +732,7 @@ Script "Samsara_OriginalSlots" (int mode)
 		
 	Delay(SamsaraOriginalSlotDelays[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")]);
 	
+	TakeInventory("DescentSecondaryKeySwitcher",1);
 	SetInventory("SamsaraOriginalKeySwitcheroo", 0);
 }
 
