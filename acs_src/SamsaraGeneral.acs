@@ -664,7 +664,7 @@ int SamsaraOriginalSlotDelays[CLASSCOUNT][MAXMODES] =
 	{ 17 },
 	{ 17 },
 	{ 17 },
-	{ 17 },
+	{ 0, 0 },
 	{ 17 },
 	{ 17 },
 	{ 17 },
@@ -696,16 +696,25 @@ Script "Samsara_OriginalSlots" (int mode)
 	int pln = PlayerNumber();
 	str nextWeapon = OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode][CheckInventory("SamsaraOriginalKeyCounter")];
 			
-	if (mode != CheckInventory("SamsaraOriginalSlotCounter"))
-		SetInventory("SamsaraOriginalKeyCounter", 0);
-	
-	SetInventory("SamsaraOriginalSlotCounter", mode);
 	switch(PlayerClass(pln))
 	{
 		default:
+			if (mode != CheckInventory("SamsaraOriginalSlotCounter"))
+				SetInventory("SamsaraOriginalKeyCounter", 0);
+				
+			SetInventory("SamsaraOriginalSlotCounter", mode);
 			SetWeapon(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]);
+			GiveInventory("SamsaraOriginalKeyCounter", 1);
+			if (StrLen(nextweapon) == 0) SetInventory("SamsaraOriginalKeyCounter", 0);
+			break;
+		case CLASS_HALFLIFE:
+			ACS_NamedExecuteWithResult("Samsara_DoHLWeaponSwitch",mode,pln);
 			break;
 		case CLASS_DESCENT:
+			if (mode != CheckInventory("SamsaraOriginalSlotCounter"))
+				SetInventory("SamsaraOriginalKeyCounter", 0);
+				
+			SetInventory("SamsaraOriginalSlotCounter", mode);
 			switch(mode)
 			{
 				default:
@@ -721,19 +730,145 @@ Script "Samsara_OriginalSlots" (int mode)
 					SetWeapon(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]);
 					break;
 			}
+			GiveInventory("SamsaraOriginalKeyCounter", 1);
+			if (StrLen(nextweapon) == 0) SetInventory("SamsaraOriginalKeyCounter", 0);
 			break;
 	}
 	
 	//Log(d:CheckInventory("SamsaraOriginalSlotCounter"), s:" ", d:CheckInventory("SamsaraOriginalKeyCounter"), s:" ", s:OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]);
-	GiveInventory("SamsaraOriginalKeyCounter", 1);
-	
-	if (StrLen(nextweapon) == 0)
-		SetInventory("SamsaraOriginalKeyCounter", 0);
-		
+
 	Delay(SamsaraOriginalSlotDelays[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")]);
 	
 	TakeInventory("DescentSecondaryKeySwitcher",1);
 	SetInventory("SamsaraOriginalKeySwitcheroo", 0);
+}
+
+str HLWeaponGraphics[2][10][10] =
+{ 
+	{
+		{ "HPKUP00", "", "", "", "", "", "", "", "", "" },
+		{ "HPKUP01", "HPKUP12", "", "", "", "", "", "", "", "" },
+		{ "HPKUP13", "HPKUP14", "HPKUP16", "", "", "", "", "", "", "" },
+		{ "HPKUP17", "HPKUP18", "HPKUP19", "HPKUP20", "", "", "", "", "", "" },
+		{ "HPKUP15", "", "", "", "", "", "", "", "", "" },
+		{ "", "", "", "", "", "", "", "", "", "" },
+		{ "", "", "", "", "", "", "", "", "", "" },
+		{ "", "", "", "", "", "", "", "", "", "" },
+		{ "", "", "", "", "", "", "", "", "", "" },
+		{ "", "", "", "", "", "", "", "", "", "" },
+	},
+	{ 
+		{ "OPFSL11", "OPFSL00", "", "", "", "", "", "", "", "" },
+		{ "OPFSL10", "OPFSL02", "", "", "", "", "", "", "", "" },
+		{ "OPFSL04", "OPFSL03", "", "", "", "", "", "", "", "" },
+		{ "", "", "", "", "", "", "", "", "", "" },
+		{ "OPFSL09", "", "", "", "", "", "", "", "", "" },
+		{ "OPFSL06", "OPFSL07", "OPFSL08", "", "", "", "", "", "", "" },
+		{ "OPFSL05", "OPFSL01", "", "", "", "", "", "", "", "" },
+		{ "", "", "", "", "", "", "", "", "", "" },
+		{ "", "", "", "", "", "", "", "", "", "" },
+		{ "", "", "", "", "", "", "", "", "", "" },
+	},
+};
+
+script "Samsara_DoHLWeaponSwitch" (int mode, int pln)
+{
+	int switchTimer;
+	
+	if (mode != CheckInventory("SamsaraOriginalSlotCounter"))
+	{
+		SetInventory("SamsaraOriginalKeyCounter",0);
+		SetInventory("HLOriginalKeySwitcherOpen",0);
+	}
+	
+	SetInventory("SamsaraOriginalSlotCounter", mode);
+	
+	if(CheckInventory("HLOriginalKeySwitcherOpen") > 0)
+		GiveInventory("SamsaraOriginalKeyCounter", 1);
+	else
+		GiveInventory("HLOriginalKeySwitcherOpen",1);
+	
+	if(strlen(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]) == 0)
+		SetInventory("SamsaraOriginalKeyCounter", 0);	
+	
+	//Keep it from selecting invalid weapons
+	int attempts;
+	int startingCounter = CheckInventory("SamsaraOriginalKeyCounter");
+	until(CheckInventory(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]))
+	{
+		attempts++;
+		if(attempts > 5) { SetInventory("SamsaraOriginalKeyCounter", startingCounter); terminate; }
+		GiveInventory("SamsaraOriginalKeyCounter", 1);
+		
+		if(strlen(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]) == 0)
+		SetInventory("SamsaraOriginalKeyCounter", 0);	
+	}
+	
+	
+	LocalAmbientSound("halflife/weaponmove",127);
+
+	GiveInventory("HLOriginalKeySwitcher",1);
+	int currentSwitch = CheckInventory("HLOriginalKeySwitcher");
+	int startingMode = CheckInventory("SamsaraModeCounter");
+	
+	while(switchTimer < 35 && CheckInventory("SamsaraModeCounter") == startingMode)
+	{
+		if(CheckInventory("HLOriginalKeySwitcher") != currentSwitch)
+			terminate;
+			
+		SetHudSize(1280,960,1);
+		for(int a = 0; a < 7; a++)
+		{
+			SetFont(strparam(s:CheckInventory("SamsaraModeCounter") == 0 ? "HWMSLOT" : "OPFWM",d:a+1));
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,32100+a,0,((a*24.0)+(mode<a)*152.0)+0.1,32.0,0.0,0.5);
+			int validWeapon = 0;
+			for(int b = 0; b < 5; b++)
+			{
+				if(strlen(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][a][b]) > 0 && CheckInventory(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][a][b]))
+				{
+					if(mode == a)
+					{
+						if(b == CheckInventory("SamsaraOriginalKeyCounter"))
+						{
+							SetFont(CheckInventory("SamsaraModeCounter") == 0 ? "HLWPNSL0" : "OPWPNSL0");
+							HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,32229,0,((a*24.0)+(mode<a)*152.0)+0.1,32.0+((validWeapon+1)*48.0)-12.0,0.0,0.5);
+							SetFont(strparam(s:HLWeaponGraphics[CheckInventory("SamsaraModeCounter")][a][b],s:"H"));
+							HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,32200+(10*a)+validWeapon,0,((a*24.0)+(mode<a)*152.0)+0.1,32.0+((validWeapon+1)*48.0)-12.0,0.0,0.5);
+						}
+						else
+						{
+							SetFont(strparam(s:HLWeaponGraphics[CheckInventory("SamsaraModeCounter")][a][b],s:"N"));
+							HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,32200+(10*a)+validWeapon,0,((a*24.0)+(mode<a)*152.0)+0.1,32.0+((validWeapon+1)*48.0)-12.0,0.0,0.5);
+						}
+					}
+					else
+					{
+						SetFont(CheckInventory("SamsaraModeCounter") == 0 ? "HWMSLOT" : "OPFWMB");
+						HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP,32200+(10*a)+validWeapon,0,((a*24.0)+(mode<a)*152.0)+0.1,32.0+((validWeapon+1)*24.0),0.0,0.5);
+					}
+					validWeapon++;
+				}
+			}
+		}
+			
+		//PrintBold(s:OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]);
+		if(GetPlayerInput(-1, INPUT_BUTTONS) & BT_ATTACK)
+		{
+			LocalAmbientSound("halflife/weaponpick",127);
+			SetWeapon(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]);
+			TakeInventory("HLOriginalKeySwitcher",65536);
+			TakeInventory("HLOriginalKeySwitcherOpen",65536);
+			break;
+		}	
+		Delay(1);
+		switchTimer++;
+		
+		if(switchTimer == 10) SetInventory("SamsaraOriginalKeySwitcheroo", 0);
+	}
+	TakeInventory("HLOriginalKeySwitcherOpen",65536);
+	TakeInventory("HLOriginalKeySwitcher",65536);
+	RemoveMessages(32100,32110);
+	RemoveMessages(32200,32290);
 }
 
 // Until Zandronum doesn't crash with the old keybindings in KEYCONF, this will be required, I'm afraid
