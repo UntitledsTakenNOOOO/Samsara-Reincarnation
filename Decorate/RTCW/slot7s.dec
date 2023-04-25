@@ -1,5 +1,5 @@
 actor SamsaraRTCWFlamethrowerNozzleIdleSoundCheck : Boolean {}
-actor SamsaraRTCWFlamethrowerFiringCheck : Boolean {}
+actor SamsaraRTCWFlamethrowerFiringSoundCheck : Boolean {}
 actor RTCW_FlamethrowerStreamAmmo : Boolean {}
 
 Actor RTCW_Flamethrower : RTCW_Weapon
@@ -39,10 +39,10 @@ Actor RTCW_Flamethrower : RTCW_Weapon
 			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
 			RW00 A 0 A_GiveInventory("RTCW_WeaponToken",16)
             RW00 L 0 A_TakeInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck") // map change hack
-            RW00 L 0 A_TakeInventory("SamsaraRTCWFlamethrowerFiringCheck")
+            RW00 L 0 A_TakeInventory("SamsaraRTCWFlamethrowerFiringSoundCheck")
             RW00 L 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
             RW00 L 0 A_TakeInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck") // map change hack
-            RW00 L 1 A_TakeInventory("SamsaraRTCWFlamethrowerFiringCheck")
+            RW00 L 1 A_TakeInventory("SamsaraRTCWFlamethrowerFiringSoundCheck")
 			RW00 MNO 2
 			RW00 A 0 A_GunFlash("Nozzle")
             goto ReadyActual
@@ -85,8 +85,7 @@ Actor RTCW_Flamethrower : RTCW_Weapon
 			RW00 A 0 A_GiveInventory("RTCW_BlazkoWeaponAlert")
             RW00 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundStopper")
 			RW00 A 0 A_PlaySound("RTCW/Flamethrower/Start",CHAN_5)
-			RW00 A 0 A_PlaySound("RTCW/Flamethrower/Stream",CHAN_WEAPON,1.0,true)
-            RW00 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerFiringCheck")
+            RW00 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerWeaponSoundStarter")
             goto FireHoldContinue
 
 		FireHold:
@@ -97,6 +96,8 @@ Actor RTCW_Flamethrower : RTCW_Weapon
 		FireHoldStart:
             RW00 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"FireUnderwater")
 			RW00 A 0 A_GiveInventory("RTCW_BlazkoWeaponAlert")
+            RW00 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundStopper")
+            RW00 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerWeaponSoundStarter")
 		FireHoldContinue:
 			RW00 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerAttackHandler")
             RW00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
@@ -146,17 +147,29 @@ actor SamsaraRTCWFlamethrowerAttackHandler : Trigger
     }
 }
 
+actor SamsaraRTCWFlamethrowerWeaponSoundStarter : Trigger
+{
+    States
+    {
+      // Sound stopping stuff
+      Pickup:
+        TNT1 A 0 A_PlaySound("RTCW/Flamethrower/Stream",CHAN_WEAPON,1.0,true)
+        TNT1 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerFiringSoundCheck")
+        stop
+    }
+}
+
 actor SamsaraRTCWFlamethrowerWeaponSoundStopper : Trigger
 {
     States
     {
       // Sound stopping stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerFiringCheck",1,1)
+        TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerFiringSoundCheck",1,1)
         stop
         TNT1 A 0 A_PlaySound("silence",CHAN_WEAPON)
         TNT1 A 0 A_StopSound(CHAN_WEAPON)
-        TNT1 A 0 A_TakeInventory("SamsaraRTCWFlamethrowerFiringCheck")
+        TNT1 A 0 A_TakeInventory("SamsaraRTCWFlamethrowerFiringSoundCheck")
         stop
     }
 }
@@ -168,7 +181,7 @@ actor SamsaraRTCWFlamethrowerNozzleIdleSoundStarter : Trigger
       // Sound starting stuff
       Pickup:
         TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"PickupStopSound") // kill the sound if we're underwater
-        TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerFiringCheck",1,"PickupStopSound") // don't play if we're firing the weapon
+        TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerFiringSoundCheck",1,"PickupStopSound") // don't play if we're firing the weapon
         TNT1 A 0 A_PlaySound("RTCW/Flamethrower/Blow",CHAN_6,0.2,true)
         TNT1 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck")
         stop
