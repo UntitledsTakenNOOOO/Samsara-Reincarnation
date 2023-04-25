@@ -21,7 +21,7 @@ Actor RTCW_MG42 : RTCW_Weapon
 	{
 		Spawn:
 			RW98 A -1
-			Stop
+			stop
 
         ReadyActual:
 			RW00 A 0 A_TakeInventory("RTCW_MG42FireFrame")
@@ -45,13 +45,14 @@ Actor RTCW_MG42 : RTCW_Weapon
             goto ReloadCheck
 
 		Deselect:
-			RW00 T 0 A_PlaySound("RTCW/Change",CHAN_7)
 			RW00 T 0 A_TakeInventory("RTCW_MG42FireFrame")
 			RW00 T 0 A_TakeInventory("RTCW_FG42Spread")
-			RW00 T 1 A_TakeInventory("RTCW_MG42CoolLock")
+			RW00 T 0 A_TakeInventory("RTCW_MG42CoolLock")
+            RW00 T 0 A_JumpIfHealthLower(1,"DeselectInstant")
+			RW00 T 1 A_PlaySound("RTCW/Change",CHAN_7)
 			RW00 "UVWXYZ[\]" 1
 			RW01 A 1
-			Goto Super::Deselect
+			goto DeselectInstant
 
 		Ready: // our "Select" state
 			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
@@ -81,8 +82,8 @@ Actor RTCW_MG42 : RTCW_Weapon
 			RW00 A 0 A_TakeInventory("RTCW_MG42CoolLock")
             RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
             RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-			TNT1 A 0 A_SelectWeapon("RTCW_Luger")
-			Goto Deselect
+			RW00 A 0 A_SelectWeapon("RTCW_Luger")
+			goto Deselect
 
         FireUnderwater:
 			RW00 A 0 A_TakeInventory("RTCW_MG42CoolLock")
@@ -354,32 +355,30 @@ Actor RTCW_MG42 : RTCW_Weapon
             goto ReadyActual
 
 		ReloadStart:
-            RW00 A 0 A_TakeInventory("RTCW_MG42CoolLock")
+            RW01 Y 0 A_TakeInventory("RTCW_MG42CoolLock")
 			RW01 Y 0 A_PlaySound("RTCW/MG42/Reload",CHAN_6)
 			RW01 "YZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW02 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW03 ABC 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
-            goto ReloadDone
-
-        ReloadDone:
-            RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        ReloadFinish:
+            RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE) // don't switch or fire just yet...
 			goto ReadyActual
 
         ReloadAmmo:
-            TNT1 A 0 A_JumpIfInventory("RTCW_MG42Magazine",0,"ReloadDone")
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-            TNT1 A 0 A_JumpIfInventory("Cell",1,1)
-            goto ReloadDone
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-            TNT1 A 0 A_TakeInventory("Cell",1)
-            TNT1 A 0 A_GiveInventory("RTCW_MG42Magazine")
+            RW00 A 0 A_JumpIfInventory("RTCW_MG42Magazine",0,"ReloadFinish")
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW00 A 0 A_JumpIfInventory("Cell",1,1)
+            goto ReloadFinish
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW00 A 0 A_TakeInventory("Cell",1)
+            RW00 A 0 A_GiveInventory("RTCW_MG42Magazine")
             loop
 
 		Kicking:
-			TNT1 A 0 A_GunFlash("KickingFoot")
+			RW00 A 0 A_GunFlash("KickingFoot")
 		KickingDelay:
 			RW00 A 18 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
@@ -436,6 +435,7 @@ actor SamsaraRTCWMG42AttackHandler : Trigger
 actor RTCW_MG42Magazine : Ammo
 {
     Inventory.MaxAmount 150
+    Tag "Portable MG42 Magazine"
     +IGNORESKILL
 }
 

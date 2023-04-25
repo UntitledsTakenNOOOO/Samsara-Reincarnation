@@ -20,7 +20,7 @@ Actor RTCW_Colt : RTCW_Weapon
 	{
 		Spawn:
 			RW98 A -1
-			Stop
+			stop
 
         // Single
         ReadyActual:
@@ -41,13 +41,15 @@ Actor RTCW_Colt : RTCW_Weapon
             goto ReadyActual
             RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"ReadyActual")
             RW00 A 0 A_JumpIfInventory("RTCW_ColtMagazine",1,"ReadyActual")
+            RW00 A 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"ReadyActualAmmoCheckDual") // if we're dual wielding, check if the other magazine has ammo as well
             goto ReloadCheck
 
 		Deselect:
-			RW00 V 0 A_PlaySound("RTCW/Change",CHAN_7)
+            RW00 G 0 A_JumpIfHealthLower(1,"DeselectInstant")
+			RW00 G 0 A_PlaySound("RTCW/Change",CHAN_7)
 			RW00 G 2 A_JumpIfInventory("RTCW_ColtDualWield",1,"DeselectDual")
 			RW00 HIJK 2
-			Goto Super::Deselect
+			goto DeselectInstant
 
 		Ready: // our "Select" state
 			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
@@ -81,8 +83,8 @@ Actor RTCW_Colt : RTCW_Weapon
 			RW00 A 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"FireDualDry")
 			RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         FireDryFinish:
-			TNT1 A 0 A_SelectWeapon("RTCW_Luger")
-			Goto Deselect
+			RW00 A 0 A_SelectWeapon("RTCW_Luger")
+			goto Deselect
 
 		FireStart:
 			RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
@@ -96,13 +98,13 @@ Actor RTCW_Colt : RTCW_Weapon
 		FireFlash:
 			TNT1 A 0 A_Jump(256,1,2)
 			RW03 B 2 Bright
-			Stop
+			stop
 			RW08 B 2 Bright
-			Stop
+			stop
 
         Reload:
         ReloadCheck:
-			TNT1 A 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"ReloadCheckDual")
+			RW00 A 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"ReloadCheckDual")
             RW00 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReadyActual")
             RW00 A 0 A_JumpIfInventory("PistolModeOn",1,1)
             goto ReloadStart
@@ -112,47 +114,65 @@ Actor RTCW_Colt : RTCW_Weapon
             goto ReadyActual
 
 		ReloadStart:
-			TNT1 A 0 A_PlaySound("RTCW/Colt/Reload",CHAN_6)
-			//TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",1,1)
+			RW00 Q 0 A_PlaySound("RTCW/Colt/Reload",CHAN_6)
+			//RW00 Q 0 A_JumpIfInventory("RTCW_ColtMagazine",1,1)
 			goto ReloadStartAmmoless
 			RW00 "QRSTUVWXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW01 ABCDEFGHIJKLM 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
-            goto ReloadDone
+        ReloadFinish:
+            RW00 A 0
+			goto ReadyActual
+
+        ReloadAmmo:
+            RW00 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoReserve")
+            RW00 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReloadFinish")
+            RW00 A 0 A_GiveInventory("RTCW_ColtMagazine")
+            loop
+
+        ReloadAmmoReserve:
+            RW00 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReloadFinish")
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW00 A 0 A_JumpIfInventory("RTCW_AlliedAmmo1",1,1)
+            goto ReloadFinish
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW00 A 0 A_TakeInventory("RTCW_AlliedAmmo1",1)
+            RW00 A 0 A_GiveInventory("RTCW_ColtMagazine")
+            goto ReloadAmmo
 
 		ReloadStartAmmoless:
 			RW00 "QRSTUVWXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW01 ABCDEFGH 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW01 IJKLM 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW01 N 0 A_PlaySound("RTCW/Colt/Reload1_2",CHAN_6)
-			RW01 NOPQRSTUVWXYZ 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-            RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
-            goto ReloadDone
+			RW01 NOPQR 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+            RW01 S 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmoAmmoless")
+        ReloadFinishAmmoless:
+			RW01 STUVWXYZ 2 A_WeaponReady
+            goto ReadyActual
 
-        ReloadDone:
-            RW00 A 0
-			goto ReadyActual
-
-        ReloadAmmo:
-            TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoReserve")
-            TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReloadDone")
-            TNT1 A 0 A_GiveInventory("RTCW_ColtMagazine")
+        ReloadAmmoAmmoless:
+            RW01 S 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoAmmolessReserve")
+            RW01 S 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReloadFinishAmmoless")
+            RW01 S 0 A_GiveInventory("RTCW_ColtMagazine")
             loop
 
-        ReloadAmmoReserve:
-            TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReloadDone")
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-            TNT1 A 0 A_JumpIfInventory("RTCW_AlliedAmmo1",1,1)
-            goto ReloadDone
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-            TNT1 A 0 A_TakeInventory("RTCW_AlliedAmmo1",1)
-            TNT1 A 0 A_GiveInventory("RTCW_ColtMagazine")
-            goto ReloadAmmo
+        ReloadAmmoAmmolessReserve:
+            RW01 S 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReloadFinishAmmoless")
+            RW01 S 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW01 S 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW01 S 0 A_JumpIfInventory("RTCW_AlliedAmmo1",1,1)
+            goto ReloadFinishAmmoless
+            RW01 S 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW01 S 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW01 S 0 A_TakeInventory("RTCW_AlliedAmmo1",1)
+            RW01 S 0 A_GiveInventory("RTCW_ColtMagazine")
+            goto ReloadAmmoAmmoless
 
 		Kicking:
-			TNT1 A 0 A_GunFlash("KickingFoot")
+			RW00 A 0 A_GunFlash("KickingFoot")
 		KickingDelay:
 			RW00 A 0 A_JumpIfInventory("RTCW_ColtDualWield",1,"KickingDelayDual")
 			RW00 A 18 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
@@ -185,23 +205,19 @@ Actor RTCW_Colt : RTCW_Weapon
         // Dual
         ReadyActualDualNonReloadable:
 			RW04 A 1 A_WeaponReady
-			goto ReadyActualAmmoCheckDual
+			goto ReadyActualAmmoCheck
 
         ReadyActualDualReloadable:
 			RW04 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
-			goto ReadyActualAmmoCheckDual
+			goto ReadyActualAmmoCheck
 
         ReadyActualAmmoCheckDual:
-            RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
-            goto ReadyActual
-            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"ReadyActual")
-            RW00 A 0 A_JumpIfInventory("RTCW_ColtMagazine",1,"ReadyActual")
-            RW00 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",1,"ReadyActual")
+            RW04 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",1,"ReadyActual")
             goto ReloadCheck
 
 		DeselectDual:
 			RW04 NOPQR 2
-			goto Super::Deselect
+			goto DeselectInstant
 
 		ReadyDual:
 			RW04 S 2 A_GiveInventory("RTCW_WeaponToken",5)
@@ -313,9 +329,9 @@ Actor RTCW_Colt : RTCW_Weapon
 		FireFlashDualLeft:
 			TNT1 A 0 A_Jump(256,1,2)
 			RW03 C 2 Bright
-			Stop
+			stop
 			RW08 C 2 Bright
-			Stop
+			stop
 
 		FireDualCheckRight:
             RW04 I 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
@@ -394,32 +410,32 @@ Actor RTCW_Colt : RTCW_Weapon
 		FireFlashDualRight:
 			TNT1 A 0 A_Jump(256,1,2)
 			RW03 D 2 Bright
-			Stop
+			stop
 			RW08 D 2 Bright
-			Stop
+			stop
 
         ReloadCheckDual:
-            RW00 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,1)
+            RW04 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,1)
             goto ReloadCheckDualSuccess
-            RW00 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",0,"ReadyActual")
+            RW04 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",0,"ReadyActual")
         ReloadCheckDualSuccess:
-            RW00 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+            RW04 A 0 A_JumpIfInventory("PistolModeOn",1,1)
             goto ReloadStartDual
-            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStartDual")
-            RW00 A 0 A_JumpIfInventory("RTCW_AlliedAmmo1",1,"ReloadStartDual")
+            RW04 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW04 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStartDual")
+            RW04 A 0 A_JumpIfInventory("RTCW_AlliedAmmo1",1,"ReloadStartDual")
             goto ReadyActual
 
 		ReloadStartDual:
-			TNT1 A 0 A_PlaySound("RTCW/Colt/Reload2",CHAN_6)
-			/*TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",1,1)
+			RW04 Y 0 A_PlaySound("RTCW/Colt/Reload2",CHAN_6)
+			/*RW04 Y 0 A_JumpIfInventory("RTCW_ColtMagazine2",1,1)
             goto ReloadStartAmmolessDual
-			TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",1,1)*/
+			RW04 Y 0 A_JumpIfInventory("RTCW_ColtMagazine",1,1)*/
 			goto ReloadStartAmmolessDual
 			RW04 "YZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW05 ABCDEFGHIJKLMNOPQRSTUV 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             RW04 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmoDualLeft")
-            goto ReloadDoneDual
+            goto ReloadFinishDual
 
 		ReloadStartAmmolessDual:
 			RW04 "YZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
@@ -428,46 +444,46 @@ Actor RTCW_Colt : RTCW_Weapon
 			RW05 "WXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW06 ABCDEFGHIJKLMNO 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             RW04 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmoDualLeft")
-            goto ReloadDoneDual
+            goto ReloadFinishDual
 
-        ReloadDoneDual:
+        ReloadFinishDual:
             RW04 A 0
 			goto ReadyActual
 
         ReloadAmmoDualLeft:
-            TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoReserveDualLeft")
-            TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",0,"ReloadAmmoDualRight")
-            TNT1 A 0 A_GiveInventory("RTCW_ColtMagazine2")
+            RW04 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoReserveDualLeft")
+            RW04 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",0,"ReloadAmmoDualRight")
+            RW04 A 0 A_GiveInventory("RTCW_ColtMagazine2")
             loop
 
         ReloadAmmoReserveDualLeft:
-            TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",0,"ReloadAmmoDualRight")
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-            TNT1 A 0 A_JumpIfInventory("RTCW_AlliedAmmo1",1,1)
+            RW04 A 0 A_JumpIfInventory("RTCW_ColtMagazine2",0,"ReloadAmmoDualRight")
+            RW04 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW04 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW04 A 0 A_JumpIfInventory("RTCW_AlliedAmmo1",1,1)
             goto ReloadAmmoDualRight
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-            TNT1 A 0 A_TakeInventory("RTCW_AlliedAmmo1",1)
-            TNT1 A 0 A_GiveInventory("RTCW_ColtMagazine2")
+            RW04 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW04 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW04 A 0 A_TakeInventory("RTCW_AlliedAmmo1",1)
+            RW04 A 0 A_GiveInventory("RTCW_ColtMagazine2")
             goto ReloadAmmoDualLeft
 
         ReloadAmmoDualRight:
-            TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoReserveDualRight")
-            TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReloadDoneDual")
-            TNT1 A 0 A_GiveInventory("RTCW_ColtMagazine")
+            RW04 A 0 A_JumpIfInventory("PistolModeOn",1,"ReloadAmmoReserveDualRight")
+            RW04 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReloadFinishDual")
+            RW04 A 0 A_GiveInventory("RTCW_ColtMagazine")
             loop
 
         ReloadAmmoReserveDualRight:
-            TNT1 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReloadDoneDual")
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-            TNT1 A 0 A_JumpIfInventory("RTCW_AlliedAmmo1",1,1)
-            goto ReloadDoneDual
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-            TNT1 A 0 A_TakeInventory("RTCW_AlliedAmmo1",1)
-            TNT1 A 0 A_GiveInventory("RTCW_ColtMagazine")
+            RW04 A 0 A_JumpIfInventory("RTCW_ColtMagazine",0,"ReloadFinishDual")
+            RW04 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW04 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW04 A 0 A_JumpIfInventory("RTCW_AlliedAmmo1",1,1)
+            goto ReloadFinishDual
+            RW04 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW04 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW04 A 0 A_TakeInventory("RTCW_AlliedAmmo1",1)
+            RW04 A 0 A_GiveInventory("RTCW_ColtMagazine")
             goto ReloadAmmoDualRight
 
 		KickingDelayDual:
@@ -557,12 +573,14 @@ actor SamsaraRTCWColtLeftAttackHandler : Trigger
 actor RTCW_ColtMagazine : Ammo
 {
     Inventory.MaxAmount 8
+    Tag "Colt Magazine (Right)"
     +IGNORESKILL
 }
 
 actor RTCW_ColtMagazine2 : Ammo
 {
     Inventory.MaxAmount 8
+    Tag "Colt Magazine (Left)"
     +IGNORESKILL
 }
 

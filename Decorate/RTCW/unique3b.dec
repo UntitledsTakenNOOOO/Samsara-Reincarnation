@@ -25,7 +25,7 @@ Actor RTCW_Pineapple : RTCW_Weapon
             goto ReadyActualNoAmmo
 
 		ReadyActualNoAmmo:
-			TNT1 A 0 A_JumpIfInventory("RTCW_Kicking",1,"KickingNoAmmo") // [tv50] I'm lazy
+			TNT1 A 0 A_JumpIfInventory("RTCW_Kicking",1,"KickingNoAmmo")
 			TNT1 A 1 A_WeaponReady
 			goto ReadyActualNoAmmoCheck
 
@@ -40,18 +40,19 @@ Actor RTCW_Pineapple : RTCW_Weapon
             goto ReadyActual
 
 		Deselect:
-			RW00 V 0 A_PlaySound("RTCW/Change",CHAN_7)
-            RW00 V 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"DeselectAmmo")
-            RW00 V 0 A_JumpIfInventory("RTCW_AlliedAmmo3",1,"DeselectAmmo")
+            RW00 G 0 A_JumpIfHealthLower(1,"DeselectInstant")
+			RW00 G 0 A_PlaySound("RTCW/Change",CHAN_7)
+            RW00 G 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"DeselectAmmo")
+            RW00 G 0 A_JumpIfInventory("RTCW_AlliedAmmo3",1,"DeselectAmmo")
             goto DeselectNoAmmo
 
 		DeselectNoAmmo:
 			TNT1 AAAAA 2
-			Goto Super::Deselect
+			goto DeselectInstant
 
         DeselectAmmo:
 			RW00 GHIJK 2
-			Goto Super::Deselect
+			goto DeselectInstant
 
 		Ready: // our "Select" state
 			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
@@ -69,15 +70,15 @@ Actor RTCW_Pineapple : RTCW_Weapon
             goto ReadyActual
 
 		Fire:
-            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
-            RW00 A 0 A_JumpIfInventory("RTCW_AlliedAmmo3",1,"FireStart")
+            RW00 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+            RW00 B 0 A_JumpIfInventory("RTCW_AlliedAmmo3",1,"FireStart")
             goto FireDry
 
         FireDry:
 			TNT1 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
             TNT1 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-			TNT1 A 0 A_SelectWeapon("RTCW_Luger")
-			Goto Deselect
+			RW00 A 0 A_SelectWeapon("RTCW_Luger")
+			goto Deselect
 
         FireStart:
             RW00 B 0 A_TakeInventory("RTCW_GrenadeFuse")
@@ -101,7 +102,7 @@ Actor RTCW_Pineapple : RTCW_Weapon
 			RW00 C 0 A_GiveInventory("RTCW_GrenadeFuse")
             RW00 C 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 C 0 A_ReFire("GrenadeHold")
-			Goto ReleaseGrenade
+			goto ReleaseGrenade
 
 		GrenadeTimerUp:
 			RW00 C 0 A_TakeInventory("RTCW_GrenadeFuse")
@@ -110,11 +111,11 @@ Actor RTCW_Pineapple : RTCW_Weapon
 			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeTimer",3,4)
 			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeTimer",2,2)
 			RW00 C 0 A_PlaySound("RTCW/Grenade/Pulse3",CHAN_5)
-			Goto GrenadeHold
+			goto GrenadeHold
 			RW00 C 0 A_PlaySound("RTCW/Grenade/Pulse2",CHAN_5)
-			Goto GrenadeHold
+			goto GrenadeHold
 			RW00 C 0 A_PlaySound("RTCW/Grenade/Pulse1",CHAN_5)
-			Goto GrenadeHold
+			goto GrenadeHold
 
 		ReleaseGrenade:
 			RW00 B 0 A_GiveInventory("RTCW_FiringToken",1)
@@ -136,16 +137,16 @@ Actor RTCW_Pineapple : RTCW_Weapon
             RW00 B 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             TNT1 A 35 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             TNT1 A 0 A_SelectWeapon("RTCW_Luger")
-            goto Super::Deselect
+            goto DeselectInstant
 
         ReloadStart:
-        ReloadDone:
+        ReloadFinish:
             RW00 LMNO 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             goto ReadyActual
 
 		KickingNoAmmo: // jumps to "with ammo" version for the time being
 		Kicking:
-			TNT1 A 0 A_GunFlash("KickingFoot")
+			RW00 A 0 A_GunFlash("KickingFoot")
 		KickingDelay:
 			RW00 A 18 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)

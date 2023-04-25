@@ -19,7 +19,7 @@ Actor RTCW_FG42 : RTCW_Weapon
 	{
 		Spawn:
 			RW98 A -1
-			Stop
+			stop
 
         ReadyActual:
 			RW00 A 0 A_TakeInventory("RTCW_FG42Spread")
@@ -27,16 +27,16 @@ Actor RTCW_FG42 : RTCW_Weapon
             RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyActualReloadable")
         ReadyActualNonReloadable:
 			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,2)
-			RW00 A 1 A_WeaponReady
+			RW00 A 1 A_WeaponReady(WRF_ALLOWZOOM)
 			goto ReadyActualAmmoCheck
-			TNT1 A 1 A_WeaponReady
+			TNT1 A 1 A_WeaponReady(WRF_ALLOWZOOM)
 			goto ReadyActualAmmoCheck
 
         ReadyActualReloadable:
 			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,2)
-			RW00 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+			RW00 A 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
 			goto ReadyActualAmmoCheck
-			TNT1 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
+			TNT1 A 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
 			goto ReadyActualAmmoCheck
 
         ReadyActualAmmoCheck:
@@ -47,19 +47,41 @@ Actor RTCW_FG42 : RTCW_Weapon
             goto ReloadCheck
 
 		Deselect:
-			RW00 V 0 A_PlaySound("RTCW/Change",CHAN_7)
-			RW00 V 0 A_TakeInventory("RTCW_Scoped",1)
-			RW00 V 0 A_ZoomFactor(1.0)
-			RW00 F 2 A_TakeInventory("RTCW_FG42Spread")
+			RW00 F 0 A_TakeInventory("RTCW_FG42Spread")
+			RW00 F 0 A_JumpIfInventory("RTCW_Scoped",1,1)
+            goto DeselectStart
+            RW00 F 0 A_TakeInventory("RTCW_Scoped")
+            RW00 F 0 A_ZoomFactor(1,ZOOM_INSTANT)
+            goto DeselectStart
+
+        DeselectStart:
+            RW00 F 0 A_JumpIfHealthLower(1,"DeselectInstant")
+			RW00 F 2 A_PlaySound("RTCW/Change",CHAN_7)
 			RW00 GHIJKL 2
-			Goto Super::Deselect
+			goto DeselectInstant
 
 		Ready: // our "Select" state
 			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
 			RW00 A 0 A_GiveInventory("RTCW_WeaponToken",12)
-			RW00 L 2 A_TakeInventory("RTCW_FG42Spread")
+			RW00 A 0 A_TakeInventory("RTCW_FG42Spread")
+            RW00 L 0 A_JumpIfInventory("RTCW_Scoped",1,"ReadyZoomOut1") // map change hack
+        ReadyStart1:
+			RW00 L 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
+            RW00 L 0 A_JumpIfInventory("RTCW_Scoped",1,"ReadyZoomOut2") // map change hack
+        ReadyStart2:
+			RW00 L 1
 			RW00 MNOP 2
             goto ReadyActual
+
+        ReadyZoomOut1:
+            RW00 L 0 A_TakeInventory("RTCW_Scoped")
+            RW00 L 0 A_ZoomFactor(1,ZOOM_INSTANT)
+            goto ReadyStart1
+
+        ReadyZoomOut2:
+            RW00 L 0 A_TakeInventory("RTCW_Scoped")
+            RW00 L 0 A_ZoomFactor(1,ZOOM_INSTANT)
+            goto ReadyStart2
 
 		Fire:
             RW00 B 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireReloadable")
@@ -85,8 +107,8 @@ Actor RTCW_FG42 : RTCW_Weapon
 			goto FireDryFinish
 
         FireDryFinish:
-			TNT1 A 0 A_SelectWeapon("RTCW_Luger")
-			Goto Deselect
+			RW00 A 0 A_SelectWeapon("RTCW_Luger")
+			goto Deselect
 
         FireUnderwater:
             RW00 A 0 A_PlaySound("RTCW/UnderwaterFire",CHAN_5)
@@ -119,24 +141,27 @@ Actor RTCW_FG42 : RTCW_Weapon
 		FireFlash:
 			TNT1 A 0 A_Jump(256,1,2)
 			RW03 B 2 Bright
-			Stop
+			stop
 			RW04 B 2 Bright
-			Stop
+			stop
 
 		AltFire:
+        Zoom:
 			RW00 A 0 A_PlaySound("RTCW/Change",CHAN_7)
-			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,"AltFireUnscope")
-		AltFireScope:
+			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,"ZoomUnscope")
+		ZoomScope:
 			TNT1 A 0 A_GiveInventory("RTCW_Scoped",1)
 			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Scope")
-			TNT1 A 0 A_ZoomFactor(1.63)
+			TNT1 A 0 A_ZoomFactor(1.63,ZOOM_INSTANT)
             TNT1 A 10 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			goto ReadyActual
 
-		AltFireUnscope:
+		ZoomUnscope:
 			RW00 A 0 A_TakeInventory("RTCW_Scoped",1)
-			RW00 A 0 A_ZoomFactor(1.0)
-            RW00 LMNOP 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW00 A 0 A_ZoomFactor(1,ZOOM_INSTANT)
+            RW00 L 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+            RW00 LL 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+            RW00 MNOP 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			goto ReadyActual
 
         Reload:
@@ -152,47 +177,61 @@ Actor RTCW_FG42 : RTCW_Weapon
             goto ReloadStart
 			RW00 A 0 A_PlaySound("RTCW/Change",CHAN_7)
 			RW00 A 0 A_TakeInventory("RTCW_Scoped",1)
-			RW00 A 0 A_ZoomFactor(1.0)
-			RW00 LMNOP 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW00 A 0 A_ZoomFactor(1,ZOOM_INSTANT)
+            RW00 L 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+            RW00 LL 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+            RW00 MNOP 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             goto ReloadCheck
 
 		ReloadStart:
-			TNT1 A 0 A_PlaySound("RTCW/FG42/Reload",CHAN_6)
-			//TNT1 A 0 A_JumpIfInventory("RTCW_FG42Magazine",1,1)
+			RW00 Q 0 A_PlaySound("RTCW/FG42/Reload",CHAN_6)
+			//RW00 Q 0 A_JumpIfInventory("RTCW_FG42Magazine",1,1)
 			goto ReloadStartAmmoless
 			RW00 "QRSTUVWXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW01 ABCDEFGHIJKLMN 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW02 DEFG 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
-            goto ReloadDone
+        ReloadFinish:
+            RW00 A 0
+			goto ReadyActual
+
+        ReloadAmmo:
+            RW00 A 0 A_JumpIfInventory("RTCW_FG42Magazine",0,"ReloadFinish")
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW00 A 0 A_JumpIfInventory("Clip",2,1)
+            goto ReloadFinish
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW00 A 0 A_TakeInventory("Clip",2)
+            RW00 A 0 A_GiveInventory("RTCW_FG42Magazine")
+            loop
 
 		ReloadStartAmmoless:
 			RW00 "QRSTUVWXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW01 ABCDEFGHIJKLMNOPQR 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW01 S 0 A_PlaySound("RTCW/FG42/Reload2",CHAN_6)
-			RW01 "STUVWXYZ[\]" 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-			RW02 ABCDEFG 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-			RW00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
-            goto ReloadDone
+			RW01 STUVWX 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW01 Y 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmoAmmoless")
+        ReloadFinishAmmoless:
+			RW01 "YZ[\]" 2 A_WeaponReady(WRF_ALLOWZOOM)
+			RW02 ABCDEFG 1 A_WeaponReady(WRF_ALLOWZOOM)
+            goto ReadyActual
 
-        ReloadDone:
-            RW00 A 0
-			goto ReadyActual
-
-        ReloadAmmo:
-            TNT1 A 0 A_JumpIfInventory("RTCW_FG42Magazine",0,"ReloadDone")
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-            TNT1 A 0 A_JumpIfInventory("Clip",2,1)
-            goto ReloadDone
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
-            TNT1 A 0 A_TakeInventory("Clip",2)
-            TNT1 A 0 A_GiveInventory("RTCW_FG42Magazine")
+        ReloadAmmoAmmoless:
+            RW01 Y 0 A_JumpIfInventory("RTCW_FG42Magazine",0,"ReloadFinishAmmoless")
+            RW01 Y 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW01 Y 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW01 Y 0 A_JumpIfInventory("Clip",2,1)
+            goto ReloadFinishAmmoless
+            RW01 Y 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+            RW01 Y 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            RW01 Y 0 A_TakeInventory("Clip",2)
+            RW01 Y 0 A_GiveInventory("RTCW_FG42Magazine")
             loop
 
 		Kicking:
-			TNT1 A 0 A_GunFlash("KickingFoot")
+			RW00 A 0 A_GunFlash("KickingFoot")
 		KickingDelay:
 			RW00 A 0 A_JumpIfInventory("RTCW_Scoped",1,2)
 			RW00 A 18 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
@@ -237,11 +276,11 @@ actor SamsaraRTCWFG42AttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackUnscopedCoop")
       PickupAttackUnscopedDM:
         TNT1 A 0 A_FireCustomMissile("RTCW_FG42Tracer",CallACS("RTCW_Decorate",1,1)*frandom(-1.0,1.0),false,4,9,0,CallACS("RTCW_Decorate",1,1)*frandom(-1.0,1.0))
-        goto PickupFinish
+        goto PickupFinishUnscoped
 
       PickupAttackUnscopedCoop:
         TNT1 A 0 A_FireCustomMissile("RTCW_FG42TracerCoop",CallACS("RTCW_Decorate",1,1)*frandom(-1.0,1.0),false,4,9,0,CallACS("RTCW_Decorate",1,1)*frandom(-1.0,1.0))
-        goto PickupFinish
+        goto PickupFinishUnscoped
 
       // Scoped
       PickupAttackScoped:
@@ -249,21 +288,22 @@ actor SamsaraRTCWFG42AttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackScopedCoop")
       PickupAttackScopedDM:
         TNT1 A 0 A_FireCustomMissile("RTCW_FG42Tracer",CallACS("RTCW_Decorate",1,1)*frandom(-0.25,0.25),false,0,9,0,CallACS("RTCW_Decorate",1,1)*frandom(-0.25,0.25))
-        goto PickupFinish
+        goto PickupFinishScoped
 
       PickupAttackScopedCoop:
         TNT1 A 0 A_FireCustomMissile("RTCW_FG42TracerCoop",CallACS("RTCW_Decorate",1,1)*frandom(-0.25,0.25),false,0,9,0,CallACS("RTCW_Decorate",1,1)*frandom(-0.25,0.25))
-        goto PickupFinish
+        goto PickupFinishScoped
 
       // Finishing stuff
-      PickupFinish:
-        TNT1 A 0 A_GiveInventory("RTCW_FG42Spread")
-        TNT1 A 0 A_JumpIfInventory("RTCW_Scoped",1,"PickupFinishScoped")
+      // Unscoped
       PickupFinishUnscoped:
+        TNT1 A 0 A_GiveInventory("RTCW_FG42Spread")
         TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_Recoil", 1)
         stop
 
+      // Scoped
       PickupFinishScoped:
+        TNT1 A 0 A_GiveInventory("RTCW_FG42Spread")
         TNT1 A 0 A_GiveInventory("RTCW_AimSpread",1048576)
         TNT1 A 0 A_SetPitch(pitch-0.5)
         TNT1 A 0 A_SetAngle(angle+frandom(-1.0,1.0))
@@ -274,6 +314,7 @@ actor SamsaraRTCWFG42AttackHandler : Trigger
 actor RTCW_FG42Magazine : Ammo
 {
     Inventory.MaxAmount 20
+    Tag "FG-42 Magazine"
     +IGNORESKILL
 }
 

@@ -12,17 +12,18 @@ Actor RTCW_Knife : RTCW_Weapon
 	{
 		Spawn:
 			RW98 A -1
-			Stop
+			stop
 
 		ReadyActual:
 			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
 			RW00 A 1 A_WeaponReady
-			Loop
+			loop
 
 		Deselect:
+            RW00 G 0 A_JumpIfHealthLower(1,"DeselectInstant")
 			RW00 G 2 A_PlaySound("RTCW/Change",CHAN_7)
 			RW00 HIJK 2
-			Goto Super::Deselect
+			goto DeselectInstant
 
 		Ready: // our "Select" state
 			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
@@ -37,14 +38,14 @@ Actor RTCW_Knife : RTCW_Weapon
 			RW00 D 0 A_GiveInventory("SamsaraRTCWKnifeAttackHandler")
 			RW00 D 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 EF 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-			Goto ReadyActual
+			goto ReadyActual
 
 		Kicking:
-			TNT1 A 0 A_Gunflash("KickingFoot")
+			RW00 A 0 A_GunFlash("KickingFoot")
 		KickingDelay:
 			RW00 A 18 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
-			Goto ReadyActual
+			goto ReadyActual
 	}
 }
 
@@ -79,6 +80,7 @@ Actor RTCW_KnifeAttack : FastProjectile
 	+NODAMAGETHRUST
 	+NOEXTREMEDEATH
     +NOTIMEFREEZE
+    +DONTBLAST
 	States
 	{
 		Spawn:

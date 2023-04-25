@@ -17,7 +17,7 @@ Actor RTCW_Winchester : RTCW_Weapon
 	{
 		Spawn:
 			RW98 A -1
-			Stop
+			stop
 
         ReadyActual:
 			RW00 A 0 A_JumpIfInventory("RTCW_Kicking",1,"Kicking")
@@ -38,9 +38,10 @@ Actor RTCW_Winchester : RTCW_Weapon
             goto ReloadCheck
 
 		Deselect:
+            RW00 I 0 A_JumpIfHealthLower(1,"DeselectInstant")
 			RW00 I 2 A_PlaySound("RTCW/Change",CHAN_7)
 			RW00 JKLM 2
-			Goto Super::Deselect
+			goto DeselectInstant
 
 		Ready: // our "Select" state
 			RW00 A 0 A_TakeInventory("RTCW_WeaponToken",256)
@@ -66,8 +67,8 @@ Actor RTCW_Winchester : RTCW_Weapon
         FireDry:
 			RW00 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
             RW00 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-			TNT1 A 0 A_SelectWeapon("RTCW_Luger")
-			Goto Deselect
+			RW00 A 0 A_SelectWeapon("RTCW_Luger")
+			goto Deselect
 
         FireUnderwater:
 			RW00 A 0 A_PlaySound("RTCW/UnderwaterFire",CHAN_5)
@@ -108,9 +109,9 @@ Actor RTCW_Winchester : RTCW_Weapon
 		FireFlash:
 			TNT1 A 0 A_Jump(256,1,2)
 			RW05 U 2 Bright
-			Stop
+			stop
 			RW06 U 2 Bright
-			Stop
+			stop
 
         Reload:
         ReloadCheck:
@@ -240,7 +241,7 @@ Actor RTCW_Winchester : RTCW_Weapon
             goto ReloadLoopInit
 
 		Kicking:
-			TNT1 A 0 A_GunFlash("KickingFoot")
+			RW00 A 0 A_GunFlash("KickingFoot")
 		KickingDelay:
 			RW00 A 18 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 A 0 A_TakeInventory("RTCW_Kicking",1)
@@ -312,6 +313,7 @@ actor SamsaraRTCWShotgunAttackHandler : Trigger
 actor RTCW_ShotgunMagazine : Ammo
 {
     Inventory.MaxAmount 6
+    Tag "Winchester M1897 Magazine"
     +IGNORESKILL
 }
 
