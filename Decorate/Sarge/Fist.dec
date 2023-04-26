@@ -1,53 +1,94 @@
+actor SamsaraQuake3GauntletFiringSoundCheck : Boolean {}
+
 Actor Q3Gauntlet : Q3Weapon
 {
 	Weapon.SlotNumber 0
-	Inventory.Pickupmessage "Gauntlet"
-	Obituary "%o was pummeled by %k"
+	Inventory.PickupMessage "Gauntlet"
+	Obituary "%o was pummeled by %k."
 	Tag "Gauntlet"
-	+WEAPON.MELEEWEAPON
-	+WEAPON.WIMPY_WEAPON
-	+WEAPON.NOALERT
 	+FLOATBOB
+	+MELEEWEAPON
+	+NOALERT // to be obsoleted by q3core
+	+WIMPY_WEAPON
 	States
 	{
 		Spawn:
-			Q399 A 1
-			Loop
+			Q399 A -1
+			stop
+
+		ReadyActual:
+            Q300 A 0 A_TakeInventory("SamsaraQuake3GauntletFiringSoundCheck")
+			Q300 A 1 A_WeaponReady
+			loop
+
 		Deselect:
-			Q301 A 0 A_StopSound(CHAN_5)
+			Q301 A 0 A_GiveInventory("SamsaraQuake3GauntletFiringSoundStopper")
+            Q301 A 0 A_JumpIfHealthLower(1,"DeselectInstant")
 			Q301 A 0 A_PlaySound("Quake3/Weapons/Change",CHAN_5)
 			Q301 ABCDE 1
-			Goto DeselectLoop
-		Ready:
-			Q300 A 0 A_StopSound(CHAN_5)
-			Q302 ABCD 1
-		ReadyLoop:
-			Q300 A 1 A_WeaponReady
-			Loop
+			goto DeselectInstant
+
+		Ready: // our "Select" state
+			Q302 AB 1 A_TakeInventory("SamsaraQuake3GauntletFiringSoundCheck") // map change hack
+			Q302 CD 1
+            goto ReadyActual
+
 		Fire:
-			Q303 A 0 A_PlaySound("Quake3/Gauntlet/Loop",CHAN_5,1.0,true)
 			Q303 A 0 A_GunFlash
-			Q303 A 0 A_JumpIfInventory("CoopModeOn",1,2)
-			Q303 A 0 A_Saw("","Quake3/Gauntlet/Hit",20,"Q3GauntletPuff",SF_NORANDOM,48)
-			Goto FireContinue
-			Q303 A 0 A_Saw("","Quake3/Gauntlet/Hit",20,"Q3GauntletPuffCoop",SF_NORANDOM,48)
-			Goto FireContinue
-		FireContinue:
-			Q303 ACEG 1
-			Q303 J 0 A_Refire("Fire")
-			Goto FireFinish
-		FireFinish:
-			Q303 A 0 A_StopSound(CHAN_5)
-			Q303 "ADGJMPSVY\" 1
+			Q303 A 0 A_GiveInventory("SamsaraQuake3GauntletAttackHandler")
+			Q303 ACEG 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			Q303 J 0 A_ReFire
+			Q303 A 0 A_GiveInventory("SamsaraQuake3GauntletFiringSoundStopper")
+			Q303 "ADGJMPSVY\" 1 A_WeaponReady
 			Q304 "BEH" 2 A_WeaponReady
 			Q303 "DGJMPSVY\" 2 A_WeaponReady
 			Q304 "BEHK" 3 A_WeaponReady
-			Goto ReadyLoop
+			goto ReadyActual
+
 		Flash:
-			Q305 A 0 A_GiveInventory("Q3QuadDamageSound",1)
 			Q305 AB 2 Bright
-			Stop
+			stop
 	}
+}
+
+actor SamsaraQuake3GauntletAttackHandler : Trigger
+{
+    States
+    {
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_PlaySound("Quake3/Gauntlet/Loop",CHAN_WEAPON,1.0,true)
+        TNT1 A 0 A_GiveInventory("Q3QuadDamageSound")
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
+        TNT1 A 0 A_Saw("","Quake3/Gauntlet/Hit",20,"Q3GauntletPuff",SF_NORANDOM,48)
+        goto PickupFinish
+
+      PickupCoop:
+        TNT1 A 0 A_Saw("","Quake3/Gauntlet/Hit",20,"Q3GauntletPuffCoop",SF_NORANDOM,48)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_GiveInventory("SamsaraQuake3GauntletFiringSoundCheck")
+        stop
+    }
+}
+
+actor SamsaraQuake3GauntletFiringSoundStopper : Trigger
+{
+    States
+    {
+      // Sound stopping stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraQuake3GauntletFiringSoundCheck",1,1)
+        stop
+        TNT1 A 0 A_PlaySound("silence",CHAN_WEAPON)
+        TNT1 A 0 A_StopSound(CHAN_WEAPON)
+        TNT1 A 0 A_TakeInventory("SamsaraQuake3GauntletFiringSoundCheck")
+        stop
+    }
 }
 
 Actor Q3GauntletPuff
@@ -72,4 +113,4 @@ Actor Q3GauntletPuff
 	}
 }
 
-Actor Q3GauntletPuffCoop : Q3GauntletPuff { Species "Player" +THRUSPECIES +MTHRUSPECIES }
+Actor Q3GauntletPuffCoop : Q3GauntletPuff { +MTHRUSPECIES }

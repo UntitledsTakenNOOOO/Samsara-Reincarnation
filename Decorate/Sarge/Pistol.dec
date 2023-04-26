@@ -1,47 +1,109 @@
+actor SamsaraQuake3MachinegunFireAnim : Boolean {}
+actor SamsaraQuake3MachinegunFiredOnce : Boolean {}
+
 Actor Q3Machinegun : Q3Weapon
 {
 	Weapon.SlotNumber 1
-	Inventory.Pickupmessage "Machine Gun"
-	Obituary "%o was machinegunned by %k"
+	Inventory.PickupMessage "Machinegun"
+	Obituary "%o was machinegunned by %k."
 	Tag "Machine Gun"
-	+WEAPON.WIMPY_WEAPON
 	+FLOATBOB
+    +NOALERT // to be obsoleted by q3core
+	+WIMPY_WEAPON
 	States
 	{
 		Spawn:
-			Q399 A 1
-			Loop
-		Deselect:
-			Q301 A 0 A_PlaySound("Quake3/Weapons/Change",CHAN_5)
-			Q301 ABCDE 1
-			Goto DeselectLoop
-		Ready:
-			Q302 ABCD 1
-		ReadyLoop:
+			Q399 A -1
+			stop
+
+		ReadyActual:
 			Q300 A 1 A_WeaponReady
-			Loop
+			loop
+
+		Deselect:
+            Q301 A 0 A_JumpIfHealthLower(1,"DeselectInstant")
+			Q301 A 1 A_PlaySound("Quake3/Weapons/Change",CHAN_5)
+			Q301 BCDE 1
+			goto DeselectInstant
+
+		Ready: // our "Select" state
+			Q302 ABCD 1
+            goto ReadyActual
+
 		Fire:
-			Q303 A 0 A_GunFlash
+            Q303 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+            goto FireInit
+            Q303 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireInit")
+            Q303 A 0 A_JumpIfInventory("Clip",1,"FireInit")
+            goto FireDry
+
+        FireDry:
+			Q300 A 0 A_PlaySound("Quake3/Weapons/NoAmmo",CHAN_5)
+            Q300 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			Q300 A 0 A_SelectWeapon("Q3Gauntlet")
+			goto Deselect
+
+        FireInit:
+            Q303 A 0 A_JumpIfInventory("SamsaraQuake3MachinegunFireAnim",1,2)
+            Q303 A 0 A_GiveInventory("SamsaraQuake3MachinegunFireAnim")
+            goto FireStart
+            Q303 A 0 A_TakeInventory("SamsaraQuake3MachinegunFireAnim")
+            goto FireStart
+
+        FireStart:
+            Q303 A 0 A_AlertMonsters
 			Q303 A 0 A_SpawnItemEx("Q3MachineGunBrass",8,4,49,0,1.5+frandom(0.0,1.2),2.0+frandom(0.0,1.6),frandom(-2.0,2.0))
-			Q303 A 0 A_JumpIfInventory("CoopModeOn",1,2)
-			Q303 A 0 A_FireBullets(2.0,2.0,-1,5,"Q3BulletPuff",FBF_NORANDOM|FBF_NORANDOMPUFFZ)
-			Goto FireContinue
-			Q303 A 0 A_FireBullets(2.0,2.0,-1,5,"Q3BulletPuffCoop",FBF_NORANDOM|FBF_NORANDOMPUFFZ)
-			Goto FireContinue
-		FireContinue:
-			Q303 A 0 A_PlaySound("Quake3/MachineGun/Fire",CHAN_WEAPON)
-			Q303 ACEG 1
-			Q300 J 0 A_Refire("Fire")
-			Goto FireFinish
-		FireFinish:
-			Q303 "ADGJMPSVY\" 1
+			Q303 A 0 A_GunFlash
+			Q303 A 0 A_GiveInventory("SamsaraQuake3MachinegunAttackHandler")
+			Q303 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			Q303 C 0 A_JumpIfInventory("SamsaraQuake3MachinegunFireAnim",1,1)
+            goto FireContinue
+			Q303 C 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        FireContinue:
+			Q303 EG 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			Q300 J 0 A_ReFire
+			Q303 "ADGJMPSVY\" 1 A_WeaponReady
 			Q304 "BEH" 2 A_WeaponReady
 			Q303 "DGJMPSVY\" 2 A_WeaponReady
 			Q304 "BEHK" 3 A_WeaponReady
-			Goto ReadyLoop
+			goto ReadyActual
+
 		Flash:
-			Q305 A 0 A_GiveInventory("Q3QuadDamageSound",1)
 			Q305 A 1 Bright
-			Stop
+			stop
 	}
+}
+
+actor SamsaraQuake3MachinegunAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto PickupAttack
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+        stop
+        TNT1 A 0 A_JumpIfInventory("SamsaraQuake3MachinegunFiredOnce",1,2)
+        TNT1 A 0 A_GiveInventory("SamsaraQuake3MachinegunFiredOnce")
+        goto PickupAttack
+        TNT1 A 0 A_TakeInventory("Clip",1)
+        TNT1 A 0 A_TakeInventory("SamsaraQuake3MachinegunFiredOnce")
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Quake3/MachineGun/Fire",CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("Q3QuadDamageSound")
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(2,2,-1,5,"Q3BulletPuff",FBF_NORANDOM|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(2,2,-1,5,"Q3BulletPuffCoop",FBF_NORANDOM|FBF_NOFLASH|FBF_NORANDOMPUFFZ)
+        stop
+    }
 }
