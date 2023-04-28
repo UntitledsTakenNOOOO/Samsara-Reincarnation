@@ -1,48 +1,88 @@
 Actor Q3ProximityLauncher : Q3Weapon
 {
+	Weapon.SlotNumber 9
 	Weapon.AmmoUse 1
 	Weapon.AmmoGive 10
-	Weapon.SlotNumber 9
 	Weapon.AmmoType "Q3GrenadeLauncherAmmo"
-	Inventory.Pickupmessage "Proximity Launcher"
-	Obituary "%o was too close to %k's Prox Mine"
+	Inventory.PickupMessage "Prox Launcher"
+	Obituary "%o was too close to %k's Prox Mine."
 	Tag "Prox Launcher"
-	+WEAPON.EXPLOSIVE
-	+WEAPON.NOALERT
+	+EXPLOSIVE
 	+FLOATBOB
 	States
 	{
 		Spawn:
-			Q399 A 1
-			Loop
-		Deselect:
-			Q301 A 0 A_PlaySound("Quake3/Weapons/Change",CHAN_5)
-			Q301 ABCDE 1
-			goto DeselectInstant
-		Ready:
-			Q302 ABCD 1
-		ReadyLoop:
+			Q399 A -1
+			stop
+
+		ReadyActual:
 			Q300 ABCDEFGHIJKLMNOP 3 A_WeaponReady
-			Loop
+			loop
+
+		Deselect:
+            Q301 A 0 A_JumpIfHealthLower(1,"DeselectInstant")
+			Q301 A 1 A_PlaySound("Quake3/Weapons/Change",CHAN_5)
+			Q301 BCDE 1
+			goto DeselectInstant
+
+		Ready: // our "Select" state
+			Q302 ABCD 1
+            goto ReadyActual
+
 		Fire:
+            Q303 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+            Q303 A 0 A_JumpIfInventory("Q3GrenadeLauncherAmmo",1,"FireStart")
+            goto FireDry
+
+        FireDry:
+			Q300 A 0 A_PlaySound("Quake3/Weapons/NoAmmo",CHAN_5)
+            Q300 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			Q300 A 0 A_SelectWeapon("Q3Machinegun")
+			goto Deselect
+
+        FireStart:
+            Q303 A 0 A_AlertMonsters
 			Q303 A 0 A_GunFlash
-			Q303 A 0 A_JumpIfInventory("CoopModeOn",1,2)
-			Q303 A 0 A_FireCustomMissile("Q3ProximityMine",0,1,4,8)
-			Goto FireContinue
-			Q303 A 0 A_FireCustomMissile("Q3ProximityMineCoop",0,1,4,8)
-			Goto FireContinue
-		FireContinue:
-			Q303 A 0 A_PlaySound("Quake3/ProximityLauncher/Fire",CHAN_WEAPON)
-			Q303 ABCDEF 3
-		FireFinish:
-			Q303 GHI 3 A_WeaponReady(WRF_NOFIRE)
-			Goto ReadyLoop
+			Q303 A 0 A_GiveInventory("SamsaraQuake3ProxLauncherAttackHandler")
+			Q303 ABCDEFGH 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			Q303 I 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			goto ReadyActual
+
 		Flash:
-			Q304 A 0 A_GiveInventory("Q3QuadDamageSound",1)
 			Q304 A 3 Bright
-			Stop
+			stop
 	}
 }
+
+actor SamsaraQuake3ProxLauncherAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Q3GrenadeLauncherAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Q3GrenadeLauncherAmmo",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/Fire",CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("Q3QuadDamageSound")
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("Q3ProximityMine",0,false,4,8)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("Q3ProximityMineCoop",0,false,4,8)
+        stop
+    }
+}
+
+actor SamsaraQuake3ProxMineOnFloor : Boolean {}
 
 Actor Q3ProximityMine
 {
@@ -67,53 +107,82 @@ Actor Q3ProximityMine
 			Q300 A 0 A_SpawnItemEx("Q3GrenadeSmoke")
 			Q300 A 0 A_SetPitch(pitch+frandom(5.0,10.0))
 			Q300 A 2 A_SetAngle(angle+frandom(5.0,10.0))
-			Loop
+			loop
+
 		XDeath:
-			TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/HitFlesh",CHAN_5)
-			TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/Activate",CHAN_BODY)
-			Goto Remove
+			TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/HitFlesh")
+			//TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/Activate",CHAN_VOICE)
+			goto Remove
+
 		Death:
-			TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/HitWall",CHAN_5)
-			TNT1 A 0 A_JumpIf(abs(z - floorz) <= 4,"HitFloor")
+			TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/HitWall")
+        DeathStart:
+			TNT1 A 0 A_JumpIf(abs(z - floorz) <= 4, "HitFloor")
 			TNT1 A 0 A_CheckCeiling("HitCeiling")
 			TNT1 A 0 A_NoGravity
 			TNT1 A 0 A_SetPitch(90)
 			TNT1 A 0 A_SetAngle(user_startingAngle)
 			TNT1 A 0 ACS_NamedExecuteWithResult("Q3ProximityMineGlow")
 			Q300 C 0
-			Goto MineWait
+			goto MineWait
+
 		Crash:
-			TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/HitMetal",CHAN_5)
-			Goto Death+1
+			TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/HitMetal")
+			goto DeathStart
+
 		HitFloor:
 			TNT1 A 0 A_SetPitch(0)
-			TNT1 A 0 ACS_NamedExecuteWithResult("Q3ProximityMineGlow",1)
+            TNT1 A 0 A_GiveInventory("SamsaraQuake3ProxMineOnFloor")
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3ProximityMineGlow", 1)
 			TNT1 A 0 A_Gravity
 			Q300 A 0
-			Goto MineWait
+			goto MineWait
+
 		HitCeiling:
 			TNT1 A 0 A_NoGravity
 			TNT1 A 0 ThrustThingZ(0,128,0,1)
 			TNT1 A 0 A_SetPitch(180)
-			TNT1 A 0 ACS_NamedExecuteWithResult("Q3ProximityMineGlow",2)
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3ProximityMineGlow", 2)
 			Q300 B 0
-			Goto MineWait
+			goto MineWait
+
 		MineWait:
-			Q300 "#" 0 A_ChangeFlag("MOVEWITHSECTOR",1)
+			Q300 "#" 0 A_ChangeFlag("MOVEWITHSECTOR",true)
 			Q300 "#" 0 A_JumpIfInventory("Q3MineRemoval",1,"Remove")
 			Q300 "#" 1
-			Loop
+			loop
+
 		Remove:
 			TNT1 A 0 A_SetDamageType("Q3Explosive")
-			TNT1 A 0 A_PlaySound("Quake3/RocketLauncher/Explode",CHAN_BODY)
-			TNT1 A 0 A_Explode(150,150,0,1)
+			TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/Explode",CHAN_VOICE)
+			TNT1 A 0 A_Explode(150,150)
 			TNT1 A 0 A_SpawnItemEx("Q3GrenadeBoom")
+            TNT1 A 0 A_JumpIfInventory("SamsaraQuake3ProxMineOnFloor",1,"RemoveFloor")
+            goto RemoveFinish
+
+        RemoveFloor:
+            TNT1 A 0 A_JumpIfCloser(32,1)
+            goto RemoveFinish
+            TNT1 A 0 A_GiveToTarget("SamsaraQuake3ProxJumpModifier")
+            goto RemoveFinish
+
+        RemoveFinish:
 			TNT1 A 1
-			Stop
+			stop
 	}
 }
 
 Actor Q3ProximityMineCoop : Q3ProximityMine { +THRUSPECIES Species "Player" }
+
+actor SamsaraQuake3ProxJumpModifier : Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 ThrustThingZ(0,20,0,1)
+        stop
+    }
+}
 
 Actor Q3ProximityMineGlow
 {
@@ -123,7 +192,7 @@ Actor Q3ProximityMineGlow
 	+NOGRAVITY
 	+LOOKALLAROUND
 	ReactionTime 525
-	Renderstyle Add
+	RenderStyle Add
 	Height 4
 	Radius 2
 	States
@@ -133,20 +202,21 @@ Actor Q3ProximityMineGlow
 			Q300 A 0 A_CopyFriendliness(AAPTR_Master)
 		SpawnLoop:
 			Q300 A 1 Bright A_LookEx(LOF_NOSOUNDCHECK,0,64)
-			Q300 A 0 A_CountDown
+			Q300 A 0 A_Countdown
 			Q300 A 0 A_JumpIfInventory("Q3MineTicker",0,2)
 			Q300 A 0 A_GiveInventory("Q3MineTicker",1)
-			Loop
-			Q300 A 0 A_PlaySound("Quake3/ProximityLauncher/Tick",CHAN_6)
+			loop
+			Q300 A 0 A_PlaySound("Quake3/ProximityLauncher/Tick")
 			Q300 A 0 A_TakeInventory("Q3MineTicker",35)
-			Loop
+			loop
+
 		See:
 		Death:
-			TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/Activate",CHAN_BODY)
+			TNT1 A 0 A_PlaySound("Quake3/ProximityLauncher/Activate",CHAN_VOICE)
 			Q300 A 17 Bright
 			TNT1 A 0 A_GiveInventory("Q3MineRemoval",1,AAPTR_TRACER)
 			TNT1 A 1
-			Stop
+			stop
 	}
 }
 

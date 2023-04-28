@@ -1,70 +1,154 @@
+actor SamsaraQuake3RailgunLoopSoundCheck : Boolean {}
+
 Actor Q3Railgun : Q3Weapon
 {
+	Weapon.SlotNumber 9
 	Weapon.AmmoUse 2
 	Weapon.AmmoGive 10
-	Weapon.SlotNumber 9
 	Weapon.AmmoType "Shell"
-	Inventory.Pickupmessage "Railgun"
-	Obituary "%o was railed by %k"
+	Inventory.PickupMessage "Railgun"
+	Obituary "%o was railed by %k."
 	Tag "Rail Gun"
 	+FLOATBOB
 	States
 	{
 		Spawn:
-			Q399 A 1
-			Loop
+			Q399 A -1
+			stop
+
+		ReadyActual:
+			Q300 A 0 A_GunFlash("ReadyActualGlow",GFF_NOEXTCHANGE)
+            Q300 A 0 A_GiveInventory("SamsaraQuake3RailgunLoopSoundStarter")
+			Q300 A 1 A_WeaponReady
+			loop
+
+		ReadyActualGlow:
+			Q305 A 1 Bright
+			stop
+
 		Deselect:
-			Q301 A 0 A_StopSound(CHAN_5)
+			Q301 A 0 A_JumpIfHealthLower(1,"DeselectInstant")
 			Q301 A 0 A_GunFlash("DeselectGlow",GFF_NOEXTCHANGE)
 			Q301 A 0 A_PlaySound("Quake3/Weapons/Change",CHAN_5)
-			Q301 ABCDE 1
-			goto DeselectInstant
+			Q301 A 1 A_GiveInventory("SamsaraQuake3RailgunLoopSoundStarter")
+			Q301 BCDE 1
+            TNT1 A 0 A_GiveInventory("SamsaraQuake3RailgunLoopSoundStopper")
+			goto Super::DeselectInstant
+
 		DeselectGlow:
 			Q306 ABCDE 1 Bright
-			Stop
-		Ready:
-			Q302 A 0 A_PlaySound("Quake3/Railgun/Idle",CHAN_5,0.5,true)
-			Q302 A 0 A_GunFlash("SelectGlow",GFF_NOEXTCHANGE)
-			Q302 ABCD 1
-		ReadyLoop:
-			Q300 A 0 A_GunFlash("ReadyGlow",GFF_NOEXTCHANGE)
-			Q300 A 1 A_WeaponReady
-			Loop
-		SelectGlow:
-			Q307 ABCD 1 Bright
-			Stop
+			stop
+
+        DeselectInstant:
+            TNT1 A 0 A_GunFlash("DeselectInstantGlow",GFF_NOEXTCHANGE)
+            TNT1 A 0 A_GiveInventory("SamsaraQuake3RailgunLoopSoundStopper")
+            goto Super::DeselectInstant
+
+        DeselectInstantGlow:
+            TNT1 A 0
+            stop
+
+		Ready: // our "Select" state
+			Q302 A 0 A_GunFlash("ReadyGlow",GFF_NOEXTCHANGE)
+			Q302 AB 1 A_GiveInventory("SamsaraQuake3RailgunLoopSoundStarter") // map change hack
+			Q302 CD 1
+            goto ReadyActual
+
 		ReadyGlow:
-			Q305 A 1 Bright
-			Stop
+			Q307 ABCD 1 Bright
+			stop
+
 		Fire:
+            Q303 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+            Q303 A 0 A_JumpIfInventory("Shell",2,"FireStart")
+            goto FireDry
+
+        FireDry:
+            Q300 A 0 A_GunFlash("FireDryGlow",GFF_NOEXTCHANGE)
+			Q300 A 0 A_PlaySound("Quake3/Weapons/NoAmmo",CHAN_5)
+            Q300 A 0 A_GiveInventory("SamsaraQuake3RailgunLoopSoundStarter")
+            Q300 A 17 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			Q300 A 0 A_SelectWeapon("Q3Machinegun")
+			goto Deselect
+
+        FireDryGlow:
+            Q305 A 1 Bright
+            loop
+
+        FireStart:
+            Q303 A 0 A_AlertMonsters
+            Q303 A 0 A_GiveInventory("SamsaraQuake3RailgunLoopSoundStarter")
 			Q303 A 0 A_GunFlash
-			Q303 A 0 A_PlaySound("Quake3/Railgun/Fire",CHAN_WEAPON)
-			Q303 A 0 A_JumpIfInventory("DMModeOn",1,"FireDM")
-			Q303 A 0 A_JumpIfInventory("CoopModeOn",1,"FireCoop")
-			Q303 A 0 A_FireCustomMissile("Q3RailGunProjectile",0,0,6)
-			Q303 A 0 A_RailAttack(150,6,1,None,None,RGF_SILENT,0,"Q3RailGunPuff",0,0,8192)
-			Goto FireContinue
-		FireDM:
-			Q303 A 0 A_FireCustomMissile("Q3RailGunProjectile",0,0,6)
-			Q303 A 0 A_RailAttack(100,6,1,None,None,RGF_SILENT,0,"Q3RailGunPuff",0,0,8192)
-			Goto FireContinue
-		FireCoop:
-			Q303 A 0 A_FireCustomMissile("Q3RailGunProjectileCoop",0,0,6)
-			Q303 A 0 A_RailAttack(150,6,1,None,None,RGF_SILENT,0,"Q3RailGunPuffCoop",0,0,8192)
-			Goto FireContinue
-		FireContinue:
-			Q303 A 6 Bright
-			Q303 BCDEF 6
-			Q300 A 16
-			Goto ReadyLoop
+			Q303 A 0 A_GiveInventory("SamsaraQuake3RailgunAttackHandler")
+			Q303 A 6 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			Q303 BCDEF 6 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			Q300 A 16 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			goto ReadyActual
+
 		Flash:
-			Q304 A 0 A_GiveInventory("Q3QuadDamageSound",1)
 			Q304 A 3 Bright
 			Q308 A 3 Bright
 			Q308 BCDEF 6 Bright
 			Q305 A 16 Bright
-			Stop		
+			stop
 	}
+}
+
+actor SamsaraQuake3RailgunAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",2,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Shell",2)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Quake3/Railgun/Fire",CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("Q3QuadDamageSound")
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("Q3RailGunProjectile",0,false,6)
+        TNT1 A 0 A_RailAttack(100,6,false,"None","None",RGF_SILENT,0,"Q3RailGunPuff")
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("Q3RailGunProjectileCoop",0,false,6)
+        TNT1 A 0 A_RailAttack(150,6,false,"None","None",RGF_SILENT,0,"Q3RailGunPuffCoop")
+        stop
+    }
+}
+
+actor SamsaraQuake3RailgunLoopSoundStarter : Trigger
+{
+    States
+    {
+      // Sound starting stuff
+      Pickup:
+        TNT1 A 0 A_PlaySound("Quake3/Railgun/Idle",CHAN_6,0.5,true)
+        TNT1 A 0 A_GiveInventory("SamsaraQuake3RailgunLoopSoundCheck")
+        stop
+    }
+}
+
+actor SamsaraQuake3RailgunLoopSoundStopper : Trigger
+{
+    States
+    {
+      // Sound stopping stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraQuake3RailgunLoopSoundCheck",1,1)
+        stop
+        TNT1 A 0 A_PlaySound("silence",CHAN_6)
+        TNT1 A 0 A_StopSound(CHAN_6)
+        TNT1 A 0 A_TakeInventory("SamsaraQuake3RailgunLoopSoundCheck")
+        stop
+    }
 }
 
 Actor Q3RailGunPuff
@@ -94,35 +178,42 @@ Actor Q3RailGunProjectile : FastProjectile
 	+THRUACTORS
 	+BLOODLESSIMPACT
 	+HITTRACER
+    +DONTBLAST
+    +NOTIMEFREEZE
 	States
 	{
 		Spawn:
-			TNT1 A 1
-			Loop
+			TNT1 A -1
+			stop
+
 		Death:
 			TNT1 A 0
-			TNT1 A 0 A_JumpIf(abs(z - floorz) <= 4,"HitFloor")
+			TNT1 A 0 A_JumpIf(abs(z - floorz) <= 4, "HitFloor")
 			TNT1 A 0 A_CheckCeiling("HitCeiling")
-			Goto DrawBeam
+			goto DrawBeam
+
 		XDeath:
 			TNT1 A 0 ACS_NamedExecuteWithResult("Q3_BloodGenerator_Offsets")
 			TNT1 A 0 A_GiveInventory("Q3_BloodGenerator",1,AAPTR_TRACER)
-			Goto DrawBeam
+			goto DrawBeam
+
 		HitFloor:
-			TNT1 A 0 ACS_NamedExecuteWithResult("Q3SpawnDecal",2)
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3SpawnDecal", 2)
 			TNT1 A 0 A_SetPitch(90)
-			Goto DrawBeam
+			goto DrawBeam
+
 		HitCeiling:
-			TNT1 A 0 ACS_NamedExecuteWithResult("Q3SpawnDecal",2,1)
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3SpawnDecal", 2, 1)
 			TNT1 A 0 A_SetPitch(-90)
-			Goto DrawBeam
+			goto DrawBeam
+
 		DrawBeam:
 			TNT1 A 0 A_FaceTarget
 			TNT1 A 0 A_SetAngle(angle+180)
 			TNT1 A 0 A_SpawnItemEx("Q3RailGunImpactShock",-4)
-			TNT1 A 0 ACS_NamedExecuteWithResult("Q3DrawLaser",1)
+			TNT1 A 0 ACS_NamedExecuteWithResult("Q3DrawLaser", 1)
 			TNT1 A 1
-			Stop
+			stop
 	}
 }
 
@@ -132,9 +223,10 @@ Actor Q3RailGunSegment
 {
 	+NOINTERACTION
 	+NOGRAVITY
+    +CLIENTSIDEONLY
 	Height 4
 	Radius 2
-	Renderstyle Add
+	RenderStyle Add
 	States
 	{
 		Spawn:
@@ -150,7 +242,7 @@ Actor Q3RailGunImpactShock
 	+FORCEXYBILLBOARD
 	Height 4
 	Radius 2
-	Scale 2.0
+	Scale 2
 	States
 	{
 		Spawn:
