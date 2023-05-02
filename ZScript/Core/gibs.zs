@@ -119,3 +119,45 @@ Class Q3_WallBlood_ZScript : Actor
 			stop;
 	}
 }
+
+Class DBT_WallBlood_ZScript : Actor
+{
+	Default
+	{
+		scale 0.6;
+		speed 7;
+		health 1;
+		radius 8;
+		height 1;
+		Gravity 0.7;
+		damage 0;
+		+MISSILE;
+		+CLIENTSIDEONLY;
+		+NOTELEPORT;
+		+NOBLOCKMAP;
+		+THRUACTORS;
+	}
+	
+	States
+	{
+		Spawn:
+			TNT1 A 0;
+			TNT1 A 0
+			{
+				if(master)
+				{
+					CopyBloodColor(master);
+					for(int i = 32; i >= 0; i--)
+					{
+						A_SetAngle(random(0, 360));
+						A_SetPitch(random(-50, 50));
+						A_SprayDecal("DBThanatosBloodDecal", 172, (0, 0, 0), (0, 0, 0), true, 0);
+						A_SetAngle(random(0, 360));
+						A_SetPitch(random(-50, 50));
+						A_SprayDecal("DBThanatosBloodDecal", 172, (0, 0, 0), (0, 0, 0), true, 0);
+					}
+				}
+			}
+			stop;
+	}
+}
