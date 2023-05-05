@@ -10,9 +10,8 @@ Actor Catacomb_BurstsQuickSpell : Catacomb3D_QuickSpell
 	Weapon.AmmoType2 "Catacomb_Bursts"
     Weapon.AmmoUse2 1
 	Inventory.PickUpSound "Catacomb/ItemGet2"
-	Inventory.PickupMessage "Zappers!"
-	+INVENTORY.UNDROPPABLE	
-	+WEAPON.NO_AUTO_SWITCH
+	Inventory.PickupMessage "Bursts!"
+	+INVENTORY.UNDROPPABLE
 	+NOALERT
 	Inventory.RestrictedTo "PettonEverhail"
 	States
@@ -51,8 +50,9 @@ Actor Catacomb_BurstsQuickSpell : Catacomb3D_QuickSpell
 			TNT1 A 0 A_JumpIfInventory("Catacomb_WeaponMode",1,1)
 			Goto Super::Fire
 		Release:
-			TNT1 A 0 A_JumpIfInventory("Catacomb_Bursts", 1, 1)
-			Goto SwitchWeapon
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            TNT1 A 0 A_JumpIfInventory("Catacomb_Bursts",1,1)
+            goto SwitchWeapon
 			TNT1 A 0 A_AlertMonsters
 			TNT1 A 0 A_PlaySound("Catacomb/Shards", CHAN_WEAPON)		
 			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_SpreadShot", 1, "BurstSpread")
@@ -382,25 +382,22 @@ Actor Catacomb_BurstsQuickSpell : Catacomb3D_QuickSpell
 			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_RapidFire", 1, 5)
 			TNT1 A 0 A_JumpIfInventory("PowerCatacomb_BounceShot", 1, 5)			
 			CT00 A 13
-			Goto ReadyLoop
+			goto FireEndAmmoCheck
 			CT00 C 13
-			Goto ReadyLoop	
+			goto FireEndAmmoCheck
 			CT00 E 13
-			Goto ReadyLoop			
+			goto FireEndAmmoCheck
 			CT00 G 13
-			Goto ReadyLoop	
+			goto FireEndAmmoCheck
 			CT00 I 13
-			Goto ReadyLoop				
+			goto FireEndAmmoCheck
+        FireEndAmmoCheck:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyLoop")
+            TNT1 A 0 A_JumpIfInventory("Catacomb_Bursts",1,"ReadyLoop")
+            goto SwitchWeapon
 		SwitchWeapon:
-			TNT1 A 0 A_JumpIfInventory("Catacomb_Bursts", 1, 1)
-			Goto TakeWeapon
-			TNT1 A 0 
 			TNT1 A 0 A_SelectWeapon("Catacomb3D_MagicMissile")
-			goto Deselect	
-		TakeWeapon:
-			TNT1 A 0 A_TakeInventory("Catacomb_BurstsQuickSpell", 1)
-			TNT1 A 0 A_SelectWeapon("Catacomb3D_MagicMissile")
-			goto Deselect			
+			goto Deselect
 		}
 }				
 			
