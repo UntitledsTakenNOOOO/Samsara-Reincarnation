@@ -6,56 +6,63 @@ Script "C7MinePlacer" (int deathmatch)
 	SetPointerExt(AAPTR_Master,0,newTid);
 }
 
-Script "Corridor7ActivateVisor" (void)
+script "Corridor7ActivateVisor" (void)
 {
-	if(CheckInventory("C7VisorActive") < 2)
-		GiveInventory("C7VisorActive",1);
-	else
-		TakeInventory("C7VisorActive",2);
+    if (isDead(0)) { terminate; }
+
+    if (CheckInventory("C7VisorActive") >= 2) { SetInventory("C7VisorActive", 0); }
+    else { GiveInventory("C7VisorActive", 1); }
 }
 
-Script "Corridor7Loop" (void)
+script "Corridor7Loop" (void)
 {
-	int currentMines = 0;
-	int transferMines = 0;
-	While(CheckInventory("C7Class"))
-	{
-		switch(CheckInventory("C7VisorActive"))
-		{
-			case 0:
-				TakeInventory("C7NightVisionPower",1);
-				TakeInventory("C7InfraredPower",1);
-				break;
-			case 1:
-				TakeInventory("C7InfraredPower",1);
-				GiveInventory("C7NightVisionPower",1);
-				break;
-			case 2:
-				TakeInventory("C7NightVisionPower",1);
-				GiveInventory("C7InfraredPower",1);
-				GiveInventory("C7EnemyLookerInfrared",1);
-				break;
-		}
+    int currentMines = 0;
+    bool transferMines = false;
+
+    while (CheckInventory("C7Class"))
+    {
+        if (isDead(0)) { SetInventory("C7VisorActive", 0); } // powerups are always automatically taken on death, no exceptions
+        else
+        {
+            switch (CheckInventory("C7VisorActive"))
+            {
+              case 0: // Off
+                TakeInventory("C7NightVisionPower", 1);
+                TakeInventory("C7InfraredPower", 1);
+                break;
+
+              case 1: // Night Vision
+                TakeInventory("C7InfraredPower", 1);
+
+                GiveInventory("C7NightVisionPower", 1);
+                break;
+
+              case 2: // Infrared
+                TakeInventory("C7NightVisionPower", 1);
+
+                GiveInventory("C7InfraredPower", 1);
+                GiveInventory("C7EnemyLookerInfrared", 1);
+                break;
+            }
+        }
 	
-		if(!SinglePlayer() && !isCoop())
-		{
-			if(ClassifyActor(0) & ACTOR_DEAD) 
-			{
-				currentMines = CheckInventory("C7MineDMToken");
-				transferMines = 1;
-			}
-			else
-			{
-				if(transferMines)
-				{
-					TakeInventory("C7MineDMToken",65536);
-					GiveInventory("C7MineDMToken",currentMines);
-				}
-			}
-		}
-		
-		Delay(1);
-	}
+        if (!isSinglePlayer() && !isCoop())
+        {
+            if (isDead(0))
+            {
+                currentMines = CheckInventory("C7MineDMToken");
+                transferMines = true;
+            } else {
+                if (transferMines)
+                {
+                    SetInventory("C7MineDMToken", currentMines);
+                    transfermines = false;
+                }
+            }
+        }
+
+        Delay(1);
+    }
 }
 
 int infraredMessageIds = 0;
