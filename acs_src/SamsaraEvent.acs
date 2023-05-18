@@ -1786,6 +1786,42 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                 if (CheckInventory("Painkiller_Zoomed") && !CheckWeapon("Painkiller_Boltgun")) { SetInventory("Painkiller_Zoomed", 0); }
                 break;
 
+            case CLASS_UNREAL:
+                if (CheckInventory("Unreal_ZoomedIn") && !CheckWeapon("Unreal_Rifle")) { SetInventory("Unreal_ZoomedIn", 0); }
+
+                if (CheckInventory("SamsaraUnrealStingerPrimaryFiringSoundCheck") && !CheckWeapon("Unreal_Stinger"))
+                {
+                    StopSound(0, CHAN_WEAPON);
+
+                    SetInventory("SamsaraUnrealStingerPrimaryFiringSoundCheck", 0);
+                }
+
+                if (CheckInventory("SamsaraUnrealMinigunFiringSoundCheck") && !CheckWeapon("Unreal_Minigun"))
+                {
+                    StopSound(0, CHAN_WEAPON);
+
+                    SetInventory("SamsaraUnrealMinigunFiringSoundCheck", 0);
+                }
+
+                if (CheckInventory("SamsaraUnrealGESBioRifleSecondaryChargingSoundCheck") && !CheckWeapon("Unreal_GESBioRifle"))
+                {
+                    StopSound(0, CHAN_WEAPON);
+
+                    SetInventory("SamsaraUnrealGESBioRifleSecondaryChargingSoundCheck", 0);
+                }
+
+                if (CheckInventory("SamsaraUnrealCARiflePrimaryFiringSoundCheck") && !CheckWeapon("Unreal_Duster"))
+                {
+                    StopSound(0, CHAN_WEAPON);
+
+                    SetInventory("SamsaraUnrealCARiflePrimaryFiringSoundCheck", 0);
+                }
+
+                TakeInventory("SamsaraUnrealCARifleSecondaryCooldown", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
+
+                if (CheckWeapon("Unreal_Duster")) { GiveInventory("SamsaraUnrealCARifleAltFire", 1); }
+                break;
+
             case CLASS_RTCW:
                 if (CheckInventory("RTCW_Scoped") && !CheckWeapon("RTCW_Mauser") && !CheckWeapon("RTCW_FG42") && !CheckWeapon("RTCW_Snooper")) { SetInventory("RTCW_Scoped", 0); }
 
@@ -1889,11 +1925,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		
         if (CheckSamsaraRecoilSettings(1)) { GiveInventory("SamsaraRecoilIsDisabled", 1); }
         else { TakeInventory("SamsaraRecoilIsDisabled", 0x7FFFFFFF); }
-		
-        if (GetCVar("samsara_cl_noflashes") == 1) { GiveInventory("PickupFlashesAreDisabled", 1); TakeInventory("WeaponFlashesAreDisabled", 0x7FFFFFFF); }
-		else if (GetCVar("samsara_cl_noflashes") == 2) { TakeInventory("PickupFlashesAreDisabled", 0x7FFFFFFF); GiveInventory("WeaponFlashesAreDisabled", 1); }
-		else if (GetCVar("samsara_cl_noflashes") == 3) { GiveInventory("PickupFlashesAreDisabled", 1); GiveInventory("WeaponFlashesAreDisabled", 1); }
-        else { TakeInventory("PickupFlashesAreDisabled", 0x7FFFFFFF); TakeInventory("WeaponFlashesAreDisabled", 0x7FFFFFFF); }
+
+        SetInventory("PickupFlashesAreDisabled", GetUserCVar(pln, "samsara_cl_noflashes") == 1 || GetUserCVar(pln, "samsara_cl_noflashes") >= 3);
+        SetInventory("WeaponFlashesAreDisabled", GetUserCVar(pln, "samsara_cl_noflashes") >= 2);
 
         if (GetCVar("samsara_classiclaz") == 1) { GiveInventory("ChexClassicLaz", 1); }
         else { TakeInventory("ChexClassicLaz", 0x7FFFFFFF); }
@@ -2281,24 +2315,18 @@ script "SamsaraSynthFire" (int startTime) //607 -- SAMSARA_SYNTHFIRE
 
     while (ServerEnterTimes[pln] == startTime)
     {
-        if (CheckInventory("Health") > 0 && !CheckInventory("CompendiumOpened"))
-        {
-        if (keyDown(BT_RELOAD)) { GiveInventory("SynthFireReload", 1); }
-        else { TakeInventory("SynthFireReload", 0x7FFFFFFF); }
-
-        if (keyDown(BT_ATTACK)) { GiveInventory("SynthFireLeft", 1); }
-        else { TakeInventory("SynthFireLeft", 0x7FFFFFFF); }
-        
-        if (keyDown(BT_ALTATTACK)) { GiveInventory("SynthFireRight", 1); }
-        else { TakeInventory("SynthFireRight", 0x7FFFFFFF); }
-        }
+        SetInventory("SynthFireReload", !isDead(0) && !CheckInventory("CompendiumOpened") && keyDown(BT_RELOAD));
+        SetInventory("SynthFireZoom", !isDead(0) && !CheckInventory("CompendiumOpened") && keyDown(BT_ZOOM));
+        SetInventory("SynthFireLeft", !isDead(0) && !CheckInventory("CompendiumOpened") && keyDown(BT_ATTACK));
+        SetInventory("SynthFireRight", !isDead(0) && !CheckInventory("CompendiumOpened") && keyDown(BT_ALTATTACK));
 
         Delay(1);
     }
 
-    TakeInventory("SynthFireReload", 0x7FFFFFFF);
-    TakeInventory("SynthFireLeft", 0x7FFFFFFF);
-    TakeInventory("SynthFireRight", 0x7FFFFFFF);
+    SetInventory("SynthFireReload", 0);
+    SetInventory("SynthFireZoom", 0);
+    SetInventory("SynthFireLeft", 0);
+    SetInventory("SynthFireRight", 0);
 }
 
 script "SamsaraConfirmClass" (int which) { SetResultValue(SamsaraWepType == which); } //206 -- SAMSARA_CONFIRMCLASS
@@ -2602,20 +2630,16 @@ script "SamsaraPuke" (int values, int pln) net //226 - SAMSARA_PUKE
 
 script "SamsaraDeath" death //619 -- SAMSARA_DEATH
 {
-	int pln = PlayerNumber();
-	/*switch(PlayerClass(pln))
-	{
-		case 6:
-			break;
-	}*/
+    int pln = PlayerNumber();
 
-    if (CheckInventory("DoomguyClass"))
+    switch(PlayerClass(pln))
     {
+      case CLASS_DOOM:
         int deadtimer = 0;
 
         while (isDead(0))
         {
-            if (CheckInventory("DoomClassMode") == 1)
+            if (CheckInventory("DoomClassMode") == 1) // Doom 64
             {
                 if (deadtimer >= 1050)
                 {
@@ -2624,12 +2648,17 @@ script "SamsaraDeath" death //619 -- SAMSARA_DEATH
                 }
 
                 deadtimer++;
-            } else {
+            } else { // Original/Stronghold
                 if (deadtimer > 0) { deadtimer = 0; }
             }
 
             if (isDead(0)) { Delay(1); }
         }
+        break;
+
+      case CLASS_UNREAL:
+        SetInventory("SamsaraUnrealCARifleSecondaryCooldown", 0);
+        break;
     }
 }
 

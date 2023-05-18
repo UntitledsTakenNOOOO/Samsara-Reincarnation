@@ -423,7 +423,7 @@ Script "RTCW_Decorate" (int value, int arg1, int arg2, int arg3)
 			SetActivatorToTarget(0);
 			SetHudSize(1280,960,1);
 			SetFont("RTCWKNIF");
-			HudMessage(s:"A"; HUDMSG_FADEOUT|HUDMSG_ALPHA, 1200, CR_UNTRANSLATED, 640.0, 768.0, 0.1, 0.67, 1.0);
+			HudMessage(s:"A"; HUDMSG_FADEOUT|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 1200, CR_UNTRANSLATED, 640.0, 768.0, 0.1, 0.67, 1.0);
 			break;
 		case 45: //Flamethrower burn visuals
 			SetActivator(0,AAPTR_Tracer);
@@ -1424,11 +1424,11 @@ Script "RTCW_ScreenBurn" (void) clientside
 		{
 			alpha -= 0.01;
 			SetFont(strparam(s:"RTCWBR",s:b < 10 ? "0" : "",d:b));
-			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 32150, CR_UNTRANSLATED, 16.0, 16.0, 0, alpha);
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 32150, CR_UNTRANSLATED, 16.0, 16.0, 0, alpha);
 			Delay(2);
 		}
 	}
-	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 32150, CR_UNTRANSLATED, 16.0, 16.0, 0, 0.5);
+	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 32150, CR_UNTRANSLATED, 16.0, 16.0, 0, 0.5);
 }
 
 Script "RTCW_FlamethrowerFireScale" (void)
@@ -1611,14 +1611,13 @@ Script "RTCW_BulletDamage" (int damage)
 	}
 }
 
-Script "RTCW_Kick" (void) net
+script "RTCW_Kick" (void)
 {
-	if(CheckInventory("RTCW_Kicking"))
-		terminate;
-		
-	GiveInventory("RTCW_Kicking",1);
-	Delay(35);
-	TakeInventory("RTCW_Kicking",1);
+    if (CheckInventory("RTCW_Kicking") || isDead(0)) { terminate; }
+
+    GiveInventory("RTCW_Kicking", 1);
+    Delay(35);
+    TakeInventory("RTCW_Kicking", 1);
 }
 
 str RTCW_Scopes[3] = { "RTCWSCP1", "RTCWSCP2", "RTCWSCP3" };
@@ -1653,9 +1652,9 @@ Script "RTCW_ScopeClient" (int scope) clientside
 		{
 			SetHudSize(256,256,0);
 			SetFont("RTCWSNPB");
-			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 1602, CR_UNTRANSLATED, 128.0, 128.0, 0, 0.5);
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 1602, CR_UNTRANSLATED, 128.0, 128.0, 0, 0.5);
 			SetFont("RTCWSNPS");
-			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 1601, CR_UNTRANSLATED, 128.0, 128.0, 0, 1.0);
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 1601, CR_UNTRANSLATED, 128.0, 128.0, 0, 1.0);
 		}
 			
 		int spreadFrac = FixedDiv(CheckInventory("RTCW_AimSpread"),255.0);
@@ -1683,21 +1682,21 @@ Script "RTCW_ScopeClient" (int scope) clientside
 		}
 		
 		//SetActorAngle(0,GetActorAngle(0)+(sin(timer())*spreadFrac));
-		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 1600, CR_UNTRANSLATED, 128.0, 128.0, 0, 1.0);
+		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 1600, CR_UNTRANSLATED, 128.0, 128.0, 0, 1.0);
 		
 		//Accuracy Bar
 		SetFont(RTCW_AccuracyTextures[((FixedDiv(CheckInventory("RTCW_AimSpread"),255.0)*32)>>16)/2]);
 		SetHudClipRect(0,(160.0-(FixedDiv(CheckInventory("RTCW_AimSpread"),255.0)*32))>>16,96,(2*(FixedDiv(CheckInventory("RTCW_AimSpread"),255.0)*32))>>16);
 		SetHudSize(512,320,0);
-		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 1550, CR_UNTRANSLATED, -2.1, 160.0, 0, 0.5);
+		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 1550, CR_UNTRANSLATED, -2.1, 160.0, 0, 0.5);
 		SetHudClipRect(0,0,0,0,0);
 		
 		Delay(1);
 	}
-	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 1602, CR_UNTRANSLATED, 128.0, 128.0, 0.1, 0.0);
-	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 1601, CR_UNTRANSLATED, 128.0, 128.0, 0.1, 0.0);
-	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 1600, CR_UNTRANSLATED, 128.0, 128.0, 0.1, 0.0);
-	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 1550, CR_UNTRANSLATED, 128.0, 128.0, 0.1, 0.0);
+	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 1602, CR_UNTRANSLATED, 128.0, 128.0, 0.1, 0.0);
+	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 1601, CR_UNTRANSLATED, 128.0, 128.0, 0.1, 0.0);
+	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 1600, CR_UNTRANSLATED, 128.0, 128.0, 0.1, 0.0);
+	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_LAYER_UNDERHUD, 1550, CR_UNTRANSLATED, 128.0, 128.0, 0.1, 0.0);
 }
 
 Script "RTCW_Recoil" (int weapon) clientside

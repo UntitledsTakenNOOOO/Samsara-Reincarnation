@@ -2,7 +2,7 @@ Script "Unreal_Loop" (void)
 {	
 	int charging, speedx, speedy, lasttimer, velocity, movement;
 	int chargetime = 39;
-	While(CheckInventory("UnrealClass") == 1 && (ClassifyActor(0) && ACTOR_PLAYER))
+	While(CheckInventory("UnrealClass") && (ClassifyActor(0) && ACTOR_PLAYER))
 	{
 		int input = GetPlayerInput(-1,INPUT_BUTTONS);
 		int DPistolLevel = (CheckInventory("UDPistolUpgrade"));
@@ -11,7 +11,7 @@ Script "Unreal_Loop" (void)
 		if(GetAmmoCapacity("DPistolAmmo") != 60 +(DPistolLevel*10))
 			SetAmmoCapacity("DPistolAmmo", 60+(DPistolLevel*10));
 		
-		if(!(input & BT_ALTATTACK) && charging >= chargetime)
+		if((!(input & BT_ALTATTACK) || CheckInventory("SamsaraHasInfiniteAmmo") || !CheckWeapon("Unreal_DispersionPistol")) && charging >= chargetime)
 		{
 			charging = 0;
 			GiveInventory("DPistolAmmo", 1);
@@ -92,17 +92,7 @@ Script "Unreal_ShockRifleCombo" (void)
 		GiveActorInventory(newtid, "Unreal_EightballLockTimer", 1);
 		delay(5);
 	}
-}	*/
-
-Script "Unreal_CARifleCooldown" (void)
-{
-    if (CheckInventory("Unreal_CARCooldown") > 0)
-    {
-        delay(1);
-        TakeInventory("Unreal_CARCooldown",1);
-        restart;
-    }
-}	
+}*/
 
 Script "UnrealHitBox" (int damage, int headshotdmg)
 {
@@ -237,7 +227,7 @@ Script "Unreal_EightballReticle" (void)
 	{
 		SetFont("8LOCKCH");
 		SetHUDSize(640,480,0);
-		HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_LAYER_OVERHUD, 1624, CR_UNTRANSLATED, 320.0,240.0,0.1,1.0);
+		HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 1624, CR_UNTRANSLATED, 320.0,240.0,0.1,1.0);
 		Delay(1);
 	}
 }		
@@ -276,20 +266,20 @@ Script "Unreal_ASMDTrace" (void)
 	}
 }
 
-Script "Unreal_TransferCharge" (int target)
+script "Unreal_TransferCharge" (int target)
 {
-//	if(target)
-		SetActivatorToTarget(0);
-	
-//	PrintBold(d:CheckInventory("UDispChargePower"));
-	SetResultValue(CheckInventory("UDispChargePower"));
+    if (target) { SetActivatorToTarget(0); }
+
+    SetResultValue(CheckInventory("UDispChargePower"));
 }
 
-Script "Unreal_RevertUpgrade" (void)
+script "Unreal_RevertUpgrade" (void)
 {
-	GiveInventory("UnrealDoUpgradeRevert",1);
-	Delay(9);
-	TakeInventory("UnrealDoUpgradeRevert",1);
+    if (!CheckWeapon("Unreal_DispersionPistol") || isDead(0)) { terminate; }
+
+    GiveInventory("UnrealDoUpgradeRevert", 1);
+    Delay(9);
+    TakeInventory("UnrealDoUpgradeRevert", 1);
 }
 
 Script "Unreal_GibScale" (void)
@@ -353,16 +343,26 @@ Script "Unreal_RedeemerRocket" (void)
 	int missileTid = UniqueTid();
 	int maxturn = 2160;
 	int turnamount = 180;
+    bool spreadproj = false;
 	Thing_ChangeTid(0,missileTid);
-	SetActivator(0,AAPTR_Target);
-	ChangeCamera(missileTid,0,0);
-	SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+	SetActivator(0,AAPTR_TARGET);
+    if (CheckInventory("SamsaraUnrealRedeemerMainRocketControlled")) { spreadproj = true; }
+    else
+    {
+        ChangeCamera(missileTid, 0, 0);
+        SetPlayerProperty(0, 1, PROP_TOTALLYFROZEN);
+        SetInventory("SamsaraUnrealRedeemerMainRocketControlled", 1);
+    }
 	SetActorPitch(missileTid,GetActorPitch(0));
-	while(ClassifyActor(missileTid) > 0 && ClassifyActor(0) & ACTOR_ALIVE)
+	while (ClassifyActor(missileTid) > 0 && !isDead(0) && CheckInventory("SamsaraUnrealRedeemerMainRocketControlled"))
 	{
-		SetFont("UNREDEEM");
-		SetHudSize(640,480,1);
-		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_ADDBLEND,10000,CR_UNTRANSLATED,320.0,240.0,0.1,0.67);
+        if (!spreadproj)
+        {
+            SetFont("UNREDEEM");
+            SetHudSize(640,480,1);
+            HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 10000, CR_UNTRANSLATED, 320.0, 240.0, 0.1, 0.67);
+        }
+
 		int yaw = GetPlayerInput(-1,INPUT_YAW);
 		int pitch = -GetPlayerInput(-1,INPUT_PITCH);
 		int detonate = (GetPlayerInput(-1,INPUT_BUTTONS) & BT_ATTACK);
@@ -373,7 +373,7 @@ Script "Unreal_RedeemerRocket" (void)
 		int vely = FixedMul(16*sin(GetActorAngle(missileTid)),cos(GetActorPitch(missileTid)));
 		int velz = -16*sin(GetActorPitch(missileTid));
 		SetActorVelocity(missileTid,velx,vely,velz,0,0);
-		
+
 		if(GZDoom)
 		{
 			int roll = GetActorRoll(missileTid);
@@ -410,20 +410,25 @@ Script "Unreal_RedeemerRocket" (void)
 		
 		Delay(1);
 		abortDelay++;
-		if(abort != 0 && abortDelay > 7)
-		{
-			SetActorVelocity(missileTid,velx*2,vely*2,velz*2,0,0);
-			break;
-		}
-		else if(detonate)
-		{
-			SetActorState(missileTid,"Death",1);
-			break;
-		}
+
+        if (abort != 0 && abortDelay > 7)
+        {
+            SetActorVelocity(missileTid, velx * 2, vely * 2, velz * 2, false, false);
+            break;
+        } else if (detonate) {
+            SetActorState(missileTid, "ForceDeath", true);
+            break;
+        }
 	}
-	GiveInventory("Unreal_RedeemerLoad",1);
-	HudMessage(s:"";HUDMSG_PLAIN,10000,CR_UNTRANSLATED,240.0,240.0,0.1);
-	SetHudSize(0,0,0);
-	ChangeCamera(0,0,0);
-	SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+
+    if (ClassifyActor(missileTid) > 0 && !CheckActorInventory(missileTid, "SamsaraUnrealRedeemerRocketDeath")) { GiveActorInventory(missileTid, "SamsaraUnrealRedeemerRocketNoTimeFreezeDisabler", 1); }
+
+    if (!spreadproj)
+    {
+        SetInventory("SamsaraUnrealRedeemerMainRocketControlled", 0);
+        HudMessage(s:""; HUDMSG_PLAIN, 10000, CR_UNTRANSLATED, 240.0, 240.0, 0.1);
+        SetHudSize(0, 0, 0);
+        ChangeCamera(0, 0, 0);
+        SetPlayerProperty(0, 0, PROP_TOTALLYFROZEN);
+    }
 }
