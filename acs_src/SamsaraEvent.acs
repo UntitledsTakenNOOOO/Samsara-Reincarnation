@@ -2628,11 +2628,11 @@ script "SamsaraPuke" (int values, int pln) net //226 - SAMSARA_PUKE
 }
 
 
-script "SamsaraDeath" death //619 -- SAMSARA_DEATH
+script "SamsaraDeath" DEATH //619 -- SAMSARA_DEATH
 {
     int pln = PlayerNumber();
 
-    switch(PlayerClass(pln))
+    switch (PlayerClass(pln))
     {
       case CLASS_DOOM:
         int deadtimer = 0;
@@ -2652,12 +2652,31 @@ script "SamsaraDeath" death //619 -- SAMSARA_DEATH
                 if (deadtimer > 0) { deadtimer = 0; }
             }
 
-            if (isDead(0)) { Delay(1); }
+            Delay(1);
         }
         break;
 
       case CLASS_UNREAL:
         SetInventory("SamsaraUnrealCARifleSecondaryCooldown", 0);
+        break;
+
+      case CLASS_RTCW:
+        if (IsSinglePlayer() && !GetCVar("sv_singleplayerrespawn"))
+        {
+            LocalAmbientSound("RTCW/GameOver", 127);
+            SetHudSize(640, 480, 0);
+            HudMessage(l:"RTCW_GAMEOVER"; HUDMSG_FADEOUT, 578, CR_WHITE, 320.0, 360.0, 3.0, 0.2);
+
+            while (isDead(0))
+            {
+                LocalSetMusic(""); // don't let any music changes occur while dead
+
+                Delay(1);
+            }
+
+            // OK, so you don't die.
+            LocalSetMusic("*");
+        }
         break;
     }
 }
