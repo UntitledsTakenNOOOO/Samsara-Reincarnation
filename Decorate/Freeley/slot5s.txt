@@ -47,7 +47,7 @@ ACTOR "Doomstick" : Weapon
 		TNT1 A 0 A_PlaySound("dstick/fire")
 		TNT1 A 0 A_JumpIfInventory("DMModeOn", 1, "DMFire")
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
-		TNT1 A 0 A_FireBullets(8.4,7.2,8,10,"RottDoomStickPuff", FBF_NORANDOM)
+		TNT1 A 0 A_FireBullets(6.2,5.5,8,15,"RottDoomStickPuff", FBF_NORANDOM)
 		RTDS A 1 Offset(0,36) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
         RTDS A 1 Offset(0,37) A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 	 Continue:
@@ -74,10 +74,10 @@ ACTOR "Doomstick" : Weapon
         RTDS A 0 A_Refire
         Goto Ready+1
 	 CoopFire:
-		TNT1 A 0 A_FireBullets(3.6,3.0,6,10,"RottDoomStickPuff", FBF_NORANDOM)
+		TNT1 A 0 A_FireBullets(6.2,5.5,8,15,"RottDoomStickPuffCoop", FBF_NORANDOM)
 		Goto Continue
 	 DMFire:
-		TNT1 A 0 A_FireBullets(3.6,3.0,6,10,"RottDoomStickPuff", FBF_NORANDOM)
+		TNT1 A 0 A_FireBullets(6.2,5.5,8,10,"RottDoomStickPuff", FBF_NORANDOM)
 		Goto Continue
 	 Fireball:
 		TNT1 A 0 A_TakeInventory("DMMissiles",1,TIF_NOTAKEINFINITE)
@@ -129,9 +129,9 @@ ACTOR "Doomstick" : Weapon
 
 actor DMMissiles : Ammo
 {
-    Inventory.MaxAmount 30
+    Inventory.MaxAmount 25
     Ammo.BackpackAmount 1
-    Ammo.BackpackMaxAmount 60
+    Ammo.BackpackMaxAmount 50
     Inventory.Icon "AMSMS0"
     Tag "Doomstick Missiles"
     +IGNORESKILL
@@ -151,9 +151,11 @@ ACTOR RottDoomStickPuff : RottPuff
      }
 }
 
+Actor RottDoomStickPuffCoop : RottDoomStickPuff { +THRUSPECIES +DONTHURTSPECIES Species "Player" }
+
 Actor DoomStickFireBall : RottMissile {
 	Speed 40
-	Damage (15)
+	Damage (20)
 	Scale 0.5
 	SeeSound "NME/Fire3"
     ActiveSound ""	
@@ -162,12 +164,22 @@ Actor DoomStickFireBall : RottMissile {
 			RNME JKLM 3 Bright
 			Loop
 		Death:
-			TNT1 A 0 A_Explode(15, 88, 0)
+		XDeath:
+			TNT1 A 0 A_Explode(15, 48, 1, true, 24)
 			EXPL AAB 1 Bright
 			TNT1 A 0 A_RadiusThrust(200, 96)
 			EXPL BCC 1 Bright
-			TNT1 A 0 A_Explode(15, 88, 0)
+			TNT1 A 0 A_Explode(15, 48, 1, true, 24)
 			EXPL DDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTT 1 Bright
+			Stop
+		Crash:
+			TNT1 A 0 A_StopSound(5)	
+			TNT1 A 0 A_PlaySound("gen/expl2",6,1.0,0,ATTN_NORM)
+			TNT1 A 0 A_Jump(250,2)
+			TNT1 A 0 A_PlaySound("rmissile/cook",5,1.0,0,ATTN_NORM)	
+			TNT1 A 0
+			EXPL A 2 Bright A_Explode(15, 48, 1, true, 24)
+			EXPL BCDEFGHIJKLMNOPQRST 2 Bright
 			Stop
 	}
 }
