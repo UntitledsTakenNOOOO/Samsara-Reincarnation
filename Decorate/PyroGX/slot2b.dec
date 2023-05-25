@@ -1,2 +1,55 @@
+actor SamsaraDescentConcussionMissileAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Shell",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Descent/Missile/Fire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"PickupAttackLeft")
+      // Right
+      PickupAttackRight:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackRightCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackRightCoop")
+      PickupAttackRightDM:
+        TNT1 A 0 A_FireCustomMissile("DescentConcussionMissile",0,false,8)
+        goto PickupFinishRight
+
+      PickupAttackRightCoop:
+        TNT1 A 0 A_FireCustomMissile("DescentConcussionMissileCoop",0,false,8)
+        goto PickupFinishRight
+
+      // Left
+      PickupAttackLeft:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackLeftCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackLeftCoop")
+      PickupAttackLeftDM:
+        TNT1 A 0 A_FireCustomMissile("DescentConcussionMissile",0,false,-8)
+        goto PickupFinishLeft
+
+      PickupAttackLeftCoop:
+        TNT1 A 0 A_FireCustomMissile("DescentConcussionMissileCoop",0,false,-8)
+        goto PickupFinishLeft
+
+      // Finishing stuff
+      // Right
+      PickupFinishRight:
+        TNT1 A 0 A_GiveInventory("DescentMissileSwitcher")
+        stop
+
+      // Left
+      PickupFinishLeft:
+        TNT1 A 0 A_TakeInventory("DescentMissileSwitcher")
+        stop
+    }
+}
+
 actor DescentConcussionMissile : DescentMissile {}
 actor DescentConcussionMissileCoop : DescentConcussionMissile { +THRUSPECIES Species "Player" }

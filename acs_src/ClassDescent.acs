@@ -71,7 +71,7 @@ Script "DescentMovement" (void)
 	int gimbalLock = 1;
 	int gimbalDelay, rollBack, rolling, thirdPerson;
 
-	bool isCoopGame = isCoop();
+	bool isPVEGame = isSinglePlayer() || isCoop();
 
 	if(PlayerIsBot(PlayerNumber())) { GiveInventory("DescentBotTrigger",1); }
 
@@ -277,7 +277,7 @@ Script "DescentMovement" (void)
 
 				if((moveX != 0 || moveY != 0 || moveZ != 0) && timer() % 4 == 0)
 				{
-					if (isCoopGame) LineAttack(0,VectorAngle(moveX,moveY),GetActorPitch(0),5,"DescentRamPuffCoop","",41.0);
+					if (isPVEGame) LineAttack(0,VectorAngle(moveX,moveY),GetActorPitch(0),5,"DescentRamPuffCoop","",41.0);
 					else LineAttack(0,VectorAngle(moveX,moveY),GetActorPitch(0),5,"DescentRamPuff","",41.0);
 				}
 
@@ -1043,17 +1043,13 @@ Script "DescentMinePlace" (int type)
 	switch(type)
 	{
 		case 0:
-			SpawnForced("DescentProximityBomb",GetActorX(0),GetActorY(0),GetActorZ(0),mineTid);
+			if (isSinglePlayer() || isCoop()) { SpawnForced("DescentProximityBombCoop",GetActorX(0),GetActorY(0),GetActorZ(0),mineTid); }
+			else { SpawnForced("DescentProximityBomb",GetActorX(0),GetActorY(0),GetActorZ(0),mineTid); }
 			break;
+
 		case 1:
-			if (isCoop())
-			{
-				SpawnForced("DescentSmartMineCoop",GetActorX(0),GetActorY(0),GetActorZ(0),mineTid);
-			}
-			else
-			{
-				SpawnForced("DescentSmartMine",GetActorX(0),GetActorY(0),GetActorZ(0),mineTid);
-			}
+			if (isSinglePlayer() || isCoop()) { SpawnForced("DescentSmartMineCoop",GetActorX(0),GetActorY(0),GetActorZ(0),mineTid); }
+			else { SpawnForced("DescentSmartMine",GetActorX(0),GetActorY(0),GetActorZ(0),mineTid); }
 			break;
 	}
 	SetPointerExt(AAPTR_MASTER,0,mineTid);

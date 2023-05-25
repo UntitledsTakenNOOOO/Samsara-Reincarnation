@@ -1,3 +1,35 @@
+actor SamsaraDescentShakerMissileAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",5,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",5)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Descent/EarthShaker/Fire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("DescentShakerMissile",0,false,0,-8)
+        goto PickupFinish
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("DescentShakerMissileCoop",0,false,0,-8)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_GiveInventory("DescentRecoil",16)
+        stop
+    }
+}
+
 actor DescentShakerMissile : DescentMissile 
 {
 	Radius 8
@@ -9,22 +41,23 @@ actor DescentShakerMissile : DescentMissile
 	{
 		Spawn:
 			DS00 A 0
-			DS00 A 0 A_GiveToTarget("DescentMissileCamera",1)
+			DS00 A 0 A_GiveToTarget("DescentMissileCamera")
 			DS00 A 0 ACS_NamedExecuteWithResult("DescentMissileCamera")
 		SpawnLoop:
 			DS00 A 1 A_SpawnItemEx("DescentMercuryMissileTrail")
-			Loop
+			loop
+
 		Death:
 			TNT1 A 0 A_RemoveMaster
 			TNT1 A 0 A_Quake(9,35,0,1024,"Descent/Quake")
-			TNT1 A 0 A_Explode(500,250,!XF_HURTSOURCE,1)
-			TNT1 A 0 A_GiveToTarget("DescentMissileStaticGiver",1)
+			TNT1 A 0 A_Explode(500,250,0)
+			TNT1 A 0 A_GiveToTarget("DescentMissileStaticGiver")
 			TNT1 A 0 A_TakeFromTarget("DescentMissileCamera",1)
-			TNT1 A 0 A_PlaySound("Descent/EarthShaker/Explode",CHAN_5)
+			TNT1 A 0 A_PlaySound("Descent/EarthShaker/Explode",CHAN_VOICE)
 			TNT1 A 0 A_SpawnItemEx("DescentShakerExplosion",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
-			TNT1 AAAAAA 0 A_CustomMissile("DescentShakerBomblet",0,0,random(0,359),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(0,359))
+			TNT1 AAAAAA 0 A_CustomMissile("DescentShakerBomblet",0,0,random(0,359),CMF_AIMDIRECTION|CMF_TRACKOWNER,random(0,359))
 			TNT1 AAAAAAAAAAAAA 2 A_RadiusGive("DescentShakerGiver",512,RGF_PLAYERS|RGF_NOSIGHT,1)
-			Stop
+			stop
 	}
 }
 
@@ -37,80 +70,79 @@ actor DescentShakerMissileCoop : DescentShakerMissile
 		Death:
 			TNT1 A 0 A_RemoveMaster
 			TNT1 A 0 A_Quake(9,35,0,1024,"Descent/Quake")
-			TNT1 A 0 A_Explode(500,250,!XF_HURTSOURCE,1)
-			TNT1 A 0 A_GiveToTarget("DescentMissileStaticGiver",1)
+			TNT1 A 0 A_Explode(500,250,0)
+			TNT1 A 0 A_GiveToTarget("DescentMissileStaticGiver")
 			TNT1 A 0 A_TakeFromTarget("DescentMissileCamera",1)
-			TNT1 A 0 A_PlaySound("Descent/EarthShaker/Explode",CHAN_5)
+			TNT1 A 0 A_PlaySound("Descent/EarthShaker/Explode",CHAN_VOICE)
 			TNT1 A 0 A_SpawnItemEx("DescentShakerExplosion",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
-			TNT1 AAAAAA 0 A_CustomMissile("DescentShakerBombletCoop",0,0,random(0,359),CMF_TRACKOWNER|CMF_AIMDIRECTION,random(0,359))
-			Goto Shake1
-		Shake1:
+			TNT1 AAAAAA 0 A_CustomMissile("DescentShakerBombletCoop",0,0,random(0,359),CMF_AIMDIRECTION|CMF_TRACKOWNER,random(0,359))
+		DeathShake1:
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake2
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake2:
+			goto DeathShake2
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake2:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake3
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake3:
+			goto DeathShake3
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake3:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake4
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake4:
+			goto DeathShake4
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake4:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake5
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake5:
+			goto DeathShake5
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake5:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake6
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake6:
+			goto DeathShake6
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake6:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake7
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake7:
+			goto DeathShake7
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake7:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake8
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake8:
+			goto DeathShake8
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake8:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake9
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake9:
+			goto DeathShake9
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake9:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake10
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake10:
+			goto DeathShake10
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake10:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake11
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake11:
+			goto DeathShake11
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake11:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake12
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake12:
+			goto DeathShake12
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake12:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake13
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake13:
+			goto DeathShake13
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake13:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Finish
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Finish:
+			goto DeathShakeFinish
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShakeFinish:
 			TNT1 A 2
-			Stop
+			stop
 	}
 }
 
@@ -124,11 +156,12 @@ actor DescentShakerBomblet : DescentMissile
 		Spawn:
 			DS00 A 1 A_SeekerMissile(8,8,SMF_LOOK|SMF_PRECISE)
 			DS00 A 0 A_SpawnItemEx("DescentMercuryMissileTrail")
-			Loop
+			loop
+
 		Death:
 			TNT1 A 0 A_Quake(9,35,0,1024,"Descent/Quake")
-			TNT1 A 0 A_Explode(500,250,!XF_HURTSOURCE,1)
-			TNT1 A 0 A_PlaySound("Descent/EarthShaker/Explode",CHAN_5)
+			TNT1 A 0 A_Explode(500,250,0)
+			TNT1 A 0 A_PlaySound("Descent/EarthShaker/Explode",CHAN_VOICE)
 			TNT1 A 0 A_SpawnItemEx("DescentShakerExplosion",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
 			TNT1 AAAAAAAAAAAAA 2 A_RadiusGive("DescentShakerGiver",512,RGF_PLAYERS|RGF_NOSIGHT,1)
 			Stop
@@ -143,77 +176,76 @@ actor DescentShakerBombletCoop : DescentShakerBomblet
 	{
 		Death:
 			TNT1 A 0 A_Quake(9,35,0,1024,"Descent/Quake")
-			TNT1 A 0 A_Explode(500,250,!XF_HURTSOURCE,1)
-			TNT1 A 0 A_PlaySound("Descent/EarthShaker/Explode",CHAN_5)
+			TNT1 A 0 A_Explode(500,250,0)
+			TNT1 A 0 A_PlaySound("Descent/EarthShaker/Explode",CHAN_VOICE)
 			TNT1 A 0 A_SpawnItemEx("DescentShakerExplosion",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
-			Goto Shake1
-		Shake1:
+		DeathShake1:
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake2
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake2:
+			goto DeathShake2
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake2:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake3
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake3:
+			goto DeathShake3
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake3:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake4
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake4:
+			goto DeathShake4
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake4:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake5
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake5:
+			goto DeathShake5
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake5:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake6
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake6:
+			goto DeathShake6
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake6:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake7
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake7:
+			goto DeathShake7
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake7:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake8
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake8:
+			goto DeathShake8
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake8:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake9
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake9:
+			goto DeathShake9
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake9:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake10
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake10:
+			goto DeathShake10
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake10:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake11
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake11:
+			goto DeathShake11
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake11:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake12
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake12:
+			goto DeathShake12
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake12:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Shake13
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Shake13:
+			goto DeathShake13
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShake13:
 			TNT1 A 2
 			TNT1 A 0 A_JumpIfCloser(512,1)
-			Goto Finish
-			TNT1 A 0 A_GiveToTarget("DescentShakerGiver",1)
-		Finish:
+			goto DeathShakeFinish
+			TNT1 A 0 A_GiveToTarget("DescentShakerGiver")
+		DeathShakeFinish:
 			TNT1 A 2
-			Stop
+			stop
 	}
 }
 
