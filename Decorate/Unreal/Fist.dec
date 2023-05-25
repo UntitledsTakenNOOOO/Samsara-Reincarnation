@@ -29,7 +29,6 @@ Actor Unreal_DispersionPistol : UnrealWeapon
 		stop
 
 	ReadyActual:
-        TNT1 A 0 A_TakeInventory("UDispChargePower")
         TNT1 A 0 A_JumpIfInventory("UDPistolUpgrade",1,1)
         goto ReadyActualUpgradeCheck
 		TNT1 A 0 A_JumpIfInventory("UnrealDoUpgradeRevert",1,"Revert")
@@ -122,6 +121,8 @@ Actor Unreal_DispersionPistol : UnrealWeapon
 		goto ReadyActual
 
 	Fire:
+        TNT1 A 0 A_TakeInventory("UDispChargePower")
+	FireStart:
 		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred",0,"FireUpgrade4")
 		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred",3,"FireUpgrade3")
 		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred",2,"FireUpgrade2")
@@ -130,7 +131,6 @@ Actor Unreal_DispersionPistol : UnrealWeapon
 		UN00 F 0 A_GiveInventory("SamsaraUnrealDispersionPistolLevel1AttackHandler")
 		UN00 F 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		UN00 GH 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-		UN00 I 0 A_TakeInventory("UDispChargePower")
 		UN00 I 0 A_ReFire
 		UN00 I 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         UN00 J 0
@@ -141,7 +141,6 @@ Actor Unreal_DispersionPistol : UnrealWeapon
 		UN01 Q 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		UN01 RS 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		UN01 T 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-		UN01 T 0 A_TakeInventory("UDispChargePower")
 		UN01 T 0 A_ReFire
 		UN01 T 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         UN01 G 0
@@ -173,6 +172,7 @@ Actor Unreal_DispersionPistol : UnrealWeapon
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         TNT1 A 0 A_JumpIfInventory("DPistolAmmo",1,1)
         goto ReadyActual
+        TNT1 A 0 A_TakeInventory("UDispChargePower")
 		TNT1 A 0 A_PlaySound("Unreal/DPistol/Charge",CHAN_WEAPON)
 	AltFireCharge:
 		TNT1 A 0 A_JumpIfInventory("UDPistolUpgradePreferred",0,"AltFireChargeUpgrade4")
@@ -214,11 +214,11 @@ Actor Unreal_DispersionPistol : UnrealWeapon
         TNT1 A 0 A_JumpIfInventory("DPistolAmmo",1,1)
         goto AltFireChargeFinish
         TNT1 A 0 A_ReFire("AltFireCharge")
-        goto AltFIreChargeFinish
+        goto AltFireChargeFinish
 
     AltFireChargeFinish:
         TNT1 A 0 A_ClearReFire
-        goto Fire
+        goto FireStart
 
 	Revert:
         TNT1 A 0 A_JumpIfInventory("UnrealRevertDirection",1,"RevertForward")
@@ -563,7 +563,12 @@ Actor UDispersionBallLevel1
 	{
 	Spawn:
 		UN00 A 0
+        UN00 A 0 A_JumpIfInTargetInventory("UDispChargePower",1,1)
+        goto SpawnInitDone
 		UN00 A 0 A_GiveInventory("UDispChargePower",CallACS("Unreal_TransferCharge", 1))
+        goto SpawnInitDone
+
+    SpawnInitDone:
         UN00 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
         UN00 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
 	SpawnLoop:
@@ -575,14 +580,19 @@ Actor UDispersionBallLevel1
 		TNT1 A 1 ACS_NamedExecuteWithResult("Unreal_BloodGenerator_Offsets")
 		TNT1 A 0 A_GiveInventory("UnrealBloodyPuffGenerator",1,AAPTR_TRACER)
 	Crash:
-	Death:
+    Death:
         TNT1 A 0 A_JumpIfInventory("SamsaraProjectileSpawnInit",1,"DeathStart")
+        TNT1 A 0 A_JumpIfInTargetInventory("UDispChargePower",1,1)
+        goto DeathInitDone
         TNT1 A 0 A_GiveInventory("UDispChargePower",CallACS("Unreal_TransferCharge", 1))
+        goto DeathInitDone
+
+    DeathInitDone:
         TNT1 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
     DeathStart:
 		TNT1 A 0 A_Explode(CallACS("Unreal_TransferCharge")*15, 150, !XF_HURTSOURCE)
 		TNT1 A 1 A_SpawnItemEx("UnrealPlasmaSplashB", 0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		Stop
+		stop
 	}
 }
 
@@ -597,14 +607,19 @@ Actor UDispersionBallLevel2 : UDispersionBallLevel1
 		TNT1 A 1 ACS_NamedExecuteWithResult("Unreal_BloodGenerator_Offsets")
 		TNT1 A 0 A_GiveInventory("UnrealBloodyPuffGenerator",1,AAPTR_TRACER)
 	Crash:
-	Death:
+    Death:
         TNT1 A 0 A_JumpIfInventory("SamsaraProjectileSpawnInit",1,"DeathStart")
+        TNT1 A 0 A_JumpIfInTargetInventory("UDispChargePower",1,1)
+        goto DeathInitDone
         TNT1 A 0 A_GiveInventory("UDispChargePower",CallACS("Unreal_TransferCharge", 1))
+        goto DeathInitDone
+
+    DeathInitDone:
         TNT1 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
     DeathStart:
 		TNT1 A 0 A_Explode(CallACS("Unreal_TransferCharge")*25, 150, !XF_HURTSOURCE)
 		TNT1 A 1 A_SpawnItemEx("UnrealPlasmaSplashY", 0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		Stop
+		stop
 	}
 }
 
@@ -619,14 +634,19 @@ Actor UDispersionBallLevel3 : UDispersionBallLevel1
 		TNT1 A 1 ACS_NamedExecuteWithResult("Unreal_BloodGenerator_Offsets")
 		TNT1 A 0 A_GiveInventory("UnrealBloodyPuffGenerator",1,AAPTR_TRACER)
 	Crash:
-	Death:
+    Death:
         TNT1 A 0 A_JumpIfInventory("SamsaraProjectileSpawnInit",1,"DeathStart")
+        TNT1 A 0 A_JumpIfInTargetInventory("UDispChargePower",1,1)
+        goto DeathInitDone
         TNT1 A 0 A_GiveInventory("UDispChargePower",CallACS("Unreal_TransferCharge", 1))
+        goto DeathInitDone
+
+    DeathInitDone:
         TNT1 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
     DeathStart:
 		TNT1 A 0 A_Explode(CallACS("Unreal_TransferCharge")*40, 150, !XF_HURTSOURCE)
 		TNT1 A 1 A_SpawnItemEx("UnrealPlasmaSplashG", 0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		Stop
+		stop
 	}
 }
 
@@ -641,14 +661,19 @@ Actor UDispersionBallLevel4 : UDispersionBallLevel1
 		TNT1 A 1 ACS_NamedExecuteWithResult("Unreal_BloodGenerator_Offsets")
 		TNT1 A 0 A_GiveInventory("UnrealBloodyPuffGenerator",1,AAPTR_TRACER)
 	Crash:
-	Death:
+    Death:
         TNT1 A 0 A_JumpIfInventory("SamsaraProjectileSpawnInit",1,"DeathStart")
+        TNT1 A 0 A_JumpIfInTargetInventory("UDispChargePower",1,1)
+        goto DeathInitDone
         TNT1 A 0 A_GiveInventory("UDispChargePower",CallACS("Unreal_TransferCharge", 1))
+        goto DeathInitDone
+
+    DeathInitDone:
         TNT1 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
     DeathStart:
 		TNT1 A 0 A_Explode(CallACS("Unreal_TransferCharge")*55, 150, !XF_HURTSOURCE)
 		TNT1 A 1 A_SpawnItemEx("UnrealPlasmaSplashO", 0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		Stop
+		stop
 	}
 }
 
@@ -663,14 +688,19 @@ Actor UDispersionBallLevel5 : UDispersionBallLevel4
 		TNT1 A 1 ACS_NamedExecuteWithResult("Unreal_BloodGenerator_Offsets")
 		TNT1 A 0 A_GiveInventory("UnrealBloodyPuffGenerator",1,AAPTR_TRACER)
 	Crash:
-	Death:
+    Death:
         TNT1 A 0 A_JumpIfInventory("SamsaraProjectileSpawnInit",1,"DeathStart")
+        TNT1 A 0 A_JumpIfInTargetInventory("UDispChargePower",1,1)
+        goto DeathInitDone
         TNT1 A 0 A_GiveInventory("UDispChargePower",CallACS("Unreal_TransferCharge", 1))
+        goto DeathInitDone
+
+    DeathInitDone:
         TNT1 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
     DeathStart:
 		TNT1 A 0 A_Explode(CallACS("Unreal_TransferCharge")*75, 150, !XF_HURTSOURCE)
 		TNT1 A 1 A_SpawnItemEx("UnrealPlasmaSplashR", 0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		Stop
+		stop
 	}
 }
 

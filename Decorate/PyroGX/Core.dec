@@ -14,11 +14,9 @@ Actor DescentCounter : Inventory
     -INVBAR
 }
 
-Actor DescentClass : Inventory { -INVBAR +INVENTORY.UNDROPPABLE Inventory.MaxAmount 1 }
-Actor DescentPrimaryCounter : DescentCounter { Inventory.MaxAmount 9 Inventory.InterHubAmount 9 }
-Actor DescentSecondaryCounter : DescentCounter { Inventory.MaxAmount 9 Inventory.InterHubAmount 9 }
-Actor DescentChargeToken : DescentCounter { Inventory.MaxAmount 20 }
-Actor DescentLaserLevel : DescentCounter { Inventory.MaxAmount 5 Inventory.InterHubAmount 5 } 
+Actor DescentPrimaryCounter : Counter { Inventory.MaxAmount 9 }
+Actor DescentSecondaryCounter : Counter { Inventory.MaxAmount 9 }
+Actor DescentLaserLevel : Counter { Inventory.MaxAmount 5 }
 Actor DescentPrimaryTrigger : DescentBoolean {}
 Actor DescentSecondaryKeySwitcher : DescentBoolean {}
 Actor DescentSecondaryTrigger : DescentBoolean {}
@@ -34,529 +32,364 @@ Actor DescentWeapon : Weapon
 	Weapon.SlotNumber 0
 	Weapon.SlotPriority 1
 	Inventory.PickupSound "Descent/Item/Pickup"
-	+WEAPON.AMMO_OPTIONAL
 	Inventory.RestrictedTo "DescentPyroGX"
     Tag "Pyro-GX Weapons"
+    +ALT_AMMO_OPTIONAL
+    +AMMO_OPTIONAL
 	States
 	{
 		Spawn:
 			PIST A -1
-			Stop
+			stop
+
 		Select:
-		DeselectLoop:
+		SelectLoop:
 			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Raise
 			TNT1 A 1 A_Raise
-			Loop
+			loop
+
 		Deselect:
 		DeselectLoop:
 			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
 			TNT1 A 1 A_Lower
-			Loop
+			loop
+
 		Ready:
 			TNT1 A 0 A_JumpIfInventory("DescentSecondaryFiring",1,2)
 			TNT1 A 0 A_GunFlash("ReadySecondary",GFF_NOEXTCHANGE)
-			TNT1 A 0 A_JumpIfInventory("DescentPrimaryTrigger",1,"Primary")
-			TNT1 A 0 A_JumpIfInventory("DescentBotTrigger",1,1)
-			Goto Ready+5
-			TNT1 A 1 A_WeaponReady
-			Loop
+			TNT1 A 0 A_JumpIfInventory("DescentPrimaryTrigger",1,"FirePrimary")
+			TNT1 A 0 A_JumpIfInventory("DescentBotTrigger",1,"ReadyBot")
 			TNT1 A 1 A_WeaponReady(WRF_NOFIRE)
-			Loop
+			loop
+
+        ReadyBot:
+			TNT1 A 1 A_WeaponReady
+			goto Ready
+
 		ReadySecondary:
-			TNT1 A 0 A_JumpIfInventory("DescentPrimaryTrigger",1,2)
-			TNT1 A 1
-			Stop
-			TNT1 A 0 A_JumpIfInventory("DescentSecondaryTrigger",1,"Secondary")
-			TNT1 A 1
-			Stop
+			TNT1 A 1 A_JumpIfInventory("DescentPrimaryTrigger",1,1)
+			stop
+			TNT1 A 1 A_JumpIfInventory("DescentSecondaryTrigger",1,"FireSecondary")
+			stop
+
 		Fire:
-			TNT1 A 1 A_JumpIfInventory("DescentBotTrigger",1,"Primary")
-			Goto Ready
-		Primary:
+			TNT1 A 1 A_JumpIfInventory("DescentBotTrigger",1,"FirePrimary")
+			goto Ready
+
+		FirePrimary:
 			TNT1 A 0 A_JumpIfInventory("DescentSecondaryTrigger",1,"Fire")
+			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",9,"FirePrimaryPhoenix")
+			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",8,"FirePrimaryPlasma")
+			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",7,"FirePrimaryOmega")
+			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",6,"FirePrimaryHelix")
+			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",5,"FirePrimaryFusion")
+			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",4,"FirePrimarySpreadFire")
+			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",3,"FirePrimaryGauss")
+			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",2,"FirePrimaryVulcan")
+            // 1 redirects to Laser due to being upgraded
+		FirePrimaryLaser:
+            TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+            goto FirePrimaryLaserStart
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FirePrimaryLaserStart")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"FirePrimaryLaserStart")
+            goto NoAmmoAlertPrimaryClip
+
+        FirePrimaryLaserStart:
+            TNT1 A 0 A_AlertMonsters
+            TNT1 A 10 A_GiveInventory("SamsaraDescentLaserAttackHandler")
+            goto Ready
+
+        FirePrimaryVulcan:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FirePrimaryVulcanStart")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"FirePrimaryVulcanStart")
+            goto NoAmmoAlertPrimaryClip
+
+        FirePrimaryVulcanStart:
+            TNT1 A 0 A_AlertMonsters
+            TNT1 A 0 A_TakeInventory("SamsaraDescentVulcanAttackSilentSound")
+            TNT1 A 1 A_GiveInventory("SamsaraDescentVulcanAttackHandler")
+            TNT1 A 0 A_GiveInventory("SamsaraDescentVulcanAttackSilentSound")
+            TNT1 A 1 A_GiveInventory("SamsaraDescentVulcanAttackHandler")
+            goto Ready
+
+        FirePrimaryGauss:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FirePrimaryGaussStart")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"FirePrimaryGaussStart")
+            goto NoAmmoAlertPrimaryClip
+
+        FirePrimaryGaussStart:
+            TNT1 A 0 A_AlertMonsters
+            TNT1 A 4 A_GiveInventory("SamsaraDescentGaussAttackHandler")
+            goto Ready
+
+        FirePrimarySpreadFire:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FirePrimarySpreadFireStart")
+            TNT1 A 0 A_JumpIfInventory("Clip",2,"FirePrimarySpreadFireStart")
+            goto NoAmmoAlertPrimaryClip
+
+        FirePrimarySpreadFireStart:
+            TNT1 A 0 A_AlertMonsters
+            TNT1 A 6 A_GiveInventory("SamsaraDescentSpreadFireAttackHandler")
+            goto Ready
+
+        FirePrimaryFusion:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FirePrimaryFusionChargeInit")
+            TNT1 A 0 A_JumpIfInventory("Cell",5,"FirePrimaryFusionChargeInit")
+            goto NoAmmoAlertPrimaryCell
+
+        FirePrimaryFusionChargeInit:
+            TNT1 A 0 A_TakeInventory("SamsaraDescentFusionChargeAmount")
+        FirePrimaryFusionCharge:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+            TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+            goto FirePrimaryFusionStart
+            TNT1 A 7
+            TNT1 A 0 A_JumpIfInventory("DescentPrimaryTrigger",1,1)
+            goto FirePrimaryFusionStart
+            TNT1 A 0 A_GiveInventory("SamsaraDescentFusionChargeGiver")
+            loop
+
+        FirePrimaryFusionStart:
+            TNT1 A 0 A_AlertMonsters
+            TNT1 A 10 A_GiveInventory("SamsaraDescentFusionAttackHandler")
+            goto Ready
+
+        FirePrimaryHelix:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FirePrimaryHelixStart")
+            TNT1 A 0 A_JumpIfInventory("Clip",4,"FirePrimaryHelixStart")
+            goto NoAmmoAlertPrimaryClip
+
+        FirePrimaryHelixStart:
+            TNT1 A 0 A_AlertMonsters
+            TNT1 A 6 A_GiveInventory("SamsaraDescentHelixAttackHandler")
+            goto Ready
+
+        FirePrimaryOmega:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FirePrimaryOmegaStart")
+            TNT1 A 0 A_JumpIfInventory("Cell",2,"FirePrimaryOmegaStart")
+            goto NoAmmoAlertPrimaryCell
+
+        FirePrimaryOmegaStart:
+            TNT1 A 0 A_AlertMonsters
+            TNT1 A 4 A_GiveInventory("SamsaraDescentOmegaAttackHandler")
+            goto Ready
+
+        FirePrimaryPlasma:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FirePrimaryPlasmaStart")
+            TNT1 A 0 A_JumpIfInventory("Clip",1,"FirePrimaryPlasmaStart")
+            goto NoAmmoAlertPrimaryClip
+
+        FirePrimaryPlasmaStart:
+            TNT1 A 0 A_AlertMonsters
+            TNT1 A 5 A_GiveInventory("SamsaraDescentPlasmaAttackHandler")
+            goto Ready
+
+        FirePrimaryPhoenix:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FirePrimaryPhoenixStart")
+            TNT1 A 0 A_JumpIfInventory("Cell",1,"FirePrimaryPhoenixStart")
+            goto NoAmmoAlertPrimaryCell
+
+        FirePrimaryPhoenixStart:
+            TNT1 A 0 A_AlertMonsters
+            TNT1 A 4 A_GiveInventory("SamsaraDescentPhoenixAttackHandler")
+            goto Ready
+
+		FireSecondary:
+			TNT1 A 0 A_GiveInventory("DescentSecondaryFiring")
+			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",9,"FireSecondarySmartMine")
+			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",8,"FireSecondaryProximity")
 			TNT1 A 0 A_AlertMonsters
-			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",9,"Primary_Phoenix")
-			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",8,"Primary_Plasma")
-			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",7,"Primary_Omega")
-			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",6,"Primary_Helix")
-			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",5,"Primary_FusionCannon")
-			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",4,"Primary_SpreadFire")
-			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",3,"Primary_Gauss")
-			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",2,"Primary_Vulcan")
-			Goto Primary_Laser
-		Primary_Laser:
-			TNT1 A 0 A_FireBullets(0,0,1,0,"SamsaraBlankPuff",FBF_NORANDOM|FBF_NOFLASH)
-			TNT1 A 0 A_JumpIfInventory("DescentLaserLevel",5,"Primary_SuperLaser2")
-			TNT1 A 0 A_JumpIfInventory("DescentLaserLevel",4,"Primary_SuperLaser")
-			TNT1 A 0 A_JumpIfInventory("DescentLaserLevel",3,"Primary_Laser4")
-			TNT1 A 0 A_JumpIfInventory("DescentLaserLevel",2,"Primary_Laser3")
-			TNT1 A 0 A_JumpIfInventory("DescentLaserLevel",1,"Primary_Laser2")
-		Primary_Laser1:	
-			TNT1 A 0 A_PlaySound("Descent/Laser1/Fire",CHAN_5)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Primary_Laser1Coop")
-			TNT1 A 0 A_FireCustomMissile("DescentLaser1Projectile",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser1Projectile",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser1Projectile",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser1Projectile",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_Laser1Coop:	
-			TNT1 A 0 A_FireCustomMissile("DescentLaser1ProjectileCoop",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser1ProjectileCoop",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser1ProjectileCoop",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser1ProjectileCoop",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_Laser2:
-			TNT1 A 0 A_PlaySound("Descent/Laser2/Fire",CHAN_5)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Primary_Laser2Coop")
-			TNT1 A 0 A_FireCustomMissile("DescentLaser2Projectile",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser2Projectile",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser2Projectile",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser2Projectile",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_Laser2Coop:
-			TNT1 A 0 A_FireCustomMissile("DescentLaser2ProjectileCoop",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser2ProjectileCoop",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser2ProjectileCoop",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser2ProjectileCoop",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_Laser3:
-			TNT1 A 0 A_PlaySound("Descent/Laser3/Fire",CHAN_5)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Primary_Laser3Coop")
-			TNT1 A 0 A_FireCustomMissile("DescentLaser3Projectile",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser3Projectile",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser3Projectile",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser3Projectile",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_Laser3Coop:
-			TNT1 A 0 A_FireCustomMissile("DescentLaser3ProjectileCoop",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser3ProjectileCoop",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser3ProjectileCoop",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser3ProjectileCoop",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_Laser4:
-			TNT1 A 0 A_PlaySound("Descent/Laser4/Fire",CHAN_5)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Primary_Laser4Coop")
-			TNT1 A 0 A_FireCustomMissile("DescentLaser4Projectile",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser4Projectile",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser4Projectile",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser4Projectile",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_Laser4Coop:
-			TNT1 A 0 A_FireCustomMissile("DescentLaser4ProjectileCoop",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser4ProjectileCoop",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser4ProjectileCoop",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser4ProjectileCoop",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_SuperLaser:
-			TNT1 A 0 A_PlaySound("Descent/Laser5/Fire",CHAN_5)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Primary_SuperLaserCoop")
-			TNT1 A 0 A_FireCustomMissile("DescentLaser5Projectile",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser5Projectile",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser5Projectile",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser5Projectile",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_SuperLaserCoop:
-			TNT1 A 0 A_FireCustomMissile("DescentLaser5ProjectileCoop",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser5ProjectileCoop",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser5ProjectileCoop",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser5ProjectileCoop",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_SuperLaser2:
-			TNT1 A 0 A_PlaySound("Descent/Laser6/Fire",CHAN_5)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Primary_SuperLaser2Coop")
-			TNT1 A 0 A_FireCustomMissile("DescentLaser6Projectile",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser6Projectile",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser6Projectile",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser6Projectile",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_SuperLaser2Coop:
-			TNT1 A 0 A_FireCustomMissile("DescentLaser6ProjectileCoop",0,0,-8)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser6ProjectileCoop",0,0,8)
-			TNT1 A 0 A_JumpIfInventory("DescentQuadLaser",1,1)
-			Goto Primary_Laser_End
-			TNT1 A 0 A_FireCustomMissile("DescentLaser6ProjectileCoop",0,0,-16,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentLaser6ProjectileCoop",0,0,16,-4)
-			Goto Primary_Laser_End
-		Primary_Laser_End:
-			TNT1 A 10
-			Goto Ready
-		Primary_Vulcan:
-			TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-			Goto NoPrimaryClip
-			TNT1 A 0 A_JumpIfInventory("DescentVulcanFiredOnce", 0, "Primary_Vulcan_Take_Ammo")
-			TNT1 A 0 A_GiveInventory("DescentVulcanFiredOnce")
-		Primary_Vulcan2:
-			TNT1 A 0 A_PlaySound("Descent/Vulcan/Fire",CHAN_WEAPON)
-			TNT1 A 0 A_JumpIfInventory("DescentPrimarySwitcher",1,"Primary_Vulcan_End")
-			TNT1 A 0 A_GiveInventory("DescentPrimarySwitcher",1)
-			TNT1 A 0 A_JumpIfInventory("SPModeOn",1,4)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,3)
-			TNT1 AA 1 A_FireBullets(3.5,3.5,-1,4,"DescentVulcanPuff",FBF_NORANDOM|FBF_NORANDOMPUFFZ)
-			Goto Primary_Vulcan_End
-			TNT1 AA 1 A_FireBullets(3.5,3.5,-1,6,"DescentVulcanPuffCoop",FBF_NORANDOM|FBF_NORANDOMPUFFZ)
-			Goto Primary_Vulcan_End
-		Primary_Vulcan_End:
-			TNT1 A 0 A_TakeInventory("DescentPrimarySwitcher",1)
-			Goto Ready
-		Primary_Vulcan_Take_Ammo:
-			TNT1 A 0 A_TakeInventory("DescentVulcanFiredOnce", 3)
-			TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
-			Goto Primary_Vulcan2
-		Primary_Gauss:
-			TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-			Goto NoPrimaryClip
-			TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
-			TNT1 A 0 A_PlaySound("Descent/Gauss/Fire",CHAN_WEAPON)
-			TNT1 A 0 A_JumpIfInventory("SPModeOn",1,3)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
-			TNT1 A 4 A_FireBullets(0,0,-1,20,"DescentGaussPuff",FBF_NORANDOM|FBF_NORANDOMPUFFZ)
-			Goto Ready
-			TNT1 A 4 A_FireBullets(0,0,-1,35,"DescentGaussPuffCoop",FBF_NORANDOM|FBF_NORANDOMPUFFZ)
-			Goto Ready
-		Primary_SpreadFire:
-			TNT1 A 0 A_JumpIfInventory("Clip",2,1)
-			Goto NoPrimaryClip
-			TNT1 A 0 A_PlaySound("Descent/SpreadFire/Fire",CHAN_WEAPON)
-			TNT1 A 0 A_TakeInventory("Clip",2,TIF_NOTAKEINFINITE)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Primary_SpreadFireCoop")
-			TNT1 A 0 A_JumpIfInventory("DescentPrimarySwitcher",1,5)
-			TNT1 A 0 A_GiveInventory("DescentPrimarySwitcher",1)
-			TNT1 A 0 A_FireCustomMissile("DescentSpreadFireProjectile",-4,0)
-			TNT1 A 0 A_FireCustomMissile("DescentSpreadFireProjectile",0,1)
-			TNT1 A 6 A_FireCustomMissile("DescentSpreadFireProjectile",4,0)
-			Goto Ready
-			TNT1 A 0 A_FireCustomMissile("DescentSpreadFireProjectile",0,0,0,0,0,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentSpreadFireProjectile",0,1)
-			TNT1 A 0 A_FireCustomMissile("DescentSpreadFireProjectile",0,0,0,0,0,4)
-			TNT1 A 6 A_TakeInventory("DescentPrimarySwitcher",1)
-			Goto Ready
-		Primary_SpreadFireCoop:
-			TNT1 A 0 A_JumpIfInventory("DescentPrimarySwitcher",1,5)
-			TNT1 A 0 A_GiveInventory("DescentPrimarySwitcher",1)
-			TNT1 A 0 A_FireCustomMissile("DescentSpreadFireProjectileCoop",-4,0)
-			TNT1 A 0 A_FireCustomMissile("DescentSpreadFireProjectileCoop",0,1)
-			TNT1 A 6 A_FireCustomMissile("DescentSpreadFireProjectileCoop",4,0)
-			Goto Ready
-			TNT1 A 0 A_FireCustomMissile("DescentSpreadFireProjectileCoop",0,0,0,0,0,-4)
-			TNT1 A 0 A_FireCustomMissile("DescentSpreadFireProjectileCoop",0,1)
-			TNT1 A 0 A_FireCustomMissile("DescentSpreadFireProjectileCoop",0,0,0,0,0,4)
-			TNT1 A 6 A_TakeInventory("DescentPrimarySwitcher",1)
-			Goto Ready
-		Primary_FusionCannon:
-			TNT1 A 0 A_JumpIfInventory("Cell",5,1)
-			Goto NoPrimaryCell
-			TNT1 A 0 A_JumpIfInventory("Cell",1,1)
-			Goto Primary_FusionCannonFire
-			TNT1 A 7
-			TNT1 A 0 A_JumpIfInventory("DescentPrimaryTrigger",1,1)
-			Goto Primary_FusionCannonFire
-			TNT1 A 0 A_JumpIfInventory("SamsaraRecoilIsDisabled", 1, 2)
-			TNT1 A 0 A_SetPitch(pitch+frandom(-1.0,1.0))
-			TNT1 A 0 A_SetAngle(angle+frandom(-1.0,1.0))
-			TNT1 A 0 A_JumpIfInventory("DescentChargeToken",0,"Primary_FusionCannon_Damage")
-			TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
-			TNT1 A 0 ACS_NamedExecuteWithResult("DescentFusionChargeSound")
-			TNT1 A 0 A_SetBlend("Purple",0.33,70)
-			TNT1 A 0 A_GiveInventory("DescentChargeToken",1)
-			Goto Primary_FusionCannon+1
-		Primary_FusionCannon_Damage:
-			TNT1 A 0 ACS_NamedExecuteWithResult("DescentFusionChargeSound",1)
-			TNT1 A 0 Thing_Damage(0,5,0)
-			TNT1 A 0 A_SetBlend("Yellow",0.33,70)
-			TNT1 A 0 A_GiveInventory("DescentChargeToken",1)
-			Goto Primary_FusionCannon+1
-		Primary_FusionCannonFire:
-			//TNT1 A 0 A_SetAngle(angle+frandom(-10.0,10.0))
-			TNT1 A 0 A_GiveInventory("DescentRecoil",12)
-			TNT1 A 0 A_PlaySound("Descent/Fusion/Fire",CHAN_WEAPON)
-			TNT1 A 0 A_TakeInventory("Cell",5,TIF_NOTAKEINFINITE)
-			TNT1 A 0 A_JumpIfInventory("SPModeOn",1,4)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,3)
-			TNT1 A 0 A_FireCustomMissile("DescentFusionProjectile",0,0,12)
-			TNT1 A 10 A_FireCustomMissile("DescentFusionProjectile",0,0,-12)
-			Goto Ready
-			TNT1 A 0 A_FireCustomMissile("DescentFusionProjectileCoop",0,0,12)
-			TNT1 A 10 A_FireCustomMissile("DescentFusionProjectileCoop",0,0,-12)
-			Goto Ready
-		Primary_Helix:
-			TNT1 A 0 A_JumpIfInventory("Clip",4,1)
-			Goto NoPrimaryCell
-		Primary_Helix_Rotation:
-			TNT1 A 0 A_JumpIfInventory("DescentHelixRotation",0,"Primary_Helix_Clear")
-			TNT1 A 0 A_PlaySound("Descent/Helix/Fire",CHAN_WEAPON)
-			TNT1 A 0 A_TakeInventory("Clip",4,TIF_NOTAKEINFINITE)
-			TNT1 A 0 A_JumpIfInventory("SPModeOn", 1, 7)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,6)
-			TNT1 A 0 A_FireCustomMissile("DescentHelixProjectile",5*cos(CallACS("DescentHelixRotation")/10),0,0,0,0,5*sin(CallACS("DescentHelixRotation")/10))
-			TNT1 A 0 A_FireCustomMissile("DescentHelixProjectile",2.5*cos(CallACS("DescentHelixRotation")/10),0,0,0,0,2.5*sin(CallACS("DescentHelixRotation")/10))
-			TNT1 A 0 A_FireCustomMissile("DescentHelixProjectile",0,0,0,0,0,0)
-			TNT1 A 0 A_FireCustomMissile("DescentHelixProjectile",-2.5*cos(CallACS("DescentHelixRotation")/10),0,0,0,0,-2.5*sin(CallACS("DescentHelixRotation")/10))
-			TNT1 A 0 A_FireCustomMissile("DescentHelixProjectile",-5*cos(CallACS("DescentHelixRotation")/10),0,0,0,0,-5*sin(CallACS("DescentHelixRotation")/10))
-			Goto Primary_Helix_End
-			TNT1 A 0 A_FireCustomMissile("DescentHelixProjectileCoop",5*cos(CallACS("DescentHelixRotation")/10),0,0,0,0,5*sin(CallACS("DescentHelixRotation")/10))
-			TNT1 A 0 A_FireCustomMissile("DescentHelixProjectileCoop",2.5*cos(CallACS("DescentHelixRotation")/10),0,0,0,0,2.5*sin(CallACS("DescentHelixRotation")/10))
-			TNT1 A 0 A_FireCustomMissile("DescentHelixProjectileCoop",0,0,0,0,0,0)
-			TNT1 A 0 A_FireCustomMissile("DescentHelixProjectileCoop",-2.5*cos(CallACS("DescentHelixRotation")/10),0,0,0,0,-2.5*sin(CallACS("DescentHelixRotation")/10))
-			TNT1 A 0 A_FireCustomMissile("DescentHelixProjectileCoop",-5*cos(CallACS("DescentHelixRotation")/10),0,0,0,0,-5*sin(CallACS("DescentHelixRotation")/10))
-			Goto Primary_Helix_End
-		Primary_Helix_Clear:
-			TNT1 A 0 A_TakeInventory("DescentHelixRotation",3600)
-			Goto Primary_Helix_Rotation+1
-		Primary_Helix_End:
-			TNT1 A 6 A_GiveInventory("DescentHelixRotation",225)
-			Goto Ready
-		Primary_Omega:
-			TNT1 A 0 A_JumpIfInventory("Cell",2,1)
-			Goto NoPrimaryCell
-			TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Primary_OmegaCoop")
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Primary_OmegaCoop")			
-			Goto Primary_OmegaDM
-		Primary_OmegaCoop:
-			TNT1 A 0 ACS_NamedExecuteWithResult("DescentOmegaFireSound",1)
-			TNT1 A 0 A_PlaySound("Descent/Omega/Fire",CHAN_WEAPON)
-			TNT1 A 0 A_TakeInventory("Cell",2,TIF_NOTAKEINFINITE)	
-			TNT1 A 4 A_FireCustomMissile("DescentOmegaProjectileCoop",0,1,-12)
-			Goto Ready			
-		Primary_OmegaDM:
-			TNT1 A 0 ACS_NamedExecuteWithResult("DescentOmegaFireSound",1)
-			TNT1 A 0 A_PlaySound("Descent/Omega/Fire",CHAN_WEAPON)
-			TNT1 A 0 A_TakeInventory("Cell",2,TIF_NOTAKEINFINITE)			
-			TNT1 A 4 A_FireCustomMissile("DescentOmegaProjectile",0,1,-12)		
-			Goto Ready
-		Primary_Plasma:
-			TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-			Goto NoPrimaryClip
-			TNT1 A 0 A_PlaySound("Descent/Plasma/Fire",CHAN_WEAPON)
-			TNT1 A 0 A_TakeInventory("Clip",1,TIF_NOTAKEINFINITE)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,3)
-			TNT1 A 0 A_FireCustomMissile("DescentPlasmaProjectile",0,0,-8)
-			TNT1 A 5 A_FireCustomMissile("DescentPlasmaProjectile",0,1,8)
-			Goto Ready
-			TNT1 A 0 A_FireCustomMissile("DescentPlasmaProjectileCoop",0,0,-8)
-			TNT1 A 5 A_FireCustomMissile("DescentPlasmaProjectileCoop",0,1,8)
-			Goto Ready
-		Primary_Phoenix:
-			TNT1 A 0 A_JumpIfInventory("Cell",1,1)
-			Goto NoPrimaryCell
-			TNT1 A 0 A_PlaySound("Descent/Phoenix/Fire",CHAN_WEAPON)
-			TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
-			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,3)
-			TNT1 A 0 A_FireCustomMissile("DescentPhoenixProjectile",0,0,-8)
-			TNT1 A 4 A_FireCustomMissile("DescentPhoenixProjectile",0,1,8)
-			Goto Ready
-			TNT1 A 0 A_FireCustomMissile("DescentPhoenixProjectileCoop",0,0,-8)
-			TNT1 A 4 A_FireCustomMissile("DescentPhoenixProjectileCoop",0,1,8)
-			Goto Ready
-		Secondary:
-			TNT1 A 0 A_GiveInventory("DescentSecondaryFiring",1)
-			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",9,"Secondary_SmartMine")
-			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",8,"Secondary_Proximity")
-			TNT1 A 0 A_AlertMonsters
-			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",7,"Secondary_Shaker")
-			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",6,"Secondary_Mercury")
-			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",5,"Secondary_Mega")
-			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",4,"Secondary_Guided")
-			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",3,"Secondary_Homing")
-			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",2,"Secondary_Concussion")
-			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",1,"Secondary_Smart")
-			Goto Secondary_Flash
-		Secondary_Flash:
+			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",7,"FireSecondaryShaker")
+			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",6,"FireSecondaryMercury")
+			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",5,"FireSecondaryMega")
+			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",4,"FireSecondaryGuided")
+			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",3,"FireSecondaryHoming")
+			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",2,"FireSecondaryConcussion")
+			TNT1 A 0 A_JumpIfInventory("DescentSecondaryCounter",1,"FireSecondarySmart")
+			Goto FireSecondaryFlash
+		FireSecondaryFlash:
 			TNT1 A 0 A_PlaySound("Descent/Missile/Fire",CHAN_WEAPON)
-			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"Secondary_Flash_Alternate")
+			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"FireSecondaryFlash_Alternate")
 			TNT1 A 0 A_GiveInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentFlashMissile",0,1,8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentFlashMissileCoop",0,1,8)
-			Goto Secondary_Fire_End
-		Secondary_Flash_Alternate:
+			Goto FireSecondaryEnd
+		FireSecondaryFlash_Alternate:
 			TNT1 A 0 A_TakeInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentFlashMissile",0,1,-8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentFlashMissileCoop",0,1,-8)
-			Goto Secondary_Fire_End
-		Secondary_Smart:
+			Goto FireSecondaryEnd
+		FireSecondarySmart:
 			TNT1 A 0 A_JumpIfInventory("Shell",2,1)
-			Goto NoSecondaryShell
+			Goto NoAmmoAlertSecondaryShell
 			TNT1 A 0 A_PlaySound("Descent/Missile/Fire",CHAN_WEAPON)
 			TNT1 A 0 A_TakeInventory("Shell",2,TIF_NOTAKEINFINITE)
-			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"Secondary_Smart_Alternate")
+			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"FireSecondarySmart_Alternate")
 			TNT1 A 0 A_GiveInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("SpModeOn",1,3)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentSmartMissile",0,0,8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentSmartMissileCoop",0,0,8)
-			Goto Secondary_Fire_End
-		Secondary_Smart_Alternate:
+			Goto FireSecondaryEnd
+		FireSecondarySmart_Alternate:
 			TNT1 A 0 A_TakeInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("SpModeOn",1,3)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentSmartMissile",0,0,-8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentSmartMissileCoop",0,0,-8)
-			Goto Secondary_Fire_End
-		Secondary_Concussion:
+			Goto FireSecondaryEnd
+		FireSecondaryConcussion:
 			TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-			Goto NoSecondaryShell
+			Goto NoAmmoAlertSecondaryShell
 			TNT1 A 0 A_PlaySound("Descent/Missile/Fire",CHAN_WEAPON)
 			TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
-			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"Secondary_Concussion_Alternate")
+			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"FireSecondaryConcussion_Alternate")
 			TNT1 A 0 A_GiveInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentConcussionMissile",0,0,8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentConcussionMissileCoop",0,0,8)
-			Goto Secondary_Fire_End
-		Secondary_Concussion_Alternate:
+			Goto FireSecondaryEnd
+		FireSecondaryConcussion_Alternate:
 			TNT1 A 0 A_TakeInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentConcussionMissile",0,0,-8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentConcussionMissileCoop",0,0,-8)
-			Goto Secondary_Fire_End
-		Secondary_Homing:
+			Goto FireSecondaryEnd
+		FireSecondaryHoming:
 			TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-			Goto NoSecondaryShell
+			Goto NoAmmoAlertSecondaryShell
 			TNT1 A 0 A_PlaySound("Descent/Missile/Fire",CHAN_WEAPON)
 			TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
-			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"Secondary_Homing_Alternate")
+			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"FireSecondaryHoming_Alternate")
 			TNT1 A 0 A_GiveInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("SPModeOn",1,3)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentHomingMissile",0,0,8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentHomingMissileCoop",0,0,8)
-			Goto Secondary_Fire_End
-		Secondary_Homing_Alternate:
+			Goto FireSecondaryEnd
+		FireSecondaryHoming_Alternate:
 			TNT1 A 0 A_TakeInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentHomingMissile",0,0,-8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentHomingMissileCoop",0,0,-8)
-			Goto Secondary_Fire_End
-		Secondary_Guided:
+			Goto FireSecondaryEnd
+		FireSecondaryGuided:
 			TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-			Goto NoSecondaryShell
+			Goto NoAmmoAlertSecondaryShell
 			TNT1 A 0 A_PlaySound("Descent/Missile/Fire",CHAN_WEAPON)
 			TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
-			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"Secondary_Guided_Alternate")
+			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"FireSecondaryGuided_Alternate")
 			TNT1 A 0 A_GiveInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentGuidedMissile",0,0,8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentGuidedMissileCoop",0,0,8)
-			Goto Secondary_Fire_End
-		Secondary_Guided_Alternate:
+			Goto FireSecondaryEnd
+		FireSecondaryGuided_Alternate:
 			TNT1 A 0 A_TakeInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentGuidedMissile",0,0,-8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentGuidedMissileCoop",0,0,-8)
-			Goto Secondary_Fire_End
-		Secondary_Mega:
+			Goto FireSecondaryEnd
+		FireSecondaryMega:
 			TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
-			Goto NoSecondaryRocket
+			Goto NoAmmoAlertSecondaryRocketAmmo
 			TNT1 A 0 A_PlaySound("Descent/MegaMissile/Fire",CHAN_WEAPON)
 			TNT1 A 0 A_TakeInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 30 A_FireCustomMissile("DescentMegaMissile",0,0,0,-8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 30 A_FireCustomMissile("DescentMegaMissileCoop",0,0,0,-8)
-			Goto Secondary_Fire_End
-		Secondary_Mercury:
+			Goto FireSecondaryEnd
+		FireSecondaryMercury:
 			TNT1 A 0 A_JumpIfInventory("Shell",2,1)
-			Goto NoSecondaryShell
+			Goto NoAmmoAlertSecondaryShell
 			TNT1 A 0 A_PlaySound("Descent/Mercury/Fire",CHAN_WEAPON)
 			TNT1 A 0 A_TakeInventory("Shell",2,TIF_NOTAKEINFINITE)
-			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"Secondary_Mercury_Alternate")
+			TNT1 A 0 A_JumpIfInventory("DescentMissileSwitcher",1,"FireSecondaryMercury_Alternate")
 			TNT1 A 0 A_GiveInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentMercuryMissile",0,0,8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentMercuryMissileCoop",0,0,8)
-			Goto Secondary_Fire_End
-		Secondary_Mercury_Alternate:
+			Goto FireSecondaryEnd
+		FireSecondaryMercury_Alternate:
 			TNT1 A 0 A_TakeInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 10 A_FireCustomMissile("DescentMercuryMissile",0,0,-8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 10 A_FireCustomMissile("DescentMercuryMissileCoop",0,0,-8)
-			Goto Secondary_Fire_End
-		Secondary_Shaker:
+			Goto FireSecondaryEnd
+		FireSecondaryShaker:
 			TNT1 A 0 A_JumpIfInventory("RocketAmmo",5,1)
-			Goto NoSecondaryRocket
+			Goto NoAmmoAlertSecondaryRocketAmmo
 			TNT1 A 0 A_GiveInventory("DescentRecoil",16)
 			TNT1 A 0 A_PlaySound("Descent/EarthShaker/Fire",CHAN_WEAPON)
 			TNT1 A 0 A_TakeInventory("DescentMissileSwitcher",1)
 			TNT1 A 0 A_TakeInventory("RocketAmmo",5,TIF_NOTAKEINFINITE)
 			TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 			TNT1 A 30 A_FireCustomMissile("DescentShakerMissile",0,0,0,-8)
-			Goto Secondary_Fire_End
+			Goto FireSecondaryEnd
 			TNT1 A 30 A_FireCustomMissile("DescentShakerMissileCoop",0,0,0,-8)
-			Goto Secondary_Fire_End
-		Secondary_Proximity:
+			Goto FireSecondaryEnd
+		FireSecondaryProximity:
 			TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-			Goto NoSecondaryShell
+			Goto NoAmmoAlertSecondaryShell
 			TNT1 A 0 A_PlaySound("Descent/Mine/Arm",CHAN_WEAPON)
 			TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
 			TNT1 A 30 ACS_NamedExecuteWithResult("DescentMinePlace")
-			Goto Secondary_Fire_End
-		Secondary_SmartMine:
+			Goto FireSecondaryEnd
+		FireSecondarySmartMine:
 			TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-			Goto NoSecondaryShell
+			Goto NoAmmoAlertSecondaryShell
 			TNT1 A 0 A_PlaySound("Descent/Mine/Arm",CHAN_WEAPON)
 			TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
 			TNT1 A 30 ACS_NamedExecuteWithResult("DescentMinePlace",1)
-			Goto Secondary_Fire_End
-		Secondary_Fire_End:
+			Goto FireSecondaryEnd
+		FireSecondaryEnd:
 			TNT1 A 0 A_TakeInventory("DescentSecondaryFiring",1)
 			Stop
-		NoPrimaryClip:
-			TNT1 A 0 A_Print("You do not have enough ammo 1 to fire this weapon.")
-			Goto NoAmmoPrimary
-		NoPrimaryCell:
-			TNT1 A 0 A_Print("You do not have enough ammo 4 to fire this weapon.")
-			Goto NoAmmoPrimary
-		NoSecondaryShell:
-			TNT1 A 0 A_Print("You do not have enough ammo 2 to fire this weapon.")
-			Goto NoAmmoSecondary
-		NoSecondaryRocket:
-			TNT1 A 0 A_Print("You do not have enough ammo 3 to fire this weapon.")
-			Goto NoAmmoSecondary
-		NoTargetPrimary:
+
+        // "No ammo" alerts
+		NoAmmoAlertPrimaryClip:
+			TNT1 A 0 A_Print("$PYROGX_NOCLIP") // ha ha
+			goto NoAmmoAlertPrimary
+
+		NoAmmoAlertPrimaryCell:
+			TNT1 A 0 A_Print("$PYROGX_NOCELL")
+			goto NoAmmoAlertPrimary
+
+		NoAmmoAlertPrimary:
+			TNT1 A 10 A_PlaySound("Descent/NoAmmo")
+			goto Ready
+
+		NoAmmoAlertSecondaryShell:
+			TNT1 A 0 A_Print("$PYROGX_NOSHELL")
+			goto NoAmmoAlertSecondary
+
+		NoAmmoAlertSecondaryRocketAmmo:
+			TNT1 A 0 A_Print("$PYROGX_NOROCKETAMMO")
+			goto NoAmmoAlertSecondary
+
+		NoAmmoAlertSecondary:
+			TNT1 A 10 A_PlaySound("Descent/NoAmmo")
+			goto FireSecondaryEnd
+
+		/*NoTargetPrimary:
 			TNT1 A 4 
-			Goto Ready			
-		NoAmmoPrimary:
-			TNT1 A 10 A_PlaySound("Descent/NoAmmo",CHAN_5)
-			Goto Ready
-		NoAmmoSecondary:
-			TNT1 A 10 A_PlaySound("Descent/NoAmmo",CHAN_5)
-			Goto Secondary_Fire_End
+			goto Ready*/
 	}
 }
 
@@ -564,39 +397,45 @@ Actor DescentWeaponPrimer : Weapon
 {
 	Inventory.PickupSound "Descent/Item/Pickup"
     Tag "Pyro-GX Weapons"
-	+WEAPON.CHEATNOTWEAPON
-	+WEAPON.AMMO_OPTIONAL
+	+CHEATNOTWEAPON
+	+AMMO_OPTIONAL
 	States
 	{
 		Spawn:
 			PIST A -1
-			Stop
+			stop
+
 		Select:
-		DeselectLoop:
+		SelectLoop:
 			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Raise
 			TNT1 A 1 A_Raise
-			Loop
+			loop
+
 		Deselect:
 		DeselectLoop:
 			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
 			TNT1 A 1 A_Lower
-			Loop
+			loop
+
 		Ready:
-			TNT1 A 10 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-			TNT1 A 0 A_TakeInventory("DescentSecondaryFiring",1)
+			TNT1 A 10 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			TNT1 A 0 A_TakeInventory("DescentSecondaryFiring")
 			TNT1 A 0 A_JumpIfInventory("DescentSecondaryKeySwitcher",1,"SetSecondary")
 			TNT1 A 0 A_JumpIfInventory("DescentSecondaryTrigger",1,"SetSecondary")
 			TNT1 A 0 A_Jump(256,"SetPrimary")
-			Goto Deselect
+			goto Deselect
+
 		SetPrimary:
 			TNT1 A 3 A_SelectWeapon("DescentWeapon")
-			Goto Deselect
+			goto Deselect
+
 		SetSecondary:
 			TNT1 A 3 A_SelectWeapon("DescentWeapon")
-			Goto Deselect
+			goto Deselect
+
 		Fire:
 			TNT1 A 1
-			Goto Ready
+			goto Ready
 	}
 }
 
@@ -609,32 +448,35 @@ Actor DescentWeaponPadUp : Weapon
 	States
 	{
 		Select:
-		DeselectLoop:
+		SelectLoop:
 			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Raise
 			TNT1 A 1 A_Raise
-			Loop
+			loop
+
 		Deselect:
 		DeselectLoop:
 			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
 			TNT1 A 1 A_Lower
-			Loop
+			loop
+
 		Ready:
-			TNT1 A 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-			TNT1 A 0 A_TakeInventory("DescentSecondaryFiring",1)
+			TNT1 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			TNT1 A 0 A_TakeInventory("DescentSecondaryFiring")
 			TNT1 A 0 A_JumpIfInventory("DescentSecondaryTrigger",1,"SetSecondary")
 			TNT1 A 0 A_Jump(256,"SetPrimary")
-			Goto Deselect
+			goto Deselect
+
 		SetPrimary:
-			TNT1 A 0 ACS_NamedExecuteWithResult("DescentSelectWeapon",0,0)
-			TNT1 A 1
-			Goto Deselect
+			TNT1 A 1 ACS_NamedExecuteWithResult("DescentSelectWeapon", 0, 0)
+			goto Deselect
+
 		SetSecondary:
-			TNT1 A 0 ACS_NamedExecuteWithResult("DescentSelectWeapon",1,0)
-			TNT1 A 1
-			Goto Deselect
+			TNT1 A 1 ACS_NamedExecuteWithResult("DescentSelectWeapon", 1, 0)
+			goto Deselect
+
 		Fire:
 			TNT1 A 1
-			Goto Ready
+			goto Ready
 	}
 }
 
@@ -647,32 +489,35 @@ Actor DescentWeaponPadDown : Weapon
 	States
 	{
 		Select:
-		DeselectLoop:
+		SelectLoop:
 			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Raise
 			TNT1 A 1 A_Raise
-			Loop
+			loop
+
 		Deselect:
 		DeselectLoop:
 			TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
 			TNT1 A 1 A_Lower
-			Loop
+			loop
+
 		Ready:
-			TNT1 A 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-			TNT1 A 0 A_TakeInventory("DescentSecondaryFiring",1)
+			TNT1 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			TNT1 A 0 A_TakeInventory("DescentSecondaryFiring")
 			TNT1 A 0 A_JumpIfInventory("DescentSecondaryTrigger",1,"SetSecondary")
 			TNT1 A 0 A_Jump(256,"SetPrimary")
-			Goto Deselect
+			goto Deselect
+
 		SetPrimary:
-			TNT1 A 0 ACS_NamedExecuteWithResult("DescentSelectWeapon",0,1)
-			TNT1 A 1
-			Goto Deselect
+			TNT1 A 1 ACS_NamedExecuteWithResult("DescentSelectWeapon", 0, 1)
+			goto Deselect
+
 		SetSecondary:
-			TNT1 A 0 ACS_NamedExecuteWithResult("DescentSelectWeapon",1,1)
-			TNT1 A 1
-			Goto Deselect
+			TNT1 A 1 ACS_NamedExecuteWithResult("DescentSelectWeapon", 1, 1)
+			goto Deselect
+
 		Fire:
 			TNT1 A 1
-			Goto Ready
+			goto Ready
 	}
 }
 
@@ -681,24 +526,25 @@ Actor DescentLaserProjectile
 	Damage (5)
 	Speed 20
 	Projectile
-	Renderstyle Add
+	RenderStyle Add
 	+FORCEXYBILLBOARD
 	+BRIGHT
 	States
 	{
 		Spawn:
-			DS00 A 1
-			Loop
+			DS00 A -1
+			stop
+
 		Death:
-			DS00 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_5)
-			DS00 A 0 A_SpawnItemEx("DescentVulcanPuff")
-			Stop
+			TNT1 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_VOICE,0.8)
+			TNT1 A 1 A_SpawnItemEx("DescentVulcanPuff")
+			stop
 	}
 }
 
-Actor DescentPrimarySwitcher : DescentBoolean {}
+Actor DescentPrimarySwitcher : Boolean {}
 Actor DescentMissileCamera : DescentCounter { Inventory.MaxAmount 256 }
-Actor DescentMissileSwitcher : DescentBoolean {}
+Actor DescentMissileSwitcher : Boolean {}
 
 Actor DescentMissile
 {
@@ -718,16 +564,17 @@ Actor DescentMissile
 			DS00 A 0 A_GiveToTarget("DescentMissileCamera",1)
 			DS00 A 0 ACS_NamedExecuteWithResult("DescentMissileCamera")
 		SpawnLoop:
-			DS00 A 1
-			Loop
+			DS00 A -1
+			stop
+
 		Death:
-			DS00 A 0 A_RemoveMaster
-			DS00 A 0 A_Explode(50,50,0,1,-1)
-			DS00 A 0 A_GiveToTarget("DescentMissileStaticGiver",1)
-			DS00 A 0 A_TakeFromTarget("DescentMissileCamera",1)
-			DS00 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_5)
-			DS00 A 0 A_SpawnItemEx("DescentExplosion",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
-			Stop
+			TNT1 A 0 A_RemoveMaster
+			TNT1 A 0 A_Explode(50,50,0)
+			TNT1 A 0 A_GiveToTarget("DescentMissileStaticGiver")
+			TNT1 A 0 A_TakeFromTarget("DescentMissileCamera",1)
+			TNT1 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_VOICE)
+			TNT1 A 1 A_SpawnItemEx("DescentExplosion",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+			stop
 	}
 }
 
@@ -738,48 +585,6 @@ Actor DescentPuff
 	+FORCEXYBILLBOARD
 	+PUFFONACTORS
 	+BRIGHT
-}
-
-Actor DescentVulcanPuff : DescentPuff
-{
-	States
-	{
-		Spawn:
-			DS00 ABCDE 2
-			Stop
-	}
-}
-Actor DescentVulcanPuffCoop : DescentVulcanPuff { Species "Player" +THRUSPECIES +MTHRUSPECIES }
-
-Actor DescentLaser5Puff : DescentPuff
-{
-	States
-	{
-		Spawn:
-			DS06 ABCDE 2
-			Stop
-	}
-}
-
-Actor DescentGaussPuff : DescentPuff
-{
-	States
-	{
-		Spawn:
-			DS01 ABCDE 2
-			Stop
-	}
-}
-Actor DescentGaussPuffCoop : DescentGaussPuff { Species "Player" +THRUSPECIES +MTHRUSPECIES }
-
-Actor DescentSpreadFirePuff : DescentPuff
-{
-	States
-	{
-		Spawn:
-			DS03 BCDEF 2
-			Stop
-	}
 }
 
 Actor DescentHelixPuff : DescentPuff
@@ -843,7 +648,7 @@ Actor DescentSmallExplosion
 	{
 		Spawn:
 			DS18 A 0
-			DS18 A 2 A_PlaySound("Descent/Laser/Explode",CHAN_5)
+			DS18 A 2 A_PlaySound("Descent/Laser/Explode",CHAN_VOICE)
 			DS18 BCDEFGH 2
 			Stop
 	}
@@ -890,7 +695,7 @@ Actor DescentBigExplosion1 : DescentExplosion
 	{
 		Spawn:
 			DS61 A 0
-			DS61 A 2 A_PlaySound("Descent/Laser/Explode",CHAN_5)
+			DS61 A 2 A_PlaySound("Descent/Laser/Explode",CHAN_VOICE)
 			DS61 BCDEFGHIJKLMNOPQ 2
 			Stop
 	}
@@ -902,7 +707,7 @@ Actor DescentBigExplosion2 : DescentBigExplosion1
 	{
 		Spawn:
 			DS62 A 0
-			DS62 A 2 A_PlaySound("Descent/Laser/Explode",CHAN_5)
+			DS62 A 2 A_PlaySound("Descent/Laser/Explode",CHAN_VOICE)
 			DS62 BCDEFGHIJKLMNOPQ 2
 			Stop
 	}
@@ -914,7 +719,7 @@ Actor DescentBigExplosion3 : DescentBigExplosion1
 	{
 		Spawn:
 			DS63 A 0
-			DS63 A 2 A_PlaySound("Descent/Laser/Explode",CHAN_5)
+			DS63 A 2 A_PlaySound("Descent/Laser/Explode",CHAN_VOICE)
 			DS63 BCDEFGHIJKLMNOPQ 2
 			Stop
 	}
@@ -926,7 +731,7 @@ Actor DescentBigExplosion4 : DescentBigExplosion1
 	{
 		Spawn:
 			DS64 A 0
-			DS64 A 2 A_PlaySound("Descent/Laser/Explode",CHAN_5)
+			DS64 A 2 A_PlaySound("Descent/Laser/Explode",CHAN_VOICE)
 			DS64 BCDEFGHIJK 2
 			Stop
 	}
@@ -943,7 +748,6 @@ Actor DescentMissileStaticGiver : Trigger
 }
 
 Actor DescentMissileStaticToken : DescentBoolean {}
-Actor DescentQuadLaser : DescentBoolean { Inventory.InterHubAmount 1 }
 
 Actor DescentDeathCamera
 {
@@ -957,13 +761,6 @@ Actor DescentDeathCamera
 	}
 }
 
-Actor DescentBerserkReplacer : RandomSpawner
-{
-	DropItem "DescentPlasma"
-	DropItem "DescentPhoenix"
-	DropItem "DescentQuadLaserPickup"
-}
-
 Actor DescentBackpackPower : BackpackItem {}
 
 Actor DescentLaserUpgrade : CustomInventory
@@ -974,41 +771,46 @@ Actor DescentLaserUpgrade : CustomInventory
 	{
 		Spawn:
 			DS53 ABCDEFGHIJKLMNO 2
-			Loop
+			loop
+
 		Pickup:
 			TNT1 A 0 A_JumpIfInventory("DescentLaserLevel",4,"UpgradeMax")
 			TNT1 A 0 A_JumpIfInventory("DescentLaserLevel",3,2)
-			TNT1 A 0 A_GiveInventory("DescentLaserLevel",1)
+			TNT1 A 0 A_GiveInventory("DescentLaserLevel")
 			TNT1 A 0 A_GiveInventory("DescentBackpackPower")
-			Stop
+			stop
+
 		UpgradeMax:
-			TNT1 A 0 A_GiveInventory("DescentLaserLevel",1)
-			Stop
+			TNT1 A 0 A_GiveInventory("DescentLaserLevel")
+			stop
 	}
 }
 
 Actor DescentSuperLaserUpgrade : CustomInventory
 {
 	Inventory.PickupSound "Descent/Item/Pickup"
-	-INVENTORY.INVBAR
+	-INVBAR
 	States
 	{
 		Spawn:
 			DS60 ABCDEFGHIJKLMNO 2
-			Loop
+			loop
+
 		Pickup:
-			TNT1 A 0 A_GiveInventory("DescentSuperLaser",1)
+			TNT1 A 0 A_GiveInventory("DescentSuperLaser")
 			TNT1 A 0 A_GiveInventory("DescentLaserLevel",5)
 			TNT1 A 0 A_JumpIfInventory("DescentPrimaryCounter",1,1)
-			Goto SwapLaser
+			goto SwapLaser
 			TNT1 A 0
-			Stop
+			stop
+
 		SwapLaser:
-			TNT1 A 0 A_GiveInventory("DescentPrimaryCounter",1)
-			Stop
+			TNT1 A 0 A_GiveInventory("DescentPrimaryCounter")
+			stop
+
 		Use:
-			TNT1 A 1
-			Stop		
+			TNT1 A 0 A_RailWait
+			fail
 	}
 }
 
@@ -1017,8 +819,8 @@ Actor DescentGravityGiver : Trigger
 	States
 	{
 		Pickup:
-			TNT1 A 0 A_ChangeFlag("NOGRAVITY",0)
-			Stop
+			TNT1 A 0 A_ChangeFlag("NOGRAVITY",false)
+			stop
 	}
 }
 
@@ -1027,9 +829,7 @@ Actor DescentGravityTaker : Trigger
 	States
 	{
 		Pickup:
-			TNT1 A 0 A_ChangeFlag("NOGRAVITY",1)
-			Stop
+			TNT1 A 0 A_ChangeFlag("NOGRAVITY",true)
+			stop
 	}
 }
-
-Actor DescentVulcanFiredOnce : Counter { Inventory.MaxAmount 3 }
