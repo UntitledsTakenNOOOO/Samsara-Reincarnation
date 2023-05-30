@@ -13,3 +13,22 @@ Class RTCWThirdPersonChecker : CustomInventory
 			stop;
 	}
 }
+
+Class RTCW_KickActivator : CustomInventory
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0
+			{
+				FLineTraceData KickRay;
+				bool impact = LineTrace(angle,110,pitch,0,32,0,0,KickRay);
+				
+				if (impact && KickRay.HitType == TRACE_HitWall)
+				{
+				   KickRay.HitLine.Activate(self, 0, SPAC_Use);
+				}
+			}
+			stop;
+	}
+}
