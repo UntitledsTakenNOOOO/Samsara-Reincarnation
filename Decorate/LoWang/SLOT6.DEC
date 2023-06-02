@@ -19,11 +19,21 @@ Actor " SWRailgun " : Weapon
 		Spawn:
 			SW60 Z -1
 		Stop
+
 		Select:
 			TNT1 A 0 A_PlaySound("Weapons/RiotgunUp", 6)
-			SWRG E 1 A_Raise
+        SelectZoomCheck:
+            TNT1 A 0 A_JumpIfInventory("SWZoomed",1,1)
+            goto SelectStart
+            TNT1 A 0 A_ZoomFactor(1,ZOOM_INSTANT) // map change
+            TNT1 A 0 A_TakeInventory("SWZoomed")
+            goto SelectStart
+
+        SelectStart:
 			TNT1 A 0 A_Raise
-		Goto Select+1
+			SWRG E 1 A_Raise
+			goto SelectZoomCheck
+
 		Deselect:
 			TNT1 A 0 A_StopSound(CHAN_WEAPON)
 			TNT1 A 0 A_TakeInventory("SWZoomed", 2)
@@ -35,7 +45,7 @@ Actor " SWRailgun " : Weapon
 			TNT1 A 0 A_TakeInventory("SWFistYell", 0)
 			TNT1 A 0 A_JumpIfInventory("LoWangReady",1,"IntroTaunt")			
 		    TNT1 A 0 A_PlaySound("Weapons/RailgunIdle", 6)
-			SWRG ABCDE 4 A_WeaponReady
+			SWRG ABCDE 4 A_WeaponReady(WRF_ALLOWZOOM)
 		Loop
 		Fire:
 		    TNT1 A 0 A_PlayWeaponSound("Weapons/RailgunCharge")
@@ -131,6 +141,7 @@ Actor " SWRailgun " : Weapon
 			TNT1 A 0 A_Refire
 		Goto Ready
 	  AltFire:
+      Zoom:
 		TNT1 A 0 A_JumpIfInventory("SWZoomed", 1, "Zoomout")
 		TNT1 A 0 A_ZoomFactor(3.0)
 		SWRG E 5 A_WeaponReady(14)
