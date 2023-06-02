@@ -5,7 +5,7 @@ int PKGiveGold = 3;
 
 str Painkiller_Silver_CardGraphics[14][6] = {
 	{ "PKSCRD00", "PKBCRD00", "Soul Catcher", "Leech souls from a distance", "Painkiller_SoulCatcher", "Painkiller_SoulCatcher_Power" },
-	{ "PKSCRD01", "PKBCRD01", "Soul Keeper", "Souls stay longer", "Painkiller_SoulKeeper", "Painkiller_SoulKeeper_Power" },
+	{ "PKSCRD01", "PKBCRD01", "Gold Magnet", "Gold magnetically attracts to you", "Painkiller_GoldMagnet", "Painkiller_GoldMagnet_Power" },
 	{ "PKSCRD02", "PKBCRD02", "Soul Redeemer", "Souls provide more health", "Painkiller_SoulRedeemer", "Painkiller_SoulRedeemer_Power" },
 	{ "PKSCRD03", "PKBCRD03", "Dark Soul", "Morph into demon form at every 50 souls", "Painkiller_DarkSoul", "Painkiller_DarkSoul_Power" },
 	{ "PKSCRD04", "PKBCRD04", "Blessing", "Increase the base health to 150", "Painkiller_Blessing", "Painkiller_Blessing_Power" },
@@ -13,7 +13,7 @@ str Painkiller_Silver_CardGraphics[14][6] = {
 	{ "PKSCRD06", "PKBCRD06", "Forgiveness", "You can use Golden Cards five times per level", "Painkiller_Forgiveness", "Painkiller_Forgiveness_Power" },
 	{ "PKSCRD07", "PKBCRD07", "Mercy", "You can use Golden Cards seven times per level", "Painkiller_Mercy", "Painkiller_Mercy_Power" },
 	{ "PKSCRD08", "PKBCRD08", "Last Breath", "Health regeneration when you're dying", "Painkiller_LastBreath", "Painkiller_LastBreath_Power" },
-	{ "PKSCRD09", "PKBCRD09", "Health Stealer", "2.5% of the damage to the enemy goes to player's health", "Painkiller_HealthStealer", "Painkiller_HealthStealer_Power" },
+	{ "PKSCRD09", "PKBCRD09", "Health Stealer", "12.5% of the damage to the enemy goes to player's health", "Painkiller_HealthStealer", "Painkiller_HealthStealer_Power" },
 	{ "PKSCRD10", "PKBCRD10", "Health Regeneration", "Health starts regeneratating 10 seconds after the last damage", "Painkiller_HealthRegeneration", "Painkiller_HealthRegeneration_Power" },
 	{ "PKSCRD11", "PKBCRD11", "Armor Regeneration", "Armor starts regeneratating 10 seconds after the last damage", "Painkiller_ArmorRegeneration", "Painkiller_ArmorRegeneration_Power" },
 	{ "PKSCRD12", "PKBCRD12", "Fear", "All enemies have 90% of initial HP", "Painkiller_Fear", "Painkiller_Fear_Power" },
@@ -50,7 +50,7 @@ str PKArmors[6][2] = {
 };
 
 int PKTarotGoldCardCosts[17] = { 100, 300, 200, 500, 200, 100, 666, 100, 300, 500, 100, 300, 100, 300, 300, 666, 400 };
-int PKTarotSilverCardCosts[14] = { 500, 500, 1000, 400, 200, 500, 1000, 2000, 500, 2000, 1000, 1000, 1000, 2000 };
+int PKTarotSilverCardCosts[14] = { 500, 1000, 1000, 400, 200, 500, 1000, 2000, 500, 2000, 1000, 1000, 1000, 2000 };
 
 Script "Painkiller_BoltGunScopeGraphic" (void)
 {
@@ -73,40 +73,14 @@ Script "Painkiller_Loop" (void)
 
 	//int musicvolume = GetCVAR("SND_MusicVolume");
 	int pln = PlayerNumber();
-	int lastsilver1, lastsilver2;
+	int lastsilver1, lastsilver2, lastHealth, returnCardResult1, returnCardResult2, memory1, memory2;
 	//LocalSetMusic(PainkillerMusic[themeseed][0][songseed],0);
 	LocalAmbientSound("Painkiller/StartLevel",255);
 	FadeTo (0, 0, 0, 1.0, 0.0);
 	FadeTo (0, 0, 0, 0.0, 3.0);
-	if(CheckInventory("Painkiller_666Ammo_Power"))
-	{
-		TakeInventory("Clip",9999);
-		TakeInventory("Shell",9999);
-		TakeInventory("RocketAmmo",9999);
-		TakeInventory("Cell",9999);
-		TakeInventory("Painkiller_FreezerAmmo",9999);
-		TakeInventory("Painkiller_FlamerAmmo",9999);
-		TakeInventory("Painkiller_ElectroAmmo",9999);
-		TakeInventory("Painkiller_HeaterAmmo",9999);
-
-		SetAmmoCapacity("Clip",666);
-		SetAmmoCapacity("Shell",666);
-		SetAmmoCapacity("RocketAmmo",666);
-		SetAmmoCapacity("Cell",666);
-		SetAmmoCapacity("Painkiller_FreezerAmmo",666);
-		SetAmmoCapacity("Painkiller_FlamerAmmo",666);
-		SetAmmoCapacity("Painkiller_ElectroAmmo",666);
-		SetAmmoCapacity("Painkiller_HeaterAmmo",666);
-
-		GiveInventory("Clip",666);
-		GiveInventory("Shell",666);
-		GiveInventory("RocketAmmo",666);
-		GiveInventory("Cell",666);
-		GiveInventory("Painkiller_FreezerAmmo",666);
-		GiveInventory("Painkiller_FlamerAmmo",666);
-		GiveInventory("Painkiller_ElectroAmmo",666);
-		GiveInventory("Painkiller_HeaterAmmo",666);
-	}
+	if(CheckInventory("Painkiller_SilverSlot1") > 0) ACS_NamedExecuteWithResult("Painkiller_SilverCardActivate",CheckInventory("Painkiller_SilverSlot1")-1,1);
+	if(CheckInventory("Painkiller_SilverSlot2") > 0) ACS_NamedExecuteWithResult("Painkiller_SilverCardActivate",CheckInventory("Painkiller_SilverSlot2")-1,1);
+		
 	while(CheckInventory("PainkillerClass"))
 	{
 		ACS_NamedExecuteWithResult("Painkiller_HudItems",pln);
@@ -124,7 +98,7 @@ Script "Painkiller_Loop" (void)
 		}
 		if(!CheckInventory("Painkiller_GoldActive"))
 		{
-			if((CheckInventory("Painkiller_SoulCount") >= 66) && !CheckInventory("Painkiller_BlockDemonMorph") && !CheckInventory("Painkiller_NoDemonMorph"))
+			if((CheckInventory("Painkiller_SoulCount") >= 66 - CheckInventory("Painkiller_DarkSoul_Power") * 16) && !CheckInventory("Painkiller_BlockDemonMorph") && !CheckInventory("Painkiller_NoDemonMorph"))
 			{
 				TakeInventory("Painkiller_DemonMorphFlash1",1);
 				TakeInventory("Painkiller_DemonMorphFlash2",1);
@@ -143,6 +117,10 @@ Script "Painkiller_Loop" (void)
 				ACS_NamedExecuteAlways("Painkiller_StartDemonMorph",0,17,0,0);
 			}	*/
 		}
+		
+		if(CheckInventory("Painkiller_SilverSlot1") > 0) returnCardResult1 = ACS_NamedExecuteWithResult("Painkiller_SilverCardActivate",CheckInventory("Painkiller_SilverSlot1")-1,0,returnCardResult1,memory1);
+		if(CheckInventory("Painkiller_SilverSlot2") > 0) returnCardResult2 = ACS_NamedExecuteWithResult("Painkiller_SilverCardActivate",CheckInventory("Painkiller_SilverSlot2")-1,0,returnCardResult2,memory2);
+		
 		int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
 		if((buttons & BT_AltAttack) && (buttons & BT_Attack))
 		{
@@ -150,6 +128,24 @@ Script "Painkiller_Loop" (void)
 		}
 		lastsilver1 = CheckInventory("Painkiller_SilverSlot1");
 		lastsilver2 = CheckInventory("Painkiller_SilverSlot2");
+		
+		switch(CheckInventory("Painkiller_SilverSlot1")-1)
+		{
+			default: break;
+			case 10: 
+			case 11: 
+				memory1 = GetActorProperty(0,APROP_Health); 
+				break;
+		}
+		switch(CheckInventory("Painkiller_SilverSlot2")-1)
+		{
+			default: break;
+			case 10: 
+			case 11: 
+				memory2 = GetActorProperty(0,APROP_Health); 
+				break;
+		}
+
 		Delay(1);
 		TakeInventory("Painkiller_Combo", 1);
 
@@ -171,6 +167,93 @@ Script "Painkiller_Loop" (void)
 			lasttimer = Timer();
 		}
 	}
+}
+
+Script "Painkiller_SilverCardActivate" (int card, int start, int memory1, int memory2)
+{
+	int returnValue = 0;
+	int myHealth = 0;
+	int myArmor = 0;
+	switch(card)
+	{
+		default: break;
+		case 8:
+			if(!CheckInventory("Painkiller_LastBreathToken"))
+				SetPlayerProperty(0,1,PROP_BUDDHA);
+			GiveInventory("Painkiller_LastBreathToken",1);
+			
+			myHealth = GetActorProperty(0,APROP_Health);
+			if(myHealth <= 1)
+			{
+				SetActorProperty(0,APROP_Health,33);
+				SetPlayerProperty(0,0,PROP_BUDDHA);
+			}
+			break;
+		case 10:
+			myHealth = GetActorProperty(0,APROP_Health);
+			if(myHealth >= memory2)
+				returnValue = memory1+1;
+			else
+				returnValue = 0;
+			if(returnValue >= 350)
+			{
+				if(myHealth < 75 && (timer()%2)==0)
+					SetActorProperty(0,APROP_Health,myHealth+1);
+			}
+			break;
+		case 11:
+			myHealth = GetActorProperty(0,APROP_Health);
+			myArmor = CheckInventory("BasicArmor");
+			if(myHealth >= memory2)
+				returnValue = memory1+1;
+			else
+				returnValue = 0;
+			if(returnValue >= 350)
+			{
+				if(myArmor < 75 && (timer()%2)==0)
+					GiveInventory("ArmorScrapArmor",1);
+			}
+			break;
+		case 12: 
+			if(start)
+			{
+				Delay(5); 
+				GiveInventory("Painkiller_Fear_Player",1); 
+				break;
+			}
+		case 13:
+			if(start)
+			{
+				TakeInventory("Clip",9999);
+				TakeInventory("Shell",9999);
+				TakeInventory("RocketAmmo",9999);
+				TakeInventory("Cell",9999);
+				TakeInventory("Painkiller_FreezerAmmo",9999);
+				TakeInventory("Painkiller_FlamerAmmo",9999);
+				TakeInventory("Painkiller_ElectroAmmo",9999);
+				TakeInventory("Painkiller_HeaterAmmo",9999);
+
+				SetAmmoCapacity("Clip",666);
+				SetAmmoCapacity("Shell",666);
+				SetAmmoCapacity("RocketAmmo",666);
+				SetAmmoCapacity("Cell",666);
+				SetAmmoCapacity("Painkiller_FreezerAmmo",666);
+				SetAmmoCapacity("Painkiller_FlamerAmmo",666);
+				SetAmmoCapacity("Painkiller_ElectroAmmo",666);
+				SetAmmoCapacity("Painkiller_HeaterAmmo",666);
+
+				GiveInventory("Clip",666);
+				GiveInventory("Shell",666);
+				GiveInventory("RocketAmmo",666);
+				GiveInventory("Cell",666);
+				GiveInventory("Painkiller_FreezerAmmo",666);
+				GiveInventory("Painkiller_FlamerAmmo",666);
+				GiveInventory("Painkiller_ElectroAmmo",666);
+				GiveInventory("Painkiller_HeaterAmmo",666);
+			}
+			break;
+	}
+	SetResultValue(returnValue);
 }
 
 Script "Painkiller_HudItems" (int pln) clientside
@@ -1777,7 +1860,7 @@ Script "Painkiller_BlackTarotUI" (void)
 		holddelay--;
 		dropdelay--;
 	}
-	RemoveMessages(1500,1600);
+	RemoveMessages(1495,1600);
 	SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
 }
 
@@ -1819,15 +1902,19 @@ Script "Painkiller_GoldTarot_Activate" (void) net
 	{
 		GiveInventory("Painkiller_TarotUsage",1);
 	}
+	
+	int goldSlot1 = CheckInventory("Painkiller_GoldSlot1");
+	int goldSlot2 = CheckInventory("Painkiller_GoldSlot2");
+	int goldSlot3 = CheckInventory("Painkiller_GoldSlot3");
 
 	int duration = 0;
 	GiveInventory("Painkiller_GoldActive",1);
-	if(CheckInventory("Painkiller_GoldSlot1") > 0)
-		GiveInventory(Painkiller_Gold_CardGraphics[CheckInventory("Painkiller_GoldSlot1")-1][5],1);
-	if(CheckInventory("Painkiller_GoldSlot2") > 0)
-		GiveInventory(Painkiller_Gold_CardGraphics[CheckInventory("Painkiller_GoldSlot2")-1][5],1);
-	if(CheckInventory("Painkiller_GoldSlot3") > 0)
-		GiveInventory(Painkiller_Gold_CardGraphics[CheckInventory("Painkiller_GoldSlot3")-1][5],1);
+	if(goldSlot1 > 0)
+		GiveInventory(Painkiller_Gold_CardGraphics[goldSlot1-1][5],1);
+	if(goldSlot2 > 0)
+		GiveInventory(Painkiller_Gold_CardGraphics[goldSlot2-1][5],1);
+	if(goldSlot3 > 0)
+		GiveInventory(Painkiller_Gold_CardGraphics[goldSlot3-1][5],1);
 
 	int maxDuration = 700+(CheckInventory("Painkiller_TimeBonus_Power")*350)+(CheckInventory("Painkiller_DoubleTimeBonus_Power")*700);
 
@@ -1836,6 +1923,24 @@ Script "Painkiller_GoldTarot_Activate" (void) net
 		SetHudSize(320,256,1);
 		SetFont("PKTARTAK");
 		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1500,0,160.0,128.0,0.5);
+		
+		SetHudSize(4096,3072,1);
+		if(maxDuration - duration < 105 && duration % 17 < 7)
+		{
+			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1499,0,1664.0,2800.0,0.5);
+			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1498,0,2048.0,2800.0,0.5);
+			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1497,0,2432.0,2800.0,0.5);
+		}
+		else
+		{	
+			SetFont(Painkiller_Gold_CardGraphics[goldSlot1-1][1]);
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1499,0,1664.0,2800.0,0.5);
+			SetFont(Painkiller_Gold_CardGraphics[goldSlot2-1][1]);
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1498,0,2048.0,2800.0,0.5);
+			SetFont(Painkiller_Gold_CardGraphics[goldSlot3-1][1]);
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1497,0,2432.0,2800.0,0.5);
+		}
+		
 		Delay(1);
 		duration++;
 	}
@@ -1844,13 +1949,13 @@ Script "Painkiller_GoldTarot_Activate" (void) net
 
 Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 {
-	Playsound(0,"Painkiller/BulletTimeStart",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
-	Playsound(0,"Painkiller/BulletTimeLoop",CHAN_NOPAUSE|CHAN_7,1.0,1,ATTN_NORM);
 	switch(type)
 	{
 		case 1:
 			if(SinglePlayer())
 			{
+				Playsound(0,"Painkiller/BulletTimeStart",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
+				Playsound(0,"Painkiller/BulletTimeLoop",CHAN_NOPAUSE|CHAN_7,1.0,1,ATTN_NORM);
 				while(CheckInventory("Painkiller_GoldActive"))
 				{
 					GiveInventory("Painkiller_Haste_Freezer",1);
@@ -1863,6 +1968,8 @@ Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 		case 2:
 			if(SinglePlayer())
 			{
+				Playsound(0,"Painkiller/BulletTimeStart",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
+				Playsound(0,"Painkiller/BulletTimeLoop",CHAN_NOPAUSE|CHAN_7,1.0,1,ATTN_NORM);
 				while(CheckInventory("Painkiller_GoldActive"))
 				{
 					GiveInventory("Painkiller_DoubleHaste_Freezer",1);
@@ -1875,6 +1982,8 @@ Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 		case 3:
 			if(SinglePlayer())
 			{
+				Playsound(0,"Painkiller/BulletTimeStart",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
+				Playsound(0,"Painkiller/BulletTimeLoop",CHAN_NOPAUSE|CHAN_7,1.0,1,ATTN_NORM);
 				while(CheckInventory("Painkiller_GoldActive"))
 				{
 					GiveInventory("Painkiller_TripleHaste_Freezer",1);
@@ -1993,17 +2102,30 @@ Script "Painkiller_SoulCatcher" (int type)
 
 	if (type == 0)
 		SpawnSpotFacingForced("Painkiller_SoulTarget",0,newtid);
-	else
+	else if(type == 1)
 		SpawnSpotFacingForced("Painkiller_SoulTargetRed",0,newtid);
+	else if(type == 2)
+		SpawnSpotFacingForced("Painkiller_CoinTarget",0,newtid);
+	else if(type == 3)
+		SpawnSpotFacingForced("Painkiller_RingTarget",0,newtid);
 
 	while(ClassifyActor(0) != ACTOR_WORLD && ClassifyActor(newtid) != ACTOR_NONE)
 	{
-		Warp(newtid,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION);
+		if(ACS_NamedExecuteWithResult("hasValidPointer",newtid,AAPTR_Target) && ACS_NamedExecuteWithResult("Painkiller_CheckMagnet",newtid))
+			Warp(newtid,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION);
+		else
+			Warp(newtid,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION|WARPF_MOVEPTR);
 		Delay(1);
 	}
 
 	Thing_Remove(0);
 	Thing_Remove(newtid);
+}
+
+Script "Painkiller_CheckMagnet" (int newtid)
+{
+	SetActivator(newtid,AAPTR_Target);
+	SetResultValue(CheckInventory("Painkiller_GoldMagnet_Power"));
 }
 
 Script "Painkiller_IsItGibbed" (void)
@@ -2124,5 +2246,15 @@ Script "Painkiller_Sceptre_Weakener" (void)
 		Delay(2);
 		TakeInventory("Painkiller_Sceptred",1);
 		SetActorProperty(0,APROP_Health,health);
+	}
+}
+
+Script "Painkiller_Fear_Weakener" (void)
+{
+	int health = GetActorProperty(0,APROP_SpawnHealth);
+	if(!CheckFlag(0,"BOSS") && !CheckInventory("Painkiller_GivenFear"))
+	{
+		GiveInventory("Painkiller_GivenFear",1);
+		SetActorProperty(0,APROP_Health,(health*9)/10);
 	}
 }
