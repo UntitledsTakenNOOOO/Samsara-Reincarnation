@@ -6,7 +6,7 @@ actor Freezethrower : DukeWeapon
 {
 	Weapon.SlotNumber 6
 	Weapon.SelectionOrder 100
-	Weapon.AmmoUse 1
+	Weapon.AmmoUse 0
 	Weapon.AmmoGive 25
 	Weapon.AmmoType "Cell"
 	//Obituary "%k threw %o on the freezer."
@@ -413,11 +413,14 @@ actor Freezethrower : DukeWeapon
 	FlashA:
 		TNT1 A 0 A_TakeInventory("DukeWaiting",15)
 		TNT1 A 0 A_JumpIfInventory("DukeClassMode",2,"FlashA64")
+		TNT1 A 0 A_JumpIfInventory("DukeClassMode", 1, "FlashALAB")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+		TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+		goto OutOfAmmo
 		TNT1 A 0 A_AlertMonsters
 		TNT1 A 0 A_Light1
 		TNT1 A 0 A_JumpIfInventory("DukeFreezethrowerHold",1,"FlashHold")
 		TNT1 A 0 A_GiveInventory("DukeFreezethrowerHold",1)
-		TNT1 A 0 A_JumpIfInventory("DukeClassMode", 1, "FlashALAB")
 		FRZG D 1 Bright A_PlayWeaponSound("duke/freezeshot")
 		TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
@@ -435,6 +438,13 @@ actor Freezethrower : DukeWeapon
 		FRZG A 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		Stop
 	FlashALAB:
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+		TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+		goto OutOfAmmoLAB
+		TNT1 A 0 A_AlertMonsters
+		TNT1 A 0 A_Light1
+		TNT1 A 0 A_JumpIfInventory("DukeFreezethrowerHold",1,"FlashHold")
+		TNT1 A 0 A_GiveInventory("DukeFreezethrowerHold",1)
 		FRZG R 1 Bright A_PlayWeaponSound("duke/freezeshot2")
 		TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
@@ -528,6 +538,9 @@ actor Freezethrower : DukeWeapon
 	FlashA64:
 		TNT1 A 0 A_GiveInventory("DBSHOT1",10)
 		TNT1 A 0 A_JumpIfInventory("Duke64UsingShrinker",1,"FlashB64")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+		TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+		goto OutOfAmmo64
 		TNT1 A 0 A_AlertMonsters
 		TNT1 A 0 A_PlayWeaponSound("duke64/expanderfire")
 		TNT1 A 0 A_TakeInventory("Cell",1,TIF_NOTAKEINFINITE)
@@ -640,6 +653,18 @@ actor Freezethrower : DukeWeapon
 	GiveMoneyLAB:
 		FRZG Q 0
 		Goto Super::GiveMoney
+		
+	OutOfAmmo:
+		TNT1 A 0 A_TakeInventory("DBSHOT",99)
+		FRZG A 2 A_TakeInventory("DBSHOT1",99)
+		TNT1 A 0 A_SelectWeapon("Glock 17")
+		Goto Deselect
+		
+	OutOfAmmoLAB:
+		TNT1 A 0 A_TakeInventory("DBSHOT",99)
+		FRZG Q 2 A_TakeInventory("DBSHOT1",99)
+		TNT1 A 0 A_SelectWeapon("Glock 17")
+		Goto Deselect
 
 	OutOfAmmo64:
 		TNT1 A 0 A_TakeInventory("DBSHOT",99)

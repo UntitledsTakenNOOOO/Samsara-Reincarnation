@@ -2,7 +2,7 @@ actor RPG : DukeWeapon
 {
 	Weapon.SlotNumber 5
 	Weapon.SelectionOrder 2500
-	Weapon.AmmoUse 1
+	Weapon.AmmoUse 0
 	Weapon.AmmoGive 5
 	Weapon.AmmoType "RocketAmmo"
 	//Obituary "%k sent %o home in a box."
@@ -92,10 +92,13 @@ actor RPG : DukeWeapon
 	FlashA:
 		TNT1 A 0 A_TakeInventory("DukeWaiting",15)
 		TNT1 A 0 A_JumpIfInventory("DukeClassMode",2,"FlashA64")
+		TNT1 A 0 A_JumpIfInventory("DukeClassMode", 1, "FlashALAB")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+		goto OutOfAmmo
 		TNT1 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
 		TNT1 A 0 A_AlertMonsters
 		TNT1 A 0 A_Light1
-		TNT1 A 0 A_JumpIfInventory("DukeClassMode", 1, 33)
 		TNT1 A 0 A_PlayWeaponSound("duke/rocketfire")
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 		TNT1 A 0 A_FireCustomMissile("SamsaraDukeRocket",0,0,4,2)
@@ -120,6 +123,12 @@ actor RPG : DukeWeapon
 		DKRL LA 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		Stop
 	FlashALAB:
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+		goto OutOfAmmoLAB
+		TNT1 A 0 A_TakeInventory("RocketAmmo",1,TIF_NOTAKEINFINITE)
+		TNT1 A 0 A_AlertMonsters
+		TNT1 A 0 A_Light1
 		TNT1 A 0 A_PlayWeaponSound("duke/rocketfire2")
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
 		TNT1 A 0 A_FireCustomMissile("SamsaraDukeRocketBeach",0,0,4,2)
@@ -145,6 +154,10 @@ actor RPG : DukeWeapon
 		Stop
 	FlashA64:
 		D6ML A 0 A_JumpIfInventory("Duke64UsingHeatSeeking", 1, "FlashA64Homing")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+		goto OutOfAmmo64
+		TNT1 A 0 A_Light1
 		D6ML D 2
 		D6ML EF 1
 		TNT1 A 0 A_AlertMonsters
@@ -177,6 +190,7 @@ actor RPG : DukeWeapon
 		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
 		TNT1 A 0 A_JumpIfInventory("Duke64HeatSeekingRockets",1,1)
 		goto OutOfAmmo64
+		TNT1 A 0 A_Light1
 		D6ML D 2
 		D6ML EF 1
 		TNT1 A 0 A_AlertMonsters
@@ -295,7 +309,17 @@ actor RPG : DukeWeapon
 	GiveMoneyLAB:
 		DKCL A 0
 		Goto Super::GiveMoney
+		
+	OutOfAmmo:
+		DKRL A 2 A_TakeInventory("DBSHOT",99)
+		TNT1 A 0 A_SelectWeapon("Glock 17")
+		Goto Deselect
 
+	OutOfAmmoLAB:
+		DKCL A 2 A_TakeInventory("DBSHOT",99)
+		TNT1 A 0 A_SelectWeapon("Glock 17")
+		Goto Deselect
+	
 	OutOfAmmo64:
 		D6ML B 2 A_TakeInventory("DBSHOT",99)
 		TNT1 A 0 A_SelectWeapon("Glock 17")
