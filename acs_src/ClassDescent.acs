@@ -19,6 +19,13 @@ Script "DescentActions" (void)
 	}
 }
 
+int resetMovement = 1;
+
+Script "DescentMovementReset" Return
+{
+	resetMovement = 1;
+}
+
 Script "DescentMovement" (void)
 {	
 	Delay(1);
@@ -65,9 +72,19 @@ Script "DescentMovement" (void)
 	bool isPVEGame = isSinglePlayer() || isCoop();
 
 	if(PlayerIsBot(PlayerNumber())) { GiveInventory("DescentBotTrigger",1); }
-
+			
 	While(!PlayerIsBot(PlayerNumber()) && CheckInventory("DescentClass"))
 	{
+		if(resetMovement == 1)
+		{
+			resetMovement = 0;
+			roll = 0;
+			tiltRoll = 0;
+			turnRoll = 0;
+			gimbalLock = 1;
+			SetActorRoll(0,0);
+		}
+	
 		if(ClassifyActor(0) & ACTOR_ALIVE)
 		{
 			int descentFlight = GetCvar("samsara_descentflight");
@@ -180,13 +197,15 @@ Script "DescentMovement" (void)
 						tiltroll -= turnSpeed;
 					else if(mouseYaw == 0)
 					{
-						if(abs(tiltRoll) > turnSpeed)
+						if(abs(tiltRoll) >= turnSpeed)
 						{
 							if(tiltRoll > 0)
 								tiltRoll -= turnSpeed;
 							else
 								tiltRoll += turnSpeed;
 						}
+						else
+							tiltRoll = 0;
 					}
 				}
 
