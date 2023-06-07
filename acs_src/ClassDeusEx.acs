@@ -703,3 +703,513 @@ Script "DeusEX_LAMMineGlowPlacement" (void)
 		case 0.75: SetActorState(0,"SpawnCeiling",1); break;
 	}
 }
+
+Script "DeusEx_Augmentations_Initiate" (void) net
+{
+	if(!CheckInventory("DeusEx_AugmentationsMenu"))
+	{
+		GiveInventory("DeusEx_AugmentationsMenu",1);
+		int execute = ACS_NamedExecuteWithResult("DeusEx_AugmentationsUI");
+		SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+	}
+	else
+	{
+		TakeInventory("DeusEx_AugmentationsMenu",1);
+		SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+	}
+}
+
+#DEFINE DX_TOTALAUGS 21
+
+str DeusExAugmentations[DX_TOTALAUGS][2] =
+{
+	{"Combat Strength", "DeusEx_Augmentation_CombatStrength"},
+	{"Microfibral Muscle", "DeusEx_Augmentation_MicrofibralMuscle"},
+	{"Speed Enhancement", "DeusEx_Augmentation_SpeedEnhancement"},
+	{"Galvanized Tendons", "DeusEx_Augmentation_GalvanizedTendons"},
+	{"Ballistic Protection", "DeusEx_Augmentation_BallisticProtection"},
+	{"EMP Shield", "DeusEx_Augmentation_EMPShield"},
+	{"Cloak", "DeusEx_Augmentation_Cloak"},
+	{"Repulsor", "DeusEx_Augmentation_Repulsor"},
+	{"Energy Shield", "DeusEx_Augmentation_EnergyShield"},
+	{"Environmental Protection", "DeusEx_Augmentation_EnvironmentalResistance"},
+	{"Regeneration", "DeusEx_Augmentation_Regeneration"},
+	{"Maintenance", "DeusEx_Augmentation_Maintenance"},
+	{"Power Recirculator", "DeusEx_Augmentation_PowerRecirculator"},
+	{"Rechargeable Battery", "DeusEx_Augmentation_RechargeableBattery"},
+	{"Spy Drone", "DeusEx_Augmentation_SpyDrone"},
+	{"Aggressive Defense System", "DeusEx_Augmentation_AggressiveDefenseSystem"},
+	{"Vision Enhancement", "DeusEx_Augmentation_VisionEnhancement"},
+	{"Targeting", "DeusEx_Augmentation_Targeting"},
+	{"Infolink", "DeusEx_Augmentation_InfoLink"},
+	{"IFF", "DeusEx_Augmentation_IFF"},
+	{"Light", "DeusEx_Augmentation_Light"},
+};
+
+Script "DeusEx_AugmentationsUI" (void)
+{
+	int cursorx, cursory, a, b, holdDelay, inputAvailable;
+	int hudboundsx = 640;
+	int hudboundsy = 480;
+	int hudcenterx = hudboundsx/2;
+	int hudcentery = hudboundsy/2;
+	int augmentationSlot = 0;
+	int validPosition = 0;
+	int selectedAugSlot = 0;
+	int lastselectedAugSlot = 0;
+	int inputDelay = 5;
+	int baseIconX = 0;
+	int baseIconY = 0;
+	int selectorX = 0;
+	int selectorY = 0;
+	int iconLMargin = -0.025;
+	int iconRMargin = 0.055;
+	int iconUMargin = -0.033;
+	int iconBMargin = 0.077;
+	int element = 0;
+	int lastElement = 0;
+
+	While(CheckInventory("DeusEx_AugmentationsMenu"))
+	{
+		//Input based variables
+		int mousesensitivity = GetCvar("mouse_sensitivity");
+		if(mousesensitivity == 0.0)
+			 mousesensitivity = 1.0;
+		int standardholddelay = FixedDiv(6.0,mousesensitivity)>>16;
+		int yaw = GetPlayerInput(-1, INPUT_YAW);
+		int pitch = GetPlayerInput(-1, INPUT_PITCH);
+		int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
+		int Lclicking = buttons & BT_ATTACK;
+		int Rclicking = buttons & BT_ALTATTACK;
+
+		if(yaw > 1 || yaw < -1)
+			cursorx -= FixedMul(yaw/16,mousesensitivity);
+
+		if(pitch > 1 || pitch < -1)
+			cursory -= FixedMul(pitch/8,mousesensitivity);
+
+		if(cursorx < 0)
+			cursorx = 0;	
+		else if(cursorx > hudboundsx)
+			cursorx = hudboundsx;
+
+		if(cursory < 0)
+			cursory = 0;
+		else if(cursory > hudboundsy)
+			cursory = hudboundsy;
+			
+		inputAvailable = holdDelay <= 0;
+
+		//Basic Graphics
+		SetHudSize(hudboundsx,hudboundsy,true);
+		SetFont("DXAUGSB1");
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1598,0,hudcenterx*1.0,hudcentery*1.0,0.0);
+		SetFont("PKCURSOR");
+		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD, 1500, CR_UNTRANSLATED, (cursorx*1.0), (cursory*1.0), 1.0);
+		SetFont("DXAUGSB2");
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA,1599,0,hudcenterx*1.0,hudcentery*1.0,0.0,0.67);
+		
+		element = 0;
+		
+		if(CheckInventory("DeusEx_Augmentation_ArmsSlot") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.115);
+			baseIconY = FixedMul(hudboundsy,0.363);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 1;
+				if(Rclicking)
+				{
+					element = -1;
+					if(CheckInventory("DeusEx_Augmentation_ArmsSlot") == 1)
+						SetInventory("DeusEx_Augmentation_ArmsSlot",2);
+					else
+						SetInventory("DeusEx_Augmentation_ArmsSlot",1);
+				}
+					
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			if(CheckInventory("DeusEx_Augmentation_ArmsSlot") == 1)
+				SetFont("DXAUGI01");
+			else
+				SetFont("DXAUGI02");
+				
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1501,0,baseIconX,baseIconY,0.0);
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[CheckInventory("DeusEx_Augmentation_ArmsSlot")-1][1])));
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1521,0,baseIconX,baseIconY,0.0);
+			SetFont("DXAUGP01");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1541,0,FixedMul(hudboundsx,0.225)*1.0,FixedMul(hudboundsy,0.354)*1.0,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_LegsSlot") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.471);
+			baseIconY = FixedMul(hudboundsy,0.796);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 2;
+				if(Rclicking)
+				{
+					element = -1;
+					if(CheckInventory("DeusEx_Augmentation_LegsSlot") == 1)
+						SetInventory("DeusEx_Augmentation_LegsSlot",2);
+					else
+						SetInventory("DeusEx_Augmentation_LegsSlot",1);
+				}
+					
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			if(CheckInventory("DeusEx_Augmentation_LegsSlot") == 1)
+				SetFont("DXAUGI03");
+			else
+				SetFont("DXAUGI04");
+				
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1502,0,baseIconX,baseIconY,0.0);
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[2+CheckInventory("DeusEx_Augmentation_LegsSlot")-1][1])));
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1522,0,baseIconX,baseIconY,0.0);
+			SetFont("DXAUGP02");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1542,0,FixedMul(hudboundsx,0.318)*1.0,FixedMul(hudboundsy,0.653)*1.0,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_SubdermalSlot1") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.115);
+			baseIconY = FixedMul(hudboundsy,0.538);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 3;
+				if(Rclicking)
+				{
+					element = -1;
+					if(CheckInventory("DeusEx_Augmentation_SubdermalSlot1") == 1)
+						SetInventory("DeusEx_Augmentation_SubdermalSlot1",2);
+					else
+						SetInventory("DeusEx_Augmentation_SubdermalSlot1",1);
+				}
+					
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			if(CheckInventory("DeusEx_Augmentation_SubdermalSlot1") == 1)
+				SetFont("DXAUGI05");
+			else
+				SetFont("DXAUGI06");
+				
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1503,0,baseIconX,baseIconY,0.0);
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[4+CheckInventory("DeusEx_Augmentation_SubdermalSlot1")-1][1])));
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1523,0,baseIconX,baseIconY,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_SubdermalSlot2") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.115);
+			baseIconY = FixedMul(hudboundsy,0.662);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 4;
+				if(Rclicking)
+				{
+					element = -1;
+					if(CheckInventory("DeusEx_Augmentation_SubdermalSlot2") == 1)
+						SetInventory("DeusEx_Augmentation_SubdermalSlot2",2);
+					else
+						SetInventory("DeusEx_Augmentation_SubdermalSlot2",1);
+				}
+					
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			if(CheckInventory("DeusEx_Augmentation_SubdermalSlot2") == 1)
+				SetFont("DXAUGI07");
+			else
+				SetFont("DXAUGI08");
+				
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1504,0,baseIconX,baseIconY,0.0);
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[6+CheckInventory("DeusEx_Augmentation_SubdermalSlot2")-1][1])));
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1524,0,baseIconX,baseIconY,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_SubdermalSlot1") > 0 || CheckInventory("DeusEx_Augmentation_SubdermalSlot2") > 0)
+		{
+			SetFont("DXAUGP03");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1543,0,FixedMul(hudboundsx,0.179)*1.0,FixedMul(hudboundsy,0.458)*1.0,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_TorsoSlot1") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.471);
+			baseIconY = FixedMul(hudboundsy,0.375);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 5;
+				if(Rclicking)
+				{
+					element = -1;
+					if(CheckInventory("DeusEx_Augmentation_TorsoSlot1") == 1)
+						SetInventory("DeusEx_Augmentation_TorsoSlot1",2);
+					else
+						SetInventory("DeusEx_Augmentation_TorsoSlot1",1);
+				}
+					
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			if(CheckInventory("DeusEx_Augmentation_TorsoSlot1") == 1)
+				SetFont("DXAUGI09");
+			else
+				SetFont("DXAUGI10");
+				
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1505,0,baseIconX,baseIconY,0.0);
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[8+CheckInventory("DeusEx_Augmentation_TorsoSlot1")-1][1])));
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1525,0,baseIconX,baseIconY,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_TorsoSlot2") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.471);
+			baseIconY = FixedMul(hudboundsy,0.499);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 6;
+				if(Rclicking)
+				{
+					element = -1;
+					if(CheckInventory("DeusEx_Augmentation_TorsoSlot2") == 1)
+						SetInventory("DeusEx_Augmentation_TorsoSlot2",2);
+					else
+						SetInventory("DeusEx_Augmentation_TorsoSlot2",1);
+				}
+					
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			if(CheckInventory("DeusEx_Augmentation_TorsoSlot2") == 1)
+				SetFont("DXAUGI11");
+			else
+				SetFont("DXAUGI12");
+				
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1506,0,baseIconX,baseIconY,0.0);
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[10+CheckInventory("DeusEx_Augmentation_TorsoSlot2")-1][1])));
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1526,0,baseIconX,baseIconY,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_TorsoSlot3") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.471);
+			baseIconY = FixedMul(hudboundsy,0.622);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 7;
+				if(Rclicking)
+				{
+					element = -1;
+					if(CheckInventory("DeusEx_Augmentation_TorsoSlot3") == 1)
+						SetInventory("DeusEx_Augmentation_TorsoSlot3",2);
+					else
+						SetInventory("DeusEx_Augmentation_TorsoSlot3",1);
+				}
+					
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			if(CheckInventory("DeusEx_Augmentation_TorsoSlot3") == 1)
+				SetFont("DXAUGI13");
+			else
+				SetFont("DXAUGI14");
+				
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1507,0,baseIconX,baseIconY,0.0);
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[12+CheckInventory("DeusEx_Augmentation_TorsoSlot3")-1][1])));
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1527,0,baseIconX,baseIconY,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_TorsoSlot1") > 0 || CheckInventory("DeusEx_Augmentation_TorsoSlot2") > 0 || CheckInventory("DeusEx_Augmentation_TorsoSlot3") > 0)
+		{
+			SetFont("DXAUGP04");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1544,0,FixedMul(hudboundsx,0.33)*1.0,FixedMul(hudboundsy,0.35)*1.0,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_CranialSlot") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.175);
+			baseIconY = FixedMul(hudboundsy,0.205);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 8;
+				if(Rclicking)
+				{
+					element = -1;
+					if(CheckInventory("DeusEx_Augmentation_CranialSlot") == 1)
+						SetInventory("DeusEx_Augmentation_CranialSlot",2);
+					else
+						SetInventory("DeusEx_Augmentation_CranialSlot",1);
+				}
+					
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			if(CheckInventory("DeusEx_Augmentation_CranialSlot") == 1)
+				SetFont("DXAUGI15");
+			else
+				SetFont("DXAUGI16");
+				
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1508,0,baseIconX,baseIconY,0.0);
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[14+CheckInventory("DeusEx_Augmentation_CranialSlot")-1][1])));
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1528,0,baseIconX,baseIconY,0.0);
+			SetFont("DXAUGP05");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1545,0,FixedMul(hudboundsx,0.269)*1.0,FixedMul(hudboundsy,0.185)*1.0,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_EyeSlot") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.417);
+			baseIconY = FixedMul(hudboundsy,0.205);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 9;
+				if(Rclicking)
+				{
+					element = -1;
+					if(CheckInventory("DeusEx_Augmentation_EyeSlot") == 1)
+						SetInventory("DeusEx_Augmentation_EyeSlot",2);
+					else
+						SetInventory("DeusEx_Augmentation_EyeSlot",1);
+				}
+					
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			if(CheckInventory("DeusEx_Augmentation_EyeSlot") == 1)
+				SetFont("DXAUGI17");
+			else
+				SetFont("DXAUGI18");
+				
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1509,0,baseIconX,baseIconY,0.0);
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[16+CheckInventory("DeusEx_Augmentation_EyeSlot")-1][1])));
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1529,0,baseIconX,baseIconY,0.0);
+			SetFont("DXAUGP06");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1546,0,FixedMul(hudboundsx,0.312)*1.0,FixedMul(hudboundsy,0.205)*1.0,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_InfoLink") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.115);
+			baseIconY = FixedMul(hudboundsy,0.837);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 10;			
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			SetFont("DXAUGI19");	
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1510,0,baseIconX,baseIconY,0.0);
+			SetFont("DXAUGTK1");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1530,0,baseIconX,baseIconY,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_IFF") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.198);
+			baseIconY = FixedMul(hudboundsy,0.837);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 11;			
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			SetFont("DXAUGI20");	
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1511,0,baseIconX,baseIconY,0.0);
+			SetFont("DXAUGTK1");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1531,0,baseIconX,baseIconY,0.0);
+		}
+		
+		if(CheckInventory("DeusEx_Augmentation_Light") > 0)
+		{
+			baseIconX = FixedMul(hudboundsx,0.281);
+			baseIconY = FixedMul(hudboundsy,0.837);
+			validPosition = cursorx > (baseIconX + FixedMul(hudboundsx,iconLMargin)) && cursorx < (baseIconX + FixedMul(hudboundsx,iconRMargin)) && cursory > (baseIconY + FixedMul(hudboundsy,iconUMargin)) && cursory < (baseIconY + FixedMul(hudboundsy,iconBMargin));
+			baseIconX = baseIconX*1.0;
+			baseIconY = baseIconY*1.0;
+			if((lClicking || Rclicking) && validPosition && inputAvailable)
+			{
+				selectedAugSlot = 12;			
+				selectorX = baseIconX;
+				selectorY = baseIconY;
+			}
+			SetFont("DXAUGI21");	
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1512,0,baseIconX,baseIconY,0.0);
+			SetFont("DXAUGTK1");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1532,0,baseIconX,baseIconY,0.0);
+		}
+		
+		if(selectedAugSlot > 0)
+		{
+			SetFont("DXAUGSEL");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1597,0,selectorX,selectorY,0.0);
+		}
+		
+		if(Lclicking && cursorx > FixedMul(hudboundsx,0.078) && cursorx < FixedMul(hudboundsx,0.19) && cursory > FixedMul(hudboundsy,0.938) && cursory < FixedMul(hudboundsy,0.975))
+		{
+			element = 1;
+			SetFont("DXAGBTS1");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1590,0,FixedMul(hudboundsx,0.112)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0);
+		}
+		else if(selectedAugSlot > 0)
+		{
+			SetFont("DXAGBTE1");
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1590,0,FixedMul(hudboundsx,0.112)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0);
+		}
+		else
+			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1590,0,FixedMul(hudboundsx,0.112)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0);
+		
+		//Update input toward end of loop...
+		if(Lclicking || Rclicking)
+		{
+			holdDelay = inputDelay;
+			if(selectedAugSlot != lastselectedAugSlot || lastElement != element)
+				LocalAmbientSound("DeusEx/Menu/Press",127);
+		}
+		
+		lastselectedAugSlot = selectedAugSlot;
+		lastElement = element;
+		
+		Delay(1);
+		
+		holdDelay--;
+	}
+	RemoveMessages(1500,1600);
+}
