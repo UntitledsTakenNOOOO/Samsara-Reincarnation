@@ -1,3 +1,47 @@
+#DEFINE DX_TOTALAUGS 21
+#DEFINE DX_AUGSLOTS 12
+
+str DeusExAugmentations[DX_TOTALAUGS][2] =
+{
+	{"Combat Strength", "DeusEx_Augmentation_CombatStrength"},
+	{"Microfibral Muscle", "DeusEx_Augmentation_MicrofibralMuscle"},
+	{"Speed Enhancement", "DeusEx_Augmentation_SpeedEnhancement"},
+	{"Galvanized Tendons", "DeusEx_Augmentation_RunSilent"},
+	{"Ballistic Protection", "DeusEx_Augmentation_BallisticProtection"},
+	{"EMP Shield", "DeusEx_Augmentation_EMPShield"},
+	{"Cloak", "DeusEx_Augmentation_Cloak"},
+	{"Repulsor", "DeusEx_Augmentation_Repulsor"},
+	{"Energy Shield", "DeusEx_Augmentation_EnergyShield"},
+	{"Environmental Protection", "DeusEx_Augmentation_EnvironmentalResistance"},
+	{"Regeneration", "DeusEx_Augmentation_Regeneration"},
+	{"Maintenance", "DeusEx_Augmentation_Maintenance"},
+	{"Power Recirculator", "DeusEx_Augmentation_PowerRecirculator"},
+	{"Rechargeable Battery", "DeusEx_Augmentation_RechargeableBattery"},
+	{"Spy Drone", "DeusEx_Augmentation_SpyDrone"},
+	{"Aggressive Defense System", "DeusEx_Augmentation_AggressiveDefenseSystem"},
+	{"Vision Enhancement", "DeusEx_Augmentation_VisionEnhancement"},
+	{"Targeting", "DeusEx_Augmentation_Targeting"},
+	{"Infolink", "DeusEx_Augmentation_InfoLink"},
+	{"IFF", "DeusEx_Augmentation_IFF"},
+	{"Light", "DeusEx_Augmentation_Light"},
+};
+
+str DeusExAugmentationsSlots[DX_AUGSLOTS][3] =
+{
+	{ "DeusEx_Augmentation_Arms", "DeusEx_Augmentation_CombatStrength", "DeusEx_Augmentation_MicrofibralMuscle"},
+	{ "DeusEx_Augmentation_Legs", "DeusEx_Augmentation_SpeedEnhancement", "DeusEx_Augmentation_RunSilent"},
+	{ "DeusEx_Augmentation_Subdermal1", "DeusEx_Augmentation_BallisticProtection", "DeusEx_Augmentation_EMPShield"},
+	{ "DeusEx_Augmentation_Subdermal2", "DeusEx_Augmentation_Cloak", "DeusEx_Augmentation_Repulsor"},
+	{ "DeusEx_Augmentation_Torso1", "DeusEx_Augmentation_EnergyShield", "DeusEx_Augmentation_EnvironmentalResistance"},
+	{ "DeusEx_Augmentation_Torso2", "DeusEx_Augmentation_Regeneration", "DeusEx_Augmentation_Maintenance"},
+	{ "DeusEx_Augmentation_Torso3", "DeusEx_Augmentation_PowerRecirculator", "DeusEx_Augmentation_RechargeableBattery"},
+	{ "DeusEx_Augmentation_Cranial", "DeusEx_Augmentation_SpyDrone", "DeusEx_Augmentation_AggressiveDefenseSystem"},
+	{ "DeusEx_Augmentation_Eye", "DeusEx_Augmentation_VisionEnhancement", "DeusEx_Augmentation_Targeting"},
+	{ "DeusEx_Augmentation_InfoLink", "DeusEx_Augmentation_InfoLink"},
+	{ "DeusEx_Augmentation_IFF", "DeusEx_Augmentation_IFF"},
+	{ "DeusEx_Augmentation_Light", "DeusEx_Augmentation_Light"}
+};
+
 Script "DeusEx_DamageModifiers" (int damage)
 {
 	int bulletX = GetActorX(0);
@@ -113,7 +157,7 @@ Script "DeusEx_KillScript" (int override, int DeusExWeaponType)
 	if(CheckInventory("DeusExClass"))
 		if(CheckInventory("PistolStartEnabled"))
 		{
-			GiveInventory(DeusExSkillPoints[DeusExWeaponType], health*(1+(PlayerCount()/4))*(experience*8)/2);		
+			GiveInventory(DeusExSkillPoints[DeusExWeaponType], health*(1+(PlayerCount()/4))*(experience*8)/2);
 		}
 		else
 		{
@@ -258,9 +302,13 @@ Script "DeusEx_Enter" (void)
 													
 			if((Timer()-lasttimer) > movement && movement != 0)
 			{
-				SpawnSpotForced("DXStep",0,0,0);
+				if(abs(GetActorZ(0) - GetActorFloorZ(0)) < 1.0) 
+					PlaySound(0,"DeusExPlayer/Step", CHAN_BODY, 0.8 - CheckInventory("DeusEx_Augmentation_RunSilentToken")*(0.2 * CheckInventory("DeusEx_Augmentation_RunSilent")));
+				GiveInventory("DeusExStepAlerter",1);
 				lasttimer = Timer();
 			}
+			
+			ACS_NamedExecuteWithResult("DeusEx_AugmentationsPlayer");
 
 			Delay(1);
 
@@ -351,11 +399,84 @@ Script "DeusEx_Enter" (void)
 	}
 }	
 
+Script "DeusEx_AugmentationsPlayer" (void)
+{
+	int healAmount = 5;
+	int healing = 0;
+
+	for(int a = 0; a < DX_AUGSLOTS; a++)
+	{
+		TakeInventory(strparam(s:DeusExAugmentationsSlots[a][1],s:"Token"),1);
+		TakeInventory(strparam(s:DeusExAugmentationsSlots[a][2],s:"Token"),1);
+	
+		if(CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot")) > 0)
+		{
+			if(CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active")) == CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot")))
+				GiveInventory(strparam(s:DeusExAugmentationsSlots[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active"))],s:"Token"),1);
+		}
+	}
+	
+	if(CheckInventory("DeusEx_Augmentation_SpeedEnhancementToken"))
+		GiveInventory(strparam(s:"DeusEx_Augmentation_SpeedEnhancement",d:CheckInventory("DeusEx_Augmentation_SpeedEnhancement")),1);
+	else
+		TakeInventory(strparam(s:"DeusEx_Augmentation_SpeedEnhancement",d:CheckInventory("DeusEx_Augmentation_SpeedEnhancement")),1);
+		
+	if(CheckInventory("DeusEx_Augmentation_CloakToken"))
+		GiveInventory("DeusEx_Augmentation_CloakPower",1);
+	else if(CheckInventory("DeusEx_Augmentation_RepulsorToken"))
+		GiveInventory("DeusEx_Augmentation_RepulsorPower",1);
+		
+	if(CheckInventory("DeusEx_Augmentation_MicroFibralMuscleToken") && !CheckInventory("DeusEx_Augmentation_ObjectGrabbing"))
+	{
+		int use = GetPlayerInput(-1, INPUT_BUTTONS) & BT_USE;
+		if(use) GiveInventory("DeusEx_Augmentation_MicrofibralMuscleTrigger",1);
+	}
+		
+	if(CheckInventory("DeusEx_Augmentation_RegenerationToken"))
+	{
+		switch(CheckInventory("DeusEx_Augmentation_Regeneration"))
+		{
+			case 1: healAmount = 5; break;
+			case 2: healAmount = 15; break;
+			case 3: healAmount = 25; break;
+			case 4: healAmount = 40; break;
+		}
+		if(timer() % 7 == 0)
+		{
+			for(healing = 0; healing < (healAmount/5); healing++)
+			{
+				if(GetActorProperty(0,APROP_Health) < 100)
+					SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_Health)+1);
+				else break;
+			}
+		}	
+	}
+	if(CheckInventory("DeusEx_Augmentation_MaintenanceToken"))
+	{
+		switch(CheckInventory("DeusEx_Augmentation_Maintenance"))
+		{
+			case 1: healAmount = 5; break;
+			case 2: healAmount = 15; break;
+			case 3: healAmount = 25; break;
+			case 4: healAmount = 40; break;
+		}
+		if(timer() % 7 == 0)
+		{
+			for(healing = 0; healing < (healAmount/5); healing++)
+			{
+				if(CheckInventory("BasicArmor") < 100)
+					GiveInventory("ArmorScrapArmor",1);
+				else break;
+			}
+		}	
+	}
+}
+
 Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 {
 	int weaponskill = CheckInventory(DeusExWeaponSkills[arg2]);
 	int weaponskillacc = 0.25*weaponskill;
-	int speedmod;
+	int speedmod, myTid;
 	Switch(funct)
 	{
 		Case 1:
@@ -418,6 +539,109 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 					SetResultValue(GetActorAngle(0)/182);
 					break;			
 			}
+			break;
+		case 9:
+			SetResultValue(384-(95*CheckInventory("DeusEx_Augmentation_RunSilent")*CheckInventory("DeusEx_Augmentation_RunSilentToken")));
+			break;
+		case 10:
+			int repulsorX = ACS_NamedExecuteWithResult("getTargetX");
+			int repulsorY = ACS_NamedExecuteWithResult("getTargetY");
+			int repulsorZ = ACS_NamedExecuteWithResult("getTargetZ");
+			int repulsorSpeed = 10;
+			SetActivator(0,AAPTR_Tracer);
+			if(!(ClassifyActor(0) & ACTOR_MONSTER) && CheckFlag(0,"BOSS")) 
+				terminate;
+			int repulseeX = GetActorX(0);
+			int repulseeY = GetActorY(0);
+			int repulseeZ = GetActorZ(0);
+			int thrustAngle = VectorAngle(repulseeX - repulsorX, repulseeY - repulsorY);
+			int thrustPitch = VectorAngle(VectorLength(repulseeX - repulsorX, repulseeY - repulsorY), repulseeZ - repulsorZ);
+			SetActorVelocity(0,FixedMul(repulsorSpeed*cos(thrustAngle),cos(thrustPitch)),FixedMul(repulsorSpeed*sin(thrustAngle),cos(thrustPitch)),repulsorSpeed*sin(thrustpitch),0,0);
+			break;
+		case 11:
+			SetResultValue(48*CheckInventory("DeusEx_Augmentation_Repulsor"));
+			break;
+		case 12:
+			int allowThrow = 1;
+			myTid = UniqueTid();
+			int useTimer = timer();
+			Thing_ChangeTid(0,myTid);
+			SetActivator(0,AAPTR_Tracer);	
+			int selectionTid = UniqueTid();
+			int previousSelectionTid = ActivatorTid();
+			Thing_ChangeTid(0,selectionTid);
+			SetActivator(myTid,AAPTR_Target);
+			GiveInventory("DeusEx_Augmentation_ObjectGrabbing",1);
+			int musclestrength = CheckInventory("DeusEx_Augmentation_MicroFibralMuscle");
+			SetPointerExt(AAPTR_Master,0,selectionTid);
+			SetActivator(selectionTid);
+			Thing_ChangeTid(selectionTid,previousSelectionTid);
+			int afraid = GetActorProperty(0,APROP_Frightened);
+			
+			if((ClassifyActor(0) & ACTOR_MONSTER) && (musclestrength < 2 || GetActorProperty(0,APROP_Mass) > 50 * musclestrength || (musclestrength == 4 && GetActorProperty(0,APROP_Height) > 56.0) || (musclestrength == 3 && GetActorProperty(0,APROP_Height) > 32.0))
+			|| (ClassifyActor(0) & ACTOR_GENERIC) && (GetActorProperty(0,APROP_Mass) > 100 * musclestrength))
+				{
+					SetActivator(myTid,AAPTR_Target);
+					TakeInventory("DeusEx_Augmentation_ObjectGrabbing",1);
+					terminate;
+				}
+			SetActorProperty(0,APROP_Frightened,1);
+			int pass = CheckFlag(0,"CANPASS");
+			GiveInventory("DeusEx_Augmentation_ObjectGrabberEnablePass",1);
+			int lastobjectX = 0;
+			int lastobjectY = 0;
+			int lastobjectZ = 0;
+			while(ACS_NamedExecuteWithResult("DeusEx_Decorate",13,timer() - 3 > useTimer) && ClassifyActor(0) > 1 && !(ClassifyActor(0) & ACTOR_DEAD))
+			{
+				int objectPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Master);
+				Warp(AAPTR_Master,48*cos(objectPitch),0,32.0+(48*sin(objectPitch)),0,WARPF_USEPTR|WARPF_INTERPOLATE);
+				int lastAngle = ACS_NamedExecuteWithResult("getPointerAngle",0,AAPTR_Master);
+				int lastPitch = ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Master);
+				int objectSight = ACS_NamedExecuteWithResult("DeusEx_Decorate",15);
+				if(objectSight)
+				{
+					lastobjectX = GetActorX(0);
+					lastobjectY = GetActorY(0);
+					lastobjectZ = GetActorZ(0);
+				}
+				else
+				{
+					allowThrow = 0;
+					ACS_NamedExecuteWithResult("DeusEx_Decorate",14,lastobjectX,lastobjectY,lastobjectZ);
+					break;
+				}
+				Delay(1);
+			}
+			if(!pass) GiveInventory("DeusEx_Augmentation_ObjectGrabberDisablePass",1);
+			if(allowThrow)
+			{
+				int throwAngle = ACS_NamedExecuteWithResult("getPointerAngle",0,AAPTR_Master);
+				int throwPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Master);
+				int massFactor = GetActorProperty(0,APROP_Mass)/50;
+				int throwVelocity = (5+(musclestrength*5))/(massFactor > 0 ? massFactor : 1);
+				SetActorVelocity(0,FixedMul(throwVelocity*cos(throwAngle),cos(throwPitch)),FixedMul(throwVelocity*sin(throwAngle),cos(throwPitch)),throwVelocity*sin(throwPitch),0,0);
+			}
+			SetActorProperty(0,APROP_Frightened,afraid);
+			SetActivator(0,AAPTR_Master);
+			Delay(3);	
+			TakeInventory("DeusEx_Augmentation_ObjectGrabbing",1);
+			break;
+		case 13:
+			SetActivator(0,AAPTR_Master);
+			int useAgain = GetPlayerInput(-1, INPUT_BUTTONS) & BT_USE;
+			SetResultValue(CheckInventory("DeusEx_Augmentation_MicroFibralMuscleToken") && (!useAgain || !arg1));
+			break;
+		case 14:
+			SetActorPosition(0,arg1,arg2,arg3,0);
+			break;
+		case 15:
+			myTid = UniqueTid();
+			int activatorstid = ActivatorTid();
+			Thing_ChangeTid(0,myTid);
+			SetActivator(0,AAPTR_Master);
+			int sight = CheckSight(0,myTid,0);
+			Thing_ChangeTid(myTid,activatorstid);
+			SetResultValue(sight);
 			break;
 	}
 }	
@@ -719,33 +943,6 @@ Script "DeusEx_Augmentations_Initiate" (void) net
 	}
 }
 
-#DEFINE DX_TOTALAUGS 21
-
-str DeusExAugmentations[DX_TOTALAUGS][2] =
-{
-	{"Combat Strength", "DeusEx_Augmentation_CombatStrength"},
-	{"Microfibral Muscle", "DeusEx_Augmentation_MicrofibralMuscle"},
-	{"Speed Enhancement", "DeusEx_Augmentation_SpeedEnhancement"},
-	{"Galvanized Tendons", "DeusEx_Augmentation_GalvanizedTendons"},
-	{"Ballistic Protection", "DeusEx_Augmentation_BallisticProtection"},
-	{"EMP Shield", "DeusEx_Augmentation_EMPShield"},
-	{"Cloak", "DeusEx_Augmentation_Cloak"},
-	{"Repulsor", "DeusEx_Augmentation_Repulsor"},
-	{"Energy Shield", "DeusEx_Augmentation_EnergyShield"},
-	{"Environmental Protection", "DeusEx_Augmentation_EnvironmentalResistance"},
-	{"Regeneration", "DeusEx_Augmentation_Regeneration"},
-	{"Maintenance", "DeusEx_Augmentation_Maintenance"},
-	{"Power Recirculator", "DeusEx_Augmentation_PowerRecirculator"},
-	{"Rechargeable Battery", "DeusEx_Augmentation_RechargeableBattery"},
-	{"Spy Drone", "DeusEx_Augmentation_SpyDrone"},
-	{"Aggressive Defense System", "DeusEx_Augmentation_AggressiveDefenseSystem"},
-	{"Vision Enhancement", "DeusEx_Augmentation_VisionEnhancement"},
-	{"Targeting", "DeusEx_Augmentation_Targeting"},
-	{"Infolink", "DeusEx_Augmentation_InfoLink"},
-	{"IFF", "DeusEx_Augmentation_IFF"},
-	{"Light", "DeusEx_Augmentation_Light"},
-};
-
 Script "DeusEx_AugmentationsUI" (void)
 {
 	int cursorx, cursory, a, b, holdDelay, inputAvailable;
@@ -828,6 +1025,8 @@ Script "DeusEx_AugmentationsUI" (void)
 						SetInventory("DeusEx_Augmentation_ArmsSlot",2);
 					else
 						SetInventory("DeusEx_Augmentation_ArmsSlot",1);
+						
+					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
 					
 				selectorX = baseIconX;
@@ -862,6 +1061,8 @@ Script "DeusEx_AugmentationsUI" (void)
 						SetInventory("DeusEx_Augmentation_LegsSlot",2);
 					else
 						SetInventory("DeusEx_Augmentation_LegsSlot",1);
+						
+					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
 					
 				selectorX = baseIconX;
@@ -879,7 +1080,7 @@ Script "DeusEx_AugmentationsUI" (void)
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1542,0,FixedMul(hudboundsx,0.318)*1.0,FixedMul(hudboundsy,0.653)*1.0,0.0);
 		}
 		
-		if(CheckInventory("DeusEx_Augmentation_SubdermalSlot1") > 0)
+		if(CheckInventory("DeusEx_Augmentation_Subdermal1Slot") > 0)
 		{
 			baseIconX = FixedMul(hudboundsx,0.115);
 			baseIconY = FixedMul(hudboundsy,0.538);
@@ -892,26 +1093,28 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_SubdermalSlot1") == 1)
-						SetInventory("DeusEx_Augmentation_SubdermalSlot1",2);
+					if(CheckInventory("DeusEx_Augmentation_Subdermal1Slot") == 1)
+						SetInventory("DeusEx_Augmentation_Subdermal1Slot",2);
 					else
-						SetInventory("DeusEx_Augmentation_SubdermalSlot1",1);
+						SetInventory("DeusEx_Augmentation_Subdermal1Slot",1);
+						
+					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
 					
 				selectorX = baseIconX;
 				selectorY = baseIconY;
 			}
-			if(CheckInventory("DeusEx_Augmentation_SubdermalSlot1") == 1)
+			if(CheckInventory("DeusEx_Augmentation_Subdermal1Slot") == 1)
 				SetFont("DXAUGI05");
 			else
 				SetFont("DXAUGI06");
 				
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1503,0,baseIconX,baseIconY,0.0);
-			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[4+CheckInventory("DeusEx_Augmentation_SubdermalSlot1")-1][1])));
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[4+CheckInventory("DeusEx_Augmentation_Subdermal1Slot")-1][1])));
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1523,0,baseIconX,baseIconY,0.0);
 		}
 		
-		if(CheckInventory("DeusEx_Augmentation_SubdermalSlot2") > 0)
+		if(CheckInventory("DeusEx_Augmentation_Subdermal2Slot") > 0)
 		{
 			baseIconX = FixedMul(hudboundsx,0.115);
 			baseIconY = FixedMul(hudboundsy,0.662);
@@ -924,32 +1127,34 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_SubdermalSlot2") == 1)
-						SetInventory("DeusEx_Augmentation_SubdermalSlot2",2);
+					if(CheckInventory("DeusEx_Augmentation_Subdermal2Slot") == 1)
+						SetInventory("DeusEx_Augmentation_Subdermal2Slot",2);
 					else
-						SetInventory("DeusEx_Augmentation_SubdermalSlot2",1);
+						SetInventory("DeusEx_Augmentation_Subdermal2Slot",1);
+						
+					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
 					
 				selectorX = baseIconX;
 				selectorY = baseIconY;
 			}
-			if(CheckInventory("DeusEx_Augmentation_SubdermalSlot2") == 1)
+			if(CheckInventory("DeusEx_Augmentation_Subdermal2Slot") == 1)
 				SetFont("DXAUGI07");
 			else
 				SetFont("DXAUGI08");
 				
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1504,0,baseIconX,baseIconY,0.0);
-			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[6+CheckInventory("DeusEx_Augmentation_SubdermalSlot2")-1][1])));
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[6+CheckInventory("DeusEx_Augmentation_Subdermal2Slot")-1][1])));
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1524,0,baseIconX,baseIconY,0.0);
 		}
 		
-		if(CheckInventory("DeusEx_Augmentation_SubdermalSlot1") > 0 || CheckInventory("DeusEx_Augmentation_SubdermalSlot2") > 0)
+		if(CheckInventory("DeusEx_Augmentation_Subdermal1Slot") > 0 || CheckInventory("DeusEx_Augmentation_Subdermal2Slot") > 0)
 		{
 			SetFont("DXAUGP03");
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1543,0,FixedMul(hudboundsx,0.179)*1.0,FixedMul(hudboundsy,0.458)*1.0,0.0);
 		}
 		
-		if(CheckInventory("DeusEx_Augmentation_TorsoSlot1") > 0)
+		if(CheckInventory("DeusEx_Augmentation_Torso1Slot") > 0)
 		{
 			baseIconX = FixedMul(hudboundsx,0.471);
 			baseIconY = FixedMul(hudboundsy,0.375);
@@ -962,26 +1167,28 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_TorsoSlot1") == 1)
-						SetInventory("DeusEx_Augmentation_TorsoSlot1",2);
+					if(CheckInventory("DeusEx_Augmentation_Torso1Slot") == 1)
+						SetInventory("DeusEx_Augmentation_Torso1Slot",2);
 					else
-						SetInventory("DeusEx_Augmentation_TorsoSlot1",1);
+						SetInventory("DeusEx_Augmentation_Torso1Slot",1);
+						
+					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
 					
 				selectorX = baseIconX;
 				selectorY = baseIconY;
 			}
-			if(CheckInventory("DeusEx_Augmentation_TorsoSlot1") == 1)
+			if(CheckInventory("DeusEx_Augmentation_Torso1Slot") == 1)
 				SetFont("DXAUGI09");
 			else
 				SetFont("DXAUGI10");
 				
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1505,0,baseIconX,baseIconY,0.0);
-			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[8+CheckInventory("DeusEx_Augmentation_TorsoSlot1")-1][1])));
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[8+CheckInventory("DeusEx_Augmentation_Torso1Slot")-1][1])));
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1525,0,baseIconX,baseIconY,0.0);
 		}
 		
-		if(CheckInventory("DeusEx_Augmentation_TorsoSlot2") > 0)
+		if(CheckInventory("DeusEx_Augmentation_Torso2Slot") > 0)
 		{
 			baseIconX = FixedMul(hudboundsx,0.471);
 			baseIconY = FixedMul(hudboundsy,0.499);
@@ -994,26 +1201,28 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_TorsoSlot2") == 1)
-						SetInventory("DeusEx_Augmentation_TorsoSlot2",2);
+					if(CheckInventory("DeusEx_Augmentation_Torso2Slot") == 1)
+						SetInventory("DeusEx_Augmentation_Torso2Slot",2);
 					else
-						SetInventory("DeusEx_Augmentation_TorsoSlot2",1);
+						SetInventory("DeusEx_Augmentation_Torso2Slot",1);
+						
+					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
 					
 				selectorX = baseIconX;
 				selectorY = baseIconY;
 			}
-			if(CheckInventory("DeusEx_Augmentation_TorsoSlot2") == 1)
+			if(CheckInventory("DeusEx_Augmentation_Torso2Slot") == 1)
 				SetFont("DXAUGI11");
 			else
 				SetFont("DXAUGI12");
 				
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1506,0,baseIconX,baseIconY,0.0);
-			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[10+CheckInventory("DeusEx_Augmentation_TorsoSlot2")-1][1])));
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[10+CheckInventory("DeusEx_Augmentation_Torso2Slot")-1][1])));
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1526,0,baseIconX,baseIconY,0.0);
 		}
 		
-		if(CheckInventory("DeusEx_Augmentation_TorsoSlot3") > 0)
+		if(CheckInventory("DeusEx_Augmentation_Torso3Slot") > 0)
 		{
 			baseIconX = FixedMul(hudboundsx,0.471);
 			baseIconY = FixedMul(hudboundsy,0.622);
@@ -1026,26 +1235,28 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_TorsoSlot3") == 1)
-						SetInventory("DeusEx_Augmentation_TorsoSlot3",2);
+					if(CheckInventory("DeusEx_Augmentation_Torso3Slot") == 1)
+						SetInventory("DeusEx_Augmentation_Torso3Slot",2);
 					else
-						SetInventory("DeusEx_Augmentation_TorsoSlot3",1);
+						SetInventory("DeusEx_Augmentation_Torso3Slot",1);
+						
+					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
 					
 				selectorX = baseIconX;
 				selectorY = baseIconY;
 			}
-			if(CheckInventory("DeusEx_Augmentation_TorsoSlot3") == 1)
+			if(CheckInventory("DeusEx_Augmentation_Torso3Slot") == 1)
 				SetFont("DXAUGI13");
 			else
 				SetFont("DXAUGI14");
 				
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1507,0,baseIconX,baseIconY,0.0);
-			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[12+CheckInventory("DeusEx_Augmentation_TorsoSlot3")-1][1])));
+			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentations[12+CheckInventory("DeusEx_Augmentation_Torso3Slot")-1][1])));
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1527,0,baseIconX,baseIconY,0.0);
 		}
 		
-		if(CheckInventory("DeusEx_Augmentation_TorsoSlot1") > 0 || CheckInventory("DeusEx_Augmentation_TorsoSlot2") > 0 || CheckInventory("DeusEx_Augmentation_TorsoSlot3") > 0)
+		if(CheckInventory("DeusEx_Augmentation_Torso1Slot") > 0 || CheckInventory("DeusEx_Augmentation_Torso2Slot") > 0 || CheckInventory("DeusEx_Augmentation_Torso3Slot") > 0)
 		{
 			SetFont("DXAUGP04");
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1544,0,FixedMul(hudboundsx,0.33)*1.0,FixedMul(hudboundsy,0.35)*1.0,0.0);
@@ -1068,6 +1279,8 @@ Script "DeusEx_AugmentationsUI" (void)
 						SetInventory("DeusEx_Augmentation_CranialSlot",2);
 					else
 						SetInventory("DeusEx_Augmentation_CranialSlot",1);
+						
+					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
 					
 				selectorX = baseIconX;
@@ -1102,6 +1315,8 @@ Script "DeusEx_AugmentationsUI" (void)
 						SetInventory("DeusEx_Augmentation_EyeSlot",2);
 					else
 						SetInventory("DeusEx_Augmentation_EyeSlot",1);
+						
+					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
 					
 				selectorX = baseIconX;
@@ -1182,26 +1397,60 @@ Script "DeusEx_AugmentationsUI" (void)
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1597,0,selectorX,selectorY,0.0);
 		}
 		
-		if(Lclicking && cursorx > FixedMul(hudboundsx,0.078) && cursorx < FixedMul(hudboundsx,0.19) && cursory > FixedMul(hudboundsy,0.938) && cursory < FixedMul(hudboundsy,0.975))
+		if(selectedAugSlot > 0)
 		{
-			element = 1;
-			SetFont("DXAGBTS1");
-			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1590,0,FixedMul(hudboundsx,0.112)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0);
-		}
-		else if(selectedAugSlot > 0)
-		{
-			SetFont("DXAGBTE1");
-			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1590,0,FixedMul(hudboundsx,0.112)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0);
+			if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active")))
+			{
+				if(Lclicking && cursorx > FixedMul(hudboundsx,0.078) && cursorx < FixedMul(hudboundsx,0.19) && cursory > FixedMul(hudboundsy,0.938) && cursory < FixedMul(hudboundsy,0.975))
+				{
+					element = 1;
+					SetFont("DXAGBTS2");
+					HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1590,0,FixedMul(hudboundsx,0.112)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0);
+				}
+				else
+				{
+					SetFont("DXAGBTE2");
+					HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1590,0,FixedMul(hudboundsx,0.112)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0);
+				}
+			}
+			else
+			{
+				if(Lclicking && cursorx > FixedMul(hudboundsx,0.078) && cursorx < FixedMul(hudboundsx,0.19) && cursory > FixedMul(hudboundsy,0.938) && cursory < FixedMul(hudboundsy,0.975))
+				{
+					element = 1;
+					SetFont("DXAGBTS1");
+					HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1590,0,FixedMul(hudboundsx,0.112)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0);
+				}
+				else
+				{
+					SetFont("DXAGBTE1");
+					HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1590,0,FixedMul(hudboundsx,0.112)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0);
+				}
+			}
 		}
 		else
 			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1590,0,FixedMul(hudboundsx,0.112)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0);
-		
 		//Update input toward end of loop...
-		if(Lclicking || Rclicking)
+		if(Lclicking || Rclicking && inputAvailable)
 		{
 			holdDelay = inputDelay;
 			if(selectedAugSlot != lastselectedAugSlot || lastElement != element)
+			{
 				LocalAmbientSound("DeusEx/Menu/Press",127);
+				if(selectedAugSlot != lastselectedAugSlot && CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 0)
+					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+				if(selectedAugSlot > 0 && element == 1)
+				{
+					if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active")))
+						TakeInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),2);
+					else
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")));
+				}
+				else if(selectedAugSlot > 0 && Rclicking)
+				{
+					TakeInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),2);
+				}
+			}
 		}
 		
 		lastselectedAugSlot = selectedAugSlot;
