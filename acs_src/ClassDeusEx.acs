@@ -174,6 +174,7 @@ Script "DeusEx_WeaponSkillDamage" (int weapontype, int basedamage)
 	int rifleskill = CheckInventory("DeusEx_RifleSkill");
 	int demoskill = CheckInventory("DeusEx_DemolitionsSkill");
 	int heavyskill = CheckInventory("DeusEx_HeavyWeaponSkill");
+	int combatStrength = CheckInventory("DeusEx_Augmentation_CombatStrengthToken") * CheckInventory("DeusEx_Augmentation_CombatStrength");
 	Switch(weapontype)
 	{
 		Case 1:
@@ -183,7 +184,7 @@ Script "DeusEx_WeaponSkillDamage" (int weapontype, int basedamage)
 			SetResultValue(basedamage*mult>>16);
 			break;
 		Case 2:
-			mult = 1.0+(0.25*lowtechskill);
+			mult = 1.0+(0.25*lowtechskill)+(0.25*combatStrength);
 			SetResultValue(basedamage*mult>>16);
 			break;	
 		Case 3:
@@ -191,7 +192,7 @@ Script "DeusEx_WeaponSkillDamage" (int weapontype, int basedamage)
 			SetResultValue(basedamage*mult>>16);
 			break;		
 		Case 4:
-			mult = 1.0+(0.25*demoskill);
+			mult = 1.0+(0.25*demoskill)+(0.25*combatStrength);
 			SetResultValue(basedamage*mult>>16);
 			break;	
 		Case 5:
@@ -303,7 +304,7 @@ Script "DeusEx_Enter" (void)
 			if((Timer()-lasttimer) > movement && movement != 0)
 			{
 				if(abs(GetActorZ(0) - GetActorFloorZ(0)) < 1.0) 
-					PlaySound(0,"DeusExPlayer/Step", CHAN_BODY, 0.8 - CheckInventory("DeusEx_Augmentation_RunSilentToken")*(0.2 * CheckInventory("DeusEx_Augmentation_RunSilent")));
+					ACS_NamedExecuteWithResult("DeusEx_Decorate",17,0.8 - CheckInventory("DeusEx_Augmentation_RunSilentToken")*(0.2 * CheckInventory("DeusEx_Augmentation_RunSilent")));
 				GiveInventory("DeusExStepAlerter",1);
 				lasttimer = Timer();
 			}
@@ -403,73 +404,147 @@ Script "DeusEx_AugmentationsPlayer" (void)
 {
 	int healAmount = 5;
 	int healing = 0;
+	int a = 0, b = 0;
 
-	for(int a = 0; a < DX_AUGSLOTS; a++)
+	for(a = 0; a < DX_AUGSLOTS; a++)
 	{
 		TakeInventory(strparam(s:DeusExAugmentationsSlots[a][1],s:"Token"),1);
 		TakeInventory(strparam(s:DeusExAugmentationsSlots[a][2],s:"Token"),1);
-	
-		if(CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot")) > 0)
+
+		if(a >= 9)
+		{
+			if(CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active")))
+				GiveInventory(strparam(s:DeusExAugmentationsSlots[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active"))],s:"Token"),1);
+		}
+		else if(CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot")) > 0)
 		{
 			if(CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active")) == CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot")))
 				GiveInventory(strparam(s:DeusExAugmentationsSlots[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active"))],s:"Token"),1);
 		}
-	}
-	
-	if(CheckInventory("DeusEx_Augmentation_SpeedEnhancementToken"))
-		GiveInventory(strparam(s:"DeusEx_Augmentation_SpeedEnhancement",d:CheckInventory("DeusEx_Augmentation_SpeedEnhancement")),1);
-	else
-		TakeInventory(strparam(s:"DeusEx_Augmentation_SpeedEnhancement",d:CheckInventory("DeusEx_Augmentation_SpeedEnhancement")),1);
 		
-	if(CheckInventory("DeusEx_Augmentation_CloakToken"))
-		GiveInventory("DeusEx_Augmentation_CloakPower",1);
-	else if(CheckInventory("DeusEx_Augmentation_RepulsorToken"))
-		GiveInventory("DeusEx_Augmentation_RepulsorPower",1);
-		
-	if(CheckInventory("DeusEx_Augmentation_MicroFibralMuscleToken") && !CheckInventory("DeusEx_Augmentation_ObjectGrabbing"))
-	{
-		int use = GetPlayerInput(-1, INPUT_BUTTONS) & BT_USE;
-		if(use) GiveInventory("DeusEx_Augmentation_MicrofibralMuscleTrigger",1);
-	}
-		
-	if(CheckInventory("DeusEx_Augmentation_RegenerationToken"))
-	{
-		switch(CheckInventory("DeusEx_Augmentation_Regeneration"))
+		switch(a)
 		{
-			case 1: healAmount = 5; break;
-			case 2: healAmount = 15; break;
-			case 3: healAmount = 25; break;
-			case 4: healAmount = 40; break;
+			case 0:
+				if(CheckInventory("DeusEx_Augmentation_MicroFibralMuscleToken") && !CheckInventory("DeusEx_Augmentation_ObjectGrabbing"))
+				{
+					int use = GetPlayerInput(-1, INPUT_BUTTONS) & BT_USE;
+					if(use) GiveInventory("DeusEx_Augmentation_MicrofibralMuscleTrigger",1);
+				}
+				break;
+			case 1:
+				for(b = 1; b <= 4; b++)
+				{
+					if(CheckInventory("DeusEx_Augmentation_SpeedEnhancementToken"))
+					{
+						if(CheckInventory("DeusEx_Augmentation_SpeedEnhancement") == b)
+							GiveInventory(strparam(s:"DeusEx_Augmentation_SpeedEnhancement",d:b),1);
+						else
+							TakeInventory(strparam(s:"DeusEx_Augmentation_SpeedEnhancement",d:b),1);
+					}
+					else
+						TakeInventory(strparam(s:"DeusEx_Augmentation_SpeedEnhancement",d:b),1);
+				}
+				break;
+			case 2:
+				for(b = 1; b <= 4; b++)
+				{
+					if(CheckInventory("DeusEx_Augmentation_BallisticProtectionToken"))
+					{
+						if(CheckInventory("DeusEx_Augmentation_BallisticProtection") == b)
+							GiveInventory(strparam(s:"DeusEx_Augmentation_BallisticProtection",d:b),1);
+						else
+							TakeInventory(strparam(s:"DeusEx_Augmentation_BallisticProtection",d:b),1);
+					}
+					else
+						TakeInventory(strparam(s:"DeusEx_Augmentation_BallisticProtection",d:b),1);
+						
+					if(CheckInventory("DeusEx_Augmentation_EMPProtectionToken"))
+					{
+						if(CheckInventory("DeusEx_Augmentation_EMPProtection") == b)
+							GiveInventory(strparam(s:"DeusEx_Augmentation_EMPProtection",d:b),1);
+						else
+							TakeInventory(strparam(s:"DeusEx_Augmentation_EMPProtection",d:b),1);
+					}
+					else
+						TakeInventory(strparam(s:"DeusEx_Augmentation_EMPProtection",d:b),1);
+				}
+				break;
+			case 3:
+				if(CheckInventory("DeusEx_Augmentation_CloakToken"))
+					GiveInventory("DeusEx_Augmentation_CloakPower",1);
+				else if(CheckInventory("DeusEx_Augmentation_RepulsorToken"))
+					GiveInventory("DeusEx_Augmentation_RepulsorPower",1);
+				break;
+			case 4:
+				for(b = 1; b <= 4; b++)
+				{
+					if(CheckInventory("DeusEx_Augmentation_EnergyShieldToken"))
+					{
+						if(CheckInventory("DeusEx_Augmentation_EnergyShield") == b)
+							GiveInventory(strparam(s:"DeusEx_Augmentation_EnergyShield",d:b),1);
+						else
+							TakeInventory(strparam(s:"DeusEx_Augmentation_EnergyShield",d:b),1);
+					}
+					else
+						TakeInventory(strparam(s:"DeusEx_Augmentation_EnergyShield",d:b),1);
+						
+					if(CheckInventory("DeusEx_Augmentation_EnvironmentalResistanceToken"))
+					{
+						if(CheckInventory("DeusEx_Augmentation_EnvironmentalResistance") == b)
+							GiveInventory(strparam(s:"DeusEx_Augmentation_EnvironmentalResistance",d:b),1);
+						else
+							TakeInventory(strparam(s:"DeusEx_Augmentation_EnvironmentalResistance",d:b),1);
+					}
+					else
+						TakeInventory(strparam(s:"DeusEx_Augmentation_EnvironmentalResistance",d:b),1);
+				}
+				break;
+			case 5:
+				if(CheckInventory("DeusEx_Augmentation_RegenerationToken"))
+				{
+					switch(CheckInventory("DeusEx_Augmentation_Regeneration"))
+					{
+						case 1: healAmount = 5; break;
+						case 2: healAmount = 15; break;
+						case 3: healAmount = 25; break;
+						case 4: healAmount = 40; break;
+					}
+					if(timer() % 7 == 0)
+					{
+						for(healing = 0; healing < (healAmount/5); healing++)
+						{
+							if(GetActorProperty(0,APROP_Health) < 100)
+								SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_Health)+1);
+							else break;
+						}
+					}	
+				}
+				if(CheckInventory("DeusEx_Augmentation_MaintenanceToken"))
+				{
+					switch(CheckInventory("DeusEx_Augmentation_Maintenance"))
+					{
+						case 1: healAmount = 5; break;
+						case 2: healAmount = 15; break;
+						case 3: healAmount = 25; break;
+						case 4: healAmount = 40; break;
+					}
+					if(timer() % 7 == 0)
+					{
+						for(healing = 0; healing < (healAmount/5); healing++)
+						{
+							if(CheckInventory("BasicArmor") < 100)
+								GiveInventory("ArmorScrapArmor",1);
+							else break;
+						}
+					}	
+				}
+				break;
+			case 12:
+				if(CheckInventory("DeusEx_Augmentation_LightToken"))
+					GiveInventory("DeusEx_Augmentation_LightTrigger",1);
+				break;
 		}
-		if(timer() % 7 == 0)
-		{
-			for(healing = 0; healing < (healAmount/5); healing++)
-			{
-				if(GetActorProperty(0,APROP_Health) < 100)
-					SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_Health)+1);
-				else break;
-			}
-		}	
-	}
-	if(CheckInventory("DeusEx_Augmentation_MaintenanceToken"))
-	{
-		switch(CheckInventory("DeusEx_Augmentation_Maintenance"))
-		{
-			case 1: healAmount = 5; break;
-			case 2: healAmount = 15; break;
-			case 3: healAmount = 25; break;
-			case 4: healAmount = 40; break;
-		}
-		if(timer() % 7 == 0)
-		{
-			for(healing = 0; healing < (healAmount/5); healing++)
-			{
-				if(CheckInventory("BasicArmor") < 100)
-					GiveInventory("ArmorScrapArmor",1);
-				else break;
-			}
-		}	
-	}
+	}	
 }
 
 Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
@@ -573,11 +648,11 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 			SetActivator(myTid,AAPTR_Target);
 			GiveInventory("DeusEx_Augmentation_ObjectGrabbing",1);
 			int musclestrength = CheckInventory("DeusEx_Augmentation_MicroFibralMuscle");
-			SetPointerExt(AAPTR_Master,0,selectionTid);
+			SetPointerExt(AAPTR_Tracer,0,selectionTid);
 			SetActivator(selectionTid);
 			Thing_ChangeTid(selectionTid,previousSelectionTid);
 			int afraid = GetActorProperty(0,APROP_Frightened);
-			
+			int objectGravity = GetActorProperty(0,APROP_Gravity);
 			if((ClassifyActor(0) & ACTOR_MONSTER) && (musclestrength < 2 || GetActorProperty(0,APROP_Mass) > 50 * musclestrength || (musclestrength == 4 && GetActorProperty(0,APROP_Height) > 56.0) || (musclestrength == 3 && GetActorProperty(0,APROP_Height) > 32.0))
 			|| (ClassifyActor(0) & ACTOR_GENERIC) && (GetActorProperty(0,APROP_Mass) > 100 * musclestrength))
 				{
@@ -586,17 +661,22 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 					terminate;
 				}
 			SetActorProperty(0,APROP_Frightened,1);
+			SetActorProperty(0,APROP_Gravity,0);
 			int pass = CheckFlag(0,"CANPASS");
+			int blockMonster = CheckFlag(0,"NOBLOCKMONST");
+			int mDropOff = CheckFlag(0,"DROPOFF");
 			GiveInventory("DeusEx_Augmentation_ObjectGrabberEnablePass",1);
+			GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableBlock",1);
+			GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableDropOff",1);
 			int lastobjectX = 0;
 			int lastobjectY = 0;
 			int lastobjectZ = 0;
 			while(ACS_NamedExecuteWithResult("DeusEx_Decorate",13,timer() - 3 > useTimer) && ClassifyActor(0) > 1 && !(ClassifyActor(0) & ACTOR_DEAD))
 			{
-				int objectPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Master);
-				Warp(AAPTR_Master,48*cos(objectPitch),0,32.0+(48*sin(objectPitch)),0,WARPF_USEPTR|WARPF_INTERPOLATE);
-				int lastAngle = ACS_NamedExecuteWithResult("getPointerAngle",0,AAPTR_Master);
-				int lastPitch = ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Master);
+				int objectPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
+				Warp(AAPTR_Tracer,48*cos(objectPitch),0,32.0+(48*sin(objectPitch)),0,WARPF_USEPTR|WARPF_INTERPOLATE);
+				int lastAngle = ACS_NamedExecuteWithResult("getPointerAngle",0,AAPTR_Tracer);
+				int lastPitch = ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
 				int objectSight = ACS_NamedExecuteWithResult("DeusEx_Decorate",15);
 				if(objectSight)
 				{
@@ -612,22 +692,24 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 				}
 				Delay(1);
 			}
+			SetActorProperty(0,APROP_Gravity,objectGravity);
 			if(!pass) GiveInventory("DeusEx_Augmentation_ObjectGrabberDisablePass",1);
 			if(allowThrow)
 			{
-				int throwAngle = ACS_NamedExecuteWithResult("getPointerAngle",0,AAPTR_Master);
-				int throwPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Master);
+				int throwAngle = ACS_NamedExecuteWithResult("getPointerAngle",0,AAPTR_Tracer);
+				int throwPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
 				int massFactor = GetActorProperty(0,APROP_Mass)/50;
 				int throwVelocity = (5+(musclestrength*5))/(massFactor > 0 ? massFactor : 1);
 				SetActorVelocity(0,FixedMul(throwVelocity*cos(throwAngle),cos(throwPitch)),FixedMul(throwVelocity*sin(throwAngle),cos(throwPitch)),throwVelocity*sin(throwPitch),0,0);
 			}
 			SetActorProperty(0,APROP_Frightened,afraid);
-			SetActivator(0,AAPTR_Master);
+			ACS_NamedExecuteWithResult("DeusEx_Decorate",16,blockMonster,mDropOff);
+			SetActivator(0,AAPTR_Tracer);
 			Delay(3);	
 			TakeInventory("DeusEx_Augmentation_ObjectGrabbing",1);
 			break;
 		case 13:
-			SetActivator(0,AAPTR_Master);
+			SetActivator(0,AAPTR_Tracer);
 			int useAgain = GetPlayerInput(-1, INPUT_BUTTONS) & BT_USE;
 			SetResultValue(CheckInventory("DeusEx_Augmentation_MicroFibralMuscleToken") && (!useAgain || !arg1));
 			break;
@@ -638,10 +720,34 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 			myTid = UniqueTid();
 			int activatorstid = ActivatorTid();
 			Thing_ChangeTid(0,myTid);
-			SetActivator(0,AAPTR_Master);
+			SetActivator(0,AAPTR_Tracer);
 			int sight = CheckSight(0,myTid,0);
 			Thing_ChangeTid(myTid,activatorstid);
 			SetResultValue(sight);
+			break;
+		case 16:
+			Delay(5);
+			int throwDamage = VectorLength(GetActorVelX(0),GetActorVelY(0))>>16;
+			until(GetActorVelX(0) == 0 && GetActorVelY(0) == 0)
+			{
+				if(ClassifyActor(0) <= 1)
+					terminate;
+					
+				Delay(1);
+			}
+			if(GetCvar("samsara_zscriptready"))
+				DamageActor(0,0,0,AAPTR_TRACER,throwDamage,"Normal");
+			else
+				Thing_Damage2(0,throwDamage,"Normal");
+			if(arg1) GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableBlock",1);
+			if(arg2) GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableDropOff",1);
+			break;
+		case 17:
+			myTid = UniqueTid();
+			SpawnForced("ShrinkFlash",GetActorX(0),GetActorY(0),GetActorZ(0),myTid);
+			SetActivator(myTid);
+			Thing_ChangeTid(myTid,0);
+			PlaySound(0,"DeusExPlayer/Step", CHAN_BODY, arg1);
 			break;
 	}
 }	
@@ -1437,14 +1543,27 @@ Script "DeusEx_AugmentationsUI" (void)
 			if(selectedAugSlot != lastselectedAugSlot || lastElement != element)
 			{
 				LocalAmbientSound("DeusEx/Menu/Press",127);
-				if(selectedAugSlot != lastselectedAugSlot && CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 0)
-					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+				if(selectedAugSlot < 10)
+				{
+					if(selectedAugSlot != lastselectedAugSlot && CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 0)
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+				}
 				if(selectedAugSlot > 0 && element == 1)
 				{
-					if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active")))
-						TakeInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),2);
+					if(selectedAugSlot < 10)
+					{
+						if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active")))
+							TakeInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),2);
+						else
+							SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")));
+					}
 					else
-						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")));
+					{
+						if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active")))
+							TakeInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),1);
+						else
+							GiveInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),1);
+					}
 				}
 				else if(selectedAugSlot > 0 && Rclicking)
 				{
