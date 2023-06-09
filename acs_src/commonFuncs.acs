@@ -893,73 +893,21 @@ function int RemoveMessages(int rangemin, int rangemax)
 	return 0;
 }
 
-#define ASPECT_4_3 (4.0 / 3)
-#define ASPECT_5_4 1.25
-#define ASPECT_16_9 (16.0 / 9)
-#define ASPECT_16_10 1.6
-#define ASPECT_17_10 1.7
-
 function int getaspectratio(void)
 {
-	int width = GetCVar("vid_defwidth");
-	int height = GetCVar("vid_defheight");
-	int nowidescreen = GetCVar("vid_nowidescreen");
-	int tft = GetCVar("vid_tft");
+	int width = GetScreenWidth();
+	int height = GetScreenHeight();
 	int aspect = GetCVar("vid_aspect");
 	switch(aspect)
 	{
-		case 1: return ASPECT_16_9;
-		case 2: return ASPECT_16_10;
-		case 3: return ASPECT_4_3;
-		case 4: return ASPECT_5_4;
-		case 5: return ASPECT_17_10;
+		case 1: return (16.0 / 9);
+		case 2: return 1.6;
+		case 3: return (4.0 / 3);
+		case 4: return 1.25;
+		case 5: return 1.7;
+		case 6: return 7.0/3;
 	}
-	if(nowidescreen)
-	{
-		if(!tft)
-			return ASPECT_4_3;
-		if(height * ASPECT_5_4 == width<<16)
-			return ASPECT_5_4;
-		else
-			return ASPECT_4_3;
-	}
-	if(abs((abs(height * ASPECT_16_9)>>16) - width) < 10)
-	{
-		return ASPECT_16_9;
-	}
-	if(abs((abs(height * ASPECT_17_10)>>16) - width) < 10)
-	{
-		return ASPECT_17_10;
-	}
-	if(abs((abs(height * ASPECT_16_10)>>16) - width) < 60)
-	{
-		if((width == 320 && height == 200) || (width == 640 && height == 400))
-			return ASPECT_4_3;
-		return ASPECT_16_10;
-	}
-	if((height * ASPECT_5_4)>>16 == width && tft)
-	{
-		return ASPECT_5_4;
-	}
-	return ASPECT_4_3;
-}
-
-function int GetHudRight(int w)
-{
-	switch (getaspectratio())
-	{
-		case ASPECT_5_4: return w + (FixedDiv(w<<16,20.0)>>16);
-		case ASPECT_16_10: return w + (FixedDiv(w<<16,10.0)>>16);
-		case ASPECT_17_10: return w + (FixedDiv(w<<16,7.95)>>16);
-		case ASPECT_16_9: return w + (FixedDiv(w<<16,5.9)>>16);
-	}
-
-	return w;
-}
-
-function int GetHudLeft(int w)
-{
-	return w - GetHudRight(w);
+	return abs(width<<16)/abs(height);
 }
 
 function int SetPointerExt(int assign_slot, int tid, int assign_to_tid)

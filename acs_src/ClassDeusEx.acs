@@ -42,6 +42,8 @@ str DeusExAugmentationsSlots[DX_AUGSLOTS][3] =
 	{ "DeusEx_Augmentation_Light", "DeusEx_Augmentation_Light"}
 };
 
+int DeusExAugmentationsConsumptions[DX_AUGSLOTS][2] = { {20,20}, {40,40}, {60,10}, {150,100}, {40,20}, {120,100}, {}, {100,150}, {40,40}, {}, {}, {} };
+
 Script "DeusEx_DamageModifiers" (int damage)
 {
 	int bulletX = GetActorX(0);
@@ -128,7 +130,7 @@ Script "DeusEx_BackDamage" (int damage)
 		SetResultValue(backdamage*bulletdamage);			
 }
 
-str DeusExSkillPoints[4] = { "DeusEx_LowTechPoints", "DeusEx_PistolPoints", "DeusEx_RiflePoints", "DeusEx_HeavyPoints" };
+str DeusExSkillPoints[4] = { "DeusEx_LowTechPoints", "DeusEx_PistolPoints", "DeusEx_RiflePoints", "DeusEx_HeavyWeaponPoints" };
 
 Script "DeusEx_KillScript" (int override, int DeusExWeaponType)
 {
@@ -204,15 +206,11 @@ Script "DeusEx_WeaponSkillDamage" (int weapontype, int basedamage)
 	}		
 }	
 
-
+str DxskillLevelNames[5] = { "Untrained", "Trained", "Proficient", "Advanced", "Master" };
+str DxSkillNames[6][2] = { {"Low-Tech","DeusEx_LowTech"}, {"Pistol","DeusEx_Pistol"}, {"Rifle","DeusEx_Rifle"}, {"Heavy Weapon","DeusEx_HeavyWeapon"}, {"Medicine","DeusEx_Medicine"}, {"Environmental","DeusEx_Enviro"} };
 str DeusExSpreads[7] = { "DeusEx_GlockSpread", "DeusEx_XBowSpread", "DeusEx_AssaultGunSpread", "DeusEx_ShotgunSpread", "DeusEx_PlasmaRifleSpread", "DeusEx_StealthSpread", "DeusEx_SawedOffSpread" };
 str DeusExWeaponSkills[5] = { "DeusEx_LowTechSkill", "DeusEx_PistolSkill", "DeusEx_RifleSkill", "DeusEx_DemolitionsSkill", "DeusEx_HeavyWeaponSkill" };
-int NXTPointsLowTech[4] = {500, 2800, 7800, 16000 };
-int NxtPointsPistol[4] = {600, 3400, 9400, 19200 };
-int NxtPointsRifle[4] = {800, 4500, 12500, 25600 };
-int NxtPointsHeavy[4] = {1000, 5700, 15600, 32000 };
-int NxtPointsMedicine[4] = {400, 2300, 6200, 12800 };
-int NxtPointsEnviro[4] = {400, 2300, 6200, 12800 };
+int NXTPoints[6][4] = { {500, 2800, 7800, 16000 }, {600, 3400, 9400, 19200 }, {800, 4500, 12500, 25600 }, {1000, 5700, 15600, 32000 }, {400, 2300, 6200, 12800 }, {400, 2300, 6200, 12800 }};
 Str DeusExLevelUpStrings[24] =
 {
 	"Low-Tech Skill has reached Trained level.",
@@ -314,6 +312,7 @@ Script "DeusEx_Enter" (void)
 			}
 			
 			ACS_NamedExecuteWithResult("DeusEx_AugmentationsPlayer");
+			ACS_NamedExecuteWithResult("DeusEx_DisplayInfoPlaceHolder");
 			
 			augsActive = CheckInventory("DeusEx_Augmentation_AugsActive");
 			
@@ -337,14 +336,14 @@ Script "DeusEx_Enter" (void)
 
 		    If(CheckInventory("DeusEx_LowTechSkill") < 4 || CheckInventory("DeusEx_PistolSkill") < 4 || CheckInventory("DeusEx_RifleSkill") < 4 || CheckInventory("DeusEx_HeavyWeaponSkill") < 4 )	
 			{
-				if(CheckInventory("DeusEx_LowTechPoints") > NXTPointsLowTech[CheckInventory("DeusEx_LowTechSkill")] && CheckInventory("DeusEx_LowTechSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 1 && CheckInventory("DeusEx_LowTechSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_LowTechSkill") < 4)
+				if(CheckInventory("DeusEx_LowTechPoints") >= NXTPoints[0][CheckInventory("DeusEx_LowTechSkill")] && CheckInventory("DeusEx_LowTechSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 1 && CheckInventory("DeusEx_LowTechSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_LowTechSkill") < 4)
 				{
 					GiveInventory("DeusEx_LowTechSkill", 1);
 					TakeInventory("DeusEx_LowTechPoints", 999999);
 					if(CheckInventory("DeusEx_LowTechSkill") > CheckInventory("DeusEx_StartingSkills"))
 						ACS_NamedExecuteAlways("DeusEx_Decorate", 0, 7, CheckInventory("DeusEx_LowTechSkill")-1);
 				}
-				If(CheckInventory("DeusEx_PistolPoints") > NxtPointsPistol[CheckInventory("DeusEx_PistolSkill")] && CheckInventory("DeusEx_PistolSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 2 && CheckInventory("DeusEx_PistolSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_PistolSkill") < 4)
+				If(CheckInventory("DeusEx_PistolPoints") >= NXTPoints[1][CheckInventory("DeusEx_PistolSkill")] && CheckInventory("DeusEx_PistolSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 2 && CheckInventory("DeusEx_PistolSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_PistolSkill") < 4)
 				{
 					GiveInventory("DeusEx_PistolSkill", 1);
 					SetAmmoCapacity("DeusEx_GlockSpread", GetAmmoCapacity("DeusEx_GlockSpread")-25);
@@ -367,7 +366,7 @@ Script "DeusEx_Enter" (void)
 					if(CheckInventory("DeusEx_PistolSkill") > CheckInventory("DeusEx_StartingSkills"))
 						ACS_NamedExecuteAlways("DeusEx_Decorate", 0, 7, 3+CheckInventory("DeusEx_PistolSkill"));
 				}
-				If(CheckInventory("DeusEx_RiflePoints") > NxtPointsRifle[CheckInventory("DeusEx_RifleSkill")] && CheckInventory("DeusEx_RifleSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 1 && CheckInventory("DeusEx_RifleSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_RifleSkill") < 4)
+				If(CheckInventory("DeusEx_RiflePoints") >= NXTPoints[2][CheckInventory("DeusEx_RifleSkill")] && CheckInventory("DeusEx_RifleSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 1 && CheckInventory("DeusEx_RifleSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_RifleSkill") < 4)
 				{
 					GiveInventory("DeusEx_RifleSkill", 1);
 					SetAmmoCapacity("DeusEx_ShotgunSpread", GetAmmoCapacity("DeusEx_ShotgunSpread")-35);
@@ -385,7 +384,7 @@ Script "DeusEx_Enter" (void)
 					if(CheckInventory("DeusEx_RifleSkill") > CheckInventory("DeusEx_StartingSkills"))
 						ACS_NamedExecuteAlways("DeusEx_Decorate", 0, 7, 7+CheckInventory("DeusEx_RifleSkill"));
 				}	
-				If(CheckInventory("DeusEx_HeavyPoints") > NxtPointsHeavy[CheckInventory("DeusEx_HeavyWeaponSkill")] && CheckInventory("DeusEx_HeavyWeaponSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 1 && CheckInventory("DeusEx_HeavyWeaponSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_HeavyWeaponSkill") < 4 )
+				If(CheckInventory("DeusEx_HeavyWeaponPoints") >= NXTPoints[3][CheckInventory("DeusEx_HeavyWeaponSkill")] && CheckInventory("DeusEx_HeavyWeaponSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 1 && CheckInventory("DeusEx_HeavyWeaponSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_HeavyWeaponSkill") < 4 )
 				{
 					GiveInventory("DeusEx_HeavyWeaponSkill", 1);
 					SetAmmoCapacity("DeusEx_PlasmaRifleSpread", GetAmmoCapacity("DeusEx_PlasmaRifleSpread")-12);
@@ -398,18 +397,18 @@ Script "DeusEx_Enter" (void)
 					GiveInventory("DeusEx_FlameThrowerMagazine", flamemax);
 					GiveInventory("DeusEx_PlasmaRifleMagazine", plasmamax);
 					GiveInventory("DeusEx_LAWAmmo", lawmax);
-					TakeInventory("DeusEx_HeavyPoints", 999999);
+					TakeInventory("DeusEx_HeavyWeaponPoints", 999999);
 					if(CheckInventory("DeusEx_HeavyWeaponSkill") > CheckInventory("DeusEx_StartingSkills"))
 						ACS_NamedExecuteAlways("DeusEx_Decorate", 0, 7, 11+CheckInventory("DeusEx_HeavyWeaponSkill"));
 				}
-				If(CheckInventory("DeusEx_MedicinePoints") > NxtPointsMedicine[CheckInventory("DeusEx_MedicineSkill")] && CheckInventory("DeusEx_MedicineSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 1 && CheckInventory("DeusEx_MedicineSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_MedicineSkill") < 4 )
+				If(CheckInventory("DeusEx_MedicinePoints") >= NXTPoints[4][CheckInventory("DeusEx_MedicineSkill")] && CheckInventory("DeusEx_MedicineSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 1 && CheckInventory("DeusEx_MedicineSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_MedicineSkill") < 4 )
 				{
 					GiveInventory("DeusEx_MedicineSkill", 1);
 					TakeInventory("DeusEx_MedicinePoints", 999999);
 					if(CheckInventory("DeusEx_MedicineSkill") > CheckInventory("DeusEx_StartingSkills"))
 						ACS_NamedExecuteAlways("DeusEx_Decorate", 0, 7, 15+CheckInventory("DeusEx_MedicineSkill"));
 				}
-				If(CheckInventory("DeusEx_EnviroPoints") > NxtPointsMedicine[CheckInventory("DeusEx_EnviroSkill")] && CheckInventory("DeusEx_EnviroSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 1 && CheckInventory("DeusEx_EnviroSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_EnviroSkill") < 4 )
+				If(CheckInventory("DeusEx_EnviroPoints") >= NXTPoints[5][CheckInventory("DeusEx_EnviroSkill")] && CheckInventory("DeusEx_EnviroSkill") < 4 || (CheckInventory("DeusEx_StartingSkills") >= 1 && CheckInventory("DeusEx_EnviroSkill") < CheckInventory("DeusEx_StartingSkills")) && CheckInventory("DeusEx_EnviroSkill") < 4 )
 				{
 					GiveInventory("DeusEx_EnviroSkill", 1);
 					TakeInventory("DeusEx_EnviroPoints", 999999);
@@ -420,7 +419,27 @@ Script "DeusEx_Enter" (void)
 		}
 		Delay(1);
 	}
+	RemoveMessages(2001,2007);
 }	
+
+Script "DeusEx_DisplayInfoPlaceHolder" (void)
+{
+	if(GetCvar("screenblocks") == 12) RemoveMessages(2001,2007);
+	SetFont("CMPSDEUS");
+	SetHudSize(1280,960,1);
+	int hudRatio = getaspectratio();
+	str skillAmount = "";
+	str bioEnergyAmount = strparam(s:"Bioelectrical Energy: ",d:CheckInventory("DeusEx_BioEnergy")); 
+	//str lowTechSkill = CheckInventory("DeusEx_LowTechPoints");
+	HudMessage(s:bioEnergyAmount;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,2001,"DXGren",0.1,800.0,0.0);
+	for(int a = 0; a < 6; a++)
+	{
+		str skill = strparam(s:DxSkillNames[a][1],s:"Skill");
+		str points = strparam(s:DxSkillNames[a][1],s:"Points");
+		skillAmount = strparam(s:DxSkillNames[a][0],s:":",s:CheckInventory(skill) >= 4 ? "" : strparam(s:" ",d:CheckInventory(points)),s:CheckInventory(skill) >= 4 ? "" : "/",s:CheckInventory(skill) >= 4 ? "" : strparam(d:NXTPoints[a][CheckInventory(skill)]),s:" (",s:DxskillLevelNames[CheckInventory(skill)],s:")");	
+		HudMessage(s:skillAmount;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,2002+a,"DXGren",1280.2,(680+(a*24))*1.0,0.0);
+	}
+}
 
 Script "DeusEx_LocalAugLoop" (int pln, int loopTid) clientside
 {
@@ -434,9 +453,12 @@ Script "DeusEx_AugmentationsPlayer" (void)
 	int healing = 0;
 	int a = 0, b = 0;
 	int augsActive = 0;
-
+	int thisSlotActive = 0;
+	int recirculatorDrain[4] = { 0.1, 0.2, 0.4, 0.6 };
+	
 	for(a = 0; a < DX_AUGSLOTS; a++)
 	{
+		thisSlotActive = 0;
 		TakeInventory(strparam(s:DeusExAugmentationsSlots[a][1],s:"Token"),1);
 		TakeInventory(strparam(s:DeusExAugmentationsSlots[a][2],s:"Token"),1);
 
@@ -444,21 +466,45 @@ Script "DeusEx_AugmentationsPlayer" (void)
 		{
 			if(CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active")))
 			{
+				thisSlotActive = 1;
+				augsActive = 1;
 				GiveInventory(strparam(s:DeusExAugmentationsSlots[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active"))],s:"Token"),1);
 			}
 		}
 		else if(CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot")) > 0)
 		{
-			if(CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active")) == CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot")))
-				GiveInventory(strparam(s:DeusExAugmentationsSlots[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active"))],s:"Token"),1);
+			if(a == 6 || (CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active")) == CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot"))))
+			{
+				if(a != 6)
+				{
+					thisSlotActive = 1;
+					augsActive = 1;
+				}
+				GiveInventory(strparam(s:DeusExAugmentationsSlots[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot"))],s:"Token"),1);
+			}
 		}
 		
-		augsActive += CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active")) > 0;
-		
-		if(augsActive > 0)
+		if(augsActive)
 			GiveInventory("DeusEx_Augmentation_AugsActive",1);
 		else
 			TakeInventory("DeusEx_Augmentation_AugsActive",1);
+			
+		if(thisSlotActive)
+		{
+			int consumption = DeusExAugmentationsConsumptions[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot"))];
+			if(DeusExAugmentationsConsumptions[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot"))] > 0)
+			{
+				if(timer() % FixedMul(((2100.0/consumption)>>16),1.0-(recirculatorDrain[CheckInventory("DeusEx_Augmentation_PowerRecirculatorToken")]*CheckInventory("DeusEx_Augmentation_PowerRecirculatorToken")*CheckInventory("DeusEx_Augmentation_PowerRecirculatorToken"))) == 0)
+					TakeInventory("DeusEx_BioEnergy",!GetCVar("sv_infiniteammo"));
+			}
+			if(CheckInventory("DeusEx_BioEnergy") == 0)
+			{
+				LocalAmbientSound("DeusEx/Augment/Deactivate",127);
+				TakeInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Active"),2);
+				if(strparam(s:DeusExAugmentationsSlots[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot"))]) == "DeusEx_Augmentation_Cloak")
+					LocalAmbientSound("DeusEx/Augment/CloakDown",127);
+			}
+		}
 		
 		switch(a)
 		{
@@ -577,6 +623,15 @@ Script "DeusEx_AugmentationsPlayer" (void)
 					}	
 				}
 				break;
+			case 6:
+				if(CheckInventory("DeusEx_Augmentation_RechargeableBatteryToken"))
+				{
+					if(timer() % (84/CheckInventory("DeusEx_Augmentation_RechargeableBattery")) == 0)
+					{
+						GiveInventory("DeusEx_BioEnergy",1);
+					}
+				}
+				break;
 			case 7:
 				if(CheckInventory("DeusEx_Augmentation_AggressiveDefenseSystemToken"))
 				{
@@ -645,9 +700,9 @@ Script "DeusEx_AugmentationsPlayer" (void)
 
 Script "DeusEx_TargeterDrawCamera" (void)
 {
-	int oldtid = PickActor(0, GetActorPitch(0), 0, 2048.0, 0, MF_SHOOTABLE, ML_BLOCKING, PICKAF_RETURNTID);
+	int oldtid = PickActor(0, GetActorPitch(0), 0, 8192.0, 0, MF_SHOOTABLE, ML_BLOCKEVERYTHING, PICKAF_RETURNTID);
 	int newtid = UniqueTid();
-	if(PickActor(0, GetActorAngle(0), GetActorPitch(0), 2048.0, newtid, MF_SHOOTABLE, ML_BLOCKING, PICKAF_FORCETID) && (ClassifyActor(newtid) & ACTOR_ALIVE))
+	if(PickActor(0, GetActorAngle(0), GetActorPitch(0), 8192.0, newtid, MF_SHOOTABLE, ML_BLOCKEVERYTHING, PICKAF_FORCETID) && (ClassifyActor(newtid) & ACTOR_ALIVE))
 	{
 		int height = GetActorProperty(newtid,APROP_Height);
 		int health = GetActorProperty(newtid,APROP_Health);
@@ -660,13 +715,13 @@ Script "DeusEx_TargeterDrawCamera" (void)
 		int camPosX = GetActorX(newtid) + FixedMul(64*cos(GetActorAngle(0) + 0.5),cos(GetActorPitch(0)));
 		int camPosY = GetActorY(newtid) + FixedMul(64*sin(GetActorAngle(0) + 0.5),cos(GetActorPitch(0)));
 		int camPosZ = GetActorZ(newtid) + (height/2) + (64 * sin(GetActorPitch(0)));
-		int distance = (VectorLength(VectorLength(GetActorX(newtid) - GetActorX(0),GetActorY(newtid) - GetActorY(0)),GetActorZ(newtid) - GetActorZ(0)) / 16)>>16;
+		int distance = (VectorLength(VectorLength(GetActorX(newtid) - GetActorX(0),GetActorY(newtid) - GetActorY(0)),GetActorZ(newtid) - GetActorZ(0)) / 12)>>16;
 		str distanceInfo = strparam(s:GetActorProperty(newtid,APROP_NameTag),s:"\nDistance: ",d:distance,s:" ft\n");
 		SpawnForced("ShrinkFlash",camPosX,camPosY,camPosZ,camTid);
 		SetActorAngle(camTid,GetActorAngle(0));
 		SetActorPitch(camTid,GetActorPitch(0));
 		ACS_NamedExecuteWithResult("DeusEx_CameraClient",camTid,PlayerNumber());
-		int ratio = getaspectratio();
+		int ratio = getaspectratio() - (4.0/3);
 		
 		switch(CheckInventory("DeusEx_Augmentation_Targeting"))
 		{
@@ -675,25 +730,25 @@ Script "DeusEx_TargeterDrawCamera" (void)
 			case 3:
 				SetFont("DXAGCAM1");
 				SetHudSize(640,480,1);
-				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,5600,0,-(floorwhole(ratio*60)+0.1),240.0,0.0);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,5600,0,-(floorwhole(ratio*240)+0.1),240.0,0.0);
 				SetFont("DXAGCAM2");
-				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,5604,0,-(floorwhole(ratio*60)+0.1),240.0,0.0);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,5604,0,-(floorwhole(ratio*240)+0.1),240.0,0.0);
 				SetFont("CMPSDEUS");
 				SetHudSize(1280,960,1);
-				HudMessage(s:healthString;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5601,"DXGren",-(floorwhole(ratio*117)+0.1),384.0,0.0);
-				HudMessage(s:distanceInfo;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5602,"DXGren",-(floorwhole(ratio*117)+0.1),332.0,0.0);
-				HudMessage(s:"Image not Available";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5603,"HalfLifeWhite",-(floorwhole(ratio*108)+0.1),480.0,0.0);
+				HudMessage(s:healthString;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5601,"DXGren",-(floorwhole(ratio*472)+0.1),384.0,0.0);
+				HudMessage(s:distanceInfo;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5602,"DXGren",-(floorwhole(ratio*472)+0.1),332.0,0.0);
+				HudMessage(s:"Image not Available";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5603,"HalfLifeWhite",-(floorwhole(ratio*320)+0.1),480.0,0.0);
 				break;
 			case 4:
 				SetFont("DXAGCAM1");
 				SetHudSize(640,480,1);
-				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,5600,0,-(floorwhole(ratio*60)+0.1),240.0,0.0);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,5600,0,-(floorwhole(ratio*240)+0.1),240.0,0.0);
 				SetFont("DXAUCAM1");
-				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,5604,0,-(floorwhole(ratio*60)+0.1),240.0,0.0);
+				HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,5604,0,-(floorwhole(ratio*240)+0.1),240.0,0.0);
 				SetFont("CMPSDEUS");
 				SetHudSize(1280,960,1);
-				HudMessage(s:healthString;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5601,"DXGren",-(floorwhole(ratio*117)+0.1),384.0,0.0);
-				HudMessage(s:distanceInfo;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5602,"DXGren",-(floorwhole(ratio*117)+0.1),332.0,0.0);
+				HudMessage(s:healthString;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5601,"DXGren",-(floorwhole(ratio*472)+0.1),384.0,0.0);
+				HudMessage(s:distanceInfo;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5602,"DXGren",-(floorwhole(ratio*472)+0.1),332.0,0.0);
 				break;
 		}
 		Thing_ChangeTid(newtid, oldtid);
@@ -943,6 +998,20 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 			break;
 		case 21:
 			SetResultValue(CheckInventory("DeusEx_Augmentation_AggressiveDefenseSystem"));
+			break;
+		case 22:
+			int inventory = CheckInventory(strparam(s:DeusExAugmentationsSlots[arg1][0],s:"Slot"));
+			if(CheckInventory(DeusExAugmentationsSlots[arg1][1]))
+			{
+				if(inventory < 1)
+					SetInventory(strparam(s:DeusExAugmentationsSlots[arg1][0],s:"Slot"),1);
+			}
+			else if(CheckInventory(DeusExAugmentationsSlots[arg1][2]))
+			{
+				if(inventory < 1)
+					SetInventory(strparam(s:DeusExAugmentationsSlots[arg1][0],s:"Slot"),2);
+			}
+			else SetInventory(strparam(s:DeusExAugmentationsSlots[arg1][0],s:"Slot"),0);
 			break;
 	}
 }	
@@ -1322,6 +1391,7 @@ Script "DeusEx_AugmentationsUI" (void)
 	int iconBMargin = 0.077;
 	int element = 0;
 	int lastElement = 0;
+	int passiveAug = 0;
 
 	While(CheckInventory("DeusEx_AugmentationsMenu"))
 	{
@@ -1364,7 +1434,7 @@ Script "DeusEx_AugmentationsUI" (void)
 		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA,1599,0,hudcenterx*1.0,hudcentery*1.0,0.0,0.67);
 		
 		element = 0;
-		
+				
 		if(CheckInventory("DeusEx_Augmentation_ArmsSlot") > 0)
 		{
 			baseIconX = FixedMul(hudboundsx,0.115);
@@ -1378,10 +1448,13 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_ArmsSlot") == 1)
-						SetInventory("DeusEx_Augmentation_ArmsSlot",2);
+					if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 1)
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),2);
 					else
-						SetInventory("DeusEx_Augmentation_ArmsSlot",1);
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+						
+					if(!CheckInventory(DeusExAugmentationsSlots[selectedAugSlot-1][CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))]))
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),!(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))-1)+1);
 						
 					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
@@ -1414,10 +1487,13 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_LegsSlot") == 1)
-						SetInventory("DeusEx_Augmentation_LegsSlot",2);
+					if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 1)
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),2);
 					else
-						SetInventory("DeusEx_Augmentation_LegsSlot",1);
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+						
+					if(!CheckInventory(DeusExAugmentationsSlots[selectedAugSlot-1][CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))]))
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),!(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))-1)+1);
 						
 					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
@@ -1450,10 +1526,13 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_Subdermal1Slot") == 1)
-						SetInventory("DeusEx_Augmentation_Subdermal1Slot",2);
+					if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 1)
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),2);
 					else
-						SetInventory("DeusEx_Augmentation_Subdermal1Slot",1);
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+						
+					if(!CheckInventory(DeusExAugmentationsSlots[selectedAugSlot-1][CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))]))
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),!(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))-1)+1);
 						
 					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
@@ -1484,10 +1563,13 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_Subdermal2Slot") == 1)
-						SetInventory("DeusEx_Augmentation_Subdermal2Slot",2);
+					if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 1)
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),2);
 					else
-						SetInventory("DeusEx_Augmentation_Subdermal2Slot",1);
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+						
+					if(!CheckInventory(DeusExAugmentationsSlots[selectedAugSlot-1][CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))]))
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),!(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))-1)+1);
 						
 					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
@@ -1524,10 +1606,13 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_Torso1Slot") == 1)
-						SetInventory("DeusEx_Augmentation_Torso1Slot",2);
+					if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 1)
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),2);
 					else
-						SetInventory("DeusEx_Augmentation_Torso1Slot",1);
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+						
+					if(!CheckInventory(DeusExAugmentationsSlots[selectedAugSlot-1][CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))]))
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),!(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))-1)+1);
 						
 					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
@@ -1558,10 +1643,13 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_Torso2Slot") == 1)
-						SetInventory("DeusEx_Augmentation_Torso2Slot",2);
+					if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 1)
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),2);
 					else
-						SetInventory("DeusEx_Augmentation_Torso2Slot",1);
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+						
+					if(!CheckInventory(DeusExAugmentationsSlots[selectedAugSlot-1][CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))]))
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),!(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))-1)+1);
 						
 					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
@@ -1592,10 +1680,13 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_Torso3Slot") == 1)
-						SetInventory("DeusEx_Augmentation_Torso3Slot",2);
+					if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 1)
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),2);
 					else
-						SetInventory("DeusEx_Augmentation_Torso3Slot",1);
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+						
+					if(!CheckInventory(DeusExAugmentationsSlots[selectedAugSlot-1][CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))]))
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),!(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))-1)+1);
 						
 					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
@@ -1632,10 +1723,13 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_CranialSlot") == 1)
-						SetInventory("DeusEx_Augmentation_CranialSlot",2);
+					if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 1)
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),2);
 					else
-						SetInventory("DeusEx_Augmentation_CranialSlot",1);
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+						
+					if(!CheckInventory(DeusExAugmentationsSlots[selectedAugSlot-1][CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))]))
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),!(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))-1)+1);
 						
 					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
@@ -1668,10 +1762,13 @@ Script "DeusEx_AugmentationsUI" (void)
 				if(Rclicking)
 				{
 					element = -1;
-					if(CheckInventory("DeusEx_Augmentation_EyeSlot") == 1)
-						SetInventory("DeusEx_Augmentation_EyeSlot",2);
+					if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 1)
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),2);
 					else
-						SetInventory("DeusEx_Augmentation_EyeSlot",1);
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
+						
+					if(!CheckInventory(DeusExAugmentationsSlots[selectedAugSlot-1][CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))]))
+						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),!(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"))-1)+1);
 						
 					SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active"),0);
 				}
@@ -1754,7 +1851,11 @@ Script "DeusEx_AugmentationsUI" (void)
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1597,0,selectorX,selectorY,0.0);
 		}
 		
-		if(selectedAugSlot > 0)
+		for(b = 0; b < DX_AUGSLOTS-3; b++) ACS_NamedExecuteWithResult("DeusEx_Decorate",22,b);
+		
+		passiveAug = selectedAugSlot == 7 || selectedAugSlot == 10 || selectedAugSlot == 11;
+		
+		if(selectedAugSlot > 0 && !(passiveAug))
 		{
 			if(CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Active")))
 			{
@@ -1798,7 +1899,7 @@ Script "DeusEx_AugmentationsUI" (void)
 					if(selectedAugSlot != lastselectedAugSlot && CheckInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot")) == 0)
 						SetInventory(strparam(s:DeusExAugmentationsSlots[selectedAugSlot-1][0],s:"Slot"),1);
 				}
-				if(selectedAugSlot > 0 && element == 1)
+				if(selectedAugSlot > 0 && element == 1 && !passiveAug)
 				{
 					if(selectedAugSlot < 10)
 					{
