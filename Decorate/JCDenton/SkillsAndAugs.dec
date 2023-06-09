@@ -23,6 +23,7 @@ actor DeusEx_DeathTypeIndicator : Counter { Inventory.MaxAmount 5 }
 actor DeusEx_BioEnergy : Counter { Inventory.MaxAmount 100 }
 
 Actor DeusEx_AugmentationsMenu : Boolean {}
+Actor DeusEx_Augmentation_AugsActive : TemporaryBoolean {}
 
 //Arms
 Actor DeusEx_Augmentation_ArmsActive : Counter { Inventory.MaxAmount 2 Inventory.InterHubAmount 2 }
@@ -1100,6 +1101,28 @@ Actor DeusEx_Augmentation_SpyDrone : Counter { Inventory.MaxAmount 4 Inventory.I
 Actor DeusEx_Augmentation_AggressiveDefenseSystem : Counter { Inventory.MaxAmount 4 Inventory.InterHubAmount 4 }
 Actor DeusEx_Augmentation_SpyDroneToken : TemporaryBoolean {}
 Actor DeusEx_Augmentation_AggressiveDefenseSystemToken : TemporaryBoolean {}
+Actor DeusEx_Augmentation_ADSDetonate : TemporaryBoolean {}
+
+Actor DeusEx_Augmentation_AggressiveDefenseSystemTrigger : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_RadiusGive("DeusEx_Augmentation_AggressiveDefenseSystemReceiver",CallACS("DeusEX_Decorate",21)*64,RGF_MISSILES|RGF_NOSIGHT)
+			Stop
+	}
+}
+
+Actor DeusEx_Augmentation_AggressiveDefenseSystemReceiver : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 ACS_NamedExecuteWithResult("DeusEX_Decorate",19)
+			Stop
+	}
+}
+
 //Eyes
 Actor DeusEx_Augmentation_EyeActive : Counter { Inventory.MaxAmount 2 Inventory.InterHubAmount 2 }
 Actor DeusEx_Augmentation_EyeSlot : Counter { Inventory.MaxAmount 2 Inventory.InterHubAmount 2 }
@@ -1107,6 +1130,57 @@ Actor DeusEx_Augmentation_VisionEnhancement : Counter { Inventory.MaxAmount 4 In
 Actor DeusEx_Augmentation_Targeting : Counter { Inventory.MaxAmount 4 Inventory.InterHubAmount 4 }
 Actor DeusEx_Augmentation_VisionEnhancementToken : TemporaryBoolean {}
 Actor DeusEx_Augmentation_TargetingToken : TemporaryBoolean {}
+
+Actor DeusEx_Augmentation_NightVision : PowerLightAmp 
+{ 
+	Powerup.Duration 3
+	Powerup.Colormap 0.0, 0.0, 0.0, 0.0, 1.0, 0.0
+}
+
+Actor DeusEx_Augmentation_InfraredVision : PowerLightAmp 
+{ 
+	Powerup.Duration 3
+	Powerup.Colormap 0.0, 0.0, 0.0, 1.0, 0.0, 0.0
+}
+
+Actor DeusEx_Augmentation_InfraredLooker : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_RadiusGive("DeusEx_Augmentation_InfraredSignal",768,RGF_MONSTERS|RGF_NOSIGHT)
+			Stop
+	}
+}
+
+Actor DeusEx_Augmentation_InfraredSignal : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_RadiusGive("C7EnemyCoordinateX",768,RGF_PLAYERS|RGF_NOSIGHT,x+65536)
+			TNT1 A 0 A_RadiusGive("C7EnemyCoordinateY",768,RGF_PLAYERS|RGF_NOSIGHT,y+65536)
+			TNT1 A 0 A_RadiusGive("C7EnemyCoordinateZ",768,RGF_PLAYERS|RGF_NOSIGHT,z+65536)
+			TNT1 A 0 A_RadiusGive("C7EnemyMonsterRadius",768,RGF_PLAYERS|RGF_NOSIGHT,radius)
+			TNT1 A 0 A_RadiusGive("C7EnemyMonsterHeight",768,RGF_PLAYERS|RGF_NOSIGHT,height)
+			TNT1 A 0 A_RadiusGive("DeusEx_Augmentation_InfraredReceiver",768,RGF_PLAYERS|RGF_NOSIGHT,1)
+			Stop
+	}
+}
+
+Actor DeusEx_Augmentation_InfraredReceiver : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_MonsterCoordinate")
+			Stop
+	}
+}
+
+Actor DeusEx_Augmentation_TargetingScanning : Counter { Inventory.MaxAmount 35 Inventory.InterHubAmount 0 }
+Actor DeusEx_Augmentation_TargetingNoTarget : Counter { Inventory.MaxAmount 35 Inventory.InterHubAmount 0 }
+
 //Default
 Actor DeusEx_Augmentation_InfoLinkActive : Boolean {}
 Actor DeusEx_Augmentation_IFFActive : Boolean {}
