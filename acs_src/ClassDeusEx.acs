@@ -981,11 +981,13 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 			GiveInventory("DeusEx_Augmentation_ObjectGrabberEnablePass",1);
 			GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableBlock",1);
 			GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableDropOff",1);
-			int lastobjectX = 0;
-			int lastobjectY = 0;
-			int lastobjectZ = 0;
-			while(ACS_NamedExecuteWithResult("DeusEx_Decorate",13,timer() - 3 > useTimer) && ClassifyActor(0) > 1 && !(ClassifyActor(0) & ACTOR_DEAD))
+			int lastobjectX = GetActorX(0);
+			int lastobjectY = GetActorY(0);
+			int lastobjectZ = GetActorZ(0);
+			int objDistance = VectorLength(VectorLength(lastobjectX - ACS_NamedExecuteWithResult("getTargetX",0,AAPTR_Tracer),lastobjectY - ACS_NamedExecuteWithResult("getTargetY",0,AAPTR_Tracer)),lastobjectZ - ACS_NamedExecuteWithResult("getTargetZ",0,AAPTR_Tracer));
+			while(ACS_NamedExecuteWithResult("DeusEx_Decorate",13,timer() - 3 > useTimer) && ClassifyActor(0) > 1 && !(ClassifyActor(0) & ACTOR_DEAD) && abs(objDistance) < 64.0)
 			{
+				objDistance = VectorLength(VectorLength(lastobjectX - ACS_NamedExecuteWithResult("getTargetX",0,AAPTR_Tracer),lastobjectY - ACS_NamedExecuteWithResult("getTargetY",0,AAPTR_Tracer)),lastobjectZ - ACS_NamedExecuteWithResult("getTargetZ",0,AAPTR_Tracer));
 				ACS_NamedExecuteWithResult("DeusEx_Decorate",18);
 				int objectPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
 				Warp(AAPTR_Tracer,48*cos(objectPitch),0,32.0+(48*sin(objectPitch)),0,WARPF_USEPTR|WARPF_INTERPOLATE);
@@ -1041,20 +1043,25 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 			SetResultValue(sight);
 			break;
 		case 16:
-			Delay(5);
 			int throwDamage = VectorLength(GetActorVelX(0),GetActorVelY(0))>>16;
+			int throwTimer = 0;
 			until(GetActorVelX(0) == 0 && GetActorVelY(0) == 0)
 			{
 				if(ClassifyActor(0) <= 1)
 					terminate;
 					
+				throwVelocity++;
+					
 				Delay(1);
 			}
 			if(ClassifyActor(0) <= 1) terminate;
-			if(GetCvar("samsara_zscriptready"))
-				DamageActor(0,0,0,AAPTR_TRACER,throwDamage,"Normal");
-			else
-				Thing_Damage2(0,throwDamage,"Normal");
+			if(throwTimer >= 5)
+			{
+				if(GetCvar("samsara_zscriptready"))
+					DamageActor(0,0,0,AAPTR_TRACER,throwDamage,"Normal");
+				else
+					Thing_Damage2(0,throwDamage,"Normal");
+			}
 			if(arg1) GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableBlock",1);
 			if(arg2) GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableDropOff",1);
 			break;
@@ -2051,11 +2058,11 @@ Script "DeusEx_AugmentationsUI" (void)
 				SetFont("DXAGBTS3");
 				element = 2;
 			}
-			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1570,0,FixedMul(hudboundsx,0.626)*1.0,FixedMul(hudboundsy,0.88)*1.0,0.0);
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA,1570,0,FixedMul(hudboundsx,0.626)*1.0,FixedMul(hudboundsy,0.88)*1.0,0.0,0.67);
 		}
 		else HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1570,0,FixedMul(hudboundsx,0.626)*1.0,FixedMul(hudboundsy,0.88)*1.0,0.0);
 		
-		if(selectedAugSlot > 0 && CheckInventory("DeusEx_AugmentationUpgradeCannister") > 0 && (CheckInventory(DeusExAugmentationsSlots[selectedAugSlot-1][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot"))]) < (selectedAugSlot > 9 ? 1 : 4)))
+		if(selectedAugSlot > 0 && CheckInventory("DeusEx_AugmentationUpgradeCannister") > 0 && (CheckInventory(DeusExAugmentationsSlots[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot"))]) < (selectedAugSlot > 9 ? 1 : 4)))
 		{	
 			SetFont("DXAGBTE4");
 			if(Lclicking && cursorx > FixedMul(hudboundsx,0.196) && cursorx < FixedMul(hudboundsx,0.296) && cursory > FixedMul(hudboundsy,0.94) && cursory < FixedMul(hudboundsy,0.975))
@@ -2063,7 +2070,7 @@ Script "DeusEx_AugmentationsUI" (void)
 				SetFont("DXAGBTS4");
 				element = 3;
 			}
-			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1571,0,FixedMul(hudboundsx,0.219)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0,0.67);
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA,1571,0,FixedMul(hudboundsx,0.219)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0,0.67);
 		}
 		else HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1571,0,FixedMul(hudboundsx,0.219)*1.0,FixedMul(hudboundsy,0.921)*1.0,0.0,0.67);
 		
