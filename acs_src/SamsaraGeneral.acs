@@ -725,10 +725,14 @@ script "Samsara_DoHLWeaponSwitch" (int mode, int pln)
 
 	SetInventory("SamsaraOriginalSlotCounter", mode);
 
-	if(CheckInventory("HLOriginalKeySwitcherOpen") > 0)
-		GiveInventory("SamsaraOriginalKeyCounter", 1);
-	else
-		GiveInventory("HLOriginalKeySwitcherOpen",1);
+    if (CheckInventory("HLOriginalKeySwitcherOpen"))
+    {
+        LocalAmbientSound("halflife/weaponmove", 127);
+        GiveInventory("SamsaraOriginalKeyCounter", 1);
+    } else {
+        LocalAmbientSound("halflife/weaponselect", 127);
+        GiveInventory("HLOriginalKeySwitcherOpen", 1);
+    }
 
 	if(strlen(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]) == 0)
 		SetInventory("SamsaraOriginalKeyCounter", 0);
@@ -745,9 +749,6 @@ script "Samsara_DoHLWeaponSwitch" (int mode, int pln)
 		if(strlen(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]) == 0)
 		SetInventory("SamsaraOriginalKeyCounter", 0);
 	}
-
-
-	LocalAmbientSound("halflife/weaponmove",127);
 
 	GiveInventory("HLOriginalKeySwitcher",1);
 	int currentSwitch = CheckInventory("HLOriginalKeySwitcher");
@@ -869,13 +870,7 @@ script "Samsara_Keybinds" (int button) NET
 
 		SetCVar("samsara_cl_heromusic", cvarsetting);
 
-		if (GetCVar("samsara_cl_heromusic") <= 0)
-		{
-			StopSound(0, CHAN_VOICE);
-			LocalSetMusic("*");
-		}
-
-		// SamsaraOST_Enter should already be handled
+        // SamsaraOST_Enter handles everything else
 
 		mode = GetCVar("samsara_cl_heromusic");
 		break;
@@ -1188,7 +1183,7 @@ script "Samsara_Keybinds_Messages" (int button, int mode, int arg2) CLIENTSIDE
 			if (pln == cpln)
 			{
 				SetCVar("samsara_cl_eradmode", mode);
-				Log(s:"\cgEradicator player class: ", s:"\ck", s:modestring);
+				Log(s:"\cgEradicator Character: ", s:"\ck", s:modestring);
 			}
 			break;
 
