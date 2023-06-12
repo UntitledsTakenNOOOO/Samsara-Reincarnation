@@ -764,6 +764,7 @@ Script "DeusEx_AugmentationsPlayer" (void)
 					LocalAmbientSound("DeusEx/Augment/Deactivate",127);
 					HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,3600,0,0,0,0.0);
 					HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,3601,0,0,0,0.0);
+					HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,3602,0,0,0,0.0);
 				}
 				break;
 			case 8:
@@ -784,36 +785,44 @@ Script "DeusEx_AugmentationsPlayer" (void)
 				}
 				else if(CheckInventory("DeusEx_Augmentation_TargetingToken"))
 				{
-					if(CheckInventory("DeusEx_Augmentation_TargetingScanning") < 35)
+					if(CheckInventory("DeusEx_Augmentation_UsingSpyDrone"))
 					{
-						if(!ACS_NamedExecuteWithResult("DeusEx_TargeterDrawCamera"))
-						{
-							TakeInventory("DeusEx_Augmentation_TargetingNoTarget",35);
-							GiveInventory("DeusEx_Augmentation_TargetingScanning",1);
-							SetFont("CMPSDEUS");
-							SetHudSize(1024,768,1);
-							HudMessage(s:"* Scanning *";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5600,"DXGren",512.0,384.0,0.0);
-						}
-						else
-						{
-							TakeInventory("DeusEx_Augmentation_TargetingNoTarget",35);
-							TakeInventory("DeusEx_Augmentation_TargetingScanning",35);
-						}
+						TakeInventory("DeusEx_Augmentation_EyeActive",2);
+						LocalAmbientSound("DeusEx/Augment/Deactivate",127);
 					}
 					else
 					{
-						if(CheckInventory("DeusEx_Augmentation_TargetingNoTarget") < 35)
+						if(CheckInventory("DeusEx_Augmentation_TargetingScanning") < 35)
 						{
-							GiveInventory("DeusEx_Augmentation_TargetingNoTarget",1);
-							
-							SetFont("CMPSDEUS");
-							SetHudSize(1024,768,1);
-							HudMessage(s:"* No Target *";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5600,"DXGren",512.0,384.0,0.0);
+							if(!ACS_NamedExecuteWithResult("DeusEx_TargeterDrawCamera"))
+							{
+								TakeInventory("DeusEx_Augmentation_TargetingNoTarget",35);
+								GiveInventory("DeusEx_Augmentation_TargetingScanning",1);
+								SetFont("CMPSDEUS");
+								SetHudSize(1024,768,1);
+								HudMessage(s:"* Scanning *";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5600,"DXGren",512.0,384.0,0.0);
+							}
+							else
+							{
+								TakeInventory("DeusEx_Augmentation_TargetingNoTarget",35);
+								TakeInventory("DeusEx_Augmentation_TargetingScanning",35);
+							}
 						}
 						else
 						{
-							TakeInventory("DeusEx_Augmentation_TargetingNoTarget",35);
-							TakeInventory("DeusEx_Augmentation_TargetingScanning",35);
+							if(CheckInventory("DeusEx_Augmentation_TargetingNoTarget") < 35)
+							{
+								GiveInventory("DeusEx_Augmentation_TargetingNoTarget",1);
+								
+								SetFont("CMPSDEUS");
+								SetHudSize(1024,768,1);
+								HudMessage(s:"* No Target *";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,5600,"DXGren",512.0,384.0,0.0);
+							}
+							else
+							{
+								TakeInventory("DeusEx_Augmentation_TargetingNoTarget",35);
+								TakeInventory("DeusEx_Augmentation_TargetingScanning",35);
+							}
 						}
 					}
 				}
@@ -846,6 +855,9 @@ Script "DeusEx_SpyDrone" (int droneTid)
 		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,3600,0,-(floorwhole(ratio*240)+0.1),240.0,0.0);
 		SetFont("DXAUCAM1");
 		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,3601,0,-(floorwhole(ratio*240)+0.1),240.0,0.0);
+		SetFont("CMPSDEUS");
+		SetHudSize(1280,960,1);
+		HudMessage(s:"Remote SpyDrone Active";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,3602,"DXGren",-floorwhole(ratio*124),352.0,0.0);
 		
 		//Movement
 		moveX = GetPlayerInput(-1,INPUT_SIDEMOVE)*(12*CheckInventory("DeusEx_Augmentation_SpyDrone"));
@@ -854,7 +866,7 @@ Script "DeusEx_SpyDrone" (int droneTid)
 		lookY += -GetPlayerInput(-1,INPUT_PITCH);
 		use = GetPlayerInput(-1,INPUT_BUTTONS) & BT_USE;
 		destroy = GetPlayerInput(-1,INPUT_BUTTONS) & BT_ATTACK;
-		stop = ((CheckInventory("DeusEx_QuickAugmentationsOpen") && GetPlayerInput(-1,INPUT_BUTTONS) & BT_USE)) || CheckInventory("DeusEx_BioEnergY") <= 0;
+		stop = ((CheckInventory("DeusEx_QuickAugmentationsOpen") && GetPlayerInput(-1,INPUT_BUTTONS) & BT_USE) && CheckInventory("DeusEx_QuickAugmentationsSlot") == 8) || CheckInventory("DeusEx_BioEnergY") <= 0;
 		if(GetActorPitch(droneTid) > 0.25) lookY = 0.25;
 		else if(GetActorPitch(droneTid) < -0.25) lookY = -0.25;
 		
