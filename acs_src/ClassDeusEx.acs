@@ -597,6 +597,7 @@ Script "DeusEx_AugmentationsPlayer" (void)
 			
 		if(thisSlotActive)
 		{
+			//TO-DO: Implement drain modifiers for different augments (vision, cloak)
 			int consumption = a != 10 ? DeusExAugmentationsConsumptions[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot"))-1] : DeusExAugmentationsConsumptions[a][0];
 			if(DeusExAugmentationsConsumptions[a][CheckInventory(strparam(s:DeusExAugmentationsSlots[a][0],s:"Slot"))-1] > 0 || a == 10)
 			{
@@ -739,9 +740,30 @@ Script "DeusEx_AugmentationsPlayer" (void)
 				}
 				break;
 			case 7:
+				if(CheckInventory("DeusEx_Augmentation_SpyDroneToken"))
+				{
+					if(!CheckInventory("DeusEx_Augmentation_UsingSpyDrone"))
+					{
+						GiveInventory("DeusEx_Augmentation_UsingSpyDrone",1);
+						int droneTid = UniqueTid();
+						SpawnForced("DeusEx_SpyDrone",GetActorX(0),GetActorY(0),GetActorZ(0),droneTid);
+						SetActorAngle(droneTid,GetActorAngle(0));
+						ACS_NamedExecuteWithResult("DeusEx_SpyDrone",droneTid);
+					}
+				}
 				if(CheckInventory("DeusEx_Augmentation_AggressiveDefenseSystemToken"))
 				{
 					GiveInventory("DeusEx_Augmentation_AggressiveDefenseSystemTrigger",1);
+				}
+				
+				if(CheckInventory("DeusEx_Augmentation_SpyDroneDetonate"))
+				{
+					TakeInventory("DeusEx_Augmentation_SpyDroneDetonate",1);
+					TakeInventory("DeusEx_Augmentation_UsingSpyDrone",1);
+					TakeInventory("DeusEx_Augmentation_CranialActive",2);
+					LocalAmbientSound("DeusEx/Augment/Deactivate",127);
+					HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,3600,0,0,0,0.0);
+					HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,3601,0,0,0,0.0);
 				}
 				break;
 			case 8:
@@ -802,6 +824,52 @@ Script "DeusEx_AugmentationsPlayer" (void)
 				break;
 		}
 	}	
+}
+
+Script "DeusEx_SpyDrone" (int droneTid)
+{
+	SetPointerExt(AAPTR_MASTER,0,droneTid);
+	int moveX, moveY, use, destroy, stop;
+	int lookX = GetActorAngle(droneTid);
+	int lookY = GetActorPitch(droneTid);
+	int startTimer = timer();
+	SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+	SetActorProperty(0,APROP_Health,100*CheckInventory("DeusEx_Augmentation_SpyDrone"));
+	while(ClassifyActor(droneTid) > 1)
+	{	
+		SetActivator(droneTid,AAPTR_MASTER);
+		//Display Camera
+		int ratio = getaspectratio() - (4.0/3);
+		ACS_NamedExecuteWithResult("DeusEx_CameraClient",droneTid,PlayerNumber());
+		SetHudSize(640,480,1);
+		SetFont("DXAGCAM1");
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,3600,0,-(floorwhole(ratio*240)+0.1),240.0,0.0);
+		SetFont("DXAUCAM1");
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,3601,0,-(floorwhole(ratio*240)+0.1),240.0,0.0);
+		
+		//Movement
+		moveX = GetPlayerInput(-1,INPUT_SIDEMOVE)*(12*CheckInventory("DeusEx_Augmentation_SpyDrone"));
+		moveY = GetPlayerInput(-1,INPUT_FORWARDMOVE)*(12*CheckInventory("DeusEx_Augmentation_SpyDrone"));
+		lookX += GetPlayerInput(-1,INPUT_YAW);
+		lookY += -GetPlayerInput(-1,INPUT_PITCH);
+		use = GetPlayerInput(-1,INPUT_BUTTONS) & BT_USE;
+		destroy = GetPlayerInput(-1,INPUT_BUTTONS) & BT_ATTACK;
+		stop = ((CheckInventory("DeusEx_QuickAugmentationsOpen") && GetPlayerInput(-1,INPUT_BUTTONS) & BT_USE)) || CheckInventory("DeusEx_BioEnergY") <= 0;
+		if(GetActorPitch(droneTid) > 0.25) lookY = 0.25;
+		else if(GetActorPitch(droneTid) < -0.25) lookY = -0.25;
+		
+		SetActivator(droneTid);
+		Warp(0,FixedMul(moveY,cos(GetActorPitch(droneTid))),moveX,-FixedMul(moveY,sin(GetActorPitch(droneTid))),0,WARPF_INTERPOLATE);
+		SetActorAngle(0,lookX);
+		SetActorPitch(0,lookY);
+		if(stop && (timer() > startTimer + 5)) { SetActorState(droneTid,"StopIt",true); break; }
+		if(use && GetCvar("samsara_zscriptready")) GiveInventory("DeusEx_DroneActivator",1);
+		if(destroy) { Thing_Damage2(droneTid,5000,"Normal"); break; }
+		Delay(1);
+	}
+	SetActivator(droneTid,AAPTR_MASTER);
+	Delay(1);
+	SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
 }
 
 Script "DeusEx_TargeterDrawCamera" (void)
@@ -1203,10 +1271,10 @@ Script "DeusEx_ScopeZoom" (void)
 Script "DeusExPlayerCodeFunctions" (int func)
 {
 	int result = 0;
-	int forward = GetPlayerInput(-1, INPUT_FORWARDMOVE);
-	int side = GetPlayerInput(-1, INPUT_SIDEMOVE);
-	int buttons = GetPlayerInput(-1, INPUT_BUTTONS);
-	int running = abs(GetPlayerInput(-1, INPUT_FORWARDMOVE)) > 6400 || abs(GetPlayerInput(-1, INPUT_SIDEMOVE)) > 6144;
+	int forward = GetPlayerInput(-1, MODINPUT_FORWARDMOVE);
+	int side = GetPlayerInput(-1, MODINPUT_SIDEMOVE);
+	int buttons = GetPlayerInput(-1, MODINPUT_BUTTONS);
+	int running = abs(GetPlayerInput(-1, MODINPUT_FORWARDMOVE)) > 6400 || abs(GetPlayerInput(-1, MODINPUT_SIDEMOVE)) > 6144;
 	switch(func)
 	{
 		case 0:
@@ -1756,7 +1824,7 @@ Script "DeusEx_AugmentationsUI" (void)
 			SetFont(strparam(s:DeusExAugmentationsSlots[4][6+CheckInventory(strparam(s:DeusExAugmentationsSlots[4][0],s:"Slot"))],s:(CheckInventory(strparam(s:DeusExAugmentationsSlots[4][0],s:"Active")) > 0 ? "E" : "D")));	
 			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ADDBLEND,1515,0,baseIconX,baseIconY,0.0);
 			SetFont(strparam(s:"DXAUGTK",d:CheckInventory(DeusExAugmentationsSlots[4][CheckInventory("DeusEx_Augmentation_Torso1Slot")])));
-			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1565,0,baseIconX,baseIconY,0.0);
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1535,0,baseIconX,baseIconY,0.0);
 		}
 		
 		if(CheckInventory("DeusEx_Augmentation_Torso2Slot") > 0)
