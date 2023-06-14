@@ -1656,7 +1656,7 @@ Actor HereticLesserTome : CustomInventory replaces ArtiTomeOfPower
 	States
 	{
 	Spawn:
-		CPRT AAAAABCDEFEDCB 5
+		CPRT AAAAABCDEFEDCB 5 BRIGHT
 		loop
 	Pickup:
 		TNT1 A -1 A_Jump(256,"CheckNormal")
@@ -1769,7 +1769,7 @@ Actor HereticTeleportPickup : CustomInventory replaces ArtiTeleport
 	States
 	{
 	Spawn:
-		SICN B -1
+		SICN B -1 BRIGHT
 		stop
 	Pickup:
 		TNT1 A 0 A_JumpIfInventory("CorvusClass", 1, "CheckCorvus")
@@ -1836,6 +1836,7 @@ Actor HereticTeleportPickup : CustomInventory replaces ArtiTeleport
 
 Actor SamsaraHereticTeleportPickupItem : ArtiTeleport
 {
+	Inventory.ForbiddenTo "CorvusPlayer", "HexenPlayer"
 	Tag "Teleportation"
 	+INVENTORY.UNDROPPABLE
 	Inventory.Icon "ARTITEL1"
@@ -1863,29 +1864,196 @@ Actor SamsaraHereticTeleportPickupItemParias : ArtiTeleport
 	Inventory.InterHubAmount 16
 }
 
-/*
-Actor HereticFlightPickup : CustomInventory replaces ArtiTeleport
+Actor HereticFlightPickup : CustomInventory replaces ArtiFly
 {
+	Game Heretic
 	+FLOATBOB
     +INVENTORY.PICKUPFLASH
     +COUNTITEM
 	+INVENTORY.QUIET
 	+INVENTORY.HUBPOWER
+	Renderstyle Add
+	Alpha 0.95
+	Scale 0.75
     //Inventory.PickupMessage "$SAMSARA_POWERUP_FLIGHT"
     Inventory.PickupSound "nosoundforyoubitch"
 	States
 	{
 	Spawn:
-		SOAR A -1
-		stop
+		AMAP B 0 BRIGHT
+		AMAP B 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
+		wait
 	Pickup:
-		TNT1 A 0 A_JumpIfInventory("CorvusClass", 1, "CheckCorvus")
-		TNT1 A 0 A_JumpIfInventory("HexenClass", 1, "CheckHexen")
+		TNT1 A 0 A_JumpIfInventory("CorvusClass", 1, "CheckRaven")
+		TNT1 A 0 A_JumpIfInventory("HexenClass", 1, "CheckRaven")
 		TNT1 A -1 A_Jump(256,"CheckNormal")
 		wait
+	CheckNormal:
+		TNT1 A 0 A_JumpIfInventory("SamsaraHereticFlightPickupItem", 0, "PickupFail")
+		goto PickupActual
+	CheckRaven:
+		TNT1 A 0 A_JumpIfInventory("SamsaraHereticFlightPickupItemRaven", 0, "PickupFail")
+		goto PickupActual
+	PickupActual:
+		TNT1 A 0 A_JumpIfInventory("CorvusClass", 1, "PickupCorvus")
+		TNT1 A 0 A_JumpIfInventory("HexenClass", 1, "PickupHexen")
+		TNT1 A 0 A_JumpIfInventory("MarathonClass", 0, "PickupMarathon")
+		TNT1 A 0 A_JumpIfInventory("DeusExClass", 0, "PickupDeusEx")
+		TNT1 A -1 A_Jump(256,"PickupNormal")
+		wait
+	PickupNormal:
+		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 95, 0, 0)
+		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
+		TNT1 A 0 A_PlaySound("uselesspickup", CHAN_ITEM) // placeholder sound
+		TNT1 A 1 A_GiveInventory("SamsaraHereticFlightPickupItem")
+		stop
+	PickupCorvus:
+		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 95, 0, 0)
+		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
+		TNT1 A 0 A_PlaySound("heretic/itemget", CHAN_ITEM)
+		TNT1 A 1 A_GiveInventory("SamsaraHereticFlightPickupItemRaven")
+		stop
+	PickupHexen:
+		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 95, 0, 0)
+		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
+		TNT1 A 0 A_PlaySound("hexen/artiget", CHAN_ITEM)
+		TNT1 A 1 A_GiveInventory("SamsaraHereticFlightPickupItemRaven")
+		stop
+	PickupMarathon:
+		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 95, 0, 0)
+		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+		TNT1 A 0 A_SetBlend("Green",0.5,6)
+        TNT1 A 0 A_PlaySound("marathon/bigitemget", CHAN_ITEM)
+		TNT1 A 1 A_GiveInventory("SamsaraHereticFlightPickupItem")
+		stop
+	PickupDeusEx:
+		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 95, 0, 0)
+		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
+		TNT1 A 0 A_PlaySound("uselesspickup", CHAN_ITEM) // placeholder sound
+		TNT1 A 0 A_GiveInventory("DeusEx_EnviroPoints", 200)
+		TNT1 A 1 A_GiveInventory("SamsaraHereticFlightPickupItem")
+		stop
+	PickupFail:
+        AMAP B 1 BRIGHT
+        fail
 	}
 }
-*/
+
+Actor SamsaraPowerFly : PowerFlight { +INVENTORY.HUBPOWER Inventory.Icon "" Powerup.Color Yellow 0.1 Powerup.Duration -60 }
+Actor SamsaraPowerFlyDXEnviro1 : PowerFlight { +INVENTORY.HUBPOWER Inventory.Icon "" Powerup.Color Yellow 0.1 Powerup.Duration -75 }
+Actor SamsaraPowerFlyDXEnviro2 : PowerFlight { +INVENTORY.HUBPOWER Inventory.Icon "" Powerup.Color Yellow 0.1 Powerup.Duration -90 }
+Actor SamsaraPowerFlyDXEnviro3 : PowerFlight { +INVENTORY.HUBPOWER Inventory.Icon "" Powerup.Color Yellow 0.1 Powerup.Duration -105 }
+Actor SamsaraPowerFlyDXEnviro4 : PowerFlight { +INVENTORY.HUBPOWER Inventory.Icon "" Powerup.Color Yellow 0.1 Powerup.Duration -120 }
+
+Actor SamsaraHereticFlightPickupItem : CustomInventory
+{
+	Game Heretic
+	+INVBAR
+	+FLOATBOB
+	+NOGRAVITY
+	+INVENTORY.PICKUPFLASH
+	+INVENTORY.UNDROPPABLE
+	Inventory.MaxAmount 16
+	inventory.interhubamount 16
+	Inventory.Icon ARTISOR1
+	Inventory.PickupMessage "$SAMSARA_POWERUP_FLIGHT"
+	Inventory.ForbiddenTo "CorvusPlayer", "HexenPlayer"
+	Tag "Flight"
+	States
+	{
+	Spawn:
+		TNT1 A 2
+		Loop
+	Use:
+		TNT1 A 0 A_JumpIfInventory("DukeClass", 1, "UseDuke")
+		TNT1 A 0 A_JumpIfInventory("RMRClass", 1, "UseRMR")
+		TNT1 A 0 A_JumpIfInventory("WitchavenClass", 1, "UseWitchaven")
+		TNT1 A 0 A_JumpIfInventory("DeusExClass", 1, "UseDeusEx")
+		TNT1 A 0 A_JumpIfInventory("SamsaraPowerFly", 1, "UseFail")
+		TNT1 A 0 A_GiveInventory("SamsaraPowerFly", 1)
+		stop
+	UseDuke:
+		TNT1 A 0 A_JumpIfInventory("SamsaraPowerFly", 1, "UseFail")
+		TNT1 A 0 A_TakeInventory("DukeFlying", 1)
+		TNT1 A 0 A_TakeInventory("DukePetjack", 1)
+		TNT1 A 0 A_GiveInventory("SamsaraPowerFly", 1)
+		stop
+	UseRMR:
+		TNT1 A 0 A_JumpIfInventory("SamsaraPowerFly", 1, "UseFail")
+		TNT1 A 0 A_TakeInventory("RMRFlyAbility")
+		TNT1 A 0 A_TakeInventory("RMRFlyAbility_2")
+		TNT1 A 0 A_GiveInventory("SamsaraPowerFly", 1)
+		stop
+	UseWitchaven:
+		TNT1 A 0 A_JumpIfInventory("SamsaraPowerFly", 1, "UseFail")
+		TNT1 A 0 A_TakeInventory("WTSpellFlyHack")
+		TNT1 A 0 A_TakeInventory("WTSpellFly")
+		TNT1 A 0 A_GiveInventory("SamsaraPowerFly", 1)
+		stop
+	UseDeusEx:
+		TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 4, "UseDeusExEnviro4")
+		TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 3, "UseDeusExEnviro3")
+		TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 2, "UseDeusExEnviro2")
+		TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 1, "UseDeusExEnviro1")
+		TNT1 A 0 A_JumpIfInventory("SamsaraPowerFly", 1, "UseFail")
+		TNT1 A 0 A_GiveInventory("SamsaraPowerFly", 1)
+		stop
+	UseDeusExEnviro1:
+		TNT1 A 0 A_JumpIfInventory("SamsaraPowerFlyDXEnviro1", 1, "UseFail")
+		TNT1 A 0 A_GiveInventory("SamsaraPowerFlyDXEnviro1", 1)
+		stop
+	UseDeusExEnviro2:
+		TNT1 A 0 A_JumpIfInventory("SamsaraPowerFlyDXEnviro2", 1, "UseFail")
+		TNT1 A 0 A_GiveInventory("SamsaraPowerFlyDXEnviro2", 1)
+		stop
+	UseDeusExEnviro3:
+		TNT1 A 0 A_JumpIfInventory("SamsaraPowerFlyDXEnviro3", 1, "UseFail")
+		TNT1 A 0 A_GiveInventory("SamsaraPowerFlyDXEnviro3", 1)
+		stop
+	UseDeusExEnviro4:
+		TNT1 A 0 A_JumpIfInventory("SamsaraPowerFlyDXEnviro4", 1, "UseFail")
+		TNT1 A 0 A_GiveInventory("SamsaraPowerFlyDXEnviro4", 1)
+		stop
+	UseFail:
+		TNT1 A 0
+		Fail
+	}
+}
+
+Actor SamsaraPowerFlyRaven : PowerFlight { +INVENTORY.HUBPOWER Inventory.Icon "HERFLY0" Powerup.Duration -60 }
+
+Actor SamsaraHereticFlightPickupItemRaven : CustomInventory
+{
+	Game Heretic
+	+INVBAR
+	+FLOATBOB
+	+NOGRAVITY
+	+INVENTORY.PICKUPFLASH
+	+INVENTORY.UNDROPPABLE
+	Inventory.MaxAmount 16
+	inventory.interhubamount 16
+	Inventory.Icon ARTISOR2
+	Inventory.PickupMessage "$SAMSARA_POWERUP_FLIGHT"
+	Inventory.RestrictedTo "CorvusPlayer", "HexenPlayer"
+	Tag "Wings of Wrath"
+	States
+	{
+	Spawn:
+		TNT1 A 2
+		Loop
+	Use:
+		TNT1 A 0 A_JumpIfInventory("SamsaraPowerFlyRaven", 1, "UseFail")
+		TNT1 A 0 A_GiveInventory("SamsaraPowerFlyRaven", 1)
+		stop
+	UseFail:
+		TNT1 A 0
+		Fail
+	}
+}
 
 // Hexen Powerups
 Actor HexenBootsPickup : CustomInventory replaces ArtiSpeedBoots
@@ -1974,6 +2142,7 @@ Actor SamsaraHexenBootsPickupItem : CustomInventory
 	inventory.interhubamount 16
 	Inventory.Icon ARTICPR3
 	Inventory.PickupMessage "$SAMSARA_POWERUP_Speed"
+	Inventory.ForbiddenTo "HexenPlayer"
 	Tag "Haste"
 	States
 	{
@@ -2095,6 +2264,7 @@ Actor HexenTeleportPickup : CustomInventory replaces ArtiTeleportOther
 
 Actor SamsaraHexenTeleportPickupItem : ArtiTeleportOther
 {
+	Inventory.ForbiddenTo "CorvusPlayer", "HexenPlayer"
 	Tag "Banishment"
 	+INVENTORY.UNDROPPABLE
 	Inventory.Icon "ARTIBAN1"
@@ -2104,344 +2274,13 @@ Actor SamsaraHexenTeleportPickupItem : ArtiTeleportOther
 
 Actor SamsaraHexenTeleportPickupItemRaven : ArtiTeleportOther
 {
-	Inventory.RestrictedTo "HexenPlayer", "CorvusPlayer"
+	Inventory.RestrictedTo "CorvusPlayer", "HexenPlayer"
 	Tag "Banishment Device"
 	+INVENTORY.UNDROPPABLE
 	Inventory.Icon "ARTIBAN2"
 	Inventory.MaxAmount 16
 	Inventory.InterHubAmount 16
 }
-
-/*
-Actor HereticInvisibility : CustomInventory replaces ArtiInvisibility
-{
-	RenderStyle Add
-	Alpha 0.75
-	+FLOATBOB
-    +VISIBILITYPULSE
-    +INVENTORY.PICKUPFLASH
-    +INVENTORY.BIGPOWERUP
-    +COUNTITEM
-	+INVENTORY.QUIET
-    Inventory.PickupAnnouncerEntry "partialinvisibility"
-    //Inventory.PickupMessage "$SAMSARA_POWERUP_INVIS"
-    Inventory.PickupSound "nosoundforyoubitch"
-	States
-	{
-	Spawn:
-		NVSI A 0 NoDelay ACS_NamedExecuteWithResult("Samsara_SwitchableObject",2)
-		NVSI A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 75)
-		wait
-	Pickup:
-		TNT1 A -1 A_Jump(256,"PickupNormal")
-		wait
-	PickupNormal:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 45, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("invisibilityget", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("SamsaraHereticInvisibilityItem")
-		stop
-	PickupFail:
-        NVSI A 1 BRIGHT
-        fail
-	}
-}
-
-Actor SamsaraHereticInvisibilityItem : PowerupGiver
-{
-	Game Heretic
-	+FLOATBOB
-	+NOGRAVITY
-	+INVENTORY.PICKUPFLASH
-	+INVENTORY.UNDROPPABLE
-	Inventory.MaxAmount 16
-	inventory.interhubamount 16
-	Inventory.Icon ARTIINVS
-	Powerup.Type SamsaraPowerInvisibilityGhost
-	Inventory.PickupMessage "$TXT_ARTIINVISIBILITY"
-	Tag "$TAG_ARTIINVISIBILITY"
-	States
-	{
-	Spawn:
-		TNT1 A 2
-		Loop
-	}
-}
-
-Actor HereticInvulnerability : CustomInventory replaces ArtiInvulnerability
-{
-	RenderStyle Add
-	Alpha 0.95
-	+FLOATBOB
-    +INVENTORY.PICKUPFLASH
-    +INVENTORY.BIGPOWERUP
-    +COUNTITEM
-	+INVENTORY.QUIET
-    Inventory.PickupAnnouncerEntry "invulnerability"
-    //Inventory.PickupMessage "$SAMSARA_POWERUP_INVULN"
-    Inventory.PickupSound "nosoundforyoubitch"
-	States
-	{
-	Spawn:
-		NVLN A 0
-        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate",28,0,0) == 1, "NoInvuln")
-        NVLN A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
-		wait
-	Pickup:
-		TNT1 A -1 A_Jump(256,"PickupNormal")
-		wait
-	PickupNormal:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 52, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("invulnget", CHAN_ITEM)
-        TNT1 A 1 A_GiveInventory("SamsaraHereticInvulnerabilityItem")
-		stop
-	PickupFail:
-        NVLN A 1 BRIGHT
-        fail
-	}
-}
-
-Actor SamsaraHereticInvulnerabilityItem : PowerupGiver
-{
-	Game Heretic
-	+FLOATBOB
-	+NOGRAVITY
-	+INVENTORY.PICKUPFLASH
-	+INVENTORY.UNDROPPABLE
-	Inventory.MaxAmount 16
-	inventory.interhubamount 16
-	Inventory.Icon ARTIINVU
-	Powerup.Type SamsaraPowerInvulnerableNormal
-	Inventory.PickupMessage "$TXT_ARTIINVULNERABILITY"
-	Tag "$TAG_ARTIINVULNERABILITY"
-	States
-	{
-	Spawn:
-		TNT1 A 2
-		Loop
-	}
-}
-
-Actor HereticVisor : CustomInventory replaces ArtiTorch
-{
-	RenderStyle Add
-	Alpha 0.85
-	+FLOATBOB
-    +INVENTORY.PICKUPFLASH
-	+INVENTORY.QUIET
-    //Inventory.PickupMessage "$SAMSARA_POWERUP_INFRARED"
-    Inventory.PickupSound "nosoundforyoubitch"
-	States
-	{
-	Spawn:
-        VISR A 0 NoDelay ACS_NamedExecuteWithResult("Samsara_SwitchableObject",1)
-	Spawn2:
-        VISR A 20 Bright ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 85)
-        VISR A 20
-        loop
-	Pickup:
-		TNT1 A -1 A_Jump(256,"PickupNormal")
-		wait
-	PickupNormal:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 60, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("lettherebelight", CHAN_ITEM)
-        TNT1 A 1 A_GiveInventory("SamsaraHereticVisorItem")
-		stop
-	PickupFail:
-        VISR A 1 BRIGHT
-        fail
-	}
-}
-
-Actor SamsaraHereticVisorItem : PowerupGiver
-{
-	Game Raven
-	+FLOATBOB
-	+NOGRAVITY
-	+INVENTORY.PICKUPFLASH
-	Inventory.MaxAmount 16
-	inventory.interhubamount 16
-	Inventory.Icon ARTITRCH
-	Inventory.PickupMessage "$TXT_ARTITORCH"
-	Tag "$TAG_ARTITORCH"
-	Powerup.Type Torch
-	States
-	{
-	Spawn:
-		TNT1 A 2
-		Loop
-	}
-}
-
-Actor HereticFlightPickup : CustomInventory replaces ArtiFly
-{
-	Game Heretic
-	RenderStyle Add
-	Alpha 0.85
-	+FLOATBOB
-	+INVENTORY.BIGPOWERUP
-    +INVENTORY.PICKUPFLASH
-	+INVENTORY.QUIET
-    //Inventory.PickupMessage "$SAMSARA_POWERUP_FLIGHT"
-    Inventory.PickupSound "nosoundforyoubitch"
-	States
-	{
-	Spawn:
-        SOAR ABCB 5 BRIGHT
-        Loop
-	Pickup:
-		TNT1 A -1 A_Jump(256,"PickupNormal")
-		wait
-	PickupNormal:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, ??, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("dsparil/rise", CHAN_ITEM)
-        TNT1 A 0 A_TakeInventory("WTSpellFlyHack")
-        TNT1 A 0 A_TakeInventory("WTSpellFly")
-        TNT1 A 1 A_GiveInventory("SamsaraHereticFlightItem")
-		stop
-	PickupFail:
-        SOAR A 1 BRIGHT
-        fail
-	}
-}
-
-Actor SamsaraHereticFlightItem : PowerupGiver
-{
-	Game Heretic
-	+FLOATBOB
-	+NOGRAVITY
-	+INVENTORY.PICKUPFLASH
-	Inventory.MaxAmount 16
-	inventory.interhubamount 16
-	Inventory.Icon ARTISOAR
-	Inventory.PickupMessage "$TXT_ARTIFLY"
-	Tag "$TAG_ARTIFLY"
-	Powerup.Type Flight
-	States
-	{
-	Spawn:
-		TNT1 A 2
-		Loop
-	}
-}
-
-Actor HexenInvulnerability : CustomInventory replaces ArtiInvulnerability2
-{
-	RenderStyle Add
-	Alpha 0.95
-	+FLOATBOB
-    +INVENTORY.PICKUPFLASH
-    +INVENTORY.BIGPOWERUP
-    +COUNTITEM
-	+INVENTORY.QUIET
-    Inventory.PickupAnnouncerEntry "invulnerability"
-    //Inventory.PickupMessage "$SAMSARA_POWERUP_INVULN"
-    Inventory.PickupSound "nosoundforyoubitch"
-	States
-	{
-	Spawn:
-		NVLN A 0
-        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate",28,0,0) == 1, "NoInvuln")
-        NVLN A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
-		wait
-	Pickup:
-		TNT1 A -1 A_Jump(256,"PickupNormal")
-		wait
-	PickupNormal:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 52, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("invulnget", CHAN_ITEM)
-        TNT1 A 1 A_GiveInventory("SamsaraHexenInvulnerabilityItem")
-		stop
-	PickupFail:
-        NVLN A 1 BRIGHT
-        fail
-	}
-}
-
-Actor SamsaraHexenInvulnerabilityItem : PowerupGiver
-{
-	Game Hexen
-	+FLOATBOB
-	+NOGRAVITY
-	+INVENTORY.PICKUPFLASH
-	+INVENTORY.UNDROPPABLE
-	Inventory.MaxAmount 16
-	inventory.interhubamount 16
-	Inventory.Icon ARTIDEFN
-	Powerup.Type SamsaraPowerInvulnerableNormal
-	Inventory.PickupMessage "$TXT_ARTIINVULNERABILITY2"
-	Tag "$TAG_ARTIDEFENDER"
-	States
-	{
-	Spawn:
-		TNT1 A 2
-		Loop
-	}
-}
-
-Actor HexenFlightPickup : CustomInventory replaces ArtiFly
-{
-	Game Hexen
-	RenderStyle Add
-	Alpha 0.85
-	+FLOATBOB
-	+INVENTORY.BIGPOWERUP
-    +INVENTORY.PICKUPFLASH
-	+INVENTORY.QUIET
-    //Inventory.PickupMessage "$SAMSARA_POWERUP_FLIGHT"
-    Inventory.PickupSound "nosoundforyoubitch"
-	States
-	{
-	Spawn:
-        SOAR ABCB 5 BRIGHT
-        Loop
-	Pickup:
-		TNT1 A -1 A_Jump(256,"PickupNormal")
-		wait
-	PickupNormal:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, ??, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("dsparil/rise", CHAN_ITEM)
-        TNT1 A 0 A_TakeInventory("WTSpellFlyHack")
-        TNT1 A 0 A_TakeInventory("WTSpellFly")
-        TNT1 A 1 A_GiveInventory("SamsaraHexenFlightItem")
-		stop
-	PickupFail:
-        SOAR A 1 BRIGHT
-        fail
-	}
-}
-
-Actor SamsaraHexenFlightItem : PowerupGiver
-{
-	Game Hexen
-	+FLOATBOB
-	+NOGRAVITY
-	+INVENTORY.PICKUPFLASH
-	Inventory.MaxAmount 16
-	inventory.interhubamount 16
-	Inventory.Icon ARTISOAR
-	Inventory.PickupMessage "$TXT_ARTIFLY"
-	Tag "$TAG_ARTIFLY"
-	Powerup.Type Flight
-	States
-	{
-	Spawn:
-		TNT1 A 2
-		Loop
-	}
-}
-*/
 
 // Skulltag Powerups
 /*
