@@ -1071,58 +1071,59 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 			Thing_ChangeTid(selectionTid,previousSelectionTid);
 			int afraid = GetActorProperty(0,APROP_Frightened);
 			int objectGravity = GetActorProperty(0,APROP_Gravity);
-			if((ClassifyActor(0) & ACTOR_MONSTER) && (musclestrength < 2 || GetActorProperty(0,APROP_Mass) > 50 * musclestrength || (musclestrength == 4 && GetActorProperty(0,APROP_Height) > 56.0) || (musclestrength == 3 && GetActorProperty(0,APROP_Height) > 32.0))
-			|| (ClassifyActor(0) & ACTOR_GENERIC) && (GetActorProperty(0,APROP_Mass) > 100 * musclestrength)) terminate;
-			SetActorProperty(0,APROP_Frightened,1);
-			SetActorProperty(0,APROP_Gravity,0);
-			int pass = CheckFlag(0,"CANPASS");
-			int blockMonster = CheckFlag(0,"NOBLOCKMONST");
-			int mDropOff = CheckFlag(0,"DROPOFF");
-			GiveInventory("DeusEx_Augmentation_ObjectGrabberEnablePass",1);
-			GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableBlock",1);
-			GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableDropOff",1);
-			int lastobjectX = GetActorX(0);
-			int lastobjectY = GetActorY(0);
-			int lastobjectZ = GetActorZ(0);
-			int objDistance = VectorLength(VectorLength(lastobjectX - ACS_NamedExecuteWithResult("getTargetX",0,AAPTR_Tracer),lastobjectY - ACS_NamedExecuteWithResult("getTargetY",0,AAPTR_Tracer)),lastobjectZ - ACS_NamedExecuteWithResult("getTargetZ",0,AAPTR_Tracer));
-			while(ACS_NamedExecuteWithResult("DeusEx_Decorate",13) && ClassifyActor(0) > 1 && !(ClassifyActor(0) & ACTOR_DEAD))
+			if(!((ClassifyActor(0) & ACTOR_MONSTER) && (musclestrength < 2 || (musclestrength == 4 && GetActorProperty(0,APROP_Height) > 56.0) || (musclestrength == 3 && GetActorProperty(0,APROP_Height) > 32.0))
+			|| (ClassifyActor(0) & ACTOR_GENERIC) && (GetActorProperty(0,APROP_Mass) > 100 * musclestrength)))
 			{
-				objDistance = VectorLength(VectorLength(lastobjectX - ACS_NamedExecuteWithResult("getTargetX",0,AAPTR_Tracer),lastobjectY - ACS_NamedExecuteWithResult("getTargetY",0,AAPTR_Tracer)),lastobjectZ - ACS_NamedExecuteWithResult("getTargetZ",0,AAPTR_Tracer));
-				int objectPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
-				Warp(AAPTR_Tracer,48*cos(objectPitch),0,32.0+(48*sin(objectPitch)),0,WARPF_USEPTR|(WARPF_INTERPOLATE * GetCvar("samsara_zscriptready")));
-				int lastAngle = ACS_NamedExecuteWithResult("getPointerAngle",0,AAPTR_Tracer);
-				int lastPitch = ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
-				int objectSight = ACS_NamedExecuteWithResult("DeusEx_Decorate",15);
-				if(objectSight && abs(objDistance) < 84.0)
+				SetActorProperty(0,APROP_Frightened,1);
+				SetActorProperty(0,APROP_Gravity,0);
+				int pass = CheckFlag(0,"CANPASS");
+				int blockMonster = CheckFlag(0,"NOBLOCKMONST");
+				int mDropOff = CheckFlag(0,"DROPOFF");
+				GiveInventory("DeusEx_Augmentation_ObjectGrabberEnablePass",1);
+				GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableBlock",1);
+				GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableDropOff",1);
+				int lastobjectX = GetActorX(0);
+				int lastobjectY = GetActorY(0);
+				int lastobjectZ = GetActorZ(0);
+				int objDistance = VectorLength(VectorLength(lastobjectX - ACS_NamedExecuteWithResult("getTargetX",0,AAPTR_Tracer),lastobjectY - ACS_NamedExecuteWithResult("getTargetY",0,AAPTR_Tracer)),lastobjectZ - ACS_NamedExecuteWithResult("getTargetZ",0,AAPTR_Tracer));
+				while(ACS_NamedExecuteWithResult("DeusEx_Decorate",13) && ClassifyActor(0) > 1 && !(ClassifyActor(0) & ACTOR_DEAD))
 				{
-					lastobjectX = GetActorX(0);
-					lastobjectY = GetActorY(0);
-					lastobjectZ = GetActorZ(0);
+					objDistance = VectorLength(VectorLength(lastobjectX - ACS_NamedExecuteWithResult("getTargetX",0,AAPTR_Tracer),lastobjectY - ACS_NamedExecuteWithResult("getTargetY",0,AAPTR_Tracer)),lastobjectZ - ACS_NamedExecuteWithResult("getTargetZ",0,AAPTR_Tracer));
+					int objectPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
+					Warp(AAPTR_Tracer,48*cos(objectPitch),0,32.0+(48*sin(objectPitch)),0,WARPF_USEPTR|(WARPF_INTERPOLATE * GetCvar("samsara_zscriptready")));
+					int lastAngle = ACS_NamedExecuteWithResult("getPointerAngle",0,AAPTR_Tracer);
+					int lastPitch = ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
+					int objectSight = ACS_NamedExecuteWithResult("DeusEx_Decorate",15);
+					if(objectSight && abs(objDistance) < 84.0)
+					{
+						lastobjectX = GetActorX(0);
+						lastobjectY = GetActorY(0);
+						lastobjectZ = GetActorZ(0);
+					}
+					else
+					{
+						allowThrow = 0;
+						ACS_NamedExecuteWithResult("DeusEx_Decorate",14,lastobjectX,lastobjectY,lastobjectZ);
+						break;
+					}
+					Delay(1);
 				}
-				else
+				if(ClassifyActor(0) > 1)
 				{
-					allowThrow = 0;
-					ACS_NamedExecuteWithResult("DeusEx_Decorate",14,lastobjectX,lastobjectY,lastobjectZ);
-					break;
+					if(ClassifyActor(0) & ACTOR_DEAD) allowThrow = 0;
+					TakeInventory("DeusEx_Augmentation_ObjectGrabbing",1);
+					SetActorProperty(0,APROP_Gravity,objectGravity);
+					if(!pass) GiveInventory("DeusEx_Augmentation_ObjectGrabberDisablePass",1);
+					if(allowThrow)
+					{
+						int throwAngle = ACS_NamedExecuteWithResult("getPointerAngle",0,AAPTR_Tracer);
+						int throwPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
+						int throwVelocity = 5+(musclestrength*5);
+						SetActorVelocity(0,FixedMul(throwVelocity*cos(throwAngle),cos(throwPitch)),FixedMul(throwVelocity*sin(throwAngle),cos(throwPitch)),throwVelocity*sin(throwPitch),0,0);
+					}
+					SetActorProperty(0,APROP_Frightened,afraid);
+					ACS_NamedExecuteWithResult("DeusEx_Decorate",16,blockMonster,mDropOff);
 				}
-				Delay(1);
-			}
-			if(ClassifyActor(0) > 1)
-			{
-				if(ClassifyActor(0) & ACTOR_DEAD) allowThrow = 0;
-				TakeInventory("DeusEx_Augmentation_ObjectGrabbing",1);
-				SetActorProperty(0,APROP_Gravity,objectGravity);
-				if(!pass) GiveInventory("DeusEx_Augmentation_ObjectGrabberDisablePass",1);
-				if(allowThrow)
-				{
-					int throwAngle = ACS_NamedExecuteWithResult("getPointerAngle",0,AAPTR_Tracer);
-					int throwPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
-					int massFactor = GetActorProperty(0,APROP_Mass)/50;
-					int throwVelocity = (5+(musclestrength*5))/(massFactor > 0 ? massFactor : 1);
-					SetActorVelocity(0,FixedMul(throwVelocity*cos(throwAngle),cos(throwPitch)),FixedMul(throwVelocity*sin(throwAngle),cos(throwPitch)),throwVelocity*sin(throwPitch),0,0);
-				}
-				SetActorProperty(0,APROP_Frightened,afraid);
-				ACS_NamedExecuteWithResult("DeusEx_Decorate",16,blockMonster,mDropOff);
 			}
 			SetActivator(myTid,AAPTR_TARGET);
 			Thing_Remove(myTid);
@@ -1160,12 +1161,18 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 				Delay(1);
 			}
 			if(ClassifyActor(0) <= 1) terminate;
+			int damageRadiusTid = UniqueTid();
 			if(throwTimer >= 5)
 			{
-				if(GetCvar("samsara_zscriptready"))
+				/*if(GetCvar("samsara_zscriptready"))
 					DamageActor(0,0,0,AAPTR_TRACER,throwDamage,"Normal");
 				else
-					Thing_Damage2(0,throwDamage,"Normal");
+					Thing_Damage2(0,throwDamage,"Normal");*/
+				
+				SpawnForced("DeusEx_Augmentation_ObjectGrabberDamageNearbyActors",GetActorX(0),GetActorY(0),GetActorZ(0),damageRadiusTid);
+				SetActorProperty(damageRadiusTid,APROP_Mass,throwDamage);
+				SetActorProperty(damageRadiusTid,APROP_Score,(GetActorProperty(0,APROP_Radius)>>16)+24);
+				ACS_NamedExecuteWithResult("DeusEx_Decorate",18,damageRadiusTid);
 			}
 			if(arg1) GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableBlock",1);
 			if(arg2) GiveInventory("DeusEx_Augmentation_ObjectGrabberEnableDropOff",1);
@@ -1177,6 +1184,10 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 			Thing_ChangeTid(myTid,0);
 			PlaySound(0,"DeusExPlayer/Step", CHAN_BODY, arg1);
 			break;	
+		case 18:
+			SetActivator(0,AAPTR_Tracer);
+			SetPointerExt(AAPTR_TARGET,0,arg1);
+			break;
 		case 19:
 			if(VectorLength(VectorLength(GetActorVelX(0),GetActorVelY(0)),GetActorVelZ(0)) < 100.0 && ACS_NamedExecuteWithResult("DeusEx_Decorate",20))
 			{
