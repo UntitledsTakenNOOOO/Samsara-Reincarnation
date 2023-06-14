@@ -844,11 +844,10 @@ Script "DeusEx_SpyDrone" (int droneTid)
 	int lookX = GetActorAngle(droneTid);
 	int lookY = GetActorPitch(droneTid);
 	int startTimer = timer();
-	SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
 	SetActorProperty(0,APROP_Health,100*CheckInventory("DeusEx_Augmentation_SpyDrone"));
 	while(ClassifyActor(droneTid) > 1)
 	{	
-		SetActivator(droneTid,AAPTR_MASTER);
+		SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
 		//Display Camera
 		int ratio = getaspectratio() - (4.0/3);
 		ACS_NamedExecuteWithResult("DeusEx_CameraClient",droneTid,PlayerNumber());
@@ -868,7 +867,8 @@ Script "DeusEx_SpyDrone" (int droneTid)
 		lookY += -GetPlayerInput(-1,INPUT_PITCH);
 		use = GetPlayerInput(-1,INPUT_BUTTONS) & BT_USE;
 		destroy = (GetPlayerInput(-1,INPUT_BUTTONS) & BT_ATTACK) && !CheckInventory("DeusEx_AugmentationsMenu");
-		stop = (!(ClassifyActor(0) & ACTOR_ALIVE) && (CheckInventory("DeusEx_QuickAugmentationsOpen") && GetPlayerInput(-1,INPUT_BUTTONS) & BT_USE) && CheckInventory("DeusEx_QuickAugmentationsSlot") == 8) || CheckInventory("DeusEx_BioEnergY") <= 0;
+		stop = ((CheckInventory("DeusEx_QuickAugmentationsOpen") && GetPlayerInput(-1,INPUT_BUTTONS) & BT_USE) && CheckInventory("DeusEx_QuickAugmentationsSlot") == 8) || CheckInventory("DeusEx_BioEnergY") <= 0;
+		if(GetActorPitch(droneTid) > 0.25) lookY = 0.25;
 		if(GetActorPitch(droneTid) > 0.25) lookY = 0.25;
 		else if(GetActorPitch(droneTid) < -0.25) lookY = -0.25;
 		
@@ -876,9 +876,11 @@ Script "DeusEx_SpyDrone" (int droneTid)
 		Warp(0,FixedMul(moveY,cos(GetActorPitch(droneTid))),moveX,-FixedMul(moveY,sin(GetActorPitch(droneTid))),0,WARPF_INTERPOLATE * GetCvar("samsara_zscriptready"));
 		SetActorAngle(0,lookX);
 		SetActorPitch(0,lookY);
-		if(stop && (timer() > startTimer + 5)) { SetActorState(droneTid,"StopIt",true); break; }
+		if((stop && (timer() > startTimer + 5))) { SetActorState(droneTid,"StopIt",true); break; }
 		if(use && GetCvar("samsara_zscriptready")) GiveInventory("DeusEx_DroneActivator",1);
 		if(destroy) { Thing_Damage2(droneTid,5000,"Normal"); break; }
+		SetActivator(droneTid,AAPTR_MASTER);
+		if(!(ClassifyActor(0) & ACTOR_ALIVE) || !CheckInventory("DeusEx_Augmentation_SpyDroneToken")) { SetActorState(droneTid,"StopIt",true); break; }
 		Delay(1);
 	}
 	SetActivator(droneTid,AAPTR_MASTER);
