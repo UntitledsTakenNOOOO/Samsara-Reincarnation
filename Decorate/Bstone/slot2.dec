@@ -1,0 +1,72 @@
+actor "Slow Fire Protector" : SamsaraBStoneWeapon
+{
+    Inventory.PickupMessage "You got a Slow Fire Protector!"
+    Inventory.PickupSound "wolfen/knifeget"
+    Weapon.SlotNumber 2
+    Weapon.SelectionOrder 1000
+    Weapon.YAdjust 11
+    Weapon.AmmoType "Shell"
+    Weapon.AmmoGive 10
+    Weapon.AmmoUse 1
+    Obituary "%k ENERGIZED! %o with the Slow Fire Protector."
+    Tag "Slow Fire Protector"
+    States
+    {
+      Spawn:
+        BWP2 A -1
+        stop
+
+      // Planet Strike
+      Ready:
+        TNT1 A 0 A_JumpIfInventory("BlakeAOGToken",1,"ReadyAOG")
+      ReadyPS:
+        BPI2 A 1 A_WeaponReady
+        goto Ready
+
+      Fire:
+        TNT1 A 0 A_JumpIfInventory("BlakeAOGToken",1,"FireAOG")
+      FirePS:
+        BPI2 B 3
+        BPI2 C 3 Bright A_GiveInventory("SamsaraBStoneSlowFireProtectorAttackHandler")
+        BPI2 DEA 3
+        goto Ready
+
+      // Aliens Of Gold
+      ReadyAOG:
+        BPI2 F 1 A_WeaponReady(WRF_NOBOB)
+        goto Ready
+
+      FireAOG:
+        BPI2 G 3
+        BPI2 H 3 Bright A_GiveInventory("SamsaraBStoneSlowFireProtectorAttackHandler")
+        BPI2 IJF 3
+        goto Ready
+    }
+}
+
+actor SamsaraBStoneSlowFireProtectorAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Shell",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("BPistol2/Fire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(1.8,1.8,-1,21,"BlankPuffBlake",FBF_NOFLASH)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(1.8,1.8,-1,21,"BlankPuffBlakeCoop",FBF_NOFLASH)
+        stop
+    }
+}

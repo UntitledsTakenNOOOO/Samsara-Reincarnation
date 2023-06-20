@@ -1493,6 +1493,15 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
 			case CLASS_BLAKE:
+                // stupid fragile code prevention hack
+                if (CheckWeapon("Rapid Assault Weapon")) { SetInventory("SamsaraBStoneCurrentAmmoUsed", 1); }
+                else if (CheckWeapon("Slow FIre Protector") || CheckWeapon("Heavy Assault Weapon")) { SetInventory("SamsaraBStoneCurrentAmmoUsed", 2); }
+                else if (CheckWeapon("Plasma Discharge Unit")) { SetInventory("SamsaraBStoneCurrentAmmoUsed", 3); }
+                else if (CheckWeapon("Dual Neutron Disruptor") || CheckWeapon("Anti-Plasma Cannon")) { SetInventory("SamsaraBStoneCurrentAmmoUsed", 4); }
+                else { SetInventory("SamsaraBStoneCurrentAmmoUsed", 0); }
+
+                TakeInventory("SamsaraBStoneAutoChargePistolCooldown", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
+
 				blakemode = GetUserCvar(pln,"samsara_cl_bsaog");
 				if(blakemode != previousvalue)
 				{
@@ -2625,6 +2634,10 @@ script "SamsaraDeath" DEATH //619 -- SAMSARA_DEATH
 
             Delay(1);
         }
+        break;
+
+      case CLASS_BLAKE:
+        SetInventory("SamsaraBStoneAutoChargePistolCooldown", 0);
         break;
 
       case CLASS_UNREAL:

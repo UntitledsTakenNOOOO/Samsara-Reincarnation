@@ -1,81 +1,55 @@
-Script "Blake459" (void) //459
+script "SamsaraBStoneAmmoRefillFailMessage" (int messagetype) CLIENTSIDE
 {
-		if(CheckWeapon("Auto Charge Pistol"))
-		{
-			SetResultValue(1);
-			SetHudSize(320,240,0);
-			HudMessage(s:"You can not use this item with this weapon"; 0, 578, CR_LIGHTBLUE, 160.0, 200.0, 1.0);
-		}
-		else
-		if (CheckWeapon("Slow Fire Protector") || CheckWeapon("Heavy Assault Weapon"))
-		{
-			if(CheckInventory("Shell") == GetAmmoCapacity("Shell"))
-			{
-				SetHudSize(320,240,0);
-				HudMessage(s:"You have maximum ammo on this weapon"; 0, 578, CR_LIGHTBLUE, 160.0, 200.0, 1.0);			
-				SetResultValue(1);
-			}
-			else
-				SetResultValue(0);
-		}
-		else
-		if (CheckWeapon("Rapid Assault Weapon"))
-		{
-			if(CheckInventory("Clip") == GetAmmoCapacity("Clip"))
-			{
-				SetHudSize(320,240,0);
-				HudMessage(s:"You have maximum ammo on this weapon"; 0, 578, CR_LIGHTBLUE, 160.0, 200.0, 1.0);
-				SetResultValue(1);
-			}
-			else	
-				SetResultValue(0);
-		}
-		else
-		if (CheckWeapon("Plasma Discharge Unit"))
-		{
-			if(CheckInventory("RocketAmmo") == GetAmmoCapacity("RocketAmmo"))
-			{
-				SetHudSize(320,240,0);
-				HudMessage(s:"You have maximum ammo on this weapon"; 0, 578, CR_LIGHTBLUE, 160.0, 200.0, 1.0);
-				SetResultValue(1);
-			}
-			else		
-				SetResultValue(0);
-		}
-		else
-		if (CheckWeapon("Dual Neutron Disruptor") || CheckWeapon("Anti-Plasma Cannon"))
-		{	
-			if(CheckInventory("Cell") == GetAmmoCapacity("Cell"))
-			{
-				SetHudSize(320,240,0);
-				HudMessage(s:"You have maximum ammo on this weapon"; 0, 578, CR_LIGHTBLUE, 160.0, 200.0, 1.0);
-				SetResultValue(1);
-			}
-			else		
-				SetResultValue(0);
-		}
+    str messagename = "Placeholder";
+
+    switch (messagetype)
+    {
+      case 0:
+        messagename = "BSTONE_AMMOREFILL_INCOMPATIBLE";
+        break;
+
+      case 1:
+        messagename = "BSTONE_AMMOREFILL_AMMOFULL";
+        break;
+
+      default:
+        terminate;
+    }
+
+    SetHudSize(320, 240, 0);
+    HudMessage(l:messagename; 0, 578, CR_LIGHTBLUE, 160.0, 200.0, 1.0);
 }
 
-Script "Blake460" (void) //460
+script "SamsaraBStoneAmmoRefill" (int ammotype)
 {
-		if (CheckWeapon("Slow Fire Protector") || CheckWeapon("Heavy Assault Weapon"))
-		{
-			if(CheckInventory("Shell") <= GetAmmoCapacity("Shell"))
-				GiveInventory("Shell", (GetAmmoCapacity("Shell")/4));
-		}
-		if (CheckWeapon("Rapid Assault Weapon"))
-		{
-			if(CheckInventory("Clip") <= GetAmmoCapacity("Clip"))
-				GiveInventory("Clip", (GetAmmoCapacity("Clip")/4));
-		}
-		if (CheckWeapon("Plasma Discharge Unit"))
-		{
-			if(CheckInventory("RocketAmmo") <= GetAmmoCapacity("RocketAmmo"))
-				GiveInventory("RocketAmmo", (GetAmmoCapacity("RocketAmmo")/4));
-		}
-		if (CheckWeapon("Dual Neutron Disruptor") || CheckWeapon("Anti-Plasma Cannon"))
-		{	
-			if(CheckInventory("Cell") <= GetAmmoCapacity("Cell"))
-				GiveInventory("Cell", (GetAmmoCapacity("Cell")/4));
-		}
+    str ammoname = "Placeholder";
+    int ammoamount = 0;
+
+    switch (ammotype)
+    {
+      case 0:
+        ammoname = "Clip";
+        ammoamount = GetAmmoCapacity("Clip") / 4;
+        break;
+
+      case 1:
+        ammoname = "Shell";
+        ammoamount = GetAmmoCapacity("Shell") / 4;
+        break;
+
+      case 2:
+        ammoname = "RocketAmmo";
+        ammoamount = GetAmmoCapacity("RocketAmmo") / 4;
+        break;
+
+      case 3:
+        ammoname = "Cell";
+        ammoamount = GetAmmoCapacity("Cell") / 4;
+        break;
+
+      default:
+        terminate;
+    }
+
+    SetInventory(ammoname, CheckInventory(ammoname) + ammoamount);
 }

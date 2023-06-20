@@ -1,0 +1,61 @@
+actor SamsaraBStoneCurrentAmmoUsed : Counter { Inventory.MaxAmount 4 }
+
+actor BlakeRefill : CustomInventory
+{
+    Scale 1.25
+    Inventory.PickupMessage "You picked up an Ammo Recharge battery!"
+    Inventory.PickupSound "Bstone/ammoget"
+    Inventory.UseSound ""
+    Inventory.Icon "BAMRB0"
+    Inventory.MaxAmount 3
+    Inventory.InterHubAmount 3
+    Inventory.RestrictedTo "BlakeStone"
+    Tag "Ammo Recharge Battery"
+    +INVBAR
+    +UNDROPPABLE
+    States
+    {
+      Spawn:
+        BAMR A -1 Bright
+        stop
+
+      Use:
+        TNT1 A 0 A_JumpIfInventory("SamsaraBStoneCurrentAmmoUsed",0,"UseCheckCell")
+        TNT1 A 0 A_JumpIfInventory("SamsaraBStoneCurrentAmmoUsed",3,"UseCheckRocketAmmo")
+        TNT1 A 0 A_JumpIfInventory("SamsaraBStoneCurrentAmmoUsed",2,"UseCheckShell")
+        TNT1 A 0 A_JumpIfInventory("SamsaraBStoneCurrentAmmoUsed",1,"UseCheckClip")
+        goto UseFailIncompatible
+
+      UseCheckClip:
+        TNT1 A 0 A_JumpIfInventory("Clip",0,"UseFailAmmoFull")
+        TNT1 A 0 A_PlaySound("Bstone/ammoget",CHAN_ITEM)
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraBStoneAmmoRefill", 0)
+        stop
+
+      UseCheckShell:
+        TNT1 A 0 A_JumpIfInventory("Shell",0,"UseFailAmmoFull")
+        TNT1 A 0 A_PlaySound("Bstone/ammoget",CHAN_ITEM)
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraBStoneAmmoRefill", 1)
+        stop
+
+      UseCheckRocketAmmo:
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",0,"UseFailAmmoFull")
+        TNT1 A 0 A_PlaySound("Bstone/ammoget",CHAN_ITEM)
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraBStoneAmmoRefill", 2)
+        stop
+
+      UseCheckCell:
+        TNT1 A 0 A_JumpIfInventory("Cell",0,"UseFailAmmoFull")
+        TNT1 A 0 A_PlaySound("Bstone/ammoget",CHAN_ITEM)
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraBStoneAmmoRefill", 3)
+        stop
+
+      UseFailIncompatible:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraBStoneAmmoRefillFailMessage", 0)
+        fail
+
+      UseFailAmmoFull:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraBStoneAmmoRefillFailMessage", 1)
+        fail
+    }
+}
