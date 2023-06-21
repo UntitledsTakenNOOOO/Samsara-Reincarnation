@@ -1,58 +1,58 @@
 actor "Taser" : Corridor7WeaponBase
 {
-    Weapon.SelectionOrder 4500
-    Weapon.SlotNumber 1
-    Weapon.SlotPriority 0	
-	Weapon.BobStyle InverseAlpha
-	Weapon.BobRangeX 0.2
-	Weapon.BobRangeY 0.2
-	Weapon.BobSpeed 4.0
-    Inventory.PickUpSound "wolfen/knifeget"
-    Obituary "%k tazed %o with lethal force."
     Inventory.PickupMessage "You got the Taser! Wait, you should have one of these!"
-    DamageType "Pistol"
-	Weapon.AmmoType2 "C7ProxyMineAmmo"
-	Weapon.AmmoUse2 1
-	Weapon.AmmoGive2 0
-    +WEAPON.WIMPY_WEAPON
-	+WEAPON.ALT_AMMO_OPTIONAL
-    +INVENTORY.UNDROPPABLE
-	+WEAPON.NOALERT
-	-WEAPON.CHEATNOTWEAPON
+    Weapon.SlotNumber 1
+    Weapon.SlotPriority 0
+    Weapon.SelectionOrder 4500
     Weapon.YAdjust 11
-	Inventory.RestrictedTo "Corridor7Player"
+    Obituary "%k tazed %o with lethal force."
     Tag "Taser"
+    +WIMPY_WEAPON
     States
     {
       Spawn:
         7PS2 A -1
-        Loop
+        stop
 
       Ready:
         C7PS OPQRSTU 2 A_WeaponReady
-        goto Ready2
-		
-	  Ready2:
-	    C7PS ABCDEFG 2 A_WeaponReady
-		Loop
+      ReadyLoop:
+        C7PS ABCDEFG 2 A_WeaponReady
+        loop
 
       Fire:
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
-        C7PS H 3
-        C7PS I 1 A_PlayWeaponSound("C7/Taser")
-		C7PS I 0 BRIGHT A_FireBullets(0,0,1,random(6,20),"BlankPuff2Bloodless", FBF_NORANDOM, 64)
-		C7PS I 0 BRIGHT A_FireBullets(0,0,1,random(3,10),"BlankPuff2Bloodless", FBF_NORANDOM, 256)
-        C7PS I 2 BRIGHT A_FireBullets(0,0,1,random(7,20),"BlankPuff2", FBF_NORANDOM)
-        C7PS JKLMN 2
-        Goto Ready
+        C7PS H 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_GiveInventory("SamsaraCorridor7TaserAttackHandler")
+        C7PS I 3 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        C7PS JKLMN 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_ReFire
+        goto Ready
 
-      CoopFire:
-        C7PS H 3
-        C7PS I 1 A_PlayWeaponSound("C7/Taser")
-		C7PS I 0 BRIGHT A_FireBullets(0,0,1,random(6,20),"BlankPuff2BloodlessCoop", FBF_NORANDOM, 64)
-		C7PS I 0 BRIGHT A_FireBullets(0,0,1,random(3,10),"BlankPuff2BloodlessCoop", FBF_NORANDOM, 256)
-        C7PS I 2 BRIGHT A_FireBullets(0,0,1,random(7,20),"BlankPuff2Coop", FBF_NORANDOM)
-        C7PS JKLMN 2
-        Goto Ready  
+      AltFire:
+        C7PS O 0
+        goto Super::AltFire
+    }
+}
+
+actor SamsaraCorridor7TaserAttackHandler : Trigger
+{
+    States
+    {
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_PlaySound("C7/Taser",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
+        TNT1 A 0 A_FireBullets(0,0,1,random(7,20),"BlankPuff2",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_FireBullets(0,0,1,random(3,10),"BlankPuff2Bloodless",FBF_NORANDOM|FBF_NOFLASH,256)
+        TNT1 A 0 A_FireBullets(0,0,1,random(6,20),"BlankPuff2Bloodless",FBF_NORANDOM|FBF_NOFLASH,64)
+        stop
+
+      PickupCoop:
+        TNT1 A 0 A_FireBullets(0,0,1,random(7,20),"BlankPuff2Coop",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_FireBullets(0,0,1,random(3,10),"BlankPuff2BloodlessCoop",FBF_NORANDOM|FBF_NOFLASH,256)
+        TNT1 A 0 A_FireBullets(0,0,1,random(6,20),"BlankPuff2BloodlessCoop",FBF_NORANDOM|FBF_NOFLASH,64)
+        stop
     }
 }

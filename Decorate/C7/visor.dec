@@ -1,0 +1,64 @@
+// Tokens
+
+actor C7VisorActive : Counter
+{
+    Inventory.MaxAmount 2
+    Inventory.InterHubAmount 0
+}
+
+actor C7EnemyCoordinateX : Counter { Inventory.MaxAmount 132072 }
+actor C7EnemyCoordinateY : Counter { Inventory.MaxAmount 132072 }
+actor C7EnemyCoordinateZ : Counter { Inventory.MaxAmount 132072 }
+actor C7EnemyMonsterRadius : Counter { Inventory.MaxAmount 1024 }
+actor C7EnemyMonsterHeight : Counter { Inventory.MaxAmount 1024 }
+
+// Night vision
+
+actor C7NightVisionPower : PowerLightAmp
+{
+    Powerup.Duration 0x7FFFFFFF
+    Powerup.Colormap 0.0, 0.0, 0.0, 0.0, 1.0, 0.0
+}
+
+// Infrared
+
+actor C7EnemyLookerInfrared : Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_RadiusGive("C7EnemyLookerInfraredSignal",1024,RGF_MONSTERS|RGF_NOSIGHT)
+        stop
+    }
+}
+
+actor C7EnemyLookerInfraredSignal : Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_RadiusGive("C7EnemyCoordinateX",1024,RGF_PLAYERS|RGF_NOSIGHT,x+65536)
+        TNT1 A 0 A_RadiusGive("C7EnemyCoordinateY",1024,RGF_PLAYERS|RGF_NOSIGHT,y+65536)
+        TNT1 A 0 A_RadiusGive("C7EnemyCoordinateZ",1024,RGF_PLAYERS|RGF_NOSIGHT,z+65536)
+        TNT1 A 0 A_RadiusGive("C7EnemyMonsterRadius",1024,RGF_PLAYERS|RGF_NOSIGHT,radius)
+        TNT1 A 0 A_RadiusGive("C7EnemyMonsterHeight",1024,RGF_PLAYERS|RGF_NOSIGHT,height)
+        TNT1 A 0 A_RadiusGive("C7EnemyLookerInfraredReceiver",1024,RGF_PLAYERS|RGF_NOSIGHT)
+        stop
+    }
+}
+
+actor C7EnemyLookerInfraredReceiver : Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 ACS_NamedExecuteWithResult("Corridor7MonsterCoordinate")
+        stop
+    }
+}
+
+actor C7InfraredPower : PowerLightAmp
+{
+    Powerup.Duration 0x7FFFFFFF
+    Powerup.Colormap 0.0, 0.0, 0.0, 0.66, 0.0, 0.0
+}

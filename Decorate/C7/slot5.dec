@@ -1,85 +1,103 @@
 actor "AlienPlasmaRifle" : Corridor7WeaponBase
 {
-    Weapon.SelectionOrder 1500
-    Weapon.SlotNumber 5
-	Weapon.BobStyle InverseAlpha
-	Weapon.BobRangeX 0.2
-	Weapon.BobRangeY 0.2
-	Weapon.BobSpeed 4.0	
-    Inventory.PickUpSound "C7/AmmoPickup"
-    Weapon.AmmoUse 1
-    Weapon.AmmoGive 5
-    Weapon.AmmoType "RocketAmmo"
-	+WEAPON.ALT_AMMO_OPTIONAL
-	+WEAPON.NOALERT
-	-WEAPON.CHEATNOTWEAPON
-	Weapon.AmmoType2 "C7ProxyMineAmmo"
-	Weapon.AmmoUse2 1
-	Weapon.AmmoGive2 0
     Inventory.PickupMessage "You got the Alien Plasma Rifle!"
-	Tag "Alien Plasma Rifle"	
+    Weapon.SlotNumber 5
+    Weapon.SelectionOrder 1500
     Weapon.YAdjust 11
-	Inventory.RestrictedTo "Corridor7Player"	
+    Weapon.AmmoType1 "RocketAmmo"
+    Weapon.AmmoGive1 5
+    Weapon.AmmoUse1 1
+    Tag "Alien Plasma Rifle"
+    +EXPLOSIVE
     States
     {
       Spawn:
         7RL2 A -1
-        Stop
+        stop
+
       Ready:
-        C7RL A 1 A_WeaponReady
-	  Ready2:
-	    C7RL BCDEFGHA 1 A_WeaponReady
-        Loop
+        C7RL ABCDEFGH 1 A_WeaponReady
+        loop
+
       Fire:
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
-		TNT1 A 0 A_AlertMonsters
-        C7RL I 4 BRIGHT A_FireCustomMissile("C7Plasma")
-        C7RL JK 5 BRIGHT
-        C7RL L 4 
-		C7RL L 0 A_Refire
-        Goto Ready
-      CoopFire:
-		TNT1 A 0 A_AlertMonsters
-        C7RL I 4 BRIGHT A_FireCustomMissile("C7Plasma2")
-        C7RL JK 5 BRIGHT
-        C7RL L 4 
-		C7RL L 0 A_Refire
-        Goto Ready	
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_GiveInventory("SamsaraCorridor7AlienPlasmaRifleAttackHandler")
+        C7RL I 4 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        C7RL JK 5 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        C7RL L 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_ReFire
+        goto Ready
+
+      AltFire:
+        C7RL A 0
+        goto Super::AltFire
+    }
+}
+
+actor SamsaraCorridor7AlienPlasmaRifleAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("C7Plasma",0,false)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("C7PlasmaCoop",0,false)
+        stop
     }
 }
 
 actor C7Plasma
 {
+    var int user_distance;
+    Projectile
     Radius 8
     Height 6
     Speed 20
-    Damage (0)
-    Projectile
-    +FORCERADIUSDMG
-	+NODAMAGETHRUST
-    Decal Scorch
     SeeSound "C7/AlienPlasmaRifle"
     DeathSound "C7/Explosion"
+    Decal "Scorch"
     Obituary "%o was deep fried by %k's Alien Plasma Rifle."
-	var int user_distance;
+    +FORCERADIUSDMG
+    +NODAMAGETHRUST
     States
     {
       Spawn:
-        7MIS A 2 Bright A_SetUserVar(user_distance, user_distance+10)
-		7MIS B 2 Bright A_SetUserVar(user_distance, user_distance+5)
-		7MIS C 2 Bright A_SetUserVar(user_distance, user_distance+10)
-		7MIS D 2 Bright A_SetUserVar(user_distance, user_distance+5)
-		7MIS E 2 Bright A_SetUserVar(user_distance, user_distance+10)
-		7MIS F 2 Bright A_SetUserVar(user_distance, user_distance+5)
-		7MIS G 2 Bright A_SetUserVar(user_distance, user_distance+10)
-		7MIS H 2 Bright A_SetUserVar(user_distance, user_distance+5)
-        Loop
+        7MIS A 2 Bright Light("C7ROCKETL__") A_SetUserVar(user_distance,user_distance+10)
+        7MIS B 2 Bright Light("C7ROCKETL__") A_SetUserVar(user_distance,user_distance+5)
+        7MIS C 2 Bright Light("C7ROCKETL__") A_SetUserVar(user_distance,user_distance+10)
+        7MIS D 2 Bright Light("C7ROCKETL__") A_SetUserVar(user_distance,user_distance+5)
+        7MIS E 2 Bright Light("C7ROCKETL__") A_SetUserVar(user_distance,user_distance+10)
+        7MIS F 2 Bright Light("C7ROCKETL__") A_SetUserVar(user_distance,user_distance+5)
+        7MIS G 2 Bright Light("C7ROCKETL__") A_SetUserVar(user_distance,user_distance+10)
+        7MIS H 2 Bright Light("C7ROCKETL__") A_SetUserVar(user_distance,user_distance+5)
+        loop
+
       Death:
-        7MIS I 8 Bright A_Explode(100+user_distance,128,0, true, 16)
-        7MIS J 6 Bright
-        7MIS K 4 Bright
-        Stop
+        TNT1 A 0 A_Explode(100+user_distance,128,0,false,16)
+      DeathFinish:
+        7MIS I 8 Bright Light("C7EXPLOSION1__")
+        7MIS J 6 Bright Light("C7EXPLOSION2__")
+        7MIS K 4 Bright Light("C7EXPLOSION3__")
+        stop
     }
 }
 
-actor C7Plasma2 : C7Plasma { +THRUSPECIES Species "Player" }
+actor C7PlasmaCoop : C7Plasma
+{
+    Species "Player"
+    +THRUSPECIES
+}

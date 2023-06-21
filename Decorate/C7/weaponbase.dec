@@ -1,0 +1,49 @@
+actor Corridor7WeaponBase : InstantSwitchWeapon
+{
+    Inventory.RestrictedTo "Corridor7Player"
+    Inventory.PickupSound "C7/AmmoPickup"
+    Weapon.BobStyle InverseAlpha
+    Weapon.BobRangeX 0.2
+    Weapon.BobRangeY 0.2
+    Weapon.BobSpeed 4
+    Weapon.AmmoType2 "C7ProxyMineAmmo"
+    Weapon.AmmoUse2 1
+    +ALT_AMMO_OPTIONAL
+    +NOALERT
+    +UNDROPPABLE
+    States
+    {
+      Ready:
+        TNT1 A 0 A_TakeInventory("Corridor7WeaponBase")
+        TNT1 A 1 A_WeaponReady
+        loop
+
+      Fire:
+        TNT1 A 1
+        goto Ready
+
+      AltFire:
+        "####" "#" 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        "####" "#" 0 A_JumpIfInventory("C7ProxyMineAmmo",1,1)
+        goto BackToReady
+        "####" "#" 0 A_JumpIfInventory("SPModeOn",1,"AltFirePlaceMine")
+        "####" "#" 0 A_JumpIfInventory("CoopModeOn",1,"AltFirePlaceMine")
+        goto AltFireMineLimitCheck
+
+      AltFirePlaceMine:
+        "####" "#" 0 A_GiveInventory("SamsaraCorridor7ProximityMineAttackHandler")
+        "####" "#" 15 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto BackToReady
+
+      AltFireMineLimitCheck:
+        "####" "#" 0 A_JumpIfInventory("C7MineDMToken",0,1)
+        goto AltFirePlaceMine
+        "####" "#" 0 ACS_NamedExecuteWithResult("C7MinePlacerFail")
+        "####" "#" 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto BackToReady
+
+      BackToReady:
+        "####" "#" 1 A_Jump(256,"Ready")
+        loop
+    }
+}
