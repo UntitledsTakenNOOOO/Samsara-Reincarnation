@@ -8571,3 +8571,131 @@ Actor Descent_AI : SamsaraMonsterDarkSideAINoBlood
 }
 
 // Deus Ex
+Actor DeusEx_AI : SamsaraMonsterDarkSideAIRegular
+{
+	obituary "%o couldn't defeat an augmented JC Denton."
+	radius 16
+	height 56
+	health 1000
+	mass 100
+	speed 8
+	monster
+	+FLOORCLIP
+	-FRIENDLY
+	+NOINFIGHTING
+	Maxstepheight 8
+	cameraheight 45
+	Tag "JC Denton"
+	painsound "DarkSideAI/JCDenton/Pain"
+	deathsound "DarkSideAI/JCDenton/Death"
+	activesound "DarkSideAI/JCDenton/Taunt"
+	var int user_scalex;
+	var int user_scaley;
+	States
+	{
+	Spawn:
+		DX4B RSTUV 6 A_Look
+		loop
+	See:
+		DX4C "STUVWXYZ[\" 3 A_FastChase
+		Loop
+	Missile:
+		DX4C R 2 A_FaceTarget
+		DX4C S 0 A_PlayWeaponSound("DeusEx/AssaultGun/Fire")
+		DX4C S 0 Bright A_CustomMissile("DeusEx_AssaultGunBullet", 32, 0, frandom(-3.0,3.0), 0, frandom(-2.5,2.5))
+		DX4C S 1 A_SpawnItemEx("DeusEx_ShellCasing1",8,-16,39,random(1,3),0,3,-90,SXF_NOCHECKPOSITION|SXF_MULTIPLYSPEED|SXF_TRANSFERPITCH)
+		DX4C S 2 A_FaceTarget
+		DX4C T 0 A_PlayWeaponSound("DeusEx/AssaultGun/Fire")
+		DX4C T 0 Bright A_CustomMissile("DeusEx_AssaultGunBullet", 32, 0, frandom(-3.0,3.0), 0, frandom(-2.5,2.5))
+		DX4C T 1 A_SpawnItemEx("DeusEx_ShellCasing1",8,-16,39,random(1,3),0,3,-90,SXF_NOCHECKPOSITION|SXF_MULTIPLYSPEED|SXF_TRANSFERPITCH)
+		DX4C T 2 A_FaceTarget
+		DX4C U 0 A_PlayWeaponSound("DeusEx/AssaultGun/Fire")
+		DX4C U 0 Bright A_CustomMissile("DeusEx_AssaultGunBullet", 32, 0, frandom(-3.0,3.0), 0, frandom(-2.5,2.5))
+		DX4C U 1 A_SpawnItemEx("DeusEx_ShellCasing1",8,-16,39,random(1,3),0,3,-90,SXF_NOCHECKPOSITION|SXF_MULTIPLYSPEED|SXF_TRANSFERPITCH)
+		DX4C U 2 A_FaceTarget
+		DX4C V 0 A_PlayWeaponSound("DeusEx/AssaultGun/Fire")
+		DX4C V 0 Bright A_CustomMissile("DeusEx_AssaultGunBullet", 32, 0, frandom(-3.0,3.0), 0, frandom(-2.5,2.5))
+		DX4C V 1 A_SpawnItemEx("DeusEx_ShellCasing1",8,-16,39,random(1,3),0,3,-90,SXF_NOCHECKPOSITION|SXF_MULTIPLYSPEED|SXF_TRANSFERPITCH)
+		DX4C V 2 A_FaceTarget
+		DX4C W 0 A_PlayWeaponSound("DeusEx/AssaultGun/Fire")
+		DX4C W 0 Bright A_CustomMissile("DeusEx_AssaultGunBullet", 32, 0, frandom(-3.0,3.0), 0, frandom(-2.5,2.5))
+		DX4C W 1 A_SpawnItemEx("DeusEx_ShellCasing1",8,-16,39,random(1,3),0,3,-90,SXF_NOCHECKPOSITION|SXF_MULTIPLYSPEED|SXF_TRANSFERPITCH)
+		TNT1 A 0 A_Jump(128, "See")
+		goto Missile
+	Pain:
+		DX4B A 0 A_Pain
+		goto See
+	Death:
+		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		TNT1 A 0 A_SpawnItem("UniversalBloodyHellGoreDeathEffect")
+		DX41 A 0 A_Scream
+		DX41 R 0 A_NoBlocking
+		DX41 "RSTUVWXYZ[\]" 3
+		DX42 A -1
+		Stop
+	DeusXDeath:
+	XDeath:
+		TNT1 A 0 A_NoBlocking
+		TNT1 A 1 A_SpawnItemEx("Q3GibGenerator",0,0,0,0,0,0,0,SXF_USEBLOODCOLOR)
+		TNT1 A -1
+		Stop
+	Death.ExpanderDMG:
+	XDeath.ExpanderDMG:
+		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+		"####" "#" 0 A_PlaySound("duke/expand")
+		Goto ExpanderLoop
+	ExpanderLoop:
+		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
+		loop
+	ExpanderPop:
+		"####" "#" 10
+		"####" A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+		"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+		"####" A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		"####" A 0 A_Jump(96,2)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+		"####" A 0 A_SetScale (1.0, 1.0)
+		"####" A 0 A_UnsetSolid
+		"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+		TNT1 A -1 A_UnsetSolid
+		Stop
+	Death.ExpanderDMGCoop:
+	XDeath.ExpanderDMGCoop:
+		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+		"####" "#" 0 A_PlaySound("duke/expand")
+		Goto ExpanderLoopCoop
+	ExpanderLoopCoop:
+		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
+		loop
+	ExpanderPopCoop:
+		"####" "#" 10
+		"####" A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+		"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+		"####" A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		"####" A 0 A_Jump(96,2)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+		"####" A 0 A_SetScale (1.0, 1.0)
+		"####" A 0 A_UnsetSolid
+		"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+		"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+		TNT1 A -1 A_UnsetSolid
+		Stop
+	}
+}
