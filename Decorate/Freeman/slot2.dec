@@ -2,22 +2,15 @@ actor freeman_slot3selected : Boolean { Inventory.InterHubAmount 0 }
 
 Actor "Assault Shotgun" : HLWeapon
 {
-	Weapon.Slotnumber 2
+	Inventory.PickupMessage "You got the assault shotgun!"
+	Weapon.SlotNumber 2
 	Weapon.SelectionOrder 2500
-	Weapon.BobRangeX 0
-	Weapon.BobRangeY 0.75
-	Weapon.BobSpeed 1.4
-	Weapon.BobStyle Alpha 
-	Inventory.Pickupmessage "You got the assault shotgun!"
-	Inventory.Pickupsound "halflife/weaponpickup"
-	DamageType "HLBullet"
 	Weapon.AmmoType1 "HLShotgunCounter"
     Weapon.AmmoUse1 1
 	Weapon.AmmoType2 "Shell"
 	Weapon.AmmoGive2 8
-	Inventory.RestrictedTo "HalfLifePlayer"
     Tag "SPAS-12"
-	states
+	States
 	{
 	Spawn:
 		HW30 Z -1
@@ -94,13 +87,6 @@ Actor "Assault Shotgun" : HLWeapon
         HW32 A 0 A_JumpIfInventory("HLShotgunCounter",1,"ReadyActual")
         goto ReloadCheck
 
-	Deselect:
-		TNT1 A 0 A_TakeInventory("freeman_slot3selected")
-	DeselectLoop:
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
-		TNT1 A 1 A_Lower
-		loop
-
 	Select:
 		TNT1 A 0 A_TakeInventory("freeman_fistselected")
 		TNT1 A 0 A_TakeInventory("freeman_pistolselected")
@@ -114,10 +100,7 @@ Actor "Assault Shotgun" : HLWeapon
 		TNT1 A 0 A_TakeInventory("freeman_uniqueselected")
 		TNT1 A 0 A_TakeInventory("freeman_unique2selected")
 		TNT1 A 0 A_TakeInventory("freeman_unique3selected")
-	SelectLoop:	
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
-		TNT1 A 1 A_Raise
-		loop
+        goto Super::Select
 
 	Ready: // our "Select" state
 		HW30 M 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyOpp")
@@ -144,7 +127,8 @@ Actor "Assault Shotgun" : HLWeapon
     FireDry:
         HW32 A 0 A_PlaySound("halflife/weaponempty",CHAN_6)
         HW32 A 0 A_ClearReFire
-        HW32 A 4 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireDryOpp")
+        HW32 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireDryOpp")
+        HW32 A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActualAmmoCheck
 
     Hold:
@@ -166,9 +150,9 @@ Actor "Assault Shotgun" : HLWeapon
     HoldDry:
         HW33 O 0 A_PlaySound("halflife/weaponempty",CHAN_6)
         HW33 O 0 A_ClearReFire
-        HW33 O 1 A_JumpIfInventory("HalfLifeOpposingForce",1,"HoldDryOpp")
-        HW33 PQR 1
-        HW33 STUV 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+        HW33 O 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"HoldDryOpp")
+        HW33 OPQR 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW33 STUV 1 A_WeaponReady(WRF_NOFIRE)
         goto ReadyActualAmmoCheck
 
     FireStart:
@@ -176,12 +160,19 @@ Actor "Assault Shotgun" : HLWeapon
         HW32 A 0 A_SpawnItemEx("HLMuzzleFlash",4,5,0,0,0,0,0,SXF_NOCHECKPOSITION)
         HW32 A 0 A_FireCustomMissile("HLShotgunShellCaser",0,false)
         HW32 A 0 A_GiveInventory("SamsaraHalfLifeShotgunPrimaryAttackHandler")
-		HW32 A 1 Bright A_JumpIfInventory("HalfLifeOpposingForce",1,"FireOpp")
-		HW32 B 1 Bright
-		HW33 ABCDEFGHI 2
-		HW33 J 2 A_PlaySound("halflife/shotgun_pump")
-		HW33 KLMN 2
-		HW33 OPQRSTUV 1 A_ReFire
+		HW32 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireOpp")
+		HW32 AB 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW33 ABCDEFGHI 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW33 J 0 A_PlaySound("halflife/shotgun_pump")
+		HW33 JKLMN 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW33 O 0 A_ReFire HW33 O 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW33 P 0 A_ReFire HW33 P 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW33 Q 0 A_ReFire HW33 Q 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW33 R 0 A_ReFire HW33 R 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW33 S 0 A_ReFire HW33 S 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW33 T 0 A_ReFire HW33 T 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW33 U 0 A_ReFire HW33 U 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW33 V 0 A_ReFire HW33 V 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
     AltFire:
@@ -202,7 +193,8 @@ Actor "Assault Shotgun" : HLWeapon
 
     AltFireDry:
         HW32 A 0 A_PlaySound("halflife/weaponempty",CHAN_6)
-        HW32 A 4 A_JumpIfInventory("HalfLifeOpposingForce",1,"AltFireDryOpp")
+        HW32 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"AltFireDryOpp")
+        HW32 A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
     AltFireDryAmmoCheck:
         HW32 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
         goto ReadyActual
@@ -215,12 +207,13 @@ Actor "Assault Shotgun" : HLWeapon
         HW32 A 0 A_SpawnItemEx("HLMuzzleFlash",4,5,0,0,0,0,0,SXF_NOCHECKPOSITION)
         HW32 AA 0 A_FireCustomMissile("HLShotgunShellCaser",0,false)
         HW32 A 0 A_GiveInventory("SamsaraHalfLifeShotgunSecondaryAttackHandler")
-		HW32 A 1 Bright A_JumpIfInventory("HalfLifeOpposingForce",1,"AltFireOpp")
-		HW32 B 1 Bright
-		HW34 ABCDEF 2
-		HW34 GHIJK 3
-		HW34 L 2 A_PlaySound("halflife/shotgun_pump")
-		HW34 MNOPQRS 3
+		HW32 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"AltFireOpp")
+		HW32 AB 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW34 ABCDEF 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW34 GHIJK 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW34 L 0 A_PlaySound("halflife/shotgun_pump")
+        HW34 L 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW34 MNOPQRS 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
     Reload:
@@ -232,8 +225,9 @@ Actor "Assault Shotgun" : HLWeapon
         goto ReadyActual
 
 	ReloadStart:
-		HW35 A 1 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReloadOpp")
-		HW36 BCDEFGH 1
+		HW35 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReloadOpp")
+        HW35 A 1 A_WeaponReady(WRF_NOFIRE)
+		HW36 BCDEFGH 1 A_WeaponReady(WRF_NOFIRE)
     ReloadLoopInit:
         TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
         goto ReloadFinish
@@ -262,26 +256,26 @@ Actor "Assault Shotgun" : HLWeapon
         HW35 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"ReloadLoopAnimWithSecondary")
         HW35 B 0 A_JumpIfInventory("HLShotgunCounter",2,"ReloadLoopAnimWithSecondary")
 		HW35 B 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReloadLoopAnimOpp")
-		HW35 BCDEFG 1 A_WeaponReady(WRF_NOBOB|WRF_NOSECONDARY)
-		HW35 HI 2 A_WeaponReady(WRF_NOBOB|WRF_NOSECONDARY)
-		HW35 J 1 A_WeaponReady(WRF_NOBOB|WRF_NOSECONDARY)
+		HW35 BCDEFG 1 A_WeaponReady(WRF_NOSECONDARY)
+		HW35 HI 2 A_WeaponReady(WRF_NOSECONDARY)
+		HW35 J 1 A_WeaponReady(WRF_NOSECONDARY)
         TNT1 A 0
-		HW35 K 1 A_WeaponReady(WRF_NOBOB|WRF_NOSECONDARY)
+		HW35 K 1 A_WeaponReady(WRF_NOSECONDARY)
         goto ReloadLoopInit
 
 	ReloadLoopAnimWithSecondary:
 		HW35 B 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReloadLoopAnimWithSecondaryOpp")
-		HW35 BCDEFG 1 A_WeaponReady(WRF_NOBOB)
-		HW35 HI 2 A_WeaponReady(WRF_NOBOB)
-		HW35 J 1 A_WeaponReady(WRF_NOBOB)
+		HW35 BCDEFG 1 A_WeaponReady
+		HW35 HI 2 A_WeaponReady
+		HW35 J 1 A_WeaponReady
         TNT1 A 0
-		HW35 K 1 A_WeaponReady(WRF_NOBOB)
+		HW35 K 1 A_WeaponReady
         goto ReloadLoopInit
 
 	ReloadFinish:
         HW35 L 0 A_PlaySound("halflife/shotgun_pump")
 		HW35 L 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReloadFinishOpp")
-		HW35 LMNOPQRTU 2 A_WeaponReady(WRF_NOBOB)
+		HW35 LMNOPQRTU 2 A_WeaponReady
 		goto ReadyActual
 
     ReloadAmmo: // calculation timing is done in accordance to holding the reload button during the animation in hl, this is reflected here as well
@@ -346,57 +340,65 @@ Actor "Assault Shotgun" : HLWeapon
 		goto ReadyActual
 
     FireDryOpp:
-        OP32 A 4
+        OP32 A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActualAmmoCheck
 
     HoldDryOpp:
-        OP33 OPQR 1
-        OP33 STUV 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+        OP33 OPQR 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP33 STUV 1 A_WeaponReady(WRF_NOFIRE)
         goto ReadyActualAmmoCheck
 
     FireOpp:
-		OP32 AB 1 Bright
-		OP33 ABCDEFGHI 2
-		OP33 J 2 A_PlaySound("halflife/shotgun_pump")
-		OP33 KLMN 2
-		OP33 OPQRSTUV 1 A_ReFire
+		OP32 AB 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP33 ABCDEFGHI 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP33 J 0 A_PlaySound("halflife/shotgun_pump")
+		OP33 JKLMN 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP33 O 0 A_ReFire OP33 O 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP33 P 0 A_ReFire OP33 P 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP33 Q 0 A_ReFire OP33 Q 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP33 R 0 A_ReFire OP33 R 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP33 S 0 A_ReFire OP33 S 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP33 T 0 A_ReFire OP33 T 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP33 U 0 A_ReFire OP33 U 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP33 V 0 A_ReFire OP33 V 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
     AltFireDryOpp:
-        OP32 A 4
+        OP32 A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto AltFireDryAmmoCheck
 
 	AltFireOpp:
-		OP32 AB 1 Bright
-		OP34 ABCDEF 2
-		OP34 GHIJK 3
-		OP34 L 2 A_PlaySound("halflife/shotgun_pump")
-		OP34 MNOPQRS 3
+		OP32 AB 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP34 ABCDEF 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP34 GHIJK 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP34 L 0 A_PlaySound("halflife/shotgun_pump")
+        OP34 L 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP34 MNOPQRS 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	ReloadOpp:
-		OP35 A 1
-		OP36 BCDEFGH 1
+		OP35 A 1 A_WeaponReady(WRF_NOFIRE)
+		OP36 BCDEFGH 1 A_WeaponReady(WRF_NOFIRE)
         goto ReloadLoopInit
 
 	ReloadLoopAnimOpp:
-		OP35 BCDEFG 1 A_WeaponReady(WRF_NOBOB|WRF_NOSECONDARY)
-		OP35 HI 2 A_WeaponReady(WRF_NOBOB|WRF_NOSECONDARY)
-		OP35 J 1 A_WeaponReady(WRF_NOBOB|WRF_NOSECONDARY)
+		OP35 BCDEFG 1 A_WeaponReady(WRF_NOSECONDARY)
+		OP35 HI 2 A_WeaponReady(WRF_NOSECONDARY)
+		OP35 J 1 A_WeaponReady(WRF_NOSECONDARY)
         TNT1 A 0
-		OP35 K 1 A_WeaponReady(WRF_NOBOB|WRF_NOSECONDARY)
+		OP35 K 1 A_WeaponReady(WRF_NOSECONDARY)
         goto ReloadLoopInit
 
 	ReloadLoopAnimWithSecondaryOpp:
-		OP35 BCDEFG 1 A_WeaponReady(WRF_NOBOB)
-		OP35 HI 2 A_WeaponReady(WRF_NOBOB)
-		OP35 J 1 A_WeaponReady(WRF_NOBOB)
+		OP35 BCDEFG 1 A_WeaponReady
+		OP35 HI 2 A_WeaponReady
+		OP35 J 1 A_WeaponReady
         TNT1 A 0
-		OP35 K 1 A_WeaponReady(WRF_NOBOB)
+		OP35 K 1 A_WeaponReady
         goto ReloadLoopInit
 
 	ReloadFinishOpp:
-		OP35 LMNOPQRTU 2 A_WeaponReady(WRF_NOBOB)
+		OP35 LMNOPQRTU 2 A_WeaponReady
 		goto ReadyActual
 	}
 }

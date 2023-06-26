@@ -4,17 +4,11 @@ actor HLCrowHit : HLBoolean {}
 
 Actor "Crowbar" : HLWeapon
 {
-	Inventory.PickupSound "halflife/weaponpickup"
-	Inventory.Pickupmessage "You got the crowbar!"
+	Inventory.PickupMessage "You got the crowbar!"
 	Weapon.SlotNumber 0
-	Weapon.BobRangeX 0
-	Weapon.BobRangeY 0.75
-	Weapon.BobSpeed 1.4
-	Weapon.BobStyle Alpha   
 	Weapon.SelectionOrder 4000
-	+WEAPON.MELEEWEAPON
-	+WEAPON.WIMPY_WEAPON
-	Inventory.RestrictedTo "HalfLifePlayer"
+	+MELEEWEAPON
+	+WIMPY_WEAPON
     Tag "Crowbar"
 	States
 	{
@@ -42,13 +36,6 @@ Actor "Crowbar" : HLWeapon
 		HWF0 MNOPQRSTUV 1 A_WeaponReady
 		goto ReadyActual
 
-	Deselect:
-		TNT1 A 0 A_TakeInventory("freeman_fistselected")
-	DeselectLoop:
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
-		TNT1 A 1 A_Lower
-		loop		
-
 	Select:
 		TNT1 A 0 A_GiveInventory("freeman_fistselected")
 		TNT1 A 0 A_TakeInventory("freeman_pistolselected")
@@ -62,10 +49,7 @@ Actor "Crowbar" : HLWeapon
 		TNT1 A 0 A_TakeInventory("freeman_uniqueselected")
 		TNT1 A 0 A_TakeInventory("freeman_unique2selected")
 		TNT1 A 0 A_TakeInventory("freeman_unique3selected")
-	SelectLoop:	
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
-		TNT1 A 1 A_Raise
-		loop
+        goto Super::Select
 
 	Ready: // our "Select" state
 		HWF0 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyOpp")
@@ -83,61 +67,69 @@ Actor "Crowbar" : HLWeapon
         HWF3 A 0 A_JumpIfInventory("SamsaraHalfLifeCrowbarFireState",0,"FireAnim3")
         HWF3 A 0 A_JumpIfInventory("SamsaraHalfLifeCrowbarFireState",2,"FireAnim2")
 	FireAnim1:
-		HWF3 A 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		HWF3 A 1
-		HWF3 B 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		HWF3 B 1
-		HWF3 C 1 A_GiveInventory("SamsaraHalfLifeCrowbarAttackHandler")
-		HWF3 D 1
-		HWF4 A 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim1Hit")
-		HWF4 ABBCCDDEEFF 1
-		HWF4 GG 1 A_ReFire
-		HWF1 AA 1 A_ReFire
+		HWF3 A 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		HWF3 AA 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF3 B 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		HWF3 BB 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF3 C 0 A_GiveInventory("SamsaraHalfLifeCrowbarAttackHandler")
+        HWF3 CD 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF4 A 0 A_JumpIfInventory("HLCrowHit",1,"FireAnim1Hit")
+		HWF4 AABBCCDDEEFF 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HWF4 G 0 A_ReFire HWF4 G 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HWF4 G 0 A_ReFire HWF4 G 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HWF1 A 0 A_ReFire HWF1 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HWF1 A 0 A_ReFire HWF1 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireAnim1Hit:
-		HWF3 EFG 1
-		HWF3 H 1 A_ReFire
-		HWF1 A 1 A_ReFire
+		HWF3 EFG 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF3 H 0 A_ReFire HWF3 H 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF1 A 0 A_ReFire HWF1 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireAnim2:
-		HWF5 A 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		HWF5 A 1
-		HWF5 B 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		HWF5 B 1
-		HWF5 C 1 A_GiveInventory("SamsaraHalfLifeCrowbarAttackHandler")
-		HWF5 D 1
-		HWF5 E 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim2Hit")
-		HWF5 FGHIJKLMN 1
-		HWF1 AA 1
-		HWF1 AAAA 1 A_ReFire
+		HWF5 A 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		HWF5 AA 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF5 B 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		HWF5 BB 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF5 C 0 A_GiveInventory("SamsaraHalfLifeCrowbarAttackHandler")
+		HWF5 CD 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF5 E 0 A_JumpIfInventory("HLCrowHit",1,"FireAnim2Hit")
+		HWF5 EFGHIJKLMN 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF1 AA 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF1 A 0 A_ReFire HWF1 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF1 A 0 A_ReFire HWF1 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF1 A 0 A_ReFire HWF1 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF1 A 0 A_ReFire HWF1 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireAnim2Hit:
-		HWF6 ABC 1
-		HWF6 D 1 A_ReFire
-		HWF1 A 1 A_ReFire
+		HWF6 ABC 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF6 D 0 A_ReFire HWF6 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF1 A 0 A_ReFire HWF1 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireAnim3:
-		HWF7 A 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		HWF7 A 1
-		HWF7 B 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		HWF7 B 1
-		HWF7 C 1 A_GiveInventory("SamsaraHalfLifeCrowbarAttackHandler")
-		HWF7 D 1
-		HWF7 E 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim3Hit")
-		HWF7 FGHI 1
-		HWF7 JKLMMNO 1
-		HWF7 PQRS 1 A_ReFire
+		HWF7 A 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		HWF7 AA 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF7 B 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		HWF7 BB 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF7 C 0 A_GiveInventory("SamsaraHalfLifeCrowbarAttackHandler")
+		HWF7 CD 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF7 E 0 A_JumpIfInventory("HLCrowHit",1,"FireAnim3Hit")
+		HWF7 EFGHIJKLMMNO 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF7 P 0 A_ReFire HWF7 P 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF7 Q 0 A_ReFire HWF7 Q 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF7 R 0 A_ReFire HWF7 R 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF7 S 0 A_ReFire HWF7 S 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireAnim3Hit:
-		HWF7 E 1
-		HWF8 AB 1
-		HWF8 CD 1 A_ReFire
-		HWF8 E 1 A_WeaponReady(WRF_NOBOB)
+		HWF7 E 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF8 AB 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF8 C 0 A_ReFire HWF8 C 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF8 D 0 A_ReFire HWF8 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HWF8 E 1 A_WeaponReady
 		goto ReadyActual
 
     // Adrian Shephard (Combat Knife)
@@ -178,58 +170,68 @@ Actor "Crowbar" : HLWeapon
         OP04 A 0 A_JumpIfInventory("SamsaraHalfLifeCrowbarFireState",0,"FireAnim3Opp")
         OP04 A 0 A_JumpIfInventory("SamsaraHalfLifeCrowbarFireState",2,"FireAnim2Opp")
     FireAnim1Opp:
-		OP04 A 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		OP04 A 1
-		OP04 B 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		OP04 B 1
-		OP04 C 1 A_GiveInventory("SamsaraHalfLifeKnifeAttackHandler")
-		OP04 D 1
-		OP05 E 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim1HitOpp")
-		OP05 EFFGGHHIIJJ 1
-		OP00 AAAA 1 A_ReFire
+		OP04 A 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		OP04 AA 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP04 B 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		OP04 BB 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP04 C 0 A_GiveInventory("SamsaraHalfLifeKnifeAttackHandler")
+		OP04 CD 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP05 E 0 A_JumpIfInventory("HLCrowHit",1,"FireAnim1HitOpp")
+		OP05 EEFFGGHHIIJJ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireAnim1HitOpp:
-		OP04 EFG 1
-		OP04 H 1 A_ReFire
-		OP00 A 1 A_ReFire
+		OP04 EFG 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP04 H 0 A_ReFire OP04 H 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireAnim2Opp:
-		OP06 A 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		OP06 A 1
-		OP06 B 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		OP06 B 1
-		OP06 C 1 A_GiveInventory("SamsaraHalfLifeKnifeAttackHandler")
-		OP06 D 1
-		OP06 E 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim2HitOpp")
-		OP06 FGHIJKLM 1
-		OP00 AAA 1
-		OP00 AAAA 1 A_ReFire
+		OP06 A 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		OP06 AA 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP06 B 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		OP06 BB 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP06 C 0 A_GiveInventory("SamsaraHalfLifeKnifeAttackHandler")
+		OP06 CD 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP06 E 0 A_JumpIfInventory("HLCrowHit",1,"FireAnim2HitOpp")
+		OP06 EFGHIJKLM 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 AAA 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireAnim2HitOpp:
-		OP07 CDE 1
-		OP07 FG 1 A_ReFire
+		OP07 CDE 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP07 F 0 A_ReFire OP07 F 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP07 G 0 A_ReFire OP07 G 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireAnim3Opp:
-		OP08 A 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		OP08 B 1
-		OP08 C 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		OP08 D 1
-		OP08 E 1 A_GiveInventory("SamsaraHalfLifeKnifeAttackHandler")
-		OP08 F 1
-		OP08 G 1 A_JumpIfInventory("HLCrowHit",1,"FireAnim3HitOpp")
-		OP08 HIIJKLMNOPQ 1
-		OP08 R 1 A_ReFire
-		OP00 AAA 1 A_ReFire
+		OP08 A 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		OP08 AB 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP08 C 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		OP08 CD 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP08 E 0 A_GiveInventory("SamsaraHalfLifeKnifeAttackHandler")
+		OP08 EF 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP08 G 0 A_JumpIfInventory("HLCrowHit",1,"FireAnim3HitOpp")
+		OP08 GHIIJKLMNOPQ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP08 R 0 A_ReFire OP08 R 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP00 A 0 A_ReFire OP00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireAnim3HitOpp:
-		OP09 EFG 1
-		OP09 HI 1 A_ReFire
-		OP09 J 1 A_WeaponReady(WRF_NOBOB)
+		OP09 EFG 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP09 H 0 A_ReFire OP09 H 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP09 I 0 A_ReFire OP09 I 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP09 J 1 A_WeaponReady
 		goto ReadyActual
 	}
 }

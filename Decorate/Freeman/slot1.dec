@@ -5,21 +5,15 @@ actor SamsaraHalfLifeShockRoachDischargeAmount : Counter {}
 
 Actor "Hornetgun" : HLWeapon
 {
-	Weapon.Slotnumber 1
+	Inventory.PickupMessage "You got the hornetgun!"
+	Weapon.SlotNumber 1
 	Weapon.SelectionOrder 6750
-	Weapon.BobRangeX 0
-	Weapon.BobRangeY 0.75
-	Weapon.BobSpeed 1.4
-	Weapon.BobStyle Alpha 	
-	Inventory.Pickupmessage "You got the hornetgun!"
-	Inventory.Pickupsound "halflife/weaponpickup"
 	Weapon.AmmoType1 "HornetGunAmmo"
     Weapon.AmmoUse1 1
 	Weapon.AmmoType2 "ShockRoachAmmo"
     Weapon.AmmoUse2 1
-	Inventory.RestrictedTo "HalfLifePlayer"
     Tag "Hivehand"
-	states
+	States
 	{
 	Spawn:
 		HW10 Z -1
@@ -61,13 +55,9 @@ Actor "Hornetgun" : HLWeapon
 		goto ReadyActual
 
 	Deselect:
-		TNT1 A 0 A_TakeInventory("freeman_slot1selected")
 		TNT1 A 0 A_TakeInventory("HLHornetGunRegenLock")
 		TNT1 A 0 A_TakeInventory("HLShockRoachRegenLock")
-	DeselectLoop:	
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
-		TNT1 A 1 A_Lower
-		loop
+        goto Super::Deselect
 
 	Select:
 		TNT1 A 0 A_TakeInventory("freeman_fistselected")
@@ -82,10 +72,7 @@ Actor "Hornetgun" : HLWeapon
 		TNT1 A 0 A_TakeInventory("freeman_uniqueselected")
 		TNT1 A 0 A_TakeInventory("freeman_unique2selected")
 		TNT1 A 0 A_TakeInventory("freeman_unique3selected")
-	SelectLoop:	
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
-		TNT1 A 1 A_Raise
-		loop
+        goto Super::Select
 
 	Ready: // our "Select" state
 		HW10 A 0 A_TakeInventory("HLHornetGunRegenLock")
@@ -106,7 +93,8 @@ Actor "Hornetgun" : HLWeapon
         HW12 A 0 A_ClearReFire
 		HW12 A 0 A_TakeInventory("HLHornetGunRegenLock")
 		HW12 A 0 A_TakeInventory("HLShockRoachRegenLock")
-        HW12 A 4 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireDryOpp")
+        HW12 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireDryOpp")
+        HW12 A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActual
 
     Hold:
@@ -118,9 +106,9 @@ Actor "Hornetgun" : HLWeapon
     HoldDry:
         HW13 G 0 A_ClearReFire
         // technically still in fire animation, no lock removal is done here
-        HW13 G 2 A_JumpIfInventory("HalfLifeOpposingForce",1,"HoldDryOpp")
-        HW13 H 2
-        HW13 I 2 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+        HW13 G 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"HoldDryOpp")
+        HW13 GH 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW13 I 2 A_WeaponReady(WRF_NOFIRE)
         goto ReadyActual
 
     FireStart:
@@ -128,10 +116,12 @@ Actor "Hornetgun" : HLWeapon
 		HW13 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireStartOpp")
 		HW13 A 0 A_TakeInventory("HLShockRoachRegenLock")
 		HW13 A 0 A_GiveInventory("HLHornetGunRegenLock")
-        HW13 A 1 A_GiveInventory("SamsaraHalfLifeHornetGunPrimaryAttackHandler")
-		HW13 BC 1
-		HW13 DEF 2
-		HW13 GHI 2 A_ReFire
+        HW13 A 0 A_GiveInventory("SamsaraHalfLifeHornetGunPrimaryAttackHandler")
+		HW13 ABC 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW13 DEF 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW13 G 0 A_ReFire HW13 G 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW13 H 0 A_ReFire HW13 H 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW13 I 0 A_ReFire HW13 I 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
     AltFire:
@@ -146,35 +136,35 @@ Actor "Hornetgun" : HLWeapon
 
     AltHoldDry:
         // technically still in fire animation, no lock removal is done here
-        HW13 D 1 A_ClearReFire
-        HW13 EFG 1
-        HW13 HI 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+        HW13 D 0 A_ClearReFire
+        HW13 DEFG 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW13 HI 1 A_WeaponReady(WRF_NOFIRE)
         goto ReadyActual
 
     AltFireStart:
         HW13 A 0 A_AlertMonsters
 		HW13 A 0 A_TakeInventory("HLShockRoachRegenLock")
 		HW13 A 0 A_GiveInventory("HLHornetGunRegenLock")
-		HW13 A 1 A_GiveInventory("SamsaraHalfLifeHornetGunSecondaryAttackHandler")
-		HW13 BC 1
+		HW13 A 0 A_GiveInventory("SamsaraHalfLifeHornetGunSecondaryAttackHandler")
+		HW13 ABC 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         HW13 D 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
         HW13 D 0 A_ReFire
-        HW13 D 1 A_ClearReFire
+        HW13 D 0 A_ClearReFire HW13 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         HW13 E 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
         HW13 E 0 A_ReFire
-        HW13 E 1 A_ClearReFire
+        HW13 E 0 A_ClearReFire HW13 E 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         HW13 F 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
         HW13 F 0 A_ReFire
-        HW13 F 1 A_ClearReFire
+        HW13 F 0 A_ClearReFire HW13 F 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         HW13 G 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
         HW13 G 0 A_ReFire
-        HW13 G 1 A_ClearReFire
+        HW13 G 0 A_ClearReFire HW13 G 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         HW13 H 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
         HW13 H 0 A_ReFire
-        HW13 H 1 A_ClearReFire
+        HW13 H 0 A_ClearReFire HW13 H 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         HW13 I 0 A_JumpIfInventory("HalfLifeOpposingForce",1,2)
         HW13 I 0 A_ReFire
-        HW13 I 1 A_ClearReFire
+        HW13 I 0 A_ClearReFire HW13 I 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
     // Adrian Shephard (Shock Roach)
@@ -210,7 +200,7 @@ Actor "Hornetgun" : HLWeapon
         goto FireDry
 
     FireDryOpp:
-        OP00 A 4
+        OP00 A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActual
 
     HoldOpp:
@@ -218,23 +208,27 @@ Actor "Hornetgun" : HLWeapon
         goto HoldDry
 
     HoldDryOpp:
-        OP04 GHIJ 1
+        OP04 GHIJ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActual
 
     FireStartOpp:
 		OP04 A 0 A_TakeInventory("HLHornetGunRegenLock")
 		OP04 A 0 A_GiveInventory("HLShockRoachRegenLock")
         OP04 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"FireDischargeOpp")
-		OP04 A 1 A_GiveInventory("SamsaraHalfLifeShockRoachAttackHandler")
-		OP04 B 1
-		OP04 C 2
-		OP04 DEF 1
-		OP04 GHIJ 1 A_ReFire
+		OP04 A 0 A_GiveInventory("SamsaraHalfLifeShockRoachAttackHandler")
+		OP04 AB 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP04 C 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP04 DEF 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP04 G 0 A_ReFire OP04 G 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP04 H 0 A_ReFire OP04 H 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP04 I 0 A_ReFire OP04 I 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP04 J 0 A_ReFire OP04 J 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
     FireDischargeOpp:
         OP00 A 0 A_ClearReFire
-        OP00 A 55 A_GiveInventory("SamsaraHalfLifeShockRoachDischargeAttackHandler")
+        OP00 A 0 A_GiveInventory("SamsaraHalfLifeShockRoachDischargeAttackHandler")
+        OPpp A 55 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActual
 	}
 }

@@ -3,14 +3,9 @@ actor HLGrenadeFuse : Counter { Inventory.MaxAmount 105 }
 
 Actor "HL Squeaks" : HLWeapon
 {
-	Weapon.Slotnumber 9
+	Inventory.PickupMessage "You found some squeaks!"
+	Weapon.SlotNumber 9
 	Weapon.SelectionOrder 1600
-	Weapon.BobRangeX 0
-	Weapon.BobRangeY 0.75
-	Weapon.BobSpeed 1.4
-	Weapon.BobStyle Alpha 
-	Inventory.Pickupmessage "You found some squeaks!"
-	Inventory.Pickupsound "halflife/weaponpickup"
 	Weapon.AmmoType1 "HLSqueakAmmo"
 	Weapon.AmmoGive1 5
 	Weapon.AmmoUse1 1
@@ -18,9 +13,8 @@ Actor "HL Squeaks" : HLWeapon
 	Weapon.AmmoGive2 3
 	Weapon.AmmoUse2 1
 	Tag "Snarks"
-	Inventory.RestrictedTo "HalfLifePlayer"	
-	+WEAPON.EXPLOSIVE
-	states
+	+EXPLOSIVE
+	States
 	{
 	Spawn:
 		HWU0 ABCDEFGHIJKLMNO 2 bright
@@ -84,13 +78,6 @@ Actor "HL Squeaks" : HLWeapon
         TNT1 A 0 A_JumpIfInventory("HLSqueakAmmo",1,"ReloadStart")
         goto ReadyActual
 
-	Deselect:
-		TNT1 A 0 A_TakeInventory("freeman_uniqueselected")
-	DeselectLoop:		
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
-		TNT1 A 1 A_Lower
-		loop
-
 	Select:
 		TNT1 A 0 A_TakeInventory("freeman_fistselected")
 		TNT1 A 0 A_TakeInventory("freeman_pistolselected")
@@ -104,10 +91,7 @@ Actor "HL Squeaks" : HLWeapon
 		TNT1 A 0 A_GiveInventory("freeman_uniqueselected")
 		TNT1 A 0 A_TakeInventory("freeman_unique2selected")
 		TNT1 A 0 A_TakeInventory("freeman_unique3selected")
-	SelectLoop:	
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
-		TNT1 A 1 A_Raise
-		loop
+        goto Super::Select
 
 	Ready: // our "Select" state
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyAmmo")
@@ -138,22 +122,23 @@ Actor "HL Squeaks" : HLWeapon
         goto FireDry
 
     FireDry:
-        TNT1 A 4 A_ClearReFire
+        TNT1 A 0 A_ClearReFire
+        TNT1 A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActualNoAmmoCheck
 
 	FireStart:
 		HW41 U 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireStartOpp")
-		HW41 U 1 A_GiveInventory("SamsaraHalfLifeSqueakAttackHandler")
-		HW41 VWXYZ 1
-		HW42 ABCDEFGHIJ 1
+		HW41 U 0 A_GiveInventory("SamsaraHalfLifeSqueakAttackHandler")
+		HW41 UVWXYZ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW42 ABCDEFGHIJ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActualNoAmmoCheck
 
     ReloadStart:
     ReloadDone:
         HW39 W 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReloadOpp")
-        HW39 WXYZ 1 A_WeaponReady(WRF_NOBOB)
-        HW40 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady(WRF_NOBOB)
-        HW41 ABCDEFGHIJKLMNOPQRST 1 A_WeaponReady(WRF_NOBOB)
+        HW39 WXYZ 1 A_WeaponReady
+        HW40 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        HW41 ABCDEFGHIJKLMNOPQRST 1 A_WeaponReady
         goto ReadyActual
 
     // Adrian Shephard (Mk 2 Grenades)
@@ -209,28 +194,29 @@ Actor "HL Squeaks" : HLWeapon
         goto FireDry
 
 	FireStartOpp:
-		OP08 ABCDEFGHIJKLMNOPQRSTUVWX 1
+		OP08 ABCDEFGHIJKLMNOPQRSTUVWX 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		OP08 X 0 A_TakeInventory("HLGrenadeFuse") // reset
 		OP08 X 0 A_GiveInventory("HLGrenadeFuse",105)
 	FireLoopOpp:
-		OP08 X 1 A_TakeInventory("HLGrenadeFuse",1)
+		OP08 X 0 A_TakeInventory("HLGrenadeFuse",1)
+        OP08 X 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		OP08 X 0 A_ReFire("FireLoopOpp")
         OP09 A 0 A_GiveInventory("SamsaraHalfLifeGrenadeAttackHandler")
 		OP09 A 0 A_Jump(256,"FireFinish1Opp","FireFinish2Opp","FireFinish3Opp")
 	FireFinish1Opp:
-		OP09 ABCDEFGHIJKLMNOPQR 1
+		OP09 ABCDEFGHIJKLMNOPQR 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActualNoAmmoCheck
 
 	FireFinish2Opp:
-		OP10 ABCDEFGHIJKLMNOPQR 1
+		OP10 ABCDEFGHIJKLMNOPQR 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActualNoAmmoCheck
 
 	FireFinish3Opp:
-		OP11 ABCDEFGHIJKLMNOPQR 1
+		OP11 ABCDEFGHIJKLMNOPQR 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActualNoAmmoCheck
 
     ReloadOpp:
-        OP13 BCEFGHIJKLMNO 1 A_WeaponReady(WRF_NOBOB)
+        OP13 BCEFGHIJKLMNO 1 A_WeaponReady
         goto ReadyActual
 	}
 }
@@ -544,7 +530,8 @@ Actor HLShephardGrenade {
 	XDeath:
 		TNT1 A 0 A_JumpIfInventory("HLGrenadeFuse",1,"OnFloor")
 		TNT1 A 0 A_PlaySound("halflife/mp5_grenadehit",CHAN_BODY)
-		TNT1 A 0 A_Explode(300,124,0,true)
+        TNT1 A 0 A_AlertMonsters
+		TNT1 A 0 A_Explode(300,124,0)
 		TNT1 A 5 A_SpawnItemEx("HLExplosionBoom",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
         Stop
     }

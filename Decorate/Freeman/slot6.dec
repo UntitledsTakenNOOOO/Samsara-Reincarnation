@@ -6,26 +6,21 @@ actor HLGaussCounter : Counter { Inventory.MaxAmount 30 }
 actor HLGaussChargeAddCounter : Boolean {}
 actor HLSawSkipFire : Boolean {}
 actor SamsaraHalfLifeSAWFireState : Counter { Inventory.MaxAmount 3 }
+actor SamsaraHalfLifeSAWReloadCooldown : Counter {}
 
 Actor "Gauss Cannon" : HLWeapon
 {
-	Weapon.Slotnumber 6
+	Inventory.PickupMessage "You got the gauss cannon!"
+	Weapon.SlotNumber 6
 	Weapon.SelectionOrder 750
-	Weapon.BobRangeX 0
-	Weapon.BobRangeY 0.75
-	Weapon.BobSpeed 1.4
-	Weapon.BobStyle Alpha
-	Inventory.Pickupmessage "You got the gauss cannon!"
-	Inventory.Pickupsound "halflife/weaponpickup"
 	Weapon.AmmoType1 "Cell"
 	Weapon.AmmoGive1 70
 	Weapon.AmmoUse1 2
 	Weapon.AmmoType2 "HLSawCounter"
 	Weapon.AmmoUse2 1
-	Inventory.RestrictedTo "HalfLifePlayer"
 	Tag "Tau Cannon"
-	+WEAPON.NOAUTOAIM
-	states
+	+NOAUTOAIM
+	States
 	{
 	Spawn:
 		HW60 Z -1
@@ -78,7 +73,6 @@ Actor "Gauss Cannon" : HLWeapon
         goto ReadyActual
 
 	Deselect:
-		TNT1 A 0 A_TakeInventory("freeman_slot6selected")
         TNT1 A 0 A_JumpIfInventory("HLGaussCharged",1,1)
         goto DeselectClear
         TNT1 A 0 A_PlaySound("silence",CHAN_WEAPON)
@@ -90,10 +84,7 @@ Actor "Gauss Cannon" : HLWeapon
 		TNT1 A 0 A_TakeInventory("HLGaussCharged")
 		TNT1 A 0 A_TakeInventory("HLGaussSpinTrigger")
 		TNT1 A 0 A_TakeInventory("HLGaussCounter")
-	DeselectLoop:
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Lower
-		TNT1 A 1 A_Lower
-		loop
+        goto Super::Deselect
 
 	Select:
 		TNT1 A 0 A_TakeInventory("freeman_fistselected")
@@ -108,10 +99,7 @@ Actor "Gauss Cannon" : HLWeapon
 		TNT1 A 0 A_TakeInventory("freeman_uniqueselected")
 		TNT1 A 0 A_TakeInventory("freeman_unique2selected")
 		TNT1 A 0 A_TakeInventory("freeman_unique3selected")
-	SelectLoop:
-		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_Raise
-		TNT1 A 1 A_Raise
-		loop
+        goto Super::Select
 
 	Ready: // our "Select" state
 		HW60 A 0 A_TakeInventory("HLGaussLoop")
@@ -139,7 +127,8 @@ Actor "Gauss Cannon" : HLWeapon
     FireDry:
         HW63 A 0 A_PlaySound("halflife/weaponempty",CHAN_6)
         HW63 A 0 A_ClearReFire
-        HW63 A 4 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireDryOpp")
+        HW63 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireDryOpp")
+        HW63 A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActualAmmoCheck
 
     Hold:
@@ -156,25 +145,56 @@ Actor "Gauss Cannon" : HLWeapon
     HoldDry:
         HW67 H 0 A_PlaySound("halflife/weaponempty",CHAN_6)
         HW67 H 0 A_ClearReFire
-        HW67 H 2 A_JumpIfInventory("HalfLifeOpposingForce",1,"HoldDryOpp")
-        HW67 I 2
+        HW67 H 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"HoldDryOpp")
+        HW67 HI 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW67 J 0 A_PlaySound("halflife/gauss_zapp",CHAN_WEAPON)
-        HW67 JKLMNO 2 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
-        HW67 PQRSTUVWXYZ 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
-        HW68 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB)
+        HW67 JKLMNO 2 A_WeaponReady(WRF_NOFIRE)
+        HW67 PQRSTUVWXYZ 1 A_WeaponReady(WRF_NOFIRE)
+        HW68 ABCDEFGHIJKLMNO 1 A_WeaponReady(WRF_NOFIRE)
         goto ReadyActualAmmoCheck
 
     FireStart:
 		HW67 A 0 A_AlertMonsters
 		HW67 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireInitOpp")
-		HW67 A 1 Bright A_GiveInventory("SamsaraHalfLifeGaussGunPrimaryAttackHandler")
-		HW67 B 1 Bright
-		HW67 CDEFG 1
-		HW67 HI 2 A_ReFire
+		HW67 A 0 A_GiveInventory("SamsaraHalfLifeGaussGunPrimaryAttackHandler")
+		HW67 AB 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW67 CDEFG 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        // pain
+        HW67 H 0 A_ReFire HW67 H 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 I 0 A_ReFire HW67 I 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW67 J 0 A_PlaySound("halflife/gauss_zapp",CHAN_WEAPON)
-		HW67 JKLMNO 2 A_ReFire
-		HW67 PQRSTUVWXYZ 1 A_ReFire
-		HW68 ABCDEFGHIJKLMNO 1 A_ReFire
+        HW67 J 0 A_ReFire HW67 J 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 K 0 A_ReFire HW67 K 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 L 0 A_ReFire HW67 L 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 M 0 A_ReFire HW67 M 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 N 0 A_ReFire HW67 N 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 O 0 A_ReFire HW67 O 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 P 0 A_ReFire HW67 P 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 Q 0 A_ReFire HW67 Q 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 R 0 A_ReFire HW67 R 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 S 0 A_ReFire HW67 S 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 T 0 A_ReFire HW67 T 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 U 0 A_ReFire HW67 U 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 V 0 A_ReFire HW67 V 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 W 0 A_ReFire HW67 W 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 X 0 A_ReFire HW67 X 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 Y 0 A_ReFire HW67 Y 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW67 Z 0 A_ReFire HW67 Z 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 A 0 A_ReFire HW68 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 B 0 A_ReFire HW68 B 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 C 0 A_ReFire HW68 C 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 D 0 A_ReFire HW68 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 E 0 A_ReFire HW68 E 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 F 0 A_ReFire HW68 F 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 G 0 A_ReFire HW68 G 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 H 0 A_ReFire HW68 H 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 I 0 A_ReFire HW68 I 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 J 0 A_ReFire HW68 J 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 K 0 A_ReFire HW68 K 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 L 0 A_ReFire HW68 L 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 M 0 A_ReFire HW68 M 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 N 0 A_ReFire HW68 N 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        HW68 O 0 A_ReFire HW68 O 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
     AltFire:
@@ -249,136 +269,157 @@ Actor "Gauss Cannon" : HLWeapon
 
 	AltFireCharging0:
 		HW64 A 0 A_PlaySound("halflife/gauss_charge",CHAN_WEAPON)
-		HW64 A 2 A_GiveInventory("HLGaussCharged",4)
-		HW64 BC 2
+		HW64 A 0 A_GiveInventory("HLGaussCharged",4)
+		HW64 ABC 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 D 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging4:
-		HW64 D 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 D 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 D 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 E 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging8:
-		HW64 E 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 E 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 E 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 F 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging12:
-		HW64 F 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 F 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 F 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 G 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging16:
-		HW64 G 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 G 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 G 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 H 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging20:
-		HW64 H 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 H 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 H 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 I 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging24:
-		HW64 I 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 I 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 I 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 J 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging28:
-		HW64 J 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 J 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 J 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 K 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging32:
-		HW64 K 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 K 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 K 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 L 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging36:
-		HW64 L 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 L 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 L 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 M 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging40:
-		HW64 M 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 M 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 M 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 N 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging44:
-		HW64 N 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 N 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 N 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 O 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging48:
-		HW64 O 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 O 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 O 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 P 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging52:
-		HW64 P 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 P 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 P 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 Q 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging56:
-		HW64 Q 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 Q 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 Q 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 R 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging60:
-		HW64 R 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 R 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 R 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 S 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging64:
-		HW64 S 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 S 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 S 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 T 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging68:
-		HW64 T 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 T 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 T 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 U 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging72:
-		HW64 U 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 U 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 U 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 V 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging76:
-		HW64 V 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 V 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 V 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 W 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging80:
-		HW64 W 2 A_GiveInventory("HLGaussCharged",4)
+		HW64 W 0 A_GiveInventory("HLGaussCharged",4)
+        HW64 W 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 X 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging84:
         HW64 X 0 A_GiveInventory("HLGaussCharged",4)
-		HW64 X 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		HW64 Y 1
+		HW64 X 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		HW64 XY 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW64 Z 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging88:
         HW64 Z 0 A_GiveInventory("HLGaussCharged",4)
-		HW64 Z 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		HW65 A 1
+		HW64 Z 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+        HW64 Z 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW65 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW65 B 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging92:
         HW65 B 0 A_GiveInventory("HLGaussCharged",4)
-		HW65 B 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		HW65 C 1
+		HW65 B 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		HW65 BC 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW65 D 0 A_ReFire
 		goto AltFireStart
 
 	AltFireCharging96:
         HW65 D 0 A_GiveInventory("HLGaussCharged",4)
-		HW65 D 1 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,1)
-		HW65 E 1
+		HW65 D 0 A_JumpIfInventory("SamsaraHasDoubleFiringSpeed",1,2)
+		HW65 DE 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 A 0 A_ReFire
 		goto AltFireStart
 
@@ -401,106 +442,127 @@ Actor "Gauss Cannon" : HLWeapon
 		goto AltFireSwing0
 
 	AltFireSwing0:
-		HW66 A 2 A_GiveInventory("HLGaussLoop")
+		HW66 A 0 A_GiveInventory("HLGaussLoop")
+        HW66 A 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 B 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing1:
-		HW66 B 2 A_GiveInventory("HLGaussLoop")
+		HW66 B 0 A_GiveInventory("HLGaussLoop")
+        HW66 B 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 C 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing2:
-		HW66 C 2 A_GiveInventory("HLGaussLoop")
+		HW66 C 0 A_GiveInventory("HLGaussLoop")
+        HW66 C 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 D 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing3:
-		HW66 D 2 A_GiveInventory("HLGaussLoop")
+		HW66 D 0 A_GiveInventory("HLGaussLoop")
+        HW66 D 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 E 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing4:
-		HW66 E 2 A_GiveInventory("HLGaussLoop")
+		HW66 E 0 A_GiveInventory("HLGaussLoop")
+        HW66 E 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 F 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing5:
-		HW66 F 2 A_GiveInventory("HLGaussLoop")
+		HW66 F 0 A_GiveInventory("HLGaussLoop")
+        HW66 F 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 G 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing6:
-		HW66 G 2 A_GiveInventory("HLGaussLoop")
+		HW66 G 0 A_GiveInventory("HLGaussLoop")
+        HW66 G 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 H 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing7:
-		HW66 H 2 A_GiveInventory("HLGaussLoop")
+		HW66 H 0 A_GiveInventory("HLGaussLoop")
+        HW66 H 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 I 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing8:
-		HW66 I 2 A_GiveInventory("HLGaussLoop")
+		HW66 I 0 A_GiveInventory("HLGaussLoop")
+        HW66 I 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 J 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing9:
-		HW66 J 2 A_GiveInventory("HLGaussLoop")
+		HW66 J 0 A_GiveInventory("HLGaussLoop")
+        HW66 J 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 K 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing10:
-		HW66 K 2 A_GiveInventory("HLGaussLoop")
+		HW66 K 0 A_GiveInventory("HLGaussLoop")
+        HW66 K 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 L 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing11:
-		HW66 L 2 A_GiveInventory("HLGaussLoop")
+		HW66 L 0 A_GiveInventory("HLGaussLoop")
+        HW66 L 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 M 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing12:
-		HW66 M 2 A_GiveInventory("HLGaussLoop")
+		HW66 M 0 A_GiveInventory("HLGaussLoop")
+        HW66 M 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 N 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing13:
-		HW66 N 2 A_GiveInventory("HLGaussLoop")
+		HW66 N 0 A_GiveInventory("HLGaussLoop")
+        HW66 N 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 O 0 A_ReFire
 		goto AltFireStart
 
 	AltFireSwing14:
-		HW66 O 0 A_JumpIfInventory("HLGaussSpinTrigger",0,2)
-		HW66 O 0 A_Jump(256,2)
+		HW66 O 0 A_JumpIfInventory("HLGaussSpinTrigger",0,1)
+		goto AltFireSwing14Continue
 		HW66 O 0 A_PlaySound("halflife/gauss_spin",CHAN_WEAPON,1.0,true)
+        goto AltFireSwing14Continue
+
+    AltFireSwing14Continue:
 		HW66 O 0 A_GiveInventory("HLGaussSpinTrigger")
-		HW66 O 2 A_TakeInventory("HLGaussLoop")
+		HW66 O 0 A_TakeInventory("HLGaussLoop")
+        HW66 O 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		HW66 A 0 A_ReFire
 		goto AltFireStart
 
 	AltFireDischarge:
         HW63 A 0 A_ClearReFire
-		HW63 A 35 A_GiveInventory("SamsaraHalfLifeGaussGunOverchargeAttackHandler")
+		HW63 A 0 A_GiveInventory("SamsaraHalfLifeGaussGunOverchargeAttackHandler")
+        HW63 A 35 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	AltFireStart:
         HW67 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"AltHoldDry")
         HW67 A 0 A_ClearReFire
 		HW67 A 0 A_AlertMonsters
-		HW67 A 1 Bright A_GiveInventory("SamsaraHalfLifeGaussGunSecondaryAttackHandler")
-		HW67 B 2 Bright
-		HW67 CDEF 2
-		HW67 G 2 A_PlaySound("halflife/gauss_zapp",CHAN_WEAPON)
-		HW67 HIJKLMNO 1
-		HW67 PQR 2
-		HW67 STUVW 1
-		HW67 XY 2
-		HW67 Z 1
-		HW68 ABC 2
-		HW68 DEF 1
-		HW68 GH 2
-		HW68 IJKLMNO 1
+        HW67 A 0 A_GiveInventory("SamsaraHalfLifeGaussGunSecondaryAttackHandler")
+		HW67 A 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW67 B 2 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW67 CDEF 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW67 G 0 A_PlaySound("halflife/gauss_zapp",CHAN_WEAPON)
+        HW67 G 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW67 HIJKLMNO 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW67 PQR 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW67 STUVW 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW67 XY 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW67 Z 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW68 ABC 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW68 DEF 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW68 GH 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		HW68 IJKLMNO 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
     ClearBelt:
@@ -512,12 +574,18 @@ Actor "Gauss Cannon" : HLWeapon
 		OP00 A 0 A_GunFlash("ReadyActualOppBelt",GFF_NOEXTCHANGE)
         OP00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyActualReloadableOpp")
     ReadyActualNonReloadableOpp:
+        OP00 A 0 A_JumpIfInventory("SamsaraHalfLifeSAWReloadCooldown",1,2)
 		OP00 A 2 A_WeaponReady(WRF_NOSECONDARY)
         goto ReadyActualJump
+		OP00 A 1 A_WeaponReady(WRF_NOFIRE)
+        goto ReadyActual // restart the state
 
     ReadyActualReloadableOpp:
+        OP00 A 0 A_JumpIfInventory("SamsaraHalfLifeSAWReloadCooldown",1,2)
 		OP00 A 2 A_WeaponReady(WRF_NOSECONDARY|WRF_ALLOWRELOAD)
         goto ReadyActualJump
+		OP00 A 1 A_WeaponReady(WRF_NOFIRE) // disallow reloading during cooldown
+        goto ReadyActual // restart the state
 
 	ReadyActualOppBelt:
         TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReadyActualReloadableOppBelt")
@@ -919,6 +987,7 @@ Actor "Gauss Cannon" : HLWeapon
         stop
 
     FireOpp:
+        OP00 A 0 A_JumpIfInventory("SamsaraHalfLifeSAWReloadCooldown",1,"ReadyActual")
         OP00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"FireReloadableOpp")
     FireNonReloadableOpp:
         OP00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireWaterCheck")
@@ -931,10 +1000,12 @@ Actor "Gauss Cannon" : HLWeapon
         goto FireDry
 
     FireDryOpp:
-        OP00 A 4 A_GunFlash("ReadyActualOppBelt",GFF_NOEXTCHANGE)
+        OP00 A 0 A_GunFlash("ReadyActualOppBelt",GFF_NOEXTCHANGE)
+        OP00 A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActualAmmoCheck
 
     HoldOpp:
+        OP00 A 0 A_JumpIfInventory("SamsaraHalfLifeSAWReloadCooldown",1,"ReadyActual")
         OP00 A 0 A_JumpIfInventory("SamsaraReloadMode",1,"HoldReloadableOpp")
     HoldNonReloadableOpp:
         OP00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"HoldWaterCheck")
@@ -951,17 +1022,17 @@ Actor "Gauss Cannon" : HLWeapon
         OP21 C 0 A_JumpIfInventory("SamsaraHalfLifeSAWFireState",2,"HoldDry2Opp")
     HoldDry1Opp:
         OP21 C 0 A_GunFlash("FireOpp1BeltFinish",GFF_NOEXTCHANGE)
-        OP21 CDEF 1
+        OP21 CDEF 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActualAmmoCheck
 
     HoldDry2Opp:
         OP22 C 0 A_GunFlash("FireOpp2BeltFinish",GFF_NOEXTCHANGE)
-        OP22 CDEF 1
+        OP22 CDEF 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActualAmmoCheck
 
     HoldDry3Opp:
         OP23 C 0 A_GunFlash("FireOpp3BeltFinish",GFF_NOEXTCHANGE)
-        OP23 CDEF 1
+        OP23 CDEF 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto ReadyActualAmmoCheck
 
     FireInitOpp:
@@ -973,15 +1044,22 @@ Actor "Gauss Cannon" : HLWeapon
 
 	FireStartOpp:
 		OP00 A 0 A_FireCustomMissile("HLBrassShellCaser",0,false,0,0,0,pitch)
-		OP00 A 1 Bright A_GiveInventory("SamsaraHalfLifeSAWAttackHandler")
+        OP00 A 0 A_GiveInventory("SamsaraHalfLifeSAWAttackHandler")
+		OP00 A 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         OP21 A 0 A_TakeInventory("SamsaraHalfLifeSAWFireState")
         OP21 A 0 A_GiveInventory("SamsaraHalfLifeSAWFireState",random(1,3))
         OP21 A 0 A_JumpIfInventory("SamsaraHalfLifeSAWFireState",0,"FireAnim3Opp")
         OP21 A 0 A_JumpIfInventory("SamsaraHalfLifeSAWFireState",2,"FireAnim2Opp")
 	FireAnim1Opp:
-		OP21 A 1 Bright A_GunFlash("FireOpp1Belt",GFF_NOEXTCHANGE)
-		OP21 B 1 A_JumpIfInventory("HLSawSkipFire",1,1)
-		OP21 CDEF 1 A_ReFire
+        OP21 A 0 A_GunFlash("FireOpp1Belt",GFF_NOEXTCHANGE)
+		OP21 A 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP21 B 0 A_JumpIfInventory("HLSawSkipFire",1,"FireAnim1FinishOpp")
+		OP21 B 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+	FireAnim1FinishOpp:
+        OP21 C 0 A_ReFire OP21 C 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP21 D 0 A_ReFire OP21 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP21 E 0 A_ReFire OP21 E 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP21 F 0 A_ReFire OP21 F 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireOpp1Belt:
@@ -1106,9 +1184,15 @@ Actor "Gauss Cannon" : HLWeapon
         stop
 
 	FireAnim2Opp:
-		OP22 A 1 Bright A_GunFlash("FireOpp2Belt",GFF_NOEXTCHANGE)
-		OP22 B 1 A_JumpIfInventory("HLSawSkipFire",1,1)
-		OP22 CDEF 1 A_ReFire
+        OP22 A 0 A_GunFlash("FireOpp2Belt",GFF_NOEXTCHANGE)
+		OP22 A 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP22 B 0 A_JumpIfInventory("HLSawSkipFire",1,"FireAnim2FinishOpp")
+		OP22 B 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+	FireAnim2FinishOpp:
+        OP22 C 0 A_ReFire OP22 C 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP22 D 0 A_ReFire OP22 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP22 E 0 A_ReFire OP22 E 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP22 F 0 A_ReFire OP22 F 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireOpp2Belt:
@@ -1233,9 +1317,15 @@ Actor "Gauss Cannon" : HLWeapon
         stop
 
 	FireAnim3Opp:
-		OP23 A 1 Bright A_GunFlash("FireOpp3Belt",GFF_NOEXTCHANGE)
-		OP23 B 1 A_JumpIfInventory("HLSawSkipFire",1,1)
-		OP23 CDEF 1 A_ReFire
+        OP23 A 0 A_GunFlash("FireOpp3Belt",GFF_NOEXTCHANGE)
+		OP23 A 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+		OP23 B 0 A_JumpIfInventory("HLSawSkipFire",1,"FireAnim3FinishOpp")
+		OP23 B 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+    FireAnim3FinishOpp:
+        OP23 C 0 A_ReFire OP23 C 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP23 D 0 A_ReFire OP23 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP23 E 0 A_ReFire OP23 E 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP23 F 0 A_ReFire OP23 F 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		goto ReadyActual
 
 	FireOpp3Belt:
@@ -1361,21 +1451,23 @@ Actor "Gauss Cannon" : HLWeapon
 
     Reload:
     ReloadCheck:
-        HW41 A 0 A_JumpIfInventory("HLSawCounter",0,"ReadyActual")
-        HW41 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-        HW41 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStart")
-        HW41 A 0 A_JumpIfInventory("Cell",1,"ReloadStart")
+        OP00 A 0 A_JumpIfInventory("SamsaraHalfLifeSAWReloadCooldown",1,"ReadyActual")
+        OP00 A 0 A_JumpIfInventory("HLSawCounter",0,"ReadyActual")
+        OP00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
+        OP00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStart")
+        OP00 A 0 A_JumpIfInventory("Cell",1,"ReloadStart")
         goto ReadyActual
 
 	ReloadStart:
-		OP10 A 1 A_GunFlash("ReloadBelt",GFF_NOEXTCHANGE)
-		OP10 B 1 A_PlaySound("HLSaw/Reload")
-		OP10 DE 1
+		OP10 A 0 A_GunFlash("ReloadBelt",GFF_NOEXTCHANGE)
+        OP10 A 1 A_WeaponReady(WRF_NOFIRE)
+		OP10 B 0 A_PlaySound("HLSaw/Reload")
+		OP10 BDE 1 A_WeaponReady(WRF_NOFIRE)
 		OP10 F 0
-		OP10 GHJKLMNPQSTVWXYZ 1
-		OP11 ABDEGHJK 1
+		OP10 GHJKLMNPQSTVWXYZ 1 A_WeaponReady(WRF_NOFIRE)
+		OP11 ABDEGHJK 1 A_WeaponReady(WRF_NOFIRE)
 		OP11 L 0 A_JumpIfInventory("SamsaraReloadMode",1,"ReloadAmmo")
-        goto ReloadDone
+        goto ReloadFinish
 
 	ReloadBelt:
 		TNT1 A 0 A_JumpIfInventory("HLSawCounter",9,"ReloadBelt8")
@@ -1464,34 +1556,36 @@ Actor "Gauss Cannon" : HLWeapon
         O812 H -1
         stop
 
-	ReloadDone: // interestingly, this weapon could not be fired immediately after ammo calculation is done in opfor. apply this (and no switching) here as well
-		OP11 LMNPQSTVWXYZ 1
-		OP12 ABDEGH 1
-		OP13 A 0 A_GunFlash("ReloadDoneBelt",GFF_NOEXTCHANGE)
-		OP13 A 1 A_PlaySound("HLSaw/Reload2")
-		OP13 BDEFGHJKMNPQRSTVWYZ 1
-		OP14 ABDEFGHJKMNPQRSTVWYZ 1
-		OP15 ABDEFGHJKMNPQRSTVWYZ 1
-		OP16 ABDEFGHJKM 1
-		OP16 NPQRSTV 1
+	ReloadFinish: // interestingly, this weapon could not be fired immediately after ammo calculation is done in opfor. apply this here as well
+        OP11 L 0 A_TakeInventory("SamsaraHalfLifeSAWReloadCooldown") // reset
+        OP11 L 0 A_GiveInventory("SamsaraHalfLifeSAWReloadCooldown",95)
+		OP11 LMNPQSTVWXYZ 1 A_WeaponReady(WRF_NOFIRE)
+		OP12 ABDEGH 1 A_WeaponReady(WRF_NOFIRE)
+		OP13 A 0 A_GunFlash("ReloadFinishBelt",GFF_NOEXTCHANGE)
+		OP13 A 0 A_PlaySound("HLSaw/Reload2")
+		OP13 ABDEFGHJKMNPQRSTVWYZ 1 A_WeaponReady(WRF_NOFIRE)
+		OP14 ABDEFGHJKMNPQRSTVWYZ 1 A_WeaponReady(WRF_NOFIRE)
+		OP15 ABDEFGHJKMNPQRSTVWYZ 1 A_WeaponReady(WRF_NOFIRE)
+		OP16 ABDEFGHJKM 1 A_WeaponReady(WRF_NOFIRE)
+		OP16 NPQRSTV 1 A_WeaponReady(WRF_NOFIRE)
 		goto ReadyActual
 
-	ReloadDoneBelt:
-		TNT1 A 0 A_JumpIfInventory("HLSawCounter",9,"ReloadDoneBelt8")
-		TNT1 A 0 A_JumpIfInventory("HLSawCounter",8,"ReloadDoneBelt7")
-		TNT1 A 0 A_JumpIfInventory("HLSawCounter",7,"ReloadDoneBelt6")
-		TNT1 A 0 A_JumpIfInventory("HLSawCounter",6,"ReloadDoneBelt5")
-		TNT1 A 0 A_JumpIfInventory("HLSawCounter",5,"ReloadDoneBelt4")
-		TNT1 A 0 A_JumpIfInventory("HLSawCounter",4,"ReloadDoneBelt3")
-		TNT1 A 0 A_JumpIfInventory("HLSawCounter",3,"ReloadDoneBelt2")
-		TNT1 A 0 A_JumpIfInventory("HLSawCounter",2,"ReloadDoneBelt1")
-        goto ReloadDoneBelt0
+	ReloadFinishBelt:
+		TNT1 A 0 A_JumpIfInventory("HLSawCounter",9,"ReloadFinishBelt8")
+		TNT1 A 0 A_JumpIfInventory("HLSawCounter",8,"ReloadFinishBelt7")
+		TNT1 A 0 A_JumpIfInventory("HLSawCounter",7,"ReloadFinishBelt6")
+		TNT1 A 0 A_JumpIfInventory("HLSawCounter",6,"ReloadFinishBelt5")
+		TNT1 A 0 A_JumpIfInventory("HLSawCounter",5,"ReloadFinishBelt4")
+		TNT1 A 0 A_JumpIfInventory("HLSawCounter",4,"ReloadFinishBelt3")
+		TNT1 A 0 A_JumpIfInventory("HLSawCounter",3,"ReloadFinishBelt2")
+		TNT1 A 0 A_JumpIfInventory("HLSawCounter",2,"ReloadFinishBelt1")
+        goto ReloadFinishBelt0
 
-    ReloadDoneBelt0:
+    ReloadFinishBelt0:
         TNT1 A -1
         stop
 
-    ReloadDoneBelt1:
+    ReloadFinishBelt1:
         O113 ABDEFGHJKMNPQRSTVWYZ 1
         O114 ABDEFGHJKMNPQRSTVWYZ 1
         O115 ABDEFGHJKMNPQRSTVWYZ 1
@@ -1499,7 +1593,7 @@ Actor "Gauss Cannon" : HLWeapon
         O116 V -1
         stop
 
-    ReloadDoneBelt2:
+    ReloadFinishBelt2:
         O213 ABDEFGHJKMNPQRSTVWYZ 1
         O214 ABDEFGHJKMNPQRSTVWYZ 1
         O215 ABDEFGHJKMNPQRSTVWYZ 1
@@ -1507,7 +1601,7 @@ Actor "Gauss Cannon" : HLWeapon
         O216 V -1
         stop
 
-    ReloadDoneBelt3:
+    ReloadFinishBelt3:
         O313 ABDEFGHJKMNPQRSTVWYZ 1
         O314 ABDEFGHJKMNPQRSTVWYZ 1
         O315 ABDEFGHJKMNPQRSTVWYZ 1
@@ -1515,7 +1609,7 @@ Actor "Gauss Cannon" : HLWeapon
         O316 V -1
         stop
 
-    ReloadDoneBelt4:
+    ReloadFinishBelt4:
         O413 ABDEFGHJKMNPQRSTVWYZ 1
         O414 ABDEFGHJKMNPQRSTVWYZ 1
         O415 ABDEFGHJKMNPQRSTVWYZ 1
@@ -1523,7 +1617,7 @@ Actor "Gauss Cannon" : HLWeapon
         O416 V -1
         stop
 
-    ReloadDoneBelt5:
+    ReloadFinishBelt5:
         O513 ABDEFGHJKMNPQRSTVWYZ 1
         O514 ABDEFGHJKMNPQRSTVWYZ 1
         O515 ABDEFGHJKMNPQRSTVWYZ 1
@@ -1531,7 +1625,7 @@ Actor "Gauss Cannon" : HLWeapon
         O516 V -1
         stop
 
-    ReloadDoneBelt6:
+    ReloadFinishBelt6:
         O613 ABDEFGHJKMNPQRSTVWYZ 1
         O614 ABDEFGHJKMNPQRSTVWYZ 1
         O615 ABDEFGHJKMNPQRSTVWYZ 1
@@ -1539,7 +1633,7 @@ Actor "Gauss Cannon" : HLWeapon
         O616 V -1
         stop
 
-    ReloadDoneBelt7:
+    ReloadFinishBelt7:
         O713 ABDEFGHJKMNPQRSTVWYZ 1
         O714 ABDEFGHJKMNPQRSTVWYZ 1
         O715 ABDEFGHJKMNPQRSTVWYZ 1
@@ -1547,7 +1641,7 @@ Actor "Gauss Cannon" : HLWeapon
         O716 V -1
         stop
 
-    ReloadDoneBelt8:
+    ReloadFinishBelt8:
         O813 ABDEFGHJKMNPQRSTVWYZ 1
         O814 ABDEFGHJKMNPQRSTVWYZ 1
         O815 ABDEFGHJKMNPQRSTVWYZ 1
@@ -1556,11 +1650,11 @@ Actor "Gauss Cannon" : HLWeapon
         stop
 
     ReloadAmmo:
-        OP11 L 0 A_JumpIfInventory("HLSawCounter",0,"ReloadDone")
+        OP11 L 0 A_JumpIfInventory("HLSawCounter",0,"ReloadFinish")
         OP11 L 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
         OP11 L 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         OP11 L 0 A_JumpIfInventory("Cell",1,1)
-        goto ReloadDone
+        goto ReloadFinish
         OP11 L 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
         OP11 L 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
         OP11 L 0 A_TakeInventory("Cell",1)
@@ -1621,8 +1715,7 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("HLGaussCharged",90,"Pickup30")
         TNT1 A 0 A_JumpIfInventory("HLGaussCharged",60,"Pickup20")
         TNT1 A 0 A_JumpIfInventory("HLGaussCharged",30,"Pickup10")
-        goto Pickup0
-
+      // 0% charge
       Pickup0:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup0Coop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup0Coop")
@@ -1634,6 +1727,7 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("HLGaussKillerCharged0_Coop",0,false,5)
         goto PickupRecoil0
 
+      // 10% charge
       Pickup10:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup10Coop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup10Coop")
@@ -1645,6 +1739,7 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("HLGaussKillerCharged10_Coop",0,false,5)
         goto PickupRecoil10
 
+      // 20% charge
       Pickup20:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup20Coop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup20Coop")
@@ -1656,6 +1751,7 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("HLGaussKillerCharged20_Coop",0,false,5)
         goto PickupRecoil20
 
+      // 30% charge
       Pickup30:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup30Coop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup30Coop")
@@ -1667,6 +1763,7 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("HLGaussKillerCharged30_Coop",0,false,5)
         goto PickupRecoil30
 
+      // 40% charge
       Pickup40:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup40Coop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup40Coop")
@@ -1678,6 +1775,7 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("HLGaussKillerCharged40_Coop",0,false,5)
         goto PickupRecoil40
 
+      // 50% charge
       Pickup50:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup50Coop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup50Coop")
@@ -1689,6 +1787,7 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("HLGaussKillerCharged50_Coop",0,false,5)
         goto PickupRecoil50
 
+      // 60% charge
       Pickup60:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup60Coop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup60Coop")
@@ -1700,6 +1799,7 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("HLGaussKillerCharged60_Coop",0,false,5)
         goto PickupRecoil60
 
+      // 70% charge
       Pickup70:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup70Coop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup70Coop")
@@ -1711,6 +1811,7 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("HLGaussKillerCharged70_Coop",0,false,5)
         goto PickupRecoil70
 
+      // 80% charge
       Pickup80:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup80Coop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup80Coop")
@@ -1722,6 +1823,7 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("HLGaussKillerCharged80_Coop",0,false,5)
         goto PickupRecoil80
 
+      // 90% charge
       Pickup90:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup90Coop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup90Coop")
@@ -1733,6 +1835,7 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("HLGaussKillerCharged90_Coop",0,false,5)
         goto PickupRecoil90
 
+      // 100% charge
       Pickup100:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"Pickup100Coop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"Pickup100Coop")
@@ -1745,46 +1848,57 @@ actor SamsaraHalfLifeGaussGunSecondaryAttackHandler : Trigger
         goto PickupRecoil100
 
       // Recoil stuff
+      // 0% charge
       PickupRecoil0:
         TNT1 A 0 A_Recoil(3)
         goto PickupFinish
 
+      // 10% charge
       PickupRecoil10:
         TNT1 A 0 A_Recoil(6)
         goto PickupFinish
 
+      // 20% charge
       PickupRecoil20:
         TNT1 A 0 A_Recoil(9)
         goto PickupFinish
 
+      // 30% charge
       PickupRecoil30:
         TNT1 A 0 A_Recoil(12)
         goto PickupFinish
 
+      // 40% charge
       PickupRecoil40:
         TNT1 A 0 A_Recoil(15)
         goto PickupFinish
 
+      // 50% charge
       PickupRecoil50:
         TNT1 A 0 A_Recoil(18)
         goto PickupFinish
 
+      // 60% charge
       PickupRecoil60:
         TNT1 A 0 A_Recoil(21)
         goto PickupFinish
 
+      // 70% charge
       PickupRecoil70:
         TNT1 A 0 A_Recoil(24)
         goto PickupFinish
 
+      // 80% charge
       PickupRecoil80:
         TNT1 A 0 A_Recoil(27)
         goto PickupFinish
 
+      // 90% charge
       PickupRecoil90:
         TNT1 A 0 A_Recoil(30)
         goto PickupFinish
 
+      // 100% charge
       PickupRecoil100:
         TNT1 A 0 A_Recoil(33)
         goto PickupFinish
