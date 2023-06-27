@@ -203,18 +203,63 @@ Script "CalebAltSpreadAngle" (void)
 	SetResultValue(angle);
 }
 
-Script "CalebBurner" (void)
+Script "CalebFlamethrowerStrength" (void)
 {
-	SetActivator(0,AAPTR_TRACER);
+	SetActivator(0,AAPTR_Target);
+	int power = CheckInventory("ThrowPower");
+	TakeInventory("ThrowPower",65536);
+	SetResultValue(power);
+}
+
+Script "CalebFlamethrowerDamage" (void)
+{
+	ACS_NamedExecuteWithResult("CalebBurner",1,5);
+	Thing_Damage2(0,5,"CalebFire");
+}
+
+Script "CalebBurner" (int notracer, int extraburn)
+{
+	if(!notracer) SetActivator(0,AAPTR_TRACER);
 	int height = GetActorProperty(0,APROP_Height);
 	int radius = GetActorProperty(0,APROP_Radius);
 	int flameCount = 0;
-	while(GetActorProperty(0,APROP_Health) > 0 && flameCount <= 7)
+	
+	if((ClassifyActor(0) & ACTOR_PLAYER) && CheckInventory("BloodBurnVFXHudFlames") == 0)
+	{	
+		for(int a = 0; a < 12; a++)
+			ACS_NamedExecuteWithResult("CalebBurningHud",a,random(0,13));
+	}
+	GiveInventory("BloodBurnVFXHudFlames",1+extraburn);
+	
+	while(GetActorProperty(0,APROP_Health) > 0 && flameCount <= 14)
 	{
 		flameCount++;
 		Spawn("BloodBurnVFX",GetActorX(0)+random(-radius,radius),GetActorY(0)+random(-radius,radius),GetActorZ(0)+random(0,height));
 		Delay(1);
 	}
+	
+	TakeInventory("BloodBurnVFXHudFlames",1+extraburn);
+}
+
+Script "CalebBurningHud" (int id, int flameStart)
+{
+	str flameGraphic = "";
+	int flameCount = 0;
+	int graphicCounter = 0;
+	SetHudSize(320,200,1);
+	
+	while(ClassifyActor(0) & ACTOR_PLAYER)
+	{
+		graphicCounter = flameStart + (flameCount/2);
+		if(graphicCounter > 13) graphicCounter -= 14;
+		flameGraphic = strparam(s:"BF01",c:65+flameCount,d:0);
+		SetFont(flameGraphic);
+		HudMessage(s:"a";HUDMSG_LAYER_UNDERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,32750+id,CR_UNTRANSLATED,0.1+(id*56.0)-224.0,280.2-(8.0*abs((id-6)/2))-((CheckInventory("BloodBurnVFXHudFlames"))*2.0),0.0);
+		Delay(1);
+		flameCount++;
+		if(CheckInventory("BloodBurnVFXHudFlames") < 1) break;
+	}
+	HudMessage(s:"";HUDMSG_LAYER_UNDERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,32750+id,CR_UNTRANSLATED,0,0,0.0,0.01);
 }
 
 Script "CalebTeslaSwitch" (void)
@@ -263,17 +308,4 @@ Script "CalebTeslaTurnOffBrightness" (void)
 {
 	Delay(2);
 	if(ClassifyActor(0) > 1) GiveInventory("BloodTurnOffTeslaBrightness",1);
-}
-
-Script "CalebFlamethrowerStrength" (void)
-{
-	SetActivator(0,AAPTR_Target);
-	int power = CheckInventory("ThrowPower");
-	TakeInventory("ThrowPower",65536);
-	SetResultValue(power);
-}
-
-Script "CalebFlamethrowerDamage" (void)
-{
-	Thing_Damage2(0,5,"CalebFire");
 }
