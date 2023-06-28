@@ -225,10 +225,8 @@ Script "CalebBurner" (int notracer, int extraburn)
 	int flameCount = 0;
 	
 	if((ClassifyActor(0) & ACTOR_PLAYER) && CheckInventory("BloodBurnVFXHudFlames") == 0)
-	{	
-		for(int a = 0; a < 12; a++)
-			ACS_NamedExecuteWithResult("CalebBurningHud",a,random(0,13));
-	}
+		ACS_NamedExecuteWithResult("CalebBurningHud");
+		
 	GiveInventory("BloodBurnVFXHudFlames",1+extraburn);
 	
 	while(GetActorProperty(0,APROP_Health) > 0 && flameCount <= 14)
@@ -241,25 +239,26 @@ Script "CalebBurner" (int notracer, int extraburn)
 	TakeInventory("BloodBurnVFXHudFlames",1+extraburn);
 }
 
-Script "CalebBurningHud" (int id, int flameStart)
+Script "CalebBurningHud" (void) clientside
 {
 	str flameGraphic = "";
 	int flameCount = 0;
 	int graphicCounter = 0;
+	int id = 0;
 	SetHudSize(320,200,1);
 	
 	while(ClassifyActor(0) & ACTOR_PLAYER)
 	{
-		graphicCounter = flameStart + (flameCount/2);
+		graphicCounter = (flameCount/2);
 		if(graphicCounter > 13) graphicCounter -= 14;
 		flameGraphic = strparam(s:"BF01",c:65+flameCount,d:0);
 		SetFont(flameGraphic);
-		HudMessage(s:"a";HUDMSG_LAYER_UNDERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,32750+id,CR_UNTRANSLATED,0.1+(id*56.0)-224.0,280.2-(8.0*abs((id-6)/2))-((CheckInventory("BloodBurnVFXHudFlames"))*2.0),0.0);
+		for(id = 0; id < 12; id++) HudMessage(s:"a";HUDMSG_LAYER_UNDERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,32750+id,CR_UNTRANSLATED,0.1+(id*56.0)-224.0,280.2-(8.0*abs((id-6)/2))-((CheckInventory("BloodBurnVFXHudFlames"))*2.0),0.0);
 		Delay(1);
 		flameCount++;
 		if(CheckInventory("BloodBurnVFXHudFlames") < 1) break;
 	}
-	HudMessage(s:"";HUDMSG_LAYER_UNDERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,32750+id,CR_UNTRANSLATED,0,0,0.0,0.01);
+	RemoveMessages(32750,32751);
 }
 
 Script "CalebTeslaSwitch" (void)
