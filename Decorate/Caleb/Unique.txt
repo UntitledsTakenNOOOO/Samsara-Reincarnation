@@ -60,8 +60,22 @@ actor VoodooDoll : CalebWeapon
 		VOO3 A 0 A_TakeInventory("VoodooDoll", 1)
 		Goto Super::DeselectLoop
 	Select:
+		TNT1 A 0 A_JumpIfInventory("CalebTNTReadyDummy",1,"DeselectTNT")
 		VOO3 A 0
 		Goto Super::SelectLoop
+	DeselectTNT:
+		TNT1 A 0 A_TakeInventory("CalebTNTReadyDummy",1)
+		TNT1 A 0 A_PlayWeaponSound("TNT/Zip")
+		TNTH VWXY 2 Offset(0,32)
+		TNTH Y 1 Offset(0,36)
+		TNTH Y 1 Offset(0,40)
+		TNTH Y 1 Offset(0,44)
+		TNTH Y 1 Offset(0,48)
+		TNTH Y 1 Offset(0,52)
+		TNTH Y 1 Offset(0,56)
+		TNTH Y 1 Offset(0,60)
+		TNTH Y 1 Offset(0,64)
+		Goto Select+1
 	Fire:
 		VOO3 O 0 A_JumpIfTargetInLOS(1)
 		Goto Self
@@ -217,7 +231,6 @@ actor Voodoo : Ammo
     +IGNORESKILL
 }
 
-Actor CalebSprayReadyDummy : Boolean {}
 Actor SprayCan2 : Boolean {}
 actor Spraycan : CalebWeapon
 {
@@ -240,20 +253,21 @@ actor Spraycan : CalebWeapon
 	States
 	{
 	Ready:
+		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
 		TNT1 A 0 A_TakeInventory("ThrowPowerBig")
 		TNT1 A 0 A_TakeInventory("ThrowPower")
 		TNT1 A 0 A_TakeInventory("UsingPitchfork", 1)
-		TNT1 A 0 A_JumpIfInventory("CalebSprayReadyDummy",1,"ReadyLoop")
-		DYHN O 1 A_WeaponReady(WRF_NOFIRE)
+		TNT1 A 0 A_JumpIfInventory("CalebTNTReadyDummy",1,9)
+		DYHN NO 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_PlayWeaponSound("TNT/Zip")
-		DYHN P 1 A_WeaponReady(WRF_NOFIRE)
+		DYHN P 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_PlaySound("TNT/Match",6)
-		DYHN QRS 1 A_WeaponReady(WRF_NOFIRE)
-		TNT1 A 0 A_TakeInventory("CalebTNTDeselectDummy",1)
-		TNT1 A 0 A_GiveInventory("CalebSprayReadyDummy",1)
-		SPRC HHIIJJ 1 A_WeaponReady(WRF_NOFIRE)
+		DYHN QRS 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_GiveInventory("CalebTNTReadyDummy",1)
+		SPRC HHIIJJ 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		Goto ReadyLoop+8
 	ReadyLoop:
+		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
 		TNT1 A 0 A_TakeInventory("ThrowPowerBig")
 		TNT1 A 0 A_TakeInventory("ThrowPower")
 		TNT1 A 0 A_JumpIfInventory("CalebReady",1,"IntroTaunt")
@@ -279,30 +293,32 @@ actor Spraycan : CalebWeapon
 		TNT1 A 0 A_JumpIfInventory("ThrowPowerBig", 0, "Explode")
 		Loop
 	Deselect:
-		TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
+		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
 		TNT1 A 0 A_JumpIfInventory("WhoopsIDied",1,"DeselectDead")
-		TNT1 A 0 A_JumpIfInventory("CalebTNTDeselectDummy",1,"DeselectAmmoLess")
-		TNT1 A 0 //A_JumpIfnoammo("DeselectAmmoLess")
-		SPRC DCB 1
-		SPRC A 0 A_PlayWeaponSound("TNT/Zip")
-		Goto Super::DeselectLoop
+		TNT1 A 0 A_JumpIfNoAmmo("DeselectMatchStart")
+		SPRC JIH 2
+	DeselectMatchStart:
+		TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
+        TNT1 A 1 A_Lower
+        Loop
 	DeselectDead:
 		TNT1 A 0 A_TakeInventory("WhoopsIDied",999)
 		TNTH S 4 A_TakeInventory("ThrowPower",255)
 		TNTH T 3 A_Lower
 		TNTH U 1 A_Lower
 		Goto DeselectDead+3
-	DeselectAmmoLess:
-		DYHN TPO 1
-		DYHN N 0 A_PlayWeaponSound("TNT/Zip")
-		Goto Super::DeselectLoop
 	Select:
-		DYHN N 0 A_GiveInventory("CalebTNTDeselectDummy",1)
-		DYHN N 0 A_TakeInventory("CalebSprayReadyDummy",1)
-		DYHN N 0 A_TakeInventory("ThrowPower",300)
+		TNT1 A 0 A_JumpIfInventory("CalebTNTReadyDummy",1,"SwitchExplosive")
+		DYHN N 0 A_TakeInventory("ThrowPower")
+		DYHN N 0 A_TakeInventory("ThrowPowerBig")
 		Goto Super::SelectLoop
+	SwitchExplosive:
+		TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Raise
+		TNT1 A 1 A_Raise
+		Loop
 	Cannot:
-		TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
+		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
+		TNT1 A 0 A_TakeInventory("CalebTNTReadyDummy",1)
 		TNT1 A 0 A_TakeInventory("ThrowPowerBig")
 		TNT1 A 0 A_TakeInventory("ThrowPower")
 		TNT1 A 0 A_SelectWeapon("Pitchfork")
@@ -328,7 +344,8 @@ actor Spraycan : CalebWeapon
 		TNT1 A 0 A_StopSound(CHAN_WEAPON)
 		Goto ReadyLoop
 	TakeAway:
-		TNT1 A 0 A_TakeInventory("CalebSprayReadyDummy",1)
+		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
+		TNT1 A 0 A_TakeInventory("CalebTNTReadyDummy",1)
 		TNT1 A 1 A_SelectWeapon("Pitchfork")
 		Goto Deselect
 	AltFire:
@@ -342,6 +359,7 @@ actor Spraycan : CalebWeapon
 		TNT1 A 0 A_GiveInventory("SprayCan2", 1)
 		TNT1 A 0 A_JumpIfInventory("ThrowPowerBig", 0, "Explode")
 		TNT1 A 0 A_StopSound(CHAN_WEAPON)
+		TNT1 A 0 A_GiveInventory("CalebInterpolateBar")
 		Goto ReadyFire
 	AltHold:
 		TNT1 A 0 A_Refire(1)
@@ -377,6 +395,7 @@ actor Spraycan : CalebWeapon
 		TNT1 A 0 A_StopSound(CHAN_WEAPON)
 		Goto Throw
 	DropCan:
+		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
 		TNT1 A 0 A_TakeInventory("ThrowPower")
 		TNT1 A 0 A_TakeInventory("TNTCounter")
 		TNT1 A 0 A_TakeInventory("SprayCan2")
@@ -389,23 +408,26 @@ actor Spraycan : CalebWeapon
 		TNT1 A 0 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH|WRF_NOBOB) SPLG I 1 Bright A_Lower SPLG III 0 A_Lower
 		Goto ReadyLoop
 	Explode:
+		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
 		TNT1 A 0 A_StopSound(CHAN_WEAPON)
 		TNT1 A 0 A_TakeInventory("ThrowPowerBig")
 		TNT1 A 0 A_TakeInventory("ThrowPower")
 		TNT1 A 0 A_TakeInventory("TNTCounter")
 		TNT1 A 0 A_GiveInventory("WhoopsIDied",1)
 		TNT1 A 0 A_PlaySound("Napalm/Explode",CHAN_ITEM)
-		TNT1 A 0 A_SpawnItem("FlareKaboom5")
+		TNT1 A 0 A_SpawnItemEx("SprayCanAltSelfExplosion")
 		TNT1 A 0 ACS_NamedExecuteWithResult("CalebSelfDamage",1)
 		TNT1 AAAAA 0 A_SpawnItemEx("Blower",-16)
 		TNT1 AAA 1 A_SpawnItemEx("Blower",-16)
 		TNTH S 4
 		TNTH T 8
 		TNTH U 5
+		TNT1 A 0 A_TakeInventory("WhoopsIDied")
 		Goto ReadyLoop
 	Throw:
 		ZIPU BDFG 1 Bright
 		DYNH ABCD 1
+		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
 		TNT1 A 0 A_GiveInventory("SamsaraBloodSprayCanAltAttackHandler")
 		TNT1 A 0 A_StopSound(CHAN_WEAPON)
 		TNT1 A 0 A_PlayWeaponSound("TNT/Throw")
@@ -472,7 +494,6 @@ ACTOR SprayCanAlt
 		TNT1 A 0 ACS_NamedExecuteWithResult("CalebThrowDuration")
 		TNT1 A 0 A_ChangeVelocity((5+(user_strength))*(user_strength>0)*(sqrt(velx*velx + vely*vely)/5.0),0,(((5+(user_strength/2))*(sqrt(velx*velx + vely*vely)/5.0))+((5+(user_strength))*(velz/5.0)))*(user_strength>0),CVF_RELATIVE|CVF_REPLACE)
 		TNT1 A 0 A_SetUserVar("user_strength",sqrt(velx*velx + vely*vely + velz*velz))
-		TNT1 A 0 ACS_NamedExecuteWithResult("CalebClearThrowableBar")
 	SpawnLoop:
 		STOS F 1 Light("BLOOD_NAPALM_ROCKET") A_CountDown TNT1 A 0 A_ScaleVelocity(0.9)
 		STOS F 1 Light("BLOOD_NAPALM_ROCKET") A_CountDown TNT1 A 0 A_ScaleVelocity(0.9)
@@ -535,6 +556,38 @@ ACTOR SprayCanAlt
 		"####" "#" 1 A_CountDown
 		Wait
 	 }
+}
+
+ACTOR SprayCanAltSelfExplosion : SprayCanAlt
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 0 A_SpawnItemEx("SprayCanAltKaboom", 0, 0, 16, 0, 0, 0, 0, SXF_CLIENTSIDE)
+			TNT1 A 1 A_PlayWeaponSound("Flare/Explode2")
+			TNT1 A 0 A_RadiusGive("BloodBurnVFXTrigger",120,RGF_MONSTERS|RGF_PLAYERS)
+			TNT1 A 3 A_Explode(100, 100)
+			//I made it burn the area.. oh well until somoene ACS burning
+			TNT1 A 3 A_Explode(5,104)
+			TNT1 A 2 A_Explode(5,114)
+			TNT1 A 2 A_Explode(5,124)
+			TNT1 A 3 A_Explode(5,134)
+			TNT1 A 2 A_Explode(5,154)
+			TNT1 A 2 A_Explode(5,164)
+			TNT1 A 3 A_Explode(5,174)
+			TNT1 A 3 A_Explode(5,184)
+			TNT1 A 3 A_Explode(5,194)
+			TNT1 A 2 A_Explode(5,204)
+			TNT1 A 2 A_Explode(5,184)
+			TNT1 A 3 A_Explode(5,164)
+			TNT1 A 2 A_Explode(5,144)
+			TNT1 A 2 A_Explode(5,124)
+			TNT1 A 3 A_Explode(5,104)
+			TNT1 A 3 A_Explode(5, 84)
+			TNT1 AAAAAAAAAAAAA 3 A_Explode(3, 64)
+			Stop
+	}
 }
 
 ACTOR SprayCanAlt_Coop : SprayCanAlt { Species "Player" +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES }

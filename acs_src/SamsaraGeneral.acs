@@ -636,6 +636,7 @@ Script "Samsara_OriginalSlots" (int mode)
 	GiveInventory("SamsaraOriginalKeySwitcheroo",1);
 
 	int pln = PlayerNumber();
+	int switchAttempts = 0;
 	if (mode != CheckInventory("SamsaraOriginalSlotCounter")) SetInventory("SamsaraOriginalKeyCounter", 0);
 	str nextWeapon = OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode][CheckInventory("SamsaraOriginalKeyCounter")];
 	if (StrLen(nextweapon) == 0) { SetInventory("SamsaraOriginalKeyCounter", 0); nextWeapon = OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode][CheckInventory("SamsaraOriginalKeyCounter")]; }
@@ -644,8 +645,14 @@ Script "Samsara_OriginalSlots" (int mode)
 	{
 		default:
 			SetInventory("SamsaraOriginalSlotCounter", mode);
-			SetWeapon(nextweapon);
 			GiveInventory("SamsaraOriginalKeyCounter", 1);
+			until(SetWeapon(nextweapon) || switchAttempts >= 8)
+			{
+				switchAttempts++;
+				GiveInventory("SamsaraOriginalKeyCounter", 1);
+				nextWeapon = OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode][CheckInventory("SamsaraOriginalKeyCounter")];
+				if (StrLen(nextweapon) == 0) { SetInventory("SamsaraOriginalKeyCounter", 0); nextWeapon = OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode][CheckInventory("SamsaraOriginalKeyCounter")]; }
+			}
 			break;
 		case CLASS_HALFLIFE:
 			ACS_NamedExecuteWithResult("Samsara_DoHLWeaponSwitch",mode,pln);
