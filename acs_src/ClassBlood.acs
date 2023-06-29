@@ -203,18 +203,77 @@ Script "CalebAltSpreadAngle" (void)
 	SetResultValue(angle);
 }
 
-Script "CalebFlamethrowerStrength" (void)
+Script "CalebThrowStrength" (void)
 {
+	int newTid = UniqueTid();
+	SpawnForced("CalebTNTShootable",GetActorX(0),GetActorY(0),GetActorZ(0),newTid);
+	SetPointerExt(AAPTR_Master,0,newTid);
 	SetActivator(0,AAPTR_Target);
 	int power = CheckInventory("ThrowPower");
 	TakeInventory("ThrowPower",65536);
 	SetResultValue(power);
 }
 
-Script "CalebFlamethrowerDamage" (void)
+Script "CalebThrowDuration" (int switchcase)
 {
-	ACS_NamedExecuteWithResult("CalebBurner",1,5);
-	Thing_Damage2(0,5,"CalebFire");
+	SetActorProperty(0,APROP_ReactionTime,150-ACS_NamedExecuteWithResult("CalebCheckThrowTimer"));
+}
+
+Script "CalebCheckThrowTimer" (void)
+{
+	SetActivator(0,AAPTR_Target);
+	int power = CheckInventory("ThrowPowerBig");
+	TakeInventory("ThrowPowerBig",65536);
+	SetResultValue(power);
+}
+
+Script "CalebTossableHitBox" (void)
+{
+	if(!Warp(AAPTR_Master,0,0,0,0,WARPF_USEPTR)) { Thing_Remove(0); }
+}
+
+Script "CalebTossableDetonate" (void)
+{
+	SetActivator(0,AAPTR_Master);
+	SetActorProperty(0,APROP_ReactionTime,0);
+	SetActorState(0,"Detonate",0);
+}
+
+Script "CalebTossableResolve" (int reactionTime, int strength, int type)
+{
+	switch(type)
+	{
+		case 0:
+			if(strength == 0 && reactionTime > 0) SetActorState(0,"Stay",1);
+			else SetActorState(0,"XDeath",1);
+			break;
+		case 1:
+			if(reactionTime > 0) SetActorState(0,"Stay",1);
+			else SetActorState(0,"Explode",1);
+			break;
+	}
+}
+
+Script "CalebClearThrowableBar" (void)
+{
+	SetActivator(0,AAPTR_Target);
+	GiveInventory("CalebThrowRemoval",1);
+	Delay(3);
+	TakeInventory("CalebThrowRemoval",1);
+}
+
+Script "CalebSelfDamage" (int type)
+{
+	switch(type)
+	{	
+		case 0:
+			ACS_NamedExecuteWithResult("CalebBurner",1,5);
+			Thing_Damage2(0,5,"CalebFire");
+			break;
+		case 1:
+			Thing_Damage2(0,100,"Dynamite");
+			break;
+	}
 }
 
 Script "CalebBurner" (int notracer, int extraburn)
@@ -245,7 +304,7 @@ Script "CalebBurningHud" (void) clientside
 	int flameCount = 0;
 	int graphicCounter = 0;
 	int id = 0;
-	SetHudSize(320,200,1);
+	SetHudSize(320,200,0);
 	
 	while(ClassifyActor(0) & ACTOR_PLAYER)
 	{
