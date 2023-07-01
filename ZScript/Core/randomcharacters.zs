@@ -52,7 +52,8 @@ Class DetermineValidSpawnZS : Actor
 			TNT1 A 0 NoDelay A_GiveInventory("isSpawnCheckerToken",1);
 			TNT1 A 0 A_RadiusGive("DetermineValidSpawnBroadcastZS",1024,RGF_PLAYERS|RGF_MONSTERS|RGF_OBJECTS|RGF_ITEMS|RGF_CUBE);
 			TNT1 A 0 A_UnsetSolid;
-			TNT1 A 4;
+			TNT1 A 35;
+			TNT1 A 0 Thing_Remove(0);
 			Stop;
 	}
 }
@@ -138,7 +139,8 @@ Class DetermineValidSpawnItemsZS : Actor
 			TNT1 A 0 NoDelay A_GiveInventory("isSpawnCheckerToken",1);
 			TNT1 A 0 A_RadiusGive("DetermineValidSpawnBroadcastItemsZS",1024,RGF_PLAYERS|RGF_MONSTERS|RGF_OBJECTS|RGF_ITEMS|RGF_CUBE);
 			TNT1 A 0 A_UnsetSolid;
-			TNT1 A 4;
+			TNT1 A 35;
+			TNT1 A 0 Thing_Remove(0);
 			Stop;
 	}
 }
