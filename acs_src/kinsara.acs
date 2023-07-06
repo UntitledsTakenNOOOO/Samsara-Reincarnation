@@ -62,222 +62,224 @@ script "ZDoomOptionMirror" ENTER
 // Fancy per-class secret notifications
 script "SecretNotifier" ENTER
 {
-	int stotal;
-	int sfound;
-	int sfound2;
-	
-	stotal = GetLevelInfo(LEVELINFO_TOTAL_SECRETS); // Dunno if secret number can increase, though.
-	sfound2 = sfound;
-	sfound = GetLevelInfo(LEVELINFO_FOUND_SECRETS);
-	// Found a secret.
-	if (sfound > sfound2)
-	{
-		if (CheckInventory("DoomguyClass"))
-		{
-            if (CheckInventory("DoomClassMode") == 1)
+    int stotal;
+    int sfound;
+    int sfound2;
+
+    stotal = GetLevelInfo(LEVELINFO_TOTAL_SECRETS); // Dunno if secret number can increase, though.
+    sfound2 = sfound;
+    sfound = GetLevelInfo(LEVELINFO_FOUND_SECRETS);
+
+    bool showmsgs = true;
+
+    if (GetTimeProperty(0, 5, true) == 0 && !GetCVar("cl_showsecretmessage")) { showmsgs = false; }
+
+    // Found a secret.
+    if (sfound > sfound2)
+    {
+        if (showmsgs) { ACS_NamedExecuteWithResult("SecretNotifierDisplay", sfound, stotal); }
+
+        if (CheckInventory("WolfenClass"))
+        {
+            if (CheckInventory("WolfenClassMode") == 2) { GiveInventory("TotenkopfSecretCounter", 1); } // Castle Totenkopf SDL
+        } else if (CheckInventory("DukeClass")) {
+            if (showmsgs) { ACS_NamedExecuteWithResult("SecretNotifierDukeTaunt"); } // don't let the delay get in the way of this script
+        } else if (CheckInventory("CalebClass")) {
+            if (!CheckInventory("CalebBallgag") && !CheckInventory("CalebTauntCooldown") && showmsgs)
             {
-                LocalAmbientSound("doom64guy/secret", 127);
-                Log(l:"SECRETFOUND_DOOM64");
-            } else {
-                LocalAmbientSound("secretfound/doom", 127);
-                Log(l:"SECRETFOUND_DOOM");
+                LocalAmbientSound("Blood/Secret", 127);
+                GiveInventory("CalebTauntCooldown", 5);
+                ACS_NamedExecuteAlways("CalebTauntCooldown", 0);
             }
-		} else if (CheckInventory("WolfenClass"))
-		{
-			if(CheckInventory("WolfenClassMode") == 2)
-			{
-				LocalAmbientSound("Totenkopf/Bonus", 127);
-				Log(l:"SECRETFOUND_TOTENKOPF");
-
-				GiveInventory("TotenkopfSecretCounter", 1);
-			}
-			else
-			{
-				LocalAmbientSound("secretfound/wolf", 127);
-				Log(l:"SECRETFOUND_WOLF");
-			}
-		} else if (CheckInventory("ChexClass"))
-		{
-			LocalAmbientSound("secretfound/chex", 127);
-			Log(l:"SECRETFOUND_CHEX");
-
-		} else if (CheckInventory("DukeClass"))
-		{
-			LocalAmbientSound("secretfound/duke", 127);
-			SetHudSize(400, 300, 0);
-				Hudmessage(l:"SECRETFOUND_DUKE";
-				HUDMSG_PLAIN,1,CR_LIGHTBLUE,200.4,9.1,2.0);
-			//Log(l:"SECRETFOUND_DUKE");
-			delay(10);
-			if (!CheckInventory("DukeBallgag"))
+        } else if (CheckInventory("EradClass")) {
+            if (!CheckInventory("EleenaBallgag") && !CheckInventory("EleenaTauntCooldown") && showmsgs)
             {
-                LocalAmbientSound("duke/secret",127);
-                GiveInventory("DukeTauntCooldown",5);
-                ACS_NamedExecuteAlways("DukeTauntCooldown",0,0);
+                switch (CheckInventory("EradMode"))
+                {
+                  case 0: // Eleena Brynstaarl
+                    LocalAmbientSound("Eleena/Secret", 127);
+                    break;
+
+                  case 1: // Kamchak
+                    LocalAmbientSound("Kamchak/Secret", 127);
+                    break;
+
+                  case 2: // Dan Blaze
+                    LocalAmbientSound("DanBlaze/Secret", 127);
+                    break;
+                }
+
+                GiveInventory("EleenaTauntCooldown", 5);
+                ACS_NamedExecuteAlways("EleenaTauntCooldown", 0);
             }
-
-		} else if (CheckInventory("MarathonClass"))
-		{
-			LocalAmbientSound("secretfound/marathon", 127);
-			Log(l:"SECRETFOUND_MARATHON");
-
-		} else if (CheckInventory("HexenClass"))
-		{
-			if (sfound == stotal)
-			{
-			LocalAmbientSound("secretfound/PuzzleSuccess", 127);
-			Print(s:"\cjYou have completed the puzzle of the secrets in this level.");
-			} else {
-			LocalAmbientSound("secretfound/SwitchOtherLevel", 127);
-			Print(s:"\cjYou have found ",i:sfound,s:" of the ",i:stotal,s:" secrets in this level.");
-			}
-		} else if (CheckInventory("CorvusClass"))
-		{
-			LocalAmbientSound("secretfound/heretic", 127);
-			Log(l:"SECRETFOUND_RAVEN");
-
-		} else if (CheckInventory("QuakeClass"))
-		{
-			LocalAmbientSound("secretfound/quake", 127);
-			Print(l:"SECRETFOUND_QUAKE");
-			
-		} else if (CheckInventory("CalebClass"))
-		{
-			LocalAmbientSound("Caleb/Secret", 127);
-			Print(l:"SECRETFOUND_DEFAULT");
-			if (!CheckInventory("CalebBallgag"))
+        } else if (CheckInventory("SWClass")) {
+            if (!CheckInventory("LoWangBallgag") && !CheckInventory("LoWangTauntCooldown") && showmsgs)
             {
-                LocalAmbientSound("Blood/Secret",127);
-                GiveInventory("CalebTauntCooldown",5);
-                ACS_NamedExecuteAlways("CalebTauntCooldown",0,0);
+                LocalAmbientSound("SW/Secret", 127);
+                GiveInventory("LoWangTauntCooldown", 5);
+                ACS_NamedExecuteAlways("LoWangTauntCooldown", 0);
             }
-			
-		} else if (CheckInventory("SWClass"))
-		{
-			LocalAmbientSound("LoWang/Secret", 127);
-			Print(l:"SECRETFOUND_DEFAULT");
-			if (!CheckInventory("LoWangBallgag"))
+        } else if (CheckInventory("RRClass")) {
+            if (!CheckInventory("LeonardBallgag") && !CheckInventory("LeonardTauntCooldown") && showmsgs)
             {
-                LocalAmbientSound("SW/Secret",127);
-                GiveInventory("LoWangTauntCooldown",5);
-                ACS_NamedExecuteAlways("LoWangTauntCooldown",0,0);
+                LocalAmbientSound("RR/Secret", 127);
+                GiveInventory("LeonardTauntCooldown", 5);
+                ACS_NamedExecuteAlways("LeonardTauntCooldown", 0);
             }
+        }
+    }
 
-		} else if (CheckInventory("RRClass"))
-		{
-			LocalAmbientSound("Leonard/Secret", 127);
-			Print(l:"SECRETFOUND_DEFAULT");
-			if (!CheckInventory("LeonardBallgag"))
-            {
-                LocalAmbientSound("RR/Secret",127);
-                GiveInventory("LeonardTauntCooldown",5);
-                ACS_NamedExecuteAlways("LoWangTauntCooldown",0,0);
-            }
+    Delay(1);
+    restart;
+}
 
-		} else if (CheckInventory("EradClass"))
-		{
-			LocalAmbientSound("Eradicator/Secret", 127);
-			Log(l:"SECRETFOUND_DEFAULT");
-			if (!CheckInventory("EleenaBallgag"))
-            {
-				switch(CheckInventory("EradMode"))
-				{
-					case 0:
-						LocalAmbientSound("Eleena/Secret",127);
-						break;
-					case 1:
-						LocalAmbientSound("Kamchak/Secret",127);
-						break;
-					case 2:
-						LocalAmbientSound("DanBlaze/Secret",127);
-						break;
-				}
-                
-                GiveInventory("EleenaTauntCooldown",5);
-                ACS_NamedExecuteAlways("EleenaTauntCooldown",0,0);
-            }
-			
-		} else if (CheckInventory("RMRClass"))
-		{
-			LocalAmbientSound("RMR/Secret", 127);
-			Log(l:"SECRETFOUND_DEFAULT");			
-			
-		} else if (CheckInventory("JonClass"))
-		{
-			LocalAmbientSound("Jon/KTaunt5", 127);
-			Log(l:"SECRETFOUND_DEFAULT");
+script "SecretNotifierDukeTaunt" (void)
+{
+    Delay(10);
 
-		} else if (CheckInventory("WitchavenClass"))
-		{
-			LocalAmbientSound("Grondoval/Secret", 127);
-			Log(l:"SECRETFOUND_DEFAULT");
+    if (!CheckInventory("DukeBallgag") && !CheckInventory("DukeTauntCooldown"))
+    {
+        LocalAmbientSound("duke/secret", 127);
+        GiveInventory("DukeTauntCooldown", 5);
+        ACS_NamedExecuteAlways("DukeTauntCooldown", 0);
+    }
+}
 
-		} else if (CheckInventory("CMClass"))
-		{
-			LocalAmbientSound("CYBERM_SECRET1", 127);
-			Log(l:"SECRETFOUND_DEFAULT");
-			
-		} else if (CheckInventory("DisruptorClass"))
-		{
-			LocalAmbientSound("Disruptor/Secret", 127);
-			Log(l:"SECRETFOUND_DEFAULT");
-			
-		} else if (CheckInventory("StrifeClass"))
-		{
-			LocalAmbientSound("Strife/Secret", 127);
-			Log(l:"SECRETFOUND_DEFAULT");
-			
-		} else if (CheckInventory("C7Class"))
-		{
-			LocalAmbientSound("C7/Secret", 127);
-			Log(l:"SECRETFOUND_DEFAULT");
+script "SecretNotifierDisplay" (int sfound, int stotal) CLIENTSIDE
+{
+	int pln = PlayerNumber(); // ensure only the activator gets the messages
+	int cpln = ConsolePlayerNumber();
 
-		} else if (CheckInventory("BlakeClass"))
-		{
-			LocalAmbientSound("Blake/Secret", 127);
-			Log(l:"SECRETFOUND_DEFAULT");
+    if (pln != cpln) { terminate; }
 
-		} else if (CheckInventory("RottClass"))
-		{
-			LocalAmbientSound("Freely/Secret", 127);
-			Log(l:"SECRETFOUND_DEFAULT");
+    if (CheckInventory("DoomguyClass"))
+    {
+        if (CheckInventory("DoomClassMode") == 1) // Doom 64
+        {
+            AmbientSound("doom64guy/secret", 127);
+            Log(l:"SECRETFOUND_DOOM64");
+        } else { // Original/Stronghold
+            AmbientSound("secretfound/doom", 127);
+            Log(l:"SECRETFOUND_DOOM");
+        }
+    } else if (CheckInventory("ChexClass")) {
+        AmbientSound("secretfound/chex", 127);
+        Log(l:"SECRETFOUND_CHEX");
+    } else if (CheckInventory("CorvusClass")) {
+        AmbientSound("secretfound/heretic", 127);
+        Log(l:"SECRETFOUND_RAVEN");
+    } else if (CheckInventory("WolfenClass")) {
+        if (CheckInventory("WolfenClassMode") == 2) // Castle Totenkopf SDL
+        {
+            AmbientSound("Totenkopf/Bonus", 127);
+            Log(l:"SECRETFOUND_TOTENKOPF");
+        } else { // Original/Lost Missions
+            AmbientSound("secretfound/wolf", 127);
+            Log(l:"SECRETFOUND_WOLF");
+        }
+    } else if (CheckInventory("HexenClass")) {
+        if (sfound == stotal)
+        {
+            AmbientSound("secretfound/PuzzleSuccess", 127);
+            Print(s:"\cjYou have completed the puzzle of the secrets in ", n:PRINTNAME_LEVELNAME, s:".");
+        } else {
+            AmbientSound("secretfound/SwitchOtherLevel", 127);
+            Print(s:"\cjYou have found ", i:sfound, s:" of the ", i:stotal, s:" secrets in ", n:PRINTNAME_LEVELNAME, s:".");
+        }
+    } else if (CheckInventory("DukeClass")) {
+        AmbientSound("secretfound/duke", 127);
 
-		} else if (CheckInventory("KatarnClass"))
-		{
-			LocalAmbientSound("Kyle/Secret", 127);
-			Log(l:"SECRETFOUND_DEFAULT");
-		} else if (CheckInventory("BittermanClass"))
-		{
-			LocalAmbientSound("Q2Misc/Secret", 127);
-			Print(l:"SECRETFOUND_QUAKE2");
-		} else if (CheckInventory("Hexen2Class"))
-		{
-			LocalAmbientSound("Hexen2/Secret", 127);
-			Log(l:"SECRETFOUND_DEFAULT");		
-		} else if (CheckInventory("CatacombClass"))
-		{
-			LocalAmbientSound("Catacomb/Secret", 127);
-			Log(l:"SECRETFOUND_WOLF");				
-		} else if (CheckInventory("PainkillerClass"))
-		{
-			LocalAmbientSound("Painkiller/Sekret", 127);
-			Log(l:"SECRETFOUND_WOLF");		
-		} else if (CheckInventory("UnrealClass"))
-		{
-			LocalAmbientSound("secretfound/unreal", 127);
-			Log(l:"SECRETFOUND_DEFAULT");		
-		} else if (CheckInventory("RTCWClass"))
-		{
-			LocalAmbientSound("RTCW/Secret", 127);
-			SetHudSize(640, 480, 0);
-			HudMessage(l:"SECRETFOUND_RTCW"; HUDMSG_FADEOUT, 578, CR_WHITE, 320.0, 360.0, 3.0, 0.2);
-		} else {
-			LocalAmbientSound("secretfound/default", 127);
-			Print(l:"SECRETFOUND_DEFAULT");
-		}
-	}
-	delay(1);
-	restart;
+        SetHudSize(400, 300, 0);
+        HudMessage(l:"SECRETFOUND_DUKE"; HUDMSG_PLAIN, 1, CR_LIGHTBLUE, 200.4, 9.1, 2.0);
+    } else if (CheckInventory("MarathonClass")) {
+        AmbientSound("secretfound/marathon", 127);
+        Log(l:"SECRETFOUND_MARATHON");
+    } else if (CheckInventory("QuakeClass")) {
+        AmbientSound("secretfound/quake", 127);
+        Print(l:"SECRETFOUND_QUAKE");
+    } else if (CheckInventory("RottClass")) {
+        AmbientSound("Freely/Secret", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("BlakeClass")) {
+        AmbientSound("Blake/Secret", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("CalebClass")) {
+        AmbientSound("Caleb/Secret", 127);
+        Print(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("StrifeClass")) {
+        AmbientSound("Strife/Secret", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("EradClass")) {
+        AmbientSound("Eradicator/Secret", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("C7Class")) {
+        AmbientSound("C7/Secret", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("RMRClass")) {
+        AmbientSound("RMR/Secret", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("KatarnClass")) {
+        AmbientSound("Kyle/Secret", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("POGreedClass")) { // placeholder
+        AmbientSound("secretfound/default", 127);
+        Print(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("DisruptorClass")) {
+        AmbientSound("Disruptor/Secret", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("WitchavenClass")) {
+        AmbientSound("Grondoval/Secret", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("HalfLifeClass")) { // placeholder
+        AmbientSound("secretfound/default", 127);
+        Print(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("SWClass")) {
+        AmbientSound("LoWang/Secret", 127);
+        Print(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("CMClass")) {
+        AmbientSound("CYBERM_SECRET1", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("JonClass")) {
+        AmbientSound("Jon/KTaunt5", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("RRClass")) {
+        AmbientSound("Leonard/Secret", 127);
+        Print(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("BittermanClass")) {
+        AmbientSound("Q2Misc/Secret", 127);
+        Print(l:"SECRETFOUND_QUAKE2");
+    } else if (CheckInventory("Hexen2Class")) {
+        AmbientSound("Hexen2/Secret", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("BondClass")) { // placeholder
+        AmbientSound("secretfound/default", 127);
+        Print(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("CatacombClass")) {
+        AmbientSound("Catacomb/Secret", 127);
+        Log(l:"SECRETFOUND_WOLF");
+    } else if (CheckInventory("PainkillerClass")) {
+        AmbientSound("Painkiller/Sekret", 127);
+        Log(l:"SECRETFOUND_WOLF");
+    } else if (CheckInventory("UnrealClass")) {
+        AmbientSound("secretfound/unreal", 127);
+        Log(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("RTCWClass")) {
+        AmbientSound("RTCW/Secret", 127);
+        SetHudSize(640, 480, 0);
+        HudMessage(l:"SECRETFOUND_RTCW"; HUDMSG_FADEOUT, 578, CR_WHITE, 320.0, 360.0, 3.0, 0.2);
+    } else if (CheckInventory("Q3Class")) { // placeholder
+        AmbientSound("secretfound/default", 127);
+        Print(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("DescentClass")) { // placeholder
+        AmbientSound("secretfound/default", 127);
+        Print(l:"SECRETFOUND_DEFAULT");
+    } else if (CheckInventory("DeusExClass")) { // placeholder
+        AmbientSound("secretfound/default", 127);
+        Print(l:"SECRETFOUND_DEFAULT");
+    } else {
+        AmbientSound("secretfound/default", 127);
+        Print(l:"SECRETFOUND_DEFAULT");
+    }
 }
 
 // don't get too brutal, kid
@@ -404,6 +406,8 @@ script "SamsaraPickupMessages" (int item) CLIENTSIDE
 {
 	int pln = PlayerNumber(); // ensure only the activator gets the messages
 	int cpln = ConsolePlayerNumber();
+
+    if (pln != cpln) { terminate; }
 
 	int colortemp = GetCvar("msg0color");
 	str msgcolor = "";
@@ -797,7 +801,7 @@ script "SamsaraPickupMessages" (int item) CLIENTSIDE
 	else if (GetCvar("msg0color") == 24) { msgcolor = "\cy"; }
 	else if (GetCvar("msg0color") == 25) { msgcolor = "\cz"; }
 
-    if (pln == cpln) { Log(s:msgcolor, l:itemtemp); }
+    Log(s:msgcolor, l:itemtemp);
 }
 
 // This is for the ReMixer ammo pickups
@@ -805,6 +809,8 @@ script "ReMixerPickupMessages" (int item) CLIENTSIDE
 {
 	int pln = PlayerNumber(); // ensure only the activator gets the messages
 	int cpln = ConsolePlayerNumber();
+
+    if (pln != cpln) { terminate; }
 
 	int colortemp = GetCvar("msg0color");
 	str msgcolor = "";
@@ -933,5 +939,5 @@ script "ReMixerPickupMessages" (int item) CLIENTSIDE
 	else if (GetCvar("msg0color") == 24) { msgcolor = "\cy"; }
 	else if (GetCvar("msg0color") == 25) { msgcolor = "\cz"; }
 
-    if (pln == cpln) { Log(s:msgcolor, l:itemtemp); }
+    Log(s:msgcolor, l:itemtemp);
 }
