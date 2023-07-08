@@ -26,6 +26,7 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 	int x, y, z;
 	int armorIndex, armorToSet;
 	int pln = PlayerNumber();
+    str ammotype = "Placeholder";
 
 	switch (choice)
 	{
@@ -46,11 +47,31 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 		break;
 
 	case 5:
-		SetActivatorToTarget(0);
+        if (arg1 >= 1) // get discharge amount
+        {
+            SetActivatorToTarget(0);
 
-		if (arg1) { result = CheckInventory("PlasmaCell"); }
-		else { result = CheckInventory("Cell"); }
-		break;
+            result = CheckInventory("SamsaraWeaponDischargeAmount");
+        } else { // set discharge amount
+            switch (arg2)
+            {
+              case 0: // Thunderbolt (Lightning Mode)
+                ammotype = "Cell";
+                break;
+
+              case 1: // Thunderbolt (Plasma Mode)
+                ammotype = "PlasmaCell";
+                break;
+
+              case 2: // Shock Roach
+                ammotype = "ShockRoachAmmo";
+                break;
+            }
+
+            if (CheckInventory("SamsaraHasInfiniteAmmo")) { SetInventory("SamsaraWeaponDischargeAmount", GetAmmoCapacity(ammotype)); }
+            else { SetInventory("SamsaraWeaponDischargeAmount", CheckInventory(ammotype)); }
+        }
+        break;
 
 	case 6:
 		result = GetCVar("skulltag");
@@ -2142,6 +2163,7 @@ Script "Samsara_ResetInventory" (void)
 			SetWeapon(".44 Magnum Mega Class A1");
 			break;
 		case 7:
+            SetInventory("QSG_FiredOnce", 0);
 			TakeInventory("Laser Cannon", INTMAX);
 			TakeInventory("Nailgun", INTMAX);
 			TakeInventory("QuadDamageItem", INTMAX);

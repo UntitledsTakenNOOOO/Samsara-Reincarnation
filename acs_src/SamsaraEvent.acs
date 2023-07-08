@@ -664,6 +664,10 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         if (isInvasion()) { GiveInventory("InvasionDualShottyCheck", 1); }
         break;
 
+      case CLASS_QUAKE:
+        if (!respawning && CheckInventory("Shell") < 25) { SetInventory("Shell", 25); }
+        break;
+
       case CLASS_CALEB:
         if (!respawning) { GiveInventory("CalebReady", 1); }
 		if(!GetCvar("samsara_permakimbo")) TakeInventory("GunsAkimboP",1);
@@ -784,8 +788,6 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                  GetArmorType("StrifeMarathonGreenArmor", pln) || GetArmorType("StrifeMarathonGreenArmorNoDrop", pln))
         { SetInventory("SamsaraArmorCategory", 1); }
         else { SetInventory("SamsaraArmorCategory", 0); } // other armors
-
-        if (!CheckWeapon("Grenade Launcher") && !CheckWeapon("Nailgun") && !CheckWeapon("  Rocket Launcher  ") && !CheckWeapon("Super Nailgun") && !CheckWeapon("Thunderbolt")) { SetInventory("UsingDoEAmmo", 0); }
 
         SetInventory("SamsaraHasDoubleFiringSpeed", CheckInventory("PowerDoubleFiringSpeed") || CheckInventory("RuneDoubleFiringSpeed") || CheckInventory("CustomDoubleFiringSpeed"));
         SetInventory("SamsaraHasProsperity", CheckInventory("PowerProsperity") || CheckInventory("RuneProsperity") || CheckInventory("CustomProsperity"));
@@ -1342,6 +1344,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					previousvalue = hexmode;
 				}
 				break;
+
 			case CLASS_DUKE:
 				dukemode = GetUserCvar(pln,"samsara_cl_dukemode");
 				if(dukemode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
@@ -1405,6 +1408,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					previousvalue = dukemode;
 				}
 				break;
+
             case CLASS_MARATHON:
                 if (!CheckWeapon(".44 Magnum Mega Class A1") && !CheckWeapon("WSTE-M5 Combat Shotgun"))
                 {
@@ -1447,6 +1451,24 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                     if (CheckInventory("Talon Ceramic Combat Blade") && !CheckWeapon("Talon Ceramic Combat Blade") && !CheckInventory("KnifeAmmo")) { TakeInventory("Talon Ceramic Combat Blade", 1); }
                 }
                 break;
+
+            case CLASS_QUAKE:
+                if (CheckInventory("SamsaraQuakeThunderboltLightningFiringSoundCheck") && !CheckWeapon("Thunderbolt"))
+                {
+                    StopSound(0, CHAN_6);
+
+                    SetInventory("SamsaraQuakeThunderboltLightningFiringSoundCheck", 0);
+                }
+
+                SetInventory("Grenade Launcher DOE", CheckInventory("Grenade Launcher") && !GetCVar("samsara_vanillaquake"));
+                SetInventory("Nailgun DOE", CheckInventory("Nailgun") && !GetCVar("samsara_vanillaquake"));
+                SetInventory("  Rocket Launcher DOE  ", CheckInventory("  Rocket Launcher  ") && !GetCVar("samsara_vanillaquake"));
+                SetInventory("Super Nailgun DOE", CheckInventory("Super Nailgun") && !GetCVar("samsara_vanillaquake"));
+                SetInventory("Thunderbolt DOE", CheckInventory("Thunderbolt") && !GetCVar("samsara_vanillaquake"));
+
+                SetInventory("UsingDoEAmmo", CheckWeapon("Grenade Launcher DOE") || CheckWeapon("Nailgun DOE") || CheckWeapon("  Rocket Launcher DOE  ") || CheckWeapon("Super Nailgun DOE") || CheckWeapon("Thunderbolt DOE"));
+                break;
+
 			case CLASS_ROTT:
 				rottmode = GetUserCvar(pln,"samsara_cl_rottmode");
 				//only run these actions if the value changes
@@ -2881,7 +2903,7 @@ script "HandleInstagibWeapons" (void)
 	// and the different loadouts for each class and altclass required this ugly-looking function
 }
 
-script "SamsaraUnloading" unloading //203
+script "SamsaraUnloading" UNLOADING //203
 {
     int i;
     UnloadingNow = 1;

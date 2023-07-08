@@ -1,302 +1,103 @@
-actor "  Rocket Launcher  ": InstantSwitchWeapon
-{
-	Weapon.BobRangeX 0
-	Weapon.BobRangeY 0.75
-	Weapon.BobSpeed 1.4
-	Weapon.BobStyle Alpha   
-    Weapon.SelectionOrder 2
-    
-    Weapon.AmmoUse 1
-    Weapon.AmmoGive 5
-    Weapon.AmmoType "RocketAmmo"
-    
-    Weapon.AmmoUse2 1
-    Weapon.AmmoGive2 0
-    Weapon.AmmoType2 "MultiRocketAmmo"
+// Normal rockets
 
-    Weapon.SisterWeapon "Spectral RL"
-    
-    +NOAUTOFIRE
-    +UNDROPPABLE
-    +AMMO_OPTIONAL
-    +ALT_AMMO_OPTIONAL
+actor "  Rocket Launcher  " : SamsaraQuakeWeapon
+{
+    Inventory.PickupMessage "You got the Rocket Launcher."
+    Weapon.SlotPriority 0
+    Weapon.SelectionOrder 2
+    Weapon.AmmoType "RocketAmmo"
+    Weapon.AmmoGive 5
+    Weapon.AmmoUse 1
+    Tag "Rocket Launcher (Normal Rockets)"
     +EXPLOSIVE
-    +NOALERT
-    
-    Inventory.Icon "QRKLZ0"
-    Inventory.RestrictedTo "QuakePlayer"
-    Inventory.PickupSound "quakeweps/weaponpickup"
-    Inventory.PickupMessage "You got the rocket launcher"
-    Tag "Rocket Launcher"
+    +NOAUTOFIRE
     States
     {
-      Select:
-		TNT1 A 0 A_TakeInventory("Ranger_AxeSelected")
-		TNT1 A 0 A_TakeInventory("Ranger_GunSelected")
-		TNT1 A 0 A_GiveInventory("Ranger_ExplosiveSelected")
-		TNT1 A 0 A_TakeInventory("Ranger_NailSelected")
-		TNT1 A 0 A_TakeInventory("Ranger_PlasmaSelected")
-        TNT1 A 0 A_TakeInventory("UsingDoEAmmo")
-        goto Super::Select
-
-	  Deselect:
-        TNT1 A 0 A_TakeInventory("Ranger_ExplosiveSelected")
-        goto Super::Deselect
-
-      Ready:
-        TNT1 A 0 A_JumpIfInventory("UsingMultiRockets",1,"MultiReady")
-        TNT1 A 0 A_TakeInventory("UsingDoEAmmo")
-        QRKL A 1 A_WeaponReady
-        loop
-
-      MultiReady:
-        TNT1 A 0 A_GiveInventory("UsingDoEAmmo")
-        QMRL A 1 A_WeaponReady
-        goto Ready
-
-      Fire:
-        TNT1 A 0 A_JumpIfInventory("UsingMultiRockets",1,"MultiFire")
-        TNT1 A 0 A_JumpIfNoAmmo("DeselectShit")
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 5, 4, 15)
-        TNT1 A 0 A_JumpIfInventory("QuakeInvisTimer", 1, 2)
-        TNT1 A 0 A_AlertMonsters
-        QRKL B 0 A_PlaySound("quakeweps/rlfire", CHAN_WEAPON)
-        TNT1 A 0 A_JumpIfInventory("QuadDamagePower", 1, "QuadFire")
-        goto AfterSound
-        
-      QuadFire:
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopQuad")
-        TNT1 A 0 A_JumpIfInventory("SPModeOn", 1, "CoopQuad")
-        QRKL B 0 A_FireCustomMissile("QuakeRocketQuad")
-        goto Fire2
-        
-      CoopQuad:
-        QRKL B 0 A_FireCustomMissile("QuakeRocketCoopQuad")
-        goto Fire2
-        
-      AfterSound:
-        QRKL A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
-        QRKL A 0 A_JumpIfInventory("SPModeOn", 1, "CoopFire")
-        QRKL B 0 A_FireCustomMissile("QuakeRocket")
-        goto Fire2
-        
-      CoopFire:
-        QRKL B 0 A_FireCustomMissile("QuakeRocketCoop")
-        goto Fire2
-        
-      Fire2:
-        QRKL BC 2 bright
-        QRKL D 3 bright
-        QRKL E 4
-        QRKL FG 5
-        QRKL H 6
-        // 27 tics
-        QRKL H 0 A_Refire
-        goto Ready
-        
-      MultiFire:
-        TNT1 A 0 A_JumpIfInventory("MultiRocketAmmo",1,"MultiFire2")
-        goto Swap2
-      MultiFire2:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 7, 4, 15)
-        TNT1 A 0 A_JumpIfInventory("QuakeInvisTimer", 1, 2)
-        TNT1 A 0 A_AlertMonsters
-        QMRL B 0 A_PlaySound("quakeweps/rlfire", CHAN_WEAPON)
-        TNT1 A 0 A_TakeInventory("MultiRocketAmmo",1,TIF_NOTAKEINFINITE)
-        TNT1 A 0 A_JumpIfInventory("QuadDamagePower", 1, "QuadAlt")
-        goto AfterSoundAlt
-        
-      QuadAlt:
-        TNT1 A 0 A_PlaySound("quakeweps/quadfire", 7)
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopQuadAlt")
-        TNT1 A 0 A_JumpIfInventory("SPModeOn", 1, "CoopQuadAlt")
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRocket", -4, 0)
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRocket", -2, 0)
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRocket",  2, 0)
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRocket",  4, 0)
-        goto AltFire2
-        
-      CoopQuadAlt:
-        QMRL B 0 A_FireCustomMissile("QuadClusterRkCoop", -4, 0)
-        QMRL B 0 A_FireCustomMissile("QuadClusterRkCoop", -2, 0)
-        QMRL B 0 A_FireCustomMissile("QuadClusterRkCoop",  2, 0)
-        QMRL B 0 A_FireCustomMissile("QuadClusterRkCoop",  4, 0)
-        goto AltFire2
-        
-      AfterSoundAlt:
-        QMRL A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopAlt")
-        QMRL A 0 A_JumpIfInventory("SPModeOn", 1, "CoopAlt")
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRocket", -4, 0)
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRocket", -2, 0)
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRocket",  2, 0)
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRocket",  4, 0)
-        goto AltFire2
-        
-      CoopAlt:
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRkCoop", -4, 0)
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRkCoop", -2, 0)
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRkCoop",  2, 0)
-        QMRL B 0 A_FireCustomMissile("QuakeClusterRkCoop",  4, 0)
-        goto AltFire2
-        
-      AltFire2:
-        QMRL B 4 bright
-        QMRL D 3 bright
-        QMRL E 4
-        QMRL F 5
-        QMRL G 5
-        QMRL H 6
-        // 27 tics
-        QMRL H 0 A_Refire
-        goto MultiReady
-        
-      AltFire:
-        TNT1 A 0 A_JumpIfInventory("QuakeModeOn",1,"Ready")
-        TNT1 A 0 A_JumpIfInventory("UsingMultiRockets",1,"Swap2")
-        TNT1 A 0 A_PlaySound("quakeweps/doeammochange")
-        TNT1 A 0 A_GiveInventory("UsingMultiRockets",1)
-        TNT1 A 0 A_GiveInventory("UsingDoEAmmo",1)
-        QMRL A 5 A_WeaponReady(12)
-        QMRL A 10 A_WeaponReady(8)
-        goto MultiReady
-        
-      Swap2:
-        TNT1 A 0 A_PlaySound("quakeweps/doeammochange")
-        TNT1 A 0 A_TakeInventory("UsingMultiRockets",1)
-        TNT1 A 0 A_TakeInventory("UsingDoEAmmo",1)
-        QRKL A 5 A_WeaponReady(12)
-        QRKL A 10 A_WeaponReady(8)
-        goto Ready
-        
       Spawn:
         QRKL Z -1
-        Stop
+        stop
 
-      DeselectShit:
-        TNT1 A 0 A_JumpIfInventory("Thunderbolt",1,"ConsiderTB")
-      Consider6:
-        //TNT1 A 0 A_JumpIfInventory("GotWeapon5",1,"ConsiderQRL")
-      Consider5:
-        TNT1 A 0 A_JumpIfInventory("GotWeapon3",1,"ConsiderQGL")
-      Consider4:
-        TNT1 A 0 A_JumpIfInventory("GotWeapon6",1,"ConsiderSNG")
-      Consider3:
-        TNT1 A 0 A_JumpIfInventory("GotWeapon4",1,"ConsiderNG")
-      Consider2:
-        TNT1 A 0 A_JumpIfInventory("GotWeapon2",1,"ConsiderDSG")
-      Consider1:
-        TNT1 A 0 A_JumpIfInventory("GotWeapon0",1,"ConsiderLasCan")
-      Consider0:
-        QRKL A 1 A_SelectWeapon("Single Shotgun")
-        TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
-        TNT1 A 1 A_Lower
-        goto Deselect
-        
-      ConsiderTB:
-        TNT1 A 0 A_JumpIfInventory("Cell",1,"SelectTB")
-        goto Consider6
-      ConsiderQRL:
-        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"SelectQRL")
-        goto Consider5
-      ConsiderQGL:
-        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"SelectQGL")
-        goto Consider4
-      ConsiderSNG:
-        TNT1 A 0 A_JumpIfInventory("Clip",2,"SelectSNG")
-        goto Consider3
-      ConsiderNG:
-        TNT1 A 0 A_JumpIfInventory("Clip",1,"SelectNG")
-        goto Consider2
-      ConsiderDSG:
-        TNT1 A 0 A_JumpIfInventory("Shell",1,"SelectDSG")
-        goto Consider1
-      ConsiderLasCan:
-        TNT1 A 0 A_JumpIfInventory("Cell",1,"SelectLasCan")
-        goto Consider0
+      Ready:
+        QRKL A 0 A_JumpIfInventory("QuakeModeOn",1,2)
+        QRKL A 1 A_WeaponReady
+        loop
+        QRKL A 1 A_WeaponReady(WRF_NOSECONDARY)
+        loop
 
-      SelectTB:
-        TNT1 A 0 A_SelectWeapon("Thunderbolt")
-        TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
-        TNT1 A 1 A_Lower
-        goto Deselect
-      /*SelectQRL:
-        TNT1 A 0 A_SelectWeapon("  Rocket Launcher  ")
-        TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
-        TNT1 A 1 A_Lower
-        goto Deselect*/
-      SelectQGL:
-        TNT1 A 0 A_SelectWeapon("Grenade Launcher")
-        TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
-        TNT1 A 1 A_Lower
-        goto Deselect
-      SelectSNG:
-        TNT1 A 0 A_SelectWeapon("Super Nailgun")
-        TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
-        TNT1 A 1 A_Lower
-        goto Deselect
-      SelectNG:
-        TNT1 A 0 A_SelectWeapon("Nailgun")
-        TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
-        TNT1 A 1 A_Lower
-        goto Deselect
-      SelectDSG:
-        TNT1 A 0 A_SelectWeapon("Double Shotgun")
-        TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
-        TNT1 A 1 A_Lower
-        goto Deselect
-      SelectLasCan:
-        TNT1 A 0 A_SelectWeapon("Laser Cannon")
-        TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
-        TNT1 A 1 A_Lower
+      Select:
+        TNT1 A 0 A_TakeInventory("Ranger_AxeSelected")
+        TNT1 A 0 A_TakeInventory("Ranger_GunSelected")
+        TNT1 A 0 A_GiveInventory("Ranger_ExplosiveSelected")
+        TNT1 A 0 A_TakeInventory("Ranger_NailSelected")
+        TNT1 A 0 A_TakeInventory("Ranger_PlasmaSelected")
+        goto Super::Select
+
+      // 27 tics
+      Fire:
+        QRKL B 0 A_JumpIfInventory("QuakeInvisTimer",1,2)
+        QRKL B 0 A_AlertMonsters
+        QRKL B 0 A_GiveInventory("SamsaraQuakeRocketLauncherNormalAttackHandler")
+        QRKL BC 2 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QRKL D 3 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QRKL E 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QRKL FG 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QRKL H 6 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QRKL A 0 A_ReFire
+        goto Ready
+
+	  AltFire:
+        QRKL A 8 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_SelectWeapon("  Rocket Launcher DOE  ")
         goto Deselect
     }
 }
 
-actor "Spectral RL": "  Rocket Launcher  "
+actor SamsaraQuakeRocketLauncherNormalAttackHandler : Trigger
 {
-    Weapon.AmmoType ""
-    Weapon.AmmoUse  0
-    Weapon.AmmoGive 0
-
-    Weapon.AmmoType2 ""
-    Weapon.AmmoUse2  0
-    Weapon.AmmoGive2 0
-
-    Weapon.SisterWeapon "  Rocket Launcher  "
-    +POWERED_UP
-
     States
     {
-      Fire:
-        TNT1 A 0 A_JumpIfInventory("QuakeInvisTimer", 1, 2)
-        TNT1 A 0 A_AlertMonsters
-        TNT1 A 0 A_JumpIfInventory("UsingMultiRockets",1,"MultiFire")
-        TNT1 A 0 A_JumpIfNoAmmo("DeselectShit")
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("quakeweps/rlfire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("QuadDamagePower",1,"PickupAttackQuad")
+      // Normal
+      PickupAttackNormal:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackNormalCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackNormalCoop")
+      PickupAttackNormalDM:
+        TNT1 A 0 A_FireCustomMissile("QuakeRocket",0,false)
+        goto PickupFinish
+
+      PickupAttackNormalCoop:
+        TNT1 A 0 A_FireCustomMissile("QuakeRocketCoop",0,false)
+        goto PickupFinish
+
+      // Quad
+      PickupAttackQuad:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackQuadCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackQuadCoop")
+      PickupAttackQuadDM:
+        TNT1 A 0 A_FireCustomMissile("QuakeRocketQuad",0,false)
+        goto PickupFinish
+
+      PickupAttackQuadCoop:
+        TNT1 A 0 A_FireCustomMissile("QuakeRocketCoopQuad",0,false)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
         TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 5, 4, 15)
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraSigil", 0, 20)
-        QRKL B 0 A_PlaySound("quakeweps/rlfire", CHAN_WEAPON)
-        TNT1 A 0 A_PlaySound("weapons/sigil", 6)
-        QRKL B 0 A_FireCustomMissile("SpectralRocket")
-        goto Fire2
-        
-      MultiFire:
-        TNT1 A 0 A_JumpIfInventory("MultiRocketAmmo", 1, 1)
-        goto Swap2
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 7, 4, 15)
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraSigil", 0, 35)
-
-        QMRL B 0 A_PlaySound("quakeweps/rlfire", CHAN_WEAPON)
-        TNT1 A 0 A_PlaySound("weapons/sigil", 6)
-
-        QMRL B 0 A_FireCustomMissile("SpectralClusterRocket", -4, 0)
-        QMRL B 0 A_FireCustomMissile("SpectralClusterRocket", -2, 0)
-        QMRL B 0 A_FireCustomMissile("SpectralClusterRocket",  2, 0)
-        QMRL B 0 A_FireCustomMissile("SpectralClusterRocket",  4)
-        goto AltFire2
+        stop
     }
 }
-
-actor UsingMultiRockets : Boolean {}
 
 actor QuakeRocket
 {
@@ -304,15 +105,13 @@ actor QuakeRocket
     Height 2
     Speed 35 //50
     DamageType "QuakeExplosive"
-    
     Projectile
-    
     +RANDOMIZE
     +DEHEXPLOSION
     //+ROCKETTRAIL
     +EXPLODEONWATER
     Obituary "$SAMSARA_RANGER_OB_SLOT5_1"
-    
+    //SelfObituary "%o becomes bored with life." // had randomized obituary in SOA, use this one for differentiation
     States
     {
       Spawn:
@@ -334,9 +133,7 @@ actor QuakeRocket
 actor QuakeRocketQuad: QuakeRocket
 {
     Obituary "$SAMSARA_RANGER_OB_SLOT5_3"
-    
     DamageType "NotQuadded"
-    
     States
     {
       Death:
@@ -362,14 +159,112 @@ actor QuakeRocketCoopQuad: QuakeRocketQuad
 	Damage (120)
 }
 
+actor SpectralRocket: QuakeRocketCoopQuad { DamageType "SpectralNoQuad" }
+
+// Multi rockets
+
+actor "  Rocket Launcher DOE  " : "  Rocket Launcher  "
+{
+    Weapon.SlotPriority 1
+    Weapon.AmmoType "MultiRocketAmmo"
+    Weapon.AmmoGive 0
+    Tag "Rocket Launcher (Multi Rockets)"
+    States
+    {
+      Ready:
+        QMRL A 0 A_JumpIfInventory("QuakeModeOn",1,2)
+        QMRL A 1 A_WeaponReady
+        loop
+        QMRL A 1 A_WeaponReady(WRF_NOPRIMARY)
+        loop
+
+      // 27 tics
+      Fire:
+        QMRL B 0 A_JumpIfInventory("QuakeInvisTimer",1,2)
+        QMRL B 0 A_AlertMonsters
+        QMRL B 0 A_GiveInventory("SamsaraQuakeRocketLauncherMultiAttackHandler")
+        QMRL BC 2 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QMRL D 3 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QMRL E 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QMRL FG 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QMRL H 6 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QMRL A 0 A_ReFire
+        goto Ready
+
+	  AltFire:
+        QMRL A 8 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_SelectWeapon("  Rocket Launcher  ")
+        goto Deselect
+    }
+}
+
+actor SamsaraQuakeRocketLauncherMultiAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("MultiRocketAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("MultiRocketAmmo",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("quakeweps/rlfire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("QuadDamagePower",1,"PickupAttackQuad")
+      // Normal
+      PickupAttackNormal:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackNormalCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackNormalCoop")
+      PickupAttackNormalDM:
+        TNT1 A 0 A_FireCustomMissile("QuakeClusterRocket",-4,false)
+        TNT1 A 0 A_FireCustomMissile("QuakeClusterRocket",-2,false)
+        TNT1 A 0 A_FireCustomMissile("QuakeClusterRocket",2,false)
+        TNT1 A 0 A_FireCustomMissile("QuakeClusterRocket",4,false)
+        goto PickupFinish
+
+      PickupAttackNormalCoop:
+        TNT1 A 0 A_FireCustomMissile("QuakeClusterRkCoop",-4,false)
+        TNT1 A 0 A_FireCustomMissile("QuakeClusterRkCoop",-2,false)
+        TNT1 A 0 A_FireCustomMissile("QuakeClusterRkCoop",2,false)
+        TNT1 A 0 A_FireCustomMissile("QuakeClusterRkCoop",4,false)
+        goto PickupFinish
+
+      // Quad
+      PickupAttackQuad:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackQuadCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackQuadCoop")
+      PickupAttackQuadDM:
+        TNT1 A 0 A_FireCustomMissile("QuadClusterRocket",-4,false)
+        TNT1 A 0 A_FireCustomMissile("QuadClusterRocket",-2,false)
+        TNT1 A 0 A_FireCustomMissile("QuadClusterRocket",2,false)
+        TNT1 A 0 A_FireCustomMissile("QuadClusterRocket",4,false)
+        goto PickupFinish
+
+      PickupAttackQuadCoop:
+        TNT1 A 0 A_FireCustomMissile("QuadClusterRkCoop",-4,false)
+        TNT1 A 0 A_FireCustomMissile("QuadClusterRkCoop",-2,false)
+        TNT1 A 0 A_FireCustomMissile("QuadClusterRkCoop",2,false)
+        TNT1 A 0 A_FireCustomMissile("QuadClusterRkCoop",4,false)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 7, 4, 15)
+        stop
+    }
+}
+
 actor QuakeClusterRocket: QuakeRocket
 {
     Obituary "$SAMSARA_RANGER_OB_SLOT5_2"
-    
     States
     {
       Death:
         DMSL B 0 A_Explode(50, 91, 0)
+        TNT1 A 0 A_ChangeFlag("FORCERADIUSDMG",1)
         DMSL B 0 A_Explode(50, 91)
         TNT1 A 1 A_SpawnItemEx("QuakeTinyExplosion")
         stop
@@ -380,7 +275,6 @@ actor QuakeClusterRkCoop: QuakeClusterRocket
 {
     +THRUSPECIES
     Species "Player"
-    
     Damage (5)
 }
 
@@ -388,12 +282,12 @@ actor QuadClusterRocket: QuakeClusterRocket
 {
     DamageType "NotQuadded"
     Obituary "$SAMSARA_RANGER_OB_SLOT5_4"
-    
     States
     {
       Death:
-        DMSL B 0 A_Explode(96, 91, 0)
-        DMSL B 0 A_Explode(96, 91)
+        DMSL B 0 A_Explode(200, 91, 0)
+        TNT1 A 0 A_ChangeFlag("FORCERADIUSDMG",1)
+        DMSL B 0 A_Explode(200, 91)
         TNT1 A 1 A_SpawnItemEx("QuakeTinyExplosion")
         stop
     }
@@ -406,5 +300,4 @@ actor QuadClusterRkCoop: QuadClusterRocket
     Damage (20)
 }
 
-actor SpectralRocket: QuakeRocketCoopQuad { +FORCERADIUSDMG DamageType "SpectralNoQuad" }
 actor SpectralClusterRocket: QuadClusterRkCoop { DamageType "SpectralNoQuad" }

@@ -1,110 +1,79 @@
-actor "Axe": InstantSwitchWeapon
+actor Ranger_AxeSelected : Boolean { Inventory.InterHubAmount 0 }
+
+actor "Axe" : SamsaraQuakeWeapon
 {
-	Weapon.BobRangeX 0
-	Weapon.BobRangeY 0.75
-	Weapon.BobSpeed 1.4
-	Weapon.BobStyle Alpha   
     Weapon.SelectionOrder 8
-    Weapon.Kickback 100
-	Inventory.RestrictedTo "QuakePlayer"
-    +NOALERT
-    +WEAPON.MELEEWEAPON
-    +UNDROPPABLE
-    +WIMPY_WEAPON
-    Inventory.Icon "TNT1A0"
+    Weapon.KickBack 100
     Obituary "$SAMSARA_RANGER_OB_FIST"
     Tag "Axe"
+    +MELEEWEAPON
+    +WIMPY_WEAPON
     States
     {
-      Select:
-		TNT1 A 0 A_GiveInventory("Ranger_AxeSelected", 1)
-		TNT1 A 0 A_TakeInventory("Ranger_GunSelected", 1)
-        TNT1 A 0 A_TakeInventory("Ranger_ExplosiveSelected", 1)
-		TNT1 A 0 A_TakeInventory("Ranger_NailSelected", 1)
-		TNT1 A 0 A_TakeInventory("Ranger_PlasmaSelected", 1)
-		TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Raise
-        TNT1 A 1 A_Raise
-        loop
-
-      Deselect:
-		TNT1 A 0 A_TakeInventory("Ranger_AxeSelected", 1)
-        TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
-        TNT1 A 1 A_Lower
-        loop
-
       Ready:
         QAXE A 1 A_WeaponReady
-        Loop
+        loop
+
+      Select:
+        TNT1 A 0 A_GiveInventory("Ranger_AxeSelected")
+        TNT1 A 0 A_TakeInventory("Ranger_GunSelected")
+        TNT1 A 0 A_TakeInventory("Ranger_ExplosiveSelected")
+        TNT1 A 0 A_TakeInventory("Ranger_NailSelected")
+        TNT1 A 0 A_TakeInventory("Ranger_PlasmaSelected")
+        goto Super::Select
 
       // 18 tics
       Fire:
-        QAXE A 0 A_PlaySound("quakeweps/axe", CHAN_WEAPON)
-        QAXE B 4 A_Jump(128, "Axe2")
-        QAXE C 2
-        QAXE D 0 A_JumpIfInventory("CoopModeOn",1,2)
-        QAXE D 2 A_CustomPunch(20, 1, 0, "QuakeAxePuff")
-        goto FireEnd
-        QAXE D 2 A_CustomPunch(20, 1, 0, "QuakeAxePuffCoop")
-        goto FireEnd
-      FireEnd:
-        QAXE E 4
-        goto AxeEnd
+        QAXE B 0 A_PlaySound("quakeweps/axe",CHAN_WEAPON)
+        QAXE B 0 A_Jump(256,"Fire1","Fire2")
+      Fire1:
+        QAXE B 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QAXE C 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QAXE D 0 A_GiveInventory("SamsaraQuakeAxeAttackHandler")
+        QAXE D 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QAXE E 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto FireFinish
 
-      Axe2:
-        QAXE F 4
-        QAXE G 2
-        QAXE H 0 A_JumpIfInventory("CoopModeOn",1,2)
-        QAXE H 2 A_CustomPunch(20, 1, 0, "QuakeAxePuff")
-        goto Axe2End
-        QAXE H 2 A_CustomPunch(20, 1, 0, "QuakeAxePuffCoop")
-        goto Axe2End
-      Axe2End:
-        QAXE I 4
-        goto AxeEnd
+      Fire2:
+        QAXE F 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QAXE G 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QAXE H 0 A_GiveInventory("SamsaraQuakeAxeAttackHandler")
+        QAXE H 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QAXE I 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto FireFinish
 
-      AxeEnd:
-        QAXE A 6
+      FireFinish:
+        QAXE A 6 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        QAXE A 0 A_ReFire
         goto Ready
     }
 }
 
-actor "Spectral Axe": Axe
+actor SamsaraQuakeAxeAttackHandler : Trigger
 {
-    Weapon.SisterWeapon "Axe"
-    +POWERED_UP
-    
     States
     {
-      Fire:
-        QAXE A 0 A_PlaySound("weapons/sigil", 6)
-        QAXE A 0 A_PlaySound("quakeweps/axe", CHAN_WEAPON)
-        QAXE B 4 A_Jump(128, "Axe2")
-        QAXE C 2
-        QAXE D 0 A_JumpIfInventory("CoopModeOn",1,2)
-        QAXE D 2 A_CustomPunch(20, 1, 0, "SpectralAxePuff")
-        goto FireEnd
-        QAXE D 2 A_CustomPunch(20, 1, 0, "SpectralAxePuffCoop")
-        goto FireEnd
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasSpread",1,"PickupDMSpread")
+        TNT1 A 0 A_CustomPunch(20,true,0,"QuakeAxePuff")
+        stop
 
-      FireEnd:
-        QAXE E 4
-        goto AxeEnd
+      PickupDMSpread:
+        TNT1 A 0 A_CustomPunch(20*3,true,0,"QuakeAxePuff")
+        stop
 
-      Axe2:
-        QAXE F 4
-        QAXE G 2
-        QAXE H 0 A_JumpIfInventory("CoopModeOn",1,2)
-        QAXE H 2 A_CustomPunch(20, 1, 0, "SpectralAxePuff")
-        goto Axe2End
-        QAXE H 2 A_CustomPunch(20, 1, 0, "SpectralAxePuffCoop")
-        goto Axe2End
-      Axe2End:
-        QAXE I 4
-        goto AxeEnd
+      PickupCoop:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasSpread",1,"PickupCoopSpread")
+        TNT1 A 0 A_CustomPunch(20,true,0,"QuakeAxePuffCoop")
+        stop
 
-      AxeEnd:
-        QAXE A 6
-        goto Ready
+      PickupCoopSpread:
+        TNT1 A 0 A_CustomPunch(20*3,true,0,"QuakeAxePuffCoop")
+        stop
     }
 }
 
@@ -129,21 +98,7 @@ actor QuakeAxePuff: QuakeBulletPuff
     }
 }
 
-actor QuakeAxePuffCoop : QuakeAxePuff { Species "Player" +THRUSPECIES +MTHRUSPECIES }
+actor QuakeAxePuffCoop : QuakeAxePuff { +MTHRUSPECIES }
 
-actor SpectralAxePuff: QuakeAxePuff
-{
-    DamageType "Spectral"
-}
-
-actor SpectralAxePuffCoop : SpectralAxePuff { Species "Player" +THRUSPECIES +MTHRUSPECIES }
-
-
-Actor Ranger_AxeSelected : Inventory
-{
-	Inventory.MaxAmount 1
-	Inventory.InterHubAmount 0
-	+INVENTORY.IGNORESKILL
-	+INVENTORY.UNDROPPABLE
-	-INVENTORY.INVBAR
-}
+actor SpectralAxePuff: QuakeAxePuff { DamageType "Spectral" }
+actor SpectralAxePuffCoop : SpectralAxePuff { +MTHRUSPECIES }
