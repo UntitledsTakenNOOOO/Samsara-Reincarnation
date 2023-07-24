@@ -1234,7 +1234,10 @@ Script "Painkiller_StartDemonMorph" (int duration)
 	SetHudSize(1, 1, 1);
 	HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 32600, 0, 0.0, 0.0, 65536.0, 0.5);
 	ACS_NamedExecuteWithResult("Painkiller_DemonMorphFade");
-	GiveInventory("Painkiller_DemonMorph", 1);
+    GiveInventory("Painkiller_DemonMorph", 1);
+    GiveInventory("PainkillerDemonMorphActive", 1);
+    GiveInventory("PainkillerDemonMorphScreen", 1);
+    GiveInventory("PainkillerDemonMorphInvulnerability", 1);
 
     until (morphtime >= duration)
     {
@@ -1245,9 +1248,11 @@ Script "Painkiller_StartDemonMorph" (int duration)
         Delay(1);
     }
 
-	TakeInventory("Painkiller_SoulCount", INTMAX);
-	HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,32600,0,0.0,0.0,0.5,0.1);
-	GiveInventory("Painkiller_DemonMorphRemove", 1);
+    TakeInventory("PainkillerDemonMorphActive", 1);
+
+    while (CheckWeapon("Painkiller_DemonMorph")) { Delay(1); }
+
+    HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 32600, 0, 0.0, 0.0, 0.5, 0.1);
 }
 
 Script "Painkiller_DemonMorphFade" (void)
@@ -1259,9 +1264,11 @@ Script "Painkiller_DemonMorphFade" (void)
 
 Script "Painkiller_ItemRemoval" UNLOADING
 {
-	TakeInventory("PainkillerDemonMorphSlower", 1);
-	TakeInventory("PainkillerDemonMorphTimerFreezer", 1);
+	TakeInventory("PainkillerDemonMorphActive", 1);
 	TakeInventory("PainkillerDemonMorphScreen", 1);
+	TakeInventory("PainkillerDemonMorphTimerFreezer", 1);
+	TakeInventory("PainkillerDemonMorphSlower", 1);
+	TakeInventory("PainkillerDemonMorphInvulnerability", 1);
 	TakeInventory("Painkiller_DemonMorph", 1);
 }
 
@@ -2057,21 +2064,27 @@ Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 			break;
 		case 13:
 			SetFont("PKDEMONB");
-			SetHudSize(1,1,1);
-			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA,32600,0,0.0,0.0,65536.0,0.5);
+			SetHudSize(1, 1, 1);
+			HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD|HUDMSG_ALPHA, 32600, 0, 0.0, 0.0, 65536.0, 0.5);
 			ACS_NamedExecuteWithResult("Painkiller_DemonMorphFade");
-			while(CheckInventory("Painkiller_GoldActive"))
+            GiveInventory("Painkiller_DemonMorph", 1);
+            GiveInventory("PainkillerDemonMorphActive", 1);
+            GiveInventory("PainkillerDemonMorphScreen", 1);
+            GiveInventory("PainkillerDemonMorphInvulnerability", 1);
+
+			while (CheckInventory("Painkiller_GoldActive"))
 			{
-				GiveInventory("Painkiller_DemonMorph", 1);
-				SetWeapon("Painkiller_DemonMorph");
-				Delay(5);
+                if (!CheckInventory("Painkiller_DemonMorph")) { break; }
+
+                if (!CheckWeapon("Painkiller_DemonMorph")) { SetWeapon("Painkiller_DemonMorph"); }
+                Delay(1);
 			}
-			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD,32600,0,0.0,0.0,0.5,0.1);
-			GiveInventory("Painkiller_DemonMorphRemove", 1);
-			//TakeInventory("Painkiller_DemonMorph", 1);
-			//TakeInventory("PainkillerDemonMorphSlower", 1);
-			//TakeInventory("PainkillerDemonMorphTimerFreezer", 1);
-			//TakeInventory("PainkillerDemonMorphScreen", 1);
+
+            TakeInventory("PainkillerDemonMorphActive", 1);
+
+            while (CheckWeapon("Painkiller_DemonMorph")) { Delay(1); }
+
+            HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 32600, 0, 0.0, 0.0, 0.5, 0.1);
 			break;
 		case 14:
 			while(CheckInventory("Painkiller_GoldActive"))
