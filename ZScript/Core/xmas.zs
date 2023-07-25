@@ -1,17 +1,22 @@
-Class SamsaraXMasDecorationsHandler : EventHandler
+Class SamsaraXMasHandler : EventHandler
 {
 	bool isXMasModeOn;
+	bool AreXmasDecorationsOn;
 	
 	override void CheckReplacement(ReplaceEvent e)
 	{
-		if (samsara_merrychristmas && samsara_merrychristmasdecorations) // Is Christmas Mode and its decoration setting activated?
+		if (samsara_merrychristmas) // Is Christmas Mode activated?
 		{
 			isXMasModeOn = true;
+			if (samsara_merrychristmasdecorations) // Are the Christmas decorations enabled?
+			{
+				AreXmasDecorationsOn = true;
+			}
 		}
 		
 		if(e.Replacee == 'TechLamp')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'TechLamp'; break;	// Vanilla actor
 				case 1: e.Replacement = 'TechLamp_SamsaraXMas'; break;	// Xmas actor
@@ -19,7 +24,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'TechLamp2')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'TechLamp2'; break;	// Vanilla actor
 				case 1: e.Replacement = 'TechLamp2_SamsaraXMas'; break;	// Xmas actor
@@ -27,7 +32,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'Column')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'Column'; break;	// Vanilla actor
 				case 1: e.Replacement = 'Column_SamsaraXMas'; break;	// Xmas actor
@@ -35,7 +40,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'TallGreenColumn')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'TallGreenColumn'; break;	// Vanilla actor
 				case 1: e.Replacement = 'TallGreenColumn_SamsaraXMas'; break;	// Xmas actor
@@ -43,7 +48,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'ShortGreenColumn')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'ShortGreenColumn'; break;	// Vanilla actor
 				case 1: e.Replacement = 'ShortGreenColumn_SamsaraXMas'; break;	// Xmas actor
@@ -51,7 +56,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'TallRedColumn')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'TallRedColumn'; break;	// Vanilla actor
 				case 1: e.Replacement = 'TallRedColumn_SamsaraXMas'; break;	// Xmas actor
@@ -59,7 +64,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'ShortRedColumn')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'ShortRedColumn'; break;	// Vanilla actor
 				case 1: e.Replacement = 'ShortRedColumn_SamsaraXMas'; break;	// Xmas actor
@@ -67,7 +72,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'SkullColumn')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'SkullColumn'; break;	// Vanilla actor
 				case 1: e.Replacement = 'SkullColumn_SamsaraXMas'; break;	// Xmas actor
@@ -75,7 +80,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'HeartColumn')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'HeartColumn'; break;	// Vanilla actor
 				case 1: e.Replacement = 'HeartColumn_SamsaraXMas'; break;	// Xmas actor
@@ -83,7 +88,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'EvilEye')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'EvilEye'; break;	// Vanilla actor
 				case 1: e.Replacement = 'EvilEye_SamsaraXMas'; break;	// Xmas actor
@@ -91,7 +96,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'FloatingSkull')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'FloatingSkull'; break;	// Vanilla actor
 				case 1: e.Replacement = 'FloatingSkull_SamsaraXMas'; break;	// Xmas actor
@@ -99,7 +104,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'TorchTree')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'TorchTree'; break;	// Vanilla actor
 				case 1: e.Replacement = 'TorchTree_SamsaraXMas'; break;	// Xmas actor
@@ -107,7 +112,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'BlueTorch')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'BlueTorch'; break;	// Vanilla actor
 				case 1: e.Replacement = 'BlueTorch_SamsaraXMas'; break;	// Xmas actor
@@ -115,7 +120,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'GreenTorch')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'GreenTorch'; break;	// Vanilla actor
 				case 1: e.Replacement = 'GreenTorch_SamsaraXMas'; break;	// Xmas actor
@@ -123,7 +128,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'RedTorch')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'RedTorch'; break;	// Vanilla actor
 				case 1: e.Replacement = 'RedTorch_SamsaraXMas'; break;	// Xmas actor
@@ -131,7 +136,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'ShortBlueTorch')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'ShortBlueTorch'; break;	// Vanilla actor
 				case 1: e.Replacement = 'ShortBlueTorch_SamsaraXMas'; break;	// Xmas actor
@@ -139,7 +144,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'ShortGreenTorch')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'ShortGreenTorch'; break;	// Vanilla actor
 				case 1: e.Replacement = 'ShortGreenTorch_SamsaraXMas'; break;	// Xmas actor
@@ -147,7 +152,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'ShortRedTorch')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'ShortRedTorch'; break;	// Vanilla actor
 				case 1: e.Replacement = 'ShortRedTorch_SamsaraXMas'; break;	// Xmas actor
@@ -155,7 +160,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'Stalagtite')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'Stalagtite'; break;	// Vanilla actor
 				case 1: e.Replacement = 'Stalagtite_SamsaraXMas'; break;	// Xmas actor
@@ -163,7 +168,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'TechPillar')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'TechPillar'; break;	// Vanilla actor
 				case 1: e.Replacement = 'TechPillar_SamsaraXMas'; break;	// Xmas actor
@@ -171,7 +176,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'BloodyTwitch')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'BloodyTwitch'; break;	// Vanilla actor
 				case 1: e.Replacement = 'BloodyTwitch_SamsaraXMas'; break;	// Xmas actor
@@ -179,7 +184,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'Meat2')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'Meat2'; break;	// Vanilla actor
 				case 1: e.Replacement = 'Meat2_SamsaraXMas'; break;	// Xmas actor
@@ -187,7 +192,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'Meat3')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'Meat3'; break;	// Vanilla actor
 				case 1: e.Replacement = 'Meat3_SamsaraXMas'; break;	// Xmas actor
@@ -195,7 +200,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'Meat4')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'Meat4'; break;	// Vanilla actor
 				case 1: e.Replacement = 'Meat4_SamsaraXMas'; break;	// Xmas actor
@@ -203,7 +208,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'Meat5')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'Meat5'; break;	// Vanilla actor
 				case 1: e.Replacement = 'Meat5_SamsaraXMas'; break;	// Xmas actor
@@ -211,7 +216,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'NonsolidMeat2')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'NonsolidMeat2'; break;	// Vanilla actor
 				case 1: e.Replacement = 'NonsolidMeat2_SamsaraXMas'; break;	// Xmas actor
@@ -219,7 +224,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'NonsolidMeat3')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'NonsolidMeat3'; break;	// Vanilla actor
 				case 1: e.Replacement = 'NonsolidMeat3_SamsaraXMas'; break;	// Xmas actor
@@ -227,7 +232,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'NonsolidMeat4')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'NonsolidMeat4'; break;	// Vanilla actor
 				case 1: e.Replacement = 'NonsolidMeat4_SamsaraXMas'; break;	// Xmas actor
@@ -235,7 +240,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'NonsolidMeat5')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'NonsolidMeat5'; break;	// Vanilla actor
 				case 1: e.Replacement = 'NonsolidMeat5_SamsaraXMas'; break;	// Xmas actor
@@ -243,7 +248,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'NonsolidTwitch')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'NonsolidTwitch'; break;	// Vanilla actor
 				case 1: e.Replacement = 'NonsolidTwitch_SamsaraXMas'; break;	// Xmas actor
@@ -251,7 +256,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'HeadOnAStick')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'HeadOnAStick'; break;	// Vanilla actor
 				case 1: e.Replacement = 'HeadOnAStick_SamsaraXMas'; break;	// Xmas actor
@@ -259,7 +264,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'HeadsOnAStick')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'HeadsOnAStick'; break;	// Vanilla actor
 				case 1: e.Replacement = 'HeadsOnAStick_SamsaraXMas'; break;	// Xmas actor
@@ -267,7 +272,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'HeadCandles')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'HeadCandles'; break;	// Vanilla actor
 				case 1: e.Replacement = 'HeadCandles_SamsaraXMas'; break;	// Xmas actor
@@ -275,7 +280,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'DeadStick')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'DeadStick'; break;	// Vanilla actor
 				case 1: e.Replacement = 'DeadStick_SamsaraXMas'; break;	// Xmas actor
@@ -283,7 +288,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'LiveStick')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'LiveStick'; break;	// Vanilla actor
 				case 1: e.Replacement = 'LiveStick_SamsaraXMas'; break;	// Xmas actor
@@ -291,7 +296,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'BigTree')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'BigTree'; break;	// Vanilla actor
 				case 1: e.Replacement = 'BigTree_SamsaraXMas'; break;	// Xmas actor
@@ -299,7 +304,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'BurningBarrel')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'BurningBarrel'; break;	// Vanilla actor
 				case 1: e.Replacement = 'BurningBarrel_SamsaraXMas'; break;	// Xmas actor
@@ -307,7 +312,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'HangNoGuts')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'HangNoGuts'; break;	// Vanilla actor
 				case 1: e.Replacement = 'HangNoGuts_SamsaraXMas'; break;	// Xmas actor
@@ -315,7 +320,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'HangBNoBrain')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'HangBNoBrain'; break;	// Vanilla actor
 				case 1: e.Replacement = 'HangBNoBrain_SamsaraXMas'; break;	// Xmas actor
@@ -323,7 +328,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'HangTLookingDown')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'HangTLookingDown'; break;	// Vanilla actor
 				case 1: e.Replacement = 'HangTLookingDown_SamsaraXMas'; break;	// Xmas actor
@@ -331,7 +336,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'HangTLookingUp')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'HangTLookingUp'; break;	// Vanilla actor
 				case 1: e.Replacement = 'HangTLookingUp_SamsaraXMas'; break;	// Xmas actor
@@ -339,7 +344,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'HangTSkull')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'HangTSkull'; break;	// Vanilla actor
 				case 1: e.Replacement = 'HangTSkull_SamsaraXMas'; break;	// Xmas actor
@@ -347,7 +352,7 @@ Class SamsaraXMasDecorationsHandler : EventHandler
 		}
 		if(e.Replacee == 'HangTNoBrain')	// The actor to replace
 		{
-			switch(isXMasModeOn)
+			switch(AreXmasDecorationsOn)
 			{
 				case 0: e.Replacement = 'HangTNoBrain'; break;	// Vanilla actor
 				case 1: e.Replacement = 'HangTNoBrain_SamsaraXMas'; break;	// Xmas actor
