@@ -24,56 +24,37 @@ Actor " Lock-on Cannon " : Weapon
 	Tag "Lock-On Cannon"
 	States
 	{
+	Spawn:
+		SQ72 S -1
+		Stop
+	
+	// Normal
 	Ready:
 		SQ71 L 0 A_JumpIfInventory("DisruptorMode", 1, "ReadyBinary")
 		SQ71 LLLLMMMMNNNNKKKKJJJJOOOO 1 A_WeaponReady
 		Loop
-	ReadyBinary:
-		SQ76 AAAABBBBCCCCDDDDEEEEFFFF 1 A_WeaponReady
-		Loop	
+
 	Deselect:
 		TNT1 A 0 A_Lower
 		SQ71 O 1 A_Lower
 		Loop
+
 	Select:
 		TNT1 A 0 A_Raise
 		SQ71 O 1 A_Raise
 		Loop
+
 	Fire:
-		SQ71 L 0 A_JumpIfInventory("DisruptorMode", 1, "FireBinary")
-		SQ71 L 0 A_JumpIfInventory("RocketAmmo", 1, 1)
-		Goto Altfire
-		SQ71 L 0 A_PlaySound("Disruptor/Cannon",CHAN_WEAPON)
-		SQ71 L 0 A_AlertMonsters
-		SQ71 L 0 A_JumpIfInventory("CoopModeOn",1,"CoopFire")
-		SQ71 L 0 A_JumpIfInventory("DMModeOn", 1, "DMFire")
-		SQ71 L 0 A_JumpIfTargetInLOS("FireLockOn", 0, JLOSF_NOAUTOAIM)
-		SQ71 L 0 A_FireCustomMissile("DisruptorMeteorite_2",0,1,0,0)
-		Goto FireEnd
-	CoopFire:
-		SQ71 L 0 A_JumpIfTargetInLOS("CoopFireLockOn", 0, JLOSF_NOAUTOAIM)
-		SQ71 L 0 A_FireCustomMissile("DisruptorMeteorite_3",0,1,0,0)
-		Goto FireEnd
-	DMFire:
-		SQ71 L 0 A_FireCustomMissile("DisruptorMeteorite_2",0,1,0,0)
-		Goto FireEnd
-	FireBinary:
-		SQ71 L 0 A_JumpIfInventory("DisruptorBinaryLockOn", 1, 1)
-		Goto AltfireBinary
-		SQ71 L 0 A_PlaySound("Disruptor/Cannon",CHAN_WEAPON)
-		SQ71 L 0 A_AlertMonsters
-		SQ71 L 0 A_TakeInventory("DisruptorBinaryLockOn", 1, TIF_NOTAKEINFINITE)
-		SQ71 L 0 A_JumpIfInventory("CoopModeOn",1,"CoopFireBinary")
-		SQ71 L 0 A_JumpIfInventory("DMModeOn", 1, "DMFireBinary")
-		SQ71 L 0 A_FireCustomMissile("DisruptorBinaryMeteorite",0,0,0,0)
-		Goto FireEnd
-	CoopFireBinary:
-		SQ71 L 0 A_FireCustomMissile("DisruptorBinaryMeteorite_1",0,0,0,0)
-		Goto FireEnd
-	DMFireBinary:
-		SQ71 L 0 A_FireCustomMissile("DisruptorBinaryMeteorite_DM",0,0,0,0)
-		Goto FireEnd
-	FireEnd:
+		TNT1 A 0 A_JumpIfInventory("DisruptorMode", 1, "FireBinary")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"FireStart")
+		goto NoAmmoSwitch
+	FireStart:
+		TNT1 A 0 A_AlertMonsters
+	FireContinue:
+		TNT1 A 0 A_JumpIfTargetInLOS("FireHomingContinue", 0, JLOSF_NOAUTOAIM)
+		TNT1 A 0 A_GiveInventory("SamsaraDisruptorLockOnCannonAttackHandler")
+	FireFinish:
 		SQ71 P 1 bright
 		SQ71 P 0 A_Recoil(3)
 		SQ71 P 1 bright Offset(28,33)
@@ -102,14 +83,11 @@ Actor " Lock-on Cannon " : Weapon
 		SQ71 O 1 bright Offset(0,26)
 		SQ71 O 4 bright
 		SQ71 OO 1 A_Refire
-		Goto Ready
-	FireLockOn:
-		SQ71 L 0 A_FireCustomMissile("DisruptorMeteorite",0,1,0,0)
-		Goto FireLockOnEnd
-	CoopFireLockOn:
-		SQ71 L 0 A_FireCustomMissile("DisruptorMeteorite_1",0,1,0,0)
-		Goto FireLockOnEnd
-	FireLockOnEnd:
+		goto Ready
+	FireHomingContinue:
+		TNT1 A 0 A_GiveInventory("SamsaraDisruptorLockOnCannonHomingAttackHandler")
+		goto FireHomingFinish
+	FireHomingFinish:
 		SQ71 P 1 bright
 		SQ76 A 0 A_Recoil(3)
 		SQ76 A 1 bright Offset(28,33)
@@ -138,20 +116,151 @@ Actor " Lock-on Cannon " : Weapon
 		SQ76 F 1 bright Offset(0,26)
 		SQ76 A 4 bright
 		SQ76 AA 1 A_Refire
-		Goto Ready
+		goto Ready
+
 	Altfire:
-		SQ76 A 0 A_JumpIfInventory("DisruptorMode", 1, "AltfireBinary")
+		TNT1 A 0 A_JumpIfInventory("DisruptorMode", 1, 4)
 		SQ76 AA 5 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH|WRF_NOSECONDARY)
 		SQ76 A 0 A_GiveInventory("DisruptorMode", 1)
-		Goto ReadyBinary
-	AltfireBinary:
+		goto ReadyBinary
 		SQ71 LL 5 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH|WRF_NOSECONDARY)
-		SQ71 L 0 A_TakeInventory("DisruptorMode", 1)
-		Goto Ready
-	Spawn:
-		SQ72 S -1
-		Stop
+		SQ71 L 0 A_TakeInventory("DisruptorMode")
+		goto Ready
+	
+	// Binary Lock-On
+	ReadyBinary:
+		SQ76 AAAABBBBCCCCDDDDEEEEFFFF 1 A_WeaponReady
+		Loop
+
+	FireBinary:
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireBinaryStart")
+		TNT1 A 0 A_JumpIfInventory("DisruptorBinaryLockOn",1,"FireBinaryStart")
+		goto NoAmmoSwitchBinary
+	FireBinaryStart:
+		TNT1 A 0 A_AlertMonsters
+	FireBinaryContinue:
+		TNT1 A 0 A_GiveInventory("SamsaraDisruptorLockOnCannonBinaryAttackHandler")
+	FireBinaryFinish:
+		SQ71 P 1 bright
+		SQ71 P 0 A_Recoil(3)
+		SQ71 P 1 bright Offset(28,33)
+		SQ71 P 1 bright Offset(25,40)
+		SQ71 O 1 bright Offset(22,38)
+		SQ71 O 1 bright Offset(20,37)
+		SQ71 O 1 bright Offset(19,36)
+		SQ71 O 1 bright Offset(18,35)
+		SQ71 O 1 bright Offset(17,34)
+		SQ71 O 1 bright Offset(16,33)
+		SQ71 O 1 bright Offset(15,32)
+		SQ71 O 1 bright Offset(14,31)
+		SQ71 O 1 bright Offset(13,30)
+		SQ71 O 1 bright Offset(12,29)
+		SQ71 O 1 bright Offset(11,28)
+		SQ71 O 1 bright Offset(10,27)
+		SQ71 O 1 bright Offset(9,26)
+		SQ71 O 1 bright Offset(8,26)
+		SQ71 O 1 bright Offset(7,26)
+		SQ71 O 1 bright Offset(6,26)
+		SQ71 O 1 bright Offset(5,26)
+		SQ71 O 1 bright Offset(4,26)
+		SQ71 O 1 bright Offset(3,26)
+		SQ71 O 1 bright Offset(2,26)
+		SQ71 O 1 bright Offset(1,26)
+		SQ71 O 1 bright Offset(0,26)
+		SQ71 O 4 bright
+		SQ71 OO 1 A_Refire
+		goto Ready
+
+	NoAmmoSwitch:
+		TNT1 A 0 A_ClearReFire
+		TNT1 A 0 A_SelectWeapon(" 18mm Semi ")
+		goto Deselect
+
+	NoAmmoSwitchBinary:
+		TNT1 A 0 A_ClearReFire
+		goto AltFire
 	}
+}
+
+actor SamsaraDisruptorLockOnCannonAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Disruptor/Cannon",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("DisruptorMeteorite_3",0,1,0,0)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("DisruptorMeteorite_2",0,1,0,0)
+        stop
+    }
+}
+
+actor SamsaraDisruptorLockOnCannonHomingAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Disruptor/Cannon",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("DisruptorMeteorite",0,1,0,0)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("DisruptorMeteorite_1",0,1,0,0)
+        stop
+    }
+}
+
+actor SamsaraDisruptorLockOnCannonBinaryAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("DisruptorBinaryLockOn",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("DisruptorBinaryLockOn",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("Disruptor/Cannon",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("DisruptorBinaryMeteorite_DM",0,1,0,0)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("DisruptorBinaryMeteorite_1",0,1,0,0)
+        stop
+    }
 }
 
 actor DisruptorBinaryLockOn : Ammo
