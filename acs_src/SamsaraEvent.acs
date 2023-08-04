@@ -688,13 +688,35 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         break;
 		
 	  case CLASS_STRIFE:
-		SetActorProperty(0,APROP_SpawnHealth,100+(CheckInventory("StrifeUpgradeCount")*10));
-		
-		if (respawning)
-		{
-			SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_SpawnHealth));
-		}
-		
+        if (CheckInventory("StrifeguyStartingUpgradesHasBeenGiven"))
+        {
+            if (respawning && CheckInventory("StrifeUpgradeCount")) { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 100 + (CheckInventory("StrifeUpgradeCount") * 10), 0, 2); } // reset spawnhealth to make up for hardcoded lost stamina argh
+        } else {
+            if (!(IsLMS() || GetCVar("samsara_lmsrules")) || ((IsLMS() || GetCVar("samsara_lmsrules")) && !GetCVar("samsara_lmsuniques")))
+            {
+                int sup = GetCVar("samsara_strifeupgrades");
+                int supdone = 0;
+
+                if (sup > 10) { sup = 10; }
+
+                while (supdone < sup)
+                {
+                    GiveInventory("StaminaUpgradeDamage", 10);
+                    GiveInventory("AccuracyUpgrade1", 10);
+                    GiveInventory("AccuracyUpgrade2", 10);
+
+                    if (CheckInventory("StrifeUpgradeCount") >= 10) { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 0, 0, 2); } // don't increase max health, only refill it
+                    else { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 2); }
+
+                    GiveInventory("StrifeUpgradeCount", 1);
+
+                    supdone++;
+                }
+            }
+
+            GiveInventory("StrifeguyStartingUpgradesHasBeenGiven", 1);
+        }
+
 	    if (!respawning) 
 		{ 
 			if(ThingCountName("Candle",0) > 0 ) 
@@ -1567,8 +1589,6 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                 SetInventory(" Grenade Launcher WP ", CheckInventory(" Grenade Launcher "));
                 SetInventory(" Grenade Launcher Gas ", CheckInventory(" Grenade Launcher "));
                 SetInventory(" Mauler Torpedo ", CheckInventory(" Mauler "));
-
-                SetActorProperty(0, APROP_SpawnHealth, 100 + (CheckInventory("StrifeUpgradeCount") * 10));
 
                 if (!CheckInventory("BlackBirdBallgag") && !CheckInventory("BlackBirdTauntCooldown") && !CheckInventory("BlackBirdInStrife"))
                 {

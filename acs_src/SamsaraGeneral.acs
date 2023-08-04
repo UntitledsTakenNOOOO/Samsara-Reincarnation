@@ -5826,3 +5826,47 @@ Script "DisableVoodooDoll" (void)
 	if(ClassifyActor(0) & ACTOR_VOODOODOLL)
 		SetActorState(0,"DisableVoodooDoll",true);
 }
+
+script "SamsaraPlayerSpawnHealthAdjust" (int amount, int add, int filltype)
+{
+    int healthcur = GetActorProperty(0, APROP_Health);
+    int healthmax = GetActorProperty(0, APROP_SpawnHealth);
+
+    if (healthmax == 0) { healthmax = 100; }
+
+    if (amount != 0)
+    {
+        // set new max health
+
+        // none of this really supports health subtracting (-amount) well, but that probably won't be needed
+
+        if (add)
+        {
+            SetActorProperty(0, APROP_SpawnHealth, healthmax + amount);
+
+            if (!isDead(0) && healthcur < healthmax + amount)
+            {
+                if (filltype >= 2) { SetActorProperty(0, APROP_Health, healthmax + amount); } // full refill
+                else if (filltype == 1) { SetActorProperty(0, APROP_Health, healthcur + amount); } // only heal by the new amount
+            }
+        } else {
+            SetActorProperty(0, APROP_SpawnHealth, amount);
+
+            if (!isDead(0) && healthcur < amount)
+            {
+                if (filltype > 0) { SetActorProperty(0, APROP_Health, amount); } // full refill regardless of setting
+            }
+        }
+
+        // adjust hud stuff
+
+        int hudhealthmax = GetActorProperty(0, APROP_SpawnHealth);
+
+        if (hudhealthmax == 0) { hudhealthmax = 100; }
+
+        SetInventory("SamsaraHealthOverMax", hudhealthmax * 2);
+        SetInventory("SamsaraHealthOverOverMax", hudhealthmax * 3);
+    } else {
+        if (filltype > 0) { SetActorProperty(0, APROP_Health, healthmax); } // full refill regardless of setting
+    }
+}

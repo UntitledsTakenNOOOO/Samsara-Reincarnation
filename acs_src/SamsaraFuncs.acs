@@ -289,11 +289,21 @@ function void ApplyLMS(void)
 		}
 
 		if (GetCVar("samsara_lmsuniques")) {
-			GiveInventory("StrifeUpgradeCount", 10);
-			GiveInventory("HealthBonus", 100);
-			GiveInventory("StaminaUpgradeDamage", 100);
-			GiveInventory("AccuracyUpgrade1", 100);
-			GiveInventory("AccuracyUpgrade2", 100);
+            int supdone = 0;
+
+            while (supdone < 10)
+            {
+                GiveInventory("StaminaUpgradeDamage", 10);
+                GiveInventory("AccuracyUpgrade1", 10);
+                GiveInventory("AccuracyUpgrade2", 10);
+
+                if (CheckInventory("StrifeUpgradeCount") >= 10) { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 0, 0, 2); } // don't increase max health, only refill it
+                else { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 2); }
+
+                GiveInventory("StrifeUpgradeCount", 1);
+
+                supdone++;
+            }
 		}
 	}
 
@@ -827,6 +837,8 @@ function int HandleUniqueSpawn(int respawning)
 	int cs = GetCVar("samsara_uniquestart");
 	int classnum = samsaraClassNum();
 	int i;
+
+    if (IsLMS() || GetCVar("samsara_lmsrules")) { return 0; }
 
 	switch (cs)
 	{
