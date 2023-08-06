@@ -1,188 +1,204 @@
-actor FlechetteCooldown : inventory { -INVBAR +INVENTORY.UNDROPPABLE inventory.maxamount 15 inventory.interhubamount 0 }
+actor FlechetteCooldown : Counter {}
 
 actor PortFlechette : CustomInventory
 {
-    tag "Poison Cloud Flechette"
-    +FLOATBOB
-    Inventory.Amount 1
-    Inventory.MaxAmount 1
+    Inventory.PickupMessage "Flechette"
+    Inventory.PickupSound "hexen/artiget"
     Inventory.PickupFlash "PickupFlash"
-    +INVBAR
-    +INVENTORY.UNDROPPABLE
+    Inventory.UseSound ""
     Inventory.Icon "ARTIPSBG"
-    Inventory.PickupSound "hexen/weaponget"
-    Inventory.UseSound "hexen/artiuse"
-    Inventory.PickupMessage "You picked up the Flechette!"
+    Inventory.MaxAmount 1
     Inventory.RestrictedTo "HexenPlayer"
+    Tag "Poison Cloud Flechette"
+    +FLOATBOB
+    +INVBAR
+    +UNDROPPABLE
     States
     {
       Spawn:
-        PSBG A 1 Bright
-        Loop
+        PSBG A -1 Bright
+        stop
 
+      // Parias
       Use:
-        TNT1 A 0 A_JumpIfInventory("HexenClassMode", 2, "UseFighter")
-        TNT1 A 0 A_JumpIfInventory("HexenClassMode", 1, "UseMage")
-        TNT1 A 0 A_JumpIfInventory("FlechetteCooldown",1,"UseFail")
-        TNT1 A 0 A_SpawnItemEx("PoisonBagCoop",0,0,0,0,0,0,0,28,0)
-        TNT1 A 1 ACS_NamedExecuteAlways("FlechetteCooldown")
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasDisabledInventoryCooldown", 1, 2)
+        TNT1 A 0 A_JumpIfInventory("HexenClassMode",2,"UseFighter")
+        TNT1 A 0 A_JumpIfInventory("HexenClassMode",1,"UseMage")
+      UseCleric:
+        TNT1 A 0 A_JumpIfInventory("FlechetteCooldown",1,"UseFailCooldownCleric")
+        TNT1 A 0 A_PlaySound("hexen/artiuse",CHAN_ITEM)
+        TNT1 A 0 A_SpawnItemEx("PoisonBagCoop",0,0,0,0,0,0,0,SXF_ABSOLUTEANGLE|SXF_ABSOLUTEVELOCITY|SXF_SETMASTER)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasDisabledInventoryCooldown",1,"UseFail")
         TNT1 A 0 A_GiveInventory("FlechetteCooldown",15)
-        TNT1 A 0
-        Fail
-        
+        TNT1 A 0 ACS_NamedExecuteAlways("FlechetteCooldown")
+        fail
+
+      UseFailCooldownCleric:
+        TNT1 A 0 A_Print("$FLECCOOLDOWN")
+        fail
+
+      // Daedolon (Time Bomb Flechette)
       UseMage:
-        TNT1 A 0 A_JumpIfInventory("FlechetteCooldown",1,"UseFailMage")
-        TNT1 A 0 A_SpawnItemEx("FireBombCoop",0,0,0,0,0,0,0,28,0)
-        TNT1 A 1 ACS_NamedExecuteAlways("FlechetteCooldown")
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasDisabledInventoryCooldown", 1, 2)
+        TNT1 A 0 A_JumpIfInventory("FlechetteCooldown",1,"UseFailCooldownMage")
+        TNT1 A 0 A_PlaySound("hexen/artiuse",CHAN_ITEM)
+        TNT1 A 0 A_SpawnItemEx("FireBombCoop",0,0,0,0,0,0,0,SXF_ABSOLUTEANGLE|SXF_ABSOLUTEVELOCITY|SXF_SETMASTER)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasDisabledInventoryCooldown",1,"UseFail")
         TNT1 A 0 A_GiveInventory("FlechetteCooldown",12)
-        TNT1 A 0
-        Fail
+        TNT1 A 0 ACS_NamedExecuteAlways("FlechetteCooldown")
+        fail
 
+      UseFailCooldownMage:
+        TNT1 A 0 A_Print("$FLECCOOLDOWNMAGE")
+        fail
+
+      // Baratus (Throwing Flechette)
       UseFighter:
-        TNT1 A 0 A_JumpIfInventory("FlechetteCooldown",1,"UseFailFighter")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"UseFighterCoop")
-        TNT1 A 0 A_FireCustomMissile("ThrowingBomb2")
-      UseFighterFinish:
-        TNT1 A 1 ACS_NamedExecuteAlways("FlechetteCooldown")
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasDisabledInventoryCooldown", 1, 2)
+        TNT1 A 0 A_JumpIfInventory("FlechetteCooldown",1,"UseFailCooldownFighter")
+        TNT1 A 0 A_PlaySound("hexen/artiuse",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("SamsaraHexenThrowingFlechetteAttackHandler")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasDisabledInventoryCooldown",1,"UseFail")
         TNT1 A 0 A_GiveInventory("FlechetteCooldown",9)
-        TNT1 A 0
-        Fail
+        TNT1 A 0 ACS_NamedExecuteAlways("FlechetteCooldown")
+        fail
 
-      UseFighterCoop:
-        TNT1 A 0 A_FireCustomMissile("ThrowingBomb2Coop")
-        Goto UseFighterFinish
+      UseFailCooldownFighter:
+        TNT1 A 0 A_Print("$FLECCOOLDOWNFIGHTER")
+        fail
 
       UseFail:
-        TNT1 A 1 A_Print("$FLECCOOLDOWN")
-        Fail
-
-      UseFailMage:
-        TNT1 A 1 A_Print("$FLECCOOLDOWNMAGE")
-        Fail
-
-      UseFailFighter:
-        TNT1 A 1 A_Print("$FLECCOOLDOWNFIGHTER")
-        Fail
+        TNT1 A 0
+        fail
     }
 }
+
+// Parias
 
 actor PoisonBagCoop
 {
-    Speed 1
     Radius 20
     Height 30
-    Mass 0x7fffffff
-    DeathSound "PoisonShroomDeath"
     DamageType "PoisonCloud"
-    +NOBLOCKMAP
-    +NOGRAVITY
-    +DROPOFF
-    +NODAMAGETHRUST
-    +DONTSPLASH
-    +FOILINVUL
-    +PIERCEARMOR
-    +FORCERADIUSDMG
-    +BLOODLESSIMPACT
+    ReactionTime 7
+    Mass 0x7FFFFFFF
     Obituary "$SAMSARA_HEXEN_OB_SLOT1"
+    +BLOODLESSIMPACT
+    +DONTSPLASH
+    +DROPOFF
+    +FOILINVUL
+    +FORCERADIUSDMG
+    +NOBLOCKMAP
+    +NODAMAGETHRUST
+    +NOGRAVITY
+    +PIERCEARMOR
     States
     {
       Spawn:
         PSBG A 20 Bright // Previously 18
-        PSBG B 4 Bright
-        PSBG C 4 BRIGHT
+        PSBG BC 4 Bright
         TNT1 A 0 A_SetTranslucent(0.7,1)
-        PSBG D 1 BRIGHT A_Scream
-        PSBG D 1 BRIGHT A_Explode(10,128,0)
-
-      Poison:
-        PSBG EEEFFFGGGHHHIII 2 BRIGHT A_Explode(6,128,0)
-        PSBG EEEFFFGGGHHHIII 2 BRIGHT A_Explode(6,128,0)
-        PSBG EEEFFFGGGHHHIII 2 BRIGHT A_Explode(6,128,0)
-        PSBG EEEFFFGGGHHHIII 2 BRIGHT A_Explode(6,128,0)
-        PSBG EEEFFFGGGHHHIII 2 BRIGHT A_Explode(6,128,0)
-        PSBG EEEFFFGGGHHHIII 2 BRIGHT A_Explode(6,128,0)
-        PSBG EEEFFFGGGHHHIII 2 BRIGHT A_Explode(6,128,0)
+        PSBG D 1 Bright A_PlaySound("PoisonShroomDeath",CHAN_VOICE)
+        PSBG D 1 Bright A_Explode(10,128,0)
+      SpawnLoop:
+        PSBG EEEFFFGGGHHHIII 2 Bright A_Explode(6,128,0)
+        TNT1 A 0 A_Countdown
+        loop
 
       Death:
-        PSBG HG 7 BRIGHT
-        PSBG FD 6 BRIGHT
-        Stop
+        PSBG HG 7 Bright
+        PSBG FD 6 Bright
+        stop
     }
 }
 
+// Daedolon
+
 actor FireBombCoop : PoisonBagCoop
 {
-    DeathSound "FighterHammerExplode"
+    DamageType "FireExplosive"
+    -BLOODLESSIMPACT
+    -NODAMAGETHRUST
+    -PIERCEARMOR
     States
     {
       Spawn:
-        PSBG A 20 Bright // Previously 18
-        PSBG B 4 Bright
-        PSBG C 4 BRIGHT
-        TNT1 A 0 A_SetTranslucent(0.7,1)
-        PSBG D 2 BRIGHT A_Scream
-
-      Explode:
-        XPL1 A 0 Bright A_Explode(128, 128)
-        TNT1 A 1 A_SpawnItemEx("HexenFireBombExplosion", 0,0,24,0,0,0,0, SXF_NOCHECKPOSITION)
-//        XPL1 BCDEF 4 Bright
-        Stop
+        PSBG A 20 // Previously 40
+        PSBG BC 4
+        TNT1 A 0 A_PlaySound("ClericFlameCircle",CHAN_VOICE)
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_Explode(128,128)
+        TNT1 A 1 A_SpawnItemEx("HexenFireBombExplosion",0,0,24,0,0,0,0,SXF_NOCHECKPOSITION)
+        stop
     }
 }
 
 actor HexenFireBombExplosion 
 {
+    RenderStyle "Add"
+    Alpha 0.9
     +CLIENTSIDEONLY
     +NOINTERACTION
-    Renderstyle Add
-    Alpha 0.50
     States
     {
-        Spawn:
-            XPL1 ABCDEF 4 Bright
-            Stop
+      Spawn:
+        XPL1 ABCDEF 4 Bright
+        stop
     }
 }
 
-ACTOR ThrowingBomb2 : ThrowingBomb
+// Baratus
+
+actor SamsaraHexenThrowingFlechetteAttackHandler : Trigger
 {
+    States
+    {
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
+        TNT1 A 0 A_FireCustomMissile("ThrowingBomb2",0,false)
+        stop
+
+      PickupCoop:
+        TNT1 A 0 A_FireCustomMissile("ThrowingBomb2Coop",0,false)
+        stop
+    }
+}
+
+actor ThrowingBomb2 : ThrowingBomb
+{
+    DamageType "FireExplosive"
+    BounceType "Hexen"
+    SeeSound ""
+    BounceSound "FlechetteBounce"
     DeathSound "ClericFlameCircle"
     States
     {
-    Spawn:
+      Spawn:
         H106 A 4 A_CheckThrowBomb
         H106 BCDE 3 A_CheckThrowBomb
         H106 F 3 A_CheckThrowBomb2
-        Loop
+        loop
+
+      Tail:
         H106 G 6 A_CheckThrowBomb
         H106 F 4 A_CheckThrowBomb
         H106 H 6 A_CheckThrowBomb
         H106 F 4 A_CheckThrowBomb
         H106 G 6 A_CheckThrowBomb
         H106 F 3 A_CheckThrowBomb
-        Wait
-    // Needed for GZDoom compatibility
-    Tail:
-        H106 G 6 A_CheckThrowBomb
-        H106 F 4 A_CheckThrowBomb
-        H106 H 6 A_CheckThrowBomb
-        H106 F 4 A_CheckThrowBomb
-        H106 G 6 A_CheckThrowBomb
-        H106 F 3 A_CheckThrowBomb
-        Wait
-    Death:
+        wait
+
+      Death:
         CFCF Q 4 Bright A_NoGravity
         CFCF R 3 Bright A_Scream
+        TNT1 A 0 A_AlertMonsters
         CFCF S 4 Bright A_Explode
         CFCF T 3 Bright
         CFCF U 4 Bright
         CFCF W 3 Bright
         CFCF X 4 Bright
         CFCF Z 3 Bright
-        Stop
+        stop
     }
 }
 
