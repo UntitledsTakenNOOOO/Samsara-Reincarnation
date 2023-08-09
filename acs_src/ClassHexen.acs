@@ -45,3 +45,41 @@ Script "FlechetteCooldown" (void)
         restart;
     }
 }
+
+script "SamsaraHexenSerpentStaffMeleeHealCheck" (void)
+{
+    // initialize tid
+
+    int pufftid = UniqueTID();
+
+    Thing_ChangeTID(0, pufftid);
+
+    // get owner's current team
+
+    int curteam;
+
+    if (isTeamGame())
+    {
+        SetActivator(pufftid, AAPTR_TARGET);
+
+        curteam = CheckInventory("SamsaraCurrentTeam");
+    }
+
+    // check if the shootable is eligible to give health
+
+    SetActivator(pufftid, AAPTR_TRACER);
+
+    bool playercheck = IsPlayerOrBot(0) && (isFreeForAll() || (isTeamGame() && CheckInventory("SamsaraCurrentTeam") != curteam) || GetCVar("teamdamage") > 0);
+    bool invulncheck = CheckFlag(0, "INVULNERABLE") ||
+                       CheckInventory("SamsaraPowerInvulnerableNormal") || CheckInventory("SamsaraPowerInvulnerableDoom64") || CheckInventory("SamsaraPowerInvulnerableGoldMap") ||
+                       CheckInventory("SamsaraPowerInvulnerableGrey") || CheckInventory("QuakePentagram") || CheckInventory("GodProtection") ||
+                       CheckInventory("DogProtection") || CheckInventory("PainkillerDemonMorphInvulnerability") || CheckInventory("SamsaraPowerInvulnerableDXEnviro1") ||
+                       CheckInventory("SamsaraPowerInvulnerableDXEnviro2") || CheckInventory("SamsaraPowerInvulnerableDXEnviro3") || CheckInventory("SamsaraPowerInvulnerableDXEnviro4");
+
+    if ((playercheck || CheckFlag(0, "ISMONSTER")) && !CheckFlag(0, "DORMANT") && !invulncheck) { SetResultValue(1); }
+    else { SetResultValue(0); }
+
+    // clear tid just in case
+
+    Thing_ChangeTID(pufftid, 0);
+}
