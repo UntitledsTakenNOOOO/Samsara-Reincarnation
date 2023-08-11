@@ -660,7 +660,7 @@ Script "Painkiller_Freeze" (int thaw, int thawhealth, int renderstyle)
 	}
 }
 
-// Used for non-bleeding enemies
+// Used for non-bleeding enemies like robots that don't have souls
 Script "Painkiller_Freeze2" (int thaw, int thawhealth, int renderstyle)
 {
 	int freezetimer, loopcounter, health, render;
@@ -698,7 +698,7 @@ Script "Painkiller_Freeze2" (int thaw, int thawhealth, int renderstyle)
 				}
 
 				if(GetActorProperty(0,APROP_Health) > GetActorProperty(0,APROP_SpawnHealth)/2)
-					ACS_NamedExecuteWithResult("Painkiller_Freeze",2,health,render,0);
+					ACS_NamedExecuteWithResult("Painkiller_Freeze2",2,health,render,0);
 				else
 				{
 					Thing_SetTranslation(0,0);
@@ -725,7 +725,7 @@ Script "Painkiller_Freeze2" (int thaw, int thawhealth, int renderstyle)
 					if(freezetimer >= 175)
 					{
 						SetActorFlag(0,"BUDDHA",0);
-						ACS_NamedExecuteWithResult("Painkiller_Freeze",2,health,render,0);
+						ACS_NamedExecuteWithResult("Painkiller_Freeze2",2,health,render,0);
 						terminate;
 					}
 
@@ -735,6 +735,98 @@ Script "Painkiller_Freeze2" (int thaw, int thawhealth, int renderstyle)
 				Thing_SetTranslation(0,0);
 				SetActorProperty(0,APROP_RenderStyle,render);
 				GiveInventory("Painkiller_IceShatter2",1);
+			}
+			break;
+		Case 2:
+			SetActorProperty(0,APROP_Invulnerable,0);
+			SetActorProperty(0,APROP_Health,thawhealth);
+			SetActorProperty(0,APROP_RenderStyle,renderstyle);
+			SetActorState(0,"PainkillerIceThaw",true);
+			for(loopcounter = 2458; loopcounter > 2449; loopcounter--)
+			{
+				Thing_SetTranslation(0,loopcounter);
+				Delay(2);
+			}
+			Thing_SetTranslation(0,0);
+			break;
+	}
+}
+
+// Used for enemies like flemoids that don't have gibs
+Script "Painkiller_Freeze3" (int thaw, int thawhealth, int renderstyle)
+{
+	int freezetimer, loopcounter, health, render;
+	//CreateTranslation(2449,0:255=0:255);
+	CreateTranslation(2450,0:255=%[0,0,0]:[1.0,1.0,1.0]);
+	CreateTranslation(2451,0:255=%[0,0,0]:[1.075,1.125,1.125]);
+	CreateTranslation(2452,0:255=%[0,0,0]:[1.15,1.25,1.25]);
+	CreateTranslation(2453,0:255=%[0,0,0]:[1.125,1.375,1.375]);
+	CreateTranslation(2454,0:255=%[0,0,0]:[1.325,1.5,1.5]);
+	CreateTranslation(2455,0:255=%[0,0,0]:[1.4,1.625,1.625]);
+	CreateTranslation(2456,0:255=%[0,0,0]:[1.475,1.75,1.75]);
+	CreateTranslation(2457,0:255=%[0,0,0]:[1.525,1.875,1.875]);
+	CreateTranslation(2458,0:255=%[0,0,0]:[1.6,2.0,2.0]);
+	switch(thaw)
+	{
+		Case 1:
+			health = GetActorProperty(0, APROP_Health);
+			render = GetActorProperty(0, APROP_RenderStyle);
+			SetActorProperty(0,APROP_RenderStyle,STYLE_NORMAL);
+			SetActorProperty(0,APROP_Invulnerable,1);
+
+			if(GetCVar("sams_runninginzandro"))
+			{
+				for(loopcounter = 2450; loopcounter < 2459; loopcounter++)
+				{	
+					Thing_SetTranslation(0,loopcounter);
+					Delay(2);
+				}
+
+				freezetimer = 0;
+				while(freezetimer <= 175)
+				{
+					freezetimer++;
+					Delay(1);
+				}
+
+				if(GetActorProperty(0,APROP_Health) > GetActorProperty(0,APROP_SpawnHealth)/2)
+					ACS_NamedExecuteWithResult("Painkiller_Freeze3",2,health,render,0);
+				else
+				{
+					Thing_SetTranslation(0,0);
+					SetActorProperty(0,APROP_RenderStyle,render);
+					GiveInventory("Painkiller_IceShatter",1);
+				}
+			}
+			else
+			{
+				SetActorProperty(0,APROP_Health,health/2);
+
+				for(loopcounter = 2450; loopcounter < 2459; loopcounter++)
+				{	
+					Thing_SetTranslation(0,loopcounter);
+					Delay(2);
+				}
+
+				SetActorProperty(0,APROP_Invulnerable,0);
+				SetActorFlag(0,"BUDDHA",1);
+
+				while(GetActorProperty(0,APROP_Health) > 1)
+				{
+					freezetimer++;
+					if(freezetimer >= 175)
+					{
+						SetActorFlag(0,"BUDDHA",0);
+						ACS_NamedExecuteWithResult("Painkiller_Freeze3",2,health,render,0);
+						terminate;
+					}
+
+					Delay(1);
+				}
+				SetActorFlag(0,"BUDDHA",0);
+				Thing_SetTranslation(0,0);
+				SetActorProperty(0,APROP_RenderStyle,render);
+				GiveInventory("Painkiller_IceShatter3",1);
 			}
 			break;
 		Case 2:
