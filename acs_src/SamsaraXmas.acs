@@ -1,8 +1,7 @@
 int musicselect;
 
-Script "Samsara_XMAS_XmasTextures" OPEN
+Script "Samsara_XMAS_XmasTextures" (int alreadyactive)
 {
-	int alreadyactive;
 	int sectorCount;
 	
 	If(GetCvar("samsara_MerryChristmas") == TRUE && alreadyactive == false)
@@ -17,18 +16,11 @@ Script "Samsara_XMAS_XmasTextures" OPEN
 		SetGlobalFogParameter(FOGP_DENSITY, 32);
 		
 		alreadyactive = 1;
+		
+		SetResultValue(1);
 	}
-	Else
-	{
-		delay(15);
-		restart;
-	}
-	
-	if(alreadyactive == 1)
-	{
-		delay(15);
-		restart;
-	}
+	else
+		SetResultValue(0);
 }
 
 Script "Samsara_XMAS_XmasCheck" (void)
@@ -45,56 +37,19 @@ Script "Samsara_XMAS_XmasCheck" (void)
 	}
 }
 
-Script "Samsara_XMAS_SnowCreator" Open clientside
+Script "Samsara_XMAS_SnowCreator" (void) clientside
 {
-	bool snowon;
-	If(GetUserCvar(ConsolePlayerNumber(),"samsara_cl_MerryChristmasSnow") && snowon == false && GetCvar("samsara_MerryChristmas"))
+	int snowTid;
+	for(int a = -768; a < 768; a+=96)
 	{
-		for(int a = -8192; a < 8192; a+=192)
+		for(int b = -768; b < 768; b+=96)
 		{
-			for(int b = -8192; b < 8192; b+=192)
-			{
-				SpawnForced("SnowGenerator", a*random(0.4,0.6), b*random(0.4,0.6), 0, 0, 0);
-			}
+			snowTid = UniqueTid();
+			SpawnForced("Samsara_XMAS_Snow", GetActorX(0) + (a<<16), GetActorY(0) + (b<<16), 0, snowTid, 0);
+			SetActorPosition(snowTid,GetActorX(snowTid),GetActorY(snowTid),GetActorCeilingZ(snowTid)-GetActorProperty(snowTid,APROP_Height),0);
+			SetActorVelocity(snowTid,random(-1.0,1.0),random(-1.0,1.0),-random(1.0,2.0),0,0);
+			if(!ACS_NamedExecuteWithResult("IsThisSky",snowTid)) { Thing_Remove(snowTid); continue; }
+			Thing_ChangeTid(snowTid,0);
 		}
-		snowon = true;
-		Delay(15);
-		restart;
-	}
-	Else if(GetUserCvar(ConsolePlayerNumber(),"samsara_cl_MerryChristmasSnow") == false || GetCvar("samsara_MerryChristmas") == false)
-	{
-		snowon = false;
-		Delay(15);
-		restart;
-	}
-	Else
-	{
-		Delay(15);
-		restart;
-	}
-}
-
-Script "Samsara_XMAS_SnowGenerator" (void) clientside
-{
-	SetResultValue(CheckActorCeilingTexture(0, "F_SKY1"));
-	terminate;
-}
-
-Script "Samsara_XMAS_SnowCheck" (void) clientside
-{
-	If(GetUserCvar(ConsolePlayerNumber(),"samsara_cl_MerryChristmasSnow") && GetCvar("samsara_MerryChristmas") != false)
-	{	
-		SetResultValue(1);
-		terminate;
-	}
-	Else if(GetUserCvar(ConsolePlayerNumber(),"samsara_cl_MerryChristmasSnow") == false || GetCvar("samsara_MerryChristmas") == false)
-	{
-		SetResultValue(0);
-		terminate;
-	}
-	Else
-	{
-		SetResultValue(0);
-		terminate;
 	}
 }
