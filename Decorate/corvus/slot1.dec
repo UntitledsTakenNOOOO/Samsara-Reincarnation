@@ -229,11 +229,11 @@ actor SamsaraHereticGauntletsAttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
       PickupAttackDM:
-        TNT1 A 0 A_Saw("","",random(1,8)*2,"GauntletPuff1DM",SF_NORANDOM|SF_RANDOMLIGHTBOTH) //A_GauntletAttack(0)
+        TNT1 A 0 A_Saw("","",random(1,8)*2,"GauntletPuff1DM",SF_NORANDOM|SF_RANDOMLIGHTBOTH|SF_NOUSEAMMO) //A_GauntletAttack(0)
         goto PickupFinish
 
       PickupAttackCoop:
-        TNT1 A 0 A_Saw("","",random(1,8)*2,"GauntletPuff1Coop",SF_NORANDOM|SF_RANDOMLIGHTBOTH)
+        TNT1 A 0 A_Saw("","",random(1,8)*2,"GauntletPuff1Coop",SF_NORANDOM|SF_RANDOMLIGHTBOTH|SF_NOUSEAMMO)
         goto PickupFinish
 
       // Finishing stuff
@@ -248,15 +248,17 @@ actor SamsaraHereticGauntletsAttackHandler : Trigger
 
 actor GauntletPuff1DM : GauntletPuff1
 {
+    +NOTIMEFREEZE
     +PUFFGETSOWNER
     States
     {
         Spawn:
         Melee:
         XDeath:
-            TNT1 A 0
+            PUF1 A 0 Bright
             TNT1 A 0 A_GiveToTarget("SamsaraHereticGauntletsHitActor")
         Crash:
+            TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
             Goto Super::Spawn
     }
 }
@@ -282,11 +284,11 @@ actor SamsaraHereticGauntletsPoweredAttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
       PickupAttackDM:
-        TNT1 A 0 A_Saw("","",random(1,8)*2,"GauntletPuff2DM",SF_NORANDOM|SF_RANDOMLIGHTBOTH,256,1.40625,0,0.5) //A_GauntletAttack(1)
+        TNT1 A 0 A_Saw("","",random(1,8)*2,"GauntletPuff2DM",SF_NORANDOM|SF_RANDOMLIGHTBOTH|SF_NOUSEAMMO,256,1.40625,0,0.5) //A_GauntletAttack(1)
         goto PickupFinish
 
       PickupAttackCoop:
-        TNT1 A 0 A_Saw("","",random(1,8)*2,"GauntletPuff2Coop",SF_NORANDOM|SF_RANDOMLIGHTBOTH,256,1.40625,0,0.5)
+        TNT1 A 0 A_Saw("","",random(1,8)*2,"GauntletPuff2Coop",SF_NORANDOM|SF_RANDOMLIGHTBOTH|SF_NOUSEAMMO,256,1.40625,0,0.5)
         goto PickupFinish
 
       // Finishing stuff
@@ -301,15 +303,17 @@ actor SamsaraHereticGauntletsPoweredAttackHandler : Trigger
 
 actor GauntletPuff2DM : GauntletPuff2
 {
+    +NOTIMEFREEZE
     +PUFFGETSOWNER
     States
     {
         Spawn:
         Melee:
         XDeath:
-            TNT1 A 0
+            PUF1 E 0 Bright
             TNT1 A 0 A_GiveToTarget("SamsaraHereticGauntletsHitActor")
         Crash:
+            TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
             Goto Super::Spawn
     }
 }
@@ -318,26 +322,24 @@ actor GauntletPuff2Coop : GauntletPuff2DM { +MTHRUSPECIES }
 
 // Lesser powered (unused)
 
-ACTOR GauntletPuff3
+actor GauntletPuff3 : GauntletPuff1
 {
-	Radius 20
-	Height 16
-	+NOBLOCKMAP
-	+NOGRAVITY
-	+NOTELEPORT
-	+CANNOTPUSH
+    VSpeed 0
+	RenderStyle "Add"
+    Alpha 1
 	+FORCEPAIN
-	+NOINTERACTION
-	+PUFFONACTORS
-	RenderStyle Add
+	+NOTIMEFREEZE
+	+PUFFGETSOWNER
 	States
 	{
 		Spawn:
 		Melee:
 		XDeath:
-            TNT1 A 0
+            H105 P 0 Bright
             TNT1 A 0 A_GiveToTarget("SamsaraHereticGauntletsHitActor")
-			H105 PQR 12 Bright
+		Crash:
+            H105 P 12 Bright A_ChangeFlag("NOTIMEFREEZE",false)
+			H105 QR 12 Bright
 			Stop
 	}
 }
