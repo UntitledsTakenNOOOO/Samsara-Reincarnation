@@ -162,3 +162,33 @@ script "SamsaraHexenWeaponPaletteBlend" (int weapon) CLIENTSIDE
         }
     }
 }
+
+script "SamsaraHexenAmmoRefill" (int ammotype)
+{
+    str ammoname = "Placeholder";
+    int ammoamount = 0;
+
+    int maxClip = GetCVar("samsara_max_clip");
+    int maxCell = GetCVar("samsara_max_cell");
+    int hasBackpack = 1 + (CheckInventory("Backpack") || CheckInventory("BagOfHolding") || CheckInventory("AmmoSatchel") || CheckInventory("Zorchpack"));
+
+    switch (ammotype)
+    {
+      case 0:
+        ammoname = "Clip";
+        if (CheckInventory("Hexen2Class")) { ammoamount = (((maxClip * 5) / 4) * hasBackpack + CheckInventory("Hexen2BlueManaAdd")) / 2; }
+        else { ammoamount = (maxClip * hasBackpack) / 2; }
+        break;
+
+      case 1:
+        ammoname = "Cell";
+        if (CheckInventory("Hexen2Class")) { ammoamount = (((maxCell * 5) / 6) * hasBackpack + CheckInventory("Hexen2GreenManaAdd")) / 2; }
+        else { ammoamount = (maxCell * hasBackpack) / 2; }
+        break;
+
+      default:
+        terminate;
+    }
+
+    SetInventory(ammoname, CheckInventory(ammoname) + ammoamount);
+}
