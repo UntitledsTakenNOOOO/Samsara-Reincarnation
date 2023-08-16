@@ -72,7 +72,8 @@ script "SamsaraHexenSerpentStaffMeleeHealCheck" (void)
     bool playercheck = IsPlayerOrBot(0) && (isFreeForAll() || (isTeamGame() && CheckInventory("SamsaraCurrentTeam") != curteam) || GetCVar("teamdamage") > 0);
     bool invulncheck = CheckFlag(0, "INVULNERABLE") ||
                        CheckInventory("SamsaraPowerInvulnerableNormal") || CheckInventory("SamsaraPowerInvulnerableDoom64") || CheckInventory("SamsaraPowerInvulnerableGoldMap") ||
-                       CheckInventory("SamsaraPowerInvulnerableGrey") || CheckInventory("QuakePentagram") || CheckInventory("GodProtection") ||
+                       CheckInventory("SamsaraPowerInvulnerableGrey") || CheckInventory("SamsaraPowerInvulnerableGreyCleric") || CheckInventory("SamsaraPowerInvulnerableGreyMage") ||
+                       CheckInventory("SamsaraPowerInvulnerableGreyFighter") || CheckInventory("QuakePentagram") || CheckInventory("GodProtection") ||
                        CheckInventory("DogProtection") || CheckInventory("PainkillerDemonMorphInvulnerability") || CheckInventory("SamsaraPowerInvulnerableDXEnviro1") ||
                        CheckInventory("SamsaraPowerInvulnerableDXEnviro2") || CheckInventory("SamsaraPowerInvulnerableDXEnviro3") || CheckInventory("SamsaraPowerInvulnerableDXEnviro4");
 
@@ -191,4 +192,67 @@ script "SamsaraHexenAmmoRefill" (int ammotype)
     }
 
     SetInventory(ammoname, CheckInventory(ammoname) + ammoamount);
+}
+
+script "SamsaraHexenInvulnerabilityEffect" (int invulnmode)
+{
+    if (invulnmode >= 1) // Reflective Invulnerability
+    {
+        while (CheckInventory("SamsaraPowerInvulnerableGreyMage"))
+        {
+            if (!CheckFlag(0, "REFLECTIVE")) { GiveInventory("SamsaraHexenMageInvulnerabilityReflectiveOn", 1); }
+
+            Delay(1);
+        }
+
+        if (CheckFlag(0, "REFLECTIVE")) { GiveInventory("SamsaraHexenMageInvulnerabilityReflectiveOff", 1); }
+    } else { // Ghost Invulnerability
+        // commented out values refer to the player alpha; can't have separate values for player and weapon
+        int newalpha1 = 0.695312; //0.59375;
+        int newalpha2 = 0.554688; //0.40625;
+        int newalpha3 = 0.25; //0.0;
+
+        while (CheckInventory("SamsaraPowerInvulnerableGreyCleric"))
+        {
+            if (!CheckFlag(0, "SHADOW")) // Don't mess with the translucency settings if an invisibility powerup is active.
+            {
+                int alpha = GetActorProperty(0, APROP_Alpha);
+
+                if (!(Timer() & 7) && alpha > 0.0 && alpha < 1.0)
+                {
+                    if (alpha == newalpha1) { alpha = newalpha2; }
+                    else
+                    {
+                        alpha = newalpha3;
+                        if (!CheckFlag(0, "NONSHOOTABLE")) { GiveInventory("SamsaraHexenClericInvulnerabilityNonShootableOn", 1); }
+                    }
+                }
+
+                if (!(Timer() & 31))
+                {
+                    if (alpha == newalpha3)
+                    {
+                        if (CheckFlag(0, "NONSHOOTABLE")) { GiveInventory("SamsaraHexenClericInvulnerabilityNonShootableOff", 1); }
+                        alpha = newalpha2;
+                    }
+                    else { alpha = newalpha1; }
+                }
+
+                SetActorProperty(0, APROP_RenderStyle, STYLE_Translucent);
+                SetActorProperty(0, APROP_Alpha, alpha);
+            } else {
+                if (CheckFlag(0, "NONSHOOTABLE")) { GiveInventory("SamsaraHexenClericInvulnerabilityNonShootableOff", 1); }
+            }
+
+            Delay(1);
+        }
+
+        if (CheckFlag(0, "NONSHOOTABLE")) { GiveInventory("SamsaraHexenClericInvulnerabilityNonShootableOff", 1); }
+
+        if (!CheckFlag(0, "SHADOW")) // Don't mess with the translucency settings if an invisibility powerup is active.
+        {
+            SetActorProperty(0, APROP_RenderStyle, STYLE_Normal);
+            SetActorProperty(0, APROP_Alpha, 1.0);
+        }
+    }
 }
