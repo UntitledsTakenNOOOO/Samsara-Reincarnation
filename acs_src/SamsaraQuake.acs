@@ -59,7 +59,7 @@ script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
     int healthGiven, healthMax;
     int opowercount, powercount, offset;
     
-    if (samsaraClassNum() != CLASS_QUAKE && samsaraClassNum() != CLASS_BITTERMAN ) { terminate; }
+    if (samsaraClassNum() != CLASS_QUAKE && samsaraClassNum() != CLASS_BITTERMAN) { terminate; }
 
     quadTimer   = CheckQuad();
     regenTimer  = CheckInventory("QuakeRegenTimer");
@@ -75,10 +75,15 @@ script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
 
         if (health <= 0)
         {
-            quadTimer = CheckQuad(); 
-            TakeInventory("QuakeQuadTimer", quadTimer);
-            if (CheckInventory("QuakeQuadTimer")) { SetInventory("SamsaraQuadDamageCooldownDisplay", CheckInventory("QuakeQuadTimer") / 35 + 1); }
-            else { SetInventory("SamsaraQuadDamageCooldownDisplay", 0); }
+            if (CheckInventory("SamsaraHasDisabledInventoryCooldown")) { TakeInventory("QuakeQuadTimer", 0x7FFFFFFF); }
+            else
+            {
+                quadTimer = CheckQuad(); 
+                TakeInventory("QuakeQuadTimer", quadTimer);
+            }
+
+            if (!CheckInventory("QuakeQuadTimer") || CheckInventory("QuakeQuadTimer") > 2100 || CheckInventory("SamsaraHasDisabledInventoryCooldown")) { SetInventory("SamsaraQuadDamageCooldownDisplay", 0); }
+            else { SetInventory("SamsaraQuadDamageCooldownDisplay", CheckInventory("QuakeQuadTimer") / 35 + 1); }
 
             TakeInventory("QuakeRegenTimer", 0x7FFFFFFF);
             TakeInventory("QuakeInvisTimer", 0x7FFFFFFF);
@@ -139,6 +144,13 @@ script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
                 HudMessage(s:""; HUDMSG_PLAIN, 58102, CR_UNTRANSLATED, 0, 0, 1);
             }
             TakeInventory("QuadDamagePower", 1);
+
+            if (CheckInventory("SamsaraHasDisabledInventoryCooldown"))
+            {
+                TakeInventory("QuakeQuadTimer", 0x7FFFFFFF);
+                if (!CheckInventory("QuakeQuadTimer") || CheckInventory("QuakeQuadTimer") > 2100 || CheckInventory("SamsaraHasDisabledInventoryCooldown")) { SetInventory("SamsaraQuadDamageCooldownDisplay", 0); }
+                else { SetInventory("SamsaraQuadDamageCooldownDisplay", CheckInventory("QuakeQuadTimer") / 35 + 1); }
+            }
         }
 
         if (quadTimer == 105)
@@ -153,7 +165,7 @@ script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
 
         if (quadTimer == -QUAD_THRESHOLD)
         {
-            if (CheckInventory("CantQuad") && CheckInventory("QuadDamageItem") && !UnloadingNow)
+            if (CheckInventory("CantQuad") && CheckInventory("QuadDamageItem") && !CheckInventory("SamsaraHasDisabledInventoryCooldown") && !UnloadingNow)
             {
                 LocalAmbientSound("quakeweps/quadready", 96);
                 SetHudSize(240, 180, 1);
@@ -338,8 +350,8 @@ script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
         }
 
         TakeInventory("QuakeQuadTimer", 1);
-        if (CheckInventory("QuakeQuadTimer")) { SetInventory("SamsaraQuadDamageCooldownDisplay", CheckInventory("QuakeQuadTimer") / 35 + 1); }
-        else { SetInventory("SamsaraQuadDamageCooldownDisplay", 0); }
+        if (!CheckInventory("QuakeQuadTimer") || CheckInventory("QuakeQuadTimer") > 2100 || CheckInventory("SamsaraHasDisabledInventoryCooldown")) { SetInventory("SamsaraQuadDamageCooldownDisplay", 0); }
+        else { SetInventory("SamsaraQuadDamageCooldownDisplay", CheckInventory("QuakeQuadTimer") / 35 + 1); }
 
         TakeInventory("QuakeRegenTimer", 1);
         TakeInventory("QuakeInvisTimer", 1);
