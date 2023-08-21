@@ -61,7 +61,10 @@ script "SamsaraOpen" open  //623 -- SAMSARA_OPEN
         if (GameType() == GAME_TITLE_MAP) { terminate; }
 		HudMessage(s:"Samsara Reincarnation 2.0"; HUDMSG_FADEOUT|HUDMSG_LOG, 93002, CR_GOLD, 1.5, 0.265, 2.0, 0.5);
 		HudMessage(s:"Press ",k:"samsara_compendium",s:" for extra information"; HUDMSG_FADEOUT|HUDMSG_LOG, 93003, CR_GOLD, 1.5, 0.285, 2.0, 0.5);
-        if (isSinglePlayer())
+		
+		ACS_NamedExecuteWithResult("SamsaraPlayerTipSystem", 0, 0, 0);
+		
+		if (isSinglePlayer())
         {
             if(GetCvar("samsara_cvarinfo") == 0)
             {
@@ -3104,4 +3107,29 @@ script "SamsaraUnloading" UNLOADING //203
 	SetPlayerProperty(1,0,PROP_FROZEN);
 
     for (i = 0; i < UNLOADCOUNT; i++) { TakeInventory(UnloadRemove[i], 0x7FFFFFFF); }
+}
+
+// A more refined system to inform players about class tips and hints will be introduced
+// in a future update, but since this was introduced late into development, this will have to do.
+script "SamsaraPlayerTipSystem" (void) clientside
+{
+	int pln = PlayerNumber(); // ensure only the activator gets the messages
+	int cpln = ConsolePlayerNumber();
+	int class = samsaraClassNum();
+	
+	if (pln != cpln) { terminate; }
+	
+	SetFont("CMPSDOOM");
+	if (GetCVar("samsara_cl_classtips"))
+	{
+		if (class == CLASS_PAINKILLER)
+		{
+			HudMessage(l:"SAMSARA_PAINKILLER_TIP"; HUDMSG_TYPEON | HUDMSG_LOG, 0, CR_WHITE, 1.5, 0.7, 5.0, 0.05, 2.0);
+		}
+		else if (class == CLASS_DEUSEX)
+		{
+			HudMessage(l:"SAMSARA_DEUSEX_TIP"; HUDMSG_TYPEON | HUDMSG_LOG, 0, CR_WHITE, 1.5, 0.7, 5.0, 0.05, 2.0);
+		}
+	}
+	
 }
