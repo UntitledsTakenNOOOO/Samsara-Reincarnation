@@ -93,83 +93,81 @@ script "SamsaraHexenSerpentStaffMeleeHealCheck" (void)
     Thing_ChangeTID(pufftid, 0);
 }
 
-script "SamsaraHexenWeaponPaletteBlend" (int weapon) CLIENTSIDE
+script "SamsaraHexenWeaponPaletteBlend" (int weapon, int blendcount) CLIENTSIDE
 {
-    while (true)
+    SetInventory("SamsaraHexenWeaponPaletteBlendCounter", blendcount);
+
+    while (CheckWeapon("Wraithverge") && !isDead(0) && CheckInventory("SamsaraHexenWeaponPaletteBlendCounter"))
     {
         int curblend = CheckInventory("SamsaraHexenWeaponPaletteBlendCounter");
 
-        if (CheckWeapon("Wraithverge") && !isDead(0) && curblend > 0)
+        bool flashmode = GetCVar("pf_hexenweaps");
+
+        int blendr = 0;
+        int blendg = 0;
+        int blendb = 0;
+        int blenda = 0.0;
+
+        if (weapon >= 1) // Bloodscourge
         {
-            bool flashmode = GetCVar("pf_hexenweaps");
-
-            int blendr = 0;
-            int blendg = 0;
-            int blendb = 0;
-            int blenda = 0.0;
-
-            if (weapon >= 1) // Bloodscourge
+            if (flashmode)
             {
-                if (flashmode)
+                if (curblend >= 3)
                 {
-                    if (curblend >= 3)
-                    {
-                        blendr = 100;
-                        blendg = 73;
-                    } else if (curblend == 2) {
-                        blendr = 125;
-                        blendg = 92;
-                    } else if (curblend == 1) {
-                        blendr = 150;
-                        blendg = 110;
-                    }
-
-                    blenda = 0.50196;
-                } else {
-                    blendr = 151;
+                    blendr = 100;
+                    blendg = 73;
+                } else if (curblend == 2) {
+                    blendr = 125;
+                    blendg = 92;
+                } else if (curblend == 1) {
+                    blendr = 150;
                     blendg = 110;
-
-                    if (curblend >= 3) { blenda = 0.50196; }
-                    else if (curblend == 2) { blenda = 0.33333; }
-                    else if (curblend == 1) { blenda = 0.16471; }
                 }
-            } else { // Wraithverge
-                if (flashmode)
-                {
-                    if (curblend >= 3)
-                    {
-                        blendr = 70;
-                        blendg = 70;
-                        blendb = 70;
-                    } else if (curblend == 2) {
-                        blendr = 100;
-                        blendg = 100;
-                        blendb = 100;
-                    } else if (curblend == 1) {
-                        blendr = 130;
-                        blendg = 130;
-                        blendb = 130;
-                    }
 
-                    blenda = 0.50196;
-                } else {
-                    blendr = 131;
-                    blendg = 131;
-                    blendb = 131;
+                blenda = 0.50196;
+            } else {
+                blendr = 151;
+                blendg = 110;
 
-                    if (curblend >= 3) { blenda = 0.50196; }
-                    else if (curblend == 2) { blenda = 0.33333; }
-                    else if (curblend == 1) { blenda = 0.16471; }
-                }
+                if (curblend >= 3) { blenda = 0.50196; }
+                else if (curblend == 2) { blenda = 0.33333; }
+                else if (curblend == 1) { blenda = 0.16471; }
             }
+        } else { // Wraithverge
+            if (flashmode)
+            {
+                if (curblend >= 3)
+                {
+                    blendr = 70;
+                    blendg = 70;
+                    blendb = 70;
+                } else if (curblend == 2) {
+                    blendr = 100;
+                    blendg = 100;
+                    blendb = 100;
+                } else if (curblend == 1) {
+                    blendr = 130;
+                    blendg = 130;
+                    blendb = 130;
+                }
 
-            FadeTo(blendr, blendg, blendb, blenda, 0.0);
-            Delay(1);
-        } else {
-            FadeTo(0, 0, 0, 0.0, 0.0);
-            terminate;
+                blenda = 0.50196;
+            } else {
+                blendr = 131;
+                blendg = 131;
+                blendb = 131;
+
+                if (curblend >= 3) { blenda = 0.50196; }
+                else if (curblend == 2) { blenda = 0.33333; }
+                else if (curblend == 1) { blenda = 0.16471; }
+            }
         }
+
+        FadeTo(blendr, blendg, blendb, blenda, 0.0);
+        Delay(1);
     }
+
+    FadeTo(0, 0, 0, 0.0, 0.0);
 }
 
 script "SamsaraHexenAmmoRefill" (int ammotype)

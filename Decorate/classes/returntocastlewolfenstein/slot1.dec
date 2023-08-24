@@ -87,7 +87,7 @@ Actor RTCW_Grenade : RTCW_Weapon
             RW00 B 0 A_GunFlash("ChargeStart",GFF_NOEXTCHANGE) // interpolation hack
             RW00 BC 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		FireCharge:
-			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"FireRelease")
+			RW00 C 0 A_JumpIfInventory("RTCW_GrenadeTimer",0,"FireReleaseOvercook")
             RW00 C 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			RW00 C 0 A_ReFire("FireCharge")
 		FireRelease:
@@ -111,6 +111,29 @@ Actor RTCW_Grenade : RTCW_Weapon
             RW00 B 0 A_GiveInventory("SamsaraRTCWGrenadeAttackHandler")
             RW00 B 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             RW00 C 0
+            TNT1 A 35 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+            TNT1 A 0 A_SelectWeapon("RTCW_Luger")
+            goto DeselectInstant
+
+        FireReleaseOvercook:
+			TNT1 A 0 A_GiveInventory("RTCW_FiringToken",1)
+            TNT1 A 0 A_GunFlash("ChargeRelease",GFF_NOEXTCHANGE)
+        FireReleaseOvercookLastShotCalc:
+            TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireReleaseOvercookContinue")
+            TNT1 A 0 A_JumpIfInventory("RocketAmmo",2,"FireReleaseOvercookContinue")
+            goto FireReleaseOvercookContinueLast
+
+        FireReleaseOvercookContinue:
+            TNT1 A 0 A_GiveInventory("SamsaraRTCWGrenadeOvercookAttackHandler")
+            TNT1 A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+            TNT1 A 35 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+            goto ReadyActualNoAmmoCheck
+
+        FireReleaseOvercookContinueLast:
+            TNT1 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
+            TNT1 A 0 A_PlaySound("RTCW/Change",CHAN_7)
+            TNT1 A 0 A_GiveInventory("SamsaraRTCWGrenadeOvercookAttackHandler")
+            TNT1 A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             TNT1 A 35 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
             TNT1 A 0 A_SelectWeapon("RTCW_Luger")
             goto DeselectInstant
@@ -172,6 +195,32 @@ actor SamsaraRTCWGrenadeAttackHandler : Trigger
       // Attack stuff
       PickupAttack:
         TNT1 A 0 A_PlaySound("RTCW/Grenade/Throw",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("RTCW_GrenadeProjectile",0,false,8,4)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("RTCW_GrenadeProjectileCoop",0,false,8,4)
+        stop
+    }
+}
+
+actor SamsaraRTCWGrenadeOvercookAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
       PickupAttackDM:

@@ -1,0 +1,183 @@
+actor Q2GrenadeLauncher : Q2Weapon
+{
+    Inventory.PickupMessage "Grenade Launcher"
+    Weapon.SlotNumber 8
+    Weapon.AmmoType "RocketAmmo"
+    Weapon.AmmoGive 5
+    Weapon.AmmoUse 1
+    Tag "Grenade Launcher"
+    +EXPLOSIVE
+    States
+    {
+      Spawn:
+        Q2WP A -1
+        stop
+
+      ReadyActual:
+        GRL1 A 1 A_WeaponReady
+        GRL1 A 0 A_Jump(32,2)
+        loop
+        GRL1 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]" 5 A_WeaponReady
+        GRL2 ABCDEFGHIJKLMN 5 A_WeaponReady
+        loop
+
+      Deselect:
+        GRL1 A 2 A_JumpIfHealthLower(1,"DeselectInstant")
+        GRL0 STUVW 3
+        goto DeselectInstant
+
+      Ready: // our "Select" state
+        TNT1 A 0 A_TakeInventory("Q2WeaponIndex")
+        GRL0 A 4 A_GiveInventory("Q2WeaponIndex",9)
+        GRL0 BCDEF 4
+        goto ReadyActual
+
+      Fire:
+        GRL0 H 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+        GRL0 H 0 A_JumpIfInventory("RocketAmmo",1,"FireStart")
+        goto FireDry
+
+      FireDry:
+        GRL1 A 0 A_ClearReFire
+        GRL1 A 0 A_PlaySound("Q2Weapons/NoAmmo",CHAN_5)
+        GRL1 A 0 A_SelectWeapon("Q2Blaster")
+        goto Deselect
+
+      FireStart:
+        GRL0 H 0 A_GiveInventory("SamsaraQuake2GrenadeLauncherAttackHandler")
+        GRL0 H 0 A_GunFlash // have to place it here for recoil
+        GRL0 HI 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        GRL0 J 0 A_GiveInventory("SamsaraQuake2GrenadeLauncherLoadSoundPlayer")
+        GRL0 JKLMNOPQR 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        GRL1 A 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto ReadyActual
+
+      Flash:
+        TNT1 A 1 A_Light2
+        TNT1 A 0 A_JumpIfInventory("SamsaraRecoilIsDisabled",1,"FlashNoRecoil")
+        goto FlashRecoil
+
+      FlashNoRecoil:
+        TNT1 AAAAA 1
+        TNT1 A 1 A_Light1
+        TNT1 AAAA 1
+        goto LightDone
+
+      FlashRecoil:
+        TNT1 A 0 A_SetPitch(pitch-5)
+        TNT1 AAAAA 1 A_SetPitch(pitch+0.5)
+        TNT1 A 0 A_Light1
+        TNT1 AAAAA 1 A_SetPitch(pitch+0.5)
+        goto LightDone
+    }
+}
+
+actor SamsaraQuake2GrenadeLauncherAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupPlaySound")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
+        goto PickupPlaySound
+
+      // Sound stuff
+      PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("PowerSilencer",1,4)
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_PlaySound("Q2Weapons/GrenadeLauncherFire",CHAN_WEAPON)
+        TNT1 A 0 A_TakeInventory("SamsaraQuake2SilentFired")
+        goto PickupAttack
+        TNT1 A 0 A_PlaySound("Q2Weapons/GrenadeLauncherFire",CHAN_WEAPON,0.25,false,ATTN_STATIC)
+        TNT1 A 0 A_GiveInventory("SamsaraQuake2SilentFired")
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("Q2Grenade",0,false,9,0,0,10)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("Q2Grenade_Coop",0,false,9,0,0,10)
+        stop
+    }
+}
+
+actor SamsaraQuake2GrenadeLauncherLoadSoundPlayer : Trigger
+{
+    States
+    {
+      // Sound playing stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraQuake2SilentFired",1,2)
+        TNT1 A 0 A_PlaySound("Q2Weapons/GrenadeLauncherReload")
+        stop
+        TNT1 A 0 A_PlaySound("Q2Weapons/GrenadeLauncherReload",CHAN_BODY,0.25,false,ATTN_STATIC)
+        stop
+    }
+}
+
+actor Q2Grenade
+{
+    var int user_angle;
+    Projectile
+    Radius 5
+    Height 10
+    Speed 25
+    Damage (125)
+    DamageType "BittermanDamage"
+    Gravity 0.66
+    BounceType "Doom"
+    BounceSound "Q2Weapons/GrenadeBounce"
+	//SelfObituary "%o tripped on %p own grenade."
+    +FORCERADIUSDMG
+    +MOVEWITHSECTOR
+    -NOGRAVITY
+    States
+    {
+      Spawn:
+        SGRN A 0 NoDelay A_Jump(128,2)
+        SGRN A 0 A_SetUserVar(user_angle,random(1,6))
+        goto SpawnLoop
+        SGRN A 0 A_SetUserVar(user_angle,random(-6,-1))
+        goto SpawnLoop
+
+      SpawnLoop:
+        SGRN AAA 0 A_SpawnItemEx("Q2GrenadeSmoke",random2(5),0,random2(5),0,0,frandom(0.1,0.5),random(0,359),0,128)
+        SGRN A 0 A_SetAngle(angle+user_angle)
+        SGRN A 1 A_SetPitch(pitch-15)
+        loop
+
+      Death:
+        SGRN A 0 A_PlaySound("Q2Weapons/GrenadeBounce",CHAN_VOICE)
+        SGRN AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Q2GrenadeSmoke",random2(5),0,random2(5),0,0,frandom(0.1,1),random(0,359),0,128)
+      XDeath:
+        TNT1 A 0 A_PlaySound("Q2Weapons/GrenadeExplosion",CHAN_VOICE)
+        TNT1 A 0 A_SpawnItemEx("Q2Explosion")
+        TNT1 A 1 A_Explode(200,165)
+        stop
+    }
+}
+
+actor Q2Grenade_Coop : Q2Grenade
+{
+    Species "Player"
+    +THRUSPECIES
+}
+
+actor Q2GrenadeSmoke : Q2BulletPuffParticle
+{
+    Scale 1
+    States
+    {
+      Fade:
+        "----" A 1 A_FadeOut(0.025)
+        loop
+    }
+}
