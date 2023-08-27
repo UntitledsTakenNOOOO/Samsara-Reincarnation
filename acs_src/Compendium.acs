@@ -4261,54 +4261,67 @@ str FTUTMessages[CLASSCOUNT][10][8] =
 		{ "SAMSARA_HERETIC_TIP1_1", "(key)invnext", "SAMSARA_HERETIC_TIP1_2", "(key)invprev", "SAMSARA_HERETIC_TIP1_3", "(key)invuse", "SAMSARA_HERETIC_TIP1_4" },
 		{ "SAMSARA_HERETIC_TIP2" }
 	},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
 	{
-		{"SAMSARA_PAINKILLER_TIP1"}
-	},
-	{},
-	{},
-	{
-		{"SAMSARA_DESCENT_TIP1"}
+		{ "SAMSARA_WOLFENSTEIN_TIP1" }
 	},
 	{},
 	{
-		{"SAMSARA_DEUSEX_TIP1"}
+		{ "SAMSARA_DUKENUKEM_TIP1_1", "(key)+altattack", "SAMSARA_DUKENUKEM_TIP1_2" }
+	},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{
+		{ "SAMSARA_PAINKILLER_TIP1" },
+		{ "SAMSARA_PAINKILLER_TIP2_1", "(key)samsara_cmd_classuniques2", "SAMSARA_PAINKILLER_TIP2_2" },
+		{ "SAMSARA_PAINKILLER_TIP3_1", "(key)samsara_cmd_classuniques", "SAMSARA_PAINKILLER_TIP3_2" }
+	},
+	{},
+	{
+		{ "SAMSARA_RTCW_TIP1_1", "(key)+strafe", "SAMSARA_RTCW_TIP1_2" },
+		{ "SAMSARA_RTCW_TIP2_1", "(key)samsara_cmd_classuniques", "SAMSARA_RTCW_TIP2_2" },
+		{ "SAMSARA_RTCW_TIP3" },
+	},
+	{},
+	{
+		{ "SAMSARA_DESCENT_TIP1" },
+		{ "SAMSARA_DESCENT_TIP2_1", "(key)+altattack", "SAMSARA_DESCENT_TIP2_1" },
+		{ "SAMSARA_DESCENT_TIP3" }
+	},
+	{
+		{ "SAMSARA_DEUSEX_TIP1" },
+		{ "SAMSARA_DEUSEX_TIP2_1", "(key)samsara_cmd_classuniques2", "SAMSARA_DEUSEX_TIP2_2", "(key)samsara_cmd_classuniques", "SAMSARA_DEUSEX_TIP2_3", "(key)+use", "SAMSARA_DEUSEX_TIP2_4" },
+		{ "SAMSARA_DEUSEX_TIP3" },
+		{ "SAMSARA_DEUSEX_TIP4" }
 	},
 };
 
 function int FTUTConfigCheck (int pClass)
 {
 	int tClass = 1<<pClass;
+	int spawnClass = GetCvar("samsara_cl_spawnedClass");
 	int check = pClass > 31 ? (GetCvar("samsara_cl_usedclass2") & tClass) : (GetCvar("samsara_cl_usedclass1") & tClass);
-	if((GetCvar("samsara_cl_spawnedClass") == pClass+1) && check)
-	{
-		return 1;
-	}
-	else if(!GetCvar("samsara_cl_classtips"))
+	SetCvar("samsara_cl_spawnedClass",pClass+1);
+	if((spawnClass == pClass+1) || (check && !GetCvar("samsara_cl_classtips"))) 
 		return 1;
 		
 	return 0;
@@ -4327,6 +4340,11 @@ function int UpdateFTUTConfig (int pClass)
 	return 0;
 }
 
+Script "FTUTResetClass" (int player) Disconnect
+{
+	SetUserCvar(player,"samsara_cl_spawnedClass",0);
+}
+
 // A more refined system to inform players about class tips and hints will be introduced
 // in a future update, but since this was introduced late into development, this will have to do.
 Script "SamsaraPlayerTipSystem" (int player) clientside
@@ -4337,7 +4355,6 @@ Script "SamsaraPlayerTipSystem" (int player) clientside
 	int messageCounter = 0;
 	str message = "";
 	if(FTUTConfigCheck(pClass)) terminate;
-	SetCvar("samsara_cl_spawnedClass",pClass+1);
 	
 	SetFont("SAMCMPBG");
 	SetHudSize(400,300,1);
