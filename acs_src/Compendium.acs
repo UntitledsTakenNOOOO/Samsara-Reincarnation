@@ -4251,3 +4251,100 @@ Script "CompendiumCloudGenerator" (int hudboundsx, int hudboundsy, int playerNum
 	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, CloudMessageIDs[cloudid], CR_UNTRANSLATED, (cloudstartx + (cloudtimer * clouddirectionx)) << 16, (cloudstarty + (cloudtimer * clouddirectiony)) << 16, 0.0, cloudalpha);
 	CloudMessageIDs[cloudid] = 0;
 }
+
+//The first index corresponds to the class. The second is the message count. The third is parts, which is used for displaying key bindings.
+str FTUTMessages[CLASSCOUNT][10][8] = 
+{
+	{},
+	{},
+	{
+		{ "Corvus always has a tome of power, which would be wise to take advantage of. Use ", "(key)invnext", " and ", "(key)invprev", " to navigate your inventory. Use ", "(key)invuse", " to use your tome of power." },
+		{ "Your tome of power is not permanent. Collecting more weapons will decrease your tome of power's cooldown." }
+	},
+};
+
+function int FTUTConfigCheck (int pClass)
+{
+	int tClass = 1<<pClass;
+	int check = pClass > 31 ? (GetCvar("samsara_cl_usedclass2") & tClass) : (GetCvar("samsara_cl_usedclass1") & tClass);
+	if(GetCvar("samsara_cl_version") < SAMSARA_CL_VERSION)
+	{
+		SetCvar("samsara_cl_usedclass1",0);
+		SetCvar("samsara_cl_usedclass2",0);
+		SetCvar("samsara_cl_version",SAMSARA_CL_VERSION);
+		return 0;
+	}
+	else if(check)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+function int UpdateFTUTConfig (int pClass)
+{
+	int tClass = 1<<pClass;
+	int check = pClass > 31 ? !(GetCvar("samsara_cl_usedclass2") & tClass) : !(GetCvar("samsara_cl_usedclass1") & tClass);
+	if(check)
+	{
+		if(pClass > 31) SetCvar("samsara_cl_usedclass2",GetCvar("samsara_cl_usedclass2")+tClass);
+		else SetCvar("samsara_cl_usedclass1",GetCvar("samsara_cl_usedclass1")+tClass);
+		return 1;
+	}
+	return 0;
+}
+
+Script "FirstTimeUserTutorial" enter clientside
+{
+	if(!(ClassifyActor(0) & ACTOR_PLAYER)) terminate;
+	int pClass = PlayerClass(PlayerNumber());
+	int messageCounter = 0;
+	str message = "";
+	if(FTUTConfigCheck(pClass)) terminate;
+	
+	until(strlen(FTUTMessages[pClass][messageCounter][0]) == 0 || !(ClassifyActor(0) & ACTOR_PLAYER))
+	{
+		SetFont("SAMCMPBG");
+		SetHudSize(400,300,1);
+		HudMessage(s:"a"; HUDMSG_FADEINOUT|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 3402, CR_UNTRANSLATED, 72.1, 248.2, 5.0, 1.0, 1.0, 0.5);
+		SetHudSize(1800,1350,1);
+		SetFont("CMPTUTGF");
+		HudMessage(s:"a"; HUDMSG_FADEINOUT|HUDMSG_LAYER_OVERHUD, 3401, CR_UNTRANSLATED, 200.1, 1136.2, 5.0, 1.0, 1.0, 0.5);
+		SetFont("CMPSDOOM");
+		Delay(35);
+		SetHudSize(600,450,1);
+		SetHudClipRect(154,304,330,100,300);
+		for(int a = 0; a < 8; a++)
+		{
+			if(strLen(FTUTMessages[pClass][messageCounter][a]) == 0) break;
+			//Check for the key prefix. If it's not there, use a regular message. Otherwise, we want to display the key binding
+			if(StrICmp(FTUTMessages[pClass][messageCounter][a],"(key)",5) == 0) message = StrParam(s:message,s:"\c[Red]",k:StrRight(FTUTMessages[pClass][messageCounter][a],strLen(FTUTMessages[pClass][messageCounter][a])-5));
+			else message = StrParam(s:message, s:"\c[Gold]", s:FTUTMessages[pClass][messageCounter][a]);
+		}
+		HudMessage(s:message; HUDMSG_TYPEON|HUDMSG_LAYER_OVERHUD, 3400, CR_UNTRANSLATED, 154.1, 304.1, 5.0, 0.01, 1.0);
+		Delay(175);
+		HudMessage(s:message; HUDMSG_FADEOUT|HUDMSG_LAYER_OVERHUD, 3400, CR_UNTRANSLATED, 154.1, 304.1, 0.0, 1.0);
+		Delay(70);
+		SetHudClipRect(0,0,0,0,0);
+		messageCounter++;
+		message = "";
+	}
+	if(ClassifyActor(0) & ACTOR_PLAYER)
+	{
+		SetFont("SAMCMPBG");
+		SetHudSize(400,300,1);
+		HudMessage(s:"a"; HUDMSG_FADEINOUT|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 3402, CR_UNTRANSLATED, 72.1, 248.2, 5.0, 1.0, 1.0, 0.5);
+		SetHudSize(1800,1350,1);
+		SetFont("CMPTUTGF");
+		HudMessage(s:"a"; HUDMSG_FADEINOUT|HUDMSG_LAYER_OVERHUD, 3401, CR_UNTRANSLATED, 200.1, 1136.2, 5.0, 1.0, 1.0, 0.5);
+		SetFont("CMPSDOOM");
+		Delay(35);
+		SetHudSize(600,450,1);
+		SetHudClipRect(154,304,330,100,300);
+		HudMessage(s:StrParam(s:"\c[Gold]For more detailed information regarding this class, please visit the Compendium \c[Red](",k:"samsara_compendium",s:")\c[Gold]. Good luck and have fun!"); HUDMSG_TYPEON|HUDMSG_LAYER_OVERHUD, 3400, CR_UNTRANSLATED, 154.1, 304.1, 5.0, 0.01, 1.0);
+		Delay(175);
+		HudMessage(s:StrParam(s:"\c[Gold]For more detailed information regarding this class, please visit the Compendium \c[Red](",k:"samsara_compendium",s:")\c[Gold]. Good luck and have fun!"); HUDMSG_FADEOUT|HUDMSG_LAYER_OVERHUD, 3400, CR_UNTRANSLATED, 154.1, 304.1, 0.0, 1.0);
+		Delay(70);
+	}
+	UpdateFTUTConfig(pClass);
+}
