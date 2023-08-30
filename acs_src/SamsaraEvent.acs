@@ -942,10 +942,12 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
         SetInventory("SamsaraCurrentWaterLevel", GetActorProperty(0, APROP_WaterLevel));
 
-        if (GetUserCvar(pln,"samsara_cl_wolfmove")) { GiveInventory("WolfenMovement", 1); }
-        else { TakeInventory("WolfenMovement", 0x7FFFFFFF); }
+        SetInventory("WolfenMovement", GetUserCVar(pln, "samsara_cl_wolfmove") && !GetCVar("samsara_banwolfmove"));
 		
-        if (bot && Random(0, 1024) == 0 && !isDead(0) && GameType() != GAME_TITLE_MAP) { PlaySound(0, "*taunt", CHAN_VOICE); }
+        if (bot && Random(0, 1024) == 0)
+        {
+            if (!isDead(0) && GameType() != GAME_TITLE_MAP) { PlaySound(0, "*taunt", CHAN_VOICE); }
+        }
 			
 		if(CheckInventory("ShrunkPlayer"))
 			GiveInventory("StepDeathLogic1",1);
@@ -2633,7 +2635,7 @@ script "SamsaraWolfMove" (void) //673 -- SAMSARA_WOLFMOVE
 			continue;
 		}
 		
-        if (!CheckInventory("WolfenMovement") || GetCVar("samsara_banwolfmove"))
+        if (!CheckInventory("WolfenMovement"))
         {
             if (GetActorProperty(0, APROP_Speed) == 0)
             {
@@ -2644,7 +2646,7 @@ script "SamsaraWolfMove" (void) //673 -- SAMSARA_WOLFMOVE
             continue;
         }
         
-        if (GetActorProperty(0, APROP_Health) < 1)
+        if (isDead(0))
         {
             SetActorProperty(0, APROP_Speed, realspeed);
             velx = 0;
