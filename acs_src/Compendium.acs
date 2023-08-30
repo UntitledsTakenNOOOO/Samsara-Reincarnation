@@ -4375,28 +4375,14 @@ function int FTUTConfigCheck (int pClass)
 {
 	int tClass = 1<<pClass;
 	int spawnClass = GetCvar("samsara_cl_spawnedClass");
-	int check = pClass > 31 ? (GetCvar("samsara_cl_usedclass2") & tClass) : (GetCvar("samsara_cl_usedclass1") & tClass);
 	int checkerToken = CheckInventory("SamsaraTipsChecker");
-	TakeInventory("SamsaraTipsChecker",1);
 	SetCvar("samsara_cl_spawnedClass",pClass+1);
-	if(spawnClass == pClass+1 && (!isSinglePlayer() || !checkerToken) || (check && !GetCvar("samsara_cl_classtips")))
+	TakeInventory("SamsaraTipsChecker",1);
+	if((spawnClass == pClass+1 && (!isSinglePlayer() || !checkerToken)) || !GetCvar("samsara_cl_classtips"))
 		return 1;
 		
 	return 0;
 	
-}
-
-function int UpdateFTUTConfig (int pClass)
-{
-	int tClass = 1<<pClass;
-	int check = pClass > 31 ? !(GetCvar("samsara_cl_usedclass2") & tClass) : !(GetCvar("samsara_cl_usedclass1") & tClass);
-	if(check)
-	{
-		if(pClass > 31) SetCvar("samsara_cl_usedclass2",GetCvar("samsara_cl_usedclass2")+tClass);
-		else SetCvar("samsara_cl_usedclass1",GetCvar("samsara_cl_usedclass1")+tClass);
-		return 1;
-	}
-	return 0;
 }
 
 Script "FTUTResetClass" (int player) Disconnect clientside
@@ -4441,7 +4427,7 @@ Script "SamsaraFirstTimeUserTutorialSystem" (int player) clientside
 		messageCounter++;
 		message = "";
 	}
-	UpdateFTUTConfig(pClass);
+	
 	if(ClassifyActor(0) & ACTOR_PLAYER)
 	{
 		SetFont("CMPSDOOM");
