@@ -216,7 +216,9 @@ Script "CalebThrowStrength" (void)
 
 Script "CalebThrowDuration" (int switchcase)
 {
-	SetActorProperty(0,APROP_ReactionTime,150-ACS_NamedExecuteWithResult("CalebCheckThrowTimer"));
+	int baseDuration = GetAmmoCapacity("ThrowPowerBig");
+
+	SetActorProperty(0,APROP_ReactionTime,baseDuration-ACS_NamedExecuteWithResult("CalebCheckThrowTimer"));
 }
 
 Script "CalebCheckThrowTimer" (void)
@@ -262,7 +264,7 @@ Script "CalebFloorDynamite" (void)
 Script "CalebSelfDamage" (int type)
 {
 	switch(type)
-	{	
+	{
 		case 0:
 			ACS_NamedExecuteWithResult("CalebBurner",1,5);
 			Thing_Damage2(0,5,"CalebFire");
@@ -279,19 +281,19 @@ Script "CalebBurner" (int notracer, int extraburn)
 	int height = GetActorProperty(0,APROP_Height);
 	int radius = GetActorProperty(0,APROP_Radius);
 	int flameCount = 0;
-	
+
 	if((ClassifyActor(0) & ACTOR_PLAYER) && CheckInventory("BloodBurnVFXHudFlames") == 0)
 		ACS_NamedExecuteWithResult("CalebBurningHud");
-		
+
 	GiveInventory("BloodBurnVFXHudFlames",1+extraburn);
-	
+
 	while(GetActorProperty(0,APROP_Health) > 0 && flameCount <= 14)
 	{
 		flameCount++;
 		Spawn("BloodBurnVFX",GetActorX(0)+random(-radius,radius),GetActorY(0)+random(-radius,radius),GetActorZ(0)+random(0,height));
 		Delay(1);
 	}
-	
+
 	TakeInventory("BloodBurnVFXHudFlames",1+extraburn);
 }
 
@@ -302,7 +304,7 @@ Script "CalebBurningHud" (void) clientside
 	int graphicCounter = 0;
 	int id = 0;
 	SetHudSize(320,200,0);
-	
+
 	while(ClassifyActor(0) & ACTOR_PLAYER)
 	{
 		graphicCounter = (flameCount/2);
@@ -356,7 +358,7 @@ Script "CalebTeslaBlinkNonHumanoid" (void)
 	}
 	SetActorProperty(0,APROP_RenderStyle,renderStyle);
 	GiveInventory("BloodTurnOffTeslaBrightness",1);
-	
+
 }
 
 //In case a monster dies, ya know
