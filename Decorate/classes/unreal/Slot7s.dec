@@ -4,15 +4,15 @@ actor Unreal_QuadShot : UnrealWeapon
 {
 	Tag "QuadShot"
 	Weapon.SlotNumber 7
-    Weapon.SlotPriority 1
+	Weapon.SlotPriority 1
 	Weapon.AmmoType "Shell"
 	Weapon.AmmoGive 24
 	Weapon.AmmoUse 2
 	Inventory.PickupMessage "You got the QuadShot."
 	Obituary "%o was turned into ground beef by %k's QuadShot!"
-    +ALT_USES_BOTH // only one ammo type with same ammo amount use, so this makes alt fire behave as intended
-    +BFG
-    +NOALERT
+	+ALT_USES_BOTH // only one ammo type with same ammo amount use, so this makes alt fire behave as intended
+	+BFG
+	+NOALERT
 	States
 	{
 		Spawn:
@@ -35,9 +35,9 @@ actor Unreal_QuadShot : UnrealWeapon
 			goto ReadyActual
 
 		Fire:
-            UN01 B 0 A_AlertMonsters
-            UN01 B 0 A_TakeInventory("SamsaraUnrealQuadshotCharges")
-            UN01 B 0 A_GiveInventory("SamsaraUnrealQuadshotAttackHandler")
+			UN01 B 0 A_AlertMonsters
+			UN01 B 0 A_TakeInventory("SamsaraUnrealQuadshotCharges")
+			UN01 B 0 A_GiveInventory("SamsaraUnrealQuadshotAttackHandler")
 			UN01 BCD 3 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			UN01 E 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		FireFinish:
@@ -57,13 +57,13 @@ actor Unreal_QuadShot : UnrealWeapon
 		AltFire:
 			UN02 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
 			UN02 A 0 A_JumpIfInventory("Shell",4,1)
-            goto ReadyActual
-            UN02 A 0 A_TakeInventory("SamsaraUnrealQuadshotCharges")
-            goto AltFireCharge
+			goto ReadyActual
+			UN02 A 0 A_TakeInventory("SamsaraUnrealQuadshotCharges")
+			goto AltFireCharge
 
 		AltFireCharge:
 			UN02 A 0 A_JumpIfInventory("SamsaraUnrealQuadshotCharges",0,"AltFireChargeFinish")
-            UN02 A 0 A_GiveInventory("SamsaraUnrealQuadshotChargeGiver")
+			UN02 A 0 A_GiveInventory("SamsaraUnrealQuadshotChargeGiver")
 			UN02 ABCD 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			UN02 E 0 A_PlaySound("Unreal/QuadShot/Reload")
 			UN02 E 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
@@ -74,19 +74,19 @@ actor Unreal_QuadShot : UnrealWeapon
 			UN02 J 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			UN02 K 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			UN02 L 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        AltFireChargeReFire:
+		AltFireChargeReFire:
 			UN02 M 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
 			UN02 M 0 A_JumpIfInventory("Shell",4,1)
-            goto AltFireChargeFinish
+			goto AltFireChargeFinish
 			UN02 M 0 A_ReFire("AltFireCharge")
 			goto AltFireChargeFinish
 
-        AltFireChargeFinish:
-            UN02 M 0 A_ClearReFire
-            goto AltFireChargeRelease
+		AltFireChargeFinish:
+			UN02 M 0 A_ClearReFire
+			goto AltFireChargeRelease
 
 		AltFireChargeRelease:
-            UN01 B 0 A_AlertMonsters
+			UN01 B 0 A_AlertMonsters
 			UN01 B 0 A_GiveInventory("SamsaraUnrealQuadshotAttackHandler")
 			UN01 BCD 3 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			UN01 E 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
@@ -96,93 +96,89 @@ actor Unreal_QuadShot : UnrealWeapon
 
 actor SamsaraUnrealQuadshotAttackHandler : Trigger
 {
-    States
-    {
-      // Ammo checking/taking stuff
-      Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("Shell",2,1)
-        stop
-        TNT1 A 0 A_TakeInventory("Shell",2)
-        goto PickupAttack
+	States
+	{
+	// Ammo checking/taking stuff
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+		TNT1 A 0 A_JumpIfInventory("Shell",2,1)
+		stop
+		TNT1 A 0 A_TakeInventory("Shell",2)
+		goto PickupAttack
 
-      // Attack stuff
-      PickupAttack:
-        TNT1 A 0 A_PlaySound("Unreal/QuadShot/Fire",CHAN_WEAPON)
-        TNT1 A 0 A_JumpIfInventory("SamsaraUnrealQuadshotCharges",0,"PickupAttackCharged3")
-        TNT1 A 0 A_JumpIfInventory("SamsaraUnrealQuadshotCharges",2,"PickupAttackCharged2")
-        TNT1 A 0 A_JumpIfInventory("SamsaraUnrealQuadshotCharges",1,"PickupAttackCharged1")
-      // Uncharged
-      PickupAttackUncharged:
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackUnchargedCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackUnchargedCoop")
-      PickupAttackUnchargedDM:
-        TNT1 A 0 A_FireBullets(4,4,9,25,"UnrealPuff",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
+	// Attack stuff
+	PickupAttack:
+		TNT1 A 0 A_PlaySound("Unreal/QuadShot/Fire",CHAN_WEAPON)
+		TNT1 A 0 A_JumpIfInventory("SamsaraUnrealQuadshotCharges",0,"PickupAttackCharged3")
+		TNT1 A 0 A_JumpIfInventory("SamsaraUnrealQuadshotCharges",2,"PickupAttackCharged2")
+		TNT1 A 0 A_JumpIfInventory("SamsaraUnrealQuadshotCharges",1,"PickupAttackCharged1")
+	// Uncharged
+	PickupAttackUncharged:
+		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackUnchargedCoop")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackUnchargedCoop")
+	PickupAttackUnchargedDM:
+		TNT1 A 0 A_FireBullets(4,4,9,25,"UnrealPuff",FBF_NORANDOM|FBF_NOFLASH)
+		goto PickupFinish
+	PickupAttackUnchargedCoop:
+		TNT1 A 0 A_FireBullets(4,4,9,25,"UnrealPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
+		goto PickupFinish
 
-      PickupAttackUnchargedCoop:
-        TNT1 A 0 A_FireBullets(4,4,9,25,"UnrealPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
+	// 1 charge
+	PickupAttackCharged1:
+		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCharged1Coop")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCharged1Coop")
+	PickupAttackCharged1DM:
+		TNT1 A 0 A_FireBullets(6,6,18,25,"UnrealPuff",FBF_NORANDOM|FBF_NOFLASH)
+		goto PickupFinish
+	PickupAttackCharged1Coop:
+		TNT1 A 0 A_FireBullets(6,6,18,25,"UnrealPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
+		goto PickupFinish
 
-      // 1 charge
-      PickupAttackCharged1:
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCharged1Coop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCharged1Coop")
-      PickupAttackCharged1DM:
-        TNT1 A 0 A_FireBullets(6,6,18,25,"UnrealPuff",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
+	// 2 charges
+	PickupAttackCharged2:
+		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCharged2Coop")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCharged2Coop")
+	PickupAttackCharged2DM:
+		TNT1 A 0 A_FireBullets(8,8,27,25,"UnrealPuff",FBF_NORANDOM|FBF_NOFLASH)
+		goto PickupFinish
+	PickupAttackCharged2Coop:
+		TNT1 A 0 A_FireBullets(8,8,27,25,"UnrealPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
+		goto PickupFinish
 
-      PickupAttackCharged1Coop:
-        TNT1 A 0 A_FireBullets(6,6,18,25,"UnrealPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
+	// 3 charges
+	PickupAttackCharged3:
+		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCharged3Coop")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCharged3Coop")
+	PickupAttackCharged3DM:
+		TNT1 A 0 A_FireBullets(10,10,36,25,"UnrealExtremePuff",FBF_NORANDOM|FBF_NOFLASH)
+		goto PickupFinish
+	PickupAttackCharged3Coop:
+		TNT1 A 0 A_FireBullets(10,10,36,25,"UnrealExtremePuffCoop",FBF_NORANDOM|FBF_NOFLASH)
+		goto PickupFinish
 
-      // 2 charges
-      PickupAttackCharged2:
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCharged2Coop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCharged2Coop")
-      PickupAttackCharged2DM:
-        TNT1 A 0 A_FireBullets(8,8,27,25,"UnrealPuff",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
-
-      PickupAttackCharged2Coop:
-        TNT1 A 0 A_FireBullets(8,8,27,25,"UnrealPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
-
-      // 3 charges
-      PickupAttackCharged3:
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCharged3Coop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCharged3Coop")
-      PickupAttackCharged3DM:
-        TNT1 A 0 A_FireBullets(10,10,36,25,"UnrealExtremePuff",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
-
-      PickupAttackCharged3Coop:
-        TNT1 A 0 A_FireBullets(10,10,36,25,"UnrealExtremePuffCoop",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
-
-      // Finishing stuff
-      PickupFinish:
-        TNT1 A 0 ACS_NamedExecuteWithResult("Unreal_Recoil")
-        stop
-    }
+	// Finishing stuff
+	PickupFinish:
+		TNT1 A 0 ACS_NamedExecuteWithResult("Unreal_Recoil")
+		stop
+	}
 }
 
 actor SamsaraUnrealQuadshotChargeGiver : Trigger
 {
-    States
-    {
-      // Ammo checking/taking stuff
-      Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraUnrealQuadshotCharges",0,"PickupStop")
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupGiveCharge")
-        TNT1 A 0 A_JumpIfInventory("Shell",2,1)
-        stop
-        TNT1 A 0 A_TakeInventory("Shell",2)
-        goto PickupGiveCharge
+	States
+	{
+	// Ammo checking/taking stuff
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("SamsaraUnrealQuadshotCharges",0,"PickupStop")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupGiveCharge")
+		TNT1 A 0 A_JumpIfInventory("Shell",2,1)
+		stop
+		TNT1 A 0 A_TakeInventory("Shell",2)
+		goto PickupGiveCharge
 
-      // Charge giving stuff
-      PickupGiveCharge:
-        TNT1 A 0 A_GiveInventory("SamsaraUnrealQuadshotCharges")
-        stop
-    }
+	// Charge giving stuff
+	PickupGiveCharge:
+		TNT1 A 0 A_GiveInventory("SamsaraUnrealQuadshotCharges")
+		stop
+	}
 }

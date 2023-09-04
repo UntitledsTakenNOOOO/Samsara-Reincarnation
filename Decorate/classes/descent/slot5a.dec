@@ -36,93 +36,90 @@ actor DescentFusion : DescentWeaponPrimer
 
 actor SamsaraDescentFusionAttackHandler : Trigger
 {
-    States
-    {
-      // Ammo taking stuff
-      Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
-        TNT1 A 0 A_TakeInventory("Cell",5) // attack could be called with less than intended amount during charge
-        goto PickupAttack
+	States
+	{
+	// Ammo taking stuff
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+		TNT1 A 0 A_TakeInventory("Cell",5) // attack could be called with less than intended amount during charge
+		goto PickupAttack
 
-      // Attack stuff
-      PickupAttack:
-        TNT1 A 0 A_PlaySound("Descent/Fusion/Fire",CHAN_WEAPON)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
-      PickupAttackDM:
-        TNT1 A 0 A_FireCustomMissile("DescentFusionProjectile",0,false,-12)
-        TNT1 A 0 A_FireCustomMissile("DescentFusionProjectile",0,false,12)
-        goto PickupFinish
+	// Attack stuff
+	PickupAttack:
+		TNT1 A 0 A_PlaySound("Descent/Fusion/Fire",CHAN_WEAPON)
+		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+	PickupAttackDM:
+		TNT1 A 0 A_FireCustomMissile("DescentFusionProjectile",0,false,-12)
+		TNT1 A 0 A_FireCustomMissile("DescentFusionProjectile",0,false,12)
+		goto PickupFinish
+	PickupAttackCoop:
+		TNT1 A 0 A_FireCustomMissile("DescentFusionProjectileCoop",0,false,-12)
+		TNT1 A 0 A_FireCustomMissile("DescentFusionProjectileCoop",0,false,12)
+		goto PickupFinish
 
-      PickupAttackCoop:
-        TNT1 A 0 A_FireCustomMissile("DescentFusionProjectileCoop",0,false,-12)
-        TNT1 A 0 A_FireCustomMissile("DescentFusionProjectileCoop",0,false,12)
-        goto PickupFinish
-
-      // Finishing stuff
-      PickupFinish:
-        TNT1 A 0 A_GiveInventory("DescentRecoil",12)
-        stop
-    }
+	// Finishing stuff
+	PickupFinish:
+		TNT1 A 0 A_GiveInventory("DescentRecoil",12)
+		stop
+	}
 }
 
 actor SamsaraDescentFusionChargeGiver : Trigger
 {
-    States
-    {
-      // Ammo checking/taking stuff
-      Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraDescentFusionChargeAmount",0,"PickupGiveCharge")
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupGiveCharge")
-        TNT1 A 0 A_JumpIfInventory("Cell",1,1)
-        stop
-        TNT1 A 0 A_TakeInventory("Cell",1)
-        goto PickupGiveCharge
+	States
+	{
+	// Ammo checking/taking stuff
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("SamsaraDescentFusionChargeAmount",0,"PickupGiveCharge")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupGiveCharge")
+		TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+		stop
+		TNT1 A 0 A_TakeInventory("Cell",1)
+		goto PickupGiveCharge
 
-      // Charge giving stuff
-      PickupGiveCharge:
-        TNT1 A 0 A_JumpIfInventory("SamsaraRecoilIsDisabled",1,2)
-        TNT1 A 0 A_SetPitch(pitch+frandom(-1.0,1.0))
-        TNT1 A 0 A_SetAngle(angle+frandom(-1.0,1.0))
-        TNT1 A 0 A_GiveInventory("SamsaraDescentFusionChargeSoundPlayer")
-        TNT1 A 0 A_JumpIfInventory("SamsaraDescentFusionChargeAmount",0,"PickupDamage")
-        TNT1 A 0 A_JumpIfInventory("WeaponFlashesAreDisabled",1,2)
-        TNT1 A 0 A_SetBlend("Purple",0.33,70)
-        TNT1 A 0 A_GiveInventory("SamsaraDescentFusionChargeAmount")
-        stop
+	// Charge giving stuff
+	PickupGiveCharge:
+		TNT1 A 0 A_JumpIfInventory("SamsaraRecoilIsDisabled",1,2)
+		TNT1 A 0 A_SetPitch(pitch+frandom(-1.0,1.0))
+		TNT1 A 0 A_SetAngle(angle+frandom(-1.0,1.0))
+		TNT1 A 0 A_GiveInventory("SamsaraDescentFusionChargeSoundPlayer")
+		TNT1 A 0 A_JumpIfInventory("SamsaraDescentFusionChargeAmount",0,"PickupDamage")
+		TNT1 A 0 A_JumpIfInventory("WeaponFlashesAreDisabled",1,2)
+		TNT1 A 0 A_SetBlend("Purple",0.33,70)
+		TNT1 A 0 A_GiveInventory("SamsaraDescentFusionChargeAmount")
+		stop
 
-      // Damage stuff
-      PickupDamage:
-        TNT1 A 0 A_JumpIfInventory("WeaponFlashesAreDisabled",1,2)
-        TNT1 A 0 A_SetBlend("Yellow",0.33,70)
-        TNT1 A 0 Thing_Damage(0,5,0)
-        stop
-    }
+	// Damage stuff
+	PickupDamage:
+		TNT1 A 0 A_JumpIfInventory("WeaponFlashesAreDisabled",1,2)
+		TNT1 A 0 A_SetBlend("Yellow",0.33,70)
+		TNT1 A 0 Thing_Damage(0,5,0)
+		stop
+	}
 }
 
 actor SamsaraDescentFusionChargeSoundPlayer : Trigger
 {
-    States
-    {
-      // Sound stuff
-      Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraDescentFusionSoundChannelCount",0,"Pickup7")
-        TNT1 A 0 A_JumpIfInventory("SamsaraDescentFusionSoundChannelCount",1,"Pickup6")
-      Pickup5:
-        TNT1 A 0 A_PlaySound("Descent/Fusion/Charge",CHAN_5)
-        TNT1 A 0 A_GiveInventory("SamsaraDescentFusionSoundChannelCount")
-        stop
-
-      Pickup6:
-        TNT1 A 0 A_PlaySound("Descent/Fusion/Charge",CHAN_6)
-        TNT1 A 0 A_GiveInventory("SamsaraDescentFusionSoundChannelCount")
-        stop
-
-      Pickup7:
-        TNT1 A 0 A_PlaySound("Descent/Fusion/Charge",CHAN_7)
-        TNT1 A 0 A_TakeInventory("SamsaraDescentFusionSoundChannelCount")
-        stop
-    }
+	States
+	{
+	// Sound stuff
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("SamsaraDescentFusionSoundChannelCount",0,"Pickup7")
+		TNT1 A 0 A_JumpIfInventory("SamsaraDescentFusionSoundChannelCount",1,"Pickup6")
+	Pickup5:
+		TNT1 A 0 A_PlaySound("Descent/Fusion/Charge",CHAN_5)
+		TNT1 A 0 A_GiveInventory("SamsaraDescentFusionSoundChannelCount")
+		stop
+	Pickup6:
+		TNT1 A 0 A_PlaySound("Descent/Fusion/Charge",CHAN_6)
+		TNT1 A 0 A_GiveInventory("SamsaraDescentFusionSoundChannelCount")
+		stop
+	Pickup7:
+		TNT1 A 0 A_PlaySound("Descent/Fusion/Charge",CHAN_7)
+		TNT1 A 0 A_TakeInventory("SamsaraDescentFusionSoundChannelCount")
+		stop
+	}
 }
 
 actor DescentFusionProjectile
@@ -137,30 +134,30 @@ actor DescentFusionProjectile
 	+NOTIMEFREEZE
 	States
 	{
-        Spawn:
-            DS00 A 0
-            DS00 A 0 A_JumpIfInTargetInventory("SamsaraDescentFusionChargeAmount",1,1)
-            goto SpawnInitDone
-            DS00 A 0 A_GiveInventory("SamsaraDescentFusionChargeAmount",CallACS("DescentTransferFusionCharge", 1))
-            goto SpawnInitDone
+		Spawn:
+			DS00 A 0
+			DS00 A 0 A_JumpIfInTargetInventory("SamsaraDescentFusionChargeAmount",1,1)
+			goto SpawnInitDone
+			DS00 A 0 A_GiveInventory("SamsaraDescentFusionChargeAmount",CallACS("DescentTransferFusionCharge", 1))
+			goto SpawnInitDone
 
-        SpawnInitDone:
-            DS00 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
-            DS00 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
-        SpawnLoop:
+		SpawnInitDone:
+			DS00 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
+			DS00 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+		SpawnLoop:
 			DS00 A -1
 			stop
 
-        Death:
-            TNT1 A 0 A_JumpIfInventory("SamsaraProjectileSpawnInit",1,"DeathStart")
-            TNT1 A 0 A_JumpIfInTargetInventory("SamsaraDescentFusionChargeAmount",1,1)
-            goto DeathInitDone
-            TNT1 A 0 A_GiveInventory("SamsaraDescentFusionChargeAmount",CallACS("DescentTransferFusionCharge", 1))
-            goto DeathInitDone
+		Death:
+			TNT1 A 0 A_JumpIfInventory("SamsaraProjectileSpawnInit",1,"DeathStart")
+			TNT1 A 0 A_JumpIfInTargetInventory("SamsaraDescentFusionChargeAmount",1,1)
+			goto DeathInitDone
+			TNT1 A 0 A_GiveInventory("SamsaraDescentFusionChargeAmount",CallACS("DescentTransferFusionCharge", 1))
+			goto DeathInitDone
 
-        DeathInitDone:
-            TNT1 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
-        DeathStart:
+		DeathInitDone:
+			TNT1 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
+		DeathStart:
 			TNT1 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_VOICE)
 			TNT1 A 0 A_Explode(50+(CallACS("DescentTransferFusionCharge")*10),120)
 			TNT1 A 1 A_SpawnItemEx("DescentFusionEffect")
@@ -168,27 +165,27 @@ actor DescentFusionProjectile
 	}
 }
 
-actor DescentFusionProjectileCoop : DescentFusionProjectile 
-{ 
-	+THRUSPECIES 
-	Species "Player" 
+actor DescentFusionProjectileCoop : DescentFusionProjectile
+{
+	+THRUSPECIES
+	Species "Player"
 	States
 	{
-        Death:
-            TNT1 A 0 A_JumpIfInventory("SamsaraProjectileSpawnInit",1,"DeathStart")
-            TNT1 A 0 A_JumpIfInTargetInventory("SamsaraDescentFusionChargeAmount",1,1)
-            goto DeathInitDone
-            TNT1 A 0 A_GiveInventory("SamsaraDescentFusionChargeAmount",CallACS("DescentTransferFusionCharge", 1))
-            goto DeathInitDone
+		Death:
+			TNT1 A 0 A_JumpIfInventory("SamsaraProjectileSpawnInit",1,"DeathStart")
+			TNT1 A 0 A_JumpIfInTargetInventory("SamsaraDescentFusionChargeAmount",1,1)
+			goto DeathInitDone
+			TNT1 A 0 A_GiveInventory("SamsaraDescentFusionChargeAmount",CallACS("DescentTransferFusionCharge", 1))
+			goto DeathInitDone
 
-        DeathInitDone:
-            TNT1 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
-        DeathStart:
+		DeathInitDone:
+			TNT1 A 0 A_GiveInventory("SamsaraProjectileSpawnInit")
+		DeathStart:
 			TNT1 A 0 A_PlaySound("Descent/Laser/Explode",CHAN_VOICE)
 			TNT1 A 0 A_Explode(75+(CallACS("DescentTransferFusionCharge")*25),120)
 			TNT1 A 1 A_SpawnItemEx("DescentFusionEffect")
 			stop
-	}	
+	}
 }
 
 actor DescentFusionEffect
