@@ -1470,13 +1470,18 @@ Script "Painkiller_BlackTarotRestore" (void)
 	}
 }
 
+#DEFINE PAINKILLER_RECHARGE_COST 1000
+
 Script "Painkiller_BlackTarotUI" (void)
 {
-	int cursorx, cursory, a, b, holding, hoverqueue, holddelay, holdqueue, dropdelay, goldamount;
+	int cursorx, cursory, a, b, holding, hoverqueue, holddelay, holdqueue, dropdelay, goldamount, hovercharge;
 	int hudboundsx = 1024;
 	int hudboundsy = 1280;
 	int hudcenterx = hudboundsx/2;
 	int hudcentery = hudboundsy/2;
+	int gameMode = !(isCoop() || isInvasion() || isSinglePlayer()) ? 0 : 1;
+	int remainingCharges = 0;
+	int chargeCondition = 0;
 
 	While(CheckInventory("Painkiller_TarotOpened") && !CheckInventory("Painkiller_BlockDemonMorph"))
 	{
@@ -1521,6 +1526,90 @@ Script "Painkiller_BlackTarotUI" (void)
 		HudMessage(s:(goldAmount < 100000 ? "0" : ""),s:(goldAmount < 10000 ? "0" : ""),s:(goldAmount < 1000 ? "0" : ""),s:(goldAmount < 100 ? "0" : ""),s:(goldAmount < 10 ? "0" : ""),d:goldAmount;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1520,CR_UNTRANSLATED,floorwhole(hudboundsx*0.9875)+0.2,floorwhole(hudboundsy*0.28),0.0);
 		hoverqueue = 0;
 
+		SetFont("PKCHCRYS");
+		SetHudSize(hudboundsx,hudboundsy,true);
+		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA,1577,0,floorwhole(hudboundsx*0.5835),floorwhole(hudboundsy*0.3735),0.1,timer()%100 > 50 ? 1.0-(((timer()%100) - 50) * 0.02) : ((timer()%100) * 0.02));
+
+		//Buy tarot charges
+		if(cursorx < FixedMul(hudboundsx,0.65) && (cursorx > (FixedMul(hudboundsx,0.54))) && (cursory < FixedMul(hudboundsy,0.445) && cursory > FixedMul(hudboundsy,0.33)) && holding == 0 && dropdelay <= 0)
+		{
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA,1577,0,floorwhole(hudboundsx*0.5835),floorwhole(hudboundsy*0.3735),0.1,1.0);
+			if(hovercharge == 0) LocalAmbientSound("Painkiller/TarotBoard/HoverCharge",255);
+			hoverqueue = 1;
+			hovercharge = 1;
+						
+			if(gameMode == 0)
+			{
+				if(CheckInventory("Painkiller_Mercy_Power"))
+				{
+					chargeCondition = 3;
+					remainingCharges = 3 - CheckInventory("Painkiller_TarotMPUses");
+				}
+				else if(CheckInventory("Painkiller_Forgiveness_Power"))
+				{
+					chargeCondition = 3;
+					remainingCharges = 2 - CheckInventory("Painkiller_TarotMPUses");
+				}
+				else
+				{
+					chargeCondition = 1;
+					remainingCharges = 1 - CheckInventory("Painkiller_TarotMPUses");
+				}
+			}
+			else
+			{
+				if(CheckInventory("Painkiller_Mercy_Power"))
+				{
+					chargeCondition = 7;
+					remainingCharges = 7 - CheckInventory("Painkiller_TarotUsage");
+				}
+				else if(CheckInventory("Painkiller_Forgiveness_Power"))
+				{
+					chargeCondition = 5;
+					remainingCharges = 5 - CheckInventory("Painkiller_TarotUsage");
+				}
+				else
+				{
+					chargeCondition = 3;
+					remainingCharges = 3 - CheckInventory("Painkiller_TarotUsage");
+				}
+			}
+			
+			SetFont("CMPBPAIN");
+			SetHudSize(FixedMul(hudboundsx,1.245),FixedMul(hudboundsy,0.75),true);
+			SetHudClipRect(FixedMul(hudboundsx,0.08),FixedMul(hudboundsy,0.4250),FixedMul(hudboundsx,0.4550),FixedMul(hudboundsy,0.11),FixedMul(hudboundsx,0.4350));
+			HudMessage(s:"Recharge Tarot Charges";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,1575,"PainkillerRed",2*floorwhole(hudboundsx*0.0475)+0.1,2*floorwhole(hudboundsy*0.22)+0.1,0.0);
+			HudMessage(s:"Restore Gold Tarot charges. Charges remaining: ",d:remainingCharges;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,1574,"PainkillerBrown",2*floorwhole(hudboundsx*0.0475)+0.1,2*floorwhole(hudboundsy*0.2325)+0.1,0.0);
+			HudMessage(s:"Cost: ",d:PAINKILLER_RECHARGE_COST;HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD|HUDMSG_COLORSTRING,1573,"PainkillerRed",2*floorwhole(hudboundsx*0.0475)+0.1,2*floorwhole(hudboundsy*0.2575)+0.1,0.0);
+			SetHudClipRect(0,0,0,0,0);
+			
+			if(((buttons & (BT_USE|BT_ATTACK)) || holdqueue == 1) && holddelay <= 0)
+			{
+				holdqueue = 1;
+				if(!(buttons & (BT_USE|BT_ATTACK)))
+				{
+					
+					if(goldAmount >= PAINKILLER_RECHARGE_COST && remainingCharges < chargeCondition) 
+					{
+						LocalAmbientSound("Painkiller/TarotBoard/BuyCharge",255);
+						TakeInventory("Painkiller_TarotMPUses",1);
+						TakeInventory("Painkiller_TarotUsage",1);
+						TakeInventory("Painkiller_GoldAmount",PAINKILLER_RECHARGE_COST);
+					}
+					else LocalAmbientSound("Sounds/Painkiller/wrong_place.wav",255);
+					holdqueue = 0;
+					holddelay = standardholddelay;
+					holding = 0;
+					hoverqueue = 0;
+				}
+			}
+		}
+		else 
+		{
+			hovercharge = 0;
+			RemoveMessages(1573,1575);
+		}
+		
 		//Card Display
 		for(a = 0; a < PainkillerSilverTarotCards; a++)
 		{
@@ -1942,6 +2031,7 @@ Script "Painkiller_BlackTarotUI" (void)
 Script "Painkiller_GoldTarot_Activate" (void) NET
 {
 	int gameMode = !(isCoop() || isInvasion() || isSinglePlayer()) ? 0 : 1;
+	int screenSize = 0;
 
 	if(CheckInventory("Painkiller_GoldActive") || CheckInventory("Painkiller_GoldSlot1") == 0 && CheckInventory("Painkiller_GoldSlot2") == 0 && CheckInventory("Painkiller_GoldSlot3") == 0 || CheckWeapon("Painkiller_DemonMorph") || (!CheckInventory("Painkiller_TarotMPUses") && gameMode == 0))
 		terminate;
@@ -1995,6 +2085,7 @@ Script "Painkiller_GoldTarot_Activate" (void) NET
 
 	while(duration < maxDuration && (ClassifyActor(0) & ACTOR_ALIVE))
 	{
+		screenSize = ACS_NamedExecuteWithResult("screenBlocks") <= 10;
 		SetHudSize(320,256,1);
 		SetFont("PKTARTAK");
 		HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1500,0,160.0,128.0,0.5);
@@ -2002,18 +2093,18 @@ Script "Painkiller_GoldTarot_Activate" (void) NET
 		SetHudSize(4096,3072,1);
 		if(maxDuration - duration < 105 && duration % 17 < 7)
 		{
-			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1499,0,1664.0,2800.0,0.5);
-			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1498,0,2048.0,2800.0,0.5);
-			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1497,0,2432.0,2800.0,0.5);
+			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1499,0,1664.0,2800.0-(screenSize*512.0),0.5);
+			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1498,0,2048.0,2800.0-(screenSize*512.0),0.5);
+			HudMessage(s:"";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1497,0,2432.0,2800.0-(screenSize*512.0),0.5);
 		}
 		else
 		{
 			SetFont(Painkiller_Gold_CardGraphics[goldSlot1-1][1]);
-			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1499,0,1664.0,2800.0,0.5);
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1499,0,1664.0,2800.0-(screenSize*512.0),0.5);
 			SetFont(Painkiller_Gold_CardGraphics[goldSlot2-1][1]);
-			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1498,0,2048.0,2800.0,0.5);
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1498,0,2048.0,2800.0-(screenSize*512.0),0.5);
 			SetFont(Painkiller_Gold_CardGraphics[goldSlot3-1][1]);
-			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1497,0,2432.0,2800.0,0.5);
+			HudMessage(s:"a";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1497,0,2432.0,2800.0-(screenSize*512.0),0.5);
 		}
 
 		Delay(1);
