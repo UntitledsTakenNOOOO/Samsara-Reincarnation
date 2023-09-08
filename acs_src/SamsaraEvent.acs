@@ -878,12 +878,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 		// Token checkers
 
-		hudhealthmax = GetActorProperty(0, APROP_SpawnHealth);
-
-		if (hudhealthmax == 0) { hudhealthmax = 100; }
-
-		SetInventory("SamsaraHealthOverMax", hudhealthmax * 2);
-		SetInventory("SamsaraHealthOverOverMax", hudhealthmax * 3);
+		if (samsaraClassNum() != CLASS_WITCHAVEN && samsaraClassNum() != CLASS_DEMONESS) { AdjustHealthOverMaxDisplay(); } // these two classes already call this function in their own loop scripts
 
 		if (GetArmorType("MarathonRedArmorArmor", pln)) { SetInventory("SamsaraArmorCategory", 10); }
 		else if (GetArmorType("MarathonYellowArmorArmor", pln)) { SetInventory("SamsaraArmorCategory", 9); }
@@ -1796,7 +1791,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
 			case CLASS_WITCHAVEN:
-				SetActorProperty(0, APROP_SpawnHealth, 100 + (20 * (CheckInventory("WTLevel") - 1) - (20 * (CheckInventory("WTLevel") >= 7))));
+                SetActorProperty(0, APROP_SpawnHealth, 100 + (20 * (CheckInventory("WTLevel") - 1) - (20 * (CheckInventory("WTLevel") >= 7))));
+                AdjustHealthOverMaxDisplay();
 
 				if (!CheckInventory("WTSpellFlyHack")) { TakeInventory("WTSpellFly", 1); } // hexen
 				break;
@@ -2686,10 +2682,9 @@ script "SamsaraWolfMove" (void) //673 -- SAMSARA_WOLFMOVE
 
 		if (!CheckInventory("WolfenMovement"))
 		{
-			if (GetActorProperty(0, APROP_Speed) == 0)
-			{
-				SetActorProperty(0, APROP_Speed, realspeed);
-			}
+			if (GetActorProperty(0, APROP_Speed) == 0) { SetActorProperty(0, APROP_Speed, realspeed); }
+
+            SetInventory("WolfMoving", 0);
 
 			Delay(1);
 			continue;
@@ -2739,14 +2734,7 @@ script "SamsaraWolfMove" (void) //673 -- SAMSARA_WOLFMOVE
 
 		if (keyDown(BT_CROUCH)) { velx /= 2; vely /= 2; }
 
-		if ((velx != 0) || (vely != 0))
-		{
-			GiveInventory("WolfMoving", 1);
-		}
-		else if (CheckInventory("WolfMoving"))
-		{
-			TakeInventory("WolfMoving", 0x7FFFFFFF);
-		}
+        SetInventory("WolfMoving", velx != 0 || vely != 0);
 
 		SetActorVelocity(0, velx, vely, GetActorVelZ(0), 0, 0);
 

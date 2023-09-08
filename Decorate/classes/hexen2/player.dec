@@ -528,45 +528,46 @@ actor Demoness_ShrinkEffect : Demoness
 	}
 }
 
-Actor Hexen2SoulSphere : CustomInventory
+actor Hexen2SoulSphere : CustomInventory
 {
-	Height 24
-	Radius 12
-	Renderstyle Translucent
-	Alpha 0.6
-	Inventory.PickupSound "Hexen2/ArtifactPickup"
-	Inventory.PickupMessage "You have devoured life force"
-	Args 5780, 0, 30
+    Radius 12
+    Height 24
+    RenderStyle "Translucent"
+    Alpha 0.6
+    Args 5780, 0, 30
+    Inventory.PickupMessage "You have devoured life force."
+    Inventory.PickupSound "Hexen2/ArtifactPickup"
+    +NOTIMEFREEZE // allow the item args to set even when time freeze is active
+    +THRUACTORS // don't allow picking up until the item args are set
     States
     {
-        Spawn:
-			TNT1 A 0
-            TNT1 A 0 A_SetSpecial(226, 5780, 0, args[2], 0, 0)
-        HealthLoop:
-			TNT1 A 0 A_JumpIf(args[2] < 1, "Remove")
-            HX00 A 17
-			TNT1 A 0 A_SetArg(2, args[2] - 1)
-            TNT1 A 0 A_SetSpecial(226, 5780, 0, args[2], 0, 0)
-            Loop
-		Remove:
-			TNT1 A 0 A_SpawnItemEx("Hexen2LittleWhiteFlash",0,0,14)
-			TNT1 A 1
-			stop
-		Pickup:
-			TNT1 A 0 A_JumpIfInventory("ChexClass",1,"PickupHarm")
-			TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupHarm")
-			TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupHeal")
-			TNT1 A 0 A_JumpIfInventory("CalebClass",1,"PickupHeal")
-			Goto PickupFail
-		PickupHeal:
-			TNT1 A 0 A_RailWait
-			stop
-		PickupHarm:
-			TNT1 A 0 A_RailWait
-			stop
-		PickupFail:
-			TNT1 A 0 A_RailWait
-			fail
+      Spawn:
+        HX00 A 0
+        TNT1 A 0 A_SetSpecial(226, args[0], args[1], args[2])
+        TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+      SpawnLoop:
+        HX00 A 17 A_JumpIf(args[2] < 1, "Remove")
+        TNT1 A 0 A_SetArg(2, args[2] - 1)
+        TNT1 A 0 A_SetSpecial(226, args[0], args[1], args[2])
+        loop
+
+      Remove:
+        TNT1 A 0 A_SpawnItemEx("Hexen2LittleWhiteFlash",0,0,14)
+        stop
+
+      Pickup:
+      PickupCheckHarm:
+        TNT1 A 0 A_JumpIfInventory("ChexClass",1,"PickupSuccess")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupSuccess")
+      PickupCheckHeal:
+        TNT1 A 0 A_JumpIfInventory("CalebClass",1,"PickupSuccess")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupSuccess")
+        fail
+
+      PickupSuccess:
+        TNT1 A 0 A_RailWait
+        stop
     }
 }
 

@@ -335,7 +335,8 @@ Script "Hexen2_Hud" (void)
 		{
 			if(CheckInventory("Hexen2Experience") > Hexen2_NextLevelXP[CheckInventory("Hexen2Level")-1])
 			{
-				SetActorProperty(0,APROP_SpawnHealth,GetActorProperty(0,APROP_SpawnHealth)+random(5,10));
+                SetActorProperty(0, APROP_SpawnHealth, GetActorProperty(0, APROP_SpawnHealth) + Random(5, 10));
+                AdjustHealthOverMaxDisplay();
 				randomincrease = random(8,11)*2;
 				SetAmmoCapacity("Clip", GetAmmoCapacity("Clip")+randomincrease);
 				SetAmmoCapacity("Cell", GetAmmoCapacity("Cell")+randomincrease);
@@ -366,7 +367,8 @@ Script "Hexen2_Hud" (void)
 		{
 			if(CheckInventory("Hexen2Experience") > Hexen2_NextLevelXP[10]+(192700*(CheckInventory("Hexen2Level")-11)))
 			{
-				SetActorProperty(0,APROP_SpawnHealth,GetActorProperty(0,APROP_SpawnHealth)+3);
+                SetActorProperty(0, APROP_SpawnHealth, GetActorProperty(0, APROP_SpawnHealth) + 3);
+                AdjustHealthOverMaxDisplay();
 				SetAmmoCapacity("Clip", GetAmmoCapacity("Clip")+6);
 				SetAmmoCapacity("Cell", GetAmmoCapacity("Cell")+8);
 				clipmax = GetAmmoCapacity("Clip")-(250*(CheckInventory("BackPack")+1));
@@ -384,10 +386,10 @@ Script "Hexen2_Hud" (void)
 				GiveInventory("Hexen2Strength", 1);
 			}
 		}
-		if(CheckInventory("BackPack"))
+		if (CheckInventory("Backpack") || CheckInventory("BagOfHolding") || CheckInventory("AmmoSatchel") || CheckInventory("Zorchpack"))
 		{
-			SetAmmoCapacity("Clip", 500+CheckInventory("Hexen2BlueManaAdd"));
-			SetAmmoCapacity("Cell", 500+CheckInventory("Hexen2GreenManaAdd"));
+			SetAmmoCapacity("Clip", 500 + CheckInventory("Hexen2BlueManaAdd"));
+			SetAmmoCapacity("Cell", 500 + CheckInventory("Hexen2GreenManaAdd"));
 		}
 		
 		//Demon glide
@@ -415,7 +417,8 @@ Script "Hexen2_Hud" (void)
 		
 		int drawbar = ACS_NamedExecuteWithResult("Hexen2_DrawExperienceBar",0,0,0,0);
 		
-		SetActorProperty(0,APROP_SpawnHealth,CheckInventory("Hexen2HealthAdd"));
+        SetActorProperty(0, APROP_SpawnHealth, CheckInventory("Hexen2HealthAdd"));
+        AdjustHealthOverMaxDisplay();
 		
 		Delay(1);
 		currenthealth = GetActorProperty(0,APROP_Health);
@@ -823,20 +826,29 @@ Script "Hexen2_LifeTimeDelete" (int lifetime)
 	Thing_Remove(0);
 }
 
-Script 5780 (int health) // if this could be named, believe me, I'd make it so
+script 5780 (int hpamount) // if this could be named, believe me, I'd make it so
 {
-	if(CheckInventory("Hexen2Class"))
-	{
-		for(int a = 0; a < health; a++)
-		{
-			if(GetActorProperty(0,APROP_Health) >= GetActorProperty(0,APROP_SpawnHealth))
-				break;
-			else
-				SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_Health)+1);
-		}
-		GiveInventory("Clip",health);
-		GiveInventory("Cell",health);
-	}
-	else
-		Thing_Damage(0,health);
+    if (hpamount <= 0) { terminate; }
+
+    if (CheckInventory("CalebClass") || CheckInventory("Hexen2Class"))
+    {
+        int healthmax = GetActorProperty(0, APROP_SpawnHealth);
+
+        if (healthmax == 0) { healthmax = 100; }
+
+        healthmax = healthmax + GetActorProperty(0, APROP_Stamina); // recheck for stamina
+
+        for (int a = 0; a < hpamount; a++)
+        {
+            if (GetActorProperty(0, APROP_Health) >= healthmax) { break; }
+            else { SetActorProperty(0, APROP_Health, GetActorProperty(0, APROP_Health) + 1); }
+        }
+
+        if (CheckInventory("Hexen2Class"))
+        {
+            GiveInventory("Clip", hpamount);
+            GiveInventory("Cell", hpamount);
+        }
+    }
+    else if (CheckInventory("ChexClass") || CheckInventory("HexenClass")) { DamageThing(hpamount, MOD_UNKNOWN); }
 }
