@@ -85,7 +85,7 @@ Actor "Spellbook" : WTWeapon
 		WW00 A 0 A_TakeInventory("WTCastingSpell",1)
 		WW00 A 0 A_TakeInventory("WTFistAttack",1)
 		WW00 A 0 A_GiveInventory("WTFistActive", 1)
-		WW00 G 24 A_Print("You don't have enough ammo to cast this spell, or it is disabled!")
+		WW00 G 24 A_Print("You don't have enough ammo to cast this spell!")
 		goto WIdle
 
 	CastFlyFail1:
@@ -93,6 +93,13 @@ Actor "Spellbook" : WTWeapon
 		WW00 A 0 A_TakeInventory("WTFistAttack",1)
 		WW00 A 0 A_GiveInventory("WTFistActive", 1)
 		WW00 G 24 A_Print("You are already flying!")
+		goto WIdle
+
+	CastFlyFail2:
+		WW00 A 0 A_TakeInventory("WTCastingSpell",1)
+		WW00 A 0 A_TakeInventory("WTFistAttack",1)
+		WW00 A 0 A_GiveInventory("WTFistActive", 1)
+		WW00 G 24 A_Print("This spell is disabled!")
 		goto WIdle
 		
 	CastNukeSpell:
@@ -132,12 +139,17 @@ Actor "Spellbook" : WTWeapon
 	CastFlySpell:
         TNT1 A 0 A_JumpIfInventory("PowerFlight",1,"CastFlyFail1")
         TNT1 A 0 A_JumpIfInventory("PowerFlight2",1,"CastFlyFail1")
+        TNT1 A 0 A_JumpIfInventory("SamsaraPowerFly",1,"CastFlyFail1")
+        TNT1 A 0 A_JumpIfInventory("SamsaraPowerFlyForHexen",1,"CastFlyFail1")
         TNT1 A 0 A_JumpIfInventory("WTSpellFly",1,"CastFlyFail1")
+		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraWitchaven",5,5) == -1,"CastFlyFail2") //Checks if disabled
 		WW65 A 1 bright A_JumpIf(ACS_NamedExecuteWithResult("SamsaraWitchaven",5,5) == 0,"CastFail") //Checks if enough ammo. If yes, take the required ammo		
 		WW65 ABCDEFG 4 bright 		
 		WW65 H 0 A_PlayWeaponSound("gspell/success")
         TNT1 A 0 A_JumpIfInventory("PowerFlight",1,"CastFlySpellFinish")
         TNT1 A 0 A_JumpIfInventory("PowerFlight2",1,"CastFlySpellFinish")
+        TNT1 A 0 A_JumpIfInventory("SamsaraPowerFly",1,"CastFlySpellFinish")
+        TNT1 A 0 A_JumpIfInventory("SamsaraPowerFlyForHexen",1,"CastFlySpellFinish")
         TNT1 A 0 A_JumpIfInventory("WTSpellFly",1,"CastFlySpellFinish")
 		TNT1 A 0 A_GiveInventory("WTSpellFlyHack")
 		TNT1 A 0 A_GiveInventory("WTSpellFly")
@@ -279,6 +291,13 @@ Actor WTSpellNukeBomb
 	+NOEXTREMEDEATH
 	+NODAMAGETHRUST 
 	+CANNOTPUSH
+    +DONTBLAST
+    +DONTREFLECT
+    +DONTSPLASH
+    +NOTIMEFREEZE
+    +NOTONAUTOMAP
+    +NOTRIGGER
+    +SKYEXPLODE
 	Height 1
 	Radius 1
 	Damage (0)
@@ -411,6 +430,13 @@ Actor WTSpellIceBomb
 	PROJECTILE
 	+FORCERADIUSDMG
 	+BLOODLESSIMPACT
+    +DONTBLAST
+    +DONTREFLECT
+    +DONTSPLASH
+    +NOTIMEFREEZE
+    +NOTONAUTOMAP
+    +NOTRIGGER
+    +SKYEXPLODE
 	Height 1
 	Radius 1
 	Damage (0)

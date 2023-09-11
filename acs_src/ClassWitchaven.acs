@@ -111,27 +111,35 @@ script "SamsaraWitchaven" (int which, int arg1, int arg2) //707
 		HudMessage(s:WitchavenStrings[arg1][0];HUDMSG_PLAIN,556,CR_UNTRANSLATED,WitchavenStrings[arg1][1] << 16,WitchavenStrings[arg1][2] << 16,3.0);
 		break;
 	case 5:
-		i = CheckInventory("Clip");
-		j = CheckInventory("Shell");
-		k = CheckInventory("RocketAmmo");
-		x = CheckInventory("Cell");
+        if (arg1 == 5 && GetCVar("samsara_banjetpack"))
+        {
+            SetResultValue(-1);
+            break;
+        }
 
-		if(i >= WitchavenSpellCost[arg1][0]
-		&& j >= WitchavenSpellCost[arg1][1]
-		&& k >= WitchavenSpellCost[arg1][2]
-		&& x >= WitchavenSpellCost[arg1][3]
-		&& !(arg1 == 5 && GetCvar("samsara_banjetpack")))
-		{	SetResultValue(1);
-			if(!GetCvar("sv_infiniteammo"))
-			{
-				TakeInventory("Clip",WitchavenSpellCost[arg1][0]);
-				TakeInventory("Shell",WitchavenSpellCost[arg1][1]);
-				TakeInventory("RocketAmmo",WitchavenSpellCost[arg1][2]);
-				TakeInventory("Cell",WitchavenSpellCost[arg1][3]);}
-			}
-		else
-		{	SetResultValue(0);}
-		break;
+        i = CheckInventory("Clip");
+        j = CheckInventory("Shell");
+        k = CheckInventory("RocketAmmo");
+        x = CheckInventory("Cell");
+
+        if (CheckInventory("SamsaraHasInfiniteAmmo") ||
+            (i >= WitchavenSpellCost[arg1][0] &&
+             j >= WitchavenSpellCost[arg1][1] &&
+             k >= WitchavenSpellCost[arg1][2] &&
+             x >= WitchavenSpellCost[arg1][3]))
+        {
+            SetResultValue(1);
+
+            if (!CheckInventory("SamsaraHasInfiniteAmmo"))
+            {
+                TakeInventory("Clip", WitchavenSpellCost[arg1][0]);
+                TakeInventory("Shell", WitchavenSpellCost[arg1][1]);
+                TakeInventory("RocketAmmo", WitchavenSpellCost[arg1][2]);
+                TakeInventory("Cell", WitchavenSpellCost[arg1][3]);
+            }
+        }
+        else { SetResultValue(0); }
+        break;
 	default:
 		break;
 	}
