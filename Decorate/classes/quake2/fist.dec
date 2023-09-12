@@ -108,20 +108,20 @@ actor SamsaraQuake2ChainfistAttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
       PickupDM:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasSpread",1,"PickupDMSpread")
-        TNT1 A 0 A_CustomPunch(35,true,CPF_NORANDOMPUFFZ,"Q2ChainfistPuff")
+        TNT1 A 0 A_CustomPunch(35,true,CPF_NORANDOMPUFFZ,"SamsaraQuake2ChainfistPuff")
         stop
 
       PickupDMSpread:
-        TNT1 A 0 A_CustomPunch(35*3,true,CPF_NORANDOMPUFFZ,"Q2ChainfistPuff")
+        TNT1 A 0 A_CustomPunch(35*3,true,CPF_NORANDOMPUFFZ,"SamsaraQuake2ChainfistPuff")
         stop
 
       PickupCoop:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasSpread",1,"PickupCoopSpread")
-        TNT1 A 0 A_CustomPunch(35,true,CPF_NORANDOMPUFFZ,"Q2ChainfistPuffCoop")
+        TNT1 A 0 A_CustomPunch(35,true,CPF_NORANDOMPUFFZ,"SamsaraQuake2ChainfistPuffCoop")
         stop
 
       PickupCoopSpread:
-        TNT1 A 0 A_CustomPunch(35*3,true,CPF_NORANDOMPUFFZ,"Q2ChainfistPuffCoop")
+        TNT1 A 0 A_CustomPunch(35*3,true,CPF_NORANDOMPUFFZ,"SamsaraQuake2ChainfistPuffCoop")
         stop
     }
 }
@@ -165,8 +165,11 @@ actor SamsaraQuake2ChainfistLoopSoundStopper : Trigger
     }
 }
 
-actor Q2ChainfistPuff : Q2BulletPuff
+actor SamsaraQuake2ChainfistHitSoundCooldown : Powerup { Powerup.Duration 17 }
+
+actor SamsaraQuake2ChainfistPuff : Q2BulletPuff
 {
+    +PUFFGETSOWNER
     +PUFFONACTORS
     States
     {
@@ -175,9 +178,13 @@ actor Q2ChainfistPuff : Q2BulletPuff
         goto Spawn
 
       XDeath:
+        TNT1 A 0 A_JumpIfInventory("SamsaraQuake2ChainfistHitSoundCooldown",1,"XDeathFinish",AAPTR_TARGET)
+        TNT1 A 0 A_PlaySound("Q2Weapons/SawSlice")
+        TNT1 A 0 A_GiveInventory("SamsaraQuake2ChainfistHitSoundCooldown",1,AAPTR_TARGET)
+      XDeathFinish:
         TNT1 A 1
         stop
     }
 }
 
-actor Q2ChainfistPuffCoop : Q2ChainfistPuff { +MTHRUSPECIES }
+actor SamsaraQuake2ChainfistPuffCoop : SamsaraQuake2ChainfistPuff { +MTHRUSPECIES }
