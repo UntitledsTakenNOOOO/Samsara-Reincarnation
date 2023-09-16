@@ -1,5 +1,5 @@
-Actor TNT2 : Boolean {}
-Actor WhoopsIDied : Boolean {}
+Actor TNT2 : TemporaryBoolean {}
+Actor WhoopsIDied : TemporaryBoolean {}
 Actor CalebLighterReadyDummy : Boolean {}
 Actor CalebUsingTNT : Boolean {}
 Actor CalebInterpolateBar : TemporaryBoolean {}
@@ -22,7 +22,7 @@ Actor ThrowPowerBig : Ammo
 	+INVENTORY.UNDROPPABLE
 }
 
-Actor Dynamite : CalebWeapon
+Actor Dynamite : CalebThrowableWeapon
 {
 	Inventory.PickupMessage "Bundle of TNT!"
 	Weapon.SelectionOrder 880
@@ -41,28 +41,24 @@ Actor Dynamite : CalebWeapon
 	States
 	{
 	Ready:
-		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
-		TNT1 A 0 A_TakeInventory("ThrowPowerBig")
-		TNT1 A 0 A_TakeInventory("ThrowPower")
-		TNT1 A 0 A_TakeInventory("UsingPitchfork", 1)
 		TNT1 A 0 A_JumpIfInventory("CalebLighterReadyDummy",1,"RaisingDynamite")
-		BLTR AB 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		BLTR AB 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_PlayWeaponSound("TNT/Zip")
-		BLTR C 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		BLTR C 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_GiveInventory("CalebLighterReadyDummy",1)
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
 		TNT1 A 0 A_JumpIfNoAmmo("ReadyAmmoless")
-		BTNT ABC 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		BTNT ABC 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_PlaySound("TNT/Match",CHAN_6)
-		BTNT DEFG 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		Goto ReadyLoop+6
+		BTNT DEFG 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		Goto ReadyLoop+4
 	RaisingDynamite:
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
 		TNT1 A 0 A_JumpIfNoAmmo("ReadyAmmolessLoop")
-		BTNT HIJK 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		Goto ReadyLoop+10
+		BTNT HIJK 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		Goto ReadyLoop+8
 	ReadyLoop:
-		TNT1 A 0 A_TakeInventory("ThrowPowerBig")
-		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
-		TNT1 A 0 A_TakeInventory("ThrowPower")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
 		TNT1 A 0 A_JumpIfNoAmmo("ReadyAmmolessLoop")
 		TNT1 A 0 A_JumpIfInventory("CalebReady",1,"IntroTaunt")
 		TNT1 A 0 A_JumpIfInventory("CalebWaiting",60,"WaitingTaunt")
@@ -83,47 +79,43 @@ Actor Dynamite : CalebWeapon
 		TNT1 A 0 A_JumpIfInventory("CalebReady",1,"IntroTaunt")
 		TNT1 A 0 A_JumpIfInventory("CalebWaiting",60,"WaitingTaunt")
 		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"RaisingDynamite")
 		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"RaisingDynamite")
 		BLTR K 3 A_WeaponReady
 		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"RaisingDynamite")
 		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"RaisingDynamite")
 		BLTR L 3 A_WeaponReady
 		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"RaisingDynamite")
 		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"RaisingDynamite")
 		BLTR M 3 A_WeaponReady
 		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"RaisingDynamite")
 		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"RaisingDynamite")
 		Loop
 	Deselect:
 		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
-		TNT1 A 0 A_TakeInventory("ThrowPower")
 		TNT1 A 0 A_TakeInventory("ThrowPowerBig")
+		TNT1 A 0 A_TakeInventory("ThrowPower")
 		TNT1 A 0 A_JumpIfInventory("WhoopsIDied",1,"DeselectDead")
-		Goto DeselectMatchStart
-	DeselectMatchStart:
-		TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Lower
-		TNT1 A 1 A_Lower
-		Loop
-		//TNTQ D 1
-		//TNTL CB 1
-		//TNT1 A 0 A_PlayWeaponSound("TNT/Zip")
-		//Goto Super::DeselectLoop
+		Goto Super::DeselectLoop
 	DeselectDead:
 		BBOM A 2 A_TakeInventory("WhoopsIDied")
 		BBOM BC 2
-		Goto DeselectMatchStart
+		Goto Super::DeselectLoop
 	Select:
-		TNT1 A 0 A_GiveInventory("CalebUsingTNT",1)
-		TNT1 A 0 A_TakeInventory("ThrowPower")
+		TNT1 A 0 A_TakeInventory("UsingPitchfork", 1)
+		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
 		TNT1 A 0 A_TakeInventory("ThrowPowerBig")
-		BLTR A 0 A_JumpIfInventory("CalebLighterReadyDummy",1,"SwitchExplosive")
+		TNT1 A 0 A_TakeInventory("ThrowPower")
+		TNT1 A 0 A_GiveInventory("CalebUsingTNT",1)
 		Goto Super::SelectLoop
-	SwitchExplosive:
-		TNT1 AAAAAAAAAAAAAAAAAAAA 0 A_Raise
-		TNT1 A 1 A_Raise
-		Loop
 	Fire:
 		TNT1 A 0 A_JumpIfInventory("TNT2", 1, "Hold")
+		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
+		TNT1 A 0 A_TakeInventory("ThrowPowerBig")
+		TNT1 A 0 A_TakeInventory("ThrowPower")
 		BTNT Z 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		BTNT "[" 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_PlayWeaponSound("TNT/Fuse")
@@ -515,7 +507,7 @@ Actor Dynamite : CalebWeapon
 		TNT1 A 0 A_TakeInventory("WhoopsIDied")
 		Goto ReadyLoop
 	AltFire:
-		TNTF A 0 A_JumpIfInventory("TNT2", 1, "DropDynamite")
+		TNT1 A 0 A_JumpIfInventory("TNT2", 1, "DropDynamite")
 		TNT1 A 0 A_GiveInventory("TNT2", 1)
 		BTNT Z 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		BTNT "[" 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
@@ -657,38 +649,31 @@ Actor Dynamite : CalebWeapon
 		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Cannot")
 		Goto Explode
 	Spawn:
-		CLVR S -1
+		CLVR A -1
 		Stop
 	Cannot:
-		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
-		TNT1 A 0 A_TakeInventory("ThrowPowerBig")
-		TNT1 A 0 A_TakeInventory("ThrowPower")
-		Goto Cannot2
-	Cannot2:
 		TNT1 A 0 A_SelectWeapon("Pitchfork")
 		Goto Deselect
 	DropDynamite:
 		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
 		TNT1 A 0 A_TakeInventory("ThrowPower")
-		TNT1 A 0 A_GiveInventory("SamsaraBloodDynamiteAttackHandler")
-		TNT1 A 0 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH|WRF_NOBOB) TNT1 AAA 0 A_Lower BTN4 E 1 A_Lower
-		TNT1 A 0 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH|WRF_NOBOB) TNT1 AAA 0 A_Lower BTN4 E 1 A_Lower
-		TNT1 A 0 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH|WRF_NOBOB) TNT1 AAA 0 A_Lower BTN4 E 1 A_Lower
-		TNT1 A 0 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH|WRF_NOBOB) TNT1 AAA 0 A_Lower BTN4 E 1 A_Lower
-		TNT1 A 0 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH|WRF_NOBOB) TNT1 AAA 0 A_Lower BTN4 E 1 A_Lower
-		TNT1 A 0 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH|WRF_NOBOB) TNT1 AAA 0 A_Lower BTN4 E 1 A_Lower
+		BTN4 PQR 1
+		BTN4 S 1 A_GiveInventory("SamsaraBloodDynamiteAttackHandler")
+		BTN4 T 1
+		BLTR L 1
 		Goto ReadyLoop
 	Throw:
 		BTN4 E 1 A_StopSound(CHAN_WEAPON)
 		BTN4 FGHI 1
 		TNT1 A 0 A_TakeInventory("CalebInterpolateBar")
 		TNT1 A 0 A_PlayWeaponSound("TNT/Throw")
-		TNT1 A 0 A_GiveInventory("SamsaraBloodDynamiteAttackHandler")
-		BTN4 JKLMNO 1
-		BLTR L 2
-		TNT1 A 0 A_JumpIfInventory("RocketAmmo", 1, 1)
-		Goto Cannot2
-		BLTR MK 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		BTN4 J 1 A_GiveInventory("SamsaraBloodDynamiteAttackHandler")
+		BTN4 KLMNO 1
+		BLTR L 3
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+		Goto Cannot
+		BLTR MK 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		Goto RaisingDynamite
 	}
 }
@@ -753,18 +738,17 @@ actor PlayerTNT
 	ActiveSound "TNT/Fuse"
 	PROJECTILE
 	+BRIGHT
-	+RANDOMIZE
-	+DONTSPLASH
-	+SHOOTABLE
-	+NOBOUNCESOUND
-	-EXPLODEONWATER
+	+BOUNCEONCEILINGS
 	+CANBOUNCEWATER
+	+DONTSPLASH
+	+NOBOUNCESOUND
 	+PUSHABLE
-	-SOLID
-	-NOGRAVITY
-	+NOTELEPORT
-	-TELESTOMP
+	+RANDOMIZE
+	+SHOOTABLE
 	+WINDTHRUST
+	-EXPLODEONWATER
+	-NOGRAVITY
+	-TELESTOMP
 	Damage (120) //+20
 	DamageType "Dynamite"
 	var int user_strength;
@@ -845,7 +829,6 @@ actor PlayerTNT1 : PlayerTNT
 	BounceFactor 0.5
 	BounceType "Hexen"
 	+BOUNCEONACTORS
-	-EXPLODEONWATER
 	-PUSHABLE
 	States
 	{
