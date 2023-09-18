@@ -680,6 +680,7 @@ Script "Samsara_OriginalSlots" (int mode)
 			}
 			break;
 		case CLASS_HALFLIFE:
+			TakeInventory("SamsaraOriginalKeyCounter", 1);
 			ACS_NamedExecuteWithResult("Samsara_DoHLWeaponSwitch",mode,pln);
 			break;
 		case CLASS_DESCENT:
@@ -688,7 +689,13 @@ Script "Samsara_OriginalSlots" (int mode)
 			{
 				default:
 					TakeInventory("DescentSecondaryKeySwitcher",1);
-					SetWeapon(nextweapon);
+					until(SetWeapon(nextweapon) || switchAttempts >= 10)
+					{
+						switchAttempts++;
+						nextWeapon = OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode][CheckInventory("SamsaraOriginalKeyCounter")];
+						if (StrLen(nextweapon) == 0) { SetInventory("SamsaraOriginalKeyCounter", 0); nextWeapon = OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode][CheckInventory("SamsaraOriginalKeyCounter")]; }
+						else { GiveInventory("SamsaraOriginalKeyCounter", 1); }
+					}
 					break;
 				case 5:
 				case 6:
@@ -696,10 +703,15 @@ Script "Samsara_OriginalSlots" (int mode)
 				case 8:
 				case 9:
 					GiveInventory("DescentSecondaryKeySwitcher",1);
-					SetWeapon(nextweapon);
+					until(SetWeapon(nextweapon) || switchAttempts >= 10)
+					{
+						switchAttempts++;
+						nextWeapon = OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode][CheckInventory("SamsaraOriginalKeyCounter")];
+						if (StrLen(nextweapon) == 0) { SetInventory("SamsaraOriginalKeyCounter", 0); nextWeapon = OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][mode][CheckInventory("SamsaraOriginalKeyCounter")]; }
+						else { GiveInventory("SamsaraOriginalKeyCounter", 1); }
+					}
 					break;
 			}
-			GiveInventory("SamsaraOriginalKeyCounter", 1);
 			break;
 	}
 
@@ -769,7 +781,7 @@ script "Samsara_DoHLWeaponSwitch" (int mode, int pln)
 	until(CheckInventory(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]))
 	{
 		attempts++;
-		if(attempts > 5) { SetInventory("SamsaraOriginalKeyCounter", startingCounter); terminate; }
+		if(attempts > 10) { SetInventory("SamsaraOriginalKeyCounter", startingCounter); terminate; }
 		GiveInventory("SamsaraOriginalKeyCounter", 1);
 
 		if(strlen(OriginalHotKeyWeapon[PlayerClass(pln)][CheckInventory("SamsaraModeCounter")][CheckInventory("SamsaraOriginalSlotCounter")][CheckInventory("SamsaraOriginalKeyCounter")]) == 0)
