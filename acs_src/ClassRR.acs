@@ -251,7 +251,7 @@ Script "LeonardHealthItem" (int mode, int add)
 	}
 }
 
-Script "LeonardMotorCycle" (void)
+Script "LeonardMotorCycle" (int pve)
 {
 	bool init;
 	int angle;
@@ -385,8 +385,15 @@ Script "LeonardMotorCycle" (void)
 	if(speedcounter && forwardmove > 0)
 	{
 		NoiseAlert(0, 0);
-		
-		LineAttack(0,random(GetActorAngle(0)-0.05,GetActorAngle(0)+0.05),random(GetActorPitch(0)-0.15,GetActorPitch(0)+0.15), random((speedcounter * 0.9) >> 16, (speedcounter * 1.25) >> 16), "RRBikePuff", "LeonardDamage2", 32.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL, 0);
+
+        if (CheckInventory("SamsaraHasSpread"))
+        {
+            if (pve) { LineAttack(0, Random(GetActorAngle(0) - 0.05, GetActorAngle(0) + 0.05), Random(GetActorPitch(0) - 0.15, GetActorPitch(0) + 0.15), Random((speedcounter * 0.9) >> 16, (speedcounter * 1.25) >> 16) * 3, "RRBikePuffCoop", "LeonardDamage2", 32.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL); }
+            else { LineAttack(0, Random(GetActorAngle(0) - 0.05, GetActorAngle(0) + 0.05), Random(GetActorPitch(0) - 0.15, GetActorPitch(0) + 0.15), Random((speedcounter * 0.9) >> 16, (speedcounter * 1.25) >> 16) * 3, "RRBikePuff", "LeonardDamage2", 32.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL); }
+        } else {
+            if (pve) { LineAttack(0, Random(GetActorAngle(0) - 0.05, GetActorAngle(0) + 0.05), Random(GetActorPitch(0) - 0.15, GetActorPitch(0) + 0.15), Random((speedcounter * 0.9) >> 16, (speedcounter * 1.25) >> 16), "RRBikePuffCoop", "LeonardDamage2", 32.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL); }
+            else { LineAttack(0, Random(GetActorAngle(0) - 0.05, GetActorAngle(0) + 0.05), Random(GetActorPitch(0) - 0.15, GetActorPitch(0) + 0.15), Random((speedcounter * 0.9) >> 16, (speedcounter * 1.25) >> 16), "RRBikePuff", "LeonardDamage2", 32.0, FHF_NORANDOMPUFFZ|FHF_NOIMPACTDECAL); }
+        }
 	}
 	
 	Delay(1);
@@ -434,12 +441,15 @@ Script "RRMotorcycleHealthCounter" (void)
 	Delay(1);
 	
 	GiveInventory("RedneckMotorCycle", 1);
-	if(strlen(armorType) > 0) 
-	{
-		GiveInventory(armorType,1);
-		SetInventory("BasicArmor",armorAmount);
-	}
-	
+
+    if (strlen(armorType) > 0 && armorAmount > 0)
+    {
+        GiveInventory(armorType, 1);
+
+        if (CheckInventory("BasicArmor") < armorAmount) { GiveInventory("InfiniteArmorBonus", armorAmount - CheckInventory("BasicArmor")); }
+        else if (CheckInventory("BasicArmor") > armorAmount) { SetInventory("BasicArmor", armorAmount); }
+    }
+
 	Thing_ChangeTid(0, usertid);
 	SetActivator(dummytid, AAPTR_Default);
 	Thing_SetTranslation(usertid, -1);
@@ -449,7 +459,7 @@ Script "RRMotorcycleHealthCounter" (void)
 	SetWeapon("RedneckMotorcycle");
 	SetActorAngle(0, angle);
 	SetActorProperty(0, APROP_Health, health);
-	ACS_NamedExecuteAlways("LeonardMotorCycle", 0, 0, 0, 0);
+	ACS_NamedExecuteAlways("LeonardMotorCycle", 0, isSinglePlayer() || isCoop(), 0, 0);
 	ACS_NamedExecuteAlways("RRDismountReal", 0, 0, 0, 0);
 }
 
