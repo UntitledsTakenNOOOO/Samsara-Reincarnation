@@ -379,3 +379,35 @@ Script "CalebProximityLooker" (void)
 	SetActivator(0,AAPTR_Target);
 	SetPointerExt(AAPTR_TRACER,0,newTid);
 }
+
+Script "CalebProximityChecker" (void)
+{
+	if(GetCvar("samsara_bloodproximitybehavior"))
+		SetActorState(0,"TNTEnemyLooker",1);
+	else
+		SetActorState(0,"BeginSpawnLoop",1);
+}
+
+Script "CalebProximityAllyChecker" (void)
+{
+	int myTid = UniqueTid();
+	int activationTid = ActivatorTid();
+	Thing_ChangeTid(0,myTid);
+	SetActivator(0,AAPTR_MASTER);
+	SetActivator(0,AAPTR_TRACER);
+	int userTeam = GetPlayerInfo(PlayerNumber(),PLAYERINFO_TEAM);
+	int userPlayer = PlayerNumber();
+	SetActivator(myTid,AAPTR_TARGET);
+	if(!(ClassifyActor(0) & ACTOR_PLAYER)) SetActorState(0,"LookForNewTarget",1);
+	else
+	{
+		int targetTeam = GetPlayerInfo(PlayerNumber(),PLAYERINFO_TEAM);
+		int targetPlayer = PlayerNumber();
+		SetActivator(myTid);
+		if(userTeam == targetTeam && userPlayer != targetPlayer)
+			SetActorState(0,"LookForNewTarget",1);
+		else
+			SetActorState(0,"ValidTarget",1);
+	}
+	Thing_ChangeTid(myTid,activationTid);
+}

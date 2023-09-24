@@ -234,14 +234,48 @@ Actor PlayerProximityTNTLooker
 	{
 		Spawn:
 			TNT1 A 0
+			TNT1 A 0 A_GiveInventory("ProximityTNTArmed",1)
+			TNT1 A 1 ACS_NamedExecuteWithResult("CalebProximityChecker")
+			wait
+		BeginSpawnLoop:	
 			TNT1 A 0 A_CopyFriendliness(AAPTR_TRACER)
-			Goto SpawnLoop
 		SpawnLoop:
+			TNT1 A 0 A_JumpIfInventory("ProximityTNTDetonate",1,"See")
 			TNT1 A 0 A_Warp(AAPTR_MASTER,0,0,0,0,WARPF_NOCHECKPOSITION)
-			TNT1 A 1 A_LookEx(LOF_NOSOUNDCHECK,0,128,0,0,"See")
+			TNT1 A 1 A_LookEx(LOF_NOSOUNDCHECK,0,128,0,360,"See")
+			Loop
+		TNTEnemyLooker:
+			TNT1 A 0 A_SpawnItemEx("PlayerProximityTNTAllegienceSwitcher",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
+			Goto BeginSpawnLoop
+		See:
+			TNT1 A 0 A_RemoveChildren(true)
+			TNT1 A 1 A_GiveInventory("ProximityTNTDetonate",1,AAPTR_MASTER)
+			Stop
+	}
+}
+
+Actor PlayerProximityTNTAllegienceSwitcher : PlayerProximityTNTLooker
+{
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 0 A_LookEx(LOF_NOSOUNDCHECK,0,128,0,360,"See")
+			TNT1 A 0 A_JumpIfInventory("ProximityTNTArmed",1,1,AAPTR_MASTER)
+			Goto Remove
+			TNT1 A 1 A_Warp(AAPTR_MASTER,0,0,0,0,WARPF_NOCHECKPOSITION)
 			Loop
 		See:
+			TNT1 A 1 ACS_NamedExecuteWithResult("CalebProximityAllyChecker")
+			wait
+		ValidTarget:
 			TNT1 A 1 A_GiveInventory("ProximityTNTDetonate",1,AAPTR_MASTER)
+			Stop
+		LookForNewTarget:
+			TNT1 A 0 A_ClearTarget
+			Goto Spawn+2
+		Remove:
+			TNT1 A 1
 			Stop
 	}
 }
