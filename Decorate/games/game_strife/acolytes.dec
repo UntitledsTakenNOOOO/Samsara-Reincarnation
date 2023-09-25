@@ -59,9 +59,9 @@ actor Acolyte2 : SamsaraMonsterReincAcolyte replaces Acolyte
 	Pain.MightyBoot:
 		TNT1 A 0 A_ChangeFlag("NOPAIN",1)
 		TNT1 A 0 A_PlaySound("duke/kickhit",CHAN_BODY)
-		AGRD G 2 A_FaceTarget
+		AGRD O 2 A_FaceTarget
 		TNT1 A 0 A_Recoil(14)
-		AGRD G 16 A_Pain
+		AGRD O 16 A_Pain
 		Goto See
 
 	Death.CalebFire:
@@ -173,7 +173,7 @@ actor AcolyteToBe2: Acolyte2 replaces AcolyteToBe
 	}
 }
 
-actor AcolyteBlue2 : SamsaraMonsterReincAcolyteBlue replaces AcolyteBlue// - Gives QuestItem7 when all the Acolytes are killed. Interesting.
+actor AcolyteBlue2 : SamsaraMonsterReincAcolyteBlue replaces AcolyteBlue // Gives QuestItem7 when all the Acolytes are killed. Interesting.
 {
 	DamageFactor "CorvusCrossbow", 1.1
 	DamageFactor "DragonClaw", 1.5
@@ -186,48 +186,47 @@ actor AcolyteBlue2 : SamsaraMonsterReincAcolyteBlue replaces AcolyteBlue// - Giv
 	+NOICEDEATH
 	Translation "128:143=144:159"
 	+THRUGHOST
-	Tag "Acolyte"
+	Tag "$TAG_ACOLYTE"
 	States
 	{
 	Death:
-		TNT1 A 0 A_GiveToTarget("AcolyteBlueDeathCount",1)
 		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		TNT1 A 0 A_JumpIfInTargetInventory("AcolyteBlueDeathCount",5,"GiveQuestItem")
-	DeathFinish:
-		AGRD G 4
-		AGRD H 4 A_Scream
-		AGRD I 4
-		AGRD J 3
-		AGRD K 3 A_NoBlocking
-		AGRD L 3
-		AGRD M 3 A_AcolyteDie
-		AGRD N -1
-		Stop
+        AGRD G 4 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+        AGRD H 4 A_Scream
+        AGRD I 4
+        AGRD J 3
+        AGRD K 3 A_NoBlocking
+        AGRD L 3
+        TNT1 A 0 A_AcolyteDie
+        AGRD M 3 ACS_NamedExecuteWithResult("SamsaraStrifeAcolyteBlueDeathChecker")
+        AGRD N -1
+        stop
 
 	XDeath:
-		TNT1 A 0 A_GiveToTarget("AcolyteBlueDeathCount",1)
 		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
 		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		TNT1 A 0 A_JumpIfInTargetInventory("AcolyteBlueDeathCount",5,"GiveQuestItemXDeath")
-	XDeathFinish:
-		GIBS A 5 A_NoBlocking
-		GIBS BC 5 A_TossGib
-		GIBS D 4 A_TossGib
-		GIBS E 4 A_XScream
-		GIBS F 4 A_TossGib
-		GIBS GH 4
-		GIBS I 5
-		GIBS J 5 A_AcolyteDie
-		GIBS K 5
-		GIBS L 1400
-		Stop
+        GIBS A 5 A_NoBlocking
+        GIBS BC 5 A_TossGib
+        GIBS D 4 A_TossGib
+        GIBS E 4 A_XScream
+        GIBS F 4 A_TossGib
+        GIBS GH 4
+        GIBS I 5
+        TNT1 A 0 A_AcolyteDie
+        GIBS J 5 ACS_NamedExecuteWithResult("SamsaraStrifeAcolyteBlueDeathChecker")
+        GIBS K 5
+        GIBS L 1400
+        stop
+
+	Missile:
+		TNT1 A 0 A_ChangeFlag("NOPAIN",0)
+		AGRD E 8 A_FaceTarget
+		AGRD FE 4 A_ShootGun
+		AGRD F 6 A_ShootGun
+		Goto See
 
 	Burn:
-		TNT1 A 0 A_GiveToTarget("AcolyteBlueDeathCount",1)
 		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_JumpIfInTargetInventory("AcolyteBlueDeathCount",5,"GiveQuestItemBurn")
-	BurnFinish:
 		SBRN A 3 bright A_PlaySound("strife/burndeath",CHAN_VOICE)
 		SBRN B 3 bright A_SpawnItemEx("FireDroplet", 0, 0, 24, 0, 0, -1)
 		SBRN C 3 bright A_Wander
@@ -240,29 +239,26 @@ actor AcolyteBlue2 : SamsaraMonsterReincAcolyteBlue replaces AcolyteBlue// - Giv
 		SBRN NOPQPQ 5 bright
 		SBRN RSTU 7 bright
 		SBRN V 0 A_AcolyteDie
-		SBRN V -1
+		SBRN V -1 ACS_NamedExecuteWithResult("SamsaraStrifeAcolyteBlueDeathChecker")
 		Stop
 
 	Disintegrate:
-		TNT1 A 0 A_GiveToTarget("AcolyteBlueDeathCount",1)
 		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_JumpIfInTargetInventory("AcolyteBlueDeathCount",5,"GiveQuestItemDisintegrate")
-	DisintegrateFinish:
 		DISR A 5 A_PlaySound("misc/disruptordeath", CHAN_VOICE)
 		DISR BC 5
 		DISR D 5 A_NoBlocking
 		DISR EF 5
 		DISR GHIJ 4
 		MEAT D 0 A_AcolyteDie
-		MEAT D 700
+		MEAT D 700 ACS_NamedExecuteWithResult("SamsaraStrifeAcolyteBlueDeathChecker")
 		Stop
 
 	Pain.MightyBoot:
 		TNT1 A 0 A_ChangeFlag("NOPAIN",1)
 		TNT1 A 0 A_PlaySound("duke/kickhit",CHAN_BODY)
-		AGRD G 2 A_FaceTarget
+		AGRD O 2 A_FaceTarget
 		TNT1 A 0 A_Recoil(14)
-		AGRD G 16 A_Pain
+		AGRD O 16 A_Pain
 		Goto See
 
 	Death.CalebFire:
@@ -270,21 +266,10 @@ actor AcolyteBlue2 : SamsaraMonsterReincAcolyteBlue replaces AcolyteBlue// - Giv
 		TNT1 A 0 A_Jump(218, 2)
 		TNT1 A 0 A_GiveToTarget("CalebDMTaunt1", 1)
 		TNT1 A 0 A_SpawnItemEx("BloodBurningCorpse_Generic", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 0 A_GiveToTarget("AcolyteBlueDeathCount",1)
 		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_JumpIfInTargetInventory("AcolyteBlueDeathCount",5,"GiveQuestItemLifeLeechBurn")
-	LifeLeechFinish:
 		TNT1 A 0 A_AcolyteDie
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraStrifeAcolyteBlueDeathChecker")
 		TNT1 A 5 A_NoBlocking
 		Stop
-
-	Missile:
-		TNT1 A 0 A_ChangeFlag("NOPAIN",0)
-		AGRD E 8 A_FaceTarget
-		AGRD FE 4 A_ShootGun
-		AGRD F 6 A_ShootGun
-		Goto See
 	}
 }
-
-actor AcolyteBlueDeathCount : Counter { Inventory.MaxAmount 5 }
