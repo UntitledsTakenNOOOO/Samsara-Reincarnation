@@ -1,7 +1,7 @@
 actor PistolFire : Boolean {}
 actor PistolReload : Boolean {}
 actor BlankFlash : Boolean {}
-actor Duke64UsingDumDums : Boolean { }
+actor Duke64UsingDumDums : Boolean {}
 
 actor "Glock 17" : DukeWeapon
 {
@@ -539,6 +539,8 @@ actor "Glock 17" : DukeWeapon
 	}
 }
 
+// Original
+
 actor SamsaraDukePistolAttackHandler : Trigger
 {
     States
@@ -592,6 +594,71 @@ actor SamsaraDukePistolAttackHandler : Trigger
     }
 }
 
+actor DukePistolReload : Ammo
+{
+    Inventory.MaxAmount 12
+    Tag "Glock 17 Magazine (Bullets)"
+    +IGNORESKILL
+}
+
+actor DukePistolPuff : DukeBulletPuff { DamageType "DukePistol" }
+
+actor DukePistolPuffCoop : DukePistolPuff { +MTHRUSPECIES }
+
+actor ShellCasingSpawner : FastProjectile
+{
+	Radius 6
+	Height 6
+	Projectile
+	Damage 0
+	Speed 5
+	SeeSound "none"
+	DeathSound "none"
+	Decal "none"
+	+CLIENTSIDEONLY
+	States
+	{
+	Spawn:
+		TNT1 A 1
+		TNT1 A 1 A_SpawnItemEx("DukeCasing1",0,3,4,random(3,5),0,random(-1,3),random(85,90),0)
+		Stop
+	}
+}
+
+actor DukeCasing1
+{
+	Speed 1
+	Scale 0.07
+	Gravity 0.8
+	-SOLID
+	+MISSILE
+	+MOVEWITHSECTOR
+	+CLIENTSIDEONLY
+	+NOBLOCKMAP
+	+NOTELEPORT
+	States
+	{
+	Spawn:
+		TNT1 A 0 A_Jump(255,"Spawn1","Spawn2")
+		TNT1 A 1
+		loop
+
+	Spawn1:
+		PISX A -1 BRIGHT
+		Stop
+
+	Spawn2:
+		PISX B -1 BRIGHT
+		Stop
+
+	Death:
+		TNT1 A 1
+		Stop
+	}
+}
+
+// Life's A Beach
+
 actor SamsaraDukeLABPistolAttackHandler : Trigger
 {
     States
@@ -644,6 +711,12 @@ actor SamsaraDukeLABPistolAttackHandler : Trigger
         stop
     }
 }
+
+actor DukePistolPuffBeach : DukeBulletPuffBeach { DamageType "DukePistol" }
+
+actor DukePistolPuffBeachCoop : DukePistolPuffBeach { +MTHRUSPECIES }
+
+// Duke Nukem 64
 
 actor SamsaraDuke64PistolAttackHandler : Trigger
 {
@@ -725,100 +798,7 @@ actor SamsaraDuke64PistolAttackHandler : Trigger
     }
 }
 
-actor DukePistolReload : Ammo
-{
-    Inventory.MaxAmount 12
-    Tag "Glock 17 Magazine (Bullets)"
-    +IGNORESKILL
-}
-
-actor DukePistolDumDumReload : Ammo
-{
-    Inventory.MaxAmount 12
-    Tag "Glock 17 Magazine (Dum Dum Rounds)"
-    +IGNORESKILL
-}
-
-actor Duke64DumDums : Ammo
-{
-    Inventory.MaxAmount 24
-    Ammo.BackpackMaxAmount 48
-    Inventory.Icon "AMSMK0"
-    Tag "Dum Dum Rounds"
-}
-
-actor ShellCasingSpawner : FastProjectile
-{
-	Radius 6
-	Height 6
-	Projectile
-	Damage 0
-	Speed 5
-	SeeSound "none"
-	DeathSound "none"
-	Decal "none"
-	+CLIENTSIDEONLY
-	States
-	{
-	Spawn:
-		TNT1 A 1
-		TNT1 A 1 A_SpawnItemEx("DukeCasing1",0,3,4,random(3,5),0,random(-1,3),random(85,90),0)
-		Stop
-	}
-}
-
-actor DukeCasing1
-{
-	Speed 1
-	Scale 0.07
-	Gravity 0.8
-	-SOLID
-	+MISSILE
-	+MOVEWITHSECTOR
-	+CLIENTSIDEONLY
-	+NOBLOCKMAP
-	+NOTELEPORT
-	States
-	{
-	Spawn:
-		TNT1 A 0 A_Jump(255,"Spawn1","Spawn2")
-		TNT1 A 1
-		loop
-
-	Spawn1:
-		PISX A -1 BRIGHT
-		Stop
-
-	Spawn2:
-		PISX B -1 BRIGHT
-		Stop
-
-	Death:
-		TNT1 A 1
-		Stop
-	}
-}
-
-actor DukePistolPuff : DukeBulletPuff
-{
-	DamageType "DukePistol"
-}
-actor DukePistolPuffCoop : DukePistolPuff
-{
-	+THRUSPECIES
-	+MTHRUSPECIES
-	Species "Player"
-}
-actor DukePistolPuffBeach : DukeBulletPuffBeach
-{
-	DamageType "DukePistol"
-}
-actor DukePistolPuffBeachCoop : DukePistolPuffBeach
-{
-	+THRUSPECIES
-	+MTHRUSPECIES
-	Species "Player"
-}
+// Bullets
 
 actor Duke64PistolPuff : BulletPuff
 {
@@ -841,9 +821,21 @@ actor Duke64PistolPuff : BulletPuff
 	}
 }
 
-actor Duke64PistolPuffCoop : Duke64PistolPuff
+actor Duke64PistolPuffCoop : Duke64PistolPuff { +MTHRUSPECIES }
+
+// Dum dum rounds
+
+actor Duke64DumDums : Ammo
 {
-	+THRUSPECIES
-	+NOTIMEFREEZE
-	Species "Player"
+    Inventory.MaxAmount 24
+    Ammo.BackpackMaxAmount 48
+    Inventory.Icon "AMSMK0"
+    Tag "Dum Dum Rounds"
+}
+
+actor DukePistolDumDumReload : Ammo
+{
+    Inventory.MaxAmount 12
+    Tag "Glock 17 Magazine (Dum Dum Rounds)"
+    +IGNORESKILL
 }

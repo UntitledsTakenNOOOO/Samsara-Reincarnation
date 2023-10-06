@@ -1,6 +1,6 @@
 actor DBSHOT : Counter { Inventory.MaxAmount 99 }
 actor DBSHOT1 : DBSHOT {}
-actor DB1 : Boolean { Inventory.MaxAmount 1 }
+actor DB1 : Boolean {}
 actor DB2 : DB1 {}
 actor DB3 : DB1 {}
 actor DB4 : DB1 {}
@@ -19,7 +19,7 @@ actor DB16 : DB1 {}
 actor DB17 : DB1 {}
 actor DB18 : DB1 {}
 actor DB19 : DB1 {}
-actor Duke64UsingExplosiveShells : Boolean { }
+actor Duke64UsingExplosiveShells : Boolean {}
 
 actor "  Shotgun  " : DukeWeapon
 {
@@ -106,13 +106,7 @@ actor "  Shotgun  " : DukeWeapon
 		goto OutOfAmmo
 		TNT1 A 0 A_AlertMonsters
 		DKSH A 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
-		DKSH A 0 A_PlayWeaponSound("duke/mossberg")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
-		DKSH A 0 A_FireBullets(3.5,2.5,7,10,"DukeBulletPuff", FBF_NORANDOM)
-		Goto FlashAEnd
-		DKSH A 0 A_FireBullets(3.5,2.5,7,10,"DukeBulletPuffCoop", FBF_NORANDOM)
-		Goto FlashAEnd
+		TNT1 A 0 A_GiveInventory("SamsaraDukeShotgunAttackHandler")
 	FlashAEnd:
 		TNT1 A 0 A_Light1
 		DKSH B 1 BRIGHT A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
@@ -139,13 +133,7 @@ actor "  Shotgun  " : DukeWeapon
 		goto OutOfAmmoLAB
 		TNT1 A 0 A_AlertMonsters
 		DKSH E 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
-		DKSH E 0 A_PlayWeaponSound("duke/mossberg2")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,2)
-		DKSH E 0 A_FireBullets(3.5,2.5,7,10,"DukeBulletPuffBeach", FBF_NORANDOM)
-		Goto FlashALabEnd
-		DKSH E 0 A_FireBullets(3.5,2.5,7,10,"DukeBulletPuffBeachCoop", FBF_NORANDOM)
-		Goto FlashALabEnd
+		TNT1 A 0 A_GiveInventory("SamsaraDukeLABShotgunAttackHandler")
 	FlashALABEnd:
 		TNT1 A 0 A_Light1
 		DKSH F 1 BRIGHT A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
@@ -171,10 +159,7 @@ actor "  Shotgun  " : DukeWeapon
 		TNT1 A 0 A_JumpIfInventory("Shell",1,1)
 		goto OutOfAmmo64
 		TNT1 A 0 A_AlertMonsters
-		TNT1 A 0 A_TakeInventory("Shell",1,TIF_NOTAKEINFINITE)
-		TNT1 A 0 A_FireBullets(3.5,2.5,7,random(10,14),"Duke64BulletPuff", FBF_NORANDOM)
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 6, 3, 17)
-		TNT1 A 0 A_PlayWeaponSound("duke64/spas12")
+		TNT1 A 0 A_GiveInventory("SamsaraDuke64ShotgunAttackHandler")
 		TNT1 A 0 A_Light1
 		D6SG B 4 Bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_Light0
@@ -192,10 +177,7 @@ actor "  Shotgun  " : DukeWeapon
 		TNT1 A 0 A_JumpIfInventory("Duke64ExplosiveShells",1,1)
 		goto OutOfAmmo64
 		TNT1 A 0 A_AlertMonsters
-		TNT1 A 0 A_TakeInventory("Duke64ExplosiveShells",1,TIF_NOTAKEINFINITE)
-		TNT1 A 0 A_FireBullets(0,0,1,0,"Duke64ExplosiveShotgunPuff",0)
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 6, 3, 17)
-		TNT1 A 0 A_PlayWeaponSound("duke64/spas12")
+		TNT1 A 0 A_GiveInventory("SamsaraDuke64ShotgunAttackHandler")
 		TNT1 A 0 A_Light1
 		D6SG B 4 Bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_Light0
@@ -306,6 +288,35 @@ actor "  Shotgun  " : DukeWeapon
 	}
 }
 
+// Original
+
+actor SamsaraDukeShotgunAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Shell",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("duke/mossberg",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(3.5,2.5,7,10,"DukeBulletPuff",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(3.5,2.5,7,10,"DukeBulletPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+    }
+}
+
 actor ShellCasingSpawner2 : FastProjectile
 {
 	Radius 6
@@ -351,16 +362,114 @@ actor DukeCasing2
 	}
 }
 
-actor Duke64BulletPuff : Duke64PistolPuff { DamageType "DukeDamage" }
+// Life's A Beach
 
-actor Duke64BulletPuffCoop : Duke64BulletPuff
+actor SamsaraDukeLABShotgunAttackHandler : Trigger
 {
-	+THRUSPECIES
-	+NOTIMEFREEZE
-	Species "Player"
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Shell",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("duke/mossberg2",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireBullets(3.5,2.5,7,10,"DukeBulletPuffBeach",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireBullets(3.5,2.5,7,10,"DukeBulletPuffBeachCoop",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+    }
 }
 
-ACTOR Duke64ExplosiveShotgunPuff : Bulletpuff
+// Duke Nukem 64
+
+actor SamsaraDuke64ShotgunAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo mode checking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("Duke64UsingExplosiveShells",1,"PickupExplosiveShell")
+      // Shotgun shells
+      PickupShell:
+      // Ammo checking/taking stuff
+      PickupAmmoCheckShell:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttackShell")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Shell",1)
+        goto PickupAttackShell
+
+      // Attack stuff
+      PickupAttackShell:
+        TNT1 A 0 A_PlaySound("duke64/spas12",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackShellCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackShellCoop")
+      PickupAttackShellDM:
+        TNT1 A 0 A_FireBullets(3.5,2.5,7,random(10,14),"Duke64BulletPuff",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      PickupAttackShellCoop:
+        TNT1 A 0 A_FireBullets(3.5,2.5,7,random(10,14),"Duke64BulletPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      // Explosive shotgun shells
+      PickupExplosiveShell:
+      // Ammo checking/taking stuff
+      PickupAmmoCheckExplosiveShell:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttackExplosiveShell")
+        TNT1 A 0 A_JumpIfInventory("Duke64ExplosiveShells",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Duke64ExplosiveShells",1)
+        goto PickupAttackExplosiveShell
+
+      // Attack stuff
+      PickupAttackExplosiveShell:
+        TNT1 A 0 A_PlaySound("duke64/spas12",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackExplosiveShellCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackExplosiveShellCoop")
+      PickupAttackExplosiveShellDM:
+        TNT1 A 0 A_FireBullets(0,0,1,0,"Duke64ExplosiveShotgunPuff",FBF_NOFLASH)
+        goto PickupFinish
+
+      PickupAttackExplosiveShellCoop:
+        TNT1 A 0 A_FireBullets(0,0,1,0,"Duke64ExplosiveShotgunPuffCoop",FBF_NOFLASH)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 6, 3, 17)
+        stop
+    }
+}
+
+// Shotgun shells
+
+actor Duke64BulletPuff : Duke64PistolPuff { DamageType "DukeDamage" }
+
+actor Duke64BulletPuffCoop : Duke64BulletPuff { +MTHRUSPECIES }
+
+// Explosive shotgun shells
+
+actor Duke64ExplosiveShells : Ammo
+{
+    Inventory.MaxAmount 5
+    Ammo.BackpackMaxAmount 10
+    Inventory.Icon "AMSMP0"
+    Tag "Explosive Shotgun Shells"
+}
+
+actor Duke64ExplosiveShotgunPuff : BulletPuff
 {
 	Renderstyle Translucent
 	Alpha 0.9
@@ -389,7 +498,9 @@ ACTOR Duke64ExplosiveShotgunPuff : Bulletpuff
    }
 }
 
-Actor Duke64ExplosiveShotgunSmoke
+actor Duke64ExplosiveShotgunPuffCoop : Duke64ExplosiveShotgunPuff { +MTHRUSPECIES }
+
+actor Duke64ExplosiveShotgunSmoke
 {
 	Height 2
 	Radius 2
@@ -453,12 +564,4 @@ Actor Duke64ExplosiveShotgunSmoke
 			DKSX R 0 A_Fadeout(0.025) DKSX R 2 A_SetScale(scalex+0.125)
 			Stop
 	}
-}
-
-actor Duke64ExplosiveShells : Ammo
-{
-    Inventory.MaxAmount 5
-    Ammo.BackpackMaxAmount 10
-    Inventory.Icon "AMSMP0"
-    Tag "Explosive Shotgun Shells"
 }
