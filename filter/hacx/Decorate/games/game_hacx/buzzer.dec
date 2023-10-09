@@ -1,0 +1,106 @@
+actor HacxBuzzer_Samsara : SamsaraMonsterRoboticMedium replaces Demon
+{
+	//game Hacx
+	spawnid 8
+	hitobituary "$OB_BUZZER"
+	health 175
+	speed 19
+	radius 25
+	height 68
+	painchance 100
+	mass 600
+	seesound "imp/sight1"
+	attacksound "demon/melee"
+	painsound "demon/pain"
+	deathsound "world/barrelx"
+	activesound "demon/active"
+	Tag "Buzzer"
+    DamageFactor "CorvusCrossbow", 1.1
+    DamageFactor "DragonClaw", 1.5
+	DamageFactor "MarathonFusion", 2.0
+    PainChance "MightyBoot", 255
+	MONSTER
+    +NOTDMATCH
+    +NOICEDEATH
+	+FLOORCLIP
+	+NOGRAVITY
+	+FLOAT
+	+NOBLOOD
+	states
+	{
+		Spawn:
+			TNT1 A 0 NoDelay A_GiveInventory("IsAFlyingActor")
+		Spawn2:
+			SARG AB 2 A_Look
+			loop
+		See:
+			SARG AABBCCDD 4 A_Chase
+			loop
+		Melee:
+			TNT1 A 0 A_ChangeFlag("NOPAIN",0)
+			SARG E 6 A_FaceTarget
+			SARG F 12 A_FaceTarget
+			SARG G 12 A_SargAttack
+			goto See
+		Pain:
+			SARG H 2 bright
+			SARG H 8 bright A_Pain
+			goto See
+		Pain.MightyBoot:
+			TNT1 A 0 A_ChangeFlag("NOPAIN",1)
+			TNT1 A 0 A_PlaySoundEx("duke/kickhit","body",0,0)
+			SARG H 2 A_FaceTarget
+			TNT1 A 0 A_Recoil(12)
+			SARG H 16 A_Pain
+			Goto See        
+		Death:
+		    TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+			SARG I 5 bright
+			SARG J 6 bright A_Scream
+			SARG K 7 bright
+			SARG L 12 bright A_Explode
+			SARG M 8 bright
+			FIRE A 0 A_NoBlocking
+			SARG N -1
+			stop	
+		Raise:
+			SARG A 0
+			"####" "#" 0 A_JumpIfInventory("EnemyZorched",1,"ZorchRaise")
+			SARG NMLKJI 5
+			goto See
+		ZorchRaise:
+			"####" "#" 1 A_UnsetShootable
+			"####" "#" 1 A_SpawnItem("SpawnFire2")
+			"####" "#" 0 A_PlaySound("archvile/resummon")
+			"####" "#" 1 A_TakeInventory("EnemyZorched",1)
+			"####" "#" 0 A_SetTranslucent(0.1,0)
+			"####" "#" 3 A_SetTranslucent(0.2,0)
+			"####" "#" 3 A_SetTranslucent(0.3,0)
+			"####" "#" 3 A_SetTranslucent(0.4,0)
+			"####" "#" 3 A_SetTranslucent(0.5,0)
+			"####" "#" 3 A_SetTranslucent(0.6,0)
+			"####" "#" 3 A_SetTranslucent(0.7,0)
+			"####" "#" 3 A_SetTranslucent(0.8,0)
+			"####" "#" 3 A_SetTranslucent(0.9,0)
+			"####" "#" 3 A_SetTranslucent(1,0)
+			"####" "#" 1 A_SetShootable
+			Goto See			
+	}
+}
+
+actor HacxStealth_Samsara : HacxBuzzer_Samsara replaces Spectre
+{
+	spawnid 9
+	hitobituary "$OB_STEALTH"
+	renderstyle OptFuzzy
+	alpha 0.2
+	speed 10
+	health 30
+	radius 32
+	painchance 250
+	seesound ""
+	painsound ""
+	activesound ""
+    +SHADOW
+	Tag "Stealth Buzzer"
+}
