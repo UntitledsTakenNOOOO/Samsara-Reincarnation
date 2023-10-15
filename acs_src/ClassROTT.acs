@@ -954,6 +954,99 @@ Script "RottDoomStickThrust" (void)
 	SetActorVelocity(0,FixedMul(thrustSpeed*cos(thrustAngle),cos(thrustPitch)),FixedMul(thrustSpeed*sin(thrustAngle),cos(thrustPitch)),thrustSpeed*sin(thrustpitch),1,0);
 }
 
+script "RoTTNet" (void) //812
+{
+	int i;
+	int knifeNum;
+	
+	GiveInventory("NoWeapon", 1);
+	Setweapon("NoWeapon");
+	SetHudSize(214,200,0);
+	SetActorProperty(0,APROP_SPEED,0.1);
+	Setfont("NET1");
+	HudMessage(s:"A";0,602,0,107.0,100.0,0);
+
+	if (CheckInventory("RottKnife") == 1)
+	{
+		GiveInventory("NoWeapon", 1);
+		Setweapon("NoWeapon");
+		Delay(15); // Give some time for the weapon to lower
+		SetHudSize(214,200,0);
+		
+		for(i = 1; i <= 7; i++)
+		{
+			knifeNum = strparam(s:"KNIFE", d:i);
+			Setfont(knifeNum);
+			HudMessage(s:"A";0,602,0,107.0,100.0,0);
+			delay(2);
+		}
+		
+		Setfont("NET5");
+		HudMessage(s:"A";0,602,0,107.0,100.0,0);
+		delay(2);
+		
+		
+		HudMessage(s:"";0,602,0,107.0,100.0,0);
+		delay(8);
+		SetActorProperty(0,APROP_SPEED,1.0);
+		TakeInventory("NoWeapon", 1);
+		SetWeapon(0);
+		Terminate;
+	}
+	else
+	{
+		SetFont("SMALLFONT");
+		ACS_NamedExecuteAlways("RoTTNetMouse", 0, 0);
+		Print(s:"\cfSwing your mouse left and right to break free!");
+		terminate;
+	}
+ 
+}
+
+
+Script "RoTTNetMouse" (int currentweapon) //813
+{
+	int i;
+	int netNum;
+	
+    int a, b;
+    int input = GetPlayerInput(-1,INPUT_YAW);   
+        
+   
+    if(input >= 640)
+		a++;
+    
+    if(input <= -640)
+		b++;
+    
+	if(GetActorProperty(0, APROP_HEALTH) <= 0) {
+		HudMessage(s:"";0,602,0,107.0,100.0,0);
+		Terminate;
+	}
+	
+        if (a &&  b >= 22) {
+            SetHudSize(214,200,0);
+			
+			for(i = 2; i <= 5; i++){
+				netNum = strparam(s:"NET", d:i);
+				Setfont(netNum);
+				HudMessage(s:"A";0,602,0,107.0,100.0,0);
+				delay(5);
+			}
+				
+            SetActorProperty(0,APROP_SPEED,1.0);
+            HudMessage(s:"";0,602,0,107.0,100.0,0);
+			TakeInventory("NoWeapon", 1);
+			SetWeapon(currentweapon);
+			a = 0;
+			b = 0;
+            Terminate;
+        } 
+			
+	delay(1);
+	restart;
+}
+
 Script "RottDamageOnEnemy" (void)
 {
 	int oldtid = PickActor(0, 0, 0.25, 64.0, 0, MF_SHOOTABLE, ML_BLOCKEVERYTHING, PICKAF_RETURNTID);
