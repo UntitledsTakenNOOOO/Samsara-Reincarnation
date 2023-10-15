@@ -15,4 +15,89 @@ Script "DarkForces_GiveShield" (void)
 		}
 	}
 	terminate;
-}	
+}
+
+str ClassesAISTR[CLASSCOUNT] =
+{
+	"Doom_AI", "Chex_AI", "Corvus_AI", "Blaskowicz_AI", "Parias_AI", "Duke_AI", "SecurityOfficer_AI", "Ranger_AI", "IPFreeley_AI", "Blake_AI",
+	"Caleb_AI", "StrifeGuy_AI", "Eleena_AI", "Corridor7_AI", "RMR_AI", "Katarn_AI", "POGreed_AI", "Jack_AI", "Grondoval_AI",
+	"Freeman_AI", "LoWang_AI", "Cybermage_AI", "Jon_AI", "Leonard_AI", "Bitterman_AI", "Demoness_AI", "JamesBond_AI", "PettonEverhail_AI",
+	"Painkiller_AI", "Unreal_AI", "RTCWBlazkowicz_AI", "Quake3_AI", "Descent_AI", "DeusEx_AI"
+};
+
+Script "DFSummonClone" (void) //2527
+{
+	int oldtid = ActivatorTid();
+	int usertid = UniqueTid();
+	int dummytid = UniqueTid();
+	str class = PlayerClass(PlayerNumber());
+	str cloneClass = ClassesAISTR[class];
+
+	switch(class)
+	{
+		case 0:
+			switch(CheckInventory("DoomClassMode"))
+			{
+				case 2: cloneClass = "DoomStronghold_AI"; break;
+				case 1: cloneClass = "Doom64_AI"; break;
+			}
+			break;
+		case 3:
+			switch(CheckInventory("WolfenClassMode"))
+			{
+				case 2: cloneClass = "Blaskowicz_Totenkopf_AI"; break;
+				case 1: cloneClass = "Blaskowicz_SOD_AI"; break;
+			}
+			break;
+		case 4:
+			switch(CheckInventory("HexenClassMode"))
+			{
+				case 2: cloneClass = "Baratus_AI"; break;
+				case 1: cloneClass = "Daedolon_AI"; break;
+			}
+			break;
+		case 5:
+			switch(CheckInventory("DukeClassMode"))
+			{
+				case 2: cloneClass = "Duke_64_AI"; break;
+				case 1: cloneClass = "Duke_LAB_AI"; break;
+			}
+			break;
+		case 8:
+			switch(CheckInventory("RottMode"))
+			{
+				case 4: cloneClass = "DougWendt_AI"; break;
+				case 3: cloneClass = "LoreleiNi_AI"; break;
+				case 2: cloneClass = "ThiBarret_AI"; break;
+				case 1: cloneClass = "TaradinoCassatt_AI"; break;
+			}
+			break;
+		case 16:
+			switch(CheckInventory("IpogMode"))
+			{
+				case 4: cloneClass = "POGreed5_AI"; break;
+				case 3: cloneClass = "POGreed4_AI"; break;
+				case 2: cloneClass = "POGreed3_AI"; break;
+				case 1: cloneClass = "POGreed2_AI"; break;
+			}
+			break;
+		case 19:
+			if(CheckInventory("HalfLifeOpposingForce")) { cloneClass = "Shephard_AI"; }
+			break;
+	}
+
+	SpawnSpotFacingForced(cloneClass, 0, usertid);
+	SpawnSpotForced("TranslationDummy",0,dummytid,0);
+	Thing_SetTranslation(dummytid, -1);
+	SetActivator(dummytid, AAPTR_Default);
+	Thing_SetTranslation(usertid, -1);
+	Thing_ChangeTid(usertid, 0);
+}
+
+Script "DFJerecGrip" (void) // Decorate with Jerec's grip is kinda broken so I think I want to see what an ACS script can do about it -- 2529
+{
+	SetPlayerProperty(0, 1, PROP_TOTALLYFROZEN);
+	Delay(20);
+	TakeInventory("AlreadyGripped", 1);
+	SetPlayerProperty(0, 0, PROP_TOTALLYFROZEN);
+}
