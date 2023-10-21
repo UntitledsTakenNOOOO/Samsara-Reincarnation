@@ -1,3070 +1,1595 @@
-// Armor Scraps
-Actor ArmorScrap : CustomInventory
+// Armor Pickup Base
+actor SamsaraArmorPickup : CustomInventory
 {
-	Scale 0.5
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORSCRAP"
-	//Inventory.PickupSound "armor0get"
-	Inventory.Icon "RMR1A0"
-	//Armor.Saveamount 1
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		BON2 A 0 BRIGHT
-		BON2 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 22, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor0get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("ArmorScrapArmor", 1)
-		stop
-	PickupFail:
-        BON2 A 1 BRIGHT
+    RenderStyle "Add"
+    +FLOATBOB
+    +NOTIMEFREEZE // allow the checks and sprite to process during time freeze
+    +QUIET
+    States
+    {
+      Spawn:
+        TNT1 A 0
+      SpawnGameModeCheck:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 19), "SpawnNothing") // Prevent spawning in LMS
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 29), "SpawnNothing") // Prevent spawning in instagib
+      SpawnArmorModeCheck:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) >= 5, "SpawnNothing") // None
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) == 4, "SpawnActual4") // Heretic
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) == 3, "SpawnActual3") // Marathon
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) == 2, "SpawnActual2") // Quake+
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) == 1, "SpawnActual1") // Quake
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) <= 0, "SpawnActual0") // Normal
+        stop
+
+      SpawnActual0:
+      SpawnActual1:
+      SpawnActual2:
+      SpawnActual3:
+      SpawnActual4:
+        TNT1 A 0
+        stop
+
+      SpawnNothing:
+        TNT1 A 0
+        stop
+
+      // Spawn code
+      // Armor bonuses
+      SpawnBonusSilver:
+        TNT1 A 0 A_SetTranslucent(0.9,1)
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        BON2 A 35 Bright Light("SAMSARA_ARMOR_CRUMB") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
+        wait
+
+      SpawnBonusGold:
+        TNT1 A 0 A_SetTranslucent(0.9,1)
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        BON3 A 35 Bright Light("SAMSARA_ARMOR_CRUMB") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
+        wait
+
+      // Armor pickups
+      SpawnGreen:
+        TNT1 A 0 A_SetTranslucent(0.9,1)
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        RMR1 A 35 Bright Light("SAMSARA_GREEN_ARMOR") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
+        wait
+
+      SpawnBlue:
+        TNT1 A 0 A_SetTranslucent(0.98,1) // 0.975
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        RMR2 A 35 Bright Light("SAMSARA_BLUE_ARMOR") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 98)
+        wait
+
+      SpawnRed:
+        TNT1 A 0 A_SetTranslucent(0.88,1) // 0.875
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        RMR3 A 35 Bright Light("SAMSARA_RED_ARMOR") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 88)
+        wait
+
+      SpawnBrown:
+        TNT1 A 0 A_SetTranslucent(0.88,1) // 0.875
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        RMR4 A 35 Bright Light("SAMSARA_BROWN_ARMOR") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 88)
+        wait
+
+      SpawnYellow:
+        TNT1 A 0 A_SetTranslucent(0.95,1)
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        RMR5 A 35 Bright Light("SAMSARA_YELLOW_ARMOR") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
+        wait
+
+      SpawnSilver:
+        TNT1 A 0 A_SetTranslucent(0.95,1)
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        RMR6 A 35 Bright Light("SAMSARA_SILVER_ARMOR") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
+        wait
+
+      SpawnLightGreen:
+        TNT1 A 0 A_SetTranslucent(0.9,1)
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        RMR7 A 35 Bright Light("SAMSARA_GREEN_ARMOR") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
+        wait
+
+      SpawnHazel:
+        TNT1 A 0 A_SetTranslucent(0.95,1)
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        RMR8 A 35 Bright Light("SAMSARA_HAZEL_ARMOR") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
+        wait
+
+      SpawnPurple:
+        TNT1 A 0 A_SetTranslucent(0.95,1)
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        RMR9 A 35 Bright Light("SAMSARA_PURPLE_ARMOR") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
+        wait
+
+      SpawnPink:
+        TNT1 A 0 A_SetTranslucent(0.95,1)
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+        RMR0 A 35 Bright Light("SAMSARA_PINK_ARMOR") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
+        wait
+
+      // Pickup code
+      Pickup:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 19), "PickupFail") // Prevent pickup in LMS
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 29), "PickupFail") // Prevent pickup in instagib
+      PickupArmorModeCheck:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) >= 5, "PickupFail") // None
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) == 4, "PickupActual4") // Heretic
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) == 3, "PickupActual3") // Marathon
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) == 2, "PickupActual2") // Quake+
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) == 1, "PickupActual1") // Quake
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42) <= 0, "PickupActual0") // Normal
         fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
 
-Actor QuakeArmorScrap : CustomInventory
-{
-	Scale 0.5
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORSCRAP"
-	//Inventory.PickupSound "armor0get"
-	Inventory.Icon "RMR1A0"
-	//Armor.Saveamount 1
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		BON2 A 0 BRIGHT
-		BON2 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 22, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor0get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("QuakeArmorScrapArmor", 1)
-		stop
-	PickupFail:
-        BON2 A 1 BRIGHT
+      PickupActual0:
+      PickupActual1:
+      PickupActual2:
+      PickupActual3:
+      PickupActual4:
+        TNT1 A 0
         fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
 
-Actor QuakeArmorScrap2 : CustomInventory
-{
-	Scale 0.5
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORSCRAP"
-	//Inventory.PickupSound "armor0get"
-	Inventory.Icon "RMR1A0"
-	//Armor.Saveamount 1
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		BON2 A 0 BRIGHT
-		BON2 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 22, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor0get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("QuakeArmorScrap2Armor", 1)
-		stop
-	PickupFail:
-        BON2 A 1 BRIGHT
+      PickupFail:
+        TNT1 A 0
         fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+
+      // Armor bonus (x1)
+      PickupBonus1Normal:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus1NormalSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus1NormalSuccess
+
+      PickupBonus1NormalSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 22)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor0get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorScrapArmorNormal")
+        stop
+
+      PickupBonus1Quake:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus1QuakeSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus1QuakeSuccess
+
+      PickupBonus1QuakeSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 22)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor0get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorScrapArmorQuake")
+        stop
+
+      PickupBonus1QuakePlus:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus1QuakePlusSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus1QuakePlusSuccess
+
+      PickupBonus1QuakePlusSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 22)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor0get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorScrapArmorQuakePlus")
+        stop
+
+      PickupBonus1Marathon:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus1MarathonSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus1MarathonSuccess
+
+      PickupBonus1MarathonSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 23)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("FFFFF0",0.3,4) // Ivory
+        TNT1 A 0 A_PlaySound("armor0get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorScrapArmorMarathon")
+        stop
+
+      PickupBonus1Heretic:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus1HereticSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus1HereticSuccess
+
+      PickupBonus1HereticSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 22)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor0get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorScrapArmorHeretic")
+        stop
+
+      // Armor bonus (x5)
+      PickupBonus5Normal:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus5NormalSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus5NormalSuccess
+
+      PickupBonus5NormalSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 36)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor0get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HereticArmorDumpArmorNormal")
+        stop
+
+      PickupBonus5Quake:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus5QuakeSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus5QuakeSuccess
+
+      PickupBonus5QuakeSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 36)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor0get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HereticArmorDumpArmorQuake")
+        stop
+
+      PickupBonus5QuakePlus:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus5QuakePlusSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus5QuakePlusSuccess
+
+      PickupBonus5QuakePlusSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 36)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor0get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HereticArmorDumpArmorQuakePlus")
+        stop
+
+      PickupBonus5Marathon:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus5MarathonSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus5MarathonSuccess
+
+      PickupBonus5MarathonSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 37)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("FFFFF0",0.3,4) // Ivory
+        TNT1 A 0 A_PlaySound("armor0get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HereticArmorDumpArmorMarathon")
+        stop
+
+      PickupBonus5Heretic:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus5HereticSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus5HereticSuccess
+
+      PickupBonus5HereticSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 36)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor0get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HereticArmorDumpArmorHeretic")
+        stop
+
+      // Armor bonus (x25)
+      PickupBonus25Normal:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus25NormalSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus25NormalSuccess
+
+      PickupBonus25NormalSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 38)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor1get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HexenArmor1ArmorNormal")
+        stop
+
+      PickupBonus25Quake:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus25QuakeSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus25QuakeSuccess
+
+      PickupBonus25QuakeSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 38)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor1get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HexenArmor1ArmorQuake")
+        stop
+
+      PickupBonus25QuakePlus:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus25QuakePlusSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus25QuakePlusSuccess
+
+      PickupBonus25QuakePlusSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 38)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor1get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HexenArmor1ArmorQuakePlus")
+        stop
+
+      PickupBonus25Marathon:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus25MarathonSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus25MarathonSuccess
+
+      PickupBonus25MarathonSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 39)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("FFFFF0",0.3,4) // Ivory
+        TNT1 A 0 A_PlaySound("armor1get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HexenArmor1ArmorMarathon")
+        stop
+
+      PickupBonus25Heretic:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupBonus25HereticSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupBonus25HereticSuccess
+
+      PickupBonus25HereticSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 38)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor1get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HexenArmor1ArmorHeretic")
+        stop
+
+      // Armor bonus (x50)
+      PickupBonus50Normal:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",300,"PickupFail")
+        goto PickupBonus50NormalSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail") // hardcoded bugginess
+        goto PickupBonus50NormalSuccess
+
+      PickupBonus50NormalSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 40)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor3get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HexenArmor5ArmorNormal")
+        stop
+
+      PickupBonus50Quake:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",300,"PickupFail")
+        goto PickupBonus50QuakeSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail") // hardcoded bugginess
+        goto PickupBonus50QuakeSuccess
+
+      PickupBonus50QuakeSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 40)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor3get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HexenArmor5ArmorQuake")
+        stop
+
+      PickupBonus50QuakePlus:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",300,"PickupFail")
+        goto PickupBonus50QuakePlusSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail") // hardcoded bugginess
+        goto PickupBonus50QuakePlusSuccess
+
+      PickupBonus50QuakePlusSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 40)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor3get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HexenArmor5ArmorQuakePlus")
+        stop
+
+      PickupBonus50Marathon:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",300,"PickupFail")
+        goto PickupBonus50MarathonSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail") // hardcoded bugginess
+        goto PickupBonus50MarathonSuccess
+
+      PickupBonus50MarathonSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 41)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("FFFFF0",0.3,4) // Ivory
+        TNT1 A 0 A_PlaySound("armor3get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HexenArmor5ArmorMarathon")
+        stop
+
+      PickupBonus50Heretic:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",300,"PickupFail")
+        goto PickupBonus50HereticSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail") // hardcoded bugginess
+        goto PickupBonus50HereticSuccess
+
+      PickupBonus50HereticSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 40)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor3get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("HexenArmor5ArmorHeretic")
+        stop
+
+      // Tier 1 (green) armor
+      PickupTier1Normal:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",100,"PickupFail")
+        goto PickupTier1NormalSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier1NormalSuccess
+
+      PickupTier1NormalSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 24)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor1get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack1ArmorNormal")
+        stop
+
+      PickupTier1Quake:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",100,"PickupFail")
+        goto PickupTier1QuakeSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier1QuakeSuccess
+
+      PickupTier1QuakeSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 28)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor1get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack1ArmorQuake")
+        stop
+
+      PickupTier1Marathon:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",100,"PickupFail")
+        goto PickupTier1MarathonSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier1MarathonSuccess
+
+      PickupTier1MarathonSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 32)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("FFFFF0",0.3,4) // Ivory
+        TNT1 A 0 A_PlaySound("armor1get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack1ArmorMarathon")
+        stop
+
+      PickupTier1Heretic:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",100,"PickupFail")
+        goto PickupTier1HereticSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier1HereticSuccess
+
+      PickupTier1HereticSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 24)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor1get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack1ArmorHeretic")
+        stop
+
+      // Tier 2 (yellow) armor
+      PickupTier2Normal:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",150,"PickupFail")
+        goto PickupTier2NormalSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier2NormalSuccess
+
+      PickupTier2NormalSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 25)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor2get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack2ArmorNormal")
+        stop
+
+      PickupTier2Quake:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",150,"PickupFail")
+        goto PickupTier2QuakeSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier2QuakeSuccess
+
+      PickupTier2QuakeSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 29)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor2get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack2ArmorQuake")
+        stop
+
+      PickupTier2Marathon:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",150,"PickupFail")
+        goto PickupTier2MarathonSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier2MarathonSuccess
+
+      PickupTier2MarathonSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 33)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("FFFFF0",0.3,4) // Ivory
+        TNT1 A 0 A_PlaySound("armor2get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack2ArmorMarathon")
+        stop
+
+      PickupTier2Heretic:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",150,"PickupFail")
+        goto PickupTier2HereticSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier2HereticSuccess
+
+      PickupTier2HereticSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 25)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor2get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack2ArmorHeretic")
+        stop
+
+      // Tier 3 (blue) armor
+      PickupTier3Normal:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupTier3NormalSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier3NormalSuccess
+
+      PickupTier3NormalSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 26)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor3get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack3ArmorNormal")
+        stop
+
+      PickupTier3Quake:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupTier3QuakeSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier3QuakeSuccess
+
+      PickupTier3QuakeSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 30)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor3get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack3ArmorQuake")
+        stop
+
+      PickupTier3Marathon:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupTier3MarathonSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier3MarathonSuccess
+
+      PickupTier3MarathonSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 34)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("FFFFF0",0.3,4) // Ivory
+        TNT1 A 0 A_PlaySound("armor3get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack3ArmorMarathon")
+        stop
+
+      PickupTier3Heretic:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",200,"PickupFail")
+        goto PickupTier3HereticSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier3HereticSuccess
+
+      PickupTier3HereticSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 26)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor3get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack3ArmorHeretic")
+        stop
+
+      // Tier 4 (red) armor
+      PickupTier4Normal:
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier4NormalSuccess
+
+      PickupTier4NormalSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 27)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor4get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack4ArmorNormal")
+        stop
+
+      PickupTier4Quake:
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier4QuakeSuccess
+
+      PickupTier4QuakeSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 31)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor4get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack4ArmorQuake")
+        stop
+
+      PickupTier4Marathon:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,2)
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",300,"PickupFail")
+        goto PickupTier4MarathonSuccess
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail") // hardcoded bugginess
+        goto PickupTier4MarathonSuccess
+
+      PickupTier4MarathonSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 35)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("FFFFF0",0.3,4) // Ivory
+        TNT1 A 0 A_PlaySound("armor4get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack4ArmorMarathon")
+        stop
+
+      PickupTier4Heretic:
+        TNT1 A 0 A_JumpIfInventory("BasicArmor",250,"PickupFail")
+        goto PickupTier4HereticSuccess
+
+      PickupTier4HereticSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 27)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("armor4get",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("ArmorPack4ArmorHeretic")
+        stop
+    }
 }
 
-Actor MarathonArmorScrap : CustomInventory
+// Armor Scrap (x1)
+actor ArmorScrap : SamsaraArmorPickup replaces ArmorBonus
 {
-	Scale 0.5
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORSCRAP"
-	//Inventory.PickupSound "armor0get"
-	Inventory.Icon "RMR1A0"
-	//Armor.Saveamount 1
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		BON2 A 0 BRIGHT
-		BON2 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 23, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("FFFFF0", 0.3, 4) // Ivory
-		TNT1 A 0 A_PlaySound("armor0get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("MarathonArmorScrapArmor", 1)
-		stop
-	PickupFail:
-        BON2 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Alpha 0.9
+    Scale 0.5
+    States
+    {
+      Spawn:
+        BON2 A 0 Bright Light("SAMSARA_ARMOR_CRUMB")
+        goto SpawnGameModeCheck
+
+      SpawnActual0:
+      SpawnActual1:
+      SpawnActual2:
+      SpawnActual3:
+      SpawnActual4:
+        goto SpawnBonusSilver
+
+      PickupActual0:
+        goto PickupBonus1Normal
+
+      PickupActual1:
+        goto PickupBonus1Quake
+
+      PickupActual2:
+        goto PickupBonus1QuakePlus
+
+      PickupActual3:
+        goto PickupBonus1Marathon
+
+      PickupActual4:
+        goto PickupBonus1Heretic
+    }
 }
 
-Actor ArmorScrapNoDrop : ArmorScrap
+actor ArmorScrapArmorNormal : BasicArmorBonus
 {
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
+    Inventory.Icon "BON2A0"
+    Armor.SavePercent 33.335
+    Armor.SaveAmount 1
+    Armor.MaxSaveAmount 200
 }
 
-Actor QuakeArmorScrapNoDrop : QuakeArmorScrap
+actor ArmorScrapArmorQuake : ArmorScrapArmorNormal { Armor.SavePercent 30 }
+
+actor ArmorScrapArmorQuakePlus : ArmorScrapArmorNormal { Armor.SavePercent 60 }
+
+actor ArmorScrapArmorMarathon : ArmorScrapArmorNormal { Armor.SavePercent 100 }
+
+actor ArmorScrapArmorHeretic : ArmorScrapArmorNormal { Armor.SavePercent 50 }
+
+actor ArmorScrap100 : ArmorScrapArmorNormal { Armor.MaxSaveAmount 100 }
+actor ArmorScrap200 : ArmorScrapArmorNormal {} // Armor.MaxSaveAmount is the same
+actor InfiniteArmorBonus : ArmorScrapArmorNormal { Armor.MaxSaveAmount 0x7FFFFFFF } // this overflows if a player has maximum armor bonuses
+
+// Armor Scrap (x5)
+actor HereticArmorDump : SamsaraArmorPickup replaces ArtiTimeBomb
 {
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
+    Alpha 0.9
+    Scale 0.55
+    States
+    {
+      Spawn:
+        BON3 A 0 Bright Light("SAMSARA_ARMOR_CRUMB")
+        goto SpawnGameModeCheck
+
+      SpawnActual0:
+      SpawnActual1:
+      SpawnActual2:
+      SpawnActual3:
+      SpawnActual4:
+        goto SpawnBonusGold
+
+      PickupActual0:
+        goto PickupBonus5Normal
+
+      PickupActual1:
+        goto PickupBonus5Quake
+
+      PickupActual2:
+        goto PickupBonus5QuakePlus
+
+      PickupActual3:
+        goto PickupBonus5Marathon
+
+      PickupActual4:
+        goto PickupBonus5Heretic
+    }
 }
 
-Actor QuakeArmorScrap2NoDrop : QuakeArmorScrap2
+actor HereticArmorDumpArmorNormal : ArmorScrapArmorNormal
 {
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
+    Inventory.Icon "BON3A0"
+    Armor.SaveAmount 5
 }
 
-Actor MarathonArmorScrapNoDrop : MarathonArmorScrap
+actor HereticArmorDumpArmorQuake : ArmorScrapArmorQuake
 {
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
+    Inventory.Icon "BON3A0"
+    Armor.SaveAmount 5
 }
 
-Actor ArmorScrapArmor : BasicArmorBonus
+actor HereticArmorDumpArmorQuakePlus : ArmorScrapArmorQuakePlus
 {
-	Armor.SaveAmount 1
-	Armor.SavePercent 33.335
-	Armor.MaxSaveAmount 200
+    Inventory.Icon "BON3A0"
+    Armor.SaveAmount 5
 }
 
-Actor QuakeArmorScrapArmor : BasicArmorBonus
+actor HereticArmorDumpArmorMarathon : ArmorScrapArmorMarathon
 {
-	Armor.SaveAmount 1
-	Armor.SavePercent 30
-	Armor.MaxSaveAmount 200
+    Inventory.Icon "BON3A0"
+    Armor.SaveAmount 5
 }
 
-Actor QuakeArmorScrap2Armor : BasicArmorBonus
+actor HereticArmorDumpArmorHeretic : ArmorScrapArmorHeretic
 {
-	Armor.SaveAmount 1
-	Armor.SavePercent 60
-	Armor.MaxSaveAmount 200
+    Inventory.Icon "BON3A0"
+    Armor.SaveAmount 5
 }
 
-Actor MarathonArmorScrapArmor : BasicArmorBonus
+// Green Armor Pickup
+actor ArmorPack1 : SamsaraArmorPickup replaces GreenArmor
 {
-	Armor.SaveAmount 1
-	Armor.SavePercent 100
-	Armor.MaxSaveAmount 200
+    Alpha 0.9
+    Scale 0.75
+    States
+    {
+      Spawn:
+        RMR1 A 0 Bright Light("SAMSARA_GREEN_ARMOR")
+        goto SpawnGameModeCheck
+
+      SpawnActual0:
+        goto SpawnGreen
+
+      SpawnActual1:
+        goto SpawnLightGreen
+
+      SpawnActual2:
+        TNT1 A 0 A_SetScale(1) // yellow armor scale
+        goto SpawnYellow
+
+      SpawnActual3:
+        goto SpawnPink
+
+      SpawnActual4:
+        goto SpawnSilver
+
+      PickupActual0:
+        goto PickupTier1Normal
+
+      PickupActual1:
+        goto PickupTier1Quake
+
+      PickupActual2:
+        goto PickupTier2Quake
+
+      PickupActual3:
+        goto PickupTier1Marathon
+
+      PickupActual4:
+        goto PickupTier1Heretic
+    }
 }
 
-Actor ArmorBonusPickup replaces ArmorBonus
+actor HereticArmorPack1 : ArmorPack1 replaces SilverShield {}
+
+actor ArmorPack1ArmorNormal : BasicArmorPickup
 {
-	+NOINTERACTION
-	States
-	{
-	Spawn:
-		BON2 A 0 BRIGHT
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29, 0, 0) == 1, "Armor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "Armor5")
-		TNT1 A 35 ACS_NamedExecuteWithResult("SamsaraDecorate", 18, 0)
-		stop
-
-	// Default Armor
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("ArmorScrapNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("ArmorScrap", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake Armor
-	Armor2:
-	Armor2_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("QuakeArmorScrapNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_Drop:
-	Armor2_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("QuakeArmorScrap", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake+ Armor
-	Armor3:
-	Armor3_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("QuakeArmorScrap2NoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor3_Drop:
-	Armor3_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("QuakeArmorScrap2", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Marathon Armor
-	Armor4:
-	Armor4_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("MarathonArmorScrapNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor4_Drop:
-	Armor4_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("MarathonArmorScrap", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// No Armor
-	Armor5:
-	Armor5_WithYellow:
-	Armor5_Drop:
-	Armor5_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("NoArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop	
-	}
+    Inventory.Icon "RMR1A0"
+    Armor.SavePercent 33.335
+    Armor.SaveAmount 100
 }
 
-Actor ArmorScrap100 : ArmorScrapArmor { Armor.MaxSaveAmount 100 }
-Actor ArmorScrap200 : ArmorScrapArmor { Armor.MaxSaveAmount 200 }
-Actor InfiniteArmorBonus : ArmorScrapArmor { Armor.MaxSaveAmount 0x7FFFFFFF }
-
-// Green Armor Pickups
-Actor ArmorPack1 : CustomInventory
+actor ArmorPack1ArmorQuake : ArmorPack1ArmorNormal
 {
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR0_1"
-	//Inventory.PickupSound "armor1get"
-	Inventory.Icon "RMR1A0"
-	//Armor.Saveamount 100
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR1 A 0 BRIGHT
-		RMR1 A 35 BRIGHT Light("ARMORGREEN1") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 100, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 24, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor1get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("ArmorPack1Armor", 100)
-		stop
-	PickupFail:
-        RMR1 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Inventory.Icon "RMR7A0"
+    Armor.SavePercent 30
 }
 
-Actor QuakeGreenArmor : CustomInventory
+actor ArmorPack1ArmorMarathon : ArmorPack1ArmorNormal
 {
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR0_1"
-	//Inventory.PickupSound "armor1get"
-	Inventory.Icon "RMR7A0"
-	//Armor.Saveamount 100
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR7 A 0 BRIGHT
-		RMR7 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 100, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 28, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor1get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("QuakeGreenArmorArmor", 100)
-		stop
-	PickupFail:
-        RMR7 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Inventory.Icon "RMR0A0"
+    Armor.SavePercent 100
 }
 
-Actor QuakeYellowArmor : CustomInventory
+actor ArmorPack1ArmorHeretic : ArmorPack1ArmorNormal
 {
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR0_1"
-	//Inventory.PickupSound "armor1get"
-	Inventory.Icon "RMR5A0"
-	//Armor.Saveamount 100
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR5 A 0 BRIGHT
-		RMR5 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 150, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 29, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor1get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("QuakeYellowArmorArmor", 100)
-		stop
-	PickupFail:
-        RMR5 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Inventory.Icon "RMR6A0"
+    Armor.SavePercent 50
 }
 
-Actor MarathonGreenArmor : CustomInventory
+// Yellow Armor Pickup
+actor ArmorPack2 : SamsaraArmorPickup //28636
 {
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR0_1"
-	//Inventory.PickupSound "armor1get"
-	Inventory.Icon "RMR0A0"
-	//Armor.Saveamount 100
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR0 A 0 BRIGHT
-		RMR0 A 35 bright ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 100, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 32, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("FFFFF0", 0.3, 4) // Ivory
-		TNT1 A 0 A_PlaySound("armor1get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("MarathonGreenArmorArmor", 100)
-		stop
-	PickupFail:
-        RMR0 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Alpha 0.95
+    States
+    {
+      Spawn:
+        RMR5 A 0 Bright Light("SAMSARA_YELLOW_ARMOR")
+        goto SpawnGameModeCheck
+
+      SpawnActual0:
+      SpawnActual1:
+        goto SpawnYellow
+
+      SpawnActual2:
+        goto SpawnRed
+
+      SpawnActual3:
+        goto SpawnHazel
+
+      SpawnActual4:
+        goto SpawnYellow
+
+      PickupActual0:
+        goto PickupTier2Normal
+
+      PickupActual1:
+        goto PickupTier2Quake
+
+      PickupActual2:
+        goto PickupTier3Quake
+
+      PickupActual3:
+        goto PickupTier2Marathon
+
+      PickupActual4:
+        goto PickupTier2Heretic
+    }
 }
 
-Actor GreenArmorNoDrop : ArmorPack1
+actor ArmorPack2ArmorNormal : BasicArmorPickup
 {
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
+    Inventory.Icon "RMR5A0"
+    Armor.SavePercent 40
+    Armor.SaveAmount 150
 }
 
-Actor QGreenArmorNoDrop : QuakeGreenArmor
+actor ArmorPack2ArmorQuake : ArmorPack2ArmorNormal { Armor.SavePercent 60 }
+
+actor ArmorPack2ArmorMarathon : ArmorPack2ArmorNormal
 {
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
+    Inventory.Icon "RMR8A0"
+    Armor.SavePercent 100
 }
 
-Actor QYellowArmorNoDrop : QuakeYellowArmor
+actor ArmorPack2ArmorHeretic : ArmorPack2ArmorNormal { Armor.SavePercent 67.5 }
+
+// Blue Armor Pickup
+actor ArmorPack3 : SamsaraArmorPickup replaces BlueArmor
 {
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
+    Alpha 0.98 // 0.975
+    States
+    {
+      Spawn:
+        RMR2 A 0 Bright Light("SAMSARA_BLUE_ARMOR")
+        goto SpawnGameModeCheck
+
+      SpawnActual0:
+        goto SpawnBlue
+
+      SpawnActual1:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42, 1), "SpawnRed")
+        goto SpawnYellow
+
+      SpawnActual2:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42, 1), "SpawnSilver")
+        goto SpawnRed
+
+      SpawnActual3:
+        goto SpawnYellow
+
+      SpawnActual4:
+        goto SpawnHazel
+
+      PickupActual0:
+        goto PickupTier3Normal
+
+      PickupActual1:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42, 1), "PickupTier3Quake")
+        goto PickupTier2Quake
+
+      PickupActual2: // Quake+
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42, 1), "PickupTier4Quake")
+        goto PickupTier3Quake
+
+      PickupActual3: // Marathon
+        goto PickupTier3Marathon
+
+      PickupActual4: // Heretic
+        goto PickupTier3Heretic
+    }
 }
 
-Actor MarathonGreenArmorNoDrop : MarathonGreenArmor
+actor HereticArmorPack3 : ArmorPack3 replaces EnchantedShield {}
+
+actor ArmorPack3ArmorNormal : BasicArmorPickup
 {
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
+    Inventory.Icon "RMR2A0"
+    Armor.SavePercent 50
+    Armor.SaveAmount 200
 }
 
-Actor ArmorPack1Armor : BasicArmorPickup
+actor ArmorPack3ArmorQuake : ArmorPack3ArmorNormal
 {
-	Armor.SaveAmount 100
-	Armor.SavePercent 33.335
+    Inventory.Icon "RMR3A0"
+    Armor.SavePercent 80
 }
 
-Actor QuakeGreenArmorArmor : BasicArmorPickup
+actor ArmorPack3ArmorMarathon : ArmorPack3ArmorNormal
 {
-	Armor.SaveAmount 100
-	Armor.SavePercent 30
+    Inventory.Icon "RMR5A0"
+    Armor.SavePercent 100
 }
 
-Actor QuakeYellowArmorArmor : BasicArmorPickup
+actor ArmorPack3ArmorHeretic : ArmorPack3ArmorNormal
 {
-	Armor.SaveAmount 150
-	Armor.SavePercent 60
+    Inventory.Icon "RMR8A0"
+    Armor.SavePercent 75
 }
 
-Actor MarathonGreenArmorArmor : BasicArmorPickup
+// Red Armor Pickup
+actor ArmorPack4 : SamsaraArmorPickup
 {
-	Armor.SaveAmount 100
-	Armor.SavePercent 100
+    Alpha 0.88 // 0.875
+    States
+    {
+      Spawn:
+        RMR3 A 0 Bright Light("SAMSARA_RED_ARMOR")
+        goto SpawnGameModeCheck
+
+      SpawnActual0:
+        goto SpawnRed
+
+      SpawnActual1:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42, 1), "SpawnSilver")
+        goto SpawnRed
+
+      SpawnActual2:
+        goto SpawnSilver
+
+      SpawnActual3:
+        goto SpawnPurple
+
+      SpawnActual4:
+        goto SpawnRed
+
+      PickupActual0:
+        goto PickupTier4Normal
+
+      PickupActual1:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42, 1), "PickupTier4Quake")
+        goto PickupTier3Quake
+
+      PickupActual2: // Quake+
+        goto PickupTier4Quake
+
+      PickupActual3: // Marathon
+        goto PickupTier4Marathon
+
+      PickupActual4: // Heretic
+        goto PickupTier4Heretic
+    }
 }
 
-Actor GreenArmorPickup replaces GreenArmor
+actor RedArmor : ArmorPack4 5040 {} // skulltag compatibility
+
+actor ArmorPack4ArmorNormal : BasicArmorPickup
 {
-	+NOINTERACTION
-	States
-	{
-	Spawn:
-		RMR1 A 0 BRIGHT
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29, 0, 0) == 1, "Armor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "Armor5")
-		TNT1 A 35 ACS_NamedExecuteWithResult("SamsaraDecorate", 18, 0)
-		stop
-
-	// Default Armor
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("GreenArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("ArmorPack1", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake Armor
-	Armor2:
-	Armor2_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("QGreenArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_Drop:
-	Armor2_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("QuakeGreenArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake+ Armor
-	Armor3:
-	Armor3_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("QYellowArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor3_Drop:
-	Armor3_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("QuakeYellowArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Marathon Armor
-	Armor4:
-	Armor4_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("MarathonGreenArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor4_Drop:
-	Armor4_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("MarathonGreenArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// No Armor
-	Armor5:
-	Armor5_WithYellow:
-	Armor5_Drop:
-	Armor5_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("NoArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop	
-	}
-}
-
-// Yellow Armor Pickups
-Actor SamsaraYellowArmor : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.95
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR0_2"
-	//Inventory.PickupSound "armor1get"
-	Inventory.Icon "RMR5A0"
-	//Armor.Saveamount 150
-	//Armor.MaxSaveAmount 150
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR5 A 0 BRIGHT
-		RMR5 A 35 BRIGHT Light("ARMORYELLOW1") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 150, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 25, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor1get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("ArmorPack4Armor", 100)
-		stop
-	PickupFail:
-        RMR5 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-// Quake does not have yellow armor pickups
-
-Actor MarathonYellowArmor : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.95
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR3_2"
-	//Inventory.PickupSound "armor1get"
-	Inventory.Icon "RMR8A0"
-	//Armor.Saveamount 150
-	//Armor.MaxSaveAmount 150
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR8 A 0 BRIGHT
-		RMR8 A 35 bright ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 150, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 33, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("FFFFF0", 0.3, 4) // Ivory
-		TNT1 A 0 A_PlaySound("armor1get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("MarathonYellowArmorArmor", 100)
-		stop
-	PickupFail:
-        RMR8 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor YellowArmorNoDrop : SamsaraYellowArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor MarathonYellowArmorNoDrop : MarathonYellowArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor ArmorPack4Armor : BasicArmorPickup
-{
-	Armor.SaveAmount 150
-	Armor.SavePercent 40
-}
-
-Actor MarathonYellowArmorArmor : BasicArmorPickup
-{
-	Armor.SaveAmount 150
-	Armor.SavePercent 100
-}
-
-Actor YellowArmorPickup
-{
-	+NOINTERACTION
-	States
-	{
-	Spawn:
-		RMR5 A 0 BRIGHT
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29, 0, 0) == 1, "Armor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "Armor5")
-		TNT1 A 35 ACS_NamedExecuteWithResult("SamsaraDecorate", 18, 1)
-		stop
-
-	// Default Armor
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("YellowArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("SamsaraYellowArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake Armor
-	Armor2:
-	Armor2_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("QYellowArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_Drop:
-	Armor2_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("QuakeYellowArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake+ Armor
-	Armor3:
-	Armor3_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("QRedArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor3_Drop:
-	Armor3_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("QuakeRedArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Marathon Armor
-	Armor4:
-	Armor4_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("MarathonYellowArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor4_Drop:
-	Armor4_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("MarathonYellowArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// No Armor
-	Armor5:
-	Armor5_WithYellow:
-	Armor5_Drop:
-	Armor5_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("NoArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop	
-	}
-}
-
-// Blue Armor Pickups
-Actor ArmorPack2 : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.975
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR0_3"
-	//Inventory.PickupSound "armor2get"
-	Inventory.Icon "RMR2A0"
-	//Armor.Saveamount 200
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR2 A 0 BRIGHT
-		RMR2 A 35 BRIGHT Light("ARMORBLUE1") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 98)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 26, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor2get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("ArmorPack2Armor", 200)
-		stop
-	PickupFail:
-        RMR2 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-// The Quake armors use different types of armor for the blue armor pickups
-
-Actor MarathonBlueArmor : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.95
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR3_3"
-	//Inventory.PickupSound "armor2get"
-	Inventory.Icon "RMR5A0"
-	//Armor.Saveamount 200
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR5 A 0 BRIGHT
-		RMR5 A 35 bright ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 34, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("FFFFF0", 0.3, 4) // Ivory
-		TNT1 A 0 A_PlaySound("armor2get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("MarathonBlueArmorArmor", 100)
-		stop
-	PickupFail:
-        RMR5 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor BlueArmorNoDrop : ArmorPack2
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor MarathonBlueArmorNoDrop : MarathonBlueArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor ArmorPack2Armor : BasicArmorPickup
-{
-	Armor.SaveAmount 200
-	Armor.SavePercent 50
-}
-
-Actor MarathonBlueArmorArmor : BasicArmorPickup
-{
-	Armor.SaveAmount 200
-	Armor.SavePercent 100
-}
-
-Actor BlueArmorPickup replaces BlueArmor
-{
-	+NOINTERACTION
-	States
-	{
-	Spawn:
-		RMR2 A 0 BRIGHT
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29, 0, 0) == 1, "Armor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "Armor5")
-		TNT1 A 35 ACS_NamedExecuteWithResult("SamsaraDecorate", 18, 2)
-		stop
-
-	// Default Armor
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("BlueArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("ArmorPack2", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake Armor
-	Armor2:
-		TNT1 A 0 A_SpawnItemEx("QYellowArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("QRedArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_Drop:
-		TNT1 A 0 A_SpawnItemEx("QuakeYellowArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("QuakeRedArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake+ Armor
-	Armor3:
-		TNT1 A 0 A_SpawnItemEx("QRedArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor3_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("SilverArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor3_Drop:
-		TNT1 A 0 A_SpawnItemEx("QuakeRedArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor3_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("SamsaraSilverArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Marathon Armor
-	Armor4:
-	Armor4_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("MarathonBlueArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor4_Drop:
-	Armor4_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("MarathonBlueArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// No Armor
-	Armor5:
-	Armor5_WithYellow:
-	Armor5_Drop:
-	Armor5_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("NoArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop	
-	}
-}
-
-// Red Armor Pickups
-Actor ArmorPack3 : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.95
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR0_4"
-	//Inventory.PickupSound "armor3get"
 	Inventory.Icon "RMR3A0"
-	//Armor.Saveamount 250
-	//Armor.MaxSaveAmount 250
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR3 A 0 BRIGHT
-		RMR3 A 35 BRIGHT Light("ARMORRED1") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 27, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor3get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("ArmorPack3Armor", 250)
-		stop
-	PickupFail:
-        RMR3 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Armor.SavePercent 66.66666
+    Armor.SaveAmount 250
+
+    // Fire damage types
+    DamageFactor "Fire", 0.125
+    DamageFactor "MarathonFire", 0.125
+    DamageFactor "MarathonPlasmaFire", 0.125
+    DamageFactor "WolfenFlamethrower", 0.125
+    DamageFactor "TotenkopfFire", 0.125
+    DamageFactor "CalebFire", 0.125
+    DamageFactor "LifeLeech", 0.125
+    DamageFactor "FireExplosive", 0.125
+    DamageFactor "Hexen2Fire", 0.125
+    DamageFactor "DoomDamageTypeFire", 0.125
+    DamageFactor "DoomDamageTypeFireExplosive", 0.125
+    DamageFactor "RottFire", 0.125
+    DamageFactor "WTRangedFire", 0.125
+    DamageFactor "DeusExFlamed", 0.125
+    DamageFactor "PSFire", 0.125
+    DamageFactor "SWFlame", 0.125
+    DamageFactor "PGFire", 0.125
+    DamageFactor "PainkillerFire", 0.125
+    DamageFactor "QuakeFire", 0.125
+    DamageFactor "RTCWFire", 0.125
+    DamageFactor "HexGreenFire", 0.125
+    DamageFactor "PhosFire", 0.125
+    DamageFactor "PhosFireCoop", 0.125
+    DamageFactor "EradGreenFire", 0.125
+    DamageFactor "EradCoopGreenFire", 0.125
+    DamageFactor "SWFlame", 0.125
+    DamageFactor "SWFlame2", 0.125
+    DamageFactor "SWFlame2Coop", 0.125
+    DamageFactor "SWFlame3", 0.125
+    DamageFactor "BittermanFire", 0.125
+
+    // Explosive damage types
+    DamageFactor "Explosive", 0.125
+    DamageFactor "DoomDamageTypeExplosive", 0.125
+    DamageFactor "DukeExplosive", 0.125
+    DamageFactor "DukeSpectral", 0.125
+    DamageFactor "NotQuadded", 0.125
+    DamageFactor "SpectralNoQuad", 0.125
+    DamageFactor "BCannonProj", 0.125
+    DamageFactor "DCannonProj", 0.125
+    DamageFactor "CMDMGSHIT", 0.125
+    DamageFactor "Disruptoruniversaldamageshit4", 0.125
+    DamageFactor "EradExplosive", 0.125
+    DamageFactor "EradExplosive2", 0.125
+    DamageFactor "RottExplosive", 0.125
+    DamageFactor "HLRPGExplosive", 0.125
+    DamageFactor "PSExplosive", 0.125
+    DamageFactor "LeonardDamage2", 0.125
+    DamageFactor "SWRocket", 0.125
+    DamageFactor "SWGrenade", 0.125
+    DamageFactor "SWSticky", 0.125
+    DamageFactor "SWNuke", 0.125
+    DamageFactor "PGExplosive", 0.125
+    DamageFactor "PainkillerExplosive", 0.125
+    DamageFactor "RMR-DiscoBall", 0.125
+    DamageFactor "RTCWExplosive", 0.125
+    DamageFactor "Q3Explosive", 0.125
+    DamageFactor "StrifeExplosive", 0.125
+    DamageFactor "UnrealExplosive", 0.125
+    DamageFactor "HLExplosive", 0.125
+    DamageFactor "CalebNapalm", 0.125
+    DamageFactor "Dynamite", 0.125
+    DamageFactor "DynamiteCoop", 0.125
+    DamageFactor "PSExplosiveCoop", 0.125
+    DamageFactor "SWStickyCoop", 0.125
+    DamageFactor "SWNukeCoop", 0.125
+    DamageFactor "QuakeExplosive", 0.125
+    DamageFactor "UnrealRedeemer", 0.125
+    DamageFactor "UnrealExtreme", 0.125
+    DamageFactor "Q3BFG", 0.125
+    DamageFactor "DeusExRifleExploded", 0.125
+    DamageFactor "DoomTheseGuysAreTheBest", 0.125
+    DamageFactor "LostSoul64Explosion", 0.125
 }
 
-Actor QuakeRedArmor : CustomInventory
+actor ArmorPack4ArmorQuake : ArmorPack4ArmorNormal
 {
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.975
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR12_3"
-	//Inventory.PickupSound "armor2get"
-	Inventory.Icon "RMR3A0"
-	//Armor.Saveamount 200
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR3 A 0 BRIGHT
-		RMR3 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 30, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor2get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("QuakeRedArmorArmor", 200)
-		stop
-	PickupFail:
-        RMR3 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor SamsaraSilverArmor : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.95
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR12_4"
-	//Inventory.PickupSound "armor3get"
 	Inventory.Icon "RMR6A0"
-	//Armor.Saveamount 250
-	//Armor.MaxSaveAmount 250
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR6 A 0 BRIGHT
-		RMR6 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 31, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor3get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("SamsaraSilverArmorArmor", 250)
-		stop
-	PickupFail:
-        RMR6 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor MarathonRedArmor : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.95
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR3_4"
-	//Inventory.PickupSound "armor3get"
-	Inventory.Icon "RMR9A0"
-	//Armor.Saveamount 300
-	//Armor.MaxSaveAmount 300
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR9 A 0 BRIGHT
-		RMR9 A 35 bright ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 300, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 35, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("FFFFF0", 0.3, 4) // Ivory
-		TNT1 A 0 A_PlaySound("armor3get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("MarathonRedArmorArmor", 300)
-		stop
-	PickupFail:
-        RMR9 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor RedArmorNoDrop : ArmorPack3
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor QRedArmorNoDrop : QuakeRedArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor SilverArmorNoDrop : SamsaraSilverArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor MarathonRedArmorNoDrop : MarathonRedArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor ArmorPack3Armor : BasicArmorPickup
-{
-	Armor.SaveAmount 250
-	Armor.SavePercent 66.66666
-
-	// Fire damage types
-	DamageFactor "Fire", 0.125
-	DamageFactor "MarathonFire", 0.125
-	DamageFactor "MarathonPlasmaFire", 0.125
-	DamageFactor "WolfenFlamethrower", 0.125
-	DamageFactor "TotenkopfFire", 0.125
-	DamageFactor "CalebFire", 0.125
-	DamageFactor "LifeLeech", 0.125
-	DamageFactor "FireExplosive", 0.125
-	DamageFactor "Hexen2Fire", 0.125
-	DamageFactor "DoomDamageTypeFire", 0.125
-	DamageFactor "DoomDamageTypeFireExplosive", 0.125
-	DamageFactor "RottFire", 0.125
-	DamageFactor "WTRangedFire", 0.125
-	DamageFactor "DeusExFlamed", 0.125
-	DamageFactor "PSFire", 0.125
-	DamageFactor "SWFlame", 0.125
-	DamageFactor "PGFire", 0.125
-	DamageFactor "PainkillerFire", 0.125
-	DamageFactor "QuakeFire", 0.125
-	DamageFactor "RTCWFire", 0.125
-	DamageFactor "HexGreenFire", 0.125
-	DamageFactor "PhosFire", 0.125
-	DamageFactor "PhosFireCoop", 0.125
-	DamageFactor "EradGreenFire", 0.125
-	DamageFactor "EradCoopGreenFire", 0.125
-	DamageFactor "SWFlame", 0.125
-	DamageFactor "SWFlame2", 0.125
-	DamageFactor "SWFlame2Coop", 0.125
-	DamageFactor "SWFlame3", 0.125
-	DamageFactor "BittermanFire", 0.125
-
-	// Explosive damage types
-	DamageFactor "Explosive", 0.125
-	DamageFactor "DoomDamageTypeExplosive", 0.125
-	DamageFactor "DukeExplosive", 0.125
-	DamageFactor "DukeSpectral", 0.125
-	DamageFactor "NotQuadded", 0.125
-	DamageFactor "SpectralNoQuad", 0.125
-	DamageFactor "BCannonProj", 0.125
-	DamageFactor "DCannonProj", 0.125
-	DamageFactor "CMDMGSHIT", 0.125
-	DamageFactor "Disruptoruniversaldamageshit4", 0.125
-	DamageFactor "EradExplosive", 0.125
-	DamageFactor "EradExplosive2", 0.125
-	DamageFactor "RottExplosive", 0.125
-	DamageFactor "HLRPGExplosive", 0.125
-	DamageFactor "PSExplosive", 0.125
-	DamageFactor "LeonardDamage2", 0.125
-	DamageFactor "SWRocket", 0.125
-	DamageFactor "SWGrenade", 0.125
-	DamageFactor "SWSticky", 0.125
-	DamageFactor "SWNuke", 0.125
-	DamageFactor "PGExplosive", 0.125
-	DamageFactor "PainkillerExplosive", 0.125
-	DamageFactor "RMR-DiscoBall", 0.125
-	DamageFactor "RTCWExplosive", 0.125
-	DamageFactor "Q3Explosive", 0.125
-	DamageFactor "StrifeExplosive", 0.125
-	DamageFactor "UnrealExplosive", 0.125
-	DamageFactor "HLExplosive", 0.125
-	DamageFactor "CalebNapalm", 0.125
-	DamageFactor "Dynamite", 0.125
-	DamageFactor "DynamiteCoop", 0.125
-	DamageFactor "PSExplosiveCoop", 0.125
-	DamageFactor "SWStickyCoop", 0.125
-	DamageFactor "SWNukeCoop", 0.125
-	DamageFactor "QuakeExplosive", 0.125
-	DamageFactor "UnrealRedeemer", 0.125
-	DamageFactor "UnrealExtreme", 0.125
-	DamageFactor "Q3BFG", 0.125
-	DamageFactor "DeusExRifleExploded", 0.125
-	DamageFactor "DoomTheseGuysAreTheBest", 0.125
-	DamageFactor "LostSoul64Explosion", 0.125
-}
-
-Actor QuakeRedArmorArmor : BasicArmorPickup
-{
-	Armor.SaveAmount 200
-	Armor.SavePercent 80
-}
-
-Actor SamsaraSilverArmorArmor : BasicArmorPickup
-{
-	Armor.SaveAmount 250
 	Armor.SavePercent 90
-
-	// Fire damage types
-	DamageFactor "Fire", 0.125
-	DamageFactor "MarathonFire", 0.125
-	DamageFactor "MarathonPlasmaFire", 0.125
-	DamageFactor "WolfenFlamethrower", 0.125
-	DamageFactor "TotenkopfFire", 0.125
-	DamageFactor "CalebFire", 0.125
-	DamageFactor "LifeLeech", 0.125
-	DamageFactor "FireExplosive", 0.125
-	DamageFactor "Hexen2Fire", 0.125
-	DamageFactor "DoomDamageTypeFire", 0.125
-	DamageFactor "DoomDamageTypeFireExplosive", 0.125
-	DamageFactor "RottFire", 0.125
-	DamageFactor "WTRangedFire", 0.125
-	DamageFactor "DeusExFlamed", 0.125
-	DamageFactor "PSFire", 0.125
-	DamageFactor "SWFlame", 0.125
-	DamageFactor "PGFire", 0.125
-	DamageFactor "PainkillerFire", 0.125
-	DamageFactor "QuakeFire", 0.125
-	DamageFactor "RTCWFire", 0.125
-	DamageFactor "HexGreenFire", 0.125
-	DamageFactor "PhosFire", 0.125
-	DamageFactor "PhosFireCoop", 0.125
-	DamageFactor "EradGreenFire", 0.125
-	DamageFactor "EradCoopGreenFire", 0.125
-	DamageFactor "SWFlame", 0.125
-	DamageFactor "SWFlame2", 0.125
-	DamageFactor "SWFlame2Coop", 0.125
-	DamageFactor "SWFlame3", 0.125
-	DamageFactor "BittermanFire", 0.125
-
-	// Explosive damage types
-	DamageFactor "Explosive", 0.125
-	DamageFactor "DoomDamageTypeExplosive", 0.125
-	DamageFactor "DukeExplosive", 0.125
-	DamageFactor "DukeSpectral", 0.125
-	DamageFactor "NotQuadded", 0.125
-	DamageFactor "SpectralNoQuad", 0.125
-	DamageFactor "BCannonProj", 0.125
-	DamageFactor "DCannonProj", 0.125
-	DamageFactor "CMDMGSHIT", 0.125
-	DamageFactor "Disruptoruniversaldamageshit4", 0.125
-	DamageFactor "EradExplosive", 0.125
-	DamageFactor "EradExplosive2", 0.125
-	DamageFactor "RottExplosive", 0.125
-	DamageFactor "HLRPGExplosive", 0.125
-	DamageFactor "PSExplosive", 0.125
-	DamageFactor "LeonardDamage2", 0.125
-	DamageFactor "SWRocket", 0.125
-	DamageFactor "SWGrenade", 0.125
-	DamageFactor "SWSticky", 0.125
-	DamageFactor "SWNuke", 0.125
-	DamageFactor "PGExplosive", 0.125
-	DamageFactor "PainkillerExplosive", 0.125
-	DamageFactor "RMR-DiscoBall", 0.125
-	DamageFactor "RTCWExplosive", 0.125
-	DamageFactor "Q3Explosive", 0.125
-	DamageFactor "StrifeExplosive", 0.125
-	DamageFactor "UnrealExplosive", 0.125
-	DamageFactor "HLExplosive", 0.125
-	DamageFactor "CalebNapalm", 0.125
-	DamageFactor "Dynamite", 0.125
-	DamageFactor "DynamiteCoop", 0.125
-	DamageFactor "PSExplosiveCoop", 0.125
-	DamageFactor "SWStickyCoop", 0.125
-	DamageFactor "SWNukeCoop", 0.125
-	DamageFactor "QuakeExplosive", 0.125
-	DamageFactor "UnrealRedeemer", 0.125
-	DamageFactor "UnrealExtreme", 0.125
-	DamageFactor "Q3BFG", 0.125
-	DamageFactor "DeusExRifleExploded", 0.125
-	DamageFactor "DoomTheseGuysAreTheBest", 0.125
-	DamageFactor "LostSoul64Explosion", 0.125
 }
 
-Actor MarathonRedArmorArmor : BasicArmorPickup
+actor ArmorPack4ArmorMarathon : BasicArmorPickup
 {
-	Armor.SaveAmount 300
-	Armor.SavePercent 100
+    Inventory.Icon "RMR9A0"
+    Armor.SaveAmount 300
+    Armor.SavePercent 100
 }
 
-Actor RedArmor 5040
+actor ArmorPack4ArmorHeretic : ArmorPack4ArmorNormal { Armor.SavePercent 87.5 }
+
+// Hexen Light Armor Pickup
+actor HexenArmor1 : SamsaraArmorPickup replaces AmuletOfWarding
 {
-	+NOINTERACTION
-	States
-	{
-	Spawn:
-		RMR3 A 0 BRIGHT
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29, 0, 0) == 1, "Armor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "Armor5")
-		TNT1 A 35 ACS_NamedExecuteWithResult("SamsaraDecorate", 18, 3)
-		stop
+    Alpha 0.88
+    Scale 0.75
+    States
+    {
+      Spawn:
+        RMR4 A 0 Bright Light("SAMSARA_BROWN_ARMOR")
+        goto SpawnGameModeCheck
 
-	// Default Armor
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("RedArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("ArmorPack3", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
+      SpawnActual0:
+        goto SpawnBrown
 
-	// Quake Armor
-	Armor2:
-		TNT1 A 0 A_SpawnItemEx("QRedArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("SilverArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_Drop:
-		TNT1 A 0 A_SpawnItemEx("QuakeRedArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("SamsaraSilverArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
+      SpawnActual1:
+        goto SpawnLightGreen
 
-	// Quake+ Armor
-	Armor3:
-	Armor3_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("SilverArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor3_Drop:
-	Armor3_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("SamsaraSilverArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
+      SpawnActual2:
+        TNT1 A 0 A_SetScale(1) // yellow armor scale
+        goto SpawnYellow
 
-	// Marathon Armor
-	Armor4:
-	Armor4_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("MarathonRedArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor4_Drop:
-	Armor4_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("MarathonRedArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
+      SpawnActual3:
+        goto SpawnPink
 
-	// No Armor
-	Armor5:
-	Armor5_WithYellow:
-	Armor5_Drop:
-	Armor5_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("NoArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop	
-	}
+      SpawnActual4:
+        goto SpawnSilver
+
+      PickupActual0:
+        goto PickupBonus25Normal
+
+      PickupActual1:
+        goto PickupBonus25Quake
+
+      PickupActual2:
+        goto PickupBonus25QuakePlus
+
+      PickupActual3:
+        goto PickupBonus25Marathon
+
+      PickupActual4:
+        goto PickupBonus25Heretic
+    }
 }
 
-Actor NoArmor : BasicArmorPickup
+actor HexenArmor1ArmorNormal : ArmorScrapArmorNormal
 {
-	Armor.SaveAmount 0
-	Armor.SavePercent 0
-	States
-	{
-	States:
-		TNT1 A 0
-		stop
-	}
+    Inventory.Icon "RMR4A0"
+    Armor.SaveAmount 25
 }
 
-// Heretic Armor Scraps
-Actor HereticArmorScrap : CustomInventory
+actor HexenArmor1ArmorQuake : ArmorScrapArmorQuake
 {
-	Scale 0.55
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORSCRAP_HERETIC"
-	//Inventory.PickupSound "armor0get"
-	Inventory.Icon "RMR1A0"
-	//Armor.Saveamount 5
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		BON3 A 0 BRIGHT
-		BON3 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 36, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor0get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HereticArmorScrapArmor", 1)
-		stop
-	PickupFail:
-        BON3 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Inventory.Icon "RMR7A0"
+    Armor.SaveAmount 25
 }
 
-Actor HereticQuakeArmorScrap : CustomInventory
+actor HexenArmor1ArmorQuakePlus : ArmorScrapArmorQuakePlus
 {
-	Scale 0.55
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORSCRAP_HERETIC"
-	//Inventory.PickupSound "armor0get"
-	Inventory.Icon "RMR1A0"
-	//Armor.Saveamount 5
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		BON3 A 0 BRIGHT
-		BON3 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 36, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor0get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HereticQuakeArmorScrapArmor", 1)
-		stop
-	PickupFail:
-        BON3 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Inventory.Icon "RMR5A0"
+    Armor.SaveAmount 25
 }
 
-Actor HereticQuakeArmorScrap2 : CustomInventory
+actor HexenArmor1ArmorMarathon : ArmorScrapArmorMarathon
 {
-	Scale 0.55
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORSCRAP_HERETIC"
-	//Inventory.PickupSound "armor0get"
-	Inventory.Icon "RMR1A0"
-	//Armor.Saveamount 5
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		BON3 A 0 BRIGHT
-		BON3 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 36, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor0get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HereticQuakeArmorScrap2Armor", 1)
-		stop
-	PickupFail:
-        BON3 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Inventory.Icon "RMR0A0"
+    Armor.SaveAmount 25
 }
 
-Actor HereticMarathonArmorScrap : CustomInventory
+actor HexenArmor1ArmorHeretic : ArmorScrapArmorHeretic
 {
-	Scale 0.55
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORSCRAP3_HERETIC"
-	//Inventory.PickupSound "armor0get"
-	Inventory.Icon "RMR1A0"
-	//Armor.Saveamount 5
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		BON3 A 0 BRIGHT
-		BON3 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 37, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("FFFFF0", 0.3, 4) // Ivory
-		TNT1 A 0 A_PlaySound("armor0get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HereticMarathonArmorScrapArmor", 1)
-		stop
-	PickupFail:
-        BON3 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor HereticArmorScrapNoDrop : HereticArmorScrap
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HereticQuakeArmorScrapNoDrop : HereticQuakeArmorScrap
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HereticQuakeArmorScrap2NoDrop : HereticQuakeArmorScrap2
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HereticMarathonArmorScrapNoDrop : HereticMarathonArmorScrap
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HereticArmorScrapArmor : BasicArmorBonus
-{
-	Armor.SaveAmount 5
-	Armor.SavePercent 33.335
-	Armor.MaxSaveAmount 200
-}
-
-Actor HereticQuakeArmorScrapArmor : BasicArmorBonus
-{
-	Armor.SaveAmount 5
-	Armor.SavePercent 30
-	Armor.MaxSaveAmount 200
-}
-
-Actor HereticQuakeArmorScrap2Armor : BasicArmorBonus
-{
-	Armor.SaveAmount 5
-	Armor.SavePercent 60
-	Armor.MaxSaveAmount 200
-}
-
-Actor HereticMarathonArmorScrapArmor : BasicArmorBonus
-{
-	Armor.SaveAmount 5
-	Armor.SavePercent 100
-	Armor.MaxSaveAmount 200
-}
-
-Actor HereticArmorDump replaces ArtiTimeBomb
-{
-	+NOINTERACTION
-	States
-	{
-	Spawn:
-		BON3 A 0 BRIGHT
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29, 0, 0) == 1, "Armor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "Armor5")
-		TNT1 A 35 ACS_NamedExecuteWithResult("SamsaraDecorate", 18, 0)
-		stop
-
-	// Default Armor
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HereticArmorScrapNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HereticArmorScrap", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake Armor
-	Armor2:
-	Armor2_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HereticQuakeArmorScrapNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_Drop:
-	Armor2_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HereticQuakeArmorScrap", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake+ Armor
-	Armor3:
-	Armor3_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HereticQuakeArmorScrap2NoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor3_Drop:
-	Armor3_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HereticQuakeArmorScrap2", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Marathon Armor
-	Armor4:
-	Armor4_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HereticMarathonArmorScrapNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor4_Drop:
-	Armor4_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HereticMarathonArmorScrap", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// No Armor
-	Armor5:
-	Armor5_WithYellow:
-	Armor5_Drop:
-	Armor5_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("NoArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop	
-	}
-}
-
-// Heretic Green Armor Pickups
-Actor HereticArmorPack1 : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR0_1"
-	//Inventory.PickupSound "armor1get"
-	Inventory.Icon "RMR1A0"
-	//Armor.Saveamount 100
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR1 A 0 BRIGHT
-		RMR1 A 35 BRIGHT Light("ARMORGREEN1") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 100, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 24, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor1get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HereticArmorPack1Armor", 100)
-		stop
-	PickupFail:
-        RMR1 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor HereticGreenArmorNoDrop : HereticArmorPack1
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HereticArmorPack1Armor : BasicArmorPickup
-{
-	Armor.SaveAmount 100
-	Armor.SavePercent 50
-}
-
-Actor HereticGreenArmorPickup : GreenArmorPickup replaces SilverShield
-{
-	+NOINTERACTION
-	States
-	{
-	// Default Armor
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HereticGreenArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HereticArmorPack1", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	}
-}
-
-// Heretic Blue Armor Pickups
-Actor HereticArmorPack2 : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.975
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMOR0_3"
-	//Inventory.PickupSound "armor2get"
-	Inventory.Icon "RMR2A0"
-	//Armor.Saveamount 200
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR2 A 0 BRIGHT
-		RMR2 A 35 BRIGHT Light("ARMORBLUE1") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 98)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 26, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor2get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HereticArmorPack2Armor", 200)
-		stop
-	PickupFail:
-        RMR2 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor HereticBlueArmorNoDrop : HereticArmorPack2
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HereticArmorPack2Armor : BasicArmorPickup
-{
-	Armor.SaveAmount 200
-	Armor.SavePercent 75
-}
-
-Actor HereticBlueArmorPickup : BlueArmorPickup replaces EnchantedShield
-{
-	+NOINTERACTION
-	States
-	{
-	// Default Armor
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HereticBlueArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HereticArmorPack2", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	}
-}
-
-// Hexen Light Armor Pickups
-Actor HexenArmorPack1 : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.875
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORHEXEN"
-	//Inventory.PickupSound "armor1get"
-	Inventory.Icon "RMR4A0"
-	//Armor.Saveamount 200
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR4 A 0 BRIGHT
-		RMR4 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 38, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor1get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HexenArmorPack1Armor", 25)
-		stop
-	PickupFail:
-        RMR4 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor HexenQuakeGreenArmor : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORHEXEN"
-	//Inventory.PickupSound "armor1get"
-	Inventory.Icon "RMR7A0"
-	//Armor.Saveamount 200
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR7 A 0 BRIGHT
-		RMR7 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 38, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor1get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HexenQuakeGreenArmorArmor", 25)
-		stop
-	PickupFail:
-        RMR7 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor HexenQuakeYellowArmor : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORHEXEN"
-	//Inventory.PickupSound "armor1get"
-	Inventory.Icon "RMR5A0"
-	//Armor.Saveamount 200
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR5 A 0 BRIGHT
-		RMR5 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 38, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor1get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HexenQuakeYellowArmorArmor", 25)
-		stop
-	PickupFail:
-        RMR5 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor HexenMarathonGreenArmor : CustomInventory
-{
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.9
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_ARMORHEXEN"
-	//Inventory.PickupSound "armor1get"
-	Inventory.Icon "RMR0A0"
-	//Armor.Saveamount 200
-	//Armor.MaxSaveAmount 200
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR0 A 0 BRIGHT
-		RMR0 A 35 bright ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity", 1, "CheckForProsperity")
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 200, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	CheckForProsperity:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 250, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 39, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("FFFFF0", 0.3, 4) // Ivory
-		TNT1 A 0 A_PlaySound("armor1get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HexenMarathonGreenArmorArmor", 25)
-		stop
-	PickupFail:
-        RMR0 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
-}
-
-Actor HexenGreenArmorNoDrop : HexenArmorPack1
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HexenQGreenArmorNoDrop : HexenQuakeGreenArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HexenQYellowArmorNoDrop : HexenQuakeYellowArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HexenMarathonGreenArmorNoDrop : HexenMarathonGreenArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HexenArmorPack1Armor : BasicArmorBonus
-{
-	Armor.SaveAmount 25
-	Armor.SavePercent 33.335
-	Armor.MaxSaveAmount 200
-}
-
-Actor HexenQuakeGreenArmorArmor : BasicArmorBonus
-{
-	Armor.SaveAmount 25
-	Armor.SavePercent 30
-	Armor.MaxSaveAmount 200
-}
-
-Actor HexenQuakeYellowArmorArmor : BasicArmorBonus
-{
-	Armor.SaveAmount 25
-	Armor.SavePercent 60
-	Armor.MaxSaveAmount 200
-}
-
-Actor HexenMarathonGreenArmorArmor : BasicArmorBonus
-{
-	Armor.SaveAmount 25
-	Armor.SavePercent 100
-	Armor.MaxSaveAmount 200
-}
-
-Actor HexenArmor1 replaces AmuletOfWarding
-{
-	+NOINTERACTION
-	States
-	{
-	Spawn:
-		RMR4 A 0 BRIGHT
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29, 0, 0) == 1, "Armor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "Armor5")
-		TNT1 A 35 ACS_NamedExecuteWithResult("SamsaraDecorate", 18, 0)
-		stop
-
-	// Default Armor
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HexenGreenArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HexenArmorPack1", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake Armor
-	Armor2:
-	Armor2_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HexenQGreenArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_Drop:
-	Armor2_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HexenQuakeGreenArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake+ Armor
-	Armor3:
-	Armor3_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HexenQYellowArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor3_Drop:
-	Armor3_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HexenQuakeYellowArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Marathon Armor
-	Armor4:
-	Armor4_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HexenMarathonGreenArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor4_Drop:
-	Armor4_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HexenMarathonGreenArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// No Armor
-	Armor5:
-	Armor5_WithYellow:
-	Armor5_Drop:
-	Armor5_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("NoArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop	
-	}
+    Inventory.Icon "RMR6A0"
+    Armor.SaveAmount 25
 }
 
 // Hexen Heavy Armor
-Actor HexenArmorPack2 : CustomInventory
+actor HexenArmor5 : SamsaraArmorPickup replaces ArtiBoostArmor
 {
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.975
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_POWERUP_ARMOR"
-	//Inventory.PickupSound "armor2get"
-	Inventory.Icon "RMR2A0"
-	//Armor.Saveamount 50
-	//Armor.MaxSaveAmount 300
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR2 A 0 BRIGHT
-		RMR2 A 35 BRIGHT Light("ARMORBLUE1") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 98)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 300, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 40, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor2get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HexenArmorPack2Armor", 50)
-		stop
-	PickupFail:
-        RMR2 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Alpha 0.98 // 0.975
+    States
+    {
+      Spawn:
+        RMR2 A 0 Bright Light("SAMSARA_BLUE_ARMOR")
+        goto SpawnGameModeCheck
+
+      SpawnActual0:
+        goto SpawnBlue
+
+      SpawnActual1:
+        goto SpawnRed
+
+      SpawnActual2:
+        goto SpawnSilver
+
+      SpawnActual3:
+        goto SpawnYellow
+
+      SpawnActual4:
+        goto SpawnHazel
+
+      PickupActual0:
+        goto PickupBonus50Normal
+
+      PickupActual1:
+        goto PickupBonus50Quake
+
+      PickupActual2:
+        goto PickupBonus50QuakePlus
+
+      PickupActual3:
+        goto PickupBonus50Marathon
+
+      PickupActual4:
+        goto PickupBonus50Heretic
+    }
 }
 
-Actor HexenQuakeRedArmor : CustomInventory
+actor HexenArmor5ArmorNormal : ArmorScrapArmorNormal
 {
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.975
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_POWERUP_ARMOR"
-	//Inventory.PickupSound "armor2get"
-	Inventory.Icon "RMR3A0"
-	//Armor.Saveamount 50
-	//Armor.MaxSaveAmount 300
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR3 A 0 BRIGHT
-		RMR3 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 300, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 40, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor2get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HexenQuakeRedArmorArmor", 50)
-		stop
-	PickupFail:
-        RMR3 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Inventory.Icon "RMR2A0"
+    Armor.SaveAmount 50
+    Armor.MaxSaveAmount 300
 }
 
-Actor HexenSamsaraSilverArmor : CustomInventory
+actor HexenArmor5ArmorQuake : ArmorScrapArmorQuake
 {
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.95
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_POWERUP_ARMOR"
-	//Inventory.PickupSound "armor2get"
-	Inventory.Icon "RMR6A0"
-	//Armor.Saveamount 50
-	//Armor.MaxSaveAmount 300
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR6 A 0 BRIGHT
-		RMR6 A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 300, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 40, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("d7ba45", 0.3, 4)
-		TNT1 A 0 A_PlaySound("armor2get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HexenSamsaraSilverArmorArmor", 50)
-		stop
-	PickupFail:
-        RMR6 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Inventory.Icon "RMR3A0"
+    Armor.SaveAmount 50
+    Armor.MaxSaveAmount 300
 }
 
-Actor HexenMarathonBlueArmor : CustomInventory
+actor HexenArmor5ArmorQuakePlus : ArmorScrapArmorQuakePlus
 {
-	Scale 0.75
-	RenderStyle Add
-	Alpha 0.95
-	+FLOATBOB
-	+INVENTORY.QUIET
-	-INVENTORY.ALWAYSPICKUP
-	-COUNTITEM
-	//Inventory.Pickupmessage "$SAMSARA_POWERUP_ARMOR3"
-	//Inventory.PickupSound "armor2get"
-	Inventory.Icon "RMR5A0"
-	//Armor.Saveamount 50
-	//Armor.MaxSaveAmount 300
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		RMR5 A 0 BRIGHT
-		RMR5 A 35 bright ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-		wait
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("BasicArmor", 300, "PickupFail")
-		TNT1 A -1 A_Jump(256,"PickupActual")
-		wait
-	PickupActual:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 41, 0, 0)
-		TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
-		TNT1 A 0 A_SetBlend("FFFFF0", 0.3, 4) // Ivory
-		TNT1 A 0 A_PlaySound("armor2get", CHAN_ITEM)
-		TNT1 A 1 A_GiveInventory("HexenMarathonBlueArmorArmor", 50)
-		stop
-	PickupFail:
-        RMR5 A 1 BRIGHT
-        fail
-	PickupStop:
-		TNT1 A 0
-		stop
-	SpawnCancel:
-		TNT1 A 1 A_FadeOut
-		stop
-	}
+    Inventory.Icon "RMR6A0"
+    Armor.SaveAmount 50
+    Armor.MaxSaveAmount 300
 }
 
-Actor HexenBlueArmorNoDrop : HexenArmorPack2
+actor HexenArmor5ArmorMarathon : ArmorScrapArmorMarathon
 {
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
+    Inventory.Icon "RMR5A0"
+    Armor.SaveAmount 50
+    Armor.MaxSaveAmount 300
 }
 
-Actor HexenQRedArmorNoDrop : HexenQuakeRedArmor
+actor HexenArmor5ArmorHeretic : ArmorScrapArmorHeretic
 {
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HexenSilverArmorNoDrop : HexenSamsaraSilverArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HexenMarathonBlueArmorNoDrop : HexenMarathonBlueArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		goto Super::Spawn
-	}
-}
-
-Actor HexenArmorPack2Armor : BasicArmorBonus
-{
-	Armor.SaveAmount 50
-	Armor.SavePercent 33.335
-	Armor.MaxSaveAmount 300
-}
-
-Actor HexenQuakeRedArmorArmor : BasicArmorBonus
-{
-	Armor.SaveAmount 50
-	Armor.SavePercent 30
-	Armor.MaxSaveAmount 300
-}
-
-Actor HexenSamsaraSilverArmorArmor : BasicArmorBonus
-{
-	Armor.SaveAmount 50
-	Armor.SavePercent 60
-	Armor.MaxSaveAmount 300
-}
-
-Actor HexenMarathonBlueArmorArmor : BasicArmorBonus
-{
-	Armor.SaveAmount 50
-	Armor.SavePercent 100
-	Armor.MaxSaveAmount 300
-}
-
-Actor HexenArmor5 replaces ArtiBoostArmor
-{
-	+NOINTERACTION
-	States
-	{
-	Spawn:
-		RMR4 A 0 BRIGHT
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29, 0, 0) == 1, "Armor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "Armor5")
-		TNT1 A 35 ACS_NamedExecuteWithResult("SamsaraDecorate", 18, 0)
-		stop
-
-	// Default Armor
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HexenBlueArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HexenArmorPack2", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake Armor
-	Armor2:
-	Armor2_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HexenQRedArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor2_Drop:
-	Armor2_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HexenQuakeRedArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Quake+ Armor
-	Armor3:
-	Armor3_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HexenSilverArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor3_Drop:
-	Armor3_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HexenSamsaraSilverArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// Marathon Armor
-	Armor4:
-	Armor4_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("HexenMarathonBlueArmorNoDrop", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	Armor4_Drop:
-	Armor4_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("HexenMarathonBlueArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-
-	// No Armor
-	Armor5:
-	Armor5_WithYellow:
-	Armor5_Drop:
-	Armor5_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("NoArmor", 0, 0, 0, 0, 0, 0, 0, SXF_TRANSFERSPECIAL)
-		stop
-	}
+    Inventory.Icon "RMR8A0"
+    Armor.SaveAmount 50
+    Armor.MaxSaveAmount 300
 }
 
 // Strife Leather Armor
-actor SamsaraLeatherArmorPickup : CustomInventory replaces LeatherArmor
+actor StrifeArmorPack1 : SamsaraArmorPickup replaces LeatherArmor
 {
-	ConversationID 130
-	+DONTGIB
-	+NOINTERACTION
-	+QUIET
-	+THRUACTORS // don't pick up until the item actually spawns
-	States
-	{
-	Spawn:
-		ARM4 A 0
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29), "Armor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "Armor5")
-		TNT1 A 35 ACS_NamedExecuteWithResult("SamsaraDecorate", 18, 0)
-		Stop
+    ConversationID 130
+    RenderStyle "Normal"
+    -FLOATBOB
+    States
+    {
+      Spawn:
+        ARM4 A 0
+        goto SpawnGameModeCheck
 
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("StrifeGreenArmorNoDrop",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      SpawnActual0:
+      SpawnActual1:
+      SpawnActual2:
+      SpawnActual3:
+      SpawnActual4:
+        ARM4 A -1 A_ChangeFlag("NOTIMEFREEZE",false)
+        stop
 
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("StrifeArmorPack1",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      // These more or less require special handling
+      PickupActual0:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack1ArmorNormal",0,"PickupFail")
+        goto PickupActual0Success
 
-	Armor2:
-	Armor2_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("StrifeQGreenArmorNoDrop",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual0Success:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 109)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack1ArmorNormal")
+        stop
 
-	Armor2_Drop:
-	Armor2_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("StrifeQuakeGreenArmor",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual1:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack1ArmorQuake",0,"PickupFail")
+        goto PickupActual1Success
 
-	Armor3:
-	Armor3_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("StrifeQYellowArmorNoDrop",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual1Success:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 109)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack1ArmorQuake")
+        stop
 
-	Armor3_Drop:
-	Armor3_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("StrifeQuakeYellowArmor",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual2:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack1ArmorQuakePlus",0,"PickupFail")
+        goto PickupActual2Success
 
-	Armor4:
-	Armor4_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("StrifeMarathonGreenArmorNoDrop",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual2Success:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 109)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack1ArmorQuakePlus")
+        stop
 
-	Armor4_Drop:
-	Armor4_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("StrifeMarathonGreenArmor",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual3:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack1ArmorMarathon",0,"PickupFail")
+        goto PickupActual3Success
 
-	Armor5:
-	Armor5_WithYellow:
-	Armor5_Drop:
-	Armor5_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("NoArmor",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual3Success:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 109)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("FFFFF0",0.3,4) // Ivory
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack1ArmorMarathon")
+        stop
 
-	Pickup:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29), "PickupArmor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "PickupArmor5")
-	PickupArmorCheck:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42) >= 4, "PickupArmor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42) == 3, "PickupArmor4")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42) == 2, "PickupArmor3")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42) == 1, "PickupArmor2")
-	PickupArmor1:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42, 1), "PickupArmor1Yellow") // turns out these don't actually work, but I'll keep them in anyway
-	PickupArmor1Yellow:
-		TNT1 A 0 A_GiveInventory("StrifeGreenArmorNoDrop")
-		Stop
+      PickupActual4:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack1ArmorHeretic",0,"PickupFail")
+        goto PickupActual4Success
 
-	PickupArmor2:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42, 1), "PickupArmor2Yellow")
-	PickupArmor2Yellow:
-		TNT1 A 0 A_GiveInventory("StrifeQGreenArmorNoDrop")
-		Stop
-
-	PickupArmor3:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42, 1), "PickupArmor3Yellow")
-	PickupArmor3Yellow:
-		TNT1 A 0 A_GiveInventory("StrifeQYellowArmorNoDrop")
-		Stop
-
-	PickupArmor4:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42, 1), "PickupArmor4Yellow")
-	PickupArmor4Yellow:
-		TNT1 A 0 A_GiveInventory("StrifeMarathonGreenArmorNoDrop")
-		Stop
-
-	PickupArmor5:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42, 1), "PickupArmor5Yellow")
-	PickupArmor5Yellow:
-		TNT1 A 0
-		Fail
-	}
+      PickupActual4Success:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 109)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack1ArmorHeretic")
+        stop
+    }
 }
 
-actor StrifeArmorPack1 : LeatherArmor {}
+actor StrifeArmorPack1ArmorNormal : LeatherArmor {}
 
-actor StrifeQuakeGreenArmor : LeatherArmor
+actor StrifeArmorPack1ArmorQuake : LeatherArmor { Armor.SavePercent 30 }
+
+actor StrifeArmorPack1ArmorQuakePlus : LeatherArmor // actually a tier 2 armor, but retaining the tier 1 icon in althud
 {
-	Armor.SaveAmount 100
-	Armor.SavePercent 30
+    Armor.SavePercent 60
+    Armor.SaveAmount 150
 }
 
-actor StrifeQuakeYellowArmor : LeatherArmor
-{
-	Armor.SaveAmount 150
-	Armor.SavePercent 60
-}
+actor StrifeArmorPack1ArmorMarathon : LeatherArmor { Armor.SavePercent 100 }
 
-actor StrifeMarathonGreenArmor : LeatherArmor
-{
-	Armor.SaveAmount 100
-	Armor.SavePercent 100
-}
-
-actor StrifeGreenArmorNoDrop : StrifeArmorPack1
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		Goto Super::Spawn
-	}
-}
-
-actor StrifeQGreenArmorNoDrop : StrifeQuakeGreenArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		Goto Super::Spawn
-	}
-}
-
-actor StrifeQYellowArmorNoDrop : StrifeQuakeYellowArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		Goto Super::Spawn
-	}
-}
-
-actor StrifeMarathonGreenArmorNoDrop : StrifeMarathonGreenArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		Goto Super::Spawn
-	}
-}
+actor StrifeArmorPack1ArmorHeretic : LeatherArmor { Armor.SavePercent 50 }
 
 // Strife Metal Armor
-actor SamsaraMetalArmorPickup : CustomInventory replaces MetalArmor
+actor StrifeArmorPack3 : SamsaraArmorPickup replaces MetalArmor
 {
-	ConversationID 129
-	+DONTGIB
-	+NOINTERACTION
-	+QUIET
-	+THRUACTORS // don't pick up until the item actually spawns
-	States
-	{
-	Spawn:
-		ARM3 A 0
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29), "Armor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "Armor5")
-		TNT1 A 35 ACS_NamedExecuteWithResult("SamsaraDecorate", 18, 2)
-		Stop
+    ConversationID 129
+    RenderStyle "Normal"
+    -FLOATBOB
+    States
+    {
+      Spawn:
+        ARM3 A 0
+        goto SpawnGameModeCheck
 
-	Armor1:
-	Armor1_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("StrifeBlueArmorNoDrop",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      SpawnActual0:
+      SpawnActual1:
+      SpawnActual2:
+      SpawnActual3:
+      SpawnActual4:
+        ARM3 A -1 A_ChangeFlag("NOTIMEFREEZE",false)
+        stop
 
-	Armor1_Drop:
-	Armor1_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("StrifeArmorPack2",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      // These more or less require special handling
+      PickupActual0:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack3ArmorNormal",0,"PickupFail")
+        goto PickupActual0Success
 
-	Armor2:
-		TNT1 A 0 A_SpawnItemEx("StrifeQYellowArmorNoDrop",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual0Success:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 110)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack3ArmorNormal")
+        stop
 
-	Armor2_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("StrifeQRedArmorNoDrop",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual1:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42, 1), "PickupActual1Tier2Active")
+      PickupActual1Tier2Inactive:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack3ArmorQuakeTier2Inactive",0,"PickupFail")
+        goto PickupActual1Tier2InactiveSuccess
 
-	Armor2_Drop:
-		TNT1 A 0 A_SpawnItemEx("StrifeQuakeYellowArmor",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual1Tier2InactiveSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 110)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack3ArmorQuakeTier2Inactive")
+        stop
 
-	Armor2_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("StrifeQuakeRedArmor",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual1Tier2Active:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack3ArmorQuakeTier2Active",0,"PickupFail")
+        goto PickupActual1Tier2ActiveSuccess
 
-	Armor3:
-		TNT1 A 0 A_SpawnItemEx("StrifeQRedArmorNoDrop",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual1Tier2ActiveSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 110)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack3ArmorQuakeTier2Active")
+        stop
 
-	Armor3_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("StrifeSilverArmorNoDrop",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual2:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 42, 1), "PickupActual2Tier2Active")
+      PickupActual2Tier2Inactive:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack3ArmorQuakePlusTier2Inactive",0,"PickupFail")
+        goto PickupActual2Tier2InactiveSuccess
 
-	Armor3_Drop:
-		TNT1 A 0 A_SpawnItemEx("StrifeQuakeRedArmor",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual2Tier2InactiveSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 110)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack3ArmorQuakePlusTier2Inactive")
+        stop
 
-	Armor3_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("SamsaraStrifeSilverArmor",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual2Tier2Active:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack3ArmorQuakePlusTier2Active",0,"PickupFail")
+        goto PickupActual2Tier2ActiveSuccess
 
-	Armor4:
-	Armor4_WithYellow:
-		TNT1 A 0 A_SpawnItemEx("StrifeMarathonBlueArmorNoDrop",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual2Tier2ActiveSuccess:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 110)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack3ArmorQuakePlusTier2Active")
+        stop
 
-	Armor4_Drop:
-	Armor4_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("StrifeMarathonBlueArmor",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual3:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack3ArmorMarathon",0,"PickupFail")
+        goto PickupActual3Success
 
-	Armor5:
-	Armor5_WithYellow:
-	Armor5_Drop:
-	Armor5_YellowDrop:
-		TNT1 A 0 A_SpawnItemEx("NoArmor",0,0,0,0,0,0,0,SXF_TRANSFERSPECIAL)
-		Stop
+      PickupActual3Success:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 110)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("FFFFF0",0.3,4) // Ivory
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack3ArmorMarathon")
+        stop
 
-	Pickup:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 29), "PickupArmor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 19), "PickupArmor5")
-	PickupArmorCheck:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42) >= 4, "PickupArmor5")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42) == 3, "PickupArmor4")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42) == 2, "PickupArmor3")
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42) == 1, "PickupArmor2")
-	PickupArmor1:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42, 1), "PickupArmor1Yellow") // turns out these don't actually work, but I'll keep them in anyway
-	PickupArmor1Yellow:
-		TNT1 A 0 A_GiveInventory("StrifeBlueArmorNoDrop")
-		Stop
+      PickupActual4:
+        TNT1 A 0 A_JumpIfInventory("StrifeArmorPack3ArmorHeretic",0,"PickupFail")
+        goto PickupActual4Success
 
-	PickupArmor2:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42, 1), "PickupArmor2Yellow")
-		TNT1 A 0 A_GiveInventory("StrifeQYellowArmorNoDrop")
-		Stop
-
-	PickupArmor2Yellow:
-		TNT1 A 0 A_GiveInventory("StrifeQRedArmorNoDrop")
-		Stop
-
-	PickupArmor3:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42, 1), "PickupArmor3Yellow")
-		TNT1 A 0 A_GiveInventory("StrifeQRedArmorNoDrop")
-		Stop
-
-	PickupArmor3Yellow:
-		TNT1 A 0 A_GiveInventory("StrifeSilverArmorNoDrop")
-		Stop
-
-	PickupArmor4:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42, 1), "PickupArmor4Yellow")
-	PickupArmor4Yellow:
-		TNT1 A 0 A_GiveInventory("StrifeMarathonBlueArmorNoDrop")
-		Stop
-
-	PickupArmor5:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 42, 1), "PickupArmor5Yellow")
-	PickupArmor5Yellow:
-		TNT1 A 0
-		Fail
-	}
+      PickupActual4Success:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 110)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/armor_pkup",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("StrifeArmorPack3ArmorHeretic")
+        stop
+    }
 }
 
-actor StrifeArmorPack2 : MetalArmor {}
+actor StrifeArmorPack3ArmorNormal : MetalArmor {}
 
-actor StrifeQuakeRedArmor : MetalArmor
+actor StrifeArmorPack3ArmorQuakeTier2Inactive : MetalArmor // actually a tier 2 armor, but retaining the tier 3 icon in althud
 {
-	Armor.SaveAmount 200
-	Armor.SavePercent 80
+    Armor.SavePercent 60
+    Armor.SaveAmount 150
 }
 
-actor SamsaraStrifeSilverArmor : MetalArmor
+actor StrifeArmorPack3ArmorQuakeTier2Active : MetalArmor { Armor.SavePercent 80 }
+
+actor StrifeArmorPack3ArmorQuakePlusTier2Inactive : MetalArmor { Armor.SavePercent 80 }
+
+actor StrifeArmorPack3ArmorQuakePlusTier2Active : MetalArmor // actually a tier 4 armor, but retaining the tier 3 icon in althud
 {
-	Armor.SaveAmount 250
-	Armor.SavePercent 90
+    Armor.SavePercent 66.66666
+    Armor.SaveAmount 250
 
-	// Fire damage types
-	DamageFactor "Fire", 0.125
-	DamageFactor "MarathonFire", 0.125
-	DamageFactor "MarathonPlasmaFire", 0.125
-	DamageFactor "WolfenFlamethrower", 0.125
-	DamageFactor "TotenkopfFire", 0.125
-	DamageFactor "CalebFire", 0.125
-	DamageFactor "LifeLeech", 0.125
-	DamageFactor "FireExplosive", 0.125
-	DamageFactor "Hexen2Fire", 0.125
-	DamageFactor "DoomDamageTypeFire", 0.125
-	DamageFactor "DoomDamageTypeFireExplosive", 0.125
-	DamageFactor "RottFire", 0.125
-	DamageFactor "WTRangedFire", 0.125
-	DamageFactor "DeusExFlamed", 0.125
-	DamageFactor "PSFire", 0.125
-	DamageFactor "SWFlame", 0.125
-	DamageFactor "PGFire", 0.125
-	DamageFactor "PainkillerFire", 0.125
-	DamageFactor "QuakeFire", 0.125
-	DamageFactor "RTCWFire", 0.125
-	DamageFactor "HexGreenFire", 0.125
-	DamageFactor "PhosFire", 0.125
-	DamageFactor "PhosFireCoop", 0.125
-	DamageFactor "EradGreenFire", 0.125
-	DamageFactor "EradCoopGreenFire", 0.125
-	DamageFactor "SWFlame", 0.125
-	DamageFactor "SWFlame2", 0.125
-	DamageFactor "SWFlame2Coop", 0.125
-	DamageFactor "SWFlame3", 0.125
-	DamageFactor "BittermanFire", 0.125
+    // Fire damage types
+    DamageFactor "Fire", 0.125
+    DamageFactor "MarathonFire", 0.125
+    DamageFactor "MarathonPlasmaFire", 0.125
+    DamageFactor "WolfenFlamethrower", 0.125
+    DamageFactor "TotenkopfFire", 0.125
+    DamageFactor "CalebFire", 0.125
+    DamageFactor "LifeLeech", 0.125
+    DamageFactor "FireExplosive", 0.125
+    DamageFactor "Hexen2Fire", 0.125
+    DamageFactor "DoomDamageTypeFire", 0.125
+    DamageFactor "DoomDamageTypeFireExplosive", 0.125
+    DamageFactor "RottFire", 0.125
+    DamageFactor "WTRangedFire", 0.125
+    DamageFactor "DeusExFlamed", 0.125
+    DamageFactor "PSFire", 0.125
+    DamageFactor "SWFlame", 0.125
+    DamageFactor "PGFire", 0.125
+    DamageFactor "PainkillerFire", 0.125
+    DamageFactor "QuakeFire", 0.125
+    DamageFactor "RTCWFire", 0.125
+    DamageFactor "HexGreenFire", 0.125
+    DamageFactor "PhosFire", 0.125
+    DamageFactor "PhosFireCoop", 0.125
+    DamageFactor "EradGreenFire", 0.125
+    DamageFactor "EradCoopGreenFire", 0.125
+    DamageFactor "SWFlame", 0.125
+    DamageFactor "SWFlame2", 0.125
+    DamageFactor "SWFlame2Coop", 0.125
+    DamageFactor "SWFlame3", 0.125
+    DamageFactor "BittermanFire", 0.125
 
-	// Explosive damage types
-	DamageFactor "Explosive", 0.125
-	DamageFactor "DoomDamageTypeExplosive", 0.125
-	DamageFactor "DukeExplosive", 0.125
-	DamageFactor "DukeSpectral", 0.125
-	DamageFactor "NotQuadded", 0.125
-	DamageFactor "SpectralNoQuad", 0.125
-	DamageFactor "BCannonProj", 0.125
-	DamageFactor "DCannonProj", 0.125
-	DamageFactor "CMDMGSHIT", 0.125
-	DamageFactor "Disruptoruniversaldamageshit4", 0.125
-	DamageFactor "EradExplosive", 0.125
-	DamageFactor "EradExplosive2", 0.125
-	DamageFactor "RottExplosive", 0.125
-	DamageFactor "HLRPGExplosive", 0.125
-	DamageFactor "PSExplosive", 0.125
-	DamageFactor "LeonardDamage2", 0.125
-	DamageFactor "SWRocket", 0.125
-	DamageFactor "SWGrenade", 0.125
-	DamageFactor "SWSticky", 0.125
-	DamageFactor "SWNuke", 0.125
-	DamageFactor "PGExplosive", 0.125
-	DamageFactor "PainkillerExplosive", 0.125
-	DamageFactor "RMR-DiscoBall", 0.125
-	DamageFactor "RTCWExplosive", 0.125
-	DamageFactor "Q3Explosive", 0.125
-	DamageFactor "StrifeExplosive", 0.125
-	DamageFactor "UnrealExplosive", 0.125
-	DamageFactor "HLExplosive", 0.125
-	DamageFactor "CalebNapalm", 0.125
-	DamageFactor "Dynamite", 0.125
-	DamageFactor "DynamiteCoop", 0.125
-	DamageFactor "PSExplosiveCoop", 0.125
-	DamageFactor "SWStickyCoop", 0.125
-	DamageFactor "SWNukeCoop", 0.125
-	DamageFactor "QuakeExplosive", 0.125
-	DamageFactor "UnrealRedeemer", 0.125
-	DamageFactor "UnrealExtreme", 0.125
-	DamageFactor "Q3BFG", 0.125
-	DamageFactor "DeusExRifleExploded", 0.125
-	DamageFactor "DoomTheseGuysAreTheBest", 0.125
+    // Explosive damage types
+    DamageFactor "Explosive", 0.125
+    DamageFactor "DoomDamageTypeExplosive", 0.125
+    DamageFactor "DukeExplosive", 0.125
+    DamageFactor "DukeSpectral", 0.125
+    DamageFactor "NotQuadded", 0.125
+    DamageFactor "SpectralNoQuad", 0.125
+    DamageFactor "BCannonProj", 0.125
+    DamageFactor "DCannonProj", 0.125
+    DamageFactor "CMDMGSHIT", 0.125
+    DamageFactor "Disruptoruniversaldamageshit4", 0.125
+    DamageFactor "EradExplosive", 0.125
+    DamageFactor "EradExplosive2", 0.125
+    DamageFactor "RottExplosive", 0.125
+    DamageFactor "HLRPGExplosive", 0.125
+    DamageFactor "PSExplosive", 0.125
+    DamageFactor "LeonardDamage2", 0.125
+    DamageFactor "SWRocket", 0.125
+    DamageFactor "SWGrenade", 0.125
+    DamageFactor "SWSticky", 0.125
+    DamageFactor "SWNuke", 0.125
+    DamageFactor "PGExplosive", 0.125
+    DamageFactor "PainkillerExplosive", 0.125
+    DamageFactor "RMR-DiscoBall", 0.125
+    DamageFactor "RTCWExplosive", 0.125
+    DamageFactor "Q3Explosive", 0.125
+    DamageFactor "StrifeExplosive", 0.125
+    DamageFactor "UnrealExplosive", 0.125
+    DamageFactor "HLExplosive", 0.125
+    DamageFactor "CalebNapalm", 0.125
+    DamageFactor "Dynamite", 0.125
+    DamageFactor "DynamiteCoop", 0.125
+    DamageFactor "PSExplosiveCoop", 0.125
+    DamageFactor "SWStickyCoop", 0.125
+    DamageFactor "SWNukeCoop", 0.125
+    DamageFactor "QuakeExplosive", 0.125
+    DamageFactor "UnrealRedeemer", 0.125
+    DamageFactor "UnrealExtreme", 0.125
+    DamageFactor "Q3BFG", 0.125
+    DamageFactor "DeusExRifleExploded", 0.125
+    DamageFactor "DoomTheseGuysAreTheBest", 0.125
+    DamageFactor "LostSoul64Explosion", 0.125
 }
 
-actor StrifeMarathonBlueArmor : MetalArmor
-{
-	Armor.SaveAmount 200
-	Armor.SavePercent 100
-}
+actor StrifeArmorPack3ArmorMarathon : MetalArmor { Armor.SavePercent 100 }
 
-actor StrifeBlueArmorNoDrop : StrifeArmorPack2
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		Goto Super::Spawn
-	}
-}
-
-actor StrifeQRedArmorNoDrop : StrifeQuakeRedArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		Goto Super::Spawn
-	}
-}
-
-actor StrifeSilverArmorNoDrop : SamsaraStrifeSilverArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		Goto Super::Spawn
-	}
-}
-
-actor StrifeMarathonBlueArmorNoDrop : StrifeMarathonBlueArmor
-{
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_ChangeFlag("DROPPED", 0)
-		Goto Super::Spawn
-	}
-}
+actor StrifeArmorPack3ArmorHeretic : MetalArmor { Armor.SavePercent 75 }

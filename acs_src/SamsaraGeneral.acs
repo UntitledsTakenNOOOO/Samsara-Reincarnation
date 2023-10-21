@@ -24,7 +24,6 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 	int result;
 	int i, j, k;
 	int x, y, z;
-	int armorIndex, armorToSet;
 	int pln = PlayerNumber();
     str ammotype = "Placeholder";
 
@@ -156,89 +155,8 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 		else { result = GetCVar("sv_weaponstay"); }
 		break;
 
-	case 18:
-		if (MapArmors[0] == -1) { CheckMapArmors(); }
-		SetArmorMode();
-
-		i = Timer() != 0;
-
-		if (MapArmors[ARMOR_YELLOW] == 1) { i += 2; }
-
-		SetActorState(0, ArmorModeStates[ArmorMode][i]);
-		break;
-
 	case 19:
 		result = isLMS();
-		break;
-
-	case 20:
-		SetArmorMode();
-
-		armorIndex = -1;
-		armorToSet = arg1;
-
-		for (i = 0; i < ARMORCOUNT; i++)
-		{
-			if (GetArmorType(ArmorItems[ArmorMode][i][0], pln))
-			{
-				armorIndex = i;
-				break;
-			}
-		}
-
-		arg1 = middle(0, arg1, ARMORCOUNT-1);
-		i = CheckInventory("Armor");
-		j = ArmorItems[ArmorMode][arg1][1];
-
-		if (j == 0) { result = 0; break; }
-
-
-		/* If we're adding armor, always follow through
-		 Else, if the ending armor count is lower than the current armor count
-		 and we're not upgrading our armor, give up now */
-
-		if (arg2 > 0)
-		{
-			if (arg1 <= armorIndex) { armorToSet = armorIndex; }
-		}
-		else if (((arg2 == 0 && i > j) || (arg2 < 0 && i > -arg2)) && (arg1 <= armorIndex))
-		{
-			result = 0;
-			break;
-		}
-
-		if (arg2 <= 0)
-		{
-			TakeInventory("BasicArmor", i);
-			GiveInventory(ArmorItems[ArmorMode][armorToSet][0], 1);
-
-			k = CheckInventory("Armor");
-
-			if (arg2 == 0) { break; }
-
-			TakeInventory("BasicArmor", k-1);
-			GiveInventory("InfiniteArmorBonus", -arg2 - 1);
-		}
-		else
-		{
-			TakeInventory("BasicArmor", i);
-			GiveInventory(ArmorItems[ArmorMode][armorToSet][0], 1);
-
-			k = CheckInventory("Armor");
-			TakeInventory("BasicArmor", k-1);
-
-			GiveInventory("InfiniteArmorBonus", (i + arg2) - 1);
-		}
-
-		result = 1;
-		break;
-
-	case 21:
-		i = CheckInventory("Armor");
-		if (i < arg1) { result = 0; break; }
-
-		TakeInventory("BasicArmor", i-arg1);
-		result = 1;
 		break;
 
 	case 22:
@@ -4692,7 +4610,7 @@ script "SamsaraResonate" (int which, int frequency) clientside //608
 	int locktime = Timer();
 
 	int item = ResonantItems[which];
-	int low= ResonantAmounts[which][0];
+	int low  = ResonantAmounts[which][0];
 	int high = ResonantAmounts[which][1];
 
 	if (high <= -1) { high = GetAmmoCapacity(item); }
@@ -4763,7 +4681,7 @@ Script "ExtraDeathFX" (int mode) // Samsara Extra Death Special Effects -- 2530
 }
 
 str itemTypeCvars[3] = { "samsara_replace_computermap", "samsara_replace_lightamplifier", "samsara_replace_blursphere" };
-str itemReplacementNames[26] = { "HealPack2", "SuperHealth", "GreenArmorPickup", "BlueArmorPickup", "MegaPack", "Ammo1Big", "Ammo2Big",
+str itemReplacementNames[26] = { "HealPack2", "SuperHealth", "ArmorPack1", "ArmorPack3", "MegaPack", "Ammo1Big", "Ammo2Big",
 "Ammo3Big", "Ammo4Big", "AmmoBackpack", "SamsaraAllMap", "SamsaraUniquePickup", "PartialInvisibility", "InvulnPowerup", "Visor", "SamsaraSlotOnePickup",
 "SamsaraSlotTwoPickup", "SamsaraSlotThreePickup", "SamsaraSlotFourPickup", "SamsaraSlotFourSkulltagPickup", "SamsaraSlotFivePickup", 
 "SamsaraSlotFiveSkulltagPickup", "SamsaraSlotSixPickup", "SamsaraSlotSixSkulltagPickup", "SamsaraSlotSevenPickup", "SamsaraSlotSevenSkulltagPickup" };
@@ -5983,3 +5901,81 @@ script "SamsaraPlayerSpawnHealthAdjust" (int amount, int add, int filltype)
 }
 
 script "SamsaraAdjustHealthOverMaxDisplay" (void) { AdjustHealthOverMaxDisplay(); } // for CustomInventory triggers
+
+script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armorbonus) // this is a separate script now due to the extra script arguments
+{
+    // initialize armor mode
+    SetArmorMode();
+
+    // determine which armor type to give
+    str armortypetogive = ArmorItems[ArmorMode][armortype];
+
+    // if armor mode is set to None, stop the script
+    if (StrCmp(armortypetogive, "NoArmor") == 0) { terminate; }
+
+    // if armoradd is 0 or negative, the amount of armor given is determined by the armor's default SaveAmount
+    if (armoradd <= 0) { armoradd = ArmorAmounts[ArmorMode][armortype][0]; }
+
+    // if the resulting value from the previous check was 0 or negative anyway, stop the script
+    if (armoradd <= 0) { terminate; }
+
+    // if armorcap is 0, the amount of armor to cap at is determined by the armor's default SaveAmount (or MaxSaveAmount if available). if negative, the cap is disregarded
+    // this is buggily hardcoded to 250 at all times when prosperity is active. can't do anything with that, unfortunately
+    if (CheckInventory("SamsaraHasProsperity")) { armorcap = 250; }
+    else
+    {
+        if (armorcap == 0) { armorcap = ArmorAmounts[ArmorMode][armortype][1]; }
+    }
+
+    // get our current armor
+    int currentarmor = CheckInventory("BasicArmor");
+
+    // check if our current armor is at or over the cap
+    if (armorcap >= 0 && currentarmor >= armorcap) { terminate; }
+
+    // reset armor type for the purposes of setting the new type if we're not treating it like a bonus or if we had no armor to begin with
+    if (!armorbonus || !currentarmor)
+    {
+        SetInventory("BasicArmor", 0);
+
+        GiveInventory(armortypetogive, 1);
+    }
+
+    // add armor accordingly
+    if (currentarmor > 0)
+    {
+        // set armor amount back to pre-pickup value for calculation purposes
+        if (CheckInventory("BasicArmor") < currentarmor) { GiveInventory("InfiniteArmorBonus", currentarmor - CheckInventory("BasicArmor")); }
+        else if (CheckInventory("BasicArmor") > currentarmor) { SetInventory("BasicArmor", currentarmor); }
+
+        // now add the amount to our armor
+        GiveInventory("InfiniteArmorBonus", armoradd);
+    } else {
+        // hackery to set new amount while retaining the new armor type
+        SetInventory("BasicArmor", 1);
+
+        if (armoradd > 1) { GiveInventory("InfiniteArmorBonus", armoradd - 1); }
+    }
+
+    // did we exceed the cap? set armor to that cap
+    if (armorcap >= 0 && CheckInventory("BasicArmor") > armorcap) { SetInventory("BasicArmor", armorcap); }
+}
+
+script "SamsaraArmorCapCheck" (int armortype)
+{
+    int result = 0;
+
+    // initialize armor mode
+    SetArmorMode();
+
+    // check if we are maxed out on armor for a specific armor type, determined by SaveAmount (or MaxSaveAmount if available)
+    // this is buggily hardcoded to 250 at all times when prosperity is active. can't do anything with that, unfortunately
+    if (CheckInventory("SamsaraHasProsperity"))
+    {
+        if (CheckInventory("BasicArmor") >= 250) { result = 1; }
+    } else {
+        if (CheckInventory("BasicArmor") >= ArmorAmounts[ArmorMode][armortype][1]) { result = 1; }
+    }
+
+    SetResultValue(result);
+}
