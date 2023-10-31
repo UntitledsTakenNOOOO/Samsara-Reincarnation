@@ -126,7 +126,6 @@ function void GiveClassUnique(int class, int which)
 function void ApplyLMS(void)
 {
 	int classNum = samsaraClassNum();
-	int lmsLevel = middle(0, GetCVar("samsara_lmslife"), LMSMODES-1);
 	int i;
 
 	if (classNum == -1) { return; }
@@ -175,17 +174,17 @@ function void ApplyLMS(void)
 		}
 	}
 
-	i = (GetCVar("samsara_lmslife") + 1) * PlayerCount();
+	//i = (GetCVar("samsara_lmslife") + 1) * PlayerCount(); // hasn't been converted or changed yet
 
 	GiveInventory("Clip", GetAmmoCapacity("Clip") - CheckInventory("Clip"));
 	GiveInventory("Shell", GetAmmoCapacity("Shell") - CheckInventory("Shell"));
 	GiveInventory("RocketAmmo", GetAmmoCapacity("RocketAmmo") - CheckInventory("RocketAmmo"));
 	GiveInventory("Cell", GetAmmoCapacity("Cell") - CheckInventory("Cell"));
 
-	TakeInventory("LavaNails", INTMAX);
+	/*TakeInventory("LavaNails", INTMAX);
 	TakeInventory("MultiRocketAmmo", INTMAX);
 	GiveInventory("LavaNails", ftoi(2.5 * i));
-	GiveInventory("MultiRocketAmmo", ftoi(0.5 * i));
+	GiveInventory("MultiRocketAmmo", ftoi(0.5 * i));*/
 
 	// Some classes need hard hacks in order to correctly work with LMS rules
 	// It's ugly, but a necessity for this feature
@@ -628,11 +627,25 @@ function void ApplyLMS(void)
 		}
 	}
 
-	if (lmsLevel > 0)
-	{
-		if (GetActorProperty(0, APROP_Health) < healthinit + (100 * (lmsLevel - 1))) { SetActorProperty(0, APROP_Health, healthinit + (100 * (lmsLevel - 1))); }
-		ACS_NamedExecuteWithResult("SamsaraArmorAdjust", ARMOR_BLUE, 100 * lmsLevel, 100 * lmsLevel);
-	}
+    int lmsHealth = GetCVar("samsara_lmshealth"), lmsArmor = GetCVar("samsara_lmsarmor");
+
+    if (lmsHealth > 0)
+    {
+        if (GetActorProperty(0, APROP_Health) < healthinit + lmsHealth) { SetActorProperty(0, APROP_Health, healthinit + lmsHealth); }
+    } else {
+        if (GetActorProperty(0, APROP_Health) < healthinit) { SetActorProperty(0, APROP_Health, healthinit); }
+    }
+
+    if (lmsArmor > 0)
+    {
+        int lmsArmorTier = ARMOR_LMSARMOR1 + GetCVar("samsara_lmsarmortier");
+
+        if (lmsArmorTier > ARMOR_LMSARMOR5) { lmsArmorTier = ARMOR_LMSARMOR5; }
+        else if (lmsArmorTier < ARMOR_LMSARMOR1) { lmsArmorTier = ARMOR_LMSARMOR1; }
+
+        ACS_NamedExecuteWithResult("SamsaraArmorAdjust", lmsArmorTier, lmsArmor, lmsArmor);
+    }
+
 	//ACS_NamedExecuteAlways("Samsara678",0,0,0,0);
 }
 
@@ -928,6 +941,8 @@ function void CheckMapArmors(void)
 
 	for (i = 0; i < ARMORCOUNT; i++)
 	{
+        if (!strcmp(ArmorPickups[i], "")) { continue; }
+
 		MapArmors[i] = ThingCountName(ArmorPickups[i], 0) > 0;
 	}
 }

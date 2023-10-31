@@ -167,7 +167,9 @@ samsara_jumpmod [-25-200]: Increases or decreases jump height for classes. The r
 samsara_speedmod [-6-10]: Increases or decreases running speed for classes. The range for the setting is -6 to 10.\n\
 samsara_permault 0/1: Toggles whether the Slot VII stays or vanishes on pickup.\n\
 samsara_lmsrules 0/1: For players who want Rocket Arena-style showdowns or just to spawn with all weapons.\n\
-samsara_lmslife [0-5]: Affects how much health/armor people have on LMS spawn/respawn.\n\
+samsara_lmshealth [0-400]: Affects how much extra health people have on LMS spawn/respawn.\n\
+samsara_lmsarmor [0-500]: Affects how much armor people have on LMS spawn/respawn.\n\
+samsara_lmsarmortier [0-4]: Determines the tier of the armor given on LMS spawn/respawn.\n\
 samsara_lmsult 0/1: Toggles whether players get their Slot VII in LMS.\n\
 samsara_lmsskulltag 0/1: Toggles whether players get their Skulltag weapons in LMS, if they have them.\n\
 samsara_uniquestart [0-4]: Toggles whether players get their Uniques on enter or spawn.\n\
@@ -198,16 +200,6 @@ samsara_cl_expparticles [0-100000]: Controls how many particles Ranger's explosi
 samsara_cl_heromusic [0/2]: Toggles if the selected class plays the soundtrack from their game or if it plays from a selected soundtrack. This setting requires the Samsara OST to be loaded.\n\
 samsara_cl_bloodyhell [-2/7]: Toggles between multiple blood settings.\n\
 For more clientside console variables and detailed information about them, look at the Compendium.";
-
-int LMSArmors[LMSMODES] = 
-{
-    "",
-    "GreenArmor",
-    "BlueArmor",
-    "LMSArmor", 
-    "LMSArmor2",
-    "LMSArmor3",
-};
 
 int ClassItems[CLASSCOUNT] =
 {
@@ -606,7 +598,7 @@ int PDWTAKItems[PDWTAKCOUNT][2] =
     {"InvPeopleDie3", "InvPeopleZorch3"},
 };
 
-#define ARMORCOUNT 11
+#define ARMORCOUNT 16
 
 #define ARMOR_BONUS1          0
 #define ARMOR_BONUS5          1
@@ -619,6 +611,11 @@ int PDWTAKItems[PDWTAKCOUNT][2] =
 #define ARMOR_RED             8
 #define ARMOR_WHITE           9
 #define ARMOR_MEGASPHERE      10
+#define ARMOR_LMSARMOR1       11
+#define ARMOR_LMSARMOR2       12
+#define ARMOR_LMSARMOR3       13
+#define ARMOR_LMSARMOR4       14
+#define ARMOR_LMSARMOR5       15
 
 int ArmorPickups[ARMORCOUNT] = 
 {
@@ -633,6 +630,12 @@ int ArmorPickups[ARMORCOUNT] =
     "ArmorPack4",
     "ArmorPack5",
     "MegaPack",
+    // The following are not actually meant to be spawned
+    "",
+    "",
+    "",
+    "",
+    "",
 };
 
 int ArmorItems[ARMORMODES][ARMORCOUNT] = 
@@ -649,6 +652,11 @@ int ArmorItems[ARMORMODES][ARMORCOUNT] =
         "ArmorPack4ArmorNormal",
         "ArmorPack5ArmorNormal",
         "ArmorPack3ArmorNormal",
+        "ArmorPack1ArmorNormal",
+        "ArmorPack2ArmorNormal",
+        "ArmorPack3ArmorNormal",
+        "ArmorPack4ArmorNormal",
+        "ArmorPack5ArmorNormal",
     },
     {
         "ArmorScrapArmorQuake",
@@ -662,6 +670,11 @@ int ArmorItems[ARMORMODES][ARMORCOUNT] =
         "ArmorPack4ArmorQuake",
         "ArmorPack5ArmorQuake",
         "ArmorPack3ArmorQuake",
+        "ArmorPack1ArmorQuake",
+        "ArmorPack2ArmorQuake",
+        "ArmorPack3ArmorQuake",
+        "ArmorPack4ArmorQuake",
+        "ArmorPack5ArmorQuake",
     },
     {
         "ArmorScrapArmorQuakePlus",
@@ -675,6 +688,11 @@ int ArmorItems[ARMORMODES][ARMORCOUNT] =
         "ArmorPack4ArmorQuake",
         "ArmorPack5ArmorQuake",
         "ArmorPack3ArmorQuake",
+        "ArmorPack1ArmorQuake",
+        "ArmorPack2ArmorQuake",
+        "ArmorPack3ArmorQuake",
+        "ArmorPack4ArmorQuake",
+        "ArmorPack5ArmorQuake",
     },
     {
         "ArmorScrapArmorMarathon",
@@ -687,6 +705,11 @@ int ArmorItems[ARMORMODES][ARMORCOUNT] =
         "ArmorPack3ArmorMarathon",
         "ArmorPack4ArmorMarathon",
         "ArmorPack5ArmorMarathon",
+        "ArmorPack5ArmorMarathon",
+        "ArmorPack1ArmorMarathon",
+        "ArmorPack2ArmorMarathon",
+        "ArmorPack3ArmorMarathon",
+        "ArmorPack4ArmorMarathon",
         "ArmorPack5ArmorMarathon",
     },
     {
@@ -701,8 +724,18 @@ int ArmorItems[ARMORMODES][ARMORCOUNT] =
         "ArmorPack4ArmorHeretic",
         "ArmorPack5ArmorHeretic",
         "ArmorPack3ArmorHeretic",
+        "ArmorPack1ArmorHeretic",
+        "ArmorPack2ArmorHeretic",
+        "ArmorPack3ArmorHeretic",
+        "ArmorPack4ArmorHeretic",
+        "ArmorPack5ArmorHeretic",
     },
     {
+        "NoArmor",
+        "NoArmor",
+        "NoArmor",
+        "NoArmor",
+        "NoArmor",
         "NoArmor",
         "NoArmor",
         "NoArmor",
@@ -731,6 +764,11 @@ int ArmorAmounts[ARMORMODES][ARMORCOUNT][3] =
         {250, 250, 66},
         {300, 300, 100},
         {200, 200, 50},
+        {100, 100, 33},
+        {150, 150, 40},
+        {200, 200, 50},
+        {250, 250, 66},
+        {300, 300, 100},
     },
     {
         {1,   200, 30},
@@ -744,6 +782,11 @@ int ArmorAmounts[ARMORMODES][ARMORCOUNT][3] =
         {250, 250, 90},
         {300, 300, 100},
         {200, 200, 80},
+        {100, 100, 30},
+        {150, 150, 60},
+        {200, 200, 80},
+        {250, 250, 90},
+        {300, 300, 100},
     },
     {
         {1,   200, 60},
@@ -757,6 +800,11 @@ int ArmorAmounts[ARMORMODES][ARMORCOUNT][3] =
         {250, 250, 90},
         {300, 300, 100},
         {200, 200, 80},
+        {100, 100, 30},
+        {150, 150, 60},
+        {200, 200, 80},
+        {250, 250, 90},
+        {300, 300, 100},
     },
     {
         {1,   200, 100},
@@ -769,6 +817,11 @@ int ArmorAmounts[ARMORMODES][ARMORCOUNT][3] =
         {200, 200, 100},
         {250, 250, 100},
         {300, 300, 100},
+        {300, 300, 100},
+        {100, 100, 100},
+        {150, 150, 100},
+        {200, 200, 100},
+        {250, 250, 100},
         {300, 300, 100},
     },
     {
@@ -783,8 +836,18 @@ int ArmorAmounts[ARMORMODES][ARMORCOUNT][3] =
         {250, 250, 87},
         {300, 300, 100},
         {200, 200, 75},
+        {100, 100, 50},
+        {150, 150, 67},
+        {200, 200, 75},
+        {250, 250, 87},
+        {300, 300, 100},
     },
     {
+        {0, 0, 0},
+        {0, 0, 0},
+        {0, 0, 0},
+        {0, 0, 0},
+        {0, 0, 0},
         {0, 0, 0},
         {0, 0, 0},
         {0, 0, 0},
