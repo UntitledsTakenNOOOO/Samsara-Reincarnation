@@ -6238,14 +6238,14 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     // if armor type wasn't defined (like armor mode being set to None), stop the script
     if (StrCmp(armortypetogive, "NoArmor") == 0) { terminate; }
 
-    // if armoradd is greater than 0, the amount of armor is added onto the default SaveAmount. if negative, the amount overrides the default
+    // if armoradd is greater than 0, the amount of armor to give is added onto the default SaveAmount. if negative, the amount overrides the default
     if (armoradd > 0) { armoramounttogive += armoradd; }
     else if (armoradd < 0) { armoramounttogive = -armoradd; }
 
     // if the amount of armor to give turned up 0 or negative, stop the script
     if (armoramounttogive <= 0) { terminate; }
 
-    // if armorcap is greater than 0, the amount of armor to cap at is added onto the default SaveAmount (or MaxSaveAmount if available). if negative, the amount overrides the result
+    // if armorcap is greater than 0, the amount of armor to cap at is added onto the default SaveAmount (or MaxSaveAmount if available). if negative, the amount overrides the default
     // this is buggily hardcoded to 250 at all times when prosperity is active. can't do anything with that, unfortunately
     if (CheckInventory("SamsaraHasProsperity")) { armoramounttocap = 250; }
     else
@@ -6253,6 +6253,9 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
         if (armorcap > 0) { armoramounttocap += armorcap; }
         else if (armorcap < 0) { armoramounttocap = -armorcap; }
     }
+
+    // if the amount of armor to cap at turned up 0 or negative, stop the script
+    if (armoramounttocap <= 0) { terminate; }
 
     // get our current armor value and absorption
     int currentarmor = CheckInventory("BasicArmor");
@@ -6296,6 +6299,8 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     } else {
         // hackery to set new amount while retaining the new armor type
         SetInventory("BasicArmor", 1);
+
+        if (armoramounttogive > armoramounttocap) { armoramounttogive = armoramounttocap; } // don't exceed the cap
 
         if (armoramounttogive > 1) { GiveInventory("InfiniteArmorBonus", armoramounttogive - 1); }
     }
@@ -6573,7 +6578,7 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int armorgivetype)
     // if armor type wasn't defined (like armor mode being set to None), stop the script
     if (StrCmp(armortypetogive, "NoArmor") == 0) { terminate; }
 
-    // if armorcap is greater than 0, the amount of armor to cap at is added onto the default SaveAmount (or MaxSaveAmount if available). if negative, the amount overrides the result
+    // if armorcap is greater than 0, the amount of armor to cap at is added onto the default SaveAmount (or MaxSaveAmount if available). if negative, the amount overrides the default
     // this is buggily hardcoded to 250 at all times when prosperity is active. can't do anything with that, unfortunately
     if (CheckInventory("SamsaraHasProsperity")) { armoramounttocap = 250; }
     else
@@ -6581,6 +6586,9 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int armorgivetype)
         if (armorcap > 0) { armoramounttocap += armorcap; }
         else if (armorcap < 0) { armoramounttocap = -armorcap; }
     }
+
+    // if the amount of armor to cap at turned up 0 or negative, stop the script
+    if (armoramounttocap <= 0) { terminate; }
 
     // get our current armor value and absorption
     int currentarmor = CheckInventory("BasicArmor");
