@@ -27,8 +27,17 @@ actor PortMysticAmbit : CustomInventory
         TNT1 A 0 A_JumpIfInventory("HexenClassMode",2,"UseFighter")
         TNT1 A 0 A_JumpIfInventory("HexenClassMode",1,"UseMage")
       UseCleric:
-        TNT1 A 0 A_JumpIfHealthLower(100,1)
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "UseSuccessCleric")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,"UseClericProsperity")
+      UseClericNormal:
+        TNT1 A 0 A_JumpIfHealthLower(100,"UseSuccessCleric")
         goto UseFailCleric
+
+      UseClericProsperity:
+        TNT1 A 0 A_JumpIfHealthLower(250,"UseSuccessCleric")
+        goto UseFailCleric
+
+      UseSuccessCleric:
         TNT1 A 0 A_PlaySound("hexen/artiuse",CHAN_ITEM)
         TNT1 A 0 A_GiveInventory("SamsaraHexenMysticAmbitIncantHealingModeCheck")
         stop
@@ -153,18 +162,45 @@ actor SamsaraHexenMysticAmbitIncantHealing : Trigger
     States
     {
       Pickup:
+      // This is where teams are checked for in the actors after this one.
       PickupCheck:
+      // Health check
+      PickupCheckHealth:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSuccessSound")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,"PickupCheckHealthProsperity")
+      PickupCheckHealthNormal:
         TNT1 A 0 A_JumpIfHealthLower(100,"PickupSuccessSound")
+        goto PickupCheckArmor
+
+      PickupCheckHealthProsperity:
+        TNT1 A 0 A_JumpIfHealthLower(250,"PickupSuccessSound")
+        goto PickupCheckArmor
+
+      // Armor check
+      PickupCheckArmor:
         TNT1 A 0 A_JumpIf(CallACS("SamsaraArmorCapCheck", 3, 0, 1), "PickupStop") // fail if we're full on health and armor
+        goto PickupSuccessSound
+
+      // Sound
       PickupSuccessSound:
         TNT1 A 0 A_PlaySound("hexen/ambituse",CHAN_AUTO)
+      // Health giving
       PickupSuccessHealth:
-        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), 2)
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSuccessHealthInfinite")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,"PickupSuccessHealthProsperity")
+      PickupSuccessHealthNormal:
         TNT1 A 0 A_GiveInventory("FiniteHealth",random(50,99))
         goto PickupSuccessArmor
+
+      PickupSuccessHealthProsperity:
+        TNT1 A 0 A_GiveInventory("FiniteHealth250",random(50,99))
+        goto PickupSuccessArmor
+
+      PickupSuccessHealthInfinite:
         TNT1 A 0 A_GiveInventory("InfiniteHealth",random(50,99))
         goto PickupSuccessArmor
 
+      // Armor giving
       PickupSuccessArmor:
         TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraArmorAdjust", 0, -random(1,15), 0, 1)
         TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraArmorAdjust", 3, 0, 0, 1)
