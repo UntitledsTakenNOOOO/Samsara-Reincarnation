@@ -335,6 +335,10 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 	case 50:
 		result = GetCVar("samsara_mixerloaded");
 		break;
+
+	case 51:
+		result = GetCVar("samsara_noarmorcap");
+		break;
 	}
 
 	SetResultValue(result);
@@ -1285,13 +1289,20 @@ Script "Samsara_UniqueKeys" (int key) net
 //													Get Settings
 //======================================================================================================================
 
-script "SamsaraGetSettings" (void) net //676 -- SAMSARA_GETSETTINGS
+script "SamsaraGetSettings" (void) NET //676 -- SAMSARA_GETSETTINGS
 {
+    int noHealthCap, noArmorCap;
 	int lmsHP = GetCVar("samsara_lmshealth"), lmsArmor = GetCVar("samsara_lmsarmor");
     int lmsArmorTier = 1 + GetCVar("samsara_lmsarmortier");
 	int lmsUlt, lmsUnique;
 	int lmsSkulltag = GetCVar("samsara_lmsskulltag");
 	int ultStay, highLow;
+
+	if (GetCVar("samsara_nohealthcap")) { noHealthCap = "on"; }
+	else { noHealthCap = "off"; }
+
+	if (GetCVar("samsara_noarmorcap")) { noArmorCap = "on"; }
+	else { noArmorCap = "off"; }
 
     if (lmsHP < 0) { lmsHP = 0; }
 
@@ -1421,7 +1432,7 @@ script "SamsaraGetSettings" (void) net //676 -- SAMSARA_GETSETTINGS
 	HudMessage(s:"STTP3K Mode is ", s:cond(GetCVar("samsara_superturboturkeypuncher3000"), "\cdon\c-.", "\caoff\c-.");
 			HUDMSG_FADEOUT, 6772, CR_WHITE, 50.1, 256.0, 3.0, 1.0);
 
-	HudMessage(s:"Limitless Health is ", s:cond(GetCVar("samsara_nohealthcap"), "\cdon\c-.", "\caoff\c-.");
+	HudMessage(s:"Limitless Health/Armor is \ca", s:noHealthCap, s:"\c- / \cd", s:noArmorCap, s:"\c-.";
 			HUDMSG_FADEOUT, 6773, CR_WHITE, 50.1, 272.0, 3.0, 1.0);
 }
 
@@ -4782,6 +4793,7 @@ script "SamsaraPresetSelection" (void)
 		SetCVar("samsara_speedmod", 0);
 		SetCVar("samsara_nohealth", false);
 		SetCVar("samsara_nohealthcap", false);
+		SetCVar("samsara_noarmorcap", false);
 		SetCVar("samsara_nomonologues", true);
 		SetCVar("samsara_experiencegain", 2);
 		SetCVar("samsara_dukesoundboard", false);
@@ -5002,6 +5014,7 @@ script "SamsaraPresetSelection" (void)
 		SetCVar("samsara_speedmod", 0);
 		SetCVar("samsara_nohealth", false);
 		SetCVar("samsara_nohealthcap", false);
+		SetCVar("samsara_noarmorcap", false);
 		SetCVar("samsara_nomonologues", true);
 		SetCVar("samsara_experiencegain", 2);
 		SetCVar("samsara_dukesoundboard", false);
@@ -5222,6 +5235,7 @@ script "SamsaraPresetSelection" (void)
 		SetCVar("samsara_speedmod", 0);
 		SetCVar("samsara_nohealth", false);
 		SetCVar("samsara_nohealthcap", false);
+		SetCVar("samsara_noarmorcap", false);
 		SetCVar("samsara_nomonologues", true);
 		SetCVar("samsara_experiencegain", 2);
 		SetCVar("samsara_dukesoundboard", false);
@@ -5443,6 +5457,7 @@ script "SamsaraPresetSelection" (void)
 		SetCVar("samsara_speedmod", 0);
 		SetCVar("samsara_nohealth", false);
 		SetCVar("samsara_nohealthcap", false);
+		SetCVar("samsara_noarmorcap", false);
 		SetCVar("samsara_nomonologues", true);
 		SetCVar("samsara_experiencegain", 1);
 		SetCVar("samsara_dukesoundboard", false);
@@ -5663,6 +5678,7 @@ script "SamsaraPresetSelection" (void)
 		SetCVar("samsara_speedmod", 0);
 		SetCVar("samsara_nohealth", false);
 		SetCVar("samsara_nohealthcap", false);
+		SetCVar("samsara_noarmorcap", false);
 		SetCVar("samsara_nomonologues", true);
 		SetCVar("samsara_experiencegain", 8);
 		SetCVar("samsara_dukesoundboard", false);
@@ -6248,6 +6264,7 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     // if armorcap is greater than 0, the amount of armor to cap at is added onto the default SaveAmount (or MaxSaveAmount if available). if negative, the amount overrides the default
     // this is buggily hardcoded to 250 at all times when prosperity is active. can't do anything with that, unfortunately
     if (CheckInventory("SamsaraHasProsperity")) { armoramounttocap = 250; }
+    else if (GetCVar("samsara_noarmorcap")) { armoramounttocap = INTMAX; }
     else
     {
         if (armorcap > 0) { armoramounttocap += armorcap; }
@@ -6581,6 +6598,7 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int armorgivetype)
     // if armorcap is greater than 0, the amount of armor to cap at is added onto the default SaveAmount (or MaxSaveAmount if available). if negative, the amount overrides the default
     // this is buggily hardcoded to 250 at all times when prosperity is active. can't do anything with that, unfortunately
     if (CheckInventory("SamsaraHasProsperity")) { armoramounttocap = 250; }
+    else if (GetCVar("samsara_noarmorcap")) { armoramounttocap = INTMAX; }
     else
     {
         if (armorcap > 0) { armoramounttocap += armorcap; }
