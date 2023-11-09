@@ -1,3 +1,4 @@
+actor SamsaraHexenMysticAmbitIncantFoundInjured : Boolean {}
 actor DiscOfRepulsionCooldown : Counter { Inventory.MaxAmount 3 }
 actor DarkServantCooldown : Counter { Inventory.MaxAmount 60 }
 actor SamsaraHexenDarkServantSpawnCount : Counter {}
@@ -27,14 +28,9 @@ actor PortMysticAmbit : CustomInventory
         TNT1 A 0 A_JumpIfInventory("HexenClassMode",2,"UseFighter")
         TNT1 A 0 A_JumpIfInventory("HexenClassMode",1,"UseMage")
       UseCleric:
-        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "UseSuccessCleric")
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasProsperity",1,"UseClericProsperity")
-      UseClericNormal:
-        TNT1 A 0 A_JumpIfHealthLower(100,"UseSuccessCleric")
-        goto UseFailCleric
-
-      UseClericProsperity:
-        TNT1 A 0 A_JumpIfHealthLower(250,"UseSuccessCleric")
+        TNT1 A 0 A_TakeInventory("SamsaraHexenMysticAmbitIncantFoundInjured")
+        TNT1 A 0 A_GiveInventory("SamsaraHexenMysticAmbitIncantInjuredModeCheck")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHexenMysticAmbitIncantFoundInjured",1,"UseSuccessCleric")
         goto UseFailCleric
 
       UseSuccessCleric:
@@ -99,6 +95,166 @@ actor PortMysticAmbit : CustomInventory
     Armor.SaveAmount 50
     Armor.MaxSaveAmount 300
 }*/
+
+actor SamsaraHexenMysticAmbitIncantInjuredModeCheck : Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",0,"PickupDMTeam8")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",7,"PickupDMTeam7")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",6,"PickupDMTeam6")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",5,"PickupDMTeam5")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",4,"PickupDMTeam4")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",3,"PickupDMTeam3")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",2,"PickupDMTeam2")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",1,"PickupDMTeam1")
+      PickupDM:
+        TNT1 A 0 A_GiveInventory("SamsaraHexenMysticAmbitIncantInjured")
+        stop
+
+      PickupDMTeam1:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantInjuredTeam1",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam2:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantInjuredTeam2",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam3:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantInjuredTeam3",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam4:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantInjuredTeam4",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam5:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantInjuredTeam5",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam6:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantInjuredTeam6",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam7:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantInjuredTeam7",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam8:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantInjuredTeam8",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupCoop:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantInjured",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantInjured : Trigger
+{
+    States
+    {
+      Pickup:
+      // This is where teams are checked for in the actors after this one.
+      PickupCheck:
+        TNT1 A 0 A_JumpIfHealthLower(CallACS("SamsaraDecorate", 52, 1), "PickupSuccess") // fail if we're full on health
+        stop
+
+      PickupSuccess:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantFoundInjured",255,RGF_GIVESELF|RGF_PLAYERS|RGF_NOSIGHT) // kinda hacky
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantInjuredTeam1 : SamsaraHexenMysticAmbitIncantInjured
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",2,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",1,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantInjuredTeam2 : SamsaraHexenMysticAmbitIncantInjured
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",3,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",2,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantInjuredTeam3 : SamsaraHexenMysticAmbitIncantInjured
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",4,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",3,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantInjuredTeam4 : SamsaraHexenMysticAmbitIncantInjured
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",5,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",4,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantInjuredTeam5 : SamsaraHexenMysticAmbitIncantInjured
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",6,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",5,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantInjuredTeam6 : SamsaraHexenMysticAmbitIncantInjured
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",7,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",6,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantInjuredTeam7 : SamsaraHexenMysticAmbitIncantInjured
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",0,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",7,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantInjuredTeam8 : SamsaraHexenMysticAmbitIncantInjured
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",0,"PickupCheck")
+        stop
+    }
+}
 
 actor SamsaraHexenMysticAmbitIncantHealingModeCheck : Trigger
 {

@@ -339,6 +339,22 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 	case 51:
 		result = GetCVar("samsara_noarmorcap");
 		break;
+
+	case 52:
+		if (GetCVar("samsara_nohealthcap")) { result = INTMAX; }
+		else
+		{
+			if (arg1 > 0) // apply stamina
+			{
+				if (GetActorProperty(0, APROP_SpawnHealth) + GetActorProperty(0, APROP_Stamina) < 250 && CheckInventory("SamsaraHasProsperity")) { result = 250; }
+				else { result = GetActorProperty(0, APROP_SpawnHealth) + GetActorProperty(0, APROP_Stamina); }
+			} else { // ignore stamina
+				if (GetActorProperty(0, APROP_SpawnHealth) < 250 && CheckInventory("SamsaraHasProsperity")) { result = 250; }
+				else { result = GetActorProperty(0, APROP_SpawnHealth); }
+			}
+		}
+
+		break;
 	}
 
 	SetResultValue(result);
@@ -355,7 +371,8 @@ script "SamsaraClientDecorate" (int which, int a1, int a2) clientside //212 -- S
 	switch (which)
 	{
 	case 1:
-		Print(l:"NOTUNLESSINJURED");
+		if (isSinglePlayer()) { Print(l:"NOTUNLESSINJURED1"); }
+		else { Print(l:"NOTUNLESSINJURED2"); }
 		break;
 
 	case 2:
