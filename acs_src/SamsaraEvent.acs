@@ -2341,7 +2341,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 		oarmor = armor;
 		otype = type;
-		armor = CheckInventory("Armor");
+		armor = CheckInventory("BasicArmor");
 		type = GetArmorInfo(0);
 
 		if (oarmor > armor && StrRight(otype, 8) == "Marathon")
@@ -2420,13 +2420,11 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			{
 				SetActorProperty(0, APROP_Gravity, 1.0);
 				SetActorProperty(0, APROP_Mass, 100);
-				TakeInventory("SamsaraIncreasedFallingDamage", 1);
-			}
-			else
-			{
+				SetInventory("SamsaraIncreasedFallingDamageMode", 0);
+			} else {
 				SetActorProperty(0, APROP_Gravity, 0.15);
 				SetActorProperty(0, APROP_Mass, 220);
-				GiveInventory("SamsaraIncreasedFallingDamage", 1);
+				SetInventory("SamsaraIncreasedFallingDamageMode", 1);
 			}
 			break;
 
@@ -2434,12 +2432,12 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			if (GetCVar("samsara_nocustomgravity"))
 			{
 				SetActorProperty(0, APROP_Gravity, 1.0);
-				TakeInventory("SamsaraIncreasedFallingDamage2", 1);
-			}
-			else
-			{
+				SetActorProperty(0, APROP_Mass, 100);
+				SetInventory("SamsaraIncreasedFallingDamageMode", 0);
+			} else {
 				SetActorProperty(0, APROP_Gravity, 0.75);
-				GiveInventory("SamsaraIncreasedFallingDamage2", 1);
+				SetActorProperty(0, APROP_Mass, 100);
+				SetInventory("SamsaraIncreasedFallingDamageMode", 2);
 			}
 			break;
 
@@ -2447,57 +2445,62 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			if (GetCVar("samsara_nocustomgravity"))
 			{
 				SetActorProperty(0, APROP_Gravity, 1.0);
-				TakeInventory("SamsaraIncreasedFallingDamage3", 1);
-			}
-			else
-			{
+				SetActorProperty(0, APROP_Mass, 100);
+				SetInventory("SamsaraIncreasedFallingDamageMode", 0);
+			} else {
 				SetActorProperty(0, APROP_Gravity, 0.68);
-				GiveInventory("SamsaraIncreasedFallingDamage3", 1);
+				SetActorProperty(0, APROP_Mass, 100);
+				SetInventory("SamsaraIncreasedFallingDamageMode", 3);
 			}
 			break;
 
 		case CLASS_DEMONESS:
 			if (GetCVar("samsara_nocustomgravity")) { SetActorProperty(0, APROP_Gravity, 1.0); }
+			SetActorProperty(0, APROP_Mass, 100);
+			SetInventory("SamsaraIncreasedFallingDamageMode", 0);
 			break;
 
 		default:
 			SetActorProperty(0, APROP_Gravity, 1.0);
+			SetActorProperty(0, APROP_Mass, 100);
+			SetInventory("SamsaraIncreasedFallingDamageMode", 0);
 			break;
 		}
 
-		if (CheckInventory("ForceRangerGravity")) { SetActorProperty(0, APROP_Gravity, 0.75); }
-		if (CheckInventory("ForceSOGravity")) { SetActorProperty(0, APROP_Gravity, 0.15); }
-		if (CheckInventory("ForceEleenaGravity")) { SetActorProperty(0, APROP_Gravity, 0.68); }
-		if (CheckInventory("ForceDemonessGravity")) { SetActorProperty(0, APROP_Gravity, 0.8125); }
+        if (CheckInventory("ForceNormalGravity"))
+        {
+            SetActorProperty(0, APROP_Gravity, 1.0);
+            SetActorProperty(0, APROP_Mass, 100);
+            SetInventory("SamsaraIncreasedFallingDamageMode", 0);
+        } else if (CheckInventory("ForceSOGravity")) {
+            SetActorProperty(0, APROP_Gravity, 0.15);
+            SetActorProperty(0, APROP_Mass, 220);
+            SetInventory("SamsaraIncreasedFallingDamageMode", 1);
+        } else if (CheckInventory("ForceRangerGravity")) {
+            SetActorProperty(0, APROP_Gravity, 0.75);
+            SetActorProperty(0, APROP_Mass, 100);
+            SetInventory("SamsaraIncreasedFallingDamageMode", 2);
+        } else if (CheckInventory("ForceEleenaGravity")) {
+            SetActorProperty(0, APROP_Gravity, 0.68);
+            SetActorProperty(0, APROP_Mass, 100);
+            SetInventory("SamsaraIncreasedFallingDamageMode", 3);
+        } else if (CheckInventory("ForceDemonessGravity")) {
+            SetActorProperty(0, APROP_Gravity, 0.8125);
+            SetActorProperty(0, APROP_Mass, 100);
+            SetInventory("SamsaraIncreasedFallingDamageMode", 0);
+        }
 
-		if (samsaraClassNum() == CLASS_HEXEN)
-		{
-			i = JumpZFromHeight(41 + GetCVar("samsara_jumpmod"), GetActorProperty(0, APROP_Gravity));
-		}
-		else if (samsaraClassNum() == CLASS_MARATHON && !(GetCVar("samsara_nocustomgravity")))
-		{
-			i = JumpZFromHeight(38 + GetCVar("samsara_jumpmod"), GetActorProperty(0, APROP_Gravity));
-		}
-		else if (samsaraClassNum() == CLASS_QUAKE && !(GetCVar("samsara_nocustomgravity")))
-		{
-			i = JumpZFromHeight(36 + GetCVar("samsara_jumpmod"), GetActorProperty(0, APROP_Gravity));
-		}
-		else if (samsaraClassNum() == CLASS_ERAD && !(GetCVar("samsara_nocustomgravity")))
-		{
-			i = JumpZFromHeight(36 + GetCVar("samsara_jumpmod"), GetActorProperty(0, APROP_Gravity));
-		}
-		else if(CheckWeapon("RedneckMotorcycle") || CheckInventory("ShrunkPlayer") || CheckInventory("IsMorphed"))
-		{
-			i = 0;
-		}
-		else if (samsaraClassNum() == CLASS_DEUSEX && !(GetCVar("samsara_nocustomgravity")))
-		{
-			i = JumpZFromHeight(FixedMul(36 + GetCVar("samsara_jumpmod"),1.0+(CheckInventory("DeusEx_Augmentation_SpeedEnhancement")*CheckInventory("DeusEx_Augmentation_SpeedEnhancementToken")*0.2)), GetActorProperty(0, APROP_Gravity));
-		}
-		else
-		{
-			i = JumpZFromHeight(32 + GetCVar("samsara_jumpmod"), GetActorProperty(0, APROP_Gravity));
-		}
+        SetInventory("SamsaraIncreasedFallingDamage", CheckInventory("SamsaraIncreasedFallingDamageMode") == 1);
+        SetInventory("SamsaraIncreasedFallingDamage2", CheckInventory("SamsaraIncreasedFallingDamageMode") == 2);
+        SetInventory("SamsaraIncreasedFallingDamage3", CheckInventory("SamsaraIncreasedFallingDamageMode") >= 3);
+
+        if (samsaraClassNum() == CLASS_HEXEN) { i = JumpZFromHeight(41 + GetCVar("samsara_jumpmod"), GetActorProperty(0, APROP_Gravity)); }
+        else if (samsaraClassNum() == CLASS_MARATHON && !GetCVar("samsara_nocustomgravity")) { i = JumpZFromHeight(38 + GetCVar("samsara_jumpmod"), GetActorProperty(0, APROP_Gravity)); }
+        else if (samsaraClassNum() == CLASS_QUAKE && !GetCVar("samsara_nocustomgravity")) { i = JumpZFromHeight(36 + GetCVar("samsara_jumpmod"), GetActorProperty(0, APROP_Gravity)); }
+        else if (samsaraClassNum() == CLASS_ERAD && !GetCVar("samsara_nocustomgravity")) { i = JumpZFromHeight(36 + GetCVar("samsara_jumpmod"), GetActorProperty(0, APROP_Gravity)); }
+        else if (CheckWeapon("RedneckMotorcycle") || CheckInventory("ShrunkPlayer") || CheckInventory("IsMorphed")) { i = 0; }
+        else if (samsaraClassNum() == CLASS_DEUSEX && !GetCVar("samsara_nocustomgravity")) { i = JumpZFromHeight(FixedMul(36 + GetCVar("samsara_jumpmod"), 1.0 + (CheckInventory("DeusEx_Augmentation_SpeedEnhancement") * CheckInventory("DeusEx_Augmentation_SpeedEnhancementToken") * 0.2)), GetActorProperty(0, APROP_Gravity)); }
+        else { i = JumpZFromHeight(32 + GetCVar("samsara_jumpmod"), GetActorProperty(0, APROP_Gravity)); }
 
 		// Hexen requires an increased jumping height
 		if (isZDoom() && GetCvar("samsara_currentgame") == 8 && samsaraClassNum() != CLASS_HEXEN) { GiveInventory("SamsaraIncreasedJumpHeightForHexen", 1); }
