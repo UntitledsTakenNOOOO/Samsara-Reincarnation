@@ -5962,15 +5962,19 @@ script "SamsaraAdjustHealthOverMaxDisplay" (void) { AdjustHealthOverMaxDisplay()
 script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armorgivetype) // this is a separate script now due to the extra script arguments
 {
     // armorgivetype is as follows:
-    // 0 = normal armor, 1 = armor bonus
+    // 0 = normal armor, 1 = normal armor (ignores max armor boost),
+    // 2 = armor bonus, 3 = armor bonus (ignores max armor boost)
 
     // initialize armor mode
     SetArmorMode();
 
+    // initialize max armor boost ignoring variable
+    bool ignoremaxboost = armorgivetype == 1 || armorgivetype >= 3;
+
     // determine armor type/amount/cap/save percent
     str armortypetogive = "NoArmor";
-    int armoramounttogive = 0;
-    int armoramounttocap = 0;
+    int armoramounttogive = 0; // usually SaveAmount
+    int armoramounttocap = 0; // usually SaveAmount (or MaxSaveAmount in the case of bonuses)
     int armorsavepercent = 0;
 
     switch (armortype)
@@ -5991,69 +5995,76 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
         break;
 
       case -2:
+        armortypetogive = "MaxArmorScrapArmorNormal";
+        armoramounttogive = 1;
+        armoramounttocap = 200;
+        armorsavepercent = 33;
+        break;
+
+      case -3:
         armortypetogive = "HereticArmorDumpArmorNormal";
         armoramounttogive = 5;
         armoramounttocap = 200;
         armorsavepercent = 33;
         break;
 
-      case -3:
+      case -4:
         armortypetogive = "HexenArmor1ArmorNormal";
         armoramounttogive = 25;
         armoramounttocap = 200;
         armorsavepercent = 33;
         break;
 
-      case -4:
+      case -5:
         armortypetogive = "HexenArmor5ArmorNormal";
         armoramounttogive = 50;
         armoramounttocap = 300;
         armorsavepercent = 33;
         break;
 
-      case -5:
+      case -6:
         armortypetogive = "ArmorPack1ArmorNormal";
         armoramounttogive = 100;
         armoramounttocap = 100;
         armorsavepercent = 33;
         break;
 
-      case -6:
+      case -7:
         armortypetogive = "StrifeArmorPack1ArmorNormal";
         armoramounttogive = 100;
         armoramounttocap = 100;
         armorsavepercent = 33;
         break;
 
-      case -7:
+      case -8:
         armortypetogive = "ArmorPack2ArmorNormal";
         armoramounttogive = 150;
         armoramounttocap = 150;
         armorsavepercent = 40;
         break;
 
-      case -8:
+      case -9:
         armortypetogive = "ArmorPack3ArmorNormal";
         armoramounttogive = 200;
         armoramounttocap = 200;
         armorsavepercent = 50;
         break;
 
-      case -9:
+      case -10:
         armortypetogive = "StrifeArmorPack3ArmorNormal";
         armoramounttogive = 200;
         armoramounttocap = 200;
         armorsavepercent = 50;
         break;
 
-      case -10:
+      case -11:
         armortypetogive = "ArmorPack4ArmorNormal";
         armoramounttogive = 250;
         armoramounttocap = 250;
         armorsavepercent = 66;
         break;
 
-      case -11:
+      case -12:
         armortypetogive = "ArmorPack5ArmorNormal";
         armoramounttogive = 300;
         armoramounttocap = 300;
@@ -6061,84 +6072,91 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
         break;
 
       // Quake
-      case -12:
+      case -13:
         armortypetogive = "ArmorScrapArmorQuake";
         armoramounttogive = 1;
         armoramounttocap = 200;
         armorsavepercent = 30;
         break;
 
-      case -13:
+      case -14:
+        armortypetogive = "MaxArmorScrapArmorQuake";
+        armoramounttogive = 1;
+        armoramounttocap = 200;
+        armorsavepercent = 30;
+        break;
+
+      case -15:
         armortypetogive = "HereticArmorDumpArmorQuake";
         armoramounttogive = 5;
         armoramounttocap = 200;
         armorsavepercent = 30;
         break;
 
-      case -14:
+      case -16:
         armortypetogive = "HexenArmor1ArmorQuake";
         armoramounttogive = 25;
         armoramounttocap = 200;
         armorsavepercent = 30;
         break;
 
-      case -15:
+      case -17:
         armortypetogive = "HexenArmor5ArmorQuake";
         armoramounttogive = 50;
         armoramounttocap = 300;
         armorsavepercent = 30;
         break;
 
-      case -16:
+      case -18:
         armortypetogive = "ArmorPack1ArmorQuake";
         armoramounttogive = 100;
         armoramounttocap = 100;
         armorsavepercent = 30;
         break;
 
-      case -17:
+      case -19:
         armortypetogive = "StrifeArmorPack1ArmorQuake";
         armoramounttogive = 100;
         armoramounttocap = 100;
         armorsavepercent = 30;
         break;
 
-      case -18:
+      case -20:
         armortypetogive = "ArmorPack2ArmorQuake";
         armoramounttogive = 150;
         armoramounttocap = 150;
         armorsavepercent = 60;
         break;
 
-      case -19:
+      case -21:
         armortypetogive = "ArmorPack3ArmorQuake";
         armoramounttogive = 200;
         armoramounttocap = 200;
         armorsavepercent = 80;
         break;
 
-      case -20:
+      case -22:
         armortypetogive = "StrifeArmorPack3ArmorQuakeTier2Inactive";
         armoramounttogive = 150;
         armoramounttocap = 150;
         armorsavepercent = 60;
         break;
 
-      case -21:
+      case -23:
         armortypetogive = "StrifeArmorPack3ArmorQuakeTier2Active";
         armoramounttogive = 200;
         armoramounttocap = 200;
         armorsavepercent = 80;
         break;
 
-      case -22:
+      case -24:
         armortypetogive = "ArmorPack4ArmorQuake";
         armoramounttogive = 250;
         armoramounttocap = 250;
         armorsavepercent = 90;
         break;
 
-      case -23:
+      case -25:
         armortypetogive = "ArmorPack5ArmorQuake";
         armoramounttogive = 300;
         armoramounttocap = 300;
@@ -6146,49 +6164,56 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
         break;
 
       // Quake+
-      case -24:
+      case -26:
         armortypetogive = "ArmorScrapArmorQuakePlus";
         armoramounttogive = 1;
         armoramounttocap = 200;
         armorsavepercent = 60;
         break;
 
-      case -25:
+      case -27:
+        armortypetogive = "MaxArmorScrapArmorQuakePlus";
+        armoramounttogive = 1;
+        armoramounttocap = 200;
+        armorsavepercent = 60;
+        break;
+
+      case -28:
         armortypetogive = "HereticArmorDumpArmorQuakePlus";
         armoramounttogive = 5;
         armoramounttocap = 200;
         armorsavepercent = 60;
         break;
 
-      case -26:
+      case -29:
         armortypetogive = "HexenArmor1ArmorQuakePlus";
         armoramounttogive = 25;
         armoramounttocap = 200;
         armorsavepercent = 60;
         break;
 
-      case -27:
+      case -30:
         armortypetogive = "HexenArmor5ArmorQuakePlus";
         armoramounttogive = 50;
         armoramounttocap = 300;
         armorsavepercent = 60;
         break;
 
-      case -28:
+      case -31:
         armortypetogive = "StrifeArmorPack1ArmorQuakePlus";
         armoramounttogive = 150;
         armoramounttocap = 150;
         armorsavepercent = 60;
         break;
 
-      case -29:
+      case -32:
         armortypetogive = "StrifeArmorPack3ArmorQuakePlusTier2Inactive";
         armoramounttogive = 200;
         armoramounttocap = 200;
         armorsavepercent = 80;
         break;
 
-      case -30:
+      case -33:
         armortypetogive = "StrifeArmorPack3ArmorQuakePlusTier2Active";
         armoramounttogive = 250;
         armoramounttocap = 250;
@@ -6196,77 +6221,84 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
         break;
 
       // Marathon
-      case -31:
+      case -34:
         armortypetogive = "ArmorScrapArmorMarathon";
         armoramounttogive = 1;
         armoramounttocap = 200;
         armorsavepercent = 100;
         break;
 
-      case -32:
+      case -35:
+        armortypetogive = "MaxArmorScrapArmorMarathon";
+        armoramounttogive = 1;
+        armoramounttocap = 200;
+        armorsavepercent = 100;
+        break;
+
+      case -36:
         armortypetogive = "HereticArmorDumpArmorMarathon";
         armoramounttogive = 5;
         armoramounttocap = 200;
         armorsavepercent = 100;
         break;
 
-      case -33:
+      case -37:
         armortypetogive = "HexenArmor1ArmorMarathon";
         armoramounttogive = 25;
         armoramounttocap = 200;
         armorsavepercent = 100;
         break;
 
-      case -34:
+      case -38:
         armortypetogive = "HexenArmor5ArmorMarathon";
         armoramounttogive = 50;
         armoramounttocap = 300;
         armorsavepercent = 100;
         break;
 
-      case -35:
+      case -39:
         armortypetogive = "ArmorPack1ArmorMarathon";
         armoramounttogive = 100;
         armoramounttocap = 100;
         armorsavepercent = 100;
         break;
 
-      case -36:
+      case -40:
         armortypetogive = "StrifeArmorPack1ArmorMarathon";
         armoramounttogive = 100;
         armoramounttocap = 100;
         armorsavepercent = 100;
         break;
 
-      case -37:
+      case -41:
         armortypetogive = "ArmorPack2ArmorMarathon";
         armoramounttogive = 150;
         armoramounttocap = 150;
         armorsavepercent = 100;
         break;
 
-      case -38:
+      case -42:
         armortypetogive = "ArmorPack3ArmorMarathon";
         armoramounttogive = 200;
         armoramounttocap = 200;
         armorsavepercent = 100;
         break;
 
-      case -39:
+      case -43:
         armortypetogive = "StrifeArmorPack3ArmorMarathon";
         armoramounttogive = 200;
         armoramounttocap = 200;
         armorsavepercent = 100;
         break;
 
-      case -40:
+      case -44:
         armortypetogive = "ArmorPack4ArmorMarathon";
         armoramounttogive = 250;
         armoramounttocap = 250;
         armorsavepercent = 100;
         break;
 
-      case -41:
+      case -45:
         armortypetogive = "ArmorPack5ArmorMarathon";
         armoramounttogive = 300;
         armoramounttocap = 300;
@@ -6274,77 +6306,84 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
         break;
 
       // Heretic
-      case -42:
+      case -46:
         armortypetogive = "ArmorScrapArmorHeretic";
         armoramounttogive = 1;
         armoramounttocap = 200;
         armorsavepercent = 50;
         break;
 
-      case -43:
+      case -47:
+        armortypetogive = "MaxArmorScrapArmorHeretic";
+        armoramounttogive = 1;
+        armoramounttocap = 200;
+        armorsavepercent = 50;
+        break;
+
+      case -48:
         armortypetogive = "HereticArmorDumpArmorHeretic";
         armoramounttogive = 5;
         armoramounttocap = 200;
         armorsavepercent = 50;
         break;
 
-      case -44:
+      case -49:
         armortypetogive = "HexenArmor1ArmorHeretic";
         armoramounttogive = 25;
         armoramounttocap = 200;
         armorsavepercent = 50;
         break;
 
-      case -45:
+      case -50:
         armortypetogive = "HexenArmor5ArmorHeretic";
         armoramounttogive = 50;
         armoramounttocap = 300;
         armorsavepercent = 50;
         break;
 
-      case -46:
+      case -51:
         armortypetogive = "ArmorPack1ArmorHeretic";
         armoramounttogive = 100;
         armoramounttocap = 100;
         armorsavepercent = 50;
         break;
 
-      case -47:
+      case -52:
         armortypetogive = "StrifeArmorPack1ArmorHeretic";
         armoramounttogive = 100;
         armoramounttocap = 100;
         armorsavepercent = 50;
         break;
 
-      case -48:
+      case -53:
         armortypetogive = "ArmorPack2ArmorHeretic";
         armoramounttogive = 150;
         armoramounttocap = 150;
         armorsavepercent = 67;
         break;
 
-      case -49:
+      case -54:
         armortypetogive = "ArmorPack3ArmorHeretic";
         armoramounttogive = 200;
         armoramounttocap = 200;
         armorsavepercent = 75;
         break;
 
-      case -50:
+      case -55:
         armortypetogive = "StrifeArmorPack3ArmorHeretic";
         armoramounttogive = 200;
         armoramounttocap = 200;
         armorsavepercent = 75;
         break;
 
-      case -51:
+      case -56:
         armortypetogive = "ArmorPack4ArmorHeretic";
         armoramounttogive = 250;
         armoramounttocap = 250;
         armorsavepercent = 87;
         break;
 
-      case -52:
+      case -57:
         armortypetogive = "ArmorPack5ArmorHeretic";
         armoramounttogive = 300;
         armoramounttocap = 300;
@@ -6370,6 +6409,9 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     {
         if (armorcap > 0) { armoramounttocap += armorcap; }
         else if (armorcap < 0) { armoramounttocap = -armorcap; }
+
+        // if we're allowed to, take max armor boost into account
+        if (!ignoremaxboost) { armoramounttocap += CheckInventory("SamsaraHasMaxArmor"); }
     }
 
     // if the amount of armor to cap at turned up 0 or negative, stop the script
@@ -6382,7 +6424,7 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     // check if our current armor is hitting the cap
     if (currentarmor > 0)
     {
-        if (GetCVar("samsara_armorpickupbehavior") >= 1 && !armorgivetype)
+        if (GetCVar("samsara_armorpickupbehavior") >= 1 && (armorgivetype <= 0 || armorgivetype == 1))
         {
             if (currentarmor > armoramounttocap || (currentarmor == armoramounttocap && currentarmorsavepercent >= armorsavepercent)) { terminate; }
         } else {
@@ -6392,7 +6434,7 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
 
     // reset armor type for the purposes of setting the new type if we're not treating it like a bonus or if we had no armor to begin with
     // if samsara_armorpickupbehavior is 2 (Zandronum+), only reset armor if our absorption is less than what the pickup provides
-    if (!armorgivetype || !currentarmor)
+    if ((armorgivetype <= 0 || armorgivetype == 1) || !currentarmor)
     {
         if (GetCVar("samsara_armorpickupbehavior") < 2 || (GetCVar("samsara_armorpickupbehavior") >= 2 && currentarmorsavepercent < armorsavepercent) || !currentarmor)
         {
@@ -6424,20 +6466,25 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     }
 }
 
-script "SamsaraArmorCapCheck" (int armortype, int armorcap, int armorgivetype)
+script "SamsaraArmorCapCheck" (int armortype, int armorcap, int maxbonuscap, int armorgivetype)
 {
     // armorgivetype is as follows:
-    // 0 = normal armor, 1 = armor bonus
+    // 0 = normal armor, 1 = normal armor (ignores max armor boost),
+    // 2 = armor bonus, 3 = armor bonus (ignores max armor boost)
 
     int result = 0;
 
     // initialize armor mode
     SetArmorMode();
 
-    // determine armor type/cap/save percent
+    // initialize max armor boost ignoring variable
+    bool ignoremaxboost = armorgivetype == 1 || armorgivetype >= 3;
+
+    // determine armor type/cap/save percent/max bonus cap
     str armortypetogive = "NoArmor";
-    int armoramounttocap = 0;
+    int armoramounttocap = 0; // usually SaveAmount (or MaxSaveAmount in the case of bonuses)
     int armorsavepercent = 0;
+    int armormaxbonusmax = 0;
 
     switch (armortype)
     {
@@ -6445,6 +6492,7 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int armorgivetype)
         armortypetogive = ArmorItems[ArmorMode][armortype];
         armoramounttocap = ArmorAmounts[ArmorMode][armortype][1];
         armorsavepercent = ArmorAmounts[ArmorMode][armortype][2];
+        armormaxbonusmax = ArmorAmounts[ArmorMode][armortype][4];
         break;
 
       // Normal
@@ -6455,310 +6503,345 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int armorgivetype)
         break;
 
       case -2:
+        armortypetogive = "MaxArmorScrapArmorNormal";
+        armoramounttocap = 200;
+        armorsavepercent = 33;
+        armormaxbonusmax = 50;
+        break;
+
+      case -3:
         armortypetogive = "HereticArmorDumpArmorNormal";
         armoramounttocap = 200;
         armorsavepercent = 33;
         break;
 
-      case -3:
+      case -4:
         armortypetogive = "HexenArmor1ArmorNormal";
         armoramounttocap = 200;
         armorsavepercent = 33;
         break;
 
-      case -4:
+      case -5:
         armortypetogive = "HexenArmor5ArmorNormal";
         armoramounttocap = 300;
         armorsavepercent = 33;
         break;
 
-      case -5:
+      case -6:
         armortypetogive = "ArmorPack1ArmorNormal";
         armoramounttocap = 100;
         armorsavepercent = 33;
         break;
 
-      case -6:
+      case -7:
         armortypetogive = "StrifeArmorPack1ArmorNormal";
         armoramounttocap = 100;
         armorsavepercent = 33;
         break;
 
-      case -7:
+      case -8:
         armortypetogive = "ArmorPack2ArmorNormal";
         armoramounttocap = 150;
         armorsavepercent = 40;
         break;
 
-      case -8:
+      case -9:
         armortypetogive = "ArmorPack3ArmorNormal";
         armoramounttocap = 200;
         armorsavepercent = 50;
         break;
 
-      case -9:
+      case -10:
         armortypetogive = "StrifeArmorPack3ArmorNormal";
         armoramounttocap = 200;
         armorsavepercent = 50;
         break;
 
-      case -10:
+      case -11:
         armortypetogive = "ArmorPack4ArmorNormal";
         armoramounttocap = 250;
         armorsavepercent = 66;
         break;
 
-      case -11:
+      case -12:
         armortypetogive = "ArmorPack5ArmorNormal";
         armoramounttocap = 300;
         armorsavepercent = 100;
         break;
 
       // Quake
-      case -12:
+      case -13:
         armortypetogive = "ArmorScrapArmorQuake";
         armoramounttocap = 200;
         armorsavepercent = 30;
         break;
 
-      case -13:
+      case -14:
+        armortypetogive = "MaxArmorScrapArmorQuake";
+        armoramounttocap = 200;
+        armorsavepercent = 30;
+        armormaxbonusmax = 50;
+        break;
+
+      case -15:
         armortypetogive = "HereticArmorDumpArmorQuake";
         armoramounttocap = 200;
         armorsavepercent = 30;
         break;
 
-      case -14:
+      case -16:
         armortypetogive = "HexenArmor1ArmorQuake";
         armoramounttocap = 200;
         armorsavepercent = 30;
         break;
 
-      case -15:
+      case -17:
         armortypetogive = "HexenArmor5ArmorQuake";
         armoramounttocap = 300;
         armorsavepercent = 30;
         break;
 
-      case -16:
+      case -18:
         armortypetogive = "ArmorPack1ArmorQuake";
         armoramounttocap = 100;
         armorsavepercent = 30;
         break;
 
-      case -17:
+      case -19:
         armortypetogive = "StrifeArmorPack1ArmorQuake";
         armoramounttocap = 100;
         armorsavepercent = 30;
         break;
 
-      case -18:
+      case -20:
         armortypetogive = "ArmorPack2ArmorQuake";
         armoramounttocap = 150;
         armorsavepercent = 60;
         break;
 
-      case -19:
+      case -21:
         armortypetogive = "ArmorPack3ArmorQuake";
         armoramounttocap = 200;
         armorsavepercent = 80;
         break;
 
-      case -20:
+      case -22:
         armortypetogive = "StrifeArmorPack3ArmorQuakeTier2Inactive";
         armoramounttocap = 150;
         armorsavepercent = 60;
         break;
 
-      case -21:
+      case -23:
         armortypetogive = "StrifeArmorPack3ArmorQuakeTier2Active";
         armoramounttocap = 200;
         armorsavepercent = 80;
         break;
 
-      case -22:
+      case -24:
         armortypetogive = "ArmorPack4ArmorQuake";
         armoramounttocap = 250;
         armorsavepercent = 90;
         break;
 
-      case -23:
+      case -25:
         armortypetogive = "ArmorPack5ArmorQuake";
         armoramounttocap = 300;
         armorsavepercent = 100;
         break;
 
       // Quake+
-      case -24:
+      case -26:
         armortypetogive = "ArmorScrapArmorQuakePlus";
         armoramounttocap = 200;
         armorsavepercent = 60;
         break;
 
-      case -25:
+      case -27:
+        armortypetogive = "MaxArmorScrapArmorQuakePlus";
+        armoramounttocap = 200;
+        armorsavepercent = 60;
+        armormaxbonusmax = 50;
+        break;
+
+      case -28:
         armortypetogive = "HereticArmorDumpArmorQuakePlus";
         armoramounttocap = 200;
         armorsavepercent = 60;
         break;
 
-      case -26:
+      case -29:
         armortypetogive = "HexenArmor1ArmorQuakePlus";
         armoramounttocap = 200;
         armorsavepercent = 60;
         break;
 
-      case -27:
+      case -30:
         armortypetogive = "HexenArmor5ArmorQuakePlus";
         armoramounttocap = 300;
         armorsavepercent = 60;
         break;
 
-      case -28:
+      case -31:
         armortypetogive = "StrifeArmorPack1ArmorQuakePlus";
         armoramounttocap = 150;
         armorsavepercent = 60;
         break;
 
-      case -29:
+      case -32:
         armortypetogive = "StrifeArmorPack3ArmorQuakePlusTier2Inactive";
         armoramounttocap = 200;
         armorsavepercent = 80;
         break;
 
-      case -30:
+      case -33:
         armortypetogive = "StrifeArmorPack3ArmorQuakePlusTier2Active";
         armoramounttocap = 250;
         armorsavepercent = 90;
         break;
 
       // Marathon
-      case -31:
+      case -34:
         armortypetogive = "ArmorScrapArmorMarathon";
         armoramounttocap = 200;
         armorsavepercent = 100;
         break;
 
-      case -32:
+      case -35:
+        armortypetogive = "MaxArmorScrapArmorMarathon";
+        armoramounttocap = 200;
+        armorsavepercent = 100;
+        armormaxbonusmax = 50;
+        break;
+
+      case -36:
         armortypetogive = "HereticArmorDumpArmorMarathon";
         armoramounttocap = 200;
         armorsavepercent = 100;
         break;
 
-      case -33:
+      case -37:
         armortypetogive = "HexenArmor1ArmorMarathon";
         armoramounttocap = 200;
         armorsavepercent = 100;
         break;
 
-      case -34:
+      case -38:
         armortypetogive = "HexenArmor5ArmorMarathon";
         armoramounttocap = 300;
         armorsavepercent = 100;
         break;
 
-      case -35:
+      case -39:
         armortypetogive = "ArmorPack1ArmorMarathon";
         armoramounttocap = 100;
         armorsavepercent = 100;
         break;
 
-      case -36:
+      case -40:
         armortypetogive = "StrifeArmorPack1ArmorMarathon";
         armoramounttocap = 100;
         armorsavepercent = 100;
         break;
 
-      case -37:
+      case -41:
         armortypetogive = "ArmorPack2ArmorMarathon";
         armoramounttocap = 150;
         armorsavepercent = 100;
         break;
 
-      case -38:
+      case -42:
         armortypetogive = "ArmorPack3ArmorMarathon";
         armoramounttocap = 200;
         armorsavepercent = 100;
         break;
 
-      case -39:
+      case -43:
         armortypetogive = "StrifeArmorPack3ArmorMarathon";
         armoramounttocap = 200;
         armorsavepercent = 100;
         break;
 
-      case -40:
+      case -44:
         armortypetogive = "ArmorPack4ArmorMarathon";
         armoramounttocap = 250;
         armorsavepercent = 100;
         break;
 
-      case -41:
+      case -45:
         armortypetogive = "ArmorPack5ArmorMarathon";
         armoramounttocap = 300;
         armorsavepercent = 100;
         break;
 
       // Heretic
-      case -42:
+      case -46:
         armortypetogive = "ArmorScrapArmorHeretic";
         armoramounttocap = 200;
         armorsavepercent = 50;
         break;
 
-      case -43:
+      case -47:
+        armortypetogive = "MaxArmorScrapArmorHeretic";
+        armoramounttocap = 200;
+        armorsavepercent = 50;
+        armormaxbonusmax = 50;
+        break;
+
+      case -48:
         armortypetogive = "HereticArmorDumpArmorHeretic";
         armoramounttocap = 200;
         armorsavepercent = 50;
         break;
 
-      case -44:
+      case -49:
         armortypetogive = "HexenArmor1ArmorHeretic";
         armoramounttocap = 200;
         armorsavepercent = 50;
         break;
 
-      case -45:
+      case -50:
         armortypetogive = "HexenArmor5ArmorHeretic";
         armoramounttocap = 300;
         armorsavepercent = 50;
         break;
 
-      case -46:
+      case -51:
         armortypetogive = "ArmorPack1ArmorHeretic";
         armoramounttocap = 100;
         armorsavepercent = 50;
         break;
 
-      case -47:
+      case -52:
         armortypetogive = "StrifeArmorPack1ArmorHeretic";
         armoramounttocap = 100;
         armorsavepercent = 50;
         break;
 
-      case -48:
+      case -53:
         armortypetogive = "ArmorPack2ArmorHeretic";
         armoramounttocap = 150;
         armorsavepercent = 67;
         break;
 
-      case -49:
+      case -54:
         armortypetogive = "ArmorPack3ArmorHeretic";
         armoramounttocap = 200;
         armorsavepercent = 75;
         break;
 
-      case -50:
+      case -55:
         armortypetogive = "StrifeArmorPack3ArmorHeretic";
         armoramounttocap = 200;
         armorsavepercent = 75;
         break;
 
-      case -51:
+      case -56:
         armortypetogive = "ArmorPack4ArmorHeretic";
         armoramounttocap = 250;
         armorsavepercent = 87;
         break;
 
-      case -52:
+      case -57:
         armortypetogive = "ArmorPack5ArmorHeretic";
         armoramounttocap = 300;
         armorsavepercent = 100;
@@ -6768,6 +6851,10 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int armorgivetype)
     // if armor type wasn't defined (like armor mode being set to None), stop the script
     if (StrCmp(armortypetogive, "NoArmor") == 0) { terminate; }
 
+    // if maxbonuscap is greater than 0, the amount of max armor boost to cap at is added onto the default MaxBonusMax. if negative, the amount overrides the default
+    if (maxbonuscap > 0) { armormaxbonusmax += maxbonuscap; }
+    else if (maxbonuscap < 0) { armormaxbonusmax = -maxbonuscap; }
+
     // if armorcap is greater than 0, the amount of armor to cap at is added onto the default SaveAmount (or MaxSaveAmount if available). if negative, the amount overrides the default
     // this is buggily hardcoded to 250 at all times when prosperity is active. can't do anything with that, unfortunately
     if (CheckInventory("SamsaraHasProsperity")) { armoramounttocap = 250; }
@@ -6776,25 +6863,104 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int armorgivetype)
     {
         if (armorcap > 0) { armoramounttocap += armorcap; }
         else if (armorcap < 0) { armoramounttocap = -armorcap; }
+
+        // if we're allowed to, take max armor boost into account
+        if (!ignoremaxboost)
+        {
+            if (CheckInventory("SamsaraHasMaxArmor") > armormaxbonusmax) { armoramounttocap += CheckInventory("SamsaraHasMaxArmor"); }
+            else if (armormaxbonusmax > 0) { armoramounttocap += armormaxbonusmax; }
+        }
     }
 
     // if the amount of armor to cap at turned up 0 or negative, stop the script
     if (armoramounttocap <= 0) { terminate; }
 
-    // get our current armor value and absorption
+    // get our current armor value, absorption, and max armor boost
     int currentarmor = CheckInventory("BasicArmor");
     int currentarmorsavepercent = CheckInventory("SamsaraArmorSavePercent");
+    int currentmaxarmor = CheckInventory("SamsaraHasMaxArmor");
 
-    // check if our current armor is hitting the cap
+    // check if our current armor is hitting the cap, and if we've hit the limit on max armor boost
     if (currentarmor > 0)
     {
-        if (GetCVar("samsara_armorpickupbehavior") >= 1 && !armorgivetype)
+        if (GetCVar("samsara_armorpickupbehavior") >= 1 && (armorgivetype <= 0 || armorgivetype == 1))
         {
-            if (currentarmor > armoramounttocap || (currentarmor == armoramounttocap && currentarmorsavepercent >= armorsavepercent)) { result = 1; }
+            if ((currentarmor > armoramounttocap || (currentarmor == armoramounttocap && currentarmorsavepercent >= armorsavepercent)) && currentmaxarmor >= armormaxbonusmax) { result = 1; }
         } else {
-            if (currentarmor >= armoramounttocap) { result = 1; }
+            if (currentarmor >= armoramounttocap && currentmaxarmor >= armormaxbonusmax) { result = 1; }
         }
     }
 
+    // we're done
     SetResultValue(result);
+}
+
+script "SamsaraPlayerMaxArmorAdjust" (int armortype, int maxbonusadd, int maxbonuscap)
+{
+    // initialize armor mode
+    SetArmorMode();
+
+    // determine armor max bonus amount/max bonus cap
+    int armormaxbonus = 0;
+    int armormaxbonusmax = 0;
+
+    switch (armortype)
+    {
+      default:
+        armormaxbonus = ArmorAmounts[ArmorMode][armortype][3];
+        armormaxbonusmax = ArmorAmounts[ArmorMode][armortype][4];
+        break;
+
+      // Normal
+      case -2:
+        armormaxbonus = 1;
+        armormaxbonusmax = 50;
+        break;
+
+      // Quake
+      case -14:
+        armormaxbonus = 1;
+        armormaxbonusmax = 50;
+        break;
+
+      // Quake+
+      case -27:
+        armormaxbonus = 1;
+        armormaxbonusmax = 50;
+        break;
+
+      // Marathon
+      case -35:
+        armormaxbonus = 1;
+        armormaxbonusmax = 50;
+        break;
+
+      // Heretic
+      case -47:
+        armormaxbonus = 1;
+        armormaxbonusmax = 50;
+        break;
+    }
+
+    // if maxbonusadd is greater than 0, the amount of max armor boost to give is added onto the default MaxBonus. if negative, the amount overrides the default
+    if (maxbonusadd > 0) { armormaxbonus += maxbonusadd; }
+    else if (maxbonusadd < 0) { armormaxbonus = -maxbonusadd; }
+
+    // if the amount of max armor boost to give turned up 0 or negative, stop the script
+    if (armormaxbonus <= 0) { terminate; }
+
+    // if maxbonuscap is greater than 0, the amount of max armor boost to cap at is added onto the default MaxBonusMax. if negative, the amount overrides the default
+    if (maxbonuscap > 0) { armormaxbonusmax += maxbonuscap; }
+    else if (maxbonuscap < 0) { armormaxbonusmax = -maxbonuscap; }
+
+    // if the amount of max armor boost to cap at turned up 0 or negative, stop the script
+    if (armormaxbonusmax <= 0) { terminate; }
+
+    // add max armor boost accordingly
+    if (CheckInventory("SamsaraHasMaxArmor") < armormaxbonusmax)
+    {
+        GiveInventory("SamsaraHasMaxArmor", armormaxbonus);
+
+        if (CheckInventory("SamsaraHasMaxArmor") > armormaxbonusmax) { SetInventory("SamsaraHasMaxArmor", armormaxbonusmax); } // don't exceed the cap
+    }
 }
