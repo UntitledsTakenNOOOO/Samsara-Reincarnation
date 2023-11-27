@@ -339,22 +339,6 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 	case 51:
 		result = GetCVar("samsara_noarmorcap");
 		break;
-
-	case 52:
-		if (GetCVar("samsara_nohealthcap")) { result = INTMAX; }
-		else
-		{
-			if (arg1 > 0) // apply stamina
-			{
-				if (GetActorProperty(0, APROP_SpawnHealth) + GetActorProperty(0, APROP_Stamina) < 250 && CheckInventory("SamsaraHasProsperity")) { result = 250; }
-				else { result = GetActorProperty(0, APROP_SpawnHealth) + GetActorProperty(0, APROP_Stamina); }
-			} else { // ignore stamina
-				if (GetActorProperty(0, APROP_SpawnHealth) < 250 && CheckInventory("SamsaraHasProsperity")) { result = 250; }
-				else { result = GetActorProperty(0, APROP_SpawnHealth); }
-			}
-		}
-
-		break;
 	}
 
 	SetResultValue(result);
@@ -862,7 +846,7 @@ script "Samsara_Keybinds" (int button) NET
 		break;
 
 	case 9:
-		if (GetCVar("samsara_cl_pickupmode") >= 2) { cvarsetting = 0; }
+		if (GetCVar("samsara_cl_pickupmode") >= 3) { cvarsetting = 0; }
 		else { cvarsetting = GetCVar("samsara_cl_pickupmode") + 1; }
 
 		SetCVar("samsara_cl_pickupmode", cvarsetting);
@@ -1069,8 +1053,9 @@ script "Samsara_Keybinds_Messages" (int button, int mode, int arg2) CLIENTSIDE
 		break;
 
 	case 9:
-		if (mode >= 2) { modestring = "Class"; }
-		else if (mode == 1) { modestring = "Hybrid"; }
+		if (mode >= 3) { modestring = "Class"; }
+		else if (mode == 2) { modestring = "Hybrid"; }
+		else if (mode == 1) { modestring = "Old-Style (v0.3666)"; }
 		else { modestring = "Old-Style"; }
 
 		if (pln == cpln)
@@ -1252,7 +1237,7 @@ Script "Samsara_UniqueKeys" (int key) net
 		case CLASS_RR:
 			if(key == 0)
 			{
-				if(((timer() > CheckInventory("LeonardPissTimer") + 10500) || CheckInventory("LeonardPissTimer") == 0) && GetActorProperty(0,APROP_Health) > 0)
+				if ((timer() > CheckInventory("LeonardPissTimer") + 10500 || !CheckInventory("LeonardPissTimer")) && !isDead(0))
 				{
 					SetInventory("LeonardPissTimer",timer());
 					if(GetActorProperty(0,APROP_Health) < 90)
@@ -1265,7 +1250,7 @@ Script "Samsara_UniqueKeys" (int key) net
 			}
 			else if(key == 1)
 			{	
-				if(timer()-CheckInventory("LeonardYeeHawTimer") >= 105 && GetActorProperty(0,APROP_Health) < 100 && GetActorProperty(0,APROP_Health) > 0)
+				if ((timer() > CheckInventory("LeonardYeeHawTimer") + 105 || !CheckInventory("LeonardYeeHawTimer")) && GetActorProperty(0, APROP_Health) < 100 && !isDead(0))
 				{
 					SetInventory("LeonardYeeHawTimer",timer());
 					Playsound(0,"Leonard/Taunt7",CHAN_VOICE,1.0,0,ATTN_NORM);
@@ -2066,8 +2051,8 @@ Script "Samsara_ResetInventory" (void)
 		case 4:
 			TakeInventory("SamsaraHexenSpikedGauntletsHitCounter", INTMAX);
 			TakeInventory("PortFlechette", INTMAX);
-			TakeInventory("PortQuartzFlask2", INTMAX);
-			TakeInventory("PortSuperHealth2", INTMAX);
+			TakeInventory("PortQuartzFlask", INTMAX);
+			TakeInventory("PortSuperHealth", INTMAX);
 			TakeInventory("PortMysticAmbit", INTMAX);
 			TakeInventory("Serpent Staff", INTMAX);
 			TakeInventory("Bloodscourge", INTMAX);
@@ -3069,8 +3054,8 @@ Script "Samsara_FillInventory" (void)
 			TakeInventory("FlechetteCooldown",65536);
 			TakeInventory("DiscOfRepulsionCooldown",65536);
 			TakeInventory("DarkServantCooldown",65536);
-			GiveInventory("PortQuartzFlask2",16);
-			GiveInventory("PortSuperHealth2",5);
+			GiveInventory("PortQuartzFlask",16);
+			GiveInventory("PortSuperHealth",5);
 			GiveInventory("PortKraterOfMight",3);
 			GiveInventory("PortTorch2",16);
 			GiveInventory("PortIconDefender",16);
@@ -5917,47 +5902,112 @@ Script "DisableVoodooDoll" (void)
 		SetActorState(0,"DisableVoodooDoll",true);
 }
 
-script "SamsaraPlayerSpawnHealthAdjust" (int amount, int add, int filltype)
+script "SamsaraPlayerHealer" (int healamount, int healcap, int usemaxbonus)
 {
-    int healthcur = GetActorProperty(0, APROP_Health);
-    int healthmax = GetActorProperty(0, APROP_SpawnHealth);
+    // initialize health variables
+    int healthmax = getMaxHealth(0);
+    int healthcapcheck = healthmax; // default cap
 
-    if (healthmax == 0) { healthmax = 100; }
+    // determine cap
+    if (healamount != 0) // only change if we're not doing full healing
+    {
+        if (healcap > 0) { healthcapcheck = healcap; } // custom cap
+        else if (healcap < 0) { healthcapcheck = -healcap; } // custom "hardcoded" cap
+
+        if (usemaxbonus) { healthcapcheck += CheckInventory("SamsaraHasMaxHealth"); } // max. health bonus healing behavior replication
+
+        if (healcap >= 0)
+        {
+            if (healthmax > healthcapcheck) { healthcapcheck = healthmax; } // this is mainly for health items that give up to 200+ hp
+
+            if (GetCVar("samsara_nohealthcap")) { healthcapcheck = INTMAX; }
+            else if (healthcapcheck < 250 && CheckInventory("SamsaraHasProsperity")) { healthcapcheck = 250; }
+        }
+    }
+
+    // do checking or healing
+    if (healamount > 0 && !isDead(0) && GetActorProperty(0, APROP_Health) < healthcapcheck) // give specified health
+    {
+        if (GetActorProperty(0, APROP_Health) + healamount > healthcapcheck) { SetActorProperty(0, APROP_Health, healthcapcheck); }
+        else { SetActorProperty(0, APROP_Health, GetActorProperty(0, APROP_Health) + healamount); }
+    }
+    else if (healamount == 0 && !isDead(0) && GetActorProperty(0, APROP_Health) < healthcapcheck) { SetActorProperty(0, APROP_Health, healthcapcheck); } // full healing
+    else if (healamount < 0) { SetResultValue(healthcapcheck); } // check health
+}
+
+script "SamsaraPlayerSpawnHealthAdjust" (int amount, int add, int maxtype, int maxcap)
+{
+    str maxtoken = "Placeholder";
+
+    switch (maxtype)
+    {
+      case 1:
+        maxtoken = "SamsaraHasMaxHealth"; // Zandronum MaxHealth (mainly for max. health bonus)
+        break;
+
+      case 2:
+        maxtoken = "StaminaUpgradeHealth"; // Strifeguy upgrade
+        break;
+    }
+
+    int maxtokenorig = CheckInventory(maxtoken);
 
     if (amount != 0)
     {
         // set new max health
 
-        // none of this really supports health subtracting (-amount) well, but that probably won't be needed
-
         if (add)
         {
-            SetActorProperty(0, APROP_SpawnHealth, healthmax + amount);
-            AdjustHealthOverMaxDisplay();
-
-            if (!isDead(0) && healthcur < healthmax + amount)
+            if (maxtype > 0)
             {
-                if (filltype >= 2) { SetActorProperty(0, APROP_Health, healthmax + amount); } // full refill
-                else if (filltype == 1) { SetActorProperty(0, APROP_Health, healthcur + amount); } // only heal by the new amount
+                if (amount > 0)
+                {
+                    if (CheckInventory(maxtoken) >= maxcap) { terminate; }
+                    else if (CheckInventory(maxtoken) + amount > maxcap)
+                    {
+                        SetInventory(maxtoken, maxcap);
+                        amount = CheckInventory(maxtoken) - maxtokenorig;
+                    }
+                    else { GiveInventory(maxtoken, amount); }
+                } else if (amount < 0) {
+                    if (CheckInventory(maxtoken) <= 0) { terminate; }
+                    else if (CheckInventory(maxtoken) + amount < 0)
+                    {
+                        SetInventory(maxtoken, 0);
+                        amount = -maxtokenorig;
+                    }
+                    else { TakeInventory(maxtoken, -amount); }
+                }
             }
+
+            if (getMaxHealth(1) + amount > 0) { SetActorProperty(0, APROP_SpawnHealth, getMaxHealth(1) + amount); }
+            else { SetActorProperty(0, APROP_SpawnHealth, 1); } // clamp base minimum at 1
+
+            AdjustHealthOverMaxDisplay();
         } else {
-            SetActorProperty(0, APROP_SpawnHealth, amount);
-            AdjustHealthOverMaxDisplay();
-
-            if (!isDead(0) && healthcur < amount)
+            if (amount > 0) // only take base into account
             {
-                if (filltype > 0) { SetActorProperty(0, APROP_Health, amount); } // full refill regardless of setting
+                SetActorProperty(0, APROP_SpawnHealth, amount + CheckInventory("SamsaraHasMaxHealth") + CheckInventory("StaminaUpgradeHealth"));
+                AdjustHealthOverMaxDisplay();
             }
-        }
-    } else {
-        if (!isDead(0) && healthcur < healthmax)
-        {
-            if (filltype > 0) { SetActorProperty(0, APROP_Health, healthmax); } // full refill regardless of setting
         }
     }
 }
 
 script "SamsaraAdjustHealthOverMaxDisplay" (void) { AdjustHealthOverMaxDisplay(); } // for CustomInventory triggers
+
+script "SamsaraStrifeStatsAdjust" (int adjusttype)
+{
+    if (adjusttype >= 1) { SetInventory("SamsaraHasBonusStamina", GetActorProperty(0, APROP_Stamina)); } // adjust token accordingly
+    else // reset for BJ PVP extra life
+    {
+        SetActorProperty(0, APROP_Stamina, 0);
+        SetInventory("SamsaraHasBonusStamina", 0);
+        AdjustHealthOverMaxDisplay();
+
+        SetActorProperty(0, APROP_Accuracy, 0);
+    }
+}
 
 script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armorgivetype) // this is a separate script now due to the extra script arguments
 {

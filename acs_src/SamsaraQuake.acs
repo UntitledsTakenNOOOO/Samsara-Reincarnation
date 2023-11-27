@@ -4,7 +4,12 @@ script "SamsaraMegaHealth" (int hpcount, int hpPerSec, int delayTics) //259 -- S
 {
     int hpGiven = GetActorProperty(0, APROP_Health);
     int startHealth = hpGiven;
-    SetActorProperty(0, APROP_Health, min(hpGiven + hpcount, 250));
+    int hpCap = getMaxHealth(0);
+
+    if (GetCVar("samsara_nohealthcap")) { hpCap = INTMAX; }
+    else if (hpCap < 250) { hpCap = 250; }
+
+    SetActorProperty(0, APROP_Health, min(hpGiven + hpcount, hpCap));
     hpGiven = GetActorProperty(0, APROP_Health) - hpGiven;
 
     hpPerSec = 1.0 / (hpPerSec * 35);
@@ -13,8 +18,7 @@ script "SamsaraMegaHealth" (int hpcount, int hpPerSec, int delayTics) //259 -- S
 
     while (1)
     {
-        if (CheckInventory("QuakeRegenTimer") || CheckInventory("SamsaraHasProsperity")
-            || GetCVar("sv_degeneration") > 0)
+        if (CheckInventory("QuakeRegenTimer") || CheckInventory("SamsaraHasProsperity") || GetCVar("sv_degeneration"))
         {
             Delay(1);
             continue;
@@ -24,7 +28,7 @@ script "SamsaraMegaHealth" (int hpcount, int hpPerSec, int delayTics) //259 -- S
         {
             hpToTake = GetActorProperty(0, APROP_Health);
 
-            hpToTake = middle(hpToTake, getMaxHealth(), hpToTake - hpGiven);
+            hpToTake = middle(hpToTake, getMaxHealth(0), hpToTake - hpGiven);
             SetActorProperty(0, APROP_Health, hpToTake);
             break;
         }
@@ -42,7 +46,7 @@ script "SamsaraMegaHealth" (int hpcount, int hpPerSec, int delayTics) //259 -- S
 
         if (hpGiven <= 0) { break; }
         if (GetActorProperty(0, APROP_Health) <= startHealth ||
-            GetActorProperty(0, APROP_Health) <= getMaxHealth()) { break; }
+            GetActorProperty(0, APROP_Health) <= getMaxHealth(0)) { break; }
         Delay(1);
     }
 }
@@ -257,12 +261,15 @@ script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
 
             if (regenTimer % 35 == 18 && !isDead(0))
             {
-                healthMax = cond(GetCVar("samsara_nohealthcap"), 0x7FFFFFFF, 150+getMaxHealth());
+                healthMax = getMaxHealth(0);
 
-                if (health >= getMaxHealth()) { giveHealthMax(5, healthMax); }
-                else if (health + 10 >= getMaxHealth())
+                if (GetCVar("samsara_nohealthcap")) { healthMax = INTMAX; }
+                else if (healthMax < 250) { healthMax = 250; }
+
+                if (health >= 100) { giveHealthMax(5, healthMax); }
+                else if (health + 10 >= 100)
                 {
-                    SetActorProperty(0, APROP_Health, getMaxHealth());
+                    SetActorProperty(0, APROP_Health, 100);
                     giveHealthMax(5, healthMax);
                 }
                 else { giveHealthMax(15, healthMax); }
@@ -283,7 +290,7 @@ script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
                 LocalAmbientSound("quakeweps/regenout", PowerOutVols[regenTimer / 35]);
             }
         }
-        else if (CheckInventory("SamsaraHasProsperity") || GetCVar("sv_degeneration") > 0)
+        else if (CheckInventory("SamsaraHasProsperity") || GetCVar("sv_degeneration"))
         {
             regenTimer = 0;
         }
@@ -295,9 +302,9 @@ script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
                 HudMessage(s:""; HUDMSG_PLAIN, 58104, CR_UNTRANSLATED, 0, 0, 1);
             }
 
-            if (health < getMaxHealth()) { healthGiven = 0; }
+            if (health <= getMaxHealth(0)) { healthGiven = 0; }
 
-            if (Timer() % 35 == 0 && healthGiven > 0 && (health - 1 >= getMaxHealth()))
+            if (Timer() % 35 == 0 && healthGiven > 0 && (health - 1 >= getMaxHealth(0)))
             {
                 SetActorProperty(0, APROP_Health, health - 1);
             }
@@ -359,9 +366,9 @@ script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
 
         if (UnloadingNow)
         {
-            SetActorProperty(0, APROP_Health, middle(health, getMaxHealth(), health - healthGiven));
+            SetActorProperty(0, APROP_Health, middle(health, getMaxHealth(0), health - healthGiven));
             health = GetActorProperty(0, APROP_Health);
-            SetActorProperty(0, APROP_Health, max(health, getMaxHealth() / 2));
+            SetActorProperty(0, APROP_Health, max(health, 50)); // getMaxHealth(0) / 2
             break;
         }
 

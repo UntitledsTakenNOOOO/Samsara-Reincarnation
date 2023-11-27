@@ -11,7 +11,7 @@ Script "Hexen2_VectorAngle" (int x, int y)
 	SetResultValue(VectorAngle(x,y));
 }
 
-Script "Hexen2_Decorate" (int mode)
+Script "Hexen2_Decorate" (int mode, int arg1)
 {
 	int oldTID, target;
 	int ActorX, ActorY, ActorZ, OriginalX, OriginalY, OriginalZ, height, radius, chance, result;
@@ -131,9 +131,6 @@ Script "Hexen2_Decorate" (int mode)
 			}
 			Thing_Remove(0);
 			break;
-		case 20:
-			SetResultValue(GetActorProperty(0,APROP_SpawnHealth));
-			break;
 		case 21:
 			SetResultValue(GetAmmoCapacity("Clip"));
 			break;
@@ -194,7 +191,7 @@ Script "Hexen2_Decorate" (int mode)
 			SetResultValue(CheckInventory("Hexen2MagicMissileStarPoweredZ"));
 			break;
 		case 29:
-			SetActivatorToTarget(0);
+			if (arg1) { SetActivatorToTarget(0); }
 			chance = (CheckInventory("Hexen2Level")-8)*4;
 			if(chance>20)
 				chance = 20;
@@ -204,7 +201,7 @@ Script "Hexen2_Decorate" (int mode)
 				SetResultValue(0);
 			break;
 		case 30:
-			SetActivatorToTarget(0);
+			if (arg1) { SetActivatorToTarget(0); }
 			chance = (CheckInventory("Hexen2Level")-8)*4;
 			SetResultValue(chance);
 			break;
@@ -278,7 +275,7 @@ Script "Hexen2_Hud" (void)
 			GiveInventory("Hexen2Wisdom", random(11,14));
 			GiveInventory("Hexen2Dexterity", random(9,13));
 			GiveInventory("Hexen2Strength", random(11,14));
-			GiveInventory("Hexen2HealthAdd", GetActorProperty(0,APROP_SpawnHealth));
+			GiveInventory("Hexen2HealthAdd", GetActorProperty(0, APROP_SpawnHealth) - CheckInventory("SamsaraHasMaxHealth")); // only take base into account
 			GiveInventory("Hexen2Started",1);
 			SetAmmoCapacity("Clip", (250*(CheckInventory("BackPack")+1)));
 			SetAmmoCapacity("Cell", (250*(CheckInventory("BackPack")+1)));
@@ -347,7 +344,7 @@ Script "Hexen2_Hud" (void)
 				TakeInventory("Hexen2HealthAdd", 2048);
 				GiveInventory("Hexen2BlueManaAdd", clipmax);
 				GiveInventory("Hexen2GreenManaAdd", cellmax);
-				GiveInventory("Hexen2HealthAdd", GetActorProperty(0,APROP_SpawnHealth));
+				GiveInventory("Hexen2HealthAdd", GetActorProperty(0, APROP_SpawnHealth) - CheckInventory("SamsaraHasMaxHealth")); // only take base into account
 				GiveInventory("Hexen2Level", 1);
 				GiveInventory("Hexen2Intelligence", 1);
 				GiveInventory("Hexen2Wisdom", 1);
@@ -359,7 +356,7 @@ Script "Hexen2_Hud" (void)
 				if(fullheal)
 				{
 					fullheal = 0;
-					SetActorProperty(0,APROP_Health,GetActorProperty(0,APROP_SpawnHealth));
+					SetActorProperty(0,APROP_Health,getMaxHealth(0));
 				}
 			}
 		}
@@ -378,7 +375,7 @@ Script "Hexen2_Hud" (void)
 				TakeInventory("Hexen2HealthAdd", 2048);
 				GiveInventory("Hexen2BlueManaAdd", clipmax);
 				GiveInventory("Hexen2GreenManaAdd", cellmax);
-				GiveInventory("Hexen2HealthAdd", GetActorProperty(0,APROP_SpawnHealth));
+				GiveInventory("Hexen2HealthAdd", GetActorProperty(0, APROP_SpawnHealth) - CheckInventory("SamsaraHasMaxHealth")); // only take base into account
 				GiveInventory("Hexen2Level", 1);
 				GiveInventory("Hexen2Intelligence", 1);
 				GiveInventory("Hexen2Wisdom", 1);
@@ -417,14 +414,14 @@ Script "Hexen2_Hud" (void)
 		
 		int drawbar = ACS_NamedExecuteWithResult("Hexen2_DrawExperienceBar",0,0,0,0);
 		
-        SetActorProperty(0, APROP_SpawnHealth, CheckInventory("Hexen2HealthAdd"));
+        SetActorProperty(0, APROP_SpawnHealth, CheckInventory("Hexen2HealthAdd") + CheckInventory("SamsaraHasMaxHealth"));
         AdjustHealthOverMaxDisplay();
 		
 		Delay(1);
 		currenthealth = GetActorProperty(0,APROP_Health);
 		if(currenthealth != oldhealth && currenthealth < oldhealth)
 		{
-			if(GetActorProperty(0,APROP_Health) < GetActorProperty(0,APROP_SpawnHealth)/2)
+			if(GetActorProperty(0,APROP_Health) < getMaxHealth(0)/2)
 			{
 				if(CheckInventory("Hexen2Level") < 10)
 				{
@@ -832,11 +829,10 @@ script 5780 (int hpamount) // if this could be named, believe me, I'd make it so
 
     if (CheckInventory("CalebClass") || CheckInventory("Hexen2Class"))
     {
-        int healthmax = GetActorProperty(0, APROP_SpawnHealth);
+        int healthmax = getMaxHealth(0);
 
-        if (healthmax == 0) { healthmax = 100; }
-
-        healthmax = healthmax + GetActorProperty(0, APROP_Stamina); // recheck for stamina
+        if (GetCVar("samsara_nohealthcap")) { healthmax = INTMAX; }
+        else if (healthmax < 250 && CheckInventory("SamsaraHasProsperity")) { healthmax = 250; }
 
         for (int a = 0; a < hpamount; a++)
         {

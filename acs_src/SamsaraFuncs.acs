@@ -134,7 +134,7 @@ function void ApplyLMS(void)
 
     if (CheckInventory("Hexen2Class")) { healthinit = 70; }
 
-	if (GetActorProperty(0, APROP_Health) < healthinit) { SetActorProperty(0, APROP_Health, healthinit); }
+	if (GetActorProperty(0, APROP_Health) < healthinit && !isDead(0)) { SetActorProperty(0, APROP_Health, healthinit); }
 
 	// Handle backpacks for different classes
 	if (CheckInventory("HexenClass")) {
@@ -316,8 +316,8 @@ function void ApplyLMS(void)
                 GiveInventory("AccuracyUpgrade1", 10);
                 GiveInventory("AccuracyUpgrade2", 10);
 
-                if (CheckInventory("StrifeUpgradeCount") >= 10) { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 0, 0, 2); } // don't increase max health, only refill it
-                else { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 2); }
+                ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 2, 100);
+                ACS_NamedExecuteWithResult("SamsaraPlayerHealer");
 
                 GiveInventory("StrifeUpgradeCount", 1);
 
@@ -629,11 +629,14 @@ function void ApplyLMS(void)
 
     int lmsHealth = GetCVar("samsara_lmshealth"), lmsArmor = GetCVar("samsara_lmsarmor");
 
-    if (lmsHealth > 0)
+    if (!isDead(0))
     {
-        if (GetActorProperty(0, APROP_Health) < healthinit + lmsHealth) { SetActorProperty(0, APROP_Health, healthinit + lmsHealth); }
-    } else {
-        if (GetActorProperty(0, APROP_Health) < healthinit) { SetActorProperty(0, APROP_Health, healthinit); }
+        if (lmsHealth > 0)
+        {
+            if (GetActorProperty(0, APROP_Health) < healthinit + lmsHealth) { SetActorProperty(0, APROP_Health, healthinit + lmsHealth); }
+        } else {
+            if (GetActorProperty(0, APROP_Health) < healthinit) { SetActorProperty(0, APROP_Health, healthinit); }
+        }
     }
 
     if (lmsArmor > 0)
@@ -1432,8 +1435,8 @@ function void autoUseHealth(int pClass, int threshold)
 				stopTrying = 1;
 				break;
 			case CLASS_HEXEN:
-				if(UseInventory("PortSuperHealth2")) break;
-				if(UseInventory("PortQuartzFlask2")) break;
+				if(UseInventory("PortSuperHealth")) break;
+				if(UseInventory("PortQuartzFlask")) break;
 				stopTrying = 1;
 				break;
 			case CLASS_STRIFE:	
@@ -1479,23 +1482,15 @@ function void autoUseHealth(int pClass, int threshold)
 				if(UseInventory("Catacomb_SmallHealthPotion")) break;
 				stopTrying = 1;
 				break;
-				
-			
 		}
-		if(ClassifyActor(0) & ACTOR_ALIVE && GetActorProperty(0,APROP_Health) < threshold && !stopTrying) autoUseHealth(pClass,threshold);
+		if (!isDead(0) && GetActorProperty(0, APROP_Health) < threshold && !stopTrying) { autoUseHealth(pClass, threshold); }
 	}
 }
 
 function void AdjustHealthOverMaxDisplay (void)
 {
-    int hudhealthmax = GetActorProperty(0, APROP_SpawnHealth);
-
-    if (hudhealthmax == 0) { hudhealthmax = 100; }
-
-    hudhealthmax = hudhealthmax + GetActorProperty(0, APROP_Stamina); // recheck for stamina
-
-    SetInventory("SamsaraHealthOverMax", hudhealthmax * 2);
-    SetInventory("SamsaraHealthOverOverMax", hudhealthmax * 3);
+    SetInventory("SamsaraHealthOverMax", getMaxHealth(0) * 2);
+    SetInventory("SamsaraHealthOverOverMax", getMaxHealth(0) * 3);
 }
 
 function void AdjustArmorDisplays (void)

@@ -459,7 +459,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	if(PlayerClass(pln) != playerClasses[pln])
 		playerClasses[pln] = ExecuteClassScripts(pln);
 		
-	if(GetActorProperty(0,APROP_SpawnHealth) == 0) SetActorProperty(0,APROP_SpawnHealth,100);
+	if (GetActorProperty(0, APROP_SpawnHealth) == 0) { SetActorProperty(0, APROP_SpawnHealth, 100); }
 
 	if(bot)
 		ACS_NamedExecuteAlways("Samsara_BotAltClassHandler",0,pln,0,0);
@@ -555,7 +555,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					GiveInventory("Catacomb_Bolts", Random(1, 2));
 					GiveInventory("Catacomb_Waves", Random(1, 2));
 
-					if (GetCVar("samsara_nohealthcap")) { GiveInventory("InfiniteHealth", 25 * Random(1, 2)); }
+					if (GetCVar("samsara_nohealthcap")) { ACS_NamedExecuteWithResult("SamsaraPlayerHealer", Random(1, 2) * 25); }
 					else { GiveInventory("Catacomb_SmallHealthPotion", Random(1, 2)); }
 					break;
 
@@ -623,6 +623,15 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	}
 	else
 	{
+        if (isSinglePlayer() || isCoop())
+        {
+            if (GetCVar("samsara_keepmaxhealth"))
+            {
+                if (CheckInventory("SamsaraHasMaxHealth")) { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", CheckInventory("SamsaraHasMaxHealth"), 1); }
+            }
+            else { SetInventory("SamsaraHasMaxHealth", 0); }
+        }
+
 		if (GameType() != GAME_NET_COOPERATIVE)
 		{
 			if (GetCVar("samsara_backpackstart") == 1)
@@ -678,7 +687,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						GiveInventory("Catacomb_Bolts", Random(1, 2));
 						GiveInventory("Catacomb_Waves", Random(1, 2));
 
-						if (GetCVar("samsara_nohealthcap")) { GiveInventory("InfiniteHealth", 25 * Random(1, 2)); }
+						if (GetCVar("samsara_nohealthcap")) { ACS_NamedExecuteWithResult("SamsaraPlayerHealer", Random(1, 2) * 25); }
 						else { GiveInventory("Catacomb_SmallHealthPotion", Random(1, 2)); }
 						break;
 
@@ -796,7 +805,11 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	case CLASS_STRIFE:
 		if (CheckInventory("StrifeguyStartingUpgradesHasBeenGiven"))
 		{
-			if (respawning && CheckInventory("StrifeUpgradeCount")) { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 100 + (CheckInventory("StrifeUpgradeCount") * 10), 0, 2); } // reset spawnhealth to make up for hardcoded lost stamina argh
+            if (respawning && CheckInventory("StaminaUpgradeHealth"))
+            {
+                ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 100); // reset spawnhealth to make up for hardcoded lost stamina argh. the script handles the bonus stuff
+                ACS_NamedExecuteWithResult("SamsaraPlayerHealer");
+            }
 		}
 		else
 		{
@@ -813,8 +826,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					GiveInventory("AccuracyUpgrade1", 10);
 					GiveInventory("AccuracyUpgrade2", 10);
 
-					if (CheckInventory("StrifeUpgradeCount") >= 10) { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 0, 0, 2); } // don't increase max health, only refill it
-					else { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 2); }
+                    ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 2, 100);
+                    ACS_NamedExecuteWithResult("SamsaraPlayerHealer");
 
 					GiveInventory("StrifeUpgradeCount", 1);
 
@@ -891,6 +904,21 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 	if (isTeamGame()) { SetInventory("SamsaraCurrentTeam", GetPlayerInfo(pln, PLAYERINFO_TEAM) + 1); }
 
+    if (respawning && (isSinglePlayer() || isCoop()))
+    {
+        if (GetCVar("samsara_keepmaxhealth"))
+        {
+            if (CheckInventory("SamsaraHasBonusStamina"))
+            {
+                SetActorProperty(0, APROP_Stamina, CheckInventory("SamsaraHasBonusStamina"));
+                AdjustHealthOverMaxDisplay();
+
+                ACS_NamedExecuteWithResult("SamsaraPlayerHealer"); // UpgradeStamina gives a health refill
+            }
+        }
+        else { SetInventory("SamsaraHasBonusStamina", 0); }
+    }
+
 	pcount = PlayerCount();
 
 	while (!endloop && ServerEnterTimes[pln] == startTime)
@@ -900,6 +928,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		if(CheckInventory("MetaCheatDetector")) { ACS_NamedExecuteWithResult("Samsara_FillInventory",0,0,0,0); }
 
 		// Token checkers
+
+        SetInventory("SamsaraHasBonusStamina", GetActorProperty(0, APROP_Stamina));
 
 		if (samsaraClassNum() != CLASS_WITCHAVEN && samsaraClassNum() != CLASS_DEMONESS) { AdjustHealthOverMaxDisplay(); } // these two classes already call this function in their own loop scripts
 
@@ -1783,7 +1813,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
 			case CLASS_WITCHAVEN:
-                SetActorProperty(0, APROP_SpawnHealth, 100 + (20 * (CheckInventory("WTLevel") - 1) - (20 * (CheckInventory("WTLevel") >= 7))));
+                SetActorProperty(0, APROP_SpawnHealth, (100 + CheckInventory("SamsaraHasMaxHealth")) + (20 * (CheckInventory("WTLevel") - 1) - (20 * (CheckInventory("WTLevel") >= 7))));
                 AdjustHealthOverMaxDisplay();
 
 				if (!CheckInventory("WTSpellFlyHack")) { TakeInventory("WTSpellFly", 1); } // hexen
@@ -2516,8 +2546,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 		//if (isDead(0)) { endloop = 1; }
 		
-		if(ClassifyActor(0) & ACTOR_ALIVE && GetActorProperty(0,APROP_Health) <= (GetUserCvar(pln,"samsara_cl_autoinventoryhealth") > 100 ? GetActorProperty(0,APROP_SpawnHealth) : GetUserCvar(pln,"samsara_cl_autoinventoryhealth"))) 
-			AutoUseHealth(PlayerClass(pln),GetUserCvar(pln,"samsara_cl_autoinventoryhealth") > 100 ? GetActorProperty(0,APROP_SpawnHealth) : GetUserCvar(pln,"samsara_cl_autoinventoryhealth"));
+        if (!GetCVar("sv_disableautohealth") && !isDead(0) &&
+            GetActorProperty(0, APROP_Health) <= (GetUserCVar(pln, "samsara_cl_autoinventoryhealth") > 100 ? getMaxHealth(0) : GetUserCVar(pln, "samsara_cl_autoinventoryhealth")))
+        { AutoUseHealth(PlayerClass(pln), GetUserCVar(pln, "samsara_cl_autoinventoryhealth") > 100 ? getMaxHealth(0) : GetUserCVar(pln, "samsara_cl_autoinventoryhealth")); }
 
         if (!isDead(0) && !CheckInventory("BasicArmor") && GetUserCVar(pln, "samsara_cl_autoinventoryarmor"))
         {
