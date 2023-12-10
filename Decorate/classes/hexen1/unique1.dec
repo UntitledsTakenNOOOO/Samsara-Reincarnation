@@ -24,7 +24,7 @@ actor PortMysticAmbit : CustomInventory
       Use:
         TNT1 A 0 A_TakeInventory("SamsaraHexenMysticAmbitIncantFoundEligible")
         TNT1 A 0 A_JumpIfInventory("HexenClassMode",3,"UseFighter")
-        //TNT1 A 0 A_JumpIfInventory("HexenClassMode",2,"UseMage")
+        TNT1 A 0 A_JumpIfInventory("HexenClassMode",2,"UseMage")
         TNT1 A 0 A_JumpIfInventory("HexenClassMode",1,"UseClericClassic")
       UseCleric:
         TNT1 A 0 A_GiveInventory("SamsaraHexenMysticAmbitIncantHealthCheckGameModeCheck")
@@ -56,6 +56,19 @@ actor PortMysticAmbit : CustomInventory
         fail
 
       // Daedolon (Ammo)
+      UseMage:
+        TNT1 A 0 A_GiveInventory("SamsaraHexenMysticAmbitIncantAmmoCheckGameModeCheck")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHexenMysticAmbitIncantFoundEligible",1,"UseSuccessMage")
+        goto UseFailMage
+
+      UseSuccessMage:
+        TNT1 A 0 A_PlaySound("hexen/artiuse",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("SamsaraHexenMysticAmbitIncantAmmoGiverGameModeCheck")
+        stop
+
+      UseFailMage:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 1, 1)
+        fail
 
       // Baratus (Armor)
       UseFighter:
@@ -593,6 +606,541 @@ actor SamsaraHexenMysticAmbitIncantHealthArmorGiverTeam8 : SamsaraHexenMysticAmb
 }
 
 // Daedolon
+
+actor SamsaraHexenMysticAmbitIncantAmmoCheckGameModeCheck : Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",0,"PickupDMTeam8")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",7,"PickupDMTeam7")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",6,"PickupDMTeam6")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",5,"PickupDMTeam5")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",4,"PickupDMTeam4")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",3,"PickupDMTeam3")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",2,"PickupDMTeam2")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",1,"PickupDMTeam1")
+      PickupDM:
+        TNT1 A 0 A_GiveInventory("SamsaraHexenMysticAmbitIncantAmmoCheck")
+        stop
+
+      PickupDMTeam1:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoCheckTeam1",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam2:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoCheckTeam2",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam3:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoCheckTeam3",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam4:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoCheckTeam4",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam5:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoCheckTeam5",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam6:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoCheckTeam6",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam7:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoCheckTeam7",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam8:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoCheckTeam8",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupCoop:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoCheck",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoCheck : Trigger
+{
+    States
+    {
+      Pickup:
+      // This is where teams are checked for in the actors after this one.
+      PickupCheck:
+      // "Mana 1" check
+      PickupCheck1:
+        TNT1 A 0 A_JumpIfInventory("WolfenClass",1,"PickupCheck1Wolfenstein")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupCheck1Hexen1")
+        TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupCheck1ROTT")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupCheck1Hexen2")
+        TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupCheck1Catacomb")
+      PickupCheck1Default:
+        TNT1 A 0 A_JumpIfInventory("Clip",0,1)
+        goto PickupSuccess
+        TNT1 A 0 A_JumpIfInventory("Shell",0,"PickupCheck2") // jump to "Mana 2" check
+        goto PickupSuccess
+
+      PickupCheck1Wolfenstein:
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"PickupCheck1Totenkopf")
+        TNT1 A 0 A_JumpIfInventory("Clip",0,"PickupCheck2")
+        goto PickupSuccess
+
+      PickupCheck1Totenkopf:
+        goto PickupCheck1Default
+
+      PickupCheck1Hexen1:
+        TNT1 A 0 A_JumpIfInventory("Clip",0,"PickupCheck2")
+        goto PickupSuccess
+
+      PickupCheck1ROTT:
+        TNT1 A 0 A_JumpIfInventory("HSMissiles",0,1)
+        goto PickupSuccess
+        TNT1 A 0 A_JumpIfInventory("RottMissiles",0,"PickupCheck2")
+        goto PickupSuccess
+
+      PickupCheck1Hexen2:
+        goto PickupCheck1Hexen1
+
+      PickupCheck1Catacomb:
+        TNT1 A 0 A_JumpIfInventory("Catacomb_Waves",0,1)
+        goto PickupSuccess
+        TNT1 A 0 A_JumpIfInventory("Catacomb_XTerminators",0,1)
+        goto PickupSuccess
+        TNT1 A 0 A_JumpIfInventory("Catacomb_Bursts",0,1)
+        goto PickupSuccess
+        TNT1 A 0 A_JumpIfInventory("Catacomb_Zappers",0,"PickupCheck2")
+        goto PickupSuccess
+
+      // "Mana 2" check
+      PickupCheck2:
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupCheck2Hexen1")
+        TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupCheck2ROTT")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupCheck2Hexen2")
+        TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupCheck2Catacomb")
+      PickupCheck2Default:
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",0,1)
+        goto PickupSuccess
+        TNT1 A 0 A_JumpIfInventory("Cell",0,"PickupStop") // fail if we're full on all ammo
+        goto PickupSuccess
+
+      PickupCheck2Hexen1:
+        TNT1 A 0 A_JumpIfInventory("Cell",0,"PickupStop")
+        goto PickupSuccess
+
+      PickupCheck2ROTT:
+        TNT1 A 0 A_JumpIfInventory("FBMissiles",0,1)
+        goto PickupSuccess
+        TNT1 A 0 A_JumpIfInventory("DMissiles",0,"PickupStop")
+        goto PickupSuccess
+
+      PickupCheck2Hexen2:
+        goto PickupCheck2Hexen1
+
+      PickupCheck2Catacomb:
+        TNT1 A 0 A_JumpIfInventory("Catacomb_Nukes",0,1)
+        goto PickupSuccess
+        TNT1 A 0 A_JumpIfInventory("Catacomb_Bolts",0,"PickupStop")
+        goto PickupSuccess
+
+      PickupSuccess:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantFoundEligible",255,RGF_GIVESELF|RGF_PLAYERS|RGF_NOSIGHT) // kinda hacky
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoCheckTeam1 : SamsaraHexenMysticAmbitIncantAmmoCheck
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",2,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",1,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoCheckTeam2 : SamsaraHexenMysticAmbitIncantAmmoCheck
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",3,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",2,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoCheckTeam3 : SamsaraHexenMysticAmbitIncantAmmoCheck
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",4,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",3,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoCheckTeam4 : SamsaraHexenMysticAmbitIncantAmmoCheck
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",5,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",4,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoCheckTeam5 : SamsaraHexenMysticAmbitIncantAmmoCheck
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",6,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",5,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoCheckTeam6 : SamsaraHexenMysticAmbitIncantAmmoCheck
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",7,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",6,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoCheckTeam7 : SamsaraHexenMysticAmbitIncantAmmoCheck
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",0,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",7,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoCheckTeam8 : SamsaraHexenMysticAmbitIncantAmmoCheck
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",0,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoGiverGameModeCheck : Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",0,"PickupDMTeam8")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",7,"PickupDMTeam7")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",6,"PickupDMTeam6")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",5,"PickupDMTeam5")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",4,"PickupDMTeam4")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",3,"PickupDMTeam3")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",2,"PickupDMTeam2")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",1,"PickupDMTeam1")
+      PickupDM:
+        TNT1 A 0 A_GiveInventory("SamsaraHexenMysticAmbitIncantAmmoGiver")
+        stop
+
+      PickupDMTeam1:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoGiverTeam1",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam2:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoGiverTeam2",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam3:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoGiverTeam3",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam4:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoGiverTeam4",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam5:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoGiverTeam5",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam6:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoGiverTeam6",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam7:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoGiverTeam7",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupDMTeam8:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoGiverTeam8",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+
+      PickupCoop:
+        TNT1 A 0 A_RadiusGive("SamsaraHexenMysticAmbitIncantAmmoGiver",255,RGF_GIVESELF|RGF_PLAYERS)
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoGiver : Trigger
+{
+    States
+    {
+      Pickup:
+      // This is where teams are checked for in the actors after this one.
+      PickupCheck:
+      // Ammo check
+      PickupCheckAmmo:
+      // "Mana 1" check
+      PickupCheckAmmo1:
+        TNT1 A 0 A_JumpIfInventory("WolfenClass",1,"PickupCheckAmmo1Wolfenstein")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupCheckAmmo1Hexen1")
+        TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupCheckAmmo1ROTT")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupCheckAmmo1Hexen2")
+        TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupCheckAmmo1Catacomb")
+      PickupCheckAmmo1Default:
+        TNT1 A 0 A_JumpIfInventory("Clip",0,1)
+        goto PickupSuccessSound1
+        TNT1 A 0 A_JumpIfInventory("Shell",0,"PickupCheckAmmo2") // jump to "Mana 2" check
+        goto PickupSuccessSound1
+
+      PickupCheckAmmo1Wolfenstein:
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"PickupCheckAmmo1Totenkopf")
+        TNT1 A 0 A_JumpIfInventory("Clip",0,"PickupCheckAmmo2")
+        goto PickupSuccessSound1
+
+      PickupCheckAmmo1Totenkopf:
+        goto PickupCheckAmmo1Default
+
+      PickupCheckAmmo1Hexen1:
+        TNT1 A 0 A_JumpIfInventory("Clip",0,"PickupCheckAmmo2")
+        goto PickupSuccessSound1
+
+      PickupCheckAmmo1ROTT:
+        TNT1 A 0 A_JumpIfInventory("HSMissiles",0,1)
+        goto PickupSuccessSound1
+        TNT1 A 0 A_JumpIfInventory("RottMissiles",0,"PickupCheckAmmo2")
+        goto PickupSuccessSound1
+
+      PickupCheckAmmo1Hexen2:
+        goto PickupCheckAmmo1Hexen1
+
+      PickupCheckAmmo1Catacomb:
+        TNT1 A 0 A_JumpIfInventory("Catacomb_Waves",0,1)
+        goto PickupSuccessSound1
+        TNT1 A 0 A_JumpIfInventory("Catacomb_XTerminators",0,1)
+        goto PickupSuccessSound1
+        TNT1 A 0 A_JumpIfInventory("Catacomb_Bursts",0,1)
+        goto PickupSuccessSound1
+        TNT1 A 0 A_JumpIfInventory("Catacomb_Zappers",0,"PickupCheckAmmo2")
+        goto PickupSuccessSound1
+
+      // Sound
+      PickupSuccessSound1:
+        TNT1 A 0 A_PlaySound("hexen/ambituse",CHAN_AUTO)
+      // Ammo giving
+      PickupSuccessAmmo1:
+        TNT1 A 0 A_JumpIfInventory("WolfenClass",1,"PickupSuccessAmmo1Wolfenstein")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupSuccessAmmo1Hexen1")
+        TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupSuccessAmmo1ROTT")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupSuccessAmmo1Hexen2")
+        TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupSuccessAmmo1Catacomb")
+      PickupSuccessAmmo1Default:
+        TNT1 A 0 A_GiveInventory("Clip",random(50,99))
+        TNT1 A 0 A_GiveInventory("Shell",random(50,99))
+        stop
+
+      PickupSuccessAmmo1Wolfenstein:
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"PickupSuccessAmmo1Totenkopf")
+        TNT1 A 0 A_GiveInventory("Clip",random(50,99))
+        stop
+
+      PickupSuccessAmmo1Totenkopf:
+        goto PickupSuccessAmmo1Default
+
+      PickupSuccessAmmo1Hexen1:
+        TNT1 A 0 A_GiveInventory("Clip",random(50,99))
+        stop
+
+      PickupSuccessAmmo1ROTT:
+        TNT1 A 0 A_GiveInventory("HSMissiles",random(50,99))
+        TNT1 A 0 A_GiveInventory("RottMissiles",random(50,99))
+        stop
+
+      PickupSuccessAmmo1Hexen2:
+        goto PickupSuccessAmmo1Hexen1
+
+      PickupSuccessAmmo1Catacomb:
+        TNT1 A 0 A_GiveInventory("Catacomb_Waves",random(50,99))
+        TNT1 A 0 A_GiveInventory("Catacomb_XTerminators",random(50,99))
+        TNT1 A 0 A_GiveInventory("Catacomb_Bursts",random(50,99))
+        TNT1 A 0 A_GiveInventory("Catacomb_Zappers",random(50,99))
+        stop
+
+      // "Mana 2" check
+      PickupCheckAmmo2:
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupCheckAmmo2Hexen1")
+        TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupCheckAmmo2ROTT")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupCheckAmmo2Hexen2")
+        TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupCheckAmmo2Catacomb")
+      PickupCheckAmmo2Default:
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",0,1)
+        goto PickupSuccessSound2
+        TNT1 A 0 A_JumpIfInventory("Cell",0,"PickupStop") // fail if we're full on all ammo
+        goto PickupSuccessSound2
+
+      PickupCheckAmmo2Hexen1:
+        TNT1 A 0 A_JumpIfInventory("Cell",0,"PickupStop")
+        goto PickupSuccessSound2
+
+      PickupCheckAmmo2ROTT:
+        TNT1 A 0 A_JumpIfInventory("FBMissiles",0,1)
+        goto PickupSuccessSound2
+        TNT1 A 0 A_JumpIfInventory("DMissiles",0,"PickupStop")
+        goto PickupSuccessSound2
+
+      PickupCheckAmmo2Hexen2:
+        goto PickupCheckAmmo2Hexen1
+
+      PickupCheckAmmo2Catacomb:
+        TNT1 A 0 A_JumpIfInventory("Catacomb_Nukes",0,1)
+        goto PickupSuccessSound2
+        TNT1 A 0 A_JumpIfInventory("Catacomb_Bolts",0,"PickupStop")
+        goto PickupSuccessSound2
+
+      // Sound
+      PickupSuccessSound2:
+        TNT1 A 0 A_PlaySound("hexen/ambituse",CHAN_AUTO)
+      // Ammo giving
+      PickupSuccessAmmo2:
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupSuccessAmmo2Hexen1")
+        TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupSuccessAmmo2ROTT")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupSuccessAmmo2Hexen2")
+        TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupSuccessAmmo2Catacomb")
+      PickupSuccessAmmo2Default:
+        TNT1 A 0 A_GiveInventory("RocketAmmo",random(50,99))
+        TNT1 A 0 A_GiveInventory("Cell",random(50,99))
+        stop
+
+      PickupSuccessAmmo2Hexen1:
+        TNT1 A 0 A_GiveInventory("Cell",random(50,99))
+        stop
+
+      PickupSuccessAmmo2ROTT:
+        TNT1 A 0 A_GiveInventory("FBMissiles",random(50,99))
+        TNT1 A 0 A_GiveInventory("DMissiles",random(50,99))
+        stop
+
+      PickupSuccessAmmo2Hexen2:
+        goto PickupSuccessAmmo2Hexen1
+
+      PickupSuccessAmmo2Catacomb:
+        TNT1 A 0 A_GiveInventory("Catacomb_Nukes",random(50,99))
+        TNT1 A 0 A_GiveInventory("Catacomb_Bolts",random(50,99))
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoGiverTeam1 : SamsaraHexenMysticAmbitIncantAmmoGiver
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",2,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",1,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoGiverTeam2 : SamsaraHexenMysticAmbitIncantAmmoGiver
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",3,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",2,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoGiverTeam3 : SamsaraHexenMysticAmbitIncantAmmoGiver
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",4,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",3,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoGiverTeam4 : SamsaraHexenMysticAmbitIncantAmmoGiver
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",5,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",4,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoGiverTeam5 : SamsaraHexenMysticAmbitIncantAmmoGiver
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",6,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",5,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoGiverTeam6 : SamsaraHexenMysticAmbitIncantAmmoGiver
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",7,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",6,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoGiverTeam7 : SamsaraHexenMysticAmbitIncantAmmoGiver
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",0,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",7,"PickupCheck")
+        stop
+    }
+}
+
+actor SamsaraHexenMysticAmbitIncantAmmoGiverTeam8 : SamsaraHexenMysticAmbitIncantAmmoGiver
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentTeam",0,"PickupCheck")
+        stop
+    }
+}
 
 // Baratus
 
