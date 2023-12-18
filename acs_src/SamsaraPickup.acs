@@ -311,6 +311,8 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
 
             ACS_NamedExecuteAlways("SamsaraClientWeaponPickup", 0, slot,GetCVar("compat_silentpickup"),dropped);		
 
+            if (!dropped) { ACS_NamedExecuteWithResult("SamsaraWeaponTaunt"); } // so it gives the taunt cooldown properly
+
             if (CheckInventory("SamsaraHeroMusicHalfLifeActive") && !CheckInventory("HalfLifeMusicPlayingToken"))
             {
                 GiveInventory("HLMusicWeapon",1);
@@ -408,33 +410,6 @@ script "SamsaraClientWeaponPickup" (int slot, int soundmode, int dropped) client
 		FadeRange(ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], ClassFades[pclass][3],
 		ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], 0.0, itof(ClassFades[pclass][4]) / 35);
 	}
-    
-    if (pclass == CLASS_DUKE && !GetCVar("samsara_cl_ballgag") && !dropped)
-    {
-        Delay(8);
-
-        if (!DukeQuoteCooldown[pln] && !CheckInventory("DukeTauntCooldown"))
-        {
-            if (soundmode == 1) { if (CheckInventory("DukeLegacyVoices")) { LocalAmbientSound("duke/old_weapontaunt", 127); } else { LocalAmbientSound("duke/weapontaunt", 127); } }
-            else { if (CheckInventory("DukeLegacyVoices")) { ActivatorSound("duke/old_weapontaunt", 127); } else { ActivatorSound("duke/weapontaunt", 127); } }
-            GiveInventory("DukeTauntCooldown",5);
-            ACS_NamedExecuteAlways("DukeTauntCooldown",0,0);
-            DukeQuoteCooldown[pln] = 140;
-        }
-    }
-	if (pclass == CLASS_RR && !GetCVar("samsara_cl_ballgag") && !dropped)
-    {
-        Delay(8);
-
-        if (!LeonardQuoteCooldown[pln] && !CheckInventory("LeonardTauntCooldown"))
-        {
-            if (soundmode == 1) { LocalAmbientSound("Leonard/weapontaunt", 127); }
-            else { ActivatorSound("Leonard/weapontaunt", 127); }
-            GiveInventory("LeonardTauntCooldown",5);
-            ACS_NamedExecuteAlways("LeonardTauntCooldown",0,0);
-            LeonardQuoteCooldown[pln] = 140;
-        }
-    }	
 }
 
 script "SamsaraClientUniquePickup" (int soundmode) clientside //633 -- SAMSARA_CLIENT_UNIQUEPICKUP
@@ -490,4 +465,23 @@ Script "SamsaraForceGrinMugShot" (void)
 	{
 		SetMugShotState("Grin");
 	}
+}
+
+script "SamsaraWeaponTaunt" (void)
+{
+    switch (samsaraClassNum())
+    {
+      case CLASS_DUKE:
+        Delay(8);
+        GiveInventory("DukeWeaponTaunt", 1);
+        break;
+
+      case CLASS_RR:
+        Delay(8);
+        GiveInventory("LeonardWeaponTaunt", 1);
+        break;
+
+      default:
+        terminate;
+    }
 }
