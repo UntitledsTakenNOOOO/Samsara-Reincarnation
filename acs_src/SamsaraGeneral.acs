@@ -4769,6 +4769,63 @@ Script "ExtraDeathFX" (int mode) // Samsara Extra Death Special Effects -- 2530
 	}
 }
 
+Script "SamsaraDeathEffects" (int type)
+{
+	// Determine the size of the actor that we want to spawn
+	int xScale = (GetActorProperty(0,APROP_Radius)/20);
+	int yScale = (GetActorProperty(0,APROP_Height)/14); // It should be 56, but for some reason, this value is divided by 4 during calculations.
+
+	// Get the coordinates of the killed actor
+	int xPosition = GetActorX(0);
+	int yPosition = GetActorY(0);
+	int zPosition = GetActorZ(0);
+
+	int effectTid = UniqueTid();
+
+	// Translation to apply to the killed actor if needed
+	CreateTranslation(7600, 0:255=0:255);	// Untranslated
+	CreateTranslation(7601, 0:255=%[0.078,0.062,0.140]:[1.16,1.16,1.348]);	// Player Ice Death Translation
+
+	// Get the transparency of the killed actor
+	int actorTransparency = (GetActorProperty(0,APROP_Alpha));
+	int actorTransparencySubtraction = (GetActorProperty(0,APROP_Alpha)/10);
+
+	// Check for any actor flags if the death effect calls for it
+	int isFlyingActor = (CheckFlag(0,"Float") && CheckFlag(0,"NoGravity"));
+
+	// Debug call to ensure the function is called properly
+	//PrintBold(s:"Monster X: ",d:xPosition >> 16,s:" Monster Y: ",d:yPosition >> 16,s:" Monster Z: ",d:zPosition >> 16,s:" TID: ",d:effectTid >> 16,s:" Activator: ",n:0);
+	//PrintBold(s:"Effect XScale: ",d:xScale >> 16,s:" Effect YScale: ",d:yScale >> 16);
+	//PrintBold(s:"Actor ", n:0, s:" is the activator of this function");
+
+	switch (type)
+	{
+		// Chex Zorch Effect
+		case 0:
+			Spawn("ZorchEffectSmall", xPosition, yPosition, zPosition, effectTid);
+			SetActorProperty(effectTid, APROP_ScaleX, xScale);
+			SetActorProperty(effectTid, APROP_ScaleY, yScale);
+
+			SetActorProperty(0, APROP_RenderStyle, STYLE_Translucent);
+			for (int i = 0; i < 9; i++)
+			{
+				Delay(3);
+				SetActorProperty(0, APROP_Alpha, (actorTransparency-actorTransparencySubtraction));
+			}
+			
+			Delay(1);
+			SetActorProperty(0, APROP_RenderStyle, STYLE_Normal);
+			SetActorProperty(0, APROP_Alpha, 1);
+			break;
+		// Chex Boss Zorch Effect
+		case 1:
+			Spawn("ZorchEffectHuge", xPosition, yPosition, zPosition, effectTid);
+			SetActorProperty(effectTid, APROP_ScaleX, xScale);
+			SetActorProperty(effectTid, APROP_ScaleY, yScale);
+			break;
+	}
+}
+
 str itemTypeCvars[3] = { "samsara_replace_computermap", "samsara_replace_lightamplifier", "samsara_replace_blursphere" };
 str itemReplacementNames[26] = { "HealPack2", "SuperHealth", "ArmorPack1", "ArmorPack3", "MegaPack", "Ammo1Big", "Ammo2Big",
 "Ammo3Big", "Ammo4Big", "AmmoBackpack", "SamsaraAllMap", "SamsaraUniquePickup", "PartialInvisibility", "InvulnPowerup", "Visor", "SamsaraSlotOnePickup",
