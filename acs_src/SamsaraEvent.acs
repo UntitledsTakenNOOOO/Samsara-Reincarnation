@@ -440,6 +440,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	int startTime = Timer();
 	int endloop;
 	int canbuddha;
+	int storedhp, canresethp;
 	int armor, oarmor, type, otype;
 	int i;
 	int doommode, dukemode, hexmode, wolfmode, rottmode, blakemode, ipogmode, halflifemode, previousvalue, cvalue;
@@ -931,14 +932,24 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
         SetInventory("SamsaraHasBonusStamina", GetActorProperty(0, APROP_Stamina));
 
-		if (samsaraClassNum() != CLASS_WITCHAVEN && samsaraClassNum() != CLASS_DEMONESS) { AdjustHealthOverMaxDisplay(); } // these two classes already call this function in their own loop scripts
+        if (samsaraClassNum() != CLASS_WITCHAVEN && samsaraClassNum() != CLASS_DEMONESS) // these two classes already call this stuff in their own loop scripts
+        {
+            storedhp = 100;
+
+            if (CheckInventory("PowerProsperity1") && GetCVar("prosperity_max_health") > storedhp) { storedhp = GetCVar("prosperity_max_health"); } // if cvar's below the starting value, don't change the variable
+
+            if (CheckInventory("PowerProsperity1") || (!CheckInventory("PowerProsperity1") && canresethp)) { SetActorProperty(0, APROP_SpawnHealth, storedhp + CheckInventory("SamsaraHasMaxHealth") + CheckInventory("StaminaUpgradeHealth")); }
+
+            canresethp = CheckInventory("PowerProsperity1");
+
+            AdjustHealthOverMaxDisplay();
+        }
 
         AdjustArmorDisplays();
 
 		SetInventory("SamsaraHasDoubleFiringSpeed", CheckInventory("PowerDoubleFiringSpeed") || CheckInventory("RuneDoubleFiringSpeed") || CheckInventory("CustomDoubleFiringSpeed") ||
 													CheckInventory("PowerRage1") || CheckInventory("PowerCatacomb_RapidFire") || CheckInventory("Painkiller_DoubleFireSpeed"));
 		SetInventory("SamsaraHasProsperity", CheckInventory("PowerProsperity") || CheckInventory("RuneProsperity") || CheckInventory("CustomProsperity"));
-		SetInventory("SamsaraHasProsperityMulti", CheckInventory("PowerProsperity1")); // Prosperity's handled a little differently in multi runes
 		SetInventory("SamsaraHasSpread", CheckInventory("PowerSpread") || CheckInventory("RuneSpread") || CheckInventory("CustomSpread") || CheckInventory("PowerSpread1"));
 
 		SetInventory("SamsaraReloadMode", GetCVar("samsara_reloadmode"));
@@ -1871,7 +1882,12 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
 			case CLASS_WITCHAVEN:
-                SetActorProperty(0, APROP_SpawnHealth, (100 + CheckInventory("SamsaraHasMaxHealth")) + (20 * (CheckInventory("WTLevel") - 1) - (20 * (CheckInventory("WTLevel") >= 7))));
+                storedhp = 100 + (20 * (CheckInventory("WTLevel") - 1) - (20 * (CheckInventory("WTLevel") >= 7)));
+
+                if (CheckInventory("PowerProsperity1") && GetCVar("prosperity_max_health") > storedhp) { storedhp = GetCVar("prosperity_max_health"); } // if cvar's below the starting value, don't change the variable
+
+                SetActorProperty(0, APROP_SpawnHealth, storedhp + CheckInventory("SamsaraHasMaxHealth") + CheckInventory("StaminaUpgradeHealth"));
+
                 AdjustHealthOverMaxDisplay();
 
 				if (!CheckInventory("WTSpellFlyHack")) { TakeInventory("WTSpellFly", 1); } // hexen
