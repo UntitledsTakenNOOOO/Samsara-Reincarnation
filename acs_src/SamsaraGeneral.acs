@@ -4795,7 +4795,8 @@ Script "SamsaraDeathEffects" (int type)
 
 	// Translation to apply to the killed actor if needed
 	CreateTranslation(7600, 0:255=0:255);	// Untranslated
-	CreateTranslation(7601, 0:255=%[0.078,0.062,0.140]:[1.16,1.16,1.348]);	// Player Ice Death Translation
+	CreateTranslation(7601, 0:255=%[0,0,0]:[0,0,0]);	// Disintegration Translation
+	CreateTranslation(7602, 0:255=%[0.078,0.062,0.140]:[1.16,1.16,1.348]);	// Player Ice Death Translation
 
 	// Check for any actor flags if the death effect calls for it
 	int isFlyingActor = (CheckFlag(0,"Float") && CheckFlag(0,"NoGravity"));
@@ -4836,6 +4837,7 @@ Script "SamsaraDeathEffects" (int type)
 				voice = GetActorProperty(0, APROP_Painsound);
 				PlaySound(0, voice, CHAN_VOICE, 1.0, 0, ATTN_NORM);
 			}
+			break;
 		// Marathon Burning Corpse // TODO: Remove "Totenkopf_BurningMan" ACS script
 		case 3:
 			Spawn("SamsaraMarathonBurningCorpse", xPosition, yPosition, zPosition, effectTid);
@@ -4853,6 +4855,7 @@ Script "SamsaraDeathEffects" (int type)
 				voice = GetActorProperty(0, APROP_Painsound);
 				PlaySound(0, voice, CHAN_VOICE, 1.0, 0, ATTN_NORM);
 			}
+			break;
 		// ROTT Burning Skeleton
 		case 4:
 			Spawn("BurningSkeleton", xPosition, yPosition, zPosition, effectTid);
@@ -4871,7 +4874,40 @@ Script "SamsaraDeathEffects" (int type)
 			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*12);
 			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*12);
 			break;
+		// ROTT Disintegrated Man
+		case 7:
+			Spawn("RGodModeDeath", xPosition, yPosition, zPosition, effectTid);
+			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*13);
+			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*13);
+			break;
+		// ROTT Generic Disintegration Effect
+		case 8:
+			Spawn("RGodModeDeathSmall", xPosition, yPosition, zPosition, effectTid);
+			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*7);
+			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*7);
+			Thing_SetTranslation(0, 7601);
+			break;
+		// Strife Burning Human // TODO: Remove "Totenkopf_BurningMan" ACS script
+		case 9:
+			Spawn("StrifeBurningHuman", xPosition, yPosition, zPosition, effectTid);
+			SetActorProperty(effectTid, APROP_ScaleX, xScale);
+			SetActorProperty(effectTid, APROP_ScaleY, yScale);
 
+			// Play death or pain sound depending on what the actor has
+			if(StrLen(GetActorProperty(0, APROP_DeathSound)) != 0)
+			{
+				voice = GetActorProperty(0, APROP_Deathsound);
+				PlaySound(0, voice, CHAN_VOICE, 1.0, 0, ATTN_NORM);
+			}
+			else if(StrLen(GetActorProperty(0, APROP_PainSound)) != 0)
+			{
+				voice = GetActorProperty(0, APROP_Painsound);
+				PlaySound(0, voice, CHAN_VOICE, 1.0, 0, ATTN_NORM);
+			}
+			break;
+		// Translation Removal
+		case 9000:
+			Thing_SetTranslation(0, 7600);
 			break;
 	}
 }
