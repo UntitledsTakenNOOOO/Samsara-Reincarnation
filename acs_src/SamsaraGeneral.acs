@@ -331,7 +331,13 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 		break;
 
 	case 52:
-		if (arg1) { result = GetCVar("samsara_pdwtak_distance"); }
+		if (arg1 > 1)
+		{
+			if (GetCVar("samsara_pdwtak_fulldamagedistance") > GetCVar("samsara_pdwtak_distance")) { result = GetCVar("samsara_pdwtak_distance"); }
+			else if (GetCVar("samsara_pdwtak_fulldamagedistance") < 0) { result = 0; }
+			else { result = GetCVar("samsara_pdwtak_fulldamagedistance"); }
+		}
+		else if (arg1 == 1) { result = GetCVar("samsara_pdwtak_distance"); }
 		else { result = GetCVar("samsara_pdwtak_damage"); }
 		break;
 	}
@@ -1304,7 +1310,7 @@ script "SamsaraGetSettings" (void) NET //676 -- SAMSARA_GETSETTINGS
 	int lmsUlt, lmsUnique;
 	int lmsSkulltag = GetCVar("samsara_lmsskulltag");
 	int ultStay, highLow;
-    int pdwtakDamage = GetCVar("samsara_pdwtak_damage"), pdwtakDistance = GetCVar("samsara_pdwtak_distance");
+    int pdwtakDamage = GetCVar("samsara_pdwtak_damage"), pdwtakDistance = GetCVar("samsara_pdwtak_distance"), pdwtakFullDamageDistance = GetCVar("samsara_pdwtak_fulldamagedistance");
 
 	if (GetCVar("samsara_nohealthcap")) { noHealthCap = "on"; }
 	else { noHealthCap = "off"; }
@@ -1337,6 +1343,9 @@ script "SamsaraGetSettings" (void) NET //676 -- SAMSARA_GETSETTINGS
     if (pdwtakDamage < 0) { pdwtakDamage = 0; }
 
     if (pdwtakDistance < 0) { pdwtakDistance = 0; }
+
+    if (pdwtakFullDamageDistance > pdwtakDistance) { pdwtakFullDamageDistance = pdwtakDistance; }
+    else if (pdwtakFullDamageDistance < 0) { pdwtakFullDamageDistance = 0; }
 
 	SetHudSize(640, 480, 1);
 
@@ -1435,7 +1444,7 @@ script "SamsaraGetSettings" (void) NET //676 -- SAMSARA_GETSETTINGS
 	HudMessage(s:"Shotgun/Chainsaw/Unique/Backpack start: \cd", d:GetCVar("samsara_shotgunstart"), s:"\c- / \ca", d:GetCvar("samsara_chainsawstart"), s:"\c- / \cn", d:GetCvar("samsara_uniquestart"), s:"\c- / \cf", d:GetCvar("samsara_backpackstart");
 			HUDMSG_FADEOUT, 6774, CR_WHITE, 50.1, 288.0, 3.0, 1.0);
 
-	HudMessage(s:"PDWTAK explosions deal \cf", d:pdwtakDamage, s:" damage\c- across \ci", d:pdwtakDistance, s:" map units", s:"\c-.";
+	HudMessage(s:"PDWTAK explosions deal \cf", d:pdwtakDamage, s:" damage\c- across \ck", d:pdwtakDistance, s:" map units", s:"\c- (full damage applied in \ci", d:pdwtakFullDamageDistance, s:" map units", s:"\c-).";
 			HUDMSG_FADEOUT, 6770, CR_WHITE, 50.1, 224.0, 3.0, 1.0);
 
 	HudMessage(s:"PPW Mode is ", s:cond(GetCVar("samsara_permaweaponlevel2"), "\cdon\c-.", "\caoff\c-.");
