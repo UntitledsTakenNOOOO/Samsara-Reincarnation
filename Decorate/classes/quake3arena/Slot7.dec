@@ -3,7 +3,7 @@ actor SamsaraQuake3BFG10KLoopSoundCheck : Boolean {}
 Actor Q3BFG10K : Q3Weapon
 {
 	Weapon.SlotNumber 7
-	Weapon.AmmoUse 2
+	Weapon.AmmoUse 3
 	Weapon.AmmoGive 50
 	Weapon.AmmoType "Cell"
 	Inventory.PickupMessage "BFG10K"
@@ -62,7 +62,7 @@ Actor Q3BFG10K : Q3Weapon
 
 		Fire:
 			Q310 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
-			Q310 A 0 A_JumpIfInventory("Cell",2,"FireStart")
+			Q310 A 0 A_JumpIfInventory("Cell",3,"FireStart")
 			goto FireDry
 
 		FireDry:
@@ -115,15 +115,23 @@ actor SamsaraQuake3BFG10KAttackHandler : Trigger
 	{
 	// Ammo checking/taking stuff
 	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
-		TNT1 A 0 A_JumpIfInventory("Cell",2,1)
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupSound")
+		TNT1 A 0 A_JumpIfInventory("Cell",3,1)
 		stop
-		TNT1 A 0 A_TakeInventory("Cell",2)
+		TNT1 A 0 A_TakeInventory("Cell",3)
+		goto PickupSound
+
+	// Sound stuff
+	PickupSound:
+		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupSoundRevolution")
+		TNT1 A 0 A_PlaySound("Quake3/BFG/Fire",CHAN_WEAPON)
+		goto PickupAttack
+	PickupSoundRevolution:
+		TNT1 A 0 A_PlaySound("Quake3Revolution/BFG/Fire",CHAN_WEAPON)
 		goto PickupAttack
 
 	// Attack stuff
 	PickupAttack:
-		TNT1 A 0 A_PlaySound("Quake3/BFG/Fire",CHAN_WEAPON)
 		TNT1 A 0 A_GiveInventory("Q3QuadDamageSound")
 		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
