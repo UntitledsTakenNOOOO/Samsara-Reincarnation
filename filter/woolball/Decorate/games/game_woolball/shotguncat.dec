@@ -1,4 +1,4 @@
-ACTOR ShotgunCat_Samsara : SamsaraMonsterBeastMediumTotalGib replaces ShotgunCat
+ACTOR ShotgunCat_Samsara : SamsaraMonsterBeastTotalGib replaces ShotgunCat
 {
 	Game Doom
 	Health 15
@@ -13,7 +13,6 @@ ACTOR ShotgunCat_Samsara : SamsaraMonsterBeastMediumTotalGib replaces ShotgunCat
 	+FLOORCLIP
     +LOOKALLAROUND
     +DONTGIB
-    +NOTDMATCH
     +NOICEDEATH
     SeeSound "CATSIGHT"
 	AttackSound "shotguy/attack"
@@ -21,8 +20,6 @@ ACTOR ShotgunCat_Samsara : SamsaraMonsterBeastMediumTotalGib replaces ShotgunCat
 	DeathSound "CATDIE"
     DropItem "SamsaraClip2_ROTWB", 125, 5
 	Tag "Shotgun Cat"
-	var int user_scalex;
-	var int user_scaley;
 	Obituary "You were perforated by the bullets of the shotgun cat!"
 	States
 	{
@@ -90,16 +87,6 @@ ACTOR ShotgunCat_Samsara : SamsaraMonsterBeastMediumTotalGib replaces ShotgunCat
         SPOS M 4
 		SPOS H -1
 		Stop
-	Death.PainkillerStake:
-		TNT1 A 0 ACS_NamedExecuteAlways("Painkiller_MonsterKill")
-		TNT1 A 0 A_JumpIf(CallACS("Painkiller_IsItGibbed")==1,"PainkillerGib")
-		TNT1 A 0 A_GiveInventory("Painkiller_RunStake",1)
-		TNT1 A 0 A_Scream
-		TNT1 A 0 A_NoBlocking
-		TNT1 A 0 A_FaceTarget
-	StakeDeath:
-		SPOS G 2
-		Loop
     Raise:
         SPOS A 0 A_TakeInventory("SamsaraMonsterHasSeenPlayer", 1)
 		"####" "#" 0 A_JumpIfInventory("EnemyZorched",1,"ZorchRaise")
@@ -110,23 +97,6 @@ ACTOR ShotgunCat_Samsara : SamsaraMonsterBeastMediumTotalGib replaces ShotgunCat
         SPOS J 4
         SPOS I 4
         Goto See
-	ZorchRaise:
-		"####" "#" 1 A_UnsetShootable
-		"####" "#" 1 A_SpawnItem("SpawnFire2")
-		"####" "#" 0 A_PlaySound("archvile/resummon")
-		"####" "#" 1 A_TakeInventory("EnemyZorched",1)
-		"####" "#" 0 A_SetTranslucent(0.1,0)
-		"####" "#" 3 A_SetTranslucent(0.2,0)
-		"####" "#" 3 A_SetTranslucent(0.3,0)
-		"####" "#" 3 A_SetTranslucent(0.4,0)
-		"####" "#" 3 A_SetTranslucent(0.5,0)
-		"####" "#" 3 A_SetTranslucent(0.6,0)
-		"####" "#" 3 A_SetTranslucent(0.7,0)
-		"####" "#" 3 A_SetTranslucent(0.8,0)
-		"####" "#" 3 A_SetTranslucent(0.9,0)
-		"####" "#" 3 A_SetTranslucent(1,0)
-		"####" "#" 1 A_SetShootable
-		Goto See
     Pain.ShrinkerDMG:
 		SPOS G 0
 		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
@@ -162,66 +132,6 @@ ACTOR ShotgunCat_Samsara : SamsaraMonsterBeastMediumTotalGib replaces ShotgunCat
 		TNT1 A 2
 		TNT1 A 0 Thing_Remove(0)
 		stop
-	Death.ExpanderDMG:
-	XDeath.ExpanderDMG:
-		SPOS A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto ExpanderLoop
-	ExpanderLoop:
-		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
-		loop
-	ExpanderPop:	
-		"####" "#" 10
-		TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
-		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_Jump(96,2)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
-		TNT1 A 0 A_SetScale (1.0, 1.0)
-	    TNT1 A 0 A_UnsetSolid
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
-		TNT1 A 1
-		Stop
-	Death.ExpanderDMGCoop:
-	XDeath.ExpanderDMGCoop:
-		SPOS A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto ExpanderLoopCoop
-	ExpanderLoopCoop:
-		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
-		loop
-	ExpanderPopCoop:	
-		"####" "#" 10
-		TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
-		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_Jump(96,2)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
-		TNT1 A 0 A_SetScale (1.0, 1.0)
-	    TNT1 A 0 A_UnsetSolid
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
-		TNT1 A 1
-		Stop
     }
 }
 
@@ -400,7 +310,7 @@ actor ShotgunCat_Samsara_ShrinkEffect : ShotgunCat_Samsara
 	}
 }
 
-ACTOR ShotgunCatFloat_Samsara : SamsaraMonsterMechanicalMediumTotalGib replaces ShotgunCatFloat
+ACTOR ShotgunCatFloat_Samsara : SamsaraMonsterCyberneticTotalGib replaces ShotgunCatFloat
 {
 	Game Doom
 	Health 15
@@ -417,14 +327,11 @@ ACTOR ShotgunCatFloat_Samsara : SamsaraMonsterMechanicalMediumTotalGib replaces 
     +DONTGIB
     +NOGRAVITY
     +FLOATBOB
-    +NOTDMATCH
     +NOICEDEATH
     SeeSound "CATSIGHT"
 	AttackSound "shotguy/attack"
 	PainSound "CATPAIN"
 	DeathSound "CATDIE"
-	var int user_scalex;
-	var int user_scaley;
 	Tag "Floating Shotgun Cat"
 	Obituary "You were perforated by the bullets of the shotgun cat!"
 	States
@@ -485,16 +392,6 @@ ACTOR ShotgunCatFloat_Samsara : SamsaraMonsterMechanicalMediumTotalGib replaces 
         FLOA I 7
         FLOA G -1 
         Stop
-	Death.PainkillerStake:
-		TNT1 A 0 ACS_NamedExecuteAlways("Painkiller_MonsterKill")
-		TNT1 A 0 A_JumpIf(CallACS("Painkiller_IsItGibbed")==1,"PainkillerGib")
-		TNT1 A 0 A_GiveInventory("Painkiller_RunStake",1)
-		TNT1 A 0 A_Scream
-		TNT1 A 0 A_NoBlocking
-		TNT1 A 0 A_FaceTarget
-	StakeDeath:
-		FLOA E 2
-		Loop
 	Raise:
 	    FLOA A 0 A_TakeInventory("SamsaraMonsterHasSeenPlayer", 1)
 		"####" "#" 0 A_JumpIfInventory("EnemyZorched",1,"ZorchRaise")
@@ -505,23 +402,6 @@ ACTOR ShotgunCatFloat_Samsara : SamsaraMonsterMechanicalMediumTotalGib replaces 
         SPOS J 4
         SPOS I 4
         Goto See
-	ZorchRaise:
-		"####" "#" 1 A_UnsetShootable
-		"####" "#" 1 A_SpawnItem("SpawnFire2")
-		"####" "#" 0 A_PlaySound("archvile/resummon")
-		"####" "#" 1 A_TakeInventory("EnemyZorched",1)
-		"####" "#" 0 A_SetTranslucent(0.1,0)
-		"####" "#" 3 A_SetTranslucent(0.2,0)
-		"####" "#" 3 A_SetTranslucent(0.3,0)
-		"####" "#" 3 A_SetTranslucent(0.4,0)
-		"####" "#" 3 A_SetTranslucent(0.5,0)
-		"####" "#" 3 A_SetTranslucent(0.6,0)
-		"####" "#" 3 A_SetTranslucent(0.7,0)
-		"####" "#" 3 A_SetTranslucent(0.8,0)
-		"####" "#" 3 A_SetTranslucent(0.9,0)
-		"####" "#" 3 A_SetTranslucent(1,0)
-		"####" "#" 1 A_SetShootable
-		Goto See
     Pain.ShrinkerDMG:
 		FLOA A 0
 		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
@@ -557,66 +437,6 @@ ACTOR ShotgunCatFloat_Samsara : SamsaraMonsterMechanicalMediumTotalGib replaces 
 		TNT1 A 2
 		TNT1 A 0 Thing_Remove(0)
 		stop
-	Death.ExpanderDMG:
-	XDeath.ExpanderDMG:
-		FLOA A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto ExpanderLoop
-	ExpanderLoop:
-		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
-		loop
-	ExpanderPop:	
-		"####" "#" 10
-		TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
-		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_Jump(96,2)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
-		TNT1 A 0 A_SetScale (1.0, 1.0)
-	    TNT1 A 0 A_UnsetSolid
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
-		TNT1 A 1
-		Stop
-	Death.ExpanderDMGCoop:
-	XDeath.ExpanderDMGCoop:
-		FLOA A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto ExpanderLoopCoop
-	ExpanderLoopCoop:
-		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
-		loop
-	ExpanderPopCoop:	
-		"####" "#" 10
-		TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
-		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_Jump(96,2)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
-		TNT1 A 0 A_SetScale (1.0, 1.0)
-	    TNT1 A 0 A_UnsetSolid
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
-		TNT1 A 1
-		Stop	
     }
 }
 
@@ -797,7 +617,7 @@ actor ShotgunCatFloat_Samsara_ShrinkEffect : ShotgunCatFloat_Samsara
 	}
 }
 
-ACTOR ShotgunCatPirate_Samsara : SamsaraMonsterBeastMediumTotalGib replaces ShotgunCatPirate
+ACTOR ShotgunCatPirate_Samsara : SamsaraMonsterBeastTotalGib replaces ShotgunCatPirate
 {
 	Game Doom
 	Health 15
@@ -818,8 +638,6 @@ ACTOR ShotgunCatPirate_Samsara : SamsaraMonsterBeastMediumTotalGib replaces Shot
 	DeathSound "CATDIE"
     DropItem "SamsaraClip2_ROTWB", 125, 5
 	Obituary "You were perforated by the bullets of the shotgun cat!"
-	var int user_scalex;
-	var int user_scaley;
 	Tag "Pirate Shotgun Cat"
 	States
 	{
@@ -887,16 +705,6 @@ ACTOR ShotgunCatPirate_Samsara : SamsaraMonsterBeastMediumTotalGib replaces Shot
         PPIR M 4
 		PPIR H -1
 		Stop
-	Death.PainkillerStake:
-		TNT1 A 0 ACS_NamedExecuteAlways("Painkiller_MonsterKill")
-		TNT1 A 0 A_JumpIf(CallACS("Painkiller_IsItGibbed")==1,"PainkillerGib")
-		TNT1 A 0 A_GiveInventory("Painkiller_RunStake",1)
-		TNT1 A 0 A_Scream
-		TNT1 A 0 A_NoBlocking
-		TNT1 A 0 A_FaceTarget
-	StakeDeath:
-		PPIR G 2
-		Loop
     Raise:
         PPIR A 0 A_TakeInventory("SamsaraMonsterHasSeenPlayer", 1)
 		"####" "#" 0 A_JumpIfInventory("EnemyZorched",1,"ZorchRaise")
@@ -907,23 +715,6 @@ ACTOR ShotgunCatPirate_Samsara : SamsaraMonsterBeastMediumTotalGib replaces Shot
         PPIR J 4
         PPIR I 4
         Goto See
-	ZorchRaise:
-		"####" "#" 1 A_UnsetShootable
-		"####" "#" 1 A_SpawnItem("SpawnFire2")
-		"####" "#" 0 A_PlaySound("archvile/resummon")
-		"####" "#" 1 A_TakeInventory("EnemyZorched",1)
-		"####" "#" 0 A_SetTranslucent(0.1,0)
-		"####" "#" 3 A_SetTranslucent(0.2,0)
-		"####" "#" 3 A_SetTranslucent(0.3,0)
-		"####" "#" 3 A_SetTranslucent(0.4,0)
-		"####" "#" 3 A_SetTranslucent(0.5,0)
-		"####" "#" 3 A_SetTranslucent(0.6,0)
-		"####" "#" 3 A_SetTranslucent(0.7,0)
-		"####" "#" 3 A_SetTranslucent(0.8,0)
-		"####" "#" 3 A_SetTranslucent(0.9,0)
-		"####" "#" 3 A_SetTranslucent(1,0)
-		"####" "#" 1 A_SetShootable
-		Goto See
     Pain.ShrinkerDMG:
 		PPIR G 0
 		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
@@ -959,66 +750,6 @@ ACTOR ShotgunCatPirate_Samsara : SamsaraMonsterBeastMediumTotalGib replaces Shot
 		TNT1 A 2
 		TNT1 A 0 Thing_Remove(0)
 		stop
-	Death.ExpanderDMG:
-	XDeath.ExpanderDMG:
-		PPIR A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto ExpanderLoop
-	ExpanderLoop:
-		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
-		loop
-	ExpanderPop:	
-		"####" "#" 10
-		TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
-		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_Jump(96,2)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
-		TNT1 A 0 A_SetScale (1.0, 1.0)
-	    TNT1 A 0 A_UnsetSolid
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
-		TNT1 A 1
-		Stop
-	Death.ExpanderDMGCoop:
-	XDeath.ExpanderDMGCoop:
-		PPIR A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto ExpanderLoopCoop
-	ExpanderLoopCoop:
-		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
-		loop
-	ExpanderPopCoop:	
-		"####" "#" 10
-		TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
-		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_Jump(96,2)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
-		TNT1 A 0 A_SetScale (1.0, 1.0)
-	    TNT1 A 0 A_UnsetSolid
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
-		TNT1 A 1
-		Stop	
     }
 }
 
