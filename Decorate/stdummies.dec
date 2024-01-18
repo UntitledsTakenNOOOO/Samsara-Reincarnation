@@ -3,7 +3,7 @@
 //actor InvisibilitySphere : PartialInvisibility { }
 
 // Monster spawners
-actor Abaddon : SamsaraMonsterDemonicLargeTotalGib 5015 // Can't inherit from Cacodemon2 because of blood color issues
+actor Abaddon : SamsaraMonsterDemonicTotalGib 5015 // Can't inherit from Cacodemon2 because of blood color issues
 {
 	Game Doom
 	Health 1200
@@ -24,8 +24,6 @@ actor Abaddon : SamsaraMonsterDemonicLargeTotalGib 5015 // Can't inherit from Ca
 	HitObituary "$OB_ABADDON_MELEE"
 	Tag "Abaddon"
 	Species "SamsaraCacodemon"
-	var int user_scalex;
-	var int user_scaley;
 	States
 	{
 	Spawn:
@@ -66,13 +64,6 @@ actor Abaddon : SamsaraMonsterDemonicLargeTotalGib 5015 // Can't inherit from Ca
 		HED3 IJK 8
 		HED3 L -1 A_SetFloorClip
 		Stop
-	Death.PainkillerStake:
-		TNT1 A 0 ACS_NamedExecuteAlways("Painkiller_MonsterKill")
-		TNT1 A 0 A_JumpIf(CallACS("Painkiller_IsItGibbed")==1,"PainkillerGib")
-		TNT1 A 0 A_GiveInventory("Painkiller_RunStake",1)
-		TNT1 A 0 A_Scream
-		TNT1 A 0 A_NoBlocking
-		TNT1 A 0 A_FaceTarget
 	StakeDeath:
 		HED3 E 2
 		Loop
@@ -81,23 +72,6 @@ actor Abaddon : SamsaraMonsterDemonicLargeTotalGib 5015 // Can't inherit from Ca
 		"####" "#" 0 A_JumpIfInventory("EnemyZorched",1,"ZorchRaise")
 		HED3 L 8 A_UnsetFloorClip
 		HED3 KJIHG 8
-		Goto See
-	ZorchRaise:
-		"####" "#" 1 A_UnsetShootable
-		"####" "#" 1 A_SpawnItem("SpawnFire2")
-		"####" "#" 0 A_PlaySound("archvile/resummon")
-		"####" "#" 1 A_TakeInventory("EnemyZorched",1)
-		"####" "#" 0 A_SetTranslucent(0.1,0)
-		"####" "#" 3 A_SetTranslucent(0.2,0)
-		"####" "#" 3 A_SetTranslucent(0.3,0)
-		"####" "#" 3 A_SetTranslucent(0.4,0)
-		"####" "#" 3 A_SetTranslucent(0.5,0)
-		"####" "#" 3 A_SetTranslucent(0.6,0)
-		"####" "#" 3 A_SetTranslucent(0.7,0)
-		"####" "#" 3 A_SetTranslucent(0.8,0)
-		"####" "#" 3 A_SetTranslucent(0.9,0)
-		"####" "#" 3 A_SetTranslucent(1,0)
-		"####" "#" 1 A_SetShootable
 		Goto See
 	Pain.ShrinkerDMG:
 		HED3 E 0
@@ -133,66 +107,6 @@ actor Abaddon : SamsaraMonsterDemonicLargeTotalGib 5015 // Can't inherit from Ca
 		"####" "#" 0 A_SpawnItemEx("Abaddon_Shrink", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_TRANSFERPOINTERS|SXF_TRANSFERSPECIAL|SXF_TRANSFERAMBUSHFLAG|SXF_SETMASTER,0,tid)
 		TNT1 A 2
 		TNT1 A 0 Thing_Remove(0)
-		Stop
-	Death.ExpanderDMG:
-	XDeath.ExpanderDMG:
-		HED3 A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto ExpanderLoop
-	ExpanderLoop:
-		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
-		Loop
-	ExpanderPop:
-		"####" "#" 10
-		TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
-		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_Jump(96,2)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
-		TNT1 A 0 A_SetScale (1.0, 1.0)
-		TNT1 A 0 A_UnsetSolid
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
-		TNT1 A 1
-		Stop
-	Death.ExpanderDMGCoop:
-	XDeath.ExpanderDMGCoop:
-		HED3 A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto ExpanderLoopCoop
-	ExpanderLoopCoop:
-		"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-		"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-		"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-		"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-		"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
-		Loop
-	ExpanderPopCoop:
-		"####" "#" 10
-		TNT1 A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-		TNT1 A 0 A_PlaySound("duke/explosion", 6, 1.0)
-		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 A_Jump(96,2)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt", 1)
-		TNT1 A 0 A_SetScale (1.0, 1.0)
-		TNT1 A 0 A_UnsetSolid
-		TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		TNT1 A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-		TNT1 A 0 A_GiveToTarget("DukeGibTaunt",1)
-		TNT1 A 1
 		Stop
 	}
 }
@@ -342,6 +256,7 @@ ACTOR AbaddonBall2
 	RenderStyle Add
 	SeeSound "caco/attack"
 	DeathSound "caco/shotx"
+	DamageType "DoomCacodemon"
 	States
 	{
 	Spawn:
@@ -410,23 +325,6 @@ actor Belphegor : BaronOfHell2 5008 // original belphegor inherited from HellKni
 		"####" "#" 0 A_JumpIfInventory("EnemyZorched",1,"ZorchRaise")
 		BOS3 ONMLKJI 8
 		Goto See
-	ZorchRaise:
-		"####" "#" 1 A_UnsetShootable
-		"####" "#" 1 A_SpawnItem("SpawnFire2")
-		"####" "#" 0 A_PlaySound("archvile/resummon")
-		"####" "#" 1 A_TakeInventory("EnemyZorched",1)
-		"####" "#" 0 A_SetTranslucent(0.1,0)
-		"####" "#" 3 A_SetTranslucent(0.2,0)
-		"####" "#" 3 A_SetTranslucent(0.3,0)
-		"####" "#" 3 A_SetTranslucent(0.4,0)
-		"####" "#" 3 A_SetTranslucent(0.5,0)
-		"####" "#" 3 A_SetTranslucent(0.6,0)
-		"####" "#" 3 A_SetTranslucent(0.7,0)
-		"####" "#" 3 A_SetTranslucent(0.8,0)
-		"####" "#" 3 A_SetTranslucent(0.9,0)
-		"####" "#" 3 A_SetTranslucent(1,0)
-		"####" "#" 1 A_SetShootable
-		Goto See
 	Pain.ShrinkerDMG:
 		BOS3 H 0
 		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
@@ -474,20 +372,6 @@ actor Belphegor : BaronOfHell2 5008 // original belphegor inherited from HellKni
 	Death.Shrink:
 		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraBossDeathToggler")
 		Stop
-	Death.ExpanderDMG:
-	XDeath.ExpanderDMG:
-		BOS3 A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto Super::ExpanderLoop
-	Death.ExpanderDMGCoop:
-	XDeath.ExpanderDMGCoop:
-		BOS3 A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto Super::ExpanderLoopCoop
 	}
 }
 
@@ -984,13 +868,6 @@ actor Cacolantern : Cacodemon2 5006
 		HED2 IJK 8
 		HED2 L -1 A_SetFloorClip
 		Stop
-	Death.PainkillerStake:
-		TNT1 A 0 ACS_NamedExecuteAlways("Painkiller_MonsterKill")
-		TNT1 A 0 A_JumpIf(CallACS("Painkiller_IsItGibbed")==1,"PainkillerGib")
-		TNT1 A 0 A_GiveInventory("Painkiller_RunStake",1)
-		TNT1 A 0 A_Scream
-		TNT1 A 0 A_NoBlocking
-		TNT1 A 0 A_FaceTarget
 	StakeDeath:
 		HED2 E 2
 		Loop
@@ -999,23 +876,6 @@ actor Cacolantern : Cacodemon2 5006
 		"####" "#" 0 A_JumpIfInventory("EnemyZorched",1,"ZorchRaise")
 		HED2 L 8 A_UnsetFloorClip
 		HED2 KJIHG 8
-		Goto See
-	ZorchRaise:
-		"####" "#" 1 A_UnsetShootable
-		"####" "#" 1 A_SpawnItem("SpawnFire2")
-		"####" "#" 0 A_PlaySound("archvile/resummon")
-		"####" "#" 1 A_TakeInventory("EnemyZorched",1)
-		"####" "#" 0 A_SetTranslucent(0.1,0)
-		"####" "#" 3 A_SetTranslucent(0.2,0)
-		"####" "#" 3 A_SetTranslucent(0.3,0)
-		"####" "#" 3 A_SetTranslucent(0.4,0)
-		"####" "#" 3 A_SetTranslucent(0.5,0)
-		"####" "#" 3 A_SetTranslucent(0.6,0)
-		"####" "#" 3 A_SetTranslucent(0.7,0)
-		"####" "#" 3 A_SetTranslucent(0.8,0)
-		"####" "#" 3 A_SetTranslucent(0.9,0)
-		"####" "#" 3 A_SetTranslucent(1,0)
-		"####" "#" 1 A_SetShootable
 		Goto See
 	Pain.ShrinkerDMG:
 		HED2 E 0
@@ -1052,20 +912,6 @@ actor Cacolantern : Cacodemon2 5006
 		TNT1 A 2
 		TNT1 A 0 Thing_Remove(0)
 		Stop
-	Death.ExpanderDMG:
-	XDeath.ExpanderDMG:
-		HED2 A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto Super::ExpanderLoop
-	Death.ExpanderDMGCoop:
-	XDeath.ExpanderDMGCoop:
-		HED2 A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto Super::ExpanderLoopCoop
 	}
 }
 
@@ -1214,6 +1060,7 @@ ACTOR CacolanternBall2
 	RenderStyle Add
 	SeeSound "caco/attack"
 	DeathSound "caco/shotx"
+	DamageType "DoomCacodemon"
 	States
 	{
 	Spawn:
@@ -1598,23 +1445,6 @@ actor Hectebus : Fatso2 5007
 		"####" "#" 0 A_JumpIfInventory("EnemyZorched",1,"ZorchRaise")
 		HECT RQPONMLK 5
 		Goto See
-	ZorchRaise:
-		"####" "#" 1 A_UnsetShootable
-		"####" "#" 1 A_SpawnItem("SpawnFire2")
-		"####" "#" 0 A_PlaySound("archvile/resummon")
-		"####" "#" 1 A_TakeInventory("EnemyZorched",1)
-		"####" "#" 0 A_SetTranslucent(0.1,0)
-		"####" "#" 3 A_SetTranslucent(0.2,0)
-		"####" "#" 3 A_SetTranslucent(0.3,0)
-		"####" "#" 3 A_SetTranslucent(0.4,0)
-		"####" "#" 3 A_SetTranslucent(0.5,0)
-		"####" "#" 3 A_SetTranslucent(0.6,0)
-		"####" "#" 3 A_SetTranslucent(0.7,0)
-		"####" "#" 3 A_SetTranslucent(0.8,0)
-		"####" "#" 3 A_SetTranslucent(0.9,0)
-		"####" "#" 3 A_SetTranslucent(1,0)
-		"####" "#" 1 A_SetShootable
-		Goto See
 	Pain.ShrinkerDMG:
 		HECT J 0
 		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
@@ -1662,20 +1492,6 @@ actor Hectebus : Fatso2 5007
 	Death.Shrink:
 		TNT1 A 1 ACS_NamedExecuteWithResult("SamsaraBossDeathToggler")
 		Stop
-	Death.ExpanderDMG:
-	XDeath.ExpanderDMG:
-		HECT A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto Super::ExpanderLoop
-	Death.ExpanderDMGCoop:
-	XDeath.ExpanderDMGCoop:
-		HECT A 0
-		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-		"####" "#" 0 A_PlaySound("duke/expand")
-		Goto Super::ExpanderLoopCoop
    }
 }
 
@@ -1939,12 +1755,6 @@ actor SuperShotgunGuy : ChaingunGuy2 5005
 		 TNT1 A 0 A_Recoil(14)
 		 GPOS G 16 A_Pain
 		 Goto See
-	  Pain.Shock:
-	  Pain.Tesla:
-		 CBGS A 4 A_Pain
-		 CBGS A 4
-		 TNT1 A -1 A_Jump(256,"See")
-		 Wait
 	  Death:
 		 TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
 		 GPOS H 5 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
