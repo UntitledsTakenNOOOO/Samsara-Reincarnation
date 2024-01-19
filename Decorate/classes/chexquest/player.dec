@@ -118,8 +118,6 @@ actor ChexWarrior : SamsaraPlayerPawnNormalNoBlood
     RadiusDamageFactor 0.75
     Player.DamageScreenColor "Yellow"
     Player.ColorRange 192, 207
-	var int user_scalex;
-	var int user_scaley;
     States
     {
 		Spawn:
@@ -276,6 +274,70 @@ actor ChexWarrior : SamsaraPlayerPawnNormalNoBlood
 			TNT1 A 0 A_ChangeFlag("NOPAIN",false)
 			TNT1 A 0 A_ChangeFlag("NODAMAGE",false)
 			Goto Spawn
+
+		// SamsaraPlayerPawnNormalNoBlood states
+		Death.ExpanderDMG:
+		XDeath.ExpanderDMG:
+			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			"####" "#" 0 A_PlaySound("duke/expand")
+			Goto ExpanderLoop
+		ExpanderLoop:
+			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
+			loop
+		ExpanderPop:
+			"####" "#" 10
+			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+			"####" A 0 A_Jump(96,2)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+			"####" A 0 A_SetScale (1.0, 1.0)
+			"####" A 0 A_UnsetSolid
+			"####" AA 0 A_SpawnItemEx("Chexbit1",random(-16,16),random(-16,16),random(24,54),random(-450,450)/100.00,random(-450,450)/100.00,random(550,850)/100.00,random(-180,180),160)
+			"####" AA 0 A_SpawnItemEx("Chexbit2",random(-20,16),random(-16,16),random(24,54),random(-450,450)/100.00,random(-450,450)/100.00,random(550,850)/100.00,random(-180,180),160)
+			"####" AA 0 A_SpawnItemEx("Chexbit3",random(-16,16),random(-16,16),random(24,54),random(-450,450)/100.00,random(-450,450)/100.00,random(550,850)/100.00,random(-180,180),160)
+			"####" AA 0 A_SpawnItemEx("Chexbit4",random(-16,16),random(-16,16),random(24,54),random(-450,450)/100.00,random(-450,450)/100.00,random(550,850)/100.00,random(-180,180),160)
+			"####" AAAAAAAAAA 0 A_SpawnItemEx("ChexCrumb",random(-16,16),random(-16,16),random(24,54),random(-450,450)/100.00,random(-450,450)/100.00,random(550,850)/100.00,random(-180,180),160)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+			TNT1 A -1 A_UnsetSolid
+			Stop
+		Death.ExpanderDMGCoop:
+		XDeath.ExpanderDMGCoop:
+			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			"####" "#" 0 A_PlaySound("duke/expand")
+			Goto ExpanderLoopCoop
+		ExpanderLoopCoop:
+			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
+			loop
+		ExpanderPopCoop:
+			"####" "#" 10
+			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
+			"####" A 0 A_Jump(96,2)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1", 1)
+			"####" A 0 A_SetScale (1.0, 1.0)
+			"####" A 0 A_UnsetSolid
+			"####" AA 0 A_SpawnItemEx("Chexbit1",random(-16,16),random(-16,16),random(24,54),random(-450,450)/100.00,random(-450,450)/100.00,random(550,850)/100.00,random(-180,180),160)
+			"####" AA 0 A_SpawnItemEx("Chexbit2",random(-20,16),random(-16,16),random(24,54),random(-450,450)/100.00,random(-450,450)/100.00,random(550,850)/100.00,random(-180,180),160)
+			"####" AA 0 A_SpawnItemEx("Chexbit3",random(-16,16),random(-16,16),random(24,54),random(-450,450)/100.00,random(-450,450)/100.00,random(550,850)/100.00,random(-180,180),160)
+			"####" AA 0 A_SpawnItemEx("Chexbit4",random(-16,16),random(-16,16),random(24,54),random(-450,450)/100.00,random(-450,450)/100.00,random(550,850)/100.00,random(-180,180),160)
+			"####" AAAAAAAAAA 0 A_SpawnItemEx("ChexCrumb",random(-16,16),random(-16,16),random(24,54),random(-450,450)/100.00,random(-450,450)/100.00,random(550,850)/100.00,random(-180,180),160)
+			"####" A 0 A_GiveToTarget("DukeDMTaunt1",1)
+			TNT1 A -1 A_UnsetSolid
+			Stop
     }
 }
 

@@ -109,8 +109,6 @@ Actor POGreedPlayer : SamsaraPlayerPawnTotalGibRedBlood
 	DamageFactor "Telefrag", 1.0
 	DamageFactor "EnemyInfightDamage", 0.0
     Player.ColorRange 112, 127
-	var int user_scalex;
-	var int user_scaley;
 	States
 	{		
 		Spawn:
@@ -220,6 +218,10 @@ Actor POGreedPlayer : SamsaraPlayerPawnTotalGibRedBlood
             TNT1 A 0 A_JumpIfInventory("PowerSamsaraDoomguyStrStunnerSpeedDebuff",1,"Pain") // ensure the timer doesn't reset when you are already slowed
             TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrStunnerSpeedDebuff") // slows down, but not stopped completely
             goto Pain
+		Pain.Shock:
+		Pain.Tesla:
+			CBGS K 8 A_GiveInventory("IPOGPlayerPainSoundTrigger")
+			Goto See
 		Death:
 			TNT1 A 0 A_KillChildren
 			TNT1 A 0 A_SpawnItem("UniversalBloodyHellGoreDeathEffect")
@@ -266,64 +268,6 @@ Actor POGreedPlayer : SamsaraPlayerPawnTotalGibRedBlood
 			TNT1 A 0 A_ChangeFlag("THRUSPECIES",1)
 			GPL0 B 1 A_ChangeFlag("DONTBLAST",1)
 			goto Spawn
-		Death.ExpanderDMG:
-		XDeath.ExpanderDMG:
-			"####" "#" 0 A_KillChildren
-			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-			"####" "#" 0 A_PlaySound("duke/expand")
-			Goto ExpanderLoop
-		ExpanderLoop:
-			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
-			loop
-		ExpanderPop:	
-			"####" "#" 10
-			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
-			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-			"####" A 0 A_Jump(96,2)
-			"####" A 0 A_GiveToTarget("DukeGibTaunt", 1)
-			"####" A 0 A_SetScale (1.0, 1.0)
-			"####" A 0 A_UnsetSolid
-			"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-			"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-			"####" A 0 A_GiveToTarget("DukeGibTaunt",1)
-			TNT1 A -1 A_UnsetSolid
-			Stop
-		Death.ExpanderDMGCoop:
-		XDeath.ExpanderDMGCoop:
-			"####" "#" 0 A_KillChildren
-			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
-			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
-			"####" "#" 0 A_PlaySound("duke/expand")
-			Goto ExpanderLoopCoop
-		ExpanderLoopCoop:
-			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
-			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
-			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
-			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
-			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
-			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
-			loop
-		ExpanderPopCoop:	
-			"####" "#" 10
-			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
-			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
-			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,2)
-			"####" A 0 A_Jump(96,2)
-			"####" A 0 A_GiveToTarget("DukeGibTaunt", 1)
-			"####" A 0 A_SetScale (1.0, 1.0)
-			"####" A 0 A_UnsetSolid
-			"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-			"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-			"####" A 0 A_GiveToTarget("DukeGibTaunt",1)
-			TNT1 A -1 A_UnsetSolid
-			Stop
 		Pain.ShrinkerDMG:
 			TNT1 A 0 A_ChangeFlag("NOPAIN",true)
 			TNT1 A 0 A_ChangeFlag("NODAMAGE",true)
@@ -485,79 +429,22 @@ Actor POGreedPlayer : SamsaraPlayerPawnTotalGibRedBlood
 			TNT1 A 0 A_ChangeFlag("NOPAIN",false)
 			TNT1 A 0 A_ChangeFlag("NODAMAGE",false)
 			Goto Spawn
+
+		// SamsaraPlayerPawnNormalRedBlood states
 		Pain.MightyBoot:
 			"####" A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 25, 5, 24)
-			"####" A 0 A_PlaySoundEx("duke/kickhit","body",0,0)
+			"####" A 0 A_PlaySound("duke/kickhit",CHAN_BODY)
 			"####" A 0 A_Recoil(12)
 			"####" A 0 A_GiveInventory("IPOGPlayerPainSoundTrigger")
 			"####" A -1 A_Jump(256,"Spawn")
-			wait
-		Pain.MarathonStun:
-			"####" A 0 A_Stop
-			"####" A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 25, 5, 100)
-			"####" A 0 A_GiveInventory("NothingSpeed")
-			"####" A 0 A_SetBlend("White",0.9,105)
-			"####" A 0 A_PlaySoundEx("marathon/tech50/stun","body",0,0)
-			"####" A 0 A_GiveInventory("IPOGPlayerPainSoundTrigger")
-			"####" A -1 A_Jump(256,"Spawn")
-			wait
-		Pain.Shock:
-		Pain.Tesla:
-			CBGS K 8 A_GiveInventory("IPOGPlayerPainSoundTrigger")
-			Goto See
-		Death.CalebFire:
-		Death.LifeLeech:
-			TNT1 A 0 A_Jump(218, 2)
-			TNT1 A 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
-			TNT1 A 0 A_GiveToTarget("CalebDMTaunt1", 1)
-			TNT1 A 0 A_GiveInventory("IPOGPlayerFallingSoundTrigger")
-			TNT1 A 0 A_SpawnItemEx("BloodBurningCorpse_Silent", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_SETMASTER)
-			TNT1 A 0 A_UnsetSolid
-			TNT1 A 0 A_KillChildren
-			TNT1 A -1
-			Stop
-		Death.TotenkopfFire:
-			TNT1 A 0 A_KillChildren
-			TNT1 A 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
-			TNT1 A 0 A_SpawnItem("Totenkopf_BurningGuard")
-			TNT1 A -1 A_UnsetSolid
-			Stop				
-		Death.RottFire:
-			TNT1 A 0 A_KillChildren
-			TNT1 A 0 A_UnsetSolid
-			TNT1 A 0 A_SpawnItem("BurningSkeleton") 
-			TNT1 A -1
-			Stop	
-		Death.PhosFire:
-		Death.PhosFireCoop:
-			TNT1 A 0 A_KillChildren
-			TNT1 A 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
-			TNT1 A 0 A_SpawnItem("StrifeBurningHuman")
-			TNT1 A -1 A_UnsetSolid
-			Stop
-		Death.MarathonFire:
-		Death.MarathonPlasmaFire:
-			TNT1 A 0 A_KillChildren
-			TNT1 A 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
-			TNT1 A 0 A_SpawnItem("SamsaraMarathonBurningCorpse")
-			TNT1 A -1 A_UnsetSolid
-			Stop
-		Death.RottExplosive:
-			TNT1 A 0 A_KillChildren
-			TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-			TNT1 A 0 A_SpawnItemEx("RottGibbedMan",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-			TNT1 A 0 A_Jump(128,2)
-			TNT1 A 0 A_GiveToTarget("LudicrousGibsItem", 1)
-			BLAN A 1 A_UnsetSolid
-			TNT1 A -1
-			Stop
+			Wait
 		Death.ZorchPistol:
 		Death.Zorch:
 		Death.ZorchKamikaze:
 		Death.PhasingZorch:
 		Death.ZorchSpectral:
 			"####" "#" 0 A_Stop
-			"####" "#" 0 A_PlaySoundEx("chex/zorch","soundslot5",0,0)
+			"####" "#" 0 A_PlaySound("chex/zorch",CHAN_5)
 			"####" "#" 3 A_SpawnItem("ZorchEffectSmall")
 			"####" "#" 3 A_SetTranslucent(0.9,0)
 			"####" "#" 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
@@ -573,9 +460,27 @@ Actor POGreedPlayer : SamsaraPlayerPawnTotalGibRedBlood
 			TNT1 A 1 A_SetTranslucent(1,0)
 			TNT1 A -1 A_UnsetSolid
 			Stop
+		Death.DukePlasma:
+			"####" "#" 0 A_Stop
+			"####" "#" 1 A_NoBlocking
+			"####" "#" 0 A_Jump(218,2)
+			"####" "#" 0 A_GiveToTarget("DukeDMTaunt1",1)
+			"####" "#" 0 ACS_NamedExecuteAlways("DN64PlasmaDeath")
+			"####" "#" 3 A_SpawnItem("Duke64PlasmaEffectSmall")
+			"####" "#" 0 A_GiveInventory("EnemyZorched",1)
+			"####" "#" 27 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
+			TNT1 A 1 A_SetTranslucent(1,0)
+			TNT1 A -1
+			Stop
+		Death.RottDisintegrate:
+			TNT1 A 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
+			TNT1 A 0 A_UnsetSolid
+			TNT1 A 5 A_SpawnItem("RGodModeDeath")
+			TNT1 A -1
+			Stop
 		Disintegrate:
 			"####" "#" 0 A_UnsetSolid
-			"####" "#" 0 ACS_NamedExecuteAlways("ExtraDeathFX",0,1)
+			"####" "#" 0 ACS_NamedExecuteAlways("SamsaraDeathEffects", 0, 10)
 			"####" "#" 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
 			"####" "#" 0 A_Stop
 			"####" "#" 3 A_SpawnItem("DisintEffectSmall",0,10)
@@ -596,34 +501,49 @@ Actor POGreedPlayer : SamsaraPlayerPawnTotalGibRedBlood
 			"####" "#" 2 A_SetTranslucent(0.2,0)
 			"####" "#" 0 ACS_NamedExecuteAlways("ExtraDeathFX",0,1)
 			"####" "#" 2 A_SetTranslucent(0.1,0)
+			TNT1 A 0 ACS_NamedExecuteAlways("SamsaraDeathEffects", 0, 9000)
 			TNT1 A -1
 			Stop
-		Death.RottDisintegrate:
-			TNT1 A 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
-			TNT1 A 0 A_UnsetSolid
-			TNT1 A 5 A_SpawnItem("RGodModeDeath")
+		Death.DarkSide:
+			"####" A 0 A_NoBlocking
+			"####" A 0 ACS_NamedExecuteAlways("DFSummonClone")
+			"####" A 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
 			TNT1 A -1
 			Stop
 		Death.Nuke:
 			"####" "#" 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
-			"####" "#" 0 A_UnsetSolid		
+			"####" "#" 0 A_UnsetSolid
 			"####" "#" 0 A_SpawnItem("WTNukeDeathSmall")
 			"####" "#" 0 A_Stop
 			"####" "#################" 3 A_Fadeout(0.05)
 			TNT1 A -1
 			Stop
-		Death.DukePlasma:
-            "####" "#" 0 A_Stop
-            "####" "#" 1 A_NoBlocking
-            "####" "#" 0 A_Jump(218,2)
-            "####" "#" 0 A_GiveToTarget("DukeDMTaunt1",1)
-            "####" "#" 0 ACS_NamedExecuteAlways("DN64PlasmaDeath")
-            "####" "#" 3 A_SpawnItem("Duke64PlasmaEffectSmall")
-            "####" "#" 0 A_GiveInventory("EnemyZorched",1)
-            "####" "#" 27 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
-			TNT1 A 1 A_SetTranslucent(1,0)
-            TNT1 A -1
-            Stop
+		Death.TotenkopfFire:
+			TNT1 A 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
+			TNT1 A 0 A_SpawnItem("Totenkopf_BurningGuard")
+			TNT1 A -1 A_UnsetSolid
+			Stop
+		Death.MarathonFire:
+		Death.MarathonPlasmaFire:
+			TNT1 A 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
+			TNT1 A 0 A_SpawnItem("SamsaraMarathonBurningCorpse")
+			TNT1 A -1 A_UnsetSolid
+			Stop
+		Death.CalebFire:
+		Death.LifeLeech:
+			TNT1 A 0 A_Jump(218, 2)
+			TNT1 A 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
+			TNT1 A 0 A_GiveToTarget("CalebDMTaunt1", 1)
+			TNT1 A 0 A_PlaySound("*burndeath",CHAN_VOICE)
+			TNT1 A 0 A_SpawnItemEx("BloodBurningCorpse_Silent", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			TNT1 A -1 A_UnsetSolid
+			Stop
+		Death.PhosFire:
+		Death.PhosFireCoop:
+			TNT1 A 0 A_GiveInventory("IPOGPlayerDeathSoundTrigger")
+			TNT1 A 0 A_SpawnItem("StrifeBurningHuman")
+			TNT1 A -1 A_UnsetSolid
+			Stop
 	}
 }
 
