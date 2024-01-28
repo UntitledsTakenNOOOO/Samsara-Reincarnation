@@ -8007,3 +8007,34 @@ script "SamsaraPlayerMaxArmorAdjust" (int armortype, int maxbonusadd, int maxbon
         if (CheckInventory("SamsaraHasMaxArmor") > armormaxbonusmax) { SetInventory("SamsaraHasMaxArmor", armormaxbonusmax); } // don't exceed the cap
     }
 }
+
+script "SamsaraPlayerOxygenAdjuster" (int mode, int amount)
+{
+    if (GetActorProperty(0, APROP_WaterLevel) < 3) // GetAirSupply's quite finicky
+    {
+        SetResultValue(0);
+        terminate;
+    }
+
+    int pln = PlayerNumber();
+    int aircapacity = 700; // usually the maximum
+    int result = 0;
+
+    if (mode >= 1) // Set current air
+    {
+        if (amount < 0)
+        {
+            if (GetAirSupply(pln) < aircapacity)
+            {
+                SetAirSupply(pln, aircapacity);
+                result = 1;
+            }
+        } else {
+            SetAirSupply(pln, amount);
+            result = 1;
+        }
+    }
+    else { result = (amount < 0 && GetAirSupply(pln) < aircapacity) || amount >= 0; } // Get current air
+
+    SetResultValue(result);
+}
