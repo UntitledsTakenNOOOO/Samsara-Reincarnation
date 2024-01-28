@@ -4822,17 +4822,19 @@ Script "SamsaraDeathEffects" (int type)
 
 	int i;
 	int effectTid = UniqueTid();
+	int iceTid = UniqueTid();
 
 	// Get the pain or death sounds of the killed actor if needed
 	str voice;
 
+	// Determines the amount of ice chunks for the killed actor
+	int numChunks = max(4, ((xScale/1.0) * (yScale/1.0)/32));
+	//int iceChunkAmount = 255 % (numChunks/4);
+
 	// Translation to apply to the killed actor if needed
 	CreateTranslation(7600, 0:255=0:255);	// Untranslated
 	CreateTranslation(7601, 0:255=%[0,0,0]:[0,0,0]);	// Disintegration Translation
-	CreateTranslation(7602, 0:255=%[0.078,0.062,0.140]:[1.16,1.16,1.348]);	// Player Ice Death Translation
-
-	// Check for any actor flags if the death effect calls for it
-	int isFlyingActor = (CheckFlag(0,"Float") && CheckFlag(0,"NoGravity"));
+	CreateTranslation(7602, 0:255=%[0.078,0.062,0.140]:[1.16,1.16,1.348]);	// Zandronum Ice Translation
 
 	// Debug call to ensure the function is called properly
 	//PrintBold(s:"Monster X: ",d:xPosition >> 16,s:" Monster Y: ",d:yPosition >> 16,s:" Monster Z: ",d:zPosition >> 16,s:" TID: ",d:effectTid >> 16,s:" Activator: ",n:0);
@@ -4843,19 +4845,19 @@ Script "SamsaraDeathEffects" (int type)
 	{
 		// Chex Zorch Effect
 		case 0:
-			Spawn("ZorchEffectSmall", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("ZorchEffectSmall", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, xScale);
 			SetActorProperty(effectTid, APROP_ScaleY, yScale);
 			break;
 		// Chex Boss Zorch Effect
 		case 1:
-			Spawn("ZorchEffectHuge", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("ZorchEffectHuge", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, xScale);
 			SetActorProperty(effectTid, APROP_ScaleY, yScale);
 			break;
 		// Totenkopf Burning Guard // TODO: Remove "Totenkopf_BurningMan" ACS script
 		case 2:
-			Spawn("Totenkopf_BurningGuard", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("Totenkopf_BurningGuard", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, xScale);
 			SetActorProperty(effectTid, APROP_ScaleY, yScale);
 
@@ -4873,7 +4875,7 @@ Script "SamsaraDeathEffects" (int type)
 			break;
 		// Marathon Burning Corpse // TODO: Remove "Totenkopf_BurningMan" ACS script
 		case 3:
-			Spawn("SamsaraMarathonBurningCorpse", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("SamsaraMarathonBurningCorpse", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*9);
 			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*9);
 
@@ -4891,38 +4893,38 @@ Script "SamsaraDeathEffects" (int type)
 			break;
 		// ROTT Burning Skeleton
 		case 4:
-			Spawn("BurningSkeleton", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("BurningSkeleton", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*13);
 			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*13);
 			break;
 		// ROTT Gibbed Human
 		case 5:
-			Spawn("RottGibbedMan", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("RottGibbedMan", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*12);
 			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*12);
 			break;
 		// ROTT Gibbed Creature
 		case 6:
-			Spawn("RottGibbedCreature", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("RottGibbedCreature", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*12);
 			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*12);
 			break;
 		// ROTT Disintegrated Human
 		case 7:
-			Spawn("RGodModeDeath", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("RGodModeDeath", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*13);
 			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*13);
 			break;
 		// ROTT Generic Disintegration Effect
 		case 8:
-			Spawn("RGodModeDeathSmall", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("RGodModeDeathSmall", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*7);
 			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*7);
 			Thing_SetTranslation(0, 7601);
 			break;
 		// Strife Burning Human // TODO: Remove "Totenkopf_BurningMan" ACS script
 		case 9:
-			Spawn("StrifeBurningHuman", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("StrifeBurningHuman", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, xScale);
 			SetActorProperty(effectTid, APROP_ScaleY, yScale);
 
@@ -4940,20 +4942,20 @@ Script "SamsaraDeathEffects" (int type)
 			break;
 		// Strife Disintegrated Human // TODO: Remove "ExtraDeathFX" ACS script
 		case 10:
-			Spawn("DisintEffectSmall", xPosition, yPosition, zPosition+10, effectTid);
+			SpawnForced("DisintEffectSmall", xPosition, yPosition, zPosition+10, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, xScale);
 			SetActorProperty(effectTid, APROP_ScaleY, yScale);
 			Thing_SetTranslation(0, 7601);
 			break;
 		// Witchaven Nuke Effect
 		case 11:
-			Spawn("WTNukeDeathSmall", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("WTNukeDeathSmall", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*2);
 			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*2);
 			break;
 		// Duke 64 Plasma Death Effect // TODO: Remove "DN64PlasmaDeath" ACS script
 		case 12:
-			Spawn("Duke64PlasmaEffectSmall", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("Duke64PlasmaEffectSmall", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*12);
 			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*12);
 
@@ -4967,20 +4969,32 @@ Script "SamsaraDeathEffects" (int type)
 			break;
 		// ROTT Boss Disintegration Effect
 		case 13:
-			Spawn("RGodModeDeathHuge", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("RGodModeDeathHuge", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*10);
 			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*10);
 			Thing_SetTranslation(0, 7601);
 			break;
 		// Witchaven Boss Nuke Effect
 		case 14:
-			Spawn("WTNukeDeathHuge", xPosition, yPosition, zPosition, effectTid);
+			SpawnForced("WTNukeDeathHuge", xPosition, yPosition, zPosition, effectTid);
 			SetActorProperty(effectTid, APROP_ScaleX, (xScale/20)*4);
 			SetActorProperty(effectTid, APROP_ScaleY, (yScale/20)*4);
 			break;
+		// Ice Shatter Effect
+		case 15:
+			for (int iceChunkAmount = max(24, numChunks + 255 % (numChunks/4)); iceChunkAmount >= 0; iceChunkAmount--)
+			{
+				iceTid = UniqueTid();
+				SpawnForced("IceChunk", xPosition+(random(-2.0, 2.0)), yPosition+(random(-2.0, 2.0)), zPosition+(random(-2.0, 2.0)), iceTid);
+				SetActorVelocity(iceTid, random(-1.0, 1.0), random(-1.0, 1.0), random(2.0, 4.0), 0, 0);
+			}
+
+			Thing_SetTranslation(0, 7600);
+			break;
 		// General Ice Translation
 		case 100:
-			Thing_SetTranslation(0, 7602);
+			if (isZDoom()) { Thing_SetTranslation(0, TRANSLATION_ICE); }
+			else { Thing_SetTranslation(0, 7602); }
 			break;
 		// Translation Removal
 		case 9000:
