@@ -2801,7 +2801,7 @@ script "SamsaraWolfMove" (void) //673 -- SAMSARA_WOLFMOVE
 	int realspeed = GetActorProperty(0, APROP_Speed);
 	int forward, side, angle, xthrust, ythrust;
 	int forwardx, forwardy, sidex, sidey;
-	int velx, vely;
+	int velx, vely, velz;
 	int moving;
 	int fired;
 	int startTime = Timer();
@@ -2874,16 +2874,24 @@ script "SamsaraWolfMove" (void) //673 -- SAMSARA_WOLFMOVE
 
 			velx = forwardx + sidex;
 			vely = forwardy + sidey;
+			velz = sin(-GetActorPitch(0)) * (forward / ((CheckInventory("IsMorphed") * 2) + 1));
 
 			forward = 0;
 			side = 0;
 		}
 
-		if (keyDown(BT_CROUCH)) { velx /= 2; vely /= 2; }
+		if (keyDown(BT_CROUCH)) { velx /= 2; vely /= 2; velz /= 2; }
 
-        SetInventory("WolfMoving", velx != 0 || vely != 0);
+        SetInventory("WolfMoving", velx != 0 || vely != 0 || velz != 0);
 
-		SetActorVelocity(0, velx, vely, GetActorVelZ(0), 0, 0);
+		if (GetActorProperty(0, APROP_WaterLevel) >= 1)
+		{
+			SetActorVelocity(0, velx, vely, velz, 0, 0);
+		}
+		else
+		{
+			SetActorVelocity(0, velx, vely, GetActorVelZ(0), 0, 0);
+		}
 
 		Delay(1);
 	}
