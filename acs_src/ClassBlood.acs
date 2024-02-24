@@ -5,7 +5,7 @@ Script "CalebLoop" (void)
 {
 	while (CheckInventory("CalebClass"))
 	{
-		if (ClassifyActor(0) & ACTOR_Alive)
+		if (ClassifyActor(0) & ACTOR_ALIVE)
 		{
 			GiveInventory("BeastVisionController",1);
 		}
@@ -32,7 +32,7 @@ script "CalebTauntCooldown" (void) //600
 
 Script "CalebBallGag" (int type) NET //601
 {
-	if(CheckInventory("CalebBallgag"))
+	if (CheckInventory("CalebBallgag"))
 	{
 		TakeInventory("CalebBallgag", 1);
 		Print(s:"Ballgag Off");
@@ -44,79 +44,60 @@ Script "CalebBallGag" (int type) NET //601
 	}
 }
 
-Script "Caleb602" (void) //602
-{
-	if(CheckInventory("TeslaCounterX") > 7)
-	{
-		TakeInventory("TeslaCounterX", 24);
-	}
-}
-
 Script "CalebLifeLeech" (void) //603
 {
-	int LifeLeechAmmo = CheckInventory("Cell");
-
-	if(CheckWeapon("LifeLeech") && !CheckInventory("SamsaraHasInfiniteAmmo"))
+	if (CheckWeapon("LifeLeech") && !CheckInventory("SamsaraHasInfiniteAmmo"))
 	{
-		if(LifeLeechAmmo >= 1)
-		{
+		if (CheckInventory("Cell") >= 1)
 			TakeInventory("Cell", 2);
-		}
 		else
 			Thing_Damage2(0, 1, "Suicide");
 	}
 }
 
-Script "CalebCoopCheck" (void) //604
-{
-	SetResultValue(isCoop());
-}
-
-Script "CalebDeathmatchCheck" (void) //604
-{
-	SetResultValue(isDeathMatch());
-}
-
 Script "FlareGunPitch" (void)
 {
-	SetActivator(0, AAPTR_Target);
-	int angle = GetActorPitch(0);
-	SetResultValue(angle);
+	SetActivator(0, AAPTR_TARGET);
+	int pitch = GetActorPitch(0);
+	SetResultValue(pitch);
 }
 
 Script "Caleb_BurningManVoice" (int mode)
 {
-	str painsound, deathsound;
-	int oldTID, master;
+	bool crashDebuggerEnabled = GetCVar("samsara_CrashDebugger");
 	int speed;
-	oldTID = ActivatorTID();
-	master = UniqueTID();
-	Thing_ChangeTID(0, master);
-	SetActivator(0, AAPTR_Master);
+	str painSound, deathSound;
+	int master = UniqueTID();
 
-	if(GetCvar("samsara_CrashDebugger") == true)
+	Thing_ChangeTID(0, master);
+	SetActivator(0, AAPTR_MASTER);
+
+	if (crashDebuggerEnabled)
 	{
-		Log(s:"Debugger: Burning Enemy: ", s:GetActorClass(0));
+		Log(s: "Debugger: Burning Enemy: ", s: GetActorClass(0));
 	}
 
-	Switch(mode)
+	switch (mode)
 	{
 		case 1:
 			speed = GetActorProperty(0, APROP_Speed);
+			painSound = GetActorProperty(0, APROP_PainSound);
+			deathSound = GetActorProperty(0, APROP_DeathSound);
 
-			painsound = GetActorProperty(0, APROP_PainSound);
-			deathsound = GetActorProperty(0, APROP_DeathSound);
 			SetActivator(master);
 
-			if(painsound != "")
-				SetActorProperty(0, APROP_PainSound, painsound);
-
-			if(deathsound != "")
-				SetActorProperty(0, APROP_DeathSound, deathsound);
-
-			if(GetCvar("samsara_CrashDebugger") == true)
+			if (painSound != "")
 			{
-				Log(s:"Debugger: Pass");
+				SetActorProperty(0, APROP_PainSound, painSound);
+			}
+			if (deathSound != "")
+			{
+				SetActorProperty(0, APROP_DeathSound, deathSound);
+			}
+
+			if (crashDebuggerEnabled)
+			{
+				Log(s: "Debugger: Pass");
 			}
 
 			SetActorProperty(0, APROP_Speed, speed/2);
@@ -124,16 +105,18 @@ Script "Caleb_BurningManVoice" (int mode)
 
 		case 2:
 			speed = GetActorProperty(0, APROP_Speed);
+			deathSound = GetActorProperty(0, APROP_DeathSound);
 
-			deathsound = GetActorProperty(0, APROP_DeathSound);
 			SetActivator(master);
 
-			if(deathsound != "")
-				SetActorProperty(0, APROP_DeathSound, deathsound);
-
-			if(GetCvar("samsara_CrashDebugger") == true)
+			if (deathSound != "")
 			{
-				Log(s:"Debugger: Pass");
+				SetActorProperty(0, APROP_DeathSound, deathSound);
+			}
+
+			if (crashDebuggerEnabled)
+			{
+				Log(s: "Debugger: Pass");
 			}
 
 			SetActorProperty(0, APROP_Speed, speed/2);
@@ -148,27 +131,31 @@ Script "BurningManSpeed" (void) // will just have to wait until 4.0 before you c
 
 Script "CalebAkimboCooldown" (void)
 {
-	if(CheckInventory("BloodGunsAkimboCooldown")) { GiveInventory("BloodGunsAkimboCooldown",120); terminate; }
+	if (CheckInventory("BloodGunsAkimboCooldown")) { GiveInventory("BloodGunsAkimboCooldown",120); terminate; }
 	GiveInventory("BloodGunsAkimboCooldown",120);
 
-	while(1)
+	while (1)
 	{
-		if(CheckInventory("BloodGunsAkimboCooldown") > 0 && !GetCvar("samsara_permakimbo"))
+		if (CheckInventory("BloodGunsAkimboCooldown") > 0 && !GetCVar("samsara_permakimbo"))
 		{
 			GiveInventory("GunsAkimboP",1);
 			TakeInventory("BloodGunsAkimboCooldown",1);
 		}
-		else if(CheckInventory("BloodGunsAkimboCooldown") == 0) { TakeInventory("GunsAkimboP",1); terminate; }
+		else if (CheckInventory("BloodGunsAkimboCooldown") == 0)
+		{
+			TakeInventory("GunsAkimboP",1);
+			terminate;
+		}
 		delay(35);
 	}
 }
 
 Script "CalebRetrieveLifeLeech" (void)
 {
-	int isAlive = ClassifyActor(0) & ACTOR_Alive;
+	int isAlive = ClassifyActor(0) & ACTOR_ALIVE;
 	int lifeLeechTid = ActivatorTID();
 
-	SetActivator(0,AAPTR_Master);
+	SetActivator(0,AAPTR_MASTER);
 
 	if (CheckInventory("CalebClass") && isAlive)
 	{
@@ -185,11 +172,11 @@ Script "CalebLifeLeechTurretMarkForDeath" (void)
 
 	int lifeLeechTid = ActivatorTID();
 
-	SetActivator(0,AAPTR_Master);
+	SetActivator(0,AAPTR_MASTER);
 
-	while (!(ClassifyActor(0) & ACTOR_Alive))
+	if (ClassifyActor(0) & ACTOR_DEAD)
 	{
-		SetActivator(lifeLeechTid,AAPTR_Default);
+		SetActivator(lifeLeechTid);
 		GiveInventory("LifeLeechMarkedForDeath",1);
 		Delay(175);
 		SetActorState(0,"Death",1);
@@ -205,10 +192,10 @@ Script "CalebAltSpreadAngle" (void)
 
 Script "CalebThrowStrength" (void)
 {
-	int newTid = UniqueTid();
+	int newTid = UniqueTID();
 	SpawnForced("CalebTNTShootable",GetActorX(0),GetActorY(0),GetActorZ(0),newTid);
-	SetPointerExt(AAPTR_Master,0,newTid);
-	SetActivator(0,AAPTR_Target);
+	SetPointerExt(AAPTR_MASTER,0,newTid);
+	SetActivator(0,AAPTR_TARGET);
 	int power = CheckInventory("ThrowPower");
 	TakeInventory("ThrowPower",65536);
 	SetResultValue(power);
@@ -223,7 +210,7 @@ Script "CalebThrowDuration" (int switchcase)
 
 Script "CalebCheckThrowTimer" (void)
 {
-	SetActivator(0,AAPTR_Target);
+	SetActivator(0,AAPTR_TARGET);
 	int power = CheckInventory("ThrowPowerBig");
 	TakeInventory("ThrowPowerBig",65536);
 	SetResultValue(power);
@@ -231,32 +218,35 @@ Script "CalebCheckThrowTimer" (void)
 
 Script "CalebTossableHitBox" (void)
 {
-	if(!Warp(AAPTR_Master,0,0,0,0,WARPF_USEPTR|WARPF_NOCHECKPOSITION)) { Thing_Remove(0); }
+	if (!Warp(AAPTR_MASTER,0,0,0,0,WARPF_USEPTR|WARPF_NOCHECKPOSITION))
+	{
+		Thing_Remove(0);
+	}
 }
 
 Script "CalebTossableDetonate" (void)
 {
-	SetActivator(0,AAPTR_Master);
+	SetActivator(0,AAPTR_MASTER);
 	SetActorProperty(0,APROP_ReactionTime,0);
 	SetActorState(0,"Detonate",0);
 }
 
 Script "CalebTossableResolve" (int reactionTime, int strength, int type)
 {
-	switch(type)
+	switch (type)
 	{
 		case 0:
-			if(strength == 0 && reactionTime > 0) SetActorState(0,"Stay",1);
+			if (strength == 0 && reactionTime > 0) SetActorState(0,"Stay",1);
 			else SetActorState(0,"XDeath",1);
 			break;
 		case 1:
-			if(reactionTime > 0) SetActorState(0,"Stay",1);
+			if (reactionTime > 0) SetActorState(0,"Stay",1);
 			else SetActorState(0,"Explode",1);
 			break;
 		case 2:
-			if(reactionTime > 0) 
+			if (reactionTime > 0)
 			{
-				if(CheckInventory("ProximityTNTArmed")) SetActorState(0,"ChargeLoop",1);
+				if (CheckInventory("ProximityTNTArmed")) SetActorState(0,"ChargeLoop",1);
 				else SetActorState(0,"Stay",1);
 			}
 			else SetActorState(0,"Explode",1);
@@ -266,7 +256,7 @@ Script "CalebTossableResolve" (int reactionTime, int strength, int type)
 
 Script "CalebSelfDamage" (int type)
 {
-	switch(type)
+	switch (type)
 	{
 		case 0:
 			ACS_NamedExecuteWithResult("CalebBurner",1,5);
@@ -280,19 +270,17 @@ Script "CalebSelfDamage" (int type)
 
 Script "CalebBurner" (int notracer, int extraburn)
 {
-	if(!notracer) SetActivator(0,AAPTR_TRACER);
+	if (!notracer) SetActivator(0,AAPTR_TRACER);
 	int height = GetActorProperty(0,APROP_Height);
 	int radius = GetActorProperty(0,APROP_Radius);
-	int flameCount = 0;
 
-	if((ClassifyActor(0) & ACTOR_PLAYER) && CheckInventory("BloodBurnVFXHudFlames") == 0)
+	if ((ClassifyActor(0) & ACTOR_PLAYER) && CheckInventory("BloodBurnVFXHudFlames") == 0)
 		ACS_NamedExecuteWithResult("CalebBurningHud");
 
 	GiveInventory("BloodBurnVFXHudFlames",1+extraburn);
 
-	while(GetActorProperty(0,APROP_Health) > 0 && flameCount <= 14)
+	for (int flameCount = 0; GetActorProperty(0,APROP_Health) > 0 && flameCount <= 14; flameCount++)
 	{
-		flameCount++;
 		Spawn("BloodBurnVFX",GetActorX(0)+random(-radius,radius),GetActorY(0)+random(-radius,radius),GetActorZ(0)+random(0,height));
 		Delay(1);
 	}
@@ -308,45 +296,47 @@ Script "CalebBurningHud" (void) clientside
 	int id = 0;
 	SetHudSize(320,200,0);
 
-	while(ClassifyActor(0) & ACTOR_PLAYER)
+	while (ClassifyActor(0) & ACTOR_PLAYER)
 	{
 		graphicCounter = (flameCount/2);
-		if(graphicCounter > 13) graphicCounter -= 14;
-		flameGraphic = strparam(s:"BF01",c:65+flameCount,d:0);
+		if (graphicCounter > 13) graphicCounter -= 14;
+		flameGraphic = StrParam(s:"BF01",c:65+flameCount,d:0);
 		SetFont(flameGraphic);
-		for(id = 0; id < 12; id++) HudMessage(s:"a";HUDMSG_LAYER_UNDERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,32750+id,CR_UNTRANSLATED,0.1+(id*56.0)-224.0,280.2-(8.0*abs((id-6)/2))-((CheckInventory("BloodBurnVFXHudFlames"))*2.0),0.0);
+		for (id = 0; id < 12; id++)
+		{
+			HudMessage(s:"a";HUDMSG_LAYER_UNDERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,32750+id,CR_UNTRANSLATED,0.1+(id*56.0)-224.0,280.2-(8.0*abs((id-6)/2))-((CheckInventory("BloodBurnVFXHudFlames"))*2.0),0.0);
+		}
 		Delay(1);
 		flameCount++;
-		if(CheckInventory("BloodBurnVFXHudFlames") < 1) break;
+		if (CheckInventory("BloodBurnVFXHudFlames") < 1) break;
 	}
-	for(id = 0; id < 12; id++) HudMessage(s:"";HUDMSG_LAYER_UNDERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,32750+id,CR_UNTRANSLATED,0,0,0.1);
+	for (id = 0; id < 12; id++) HudMessage(s:"";HUDMSG_LAYER_UNDERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,32750+id,CR_UNTRANSLATED,0,0,0.1);
 	//RemoveMessages(32750,32751);
 }
 
 Script "CalebTeslaSwitch" (void)
 {
-	if(ClassifyActor(0) & ACTOR_DEAD) terminate;
+	if (ClassifyActor(0) & ACTOR_DEAD) terminate;
 	int scaleX = GetActorProperty(0,APROP_ScaleX);
 	int scaleY = GetActorProperty(0,APROP_ScaleY);
 	int totalScale = (scaleX + scaleY) / 2; //We want the average, not the magnitude
-	SetActorState(0,strparam(s:"CalebTesla",d:(((1.0-totalScale))/3275)+6),true);
+	SetActorState(0,StrParam(s:"CalebTesla",d:(((1.0-totalScale))/3275)+6),true);
 }
 
 Script "CalebTeslaBlink" (void)
 {
 	Thing_Stop(0);
-	if((timer()%4) < 2) ACS_NamedExecuteWithResult("CalebTeslaTurnOffBrightness");
-	SetResultValue((timer()%4) < 2);
+	if ((Timer()%4) < 2) ACS_NamedExecuteWithResult("CalebTeslaTurnOffBrightness");
+	SetResultValue((Timer()%4) < 2);
 }
 
 Script "CalebTeslaBlinkNonHumanoid" (void)
 {
-	int stunTimer;
 	int renderStyle = GetActorProperty(0,APROP_RenderStyle);
 	SetActorProperty(0,APROP_Renderstyle,STYLE_STENCIL);
-	while((ClassifyActor(0) & ACTOR_ALIVE) && stunTimer < 24)
+	for (int stunTimer = 0; stunTimer < 24 && ClassifyActor(0) & ACTOR_ALIVE; stunTimer++)
 	{
-		switch(stunTimer%6)
+		switch (stunTimer%6)
 		{
 			case 0: SetActorProperty(0,APROP_StencilColor,0x2F324A); break;
 			case 1: SetActorProperty(0,APROP_StencilColor,0x62677F); break;
@@ -357,32 +347,31 @@ Script "CalebTeslaBlinkNonHumanoid" (void)
 		}
 		Thing_Stop(0);
 		Delay(2);
-		stunTimer++;
 	}
+
 	SetActorProperty(0,APROP_RenderStyle,renderStyle);
 	GiveInventory("BloodTurnOffTeslaBrightness",1);
-
 }
 
 //In case a monster dies, ya know
 Script "CalebTeslaTurnOffBrightness" (void)
 {
 	Delay(2);
-	if(ClassifyActor(0) > 1) GiveInventory("BloodTurnOffTeslaBrightness",1);
+	if (ClassifyActor(0) > 1) GiveInventory("BloodTurnOffTeslaBrightness",1);
 }
 
 Script "CalebProximityLooker" (void)
 {
-	int newTid = UniqueTid();
+	int newTid = UniqueTID();
 	SpawnForced("PlayerProximityTNTLooker",GetActorX(0),GetActorY(0),GetActorZ(0),newTid);
 	SetPointerExt(AAPTR_MASTER,0,newTid);
-	SetActivator(0,AAPTR_Target);
+	SetActivator(0,AAPTR_TARGET);
 	SetPointerExt(AAPTR_TRACER,0,newTid);
 }
 
 Script "CalebProximityChecker" (void)
 {
-	if(GetCvar("samsara_proximitybehavior"))
+	if (GetCVar("samsara_proximitybehavior"))
 		SetActorState(0,"TNTEnemyLooker",1);
 	else
 		SetActorState(0,"BeginSpawnLoop",1);
@@ -390,24 +379,27 @@ Script "CalebProximityChecker" (void)
 
 Script "CalebProximityAllyChecker" (void)
 {
-	int myTid = UniqueTid();
-	int activationTid = ActivatorTid();
-	Thing_ChangeTid(0,myTid);
+	int myTid = UniqueTID();
+	int activationTid = ActivatorTID();
+	Thing_ChangeTID(0,myTid);
 	SetActivator(0,AAPTR_MASTER);
 	SetActivator(0,AAPTR_TRACER);
 	int userTeam = GetPlayerInfo(PlayerNumber(),PLAYERINFO_TEAM);
 	int userPlayer = PlayerNumber();
 	SetActivator(myTid,AAPTR_TARGET);
-	if(!(ClassifyActor(0) & ACTOR_PLAYER)) SetActorState(0,"LookForNewTarget",1);
+	if(!(ClassifyActor(0) & ACTOR_PLAYER))
+	{
+		SetActorState(0,"LookForNewTarget",1);
+	}
 	else
 	{
 		int targetTeam = GetPlayerInfo(PlayerNumber(),PLAYERINFO_TEAM);
 		int targetPlayer = PlayerNumber();
 		SetActivator(myTid);
-		if(userTeam == targetTeam && userPlayer != targetPlayer)
+		if (userTeam == targetTeam && userPlayer != targetPlayer)
 			SetActorState(0,"LookForNewTarget",1);
 		else
 			SetActorState(0,"ValidTarget",1);
 	}
-	Thing_ChangeTid(myTid,activationTid);
+	Thing_ChangeTID(myTid,activationTid);
 }

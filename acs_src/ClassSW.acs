@@ -2,29 +2,6 @@
 #define MAGIC_CIRCLE_BASE 3000
 #define RAILINITTID 9000
 
-function int sqrt_z(int number)
-{
-	if(number <= 3)
-	{
-		if(number > 0)
-		{
-			return 1;
-		}
-		return 0;
-	}
-	
-	int oldAns = number >> 1,                     
-	    newAns = (oldAns + number / oldAns) >> 1; 
-	
-	while(newAns < oldAns)
-	{
-		oldAns = newAns;
-		newAns = (oldAns + number / oldAns) >> 1;
-	}
-
-	return oldAns;
-}
-
 Script "SWCloneCreate" (void)
 {
 	int playerTid = UniqueTid();
@@ -79,7 +56,7 @@ script "SW741" (int ButtonPress) //741
     int FireButton1 = GetPlayerInput(-1, INPUT_BUTTONS);
     if (FireButton1 & BT_ATTACK)
 	    ButtonPress = 1;
-   
+
     SetResultValue(ButtonPress);
 }
 
@@ -88,9 +65,9 @@ script "SW741" (int ButtonPress) //741
 Script "SWMissileMode" (void) //742
 {
 	int res = CheckInventory("MissileMode");
-	
+
 	res = (res + 1) % 3;
-	
+
 	if(res == 1) {
 		if(!CheckInventory("HeatSeekerCharge")) { // if we don't have any heatseeker, don't change mode to this
 			if(!CheckInventory("GotNuke")) // if we have no nukes at all also don't bother
@@ -103,7 +80,7 @@ Script "SWMissileMode" (void) //742
 		if(!CheckInventory("GotNuke")) // if I don't have nuke just switch over to normal mode
 			res = 0;
 	}
-	
+
 	TakeInventory("MissileMode", 3);
 	if(res != -1)
 		GiveInventory("MissileMode", res);
@@ -125,7 +102,7 @@ Script "SW744" (int density) //744
 	int ptid = ActivatorTID();
 	int newtid = ptid + RAILINITTID;
 	Thing_ChangeTID(RAILINITTID, newtid);
-	
+
     int plX; int plY;  int plZ;
     int grX; int grY;  int grZ;
     int vX;  int vY;   int vZ;
@@ -138,7 +115,7 @@ Script "SW744" (int density) //744
     plY = GetActorY(ptid); grY  = GetActorY(newtid);
     plZ = GetActorZ(ptid)+32.0; grZ  = GetActorZ(newtid);
 	int faceangle = VectorAngle(grX - plX, grY - plY);
-    vX   = grX - plX;       vY   = grY - plY;       vZ   = grZ - plZ;
+    vX = grX - plX; vY = grY - plY; vZ = grZ - plZ;
 
     magnitude = magnitudeThree(vX >> 16, vY >> 16, vZ >> 16);
 
@@ -264,8 +241,8 @@ str FortuneCookieText[MAX_FORTUNE_MESSAGES] = { "Fortune Say: Sorry, you no win 
 							  "Fortune Say: The early bird gets the worm. The second mouse gets cheese.",
 							  "Fortune Say: To maintain perfect accuracy, shoot first and call whatever you hit the target.",
 							  "Fortune Say: Baseball has it wrong. Man with four balls cannot walk.",
-							  "Fortune Say: To be is to do. - Socrates 
-							  \n\n To do is to be. - Sarte 
+							  "Fortune Say: To be is to do. - Socrates
+							  \n\n To do is to be. - Sarte
 							  \n\n Do be do be do. - Sinatra",
 							  "Fortune Say: Time is an illusion. Lunchtime doubly so.",
 							  "Fortune Say: Man who drops soap in prison shower is super bummed.",
@@ -324,7 +301,7 @@ str FortuneCookieText[MAX_FORTUNE_MESSAGES] = { "Fortune Say: Sorry, you no win 
 							  "Fortune Say: Man with tool in woman's mouth not necessarily dentist.",
 							  "Fortune Say: Man with hand in pocket feel cocky all day long.",
 							  "Fortune Say: It take many nail to build crib, one screw to fill it.",
-							  "Fortune Say: War not determine who right. War determine who left.",	  
+							  "Fortune Say: War not determine who right. War determine who left.",
 							  "Fortune Say: Woo, /v/!",
 							  "Fortune Say: If you're reading this, I hope you have a good day!",
 							  "Fortune Say: This fortune intentionally left blank.",
@@ -339,12 +316,12 @@ str FortuneCookieText[MAX_FORTUNE_MESSAGES] = { "Fortune Say: Sorry, you no win 
 
 Script "SWFortuneCookie" (void) ClientSide //8432
 {
-        int cookietext = random(0, MAX_FORTUNE_MESSAGES-1);
-	    SetFont("SWCOOKIE");
-		SetHudSize(640, 480, 1);
-	    HudMessage(s:FortuneCookieText[cookietext]; HUDMSG_FADEOUT, 0, CR_UNTRANSLATED, 320.4, 360.0, 5.0, 1.0);
-		SetHudSize(0, 0, 0);
-		SetFont("SMALLFONT");
+	int cookietext = random(0, MAX_FORTUNE_MESSAGES-1);
+	SetFont("SWCOOKIE");
+	SetHudSize(640, 480, 1);
+	HudMessage(s:FortuneCookieText[cookietext]; HUDMSG_FADEOUT, 0, CR_UNTRANSLATED, 320.4, 360.0, 5.0, 1.0);
+	SetHudSize(0, 0, 0);
+	SetFont("SMALLFONT");
 }
 
 Script "StickyLocation" (int swicheroo)
@@ -352,45 +329,42 @@ Script "StickyLocation" (int swicheroo)
 	int currentx = GetActorX(0);
 	int currenty = GetActorY(0);
 	int currentz = GetActorZ(0);
+
 	SetActivator(0, AAPTR_Tracer);
-	int monsterx = GetActorX(0);
-	int monstery = GetActorY(0);
-	int monsterz = GetActorZ(0);
-	
-	Switch(swicheroo)
+
+	switch(swicheroo)
 	{
-		Case 0:
-			SetResultValue(0);
+		case 1:
+			int monsterRadius = GetActorProperty(0,APROP_Radius);
+			int adjustedRadius = monsterRadius < 20 ? 5 : monsterRadius - 10;
+
+			SetResultValue(adjustedRadius);
 			break;
-	
-		Case 1:
-			if(GetActorProperty(0,APROP_Radius) < 20)
-				SetResultValue(5);
-			
-			else
-				SetResultValue(GetActorProperty(0,APROP_Radius) - 10);
-			
-			break;
-			
-		Case 2:
+
+		case 2:
+			int monsterz = GetActorZ(0);
 			SetResultValue((monsterz - currentz) >> 16);
 			break;
 
-		Case 3:
-			int currentangle = GetActorAngle (0);
+		case 3:
+			int monsterx = GetActorX(0);
+			int monstery = GetActorY(0);
+			int currentangle = GetActorAngle(0);
+
 			int vang = VectorAngle(monsterx - currentx, monstery - currenty);
 			int angle = ((vang - currentangle) % 1.0) / 182; //haha, lazy
 			SetResultValue(angle);
 			break;
-			
-		Case 4:
-			if(GetActorProperty(0, APROP_Health) <= 0)
-				SetResultValue(1);
-				
-			else
-				SetResultValue(0);
+
+		case 4:
+			SetResultValue(GetActorProperty(0, APROP_Health) <= 0);
+			break;
+
+		default:
+			SetResultValue(0);
+			break;
 	}
-}	
+}
 
 // creating this for real infinite ammo
 Script "SW_FireRocketLauncher" (int mode)
@@ -437,22 +411,22 @@ Script "SW_RabbitGrowUp" (int female)
 }
 
 Script "SW_RabbitScrew" (void)
-{	
+{
 	if(CheckInventory("SWRabbitScrewing") || GetActorClass(0) != "SW_RabbitMale")
 		terminate;
-		
+
 	GiveInventory("SWRabbitScrewing",1);
 	int rabbitX = GetActorX(0);
 	int rabbitY = GetActorY(0);
 	int rabbitZ = GetActorZ(0);
 	int rabbitAngle = GetActorAngle(0);
 	int femaleTid = UniqueTid();
-	
+
 	SpawnForced("SW_RabbitFemaleMature",rabbitX+(cos(rabbitAngle)*12),rabbitY+(sin(rabbitAngle)*12),rabbitZ,femaleTid);
 	SetActorAngle(femaleTid,rabbitAngle);
 	SetActorState(0,"Screw",1);
 	SetActorState(femaleTid,"Screw",1);
-	
+
 	Delay(35*random(10,15));
 	if(ClassifyActor(femaleTid) & ACTOR_ALIVE)
 		GiveActorInventory(femaleTid,"SWRabbitBirth",1);
