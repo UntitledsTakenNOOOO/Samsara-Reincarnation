@@ -1,36 +1,36 @@
 actor Crusader2 : SamsaraMonsterReincCrusader replaces Crusader
 {
-	DamageFactor "CorvusCrossbow", 1.1
-	DamageFactor "DragonClaw", 1.5
-	DamageFactor "WitchMelee", 1.1
-	DamageFactor "ElectricBolt", 2.0
-	DamageFactor "PoisonBolt", 0
-	DamageFactor "MarathonFusion", 2.0
-	DamageFactor "Tesla", 2.0
-	DamageFactor "DeusExPistol", 0.5
-	DamageFactor "DeusExRifleShot", 0.5
-	DamageFactor "DeusExPoisonEffect", 0
-	DamageFactor "DeusExKnockedOut", 0
-	DamageFactor "DeusExMelee", 0.5
-	DamageFactor "DeusExSabot", 1.2
-	DamageFactor "DeusExSabotPistol", 1.2
-	DamageFactor "DeusExFlamed", 0.5
-	DamageFactor "DeusExBurned", 0.5
-	PainChance "MightyBoot", 255
-	PainChance "CalebFire", 0
-	PainChance "WTMelee", 255
-	PainChance "WTMeleeIce", 255
-	PainChance "ShrinkerDMG", 0
-	+NOTDMATCH
+	Game Strife
+	ConversationID 63,-1,-1
+	Speed 8
+	Radius 40
+	Height 56
+	Mass 400
+	Health 400
+	Painchance 128
+	Monster
+	+FLOORCLIP
+	+DONTMORPH
+	+MISSILEMORE
+	+INCOMBAT
 	+NOICEDEATH
-	ConversationID 63
+	+NOBLOOD
+	MinMissileChance 120
+	MaxDropoffHeight 32
 	DropItem "StrifeEnergyPod2"
+	SeeSound "crusader/sight"
+	PainSound "crusader/pain"
+	DeathSound "crusader/death"
+	ActiveSound "crusader/active"
+	Obituary "$OB_CRUSADER"
 	States
 	{
-	Death:
-		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		Goto Super::Death
-
+	Spawn:
+		ROB2 Q 10 A_Look
+		Loop
+	See:
+		ROB2 AABBCCDD 3 A_Chase
+		Loop
 	Missile:
 		TNT1 A 0 A_ChangeFlag("NOPAIN",0)
 		ROB2 E 3 A_FaceTarget
@@ -44,7 +44,9 @@ actor Crusader2 : SamsaraMonsterReincCrusader replaces Crusader
 		ROB2 E 2 bright A_CrusaderSweepRight
 		ROB2 F 2 A_CrusaderRefire
 		Loop
-
+	Pain:
+		ROB2 D 1 Slow A_Pain
+		Goto See
 	Pain.MightyBoot:
 		TNT1 A 0 A_ChangeFlag("NOPAIN",1)
 		TNT1 A 0 A_PlaySound("duke/kickhit",CHAN_BODY)
@@ -52,10 +54,28 @@ actor Crusader2 : SamsaraMonsterReincCrusader replaces Crusader
 		TNT1 A 0 A_Recoil(10)
 		ROB2 E 16 A_Pain
 		Goto See
-
-	Crush:
-		TNT1 A -1
+	Death:
+	Disintegrate:
+		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		ROB2 G 3 A_Scream
+		ROB2 H 5 A_TossGib
+		ROB2 I 4 Bright A_TossGib
+		ROB2 J 4 Bright A_Explode(64,64,1,1)
+		ROB2 K 4 Bright A_Fall
+		ROB2 L 4 A_Explode(64,64,1,1)
+		ROB2 MN 4 A_TossGib
+		ROB2 O 4 A_Explode(64,64,1,1)
+		ROB2 P -1 A_CrusaderDeath
 		Stop
+
+		// SamsaraMonsterReincCrusader states
+		XDeath.PunchDagger:
+		XDeath.ElectricBolt:
+		XDeath.PoisonBolt:
+		XDeath.StrifeExplosive:
+		XDeath.StrifeSigil:
+			TNT1 A -1 A_Jump(256,"Death")
+			Wait
 	}
 }
 

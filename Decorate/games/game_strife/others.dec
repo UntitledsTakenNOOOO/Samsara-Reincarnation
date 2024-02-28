@@ -1,28 +1,40 @@
 // Other enemies
 ACTOR Macil2B : SamsaraMonsterReincMacil replaces Macil2
 {
-	DamageFactor "CorvusCrossbow", 1.1
-	DamageFactor "DragonClaw", 1.5
-	DamageFactor "WitchMelee", 1.1
-	PainChance "MightyBoot", 255
-	PainChance "CalebFire", 0
-	PainChance "WTMelee", 255
-	PainChance "WTMeleeIce", 255
-	+NOTDMATCH
-	+NOICEDEATH
+	Game Strife
 	ConversationID 50, 49, 50
 	Health 1500 // Why the fuck was his health <100?
+	Radius 20
+	Height 56
+	Speed 8
+	Painchance 200
+	Monster
 	-SPECTRAL // Dude's just a human... Well, a possessed human, of course, but still.
+	+NOTDMATCH
+	+NOICEDEATH
+	+NOSPLASHALERT
+	-NODAMAGE
+	+NEVERRESPAWN
+	+BOSS
+	+DONTRIP
+	+COUNTKILL
+	DamageFactor "Fire", 0.5
 	DamageFactor "Spectral", 1
 	DamageFactor "SpectralLow", 1
 	DamageFactor "DukeSpectral", 1
 	DamageFactor "ZorchSpectral", 1
 	DamageFactor "SpectralNoQuad", 1
-	+BOSS
-	+DONTRIP
+	MinMissileChance 150
+	SeeSound "macil/sight"
+	PainSound "macil/pain"
+	ActiveSound "macil/active"
+	DeathSound "macil/slop"
+	CrushPainSound "misc/pcrush"
 	Tag "$TAG_MACIL2"
-	var int user_scalex;
-	var int user_scaley;
+	Obituary "$OB_MACIL"
+	DropItem "None"
+	MaxStepHeight 16
+	MaxDropoffHeight 32
 	States
 	{
 	See:
@@ -44,29 +56,29 @@ ACTOR Macil2B : SamsaraMonsterReincMacil replaces Macil2
 	XDeath:
 	Death:
 		LEAD G 5 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		LEAD G 5
 		LEAD H 5 A_Scream
 		LEAD IJ 4
 		LEAD K 3
 		LEAD L 3 A_NoBlocking
 		LEAD MNOPQRSTUV 3
-		LEAD W 4 bright A_SpawnItemEx("AlienSpectre4",0,0,0,0,0,0,0,32)
+		LEAD W 4 Bright A_SpawnItemEx("AlienSpectre4", 0, 0, 0, 0, 0, random[spectrespawn](0,255)*0.0078125, 0, SXF_NOCHECKPOSITION)
 		LEAD X -1
 		Stop
-	  Burn:
-		SBRN A 3 bright ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		TNT1 A 0 bright A_PlaySound("*burndeath", CHAN_VOICE)
-		SBRN B 3 bright A_DropFire
-		SBRN C 3 bright
+	Burn:
+		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		SBRN A 3 bright A_PlaySound("human/imonfire",CHAN_VOICE)
+		SBRN B 3 bright A_SpawnItemEx("FireDroplet", 0, 0, 24, 0, 0, -1)
+		SBRN C 3 bright A_Wander
 		SBRN D 3 bright A_NoBlocking
-		SBRN E 5 bright A_DropFire
-		SBRN FGH 5 bright
-		SBRN I 5 bright A_DropFire
-		SBRN JKL 5 bright
-		SBRN M 5 bright A_DropFire
+		SBRN E 5 bright A_SpawnItemEx("FireDroplet", 0, 0, 24, 0, 0, -1)
+		SBRN FGH 5 bright A_Wander
+		SBRN I 5 bright A_SpawnItemEx("FireDroplet", 0, 0, 24, 0, 0, -1)
+		SBRN JKL 5 bright A_Wander
+		SBRN M 5 bright A_SpawnItemEx("FireDroplet", 0, 0, 24, 0, 0, -1)
 		SBRN NOPQPQ 5 bright
 		SBRN RSTU 7 bright
-		TNT1 A 0 bright A_SpawnItemEx("AlienSpectre4",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		SBRN V -1
+		SBRN V -1 A_SpawnItemEx("AlienSpectre4", 0, 0, 0, 0, 0, random[spectrespawn](0,255)*0.0078125, 0, SXF_NOCHECKPOSITION)
 		Stop
 	Disintegrate:
 		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
@@ -75,60 +87,44 @@ ACTOR Macil2B : SamsaraMonsterReincMacil replaces Macil2
 		DISR D 5 A_NoBlocking
 		DISR EF 5
 		DISR GHIJ 4
-		TNT1 A 0 bright A_SpawnItemEx("AlienSpectre4",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
-		MEAT D 700
+		TNT1 A -1 A_SpawnItemEx("AlienSpectre4", 0, 0, 0, 0, 0, random[spectrespawn](0,255)*0.0078125, 0, SXF_NOCHECKPOSITION)
 		Stop
-	Crush:
-		LEAD L -1
-		Stop
-	Pain.Shock:
-	Pain.Tesla:
-		CBGS A 4 A_Pain
-		CBGS A 4
-		TNT1 A -1 A_Jump(256,"See")
-		Wait
 	}
 }
 
 ACTOR StrifeBishop2 : SamsaraMonsterReincStrifeBishop replaces StrifeBishop
 {
-	DamageFactor "CorvusCrossbow", 1.15
-	DamageFactor "DragonClaw", 1.5
-	DamageFactor "ElectricBolt", 2.0
-	DamageFactor "PoisonBolt", 0.5
-	DamageFactor "MarathonFusion", 2.0
-	DamageFactor "Tesla", 2.0
-	DamageFactor "CorvusHellstaffTomed", 0.2
-	DamageFactor "DeusExSabot", 1.2
-	DamageFactor "DeusExSabotPistol", 1.2
-	PainChance "MightyBoot", 0
-	PainChance "PhosFireCoop", 0
-	PainChance "EradCoopGreenFire", 0
-	PainChance "EradGreenFire", 0
-	PainChance "StrifeExplosive", 0
-	PainChance "PSFire", 5
-	PainChance "WTMelee", 96
-	PainChance "WTMeleeIce", 96
-	PainChance "ShrinkerDMG", 0
-	PainChance "PainkillerIce", 0
-	+NOTDMATCH
-	+NOICEDEATH
-	+DONTRIP
+	Game Strife
+	ConversationID 64,-1,-1
 	Health 1000
-	ConversationID 64, -1, -1
-	DamageFactor "Fire", 0.5
-	DamageFactor "MarathonFire", 0.5
-	DamageFactor "MarathonPlasmaFire", 0.5
-	DamageFactor "BFGSpray", 0.5
-	DamageFactor "CorvusHellstaffTomed", 0.2
-	DamageFactor "MarathonFusion", 2.0
-	DamageFactor "WMCNade", 0.75
+	Painchance 128
+	Speed 8
+	Radius 40
+	Height 56
+	Mass 500
+	Monster
+	+NOBLOOD
+	+NOTDMATCH
+	+FLOORCLIP
+	+INCOMBAT
+	+NOICEDEATH
+	+NEVERRESPAWN
 	+DONTRIP
 	Tag "Bishop"
-	var int user_scalex;
-	var int user_scaley;
+	DamageFactor "Fire", 0.5
+	MinMissileChance 150
+	MaxDropoffHeight 32
+	SeeSound "bishop/sight"
+	PainSound "bishop/pain"
+	DeathSound "bishop/death"
+	ActiveSound "bishop/active"
+	DropItem "CrateOfMissiles", 256, 20
+	Obituary "$OB_STFBISHOP"
 	States
 	{
+	Spawn:
+		MLDR A 10 A_Look
+		Loop
 	See:
 		TNT1 A 0 A_JumpIfInventory("DukeBossSee",1,"See2")
 		TNT1 A 0 A_JumpIfInventory("CalebBossSee",1,"See2")
@@ -153,58 +149,71 @@ ACTOR StrifeBishop2 : SamsaraMonsterReincStrifeBishop replaces StrifeBishop
 		Loop
 	Missile:
 		MLDR E 3 A_FaceTarget
-		MLDR F 2 bright A_CustomMissile("BishopMissile", 64, 0, 0, CMF_AIMOFFSET)
+		MLDR F 2 Bright A_CustomMissile("BishopMissile", 64, 0, 0, CMF_AIMOFFSET)
 		Goto See2
 	Pain:
 		MLDR D 1 A_Pain
 		Goto See2
-	XDeath:
 	Death:
+	Disintegrate:
 		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
-		Goto Super::Death
-	Crush:
-		MLDR V -1
+		MLDR G 3 Bright
+		MLDR H 5 Bright A_Scream
+		MLDR I 4 Bright A_TossGib
+		MLDR J 4 Bright A_Explode(64,64,1,1)
+		MLDR KL 3 Bright
+		MLDR M 4 Bright A_NoBlocking
+		MLDR N 4 Bright
+		MLDR O 4 Bright A_TossGib
+		MLDR P 4 Bright
+		MLDR Q 4 Bright A_TossGib
+		MLDR R 4 Bright
+		MLDR S 4 Bright A_TossGib
+		MLDR T 4 Bright
+		MLDR U 4 Bright A_TossGib
+		MLDR V 4 Bright A_SpawnItemEx("AlienSpectre2", 0, 0, 0, 0, 0, random[spectrespawn](0,255)*0.0078125, 0, SXF_NOCHECKPOSITION)
 		Stop
 	}
 }
 
 ACTOR Loremaster2 : SamsaraMonsterReincLoremaster replaces Loremaster
 {
-	DamageFactor "CorvusCrossbow", 1.15
-	DamageFactor "DragonClaw", 1.5
-	DamageFactor "ElectricBolt", 2.0
-	DamageFactor "PoisonBolt", 0.5
-	DamageFactor "MarathonFusion", 2.0
-	DamageFactor "Tesla", 2.0
-	DamageFactor "CorvusHellstaffTomed", 0.2
-	DamageFactor "DeusExSabot", 1.2
-	DamageFactor "DeusExSabotPistol", 1.2
-	PainChance "MightyBoot", 0
-	PainChance "PhosFireCoop", 0
-	PainChance "EradCoopGreenFire", 0
-	PainChance "EradGreenFire", 0
-	PainChance "StrifeExplosive", 0
-	PainChance "PSFire", 5
-	PainChance "WTMelee", 96
-	PainChance "WTMeleeIce", 96
-	PainChance "ShrinkerDMG", 0
-	PainChance "PainkillerIce", 0
-	+NOTDMATCH
-	+NOICEDEATH
-	+DONTRIP
+	Game Strife
 	ConversationID 66, 63, 64
-	Health 1500
-	+BOSS
+	Health 1500	
+	Speed 10
+	Radius 15	
+	Height 56
+	FloatSpeed 5
+	Monster
+	+FLOAT
+	+NOBLOOD
+	+NOGRAVITY
+	+NOTDMATCH
+	+FLOORCLIP
+	+NOBLOCKMONST
+	+INCOMBAT
+	+LOOKALLAROUND
+	+NOICEDEATH
+	+NEVERRESPAWN
 	+DONTRIP
-	Tag "Loremaster"
-	DamageFactor "BFGSpray", 0.5
-	DamageFactor "CorvusHellstaffTomed", 0.2
-	DamageFactor "MarathonFusion", 2.0
-	DamageFactor "WMCNade", 0.75
-	var int user_scalex;
-	var int user_scaley;
+	+BOSS
+	DamageFactor "Fire", 0.5
+	MinMissileChance 150
+	Tag "$TAG_PRIEST"
+	SeeSound "loremaster/sight"
+	AttackSound "loremaster/attack"
+	PainSound "loremaster/pain"
+	DeathSound "loremaster/death"
+	ActiveSound "loremaster/active"
+	Obituary "$OB_LOREMASTER"
+	DropItem "Junk"
 	States
 	{
+	Spawn:
+		PRST A 10 A_Look
+		PRST B 10 A_SentinelBob
+		Loop
 	See:
 		TNT1 A 0 A_JumpIfInventory("DukeBossSee",1,"See2")
 		TNT1 A 0 A_JumpIfInventory("CalebBossSee",1,"See2")
@@ -245,6 +254,8 @@ ACTOR Loremaster2 : SamsaraMonsterReincLoremaster replaces Loremaster
 		PRST E 4 A_SentinelBob
 		Goto See2
 	Death:
+	Disintegrate:
+		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
 		PDED A 6
 		PDED B 6 A_Scream
 		PDED C 6
@@ -256,31 +267,48 @@ ACTOR Loremaster2 : SamsaraMonsterReincLoremaster replaces Loremaster
 		PDED RS 4
 		PDED T -1
 		Stop
-	Crush:
-		PDED I -1
-		Stop
 	}
 }
 
 ACTOR Programmer2 : SamsaraMonsterReincProgrammer replaces Programmer
 {
+	Game Strife
 	ConversationID 95, -1, -1
 	Health 2500 // WHY YES I AM INTENT ON INCREASING THE HEALTH OF EVERY FUCKING ENEMY I CAN
-	Speed 30
+	PainChance 50
+	Speed 26
+	FloatSpeed 5
+	Radius 45
+	Height  60
+	Mass 800
+	Damage 4
+	Monster
+	+NOGRAVITY
+	+FLOAT
+	+NOBLOOD
+	+NOTDMATCH
+	+DONTMORPH
+	+NOBLOCKMONST
+	+LOOKALLAROUND
+	+NOICEDEATH
+	+NOTARGETSWITCH
 	+BOSS
 	+DONTRIP
-	DamageFactor "BFGSpray", 0.5
-	DamageFactor "CorvusHellstaffTomed", 0.2
-	DamageFactor "MarathonFusion", 2.0
-	DamageFactor "WMCNade", 0.75
-	DamageFactor "ElectricBolt", 2.0
-	DamageFactor "PoisonBolt", 0.5
+	DamageFactor "Fire", 0.5
+	MinMissileChance 150
+	AttackSound "programmer/attack"
+	PainSound "programmer/pain"
+	DeathSound "programmer/death"
+	ActiveSound "programmer/active"
+	Obituary "$OB_PROGRAMMER"
 	Tag "Programmer"
-	DropItem ""
-	var int user_scalex;
-	var int user_scaley;
+	DropItem "None"
 	States
 	{
+	Spawn:
+		PRGR A 5 A_Look
+		PRGR A 1 A_SentinelBob
+		Loop
 	See:
 		TNT1 A 0 A_JumpIfInventory("DukeBossSee",1,"See2")
 		TNT1 A 0 A_JumpIfInventory("CalebBossSee",1,"See2")
@@ -323,6 +351,7 @@ ACTOR Programmer2 : SamsaraMonsterReincProgrammer replaces Programmer
 		PRGR L 5 A_SentinelBob
 		Goto See2+4
 	Death:
+	Disintegrate:
 		TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
 		PRGR L 7 bright A_TossGib
 		PRGR M 7 bright A_Scream
