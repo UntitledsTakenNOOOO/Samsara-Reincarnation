@@ -219,6 +219,7 @@ ACTOR " Minigun " : Weapon
 		goto Select
 
 	FireStr:
+		TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"FireStrSmooth")
 		TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"FireStrPowered")
 		TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"FireStrPowered")
 		TNT1 A 0 A_GunFlash("FlashStr")
@@ -234,18 +235,56 @@ ACTOR " Minigun " : Weapon
 	FireStrFinish:
 		TNT1 A 0 A_ReFire
 	FireStrFinishAnim:
+		TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"FireStrFinishAnimSmooth")
 		DMNG C 2 A_GiveInventory("SamsaraDoomguyStrMinigunFiringEndSoundPlayer")
 		DMNG D 2
 		DMNG CD 4
 		DMNG CD 8
+		//DMNG CD 12
+		goto Ready
+		
+	FireStrSmooth:
+		TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"FireStrPowered")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"FireStrPowered")
+		TNT1 A 0 A_GunFlash("FlashStrSmooth")
+		DMNG C 1 A_GiveInventory("SamsaraDoomguyStrMinigunAttackHandler")
+		DMNG E 1
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStr2AttackSmooth")
+		TNT1 A 0 A_JumpIfInventory("Clip",1,"FireStr2AttackSmooth")
+		goto FireStr2
+
+	FireStr2AttackSmooth:
+		TNT1 A 0 A_GunFlash("FlashStr2Smooth")
+	FireStr2Smooth:
+		DMNG D 1 A_GiveInventory("SamsaraDoomguyStrMinigunAttackHandler")
+		DMNG F 1
+	FireStrFinishSmooth:
+		TNT1 A 0 A_ReFire
+	FireStrFinishAnimSmooth:
+		DMNG C 1 A_GiveInventory("SamsaraDoomguyStrMinigunFiringEndSoundPlayer")
+		DMNG E 1
+		DMNG DF 1
+		DMNG CEDF 2
+		DMNG CEDF 4
+		//DMNG CEDF 6
 		goto Ready
 
 	FlashStr:
-		DMNF C 3 Bright A_Light1
+		DMNF C 2 Bright A_Light1
 		goto LightDone
 
 	FlashStr2:
-		DMNF D 3 Bright A_Light2
+		DMNF G 2 Bright A_Light2
+		goto LightDone
+		
+	FlashStrSmooth:
+		DMNF C 1 Bright A_Light2
+		DMNF E 1 Bright A_Light1
+		goto LightDone
+
+	FlashStr2Smooth:
+		DMNF D 1 Bright A_Light2
+		DMNF F 1 Bright A_Light1
 		goto LightDone
 
 	// Powered
@@ -289,9 +328,16 @@ ACTOR " Minigun " : Weapon
 	FireStrPoweredFinish:
 		TNT1 A 0 A_ReFire
 	FireStrPoweredFinishAnim:
-		DMNG C 2 A_GiveInventory("SamsaraDoomguyStrMinigunFiringEndSoundPlayer")
+		TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"FireStrPoweredFinishAnimSmooth")
+		DMNG C 2 A_GiveInventory("SamsaraDoomguyStrMinigunFiringPoweredEndSoundPlayer")
 		DMNG D 2
 		DMNG CD 4 //Extremely shortened refire delay
+		goto Ready
+	FireStrPoweredFinishAnimSmooth: //no smooth powered fire because it fires really fast
+		DMNG C 1 A_GiveInventory("SamsaraDoomguyStrMinigunFiringPoweredEndSoundPlayer")
+		DMNG E 1
+		DMNG DF 1
+		DMNG CEDF 2 //Extremely shortened refire delay
 		goto Ready
 
 	AltFire:
@@ -324,18 +370,19 @@ ACTOR " Minigun " : Weapon
 		goto FireStrFinishAnim
 
 	AltFireFinishReFire:
+		TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"AltFireFinishReFireSmooth")
 		TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"FireStrFinish")
 		TNT1 A 0 A_CheckReload
 		goto FireStrFinishAnim
 
 	FlashStrPowered:
 		DMNF C 1 Bright A_Light1
-		DMNF C 1 Bright
+		//DMNF C 1 Bright
 		goto LightDone
 
 	FlashStrPowered2:
-		DMNF D 1 Bright A_Light2
-		DMNF D 1 Bright
+		DMNF G 1 Bright A_Light2
+		//DMNF D 1 Bright
 		goto LightDone
 	}
 }
@@ -490,7 +537,7 @@ actor SamsaraDoomguyStrMinigunAttackHandler : Trigger
 		stop
 	}
 }
-
+//SamsaraDoomguyStrMinigunFiringPoweredEndSoundPlayer
 actor SamsaraDoomguyStrMinigunFiringEndSoundPlayer : Trigger
 {
 	States
@@ -504,6 +551,21 @@ actor SamsaraDoomguyStrMinigunFiringEndSoundPlayer : Trigger
 		stop
 	}
 }
+
+actor SamsaraDoomguyStrMinigunFiringPoweredEndSoundPlayer : Trigger
+{
+	States
+	{
+	// Sound playing stuff
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrMinigunFiringSoundCheck",1,1)
+		stop
+		TNT1 A 0 A_PlaySound("doomguy/stronghold/minigundown2",CHAN_6)
+		TNT1 A 0 A_TakeInventory("SamsaraDoomguyStrMinigunFiringSoundCheck")
+		stop
+	}
+}
+
 
 actor SamsaraDoomguyStrMinigunFiringSoundStopper : Trigger
 {
