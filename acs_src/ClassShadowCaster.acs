@@ -1,0 +1,899 @@
+#DEFINE MAXFORMS 7
+#DEFINE MAXBAGSIZE 36
+#DEFINE MAXITEMS 36
+
+str MenuPortraits[MAXFORMS] = { "SMORPH01", "SMORPH02", "SMORPH03", "SMORPH04", "SMORPH05", "SMORPH06", "SMORPH07"};
+str MorphPrefixes[MAXFORMS-1] = { "PIX", "KAP", "CAT", "EYE", "DRG", "GOL" };
+str MorphMicroPrefixes[MAXFORMS] = { "H", "C", "K", "M", "E", "D", "G" };
+str MorphNames[MAXFORMS] = { "Kirt", "Caun", "Kahpa", "Maorin", "Opsis", "Ssair", "Grost" };
+int expLevels[MAXFORMS] = { 500, 250, 350, 750, 1000, 1500, 2000 };
+int ItemInformation[MAXITEMS][3] =
+{
+	{ "IceWand", "Ice Wand", 15 },
+	{ "FireWand", "Fire Wand", 12 },
+	{ "StaffOfPower", "Staff of Power", 15 },
+	{ "FlameWand", "Flame Wand", 15 },
+	{ "SceptreOfMight", "Sceptre of Might", 15 },
+	{ "StaffOfForce", "Staff of Force", 20 },
+	{ "TriWand", "Tri-Wand", 15 },
+	{ "FrostWand", "Frost Wand", 15 },
+	{ "SwarmWand", "Swarm Wand", 12 },
+	{ "LightningWand", "Lightning Wand", 20 },
+	{ "AcidWand", "Acid Wand", 30 },
+	{ "Shuriken", "Shuriken" },
+	{ "WaterCannon", "Water Cannon", 20 },
+	{ "DragonHorn", "Dragon Horn", 15 },
+	{ "RedBomb", "Bomb (Red)", 1 },
+	{ "BlueBomb", "Bomb (Blue)", 1 },
+	{ "GreenBomb", "Bomb (Green)", 1 },
+	{ "ShockHorn", "Shock Horn", 12 },
+	{ "HornOfTheCaun", "Horn of the Caun", 10 },
+	{ "CaneOfForce", "Cane of Force", 20 },
+	{ "CaunSword", "Caun Sword" },
+	{ "SilverSword", "Silver Sword" },
+	{ "MagicSword", "Magic Sword" },
+	{ "TridentOfMight", "Trident of Might" },
+	{ "SilverArmor", "Silver Armor" },
+	{ "MoarinArmor", "Moarin Armor" },
+	{ "CaunArmor", "Caun Armor" },
+	{ "WaterArmor", "Water Armor" },
+	{ "AmuletOfDefense", "Amulet of Defense" },
+	{ "CrystalOfLight", "Crystal of Light", 5 },
+	{ "ChaliceOfPower", "Chalice of Power", 1 },
+	{ "StrengthPotion", "Strength Potion", 2 },
+	{ "HealthPotion", "Health Potion", 6 },
+	{ "PowerPotion", "Potion of Power", 6 },
+	{ "HealthFruit", "Health Fruit", 5 },
+	{ "PowerFruit", "Power Fruit", 5 }	
+};
+
+str MorphAbilities[MAXFORMS][7] =
+{
+	{ "Punch", "Kick" },
+	{ "Punch", "Insect Swarm", "Special Heal", "Light", "Shield", "Sneak", "Distant Grab" },
+	{ "Claw Attack", "Shock", "Sonic Attack" },
+	{ "Claw Attack", "Toxic Breath", "Cat Sight" },
+	{ "Tentacle Slap", "Fireballs", "Cold Blast", "Death Blast", "Super Map", "Mortal Terror", "Slow Time" },
+	{ "Claw Attack", "Tail Attack", "Fire Breath" },
+	{ "Punch", "Earthquake", "Paralysis" }
+};
+
+int MorphAbilityCosts[MAXFORMS][7] =
+{
+	{ 0, 0 },
+	{ 0, 2, 10, 10, 10, 10, 10 },
+	{ 0, 2, 4 },
+	{ 0, 2, 8 },
+	{ 0, 3, 2, 30, 20, 15, 20 },
+	{ 0, 0, 2 },
+	{ 0, 50, 25 }
+};
+
+function int ShadowCaster_IsWeapon (int id)
+{
+	return id <= 24; 
+}
+
+function int ShadowCaster_IsConsumable (int id)
+{
+	return id >= 30; 
+}
+
+function int ShadowCaster_IsImportant (int id)
+{
+	return (id == 12 || id == 21 || id == 22 || id == 23 || id == 24); 
+}
+
+function int ShadowCaster_OldExperience (void)
+{
+	int totalOld = 0;
+	for(int a = (CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Level"))); a > 0; a--)
+		totalOld += expLevels[CheckInventory("ShadowCaster_CurrentForm")] * (1<<(a-1));
+		
+	return totalOld;
+}
+
+Script "ShadowCaster_Loop" (Void)
+{
+	int currentlyOpen;
+	int startAngle, startPitch;
+	int lastInput, bag1, bag2, bag1charge, bag2charge, nextExp, oldExp;
+	str bag1Name, bag2Name;
+	int faceSequence = -1;
+	int faceImage = 1;
+	int faceTimer = 0;
+	int useSpamBlocker = 0;
+	int trashFail = 0;
+	
+	while(CheckInventory("ShadowCasterClass"))
+	{
+		SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+		SetPlayerProperty(0,0,PROP_FROZEN);
+		GiveInventory("ShadowCaster_AllowMorph",1);
+		if(CheckWeapon("ShadowCaster_ContextSwitcher")) SetWeapon("ShadowCaster_Attacker");
+		if(CheckInventory("ShadowCaster_DoShurikenRedeem")) ACS_NamedExecuteWithResult("ShadowCaster_ShurikenRedeem",1);
+		while(1 == 1)
+		{
+			//Handle Levelling
+			nextExp = (expLevels[CheckInventory("ShadowCaster_CurrentForm")] * (1<<(CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Level")))));
+			oldExp = ShadowCaster_OldExperience();
+		
+			ShadowCaster_DoLevelUp(CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Experience")),nextExp,oldExp);
+		
+			//Power regeneration
+			if(timer() % 35 == 0 && (CheckInventory("ShadowCaster_Power") < GetAmmoCapacity("ShadowCaster_Power"))) GiveInventory("ShadowCaster_Power",1);
+			
+			//Do Form Stuff
+			ShadowCaster_FormProperties(CheckInventory("ShadowCaster_CurrentForm"));
+			
+			//Handle Input and Context Menu
+			int playerInput = GetPlayerInput(-1,INPUT_BUTTONS);
+			if(playerInput & BT_ALTATTACK && !CheckInventory("ShadowCaster_Morphing"))
+			{
+				if(!currentlyOpen)
+				{
+					GiveInventory("ShadowCaster_ContextSwitcher",1);
+					SetWeapon("ShadowCaster_ContextSwitcher");
+					currentlyOpen = 1;
+					startAngle = GetActorAngle(0);
+					startPitch = GetActorPitch(0);	
+					SetInventory("ShadowCaster_ContextPosX",CheckInventory("ShadowCaster_CurrentSlot"));
+					SetInventory("ShadowCaster_ContextPosY",CheckInventory("ShadowCaster_CurrentForm")+4);
+				}
+				if(playerInput & BT_ATTACK)
+				{
+					if(timer() > lastInput + 3)
+					{
+						lastInput = timer();
+						if(CheckInventory("ShadowCaster_SelectedX") || CheckInventory("ShadowCaster_SelectedY"))
+						{
+							if(CheckInventory("ShadowCaster_TrashSelected"))
+							{
+								trashfail = 1;
+								if(CheckInventory("ShadowCaster_SelectedY") > 4)
+									bag1Name = strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_SelectedY")-5],s:"Bag",d:CheckInventory("ShadowCaster_SelectedX")-1);
+								else
+									bag1Name = strparam(s:"ShadowCaster_Bag",d:1+(((CheckInventory("ShadowCaster_SelectedY")-1))*9)+(CheckInventory("ShadowCaster_SelectedX")-1));
+									
+								bag1 = CheckInventory(bag1Name);
+								if(bag1 > 0 && !ShadowCaster_IsImportant(bag1))
+								{
+									ACS_NamedExecuteWithResult("ShadowCaster_MenuSound",1);
+									SetInventory(bag1Name,0);
+									SetInventory(strparam(s:bag1Name,s:"Charge"),0);
+								}
+							}
+							if(CheckInventory("ShadowCaster_SelectedY") > 4)
+								bag1Name = strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_SelectedY")-5],s:"Bag",d:CheckInventory("ShadowCaster_SelectedX")-1);
+							else bag1Name = strparam(s:"ShadowCaster_Bag",d:1+(((CheckInventory("ShadowCaster_SelectedY")-1))*9)+(CheckInventory("ShadowCaster_SelectedX")-1));
+							bag1 = CheckInventory(bag1Name);
+							bag1charge = CheckInventory(strparam(s:bag1Name,s:"Charge"));
+							
+							if(CheckInventory("ShadowCaster_ContextPosY") > 3)
+								bag2Name = strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_ContextPosY")-4],s:"Bag",d:CheckInventory("ShadowCaster_ContextPosX"));
+							else bag2Name = strparam(s:"ShadowCaster_Bag",d:1+((CheckInventory("ShadowCaster_ContextPosY"))*9)+CheckInventory("ShadowCaster_ContextPosX"));
+							bag2 = CheckInventory(bag2Name);
+							bag2charge = CheckInventory(strparam(s:bag2Name,s:"Charge"));
+							
+							if(trashfail == 0)
+							{
+								if(!((CheckInventory("ShadowCaster_SelectedX") == 2 || CheckInventory("ShadowCaster_SelectedX") == 3) && CheckInventory("ShadowCaster_SelectedY") > 4 && (!ShadowCaster_IsWeapon(bag1) || !ShadowCaster_IsWeapon(bag2)))
+								&& !(CheckInventory("ShadowCaster_ContextPosY") > 3 && (CheckInventory("ShadowCaster_ContextPosX") < 1 || CheckInventory("ShadowCaster_ContextPosX") > 2 || !ShadowCaster_IsWeapon(bag1))))
+								{
+									SetInventory(bag1Name,bag2);
+									SetInventory(bag2Name,bag1);
+									SetInventory(strparam(s:bag1Name,s:"Charge"),bag2charge);
+									SetInventory(strparam(s:bag2Name,s:"Charge"),bag1charge);
+								}
+							}
+							SetInventory("ShadowCaster_SelectedX",0);
+							SetInventory("ShadowCaster_SelectedY",0);
+							bag1 = 0;
+							bag2 = 0;
+							bag1charge = 0;
+							bag2charge = 0;
+							trashfail = 0;
+						}
+						else
+						{
+							if(!CheckInventory("ShadowCaster_TrashSelected") && !(CheckInventory("ShadowCaster_ContextPosY") > 3 && (CheckInventory("ShadowCaster_ContextPosX") < 1 || CheckInventory("ShadowCaster_ContextPosX") > 2)))
+							{
+								SetInventory("ShadowCaster_SelectedX",CheckInventory("ShadowCaster_ContextPosX")+1);
+								SetInventory("ShadowCaster_SelectedY",CheckInventory("ShadowCaster_ContextPosY")+1);
+							}
+						}
+					}
+				}
+				else if(playerInput & BT_USE && !useSpamBlocker)
+				{
+					useSpamBlocker = 1;
+					lastInput = timer();
+					if(CheckInventory("ShadowCaster_ContextPosY") > 3)
+						bag1Name = strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_ContextPosY")-4],s:"Bag",d:CheckInventory("ShadowCaster_ContextPosX"));
+					else bag1Name = strparam(s:"ShadowCaster_Bag",d:1+((CheckInventory("ShadowCaster_ContextPosY"))*9)+CheckInventory("ShadowCaster_ContextPosX"));
+					bag1 = CheckInventory(bag1Name);
+					bag1charge = CheckInventory(strparam(s:bag1Name,s:"Charge"));
+					
+					if(CheckInventory("ShadowCaster_ContextPosY") > 3)
+					{
+						if(ShadowCaster_IsWeapon(bag1))
+						{
+							if(ShadowCaster_FindNextEmpty(bag1,bag1charge))
+							{
+								SetInventory(bag1Name,0);
+								SetInventory(strparam(s:bag1Name,s:"Charge"),0);
+							}
+							else 
+							{
+								GiveInventory("ShadowCaster_ItemUser",bag1);
+								GiveInventory("ShadowCaster_InventoryUser",1);
+								if(bag1 != 12) ACS_NamedExecuteWithResult("ShadowCaster_WeaponItemLogic",bag1Name,2);
+							}
+						}
+						else if(ShadowCaster_IsConsumable(bag1))
+						{
+							GiveInventory("ShadowCaster_ItemUser",bag1);
+							GiveInventory("ShadowCaster_InventoryUser",1);
+							ACS_NamedExecuteWithResult("ShadowCaster_WeaponItemLogic",bag1Name,2);
+						}
+					}
+					else
+					{
+						if(ShadowCaster_IsWeapon(bag1))
+						{
+							if(ShadowCaster_FindNextEmpty2(bag1,bag1charge))
+							{
+								SetInventory(bag1Name,0);
+								SetInventory(strparam(s:bag1Name,s:"Charge"),0);
+							}
+							else 
+							{
+								GiveInventory("ShadowCaster_ItemUser",bag1);
+								GiveInventory("ShadowCaster_InventoryUser",1);
+								if(bag1 != 12) ACS_NamedExecuteWithResult("ShadowCaster_WeaponItemLogic",bag1Name,2);
+							}
+						}
+						else if(ShadowCaster_IsConsumable(bag1))
+						{
+							GiveInventory("ShadowCaster_ItemUser",bag1);
+							GiveInventory("ShadowCaster_InventoryUser",1);
+							ACS_NamedExecuteWithResult("ShadowCaster_WeaponItemLogic",bag1Name,2);
+						}
+					}
+				}
+				else if(playerInput & BT_RELOAD)
+				{
+					if(CheckInventory("ShadowCaster_ContextPosY") > 3)
+						bag1Name = strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_ContextPosY")-4],s:"Bag",d:CheckInventory("ShadowCaster_ContextPosX"));
+					else bag1Name = strparam(s:"ShadowCaster_Bag",d:1+((CheckInventory("ShadowCaster_ContextPosY"))*9)+CheckInventory("ShadowCaster_ContextPosX"));
+					bag1 = CheckInventory(bag1Name);
+					bag1charge = CheckInventory(strparam(s:bag1Name,s:"Charge"));
+					
+					if(bag1 > 0 && !ShadowCaster_IsImportant(bag1))
+					{
+						ACS_NamedExecuteWithResult("ShadowCaster_MenuSound",1);
+						SetInventory(bag1Name,0);
+						SetInventory(strparam(s:bag1Name,s:"Charge"),0);
+					}
+				}
+				
+				if(!(playerInput & BT_USE)) useSpamBlocker = 0;
+				
+				TakeInventory("ShadowCaster_AllowMorph",1);
+				GiveInventory("ShadowCaster_AltSelection",1);
+				SetPlayerProperty(0,1,PROP_FROZEN);
+				SetActorAngle(0,startAngle);
+				SetActorPitch(0,startPitch);
+			}
+			else
+			{
+				TakeInventory("ShadowCaster_AltSelection",1);
+				if(currentlyOpen)
+				{
+					SetInventory("ShadowCaster_SelectedX",0);
+					SetInventory("ShadowCaster_SelectedY",0);
+					SetWeapon("ShadowCaster_Attacker");
+					if(CheckInventory("ShadowCaster_ContextPosY") > 3)
+					{
+						SetInventory("ShadowCaster_CurrentSlot",CheckInventory("ShadowCaster_ContextPosX"));
+						for(int a = CheckInventory("ShadowCaster_CurrentSlot"); a > 2; a--)
+						{
+							if(strlen(MorphAbilities[CheckInventory("ShadowCaster_CurrentForm")][a-2])>0)
+							{
+								SetInventory("ShadowCaster_CurrentSlot",a);
+								break;
+							}				
+						}
+						SetInventory("ShadowCaster_ContextPosX",CheckInventory("ShadowCaster_CurrentSlot"));
+						SetInventory("ShadowCaster_ContextPosY",CheckInventory("ShadowCaster_CurrentForm")+4);
+					}	
+					GiveInventory("ShadowCaster_AllowMorph",1);
+					SetPlayerProperty(0,0,PROP_FROZEN);
+					currentlyOpen = 0;
+				}
+			}
+				
+			ShadowCaster_InputMenu();
+			
+			//Handle the mugshot
+			
+			if(faceSequence >= 0)
+			{
+				if(faceSequence >= 3)
+				{
+					if(timer() > faceTimer + 20)
+					{
+						faceSequence = -1;
+						faceTimer = timer();
+						faceImage = 1;
+					}
+					else if(timer() > faceTimer + 10) faceImage = !(faceSequence-3)+3;
+					else faceImage = faceSequence;
+				}
+				else
+				{
+					if(timer() > faceTimer + 10)
+					{
+						faceSequence = -1;
+						faceTimer = timer();
+					}
+					faceImage = faceSequence+2;
+				}
+			}
+			else if(timer() > faceTimer + 105)
+			{
+				faceSequence = random(0,4);
+				faceTimer = timer();
+			}
+			
+			//Then we draw the stuff here
+			ACS_NamedExecuteWithResult("ShadowCaster_ClientFunctions",faceImage,nextExp,oldExp);
+			
+			Delay(1);
+		}
+	}
+}
+
+function void ShadowCaster_DoLevelUp (int currentExp, int oldExp, int nextExp)
+{
+	if(currentExp - oldExp >= nextExp)
+	{
+		GiveInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Level"),1);
+		SetAmmoCapacity("ShadowCaster_Power",100+CheckInventory("ShadowCaster_KirtLevel")*25);	
+		GiveInventory("ShadowCaster_UpdateHealth",1);
+		
+		nextExp = (expLevels[CheckInventory("ShadowCaster_CurrentForm")] * (1<<(CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Level")))));
+		oldExp = ShadowCaster_OldExperience();
+	
+		ShadowCaster_DoLevelUp(CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Experience")),nextExp,oldExp);
+	}
+}
+
+function void ShadowCaster_FormProperties(int form)
+{
+	if((form != (CheckInventory("ShadowCaster_LastForm")-1)) || CheckInventory("ShadowCaster_UpdateHealth"))
+	{
+		int spawnHealthDefault = GetActorProperty(0,APROP_SpawnHealth) == 0 ? 100 : GetActorProperty(0,APROP_SpawnHealth);
+		int healthPercentage = (((GetActorProperty(0,APROP_Health)*100)/spawnHealthDefault)*1.0)/100;
+		if(CheckInventory("ShadowCaster_UpdateHealth")) healthPercentage += 0.25;
+		if(healthPercentage > 1.0) healthPercentage = 1.0;
+		if(healthPercentage < 0.0) healthPercentage = 0.01;
+		TakeInventory("ShadowCaster_UpdateHealth",1);
+		SetInventory("ShadowCaster_CurrentSlot",CheckInventory("ShadowCaster_ContextPosX"));
+		for(int a = CheckInventory("ShadowCaster_CurrentSlot"); a > 2; a--)
+		{
+			if(strlen(MorphAbilities[CheckInventory("ShadowCaster_CurrentForm")][a-2])>0)
+			{
+				SetInventory("ShadowCaster_CurrentSlot",a);
+				break;
+			}				
+		}
+		SetInventory("ShadowCaster_ContextPosX",CheckInventory("ShadowCaster_CurrentSlot"));
+		SetInventory("ShadowCaster_ContextPosY",CheckInventory("ShadowCaster_CurrentForm")+4);
+		switch(form)
+		{
+			case 0:
+				SetActorProperty(0,APROP_SpawnHealth,100+CheckInventory("ShadowCaster_KirtLevel")*25);
+				SetActorProperty(0,APROP_Health,healthPercentage == 1.0 ? GetActorProperty(0,APROP_SpawnHealth) : ceilZandronum(GetActorProperty(0,APROP_SpawnHealth)*healthPercentage));
+				SetActorProperty(0,APROP_ViewHeight,46.0);
+				SetActorProperty(0,APROP_Speed,1.0);
+				SetPlayerProperty(0,0,PROP_FLY);
+				break;
+			case 1:
+				SetActorProperty(0,APROP_SpawnHealth,100+CheckInventory("ShadowCaster_CaunLevel")*10);
+				SetActorProperty(0,APROP_Health,healthPercentage == 1.0 ? GetActorProperty(0,APROP_SpawnHealth) : ceilZandronum(GetActorProperty(0,APROP_SpawnHealth)*healthPercentage));
+				SetActorProperty(0,APROP_ViewHeight,24.0);
+				SetActorProperty(0,APROP_Speed,1.25);
+				SetPlayerProperty(0,0,PROP_FLY);
+				break;
+			case 2:
+				SetActorProperty(0,APROP_SpawnHealth,100+CheckInventory("ShadowCaster_KahpaLevel")*20);
+				SetActorProperty(0,APROP_Health,healthPercentage == 1.0 ? GetActorProperty(0,APROP_SpawnHealth) : ceilZandronum(GetActorProperty(0,APROP_SpawnHealth)*healthPercentage));
+				SetActorProperty(0,APROP_ViewHeight,34.0);
+				SetActorProperty(0,APROP_Speed,1.0);
+				SetPlayerProperty(0,0,PROP_FLY);
+				break;
+			case 3:
+				SetActorProperty(0,APROP_SpawnHealth,120+CheckInventory("ShadowCaster_MaorinLevel")*35);
+				SetActorProperty(0,APROP_Health,healthPercentage == 1.0 ? GetActorProperty(0,APROP_SpawnHealth) : ceilZandronum(GetActorProperty(0,APROP_SpawnHealth)*healthPercentage));
+				SetActorProperty(0,APROP_ViewHeight,44.0);
+				SetActorProperty(0,APROP_Speed,1.0);
+				SetPlayerProperty(0,0,PROP_FLY);
+				break;
+			case 4:
+				SetActorProperty(0,APROP_SpawnHealth,100+CheckInventory("ShadowCaster_OpsisLevel")*15);
+				SetActorProperty(0,APROP_Health,healthPercentage == 1.0 ? GetActorProperty(0,APROP_SpawnHealth) : ceilZandronum(GetActorProperty(0,APROP_SpawnHealth)*healthPercentage));
+				SetActorProperty(0,APROP_ViewHeight,44.0);
+				SetActorProperty(0,APROP_Speed,0.5);
+				SetPlayerProperty(0,1,PROP_FLY);
+				break;
+			case 5:
+				SetActorProperty(0,APROP_SpawnHealth,180+CheckInventory("ShadowCaster_SsairLevel")*40);
+				SetActorProperty(0,APROP_Health,healthPercentage == 1.0 ? GetActorProperty(0,APROP_SpawnHealth) : ceilZandronum(GetActorProperty(0,APROP_SpawnHealth)*healthPercentage));
+				SetActorProperty(0,APROP_ViewHeight,48.0);
+				SetActorProperty(0,APROP_Speed,1.0);
+				SetPlayerProperty(0,1,PROP_FLY);
+				break;
+			case 6:
+				SetActorProperty(0,APROP_SpawnHealth,200+CheckInventory("ShadowCaster_GrostLevel")*50);
+				SetActorProperty(0,APROP_Health,healthPercentage == 1.0 ? GetActorProperty(0,APROP_SpawnHealth) : ceilZandronum(GetActorProperty(0,APROP_SpawnHealth)*healthPercentage));
+				SetActorProperty(0,APROP_ViewHeight,56.0);
+				SetActorProperty(0,APROP_Speed,0.25);
+				SetPlayerProperty(0,0,PROP_FLY);
+				break;
+		}
+		SetInventory("ShadowCaster_LastForm",form+1);
+	}
+}
+
+Script "ShadowCaster_ClientFunctions" (int arg1, int arg2, int arg3) clientside
+{
+	if(ACS_NamedExecuteWithResult("wrongClient",playerNumber())) terminate;
+	ShadowCaster_DrawMenu();
+	ShadowCaster_DrawMugShot(arg1);
+	ShadowCaster_DrawExpBar(CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Experience")),arg2,arg3);
+}
+
+Script "ShadowCaster_MenuSound" (int type) clientside
+{
+	if(ACS_NamedExecuteWithResult("wrongClient",playerNumber())) terminate;
+	switch(type)
+	{
+		case 1: PlaySound(0,"ShadowCaster/Discard",CHAN_5,1.0,0,ATTN_NONE); break;
+	}
+}
+
+function void ShadowCaster_InputMenu (void)
+{
+	if(CheckInventory("ShadowCaster_AltSelection"))
+	{	
+		int mouseX = -GetPlayerInput(-1,INPUT_YAW);
+		int mouseY = -GetPlayerInput(-1,INPUT_PITCH);
+		//Humans naturally will not move mouse straight along one axis. We need a deadzone.
+		int aMouseX = abs(mouseX);
+		int aMouseY = abs(mouseY);
+		if(aMouseX - aMouseY < -64) aMouseX = 0;
+		else if(aMouseX - aMouseY > 64) aMouseY = 0;
+		if(aMouseX < 96) aMouseX = 0;
+		if(aMouseY < 96) aMouseY = 0;
+		if(aMouseX > 2048) aMouseX = 2048;
+		if(aMouseY > 1024) aMouseY = 1024;
+		mouseX = aMouseX * sign(mouseX);
+		mouseY = aMouseY * sign(mouseY);
+		
+		int inputDelayX = timer() % (((2048 - aMouseX) / 1024) + 1) == 0;
+		int inputDelayY = timer() % (((1024 - aMouseY) / 1024) + 1) == 0;
+		
+		int moveX = mouseX * inputDelayX;
+		int moveY = mouseY * inputDelayY;
+		if(moveX > 0 && CheckInventory("ShadowCaster_ContextPosX") < 8) 
+		{
+			GiveInventory("ShadowCaster_ContextPosX",1);
+			TakeInventory("ShadowCaster_TrashSelected",1);
+		}
+		else if(moveX < 0 && CheckInventory("ShadowCaster_ContextPosX") > 0) TakeInventory("ShadowCaster_ContextPosX",1);
+		else if(moveX < 0 && CheckInventory("ShadowCaster_ContextPosX") == 0 && CheckInventory("ShadowCaster_ContextPosY") < 4 && CheckInventory("ShadowCaster_ContextPosY") > 1) 
+		{
+			SetInventory("ShadowCaster_ContextPosY",3);
+			GiveInventory("ShadowCaster_TrashSelected",1);
+		}
+		if(!CheckInventory("ShadowCaster_TrashSelected"))
+		{
+			if(moveY > 0 && CheckInventory("ShadowCaster_ContextPosY") < 10) GiveInventory("ShadowCaster_ContextPosY",1);
+			else if(moveY < 0 && CheckInventory("ShadowCaster_ContextPosY") > 0) TakeInventory("ShadowCaster_ContextPosY",1);
+		}
+	}
+}
+
+function void ShadowCaster_DrawMugShot (int image)
+{
+	HudMessageEx(strparam(s:"SC",s:MorphMicroPrefixes[CheckInventory("ShadowCaster_CurrentForm")],s:"MUG0",d:image),"a",1.0,1.0,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1002,CR_UNTRANSLATED,0.1025,0.69,0.0,0.1,0,0,0,0,0);
+}
+
+function void ShadowCaster_DrawExpBar (int currentExp, int levelExp, int oldExp)
+{
+	//we need a way to compress larger numbers because ACS won't be able to compute anything greater than 65536.0
+	int compression = ((((currentExp-oldExp)*100)/levelExp)*1.0)/100;
+	SetHudClipRect(12,130,(40*compression)>>16,3,0);
+	HudMessageEx("SCYELBAR","a",1.0,1.0,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1000,CR_UNTRANSLATED,0.1025,0.6525,0.0,0.1,0,0,0,0,0);
+	SetHudClipRect(0,0,0,0,0);
+	HudMessageEx("SMALLFONT",strparam(d:currentExp-oldExp,s:"/",d:levelExp),1.5,1.5,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1001,CR_UNTRANSLATED,0.115,0.61,0.0,0.1,0,0,0,0,0);
+}
+
+function void ShadowCaster_DrawMenu (void)
+{
+	int a, b, bagID, bagMsgID;
+	str abbicon = "";
+	str chargeMsg = "";
+	if(CheckInventory("ShadowCaster_AltSelection"))
+	{
+		//Draw background	
+		HudMessageEx("SINVENTY","a",2.125,3.0,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1500,CR_UNTRANSLATED,0.5665,0.615,0.1,0.2,0,0,0,0,0);
+		for(a = 0; a < MAXFORMS; a++)
+			HudMessageEx(strparam(s:"SCMBAR",d:a+1,s:CheckInventory("ShadowCaster_CurrentForm") == a ? "A" : "B"),"a",2.575,3.0,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1493+a,CR_UNTRANSLATED,0.5665,0.615+(a*0.055),0.1,0.1,0,0,0,0,0);
+		
+		//Draw selected cell
+		if(!CheckInventory("ShadowCaster_TrashSelected"))
+		{
+			if(CheckInventory("ShadowCaster_ContextPosY") < 4)
+				HudMessageEx("SSELECT","a",2.125,3.0,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1429,CR_UNTRANSLATED,0.6375+(CheckInventory("ShadowCaster_ContextPosX")*0.03975),0.471+(CheckInventory("ShadowCaster_ContextPosY")*0.0425),0.1,0.2,0,0,0,0,0);
+			else
+				HudMessageEx("SSELECT","a",2.2,2.73,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1429,CR_UNTRANSLATED,0.64+(CheckInventory("ShadowCaster_ContextPosX")*0.038825),0.661+((CheckInventory("ShadowCaster_ContextPosY")-4)*0.055),0.1,0.2,0,0,0,0,0);
+		}
+		else HudMessageEx("SSELECT","a",1.233,1.7196,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1429,CR_UNTRANSLATED,0.595,0.5825,0.0,0.0,0,0,0,0,0);
+		if(CheckInventory("ShadowCaster_SelectedX") || CheckInventory("ShadowCaster_SelectedY"))
+		{
+			if(CheckInventory("ShadowCaster_SelectedY") < 5)
+				HudMessageEx("SSELECT2","a",2.125,3.0,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1430,CR_UNTRANSLATED,0.6375+((CheckInventory("ShadowCaster_SelectedX")-1)*0.03975),0.471+((CheckInventory("ShadowCaster_SelectedY")-1)*0.0425),0.1,0.2,0,0,0,0,0);
+			else
+				HudMessageEx("SSELECT2","a",2.2,2.73,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1430,CR_UNTRANSLATED,0.64+((CheckInventory("ShadowCaster_SelectedX")-1)*0.038825),0.661+((CheckInventory("ShadowCaster_SelectedY")-5)*0.055),0.1,0.2,0,0,0,0,0);
+		}
+		else RemoveMessages(1430,1430);
+		
+		RemoveMessages(1428,1428);
+		for(a = 1; a <= MAXBAGSIZE; a++)
+		{
+			bagID = CheckInventory(strparam(s:"ShadowCaster_Bag",d:a));
+			if(bagID)
+			{
+				HudMessageEx(strparam(s:"SCITEM",s:bagID < 10 ? "0" : "",d:CheckInventory(strparam(s:"ShadowCaster_Bag",d:a))),"a",2.125,3.0,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1449+a,CR_UNTRANSLATED,0.67+(((a-1)%9)*0.03975),0.4675+(((a-1)/9)*0.0425),0.0,0.0,0,0,0,0,0);
+				if((a-1)/9 == CheckInventory("ShadowCaster_ContextPosY") && (a-1)%9 == CheckInventory("ShadowCaster_ContextPosX"))
+				{
+					chargeMsg = strparam(s:ItemInformation[bagID-1][1],s:ItemInformation[bagID-1][2] > 0 ? strparam(s:" - Charges Left: ",d:CheckInventory(strparam(s:"ShadowCaster_Bag",d:a,s:"Charge"))) : "");
+					HudMessageEx("SMALLFONT",chargeMsg,2.125,3.0,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1428,CR_UNTRANSLATED,0.635,0.4225,0.1,0.2,0,0,0,0,0);
+				}
+			}
+			else RemoveMessages(1449+a,1449+a);
+		}
+		bagMsgID = 0;
+		for(a = 0; a < MAXFORMS; a++)
+		{
+			for(b = 0; b <= 8; b++)
+			{
+				if(b == 1 || b == 2)
+				{
+					bagMsgID++;
+					bagID = CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[a],s:"Bag",d:b));
+					if(bagID > 0)
+					{
+						abbicon = strparam(s:"SCITEM",s:bagID < 10 ? "0" : "",d:bagID);
+						HudMessageEx(abbicon,"a",2.2,2.73,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1430+bagMsgID,CR_UNTRANSLATED,0.67+(b*0.03875),0.66+(a*0.055),0.0,0.0,0,0,0,0,0);
+						if(a == CheckInventory("ShadowCaster_ContextPosY")-4 && b == CheckInventory("ShadowCaster_ContextPosX"))
+						{
+							chargeMsg = strparam(s:ItemInformation[bagID-1][1],s:ItemInformation[bagID-1][2] > 0 ? strparam(s:" - Charges Left: ",d:CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_ContextPosY")-4],s:"Bag",d:b,s:"Charge"))) : "");
+							HudMessageEx("SMALLFONT",chargeMsg,2.125,3.0,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1428,CR_UNTRANSLATED,0.635,0.4225,0.1,0.2,0,0,0,0,0);
+						}
+					}
+					else RemoveMessages(1430+bagMsgID,1430+bagMsgID);
+				}
+				else if(CheckInventory("ShadowCaster_ContextPosX") == b)
+				{
+					str ability = MorphAbilities[CheckInventory("ShadowCaster_ContextPosY")-4][CheckInventory("ShadowCaster_ContextPosX") - (b > 2 ? 2 : 0)];
+					int abilityCost = MorphAbilityCosts[CheckInventory("ShadowCaster_ContextPosY")-4][CheckInventory("ShadowCaster_ContextPosX") - (b > 2 ? 2 : 0)];
+					if(strlen(ability) > 0)
+						HudMessageEx("SMALLFONT",strparam(s:ability,s:abilityCost > 0 ? strparam(s:" - Cost: ",d:abilityCost,s:" power") : ""),2.125,3.0,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1428,CR_UNTRANSLATED,0.635,0.4225,0.1,0.2,0,0,0,0,0);
+				}
+			}
+		}
+		
+	}
+	else if(CheckInventory("ShadowCaster_Morphing"))
+	{
+		if(!CheckInventory("ShadowCaster_MorphScriptProtector"))
+		{
+			GiveInventory("ShadowCaster_MorphScriptProtector",1);
+			RemoveMessages(1428,1500);
+			HudMessageEx("SMORPHBK","a",4.0,4.8,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1500,CR_UNTRANSLATED,0.5,1.0,0.0,0.2,0,0,0,0,0);
+			ACS_NamedExecuteWithResult("ShadowCaster_DrawMorph",CheckInventory("ShadowCaster_NextForm"),CheckInventory("ShadowCaster_CurrentForm")); 
+		}
+	}
+	else
+	{
+		RemoveMessages(1428,1500);
+	}
+}
+
+Script "ShadowCaster_DrawMorph" (int nextForm, int currentForm) clientside
+{
+	int a;
+	if(currentForm > 0)
+	{
+		for(a = 30; a > 0; a--)
+		{
+			HudMessageEx(strparam(s:"SCM",s:MorphPrefixes[currentForm-1],s:a < 10 ? "0" : "",d:a),"a",4.0,4.8,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1430,CR_UNTRANSLATED,0.5,1.0,0.0,0.2,0,0,0,0,0);
+			Delay(1);
+		}
+		HudMessageEx("SCMORPH3","a",4.0,4.8,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1430,CR_UNTRANSLATED,0.5,1.0,0.0,0.2,0,0,0,0,0);
+		Delay(1);
+		HudMessageEx("SCMORPH2","a",4.0,4.8,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1430,CR_UNTRANSLATED,0.5,1.0,0.0,0.2,0,0,0,0,0);
+		Delay(1);
+		HudMessageEx("SCMORPH1","a",4.0,4.8,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1430,CR_UNTRANSLATED,0.5,1.0,0.0,0.2,0,0,0,0,0);
+	}
+	else
+	{
+		HudMessageEx("SCMORPH1","a",4.0,4.8,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1430,CR_UNTRANSLATED,0.5,1.0,0.0,0.2,0,0,0,0,0);
+		Delay(1);
+		HudMessageEx("SCMORPH2","a",4.0,4.8,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1430,CR_UNTRANSLATED,0.5,1.0,0.0,0.2,0,0,0,0,0);
+		Delay(1);
+		HudMessageEx("SCMORPH3","a",4.0,4.8,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1430,CR_UNTRANSLATED,0.5,1.0,0.0,0.2,0,0,0,0,0);
+	}
+	
+	if(nextForm > 0)
+	{
+		for(a = 1; a <= 30; a++)
+		{
+			HudMessageEx(strparam(s:"SCM",s:MorphPrefixes[nextForm-1],s:a < 10 ? "0" : "",d:a),"a",4.0,4.8,HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_OVERHUD,1430,CR_UNTRANSLATED,0.5,1.0,0.0,0.2,0,0,0,0,0);
+			Delay(1);
+		}
+	}
+	
+	until(!CheckInventory("ShadowCaster_Morphing")) { Delay(1); };
+	
+	RemoveMessages(1430,1430);
+}
+
+Script "ShadowCaster_AddToBag" (int value)
+{
+	SetResultValue(ShadowCaster_FindNextEmpty(value,ItemInformation[value-1][2]));
+	terminate;
+}
+
+function int ShadowCaster_FindNextEmpty (int value, int charge)
+{
+	for(int a = 1; a <= MAXBAGSIZE; a++)
+	{
+		if(!CheckInventory(strparam(s:"ShadowCaster_Bag",d:a)))
+		{
+			SetInventory(strparam(s:"ShadowCaster_Bag",d:a),value);
+			SetInventory(strparam(s:"ShadowCaster_Bag",d:a,s:"Charge"),charge);
+			return a;
+		}
+	}
+	return 0;
+}
+
+function int ShadowCaster_FindNextEmpty2 (int value, int charge)
+{
+	if(!CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Bag",d:1)))
+	{
+		SetInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Bag",d:1),value);
+		SetInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Bag",d:1,s:"Charge"),charge);
+		return 1;
+	}
+	else if(!CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Bag",d:2)))
+	{
+		SetInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Bag",d:2),value);
+		SetInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Bag",d:2,s:"Charge"),charge);
+		return 2;
+	}
+	return 0;
+}
+
+Script "ShadowCaster_ActionBar" (int form)
+{
+	SetInventory("ShadowCaster_ContextPosX",form-1);
+	SetInventory("ShadowCaster_ContextPosY",4+CheckInventory("ShadowCaster_CurrentForm"));
+}
+
+Script "ShadowCaster_DoMorph" (int type)
+{
+	Thing_Stop(0);
+	GiveInventory("ShadowCaster_Morphing",1);
+	SetInventory("ShadowCaster_NextForm",type-1);
+	int extended = CheckInventory("ShadowCaster_CurrentForm") > 0;
+	PlaySound(0,"ShadowCaster/Morph",CHAN_BODY,1.0,0,ATTN_NORM);
+	for(int a = 0; a < ((30 * (1 + extended)) + 18); a++)
+	{
+		SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+		Delay(1);
+	}
+	SetInventory("ShadowCaster_NextForm",0);
+	SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+	SetInventory("ShadowCaster_CurrentForm",type-1);
+	SetInventory("ShadowCaster_Morphing",0);
+	TakeInventory("ShadowCaster_MorphScriptProtector",1);
+}
+
+Script "ShadowCaster_FinishMorph" (void)
+{
+	SetWeapon("ShadowCaster_Attacker");
+}
+
+Script "ShadowCaster_ShurikenRedeem" (int give, int projectile)
+{
+	if(give)
+	{
+		SetInventory("ShadowCaster_DoShurikenRedeem",1);
+		SetInventory("ShadowCaster_ShurikenRedeem",CheckInventory("ShadowCaster_CurrentSlot")-1);
+		SetInventory("ShadowCaster_ShurikenRedeemForm",CheckInventory("ShadowCaster_CurrentForm"));
+		SetInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_ShurikenRedeemForm")],s:"Bag",d:CheckInventory("ShadowCaster_ShurikenRedeem")+1),0);
+	}
+	else
+	{
+		if(projectile) SetActivatorToTarget(0);
+		SetInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_ShurikenRedeemForm")],s:"Bag",d:CheckInventory("ShadowCaster_ShurikenRedeem")+1),12);
+		SetInventory("ShadowCaster_CurrentSlot",CheckInventory("ShadowCaster_ShurikenRedeem")+1);
+		SetInventory("ShadowCaster_DoShurikenRedeem",0);
+		SetInventory("ShadowCaster_ShurikenRedeem",0);
+		SetInventory("ShadowCaster_ShurikenRedeemForm",0);
+	}
+}
+
+Script "ShadowCaster_WeaponItemLogic" (int which, int func)
+{
+	if(func == 0) SetInventory("ShadowCaster_WeaponItemLogic",CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Bag",d:which)));
+	else if(func == 1) 
+	{
+		TakeInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Bag",d:CheckInventory("ShadowCaster_CurrentSlot"),s:"Charge"),!GetCvar("sv_infiniteammo"));
+		if(CheckInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Bag",d:CheckInventory("ShadowCaster_CurrentSlot"),s:"Charge")) == 0)
+			SetInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Bag",d:CheckInventory("ShadowCaster_CurrentSlot")),0);
+	}
+	else if(func == 2) 
+	{
+		TakeInventory(strparam(s:which,s:"Charge"),!GetCvar("sv_infiniteammo"));
+		if(CheckInventory(strparam(s:which,s:"Charge")) == 0) SetInventory(which,0);
+	}
+}
+
+// I guess changing attackzoffset through ACS does nothing, huh?
+Script "ShadowCaster_OffsetProjHeight" (void)
+{
+	int offset = 0;
+	switch(CheckInventory("ShadowCaster_CurrentForm"))
+	{
+		case 0: offset = 0; break;
+		case 1: offset = -16; break;
+		case 2: offset = -8; break;
+		case 3: offset = -2; break;
+		case 4: offset = 0; break;
+		case 5: offset = 8; break;
+		case 6: offset = 16; break;
+	}
+	SetResultValue(offset);
+}
+
+Script "ShadowCaster_HealOverTime" (int seconds, int rate, int type)
+{
+	int ticker = 35*seconds;
+	while(ticker > 0)
+	{
+		if(ticker % rate == 0)
+		{
+			if(type == 0) HealThing(1);
+			else GiveInventory("ShadowCaster_Power",1);
+		}
+		ticker--;
+		Delay(1);
+	}
+}
+
+//We're better off running this on monsters
+Script "ShadowCaster_RedeemExp" (void)
+{
+	int hValue = GetActorProperty(0,APROP_SpawnHealth);
+	int deadMonster = (ClassifyActor(0) & ACTOR_DEAD) && (ClassifyActor(0) & ACTOR_MONSTER);
+	SetActivator(0,AAPTR_Target);
+	if(deadMonster) GiveInventory(strparam(s:"ShadowCaster_",s:MorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Experience"),hValue);
+}
+
+// A gross hack to reveal more of the map, but not all of it
+Script "ShadowCaster_OpsisReveal" (void)
+{
+	int countDown = 1050;
+	While(countDown > 0)
+	{
+		GiveInventory("ShadowCaster_MapLooker",1);
+		countDown--;
+		Delay(1);
+	}
+	TakeInventory("ShadowCaster_MapBeingRevealed",1);
+}
+
+int ShadowCasterEnemyRadarIDs = 0;
+
+Script "ShadowCaster_MonsterCoordinate" (void)
+{
+	if(ACS_NamedExecuteWithResult("wrongClient",PlayerNumber()) || ShadowCasterEnemyRadarIDs >= 256 || !CheckInventory("ShadowCaster_MapBeingRevealed"))
+	{
+		TakeInventory("ShadowCaster_MapCoordinateX",131072);
+		TakeInventory("ShadowCaster_MapCoordinateY",131072);
+		TakeInventory("ShadowCaster_MapCoordinateZ",131072);
+		TakeInventory("ShadowCaster_MapMonsterRadius",1024);
+		TakeInventory("ShadowCaster_MapMonsterHeight",1024);
+	}
+	int myX = GetActorX(0);
+	int myY = GetActorY(0);
+	int myZ = GetActorZ(0);
+	
+	int monsterRadius = CheckInventory("ShadowCaster_MapMonsterRadius");
+	int monsterHeight = CheckInventory("ShadowCaster_MapMonsterHeight");
+	int monsterX = (CheckInventory("ShadowCaster_MapCoordinateX") - 65536) * 1.0;
+	int monsterY = (CheckInventory("ShadowCaster_MapCoordinateY") - 65536) * 1.0;
+	int monsterZ = (CheckInventory("ShadowCaster_MapCoordinateZ") - 65536) * 1.0;
+	
+	//PrintBold(s:"Monster X: ",d:monsterX,s:" Monster Y: ",d:monsterY,s:" Monster Z: ",d:monsterZ);
+	
+	TakeInventory("ShadowCaster_MapCoordinateX",131072);
+	TakeInventory("ShadowCaster_MapCoordinateY",131072);
+	TakeInventory("ShadowCaster_MapCoordinateZ",131072);
+	TakeInventory("ShadowCaster_MapMonsterRadius",1024);
+	TakeInventory("ShadowCaster_MapMonsterHeight",1024);
+	
+	if(monsterRadius == 0 || monsterHeight == 0) terminate;
+		
+	int distance = magnitudeThree_f(monsterX - myX,monsterY - myY,monsterZ - myZ);
+	
+	if(distance <= 1024.0)
+	{
+		int monsterAngle = VectorAngle(monsterX - myX, monsterY - myY);
+		int playerAngle = GetActorAngle(0);
+		int deltaAngle = (monsterAngle - playerAngle + 1.0) % 1.0;
+		
+		int monsterPitch = VectorAngle(VectorLength(monsterX - myX, monsterY - myY), monsterZ - myZ);
+		int playerPitch = GetActorPitch(0);
+		int deltaPitch = (monsterPitch + playerPitch + 1.0) % 1.0;
+						
+		if (deltaAngle < 0.2 || deltaAngle > 0.8)
+		{
+			int hudX = FixedMul(960.0,(20.0/monsterRadius))/1.0;
+			int hudY = FixedMul(720.0,(52.0/monsterHeight))/1.0;
+			if(Cos (deltaAngle) == 0) terminate;
+			int sx = (hudX/2) - ((hudX/2) * Sin (deltaAngle) / Cos (deltaAngle));
+			if(Cos (-deltaPitch) == 0) terminate;
+			int sy = (hudY/2) - ((hudY/2) * Sin (deltaPitch) / Cos (-deltaPitch));
+			SetHudSize(hudX, hudY, 0);
+			SetFont("SCSKULL");
+			HudMessage(s:"A"; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 30500+ShadowCasterEnemyRadarIDs, CR_UNTRANSLATED, sx * 1.0, sy * 1.0, 0.5, (1024.0-distance)/1024);
+			ShadowCasterEnemyRadarIDs++;
+		
+			Delay(1);
+		
+			HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP, 30500+ShadowCasterEnemyRadarIDs-1, CR_UNTRANSLATED, sx * 1.0, sy * 1.0, 0.5, (1024.0-distance)/1024);
+			ShadowCasterEnemyRadarIDs--;
+		}	
+	}
+}
+
+Script "ShadowCaster_GetTheHellOuttaHere" (void)
+{
+	SetActivator(0,AAPTR_TRACER);
+	if(!CheckFlag(0,"FRIGHTENED"))
+	{
+		GiveInventory("ShadowCaster_Terrorizer",1);
+		SetActorProperty(0,APROP_Speed,GetActorProperty(0,APROP_Speed)*2);
+	}
+}
+
+Script "ShadowCaster_TimeSlower" (void)
+{
+	if(!CheckInventory("ShadowCaster_TimeSlower"))
+	{
+		GiveInventory("ShadowCaster_TimeSlower",1);
+		int slowTime = 1050;
+		int originalSpeed = GetActorProperty(0,APROP_Speed);
+		while(slowTime > 0 && (ClassifyActor(0) & ACTOR_ALIVE)) { slowTime--; SetActorProperty(0,APROP_Speed,originalSpeed/4); Delay(1); }
+		SetActorProperty(0,APROP_Speed,originalSpeed);
+		TakeInventory("ShadowCaster_TimeSlower",1);
+	}
+}
+

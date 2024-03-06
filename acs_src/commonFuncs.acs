@@ -1088,6 +1088,25 @@ script "screenBlocks" (void) clientside
 	SetResultValue(GetCvar("screenblocks"));
 }
 
+/*HUD Library by Shiny Metagross
+if HUDMSG_TYPEON:
+inTime = typeTime
+outTime = outTime
+if HUDMSG_FADEOUT:
+inTime = fadeTime
+*/
+
+function void HudMessageEx(int font, int message, int sizeX, int sizeY, int flags, int id, int color, int x, int y, int flagx, int flagy, int holdTime, int inTime, int outTime, int alpha, int statusbar)
+{
+	if(strlen(font) > 0) SetFont(font);
+	if(sizeX != 0 && sizeY != 0) SetHudSize((320*sizeX)>>16,(200*sizeY)>>16,statusbar);
+	int posX = FixedMul((320*sizeX)>>16,x);
+	int posY = FixedMul((200*sizeY)>>16,y);
+	if(flags & HUDMSG_FADEOUT) HudMessage(s:message; flags, id, color, (posX*1.0)+flagx, (posY*1.0)+flagy, holdTime, inTime, alpha);
+	else if(flags & HUDMSG_TYPEON || flags & HUDMSG_FADEINOUT) HudMessage(s:message; flags, id, color, (posX*1.0)+flagx, (posY*1.0)+flagy, holdTime, inTime, outTime, alpha);
+	else HudMessage(s:message; flags, id, color, (posX*1.0)+flagx, (posY*1.0)+flagy, holdTime, alpha);
+}
+
 // [tv50] GetTimeProperty is a new function in Zandronum that is treated as a dummy
 // [tv50] in ZDoom, returning 0 there (as opposed to 1970 in Zandronum with the
 // [tv50] parameters chosen). Compared to previous methods, no side effects have
