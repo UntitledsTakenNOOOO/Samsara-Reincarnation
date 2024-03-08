@@ -489,12 +489,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 	ACS_NamedExecuteWithResult("SamsaraFirstTimeUserTutorialSystem", PlayerNumber(), 0, 0);
 
-	if (isLMS()) { ApplyLMS(); }
-	if (GetCvar("samsara_lmsrules") == 1)
-	{
-		ApplyLMS();
-	}
-	if (isSinglePlayer()) { SamsaraWepType = samsaraClassNum()+1; }
+	if (isLMS() || GetCVar("samsara_lmsrules")) { ApplyLMS(); }
+
+	if (isSinglePlayer()) { SamsaraWepType = samsaraClassNum() + 1; }
 
 	if (!respawning)
 	{
@@ -513,134 +510,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		}
 		ClientTipboxes[pln] = 0;
 		ACS_NamedExecuteAlways("SamsaraScheduled", 0, respawning,1,0);
-
-		if (GetCVar("samsara_backpackstart") == 1)
-		{
-			if (!CheckInventory("SamsaraBackpackGiven"))
-			{
-				switch (samsaraClassNum())
-				{
-				case CLASS_WOLFEN:
-					GiveInventory("Backpack", 1);
-
-					if (GetUserCVar(pln, "samsara_cl_wolfmode") == 2) { GiveInventory("Totenkopf_IHaveDualPistols", 1); }
-					else
-					{
-						TakeInventory("Shell", 8);
-						GiveInventory("Clip", 8);
-					}
-
-					GiveInventory("Samsara_ModeWeaponChange", 1);
-					break;
-
-				case CLASS_HEXEN:
-					GiveInventory("PortKraterOfMight", 1);
-					break;
-
-				case CLASS_DUKE:
-					GiveInventory("Backpack", 1);
-
-					if (GetUserCVar(pln, "samsara_cl_dukemode") == 2)
-					{
-						GiveInventory("Duke64DumDums", 6);
-						GiveInventory("Duke64ExplosiveShells", 2);
-						GiveInventory("Duke64HeatSeekingRockets", 3);
-						GiveInventory("Duke64ShrinkerAmmo", 2);
-					}
-					break;
-
-				case CLASS_MARATHON:
-					GiveInventory("Backpack", 1);
-					GiveInventory("Talon Ceramic Combat Blade", 1);
-					GiveInventory("KnifeAmmo", 2);
-					GiveInventory("Tech.50 Pacifier", 1);
-					break;
-
-				case CLASS_DEMONESS:
-					GiveInventory("PortKraterOfMight2", 1);
-					break;
-
-				case CLASS_BOND:
-					GiveInventory("Backpack", 1);
-					GiveInventory("Goldeneye_PP7DualToken", 1);
-					break;
-
-				case CLASS_CATACOMB:
-					GiveInventory("Catacomb_XTerminators", Random(1, 2));
-					GiveInventory("Catacomb_Zappers", Random(1, 2));
-					GiveInventory("Catacomb_Nukes", Random(1, 2));
-					GiveInventory("Catacomb_Bursts", Random(1, 2));
-					GiveInventory("Catacomb_Bolts", Random(1, 2));
-					GiveInventory("Catacomb_Waves", Random(1, 2));
-
-					if (GetCVar("samsara_nohealthcap")) { ACS_NamedExecuteWithResult("SamsaraPlayerHealer", Random(1, 2) * 25); }
-					else { GiveInventory("Catacomb_SmallHealthPotion", Random(1, 2)); }
-					break;
-
-				case CLASS_PAINKILLER:
-					GiveInventory("Backpack", 1);
-					GiveInventory("Clip", 35);
-					GiveInventory("Shell", 8);
-					GiveInventory("RocketAmmo", 5);
-					GiveInventory("Cell", 10);
-					GiveInventory("Painkiller_FlamerAmmo", 10);
-					GiveInventory("Painkiller_FreezerAmmo", 1);
-					GiveInventory("Painkiller_HeaterAmmo", 20);
-					GiveInventory("Painkiller_ElectroAmmo", 20);
-
-					if (CheckInventory("Painkiller_Replenish_Power"))
-					{
-						GiveInventory("Backpack", 1);
-						GiveInventory("Clip", 35);
-						GiveInventory("Shell", 8);
-						GiveInventory("RocketAmmo", 5);
-						GiveInventory("Cell", 10);
-						GiveInventory("Painkiller_FlamerAmmo", 10);
-						GiveInventory("Painkiller_FreezerAmmo", 1);
-						GiveInventory("Painkiller_HeaterAmmo", 20);
-						GiveInventory("Painkiller_ElectroAmmo", 20);
-					}
-					break;
-
-				case CLASS_UNREAL:
-					GiveInventory("Backpack", 1);
-
-					if (CheckInventory("UDPistolUpgrade") < 4)
-					{
-						GiveInventory("UDPistolUpgrade", 1);
-						GiveInventory("UDPistolUpgradePreferred", 1);
-					}
-					break;
-
-				case CLASS_QUAKE3:
-					GiveInventory("Q3AmmoRegenerationDummy", 1);
-					break;
-
-				case CLASS_DESCENT:
-					GiveInventory("Backpack", 1);
-					GiveInventory("DescentLaserLevel", 1);
-					break;
-
-				case CLASS_DEUSEX:
-					GiveInventory("Backpack", 1);
-					ACS_NamedExecuteWithResult("DeusEx_Decorate", 23);
-					GiveInventory("DeusEx_StealthPistol", 1);
-					GiveInventory("DeusEx_LAM", 1);
-					GiveInventory("Clip", 20);
-					GiveInventory("RocketAmmo", 3);
-					break;
-
-				default:
-					GiveInventory("Backpack", 1);
-					break;
-				}
-
-				GiveInventory("SamsaraBackpackGiven", 1);
-			}
-		}
-	}
-	else
-	{
+	} else {
         if (isSinglePlayer() || isCoop())
         {
             if (GetCVar("samsara_keepmaxhealth"))
@@ -649,135 +519,129 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
             }
             else { SetInventory("SamsaraHasMaxHealth", 0); }
         }
-
-		if (GameType() != GAME_NET_COOPERATIVE)
-		{
-			if (GetCVar("samsara_backpackstart") == 1)
-			{
-				if (!CheckInventory("SamsaraBackpackGiven"))
-				{
-					switch (samsaraClassNum())
-					{
-					case CLASS_WOLFEN:
-						GiveInventory("Backpack", 1);
-
-						if (GetUserCVar(pln, "samsara_cl_wolfmode") == 2) { GiveInventory("Totenkopf_IHaveDualPistols", 1); }
-						else
-						{
-							TakeInventory("Shell", 8);
-							GiveInventory("Clip", 8);
-						}
-
-						GiveInventory("Samsara_ModeWeaponChange", 1);
-						break;
-
-					case CLASS_HEXEN:
-						GiveInventory("PortKraterOfMight", 1);
-						break;
-
-					case CLASS_DUKE:
-						GiveInventory("Backpack", 1);
-
-						if (GetUserCVar(pln, "samsara_cl_dukemode") == 2)
-						{
-							GiveInventory("Duke64DumDums", 6);
-							GiveInventory("Duke64ExplosiveShells", 2);
-							GiveInventory("Duke64HeatSeekingRockets", 3);
-							GiveInventory("Duke64ShrinkerAmmo", 2);
-						}
-						break;
-
-					case CLASS_MARATHON:
-						GiveInventory("Backpack", 1);
-						GiveInventory("Talon Ceramic Combat Blade", 1);
-						GiveInventory("KnifeAmmo", 2);
-						GiveInventory("Tech.50 Pacifier", 1);
-						break;
-
-					case CLASS_DEMONESS:
-						GiveInventory("PortKraterOfMight2", 1);
-						break;
-
-					case CLASS_BOND:
-						GiveInventory("Backpack", 1);
-						GiveInventory("Goldeneye_PP7DualToken", 1);
-						break;
-
-					case CLASS_CATACOMB:
-						GiveInventory("Catacomb_XTerminators", Random(1, 2));
-						GiveInventory("Catacomb_Zappers", Random(1, 2));
-						GiveInventory("Catacomb_Nukes", Random(1, 2));
-						GiveInventory("Catacomb_Bursts", Random(1, 2));
-						GiveInventory("Catacomb_Bolts", Random(1, 2));
-						GiveInventory("Catacomb_Waves", Random(1, 2));
-
-						if (GetCVar("samsara_nohealthcap")) { ACS_NamedExecuteWithResult("SamsaraPlayerHealer", Random(1, 2) * 25); }
-						else { GiveInventory("Catacomb_SmallHealthPotion", Random(1, 2)); }
-						break;
-
-					case CLASS_PAINKILLER:
-						GiveInventory("Backpack", 1);
-						GiveInventory("Clip", 35);
-						GiveInventory("Shell", 8);
-						GiveInventory("RocketAmmo", 5);
-						GiveInventory("Cell", 10);
-						GiveInventory("Painkiller_FlamerAmmo", 10);
-						GiveInventory("Painkiller_FreezerAmmo", 1);
-						GiveInventory("Painkiller_HeaterAmmo", 20);
-						GiveInventory("Painkiller_ElectroAmmo", 20);
-
-						if (CheckInventory("Painkiller_Replenish_Power"))
-						{
-							GiveInventory("Backpack", 1);
-							GiveInventory("Clip", 35);
-							GiveInventory("Shell", 8);
-							GiveInventory("RocketAmmo", 5);
-							GiveInventory("Cell", 10);
-							GiveInventory("Painkiller_FlamerAmmo", 10);
-							GiveInventory("Painkiller_FreezerAmmo", 1);
-							GiveInventory("Painkiller_HeaterAmmo", 20);
-							GiveInventory("Painkiller_ElectroAmmo", 20);
-						}
-						break;
-
-					case CLASS_UNREAL:
-						GiveInventory("Backpack", 1);
-
-						if (CheckInventory("UDPistolUpgrade") < 4)
-						{
-							GiveInventory("UDPistolUpgrade", 1);
-							GiveInventory("UDPistolUpgradePreferred", 1);
-						}
-						break;
-
-					case CLASS_QUAKE3:
-						GiveInventory("Q3AmmoRegenerationDummy", 1);
-						break;
-
-					case CLASS_DESCENT:
-						GiveInventory("Backpack", 1);
-						GiveInventory("DescentLaserLevel", 1);
-						break;
-
-					case CLASS_DEUSEX:
-						GiveInventory("Backpack", 1);
-						ACS_NamedExecuteWithResult("DeusEx_Decorate", 23);
-						GiveInventory("DeusEx_StealthPistol", 1);
-						GiveInventory("DeusEx_LAM", 1);
-						GiveInventory("Clip", 20);
-						GiveInventory("RocketAmmo", 3);
-						break;
-
-					default:
-						GiveInventory("Backpack", 1);
-						break;
-					}
-
-					GiveInventory("SamsaraBackpackGiven", 1);
-				}
-			}
-		}
 	}
+
+    if (GetCVar("samsara_backpackstart") && !CheckInventory("SamsaraBackpackGiven") && (!respawning || (respawning && !(isSinglePlayer() || isCoop()))))
+    {
+        switch (samsaraClassNum())
+        {
+          case CLASS_WOLFEN:
+            GiveInventory("Backpack", 1);
+
+            if (GetUserCVar(pln, "samsara_cl_wolfmode") == 2) { GiveInventory("Totenkopf_IHaveDualPistols", 1); }
+            else
+            {
+                TakeInventory("Shell", 8);
+                GiveInventory("Clip", 8);
+            }
+
+            GiveInventory("Samsara_ModeWeaponChange", 1);
+            break;
+
+          case CLASS_HEXEN:
+            GiveInventory("PortKraterOfMight", 1);
+            break;
+
+          case CLASS_DUKE:
+            GiveInventory("Backpack", 1);
+
+            if (GetUserCVar(pln, "samsara_cl_dukemode") == 2)
+            {
+                GiveInventory("Duke64DumDums", 6);
+                GiveInventory("Duke64ExplosiveShells", 2);
+                GiveInventory("Duke64HeatSeekingRockets", 3);
+                GiveInventory("Duke64ShrinkerAmmo", 2);
+            }
+            break;
+
+          case CLASS_MARATHON:
+            GiveInventory("Backpack", 1);
+            GiveInventory("Talon Ceramic Combat Blade", 1);
+            GiveInventory("KnifeAmmo", 2);
+            GiveInventory("Tech.50 Pacifier", 1);
+            break;
+
+          case CLASS_DEMONESS:
+            GiveInventory("PortKraterOfMight2", 1);
+            break;
+
+          case CLASS_BOND:
+            GiveInventory("Backpack", 1);
+            GiveInventory("Goldeneye_PP7DualToken", 1);
+            break;
+
+          case CLASS_CATACOMB:
+            GiveInventory("Catacomb_XTerminators", Random(1, 2));
+            GiveInventory("Catacomb_Zappers", Random(1, 2));
+            GiveInventory("Catacomb_Nukes", Random(1, 2));
+            GiveInventory("Catacomb_Bursts", Random(1, 2));
+            GiveInventory("Catacomb_Bolts", Random(1, 2));
+            GiveInventory("Catacomb_Waves", Random(1, 2));
+
+            if (GetCVar("samsara_nohealthcap")) { ACS_NamedExecuteWithResult("SamsaraPlayerHealer", Random(1, 2) * 25); }
+            else { GiveInventory("Catacomb_SmallHealthPotion", Random(1, 2)); }
+            break;
+
+          case CLASS_PAINKILLER:
+            GiveInventory("Backpack", 1);
+            GiveInventory("Clip", 35);
+            GiveInventory("Shell", 8);
+            GiveInventory("RocketAmmo", 5);
+            GiveInventory("Cell", 10);
+            GiveInventory("Painkiller_FlamerAmmo", 10);
+            GiveInventory("Painkiller_FreezerAmmo", 1);
+            GiveInventory("Painkiller_HeaterAmmo", 20);
+            GiveInventory("Painkiller_ElectroAmmo", 20);
+
+            if (CheckInventory("Painkiller_Replenish_Power"))
+            {
+                GiveInventory("Backpack", 1);
+                GiveInventory("Clip", 35);
+                GiveInventory("Shell", 8);
+                GiveInventory("RocketAmmo", 5);
+                GiveInventory("Cell", 10);
+                GiveInventory("Painkiller_FlamerAmmo", 10);
+                GiveInventory("Painkiller_FreezerAmmo", 1);
+                GiveInventory("Painkiller_HeaterAmmo", 20);
+                GiveInventory("Painkiller_ElectroAmmo", 20);
+            }
+            break;
+
+          case CLASS_UNREAL:
+            GiveInventory("Backpack", 1);
+
+            if (CheckInventory("UDPistolUpgrade") < 4)
+            {
+                GiveInventory("UDPistolUpgrade", 1);
+                GiveInventory("UDPistolUpgradePreferred", 1);
+            }
+            break;
+
+          case CLASS_QUAKE3:
+            GiveInventory("Q3AmmoRegenerationDummy", 1);
+            break;
+
+          case CLASS_DESCENT:
+            GiveInventory("Backpack", 1);
+            GiveInventory("DescentLaserLevel", 1);
+            break;
+
+          case CLASS_DEUSEX:
+            GiveInventory("Backpack", 1);
+            ACS_NamedExecuteWithResult("DeusEx_Decorate", 23);
+            GiveInventory("DeusEx_StealthPistol", 1);
+            GiveInventory("DeusEx_LAM", 1);
+            GiveInventory("Clip", 20);
+            GiveInventory("RocketAmmo", 3);
+            break;
+
+          default:
+            GiveInventory("Backpack", 1);
+            break;
+        }
+
+        GiveInventory("SamsaraBackpackGiven", 1);
+    }
 
 	HandleChainsawSpawn(respawning);
 	HandleShotgunSpawn(respawning);
