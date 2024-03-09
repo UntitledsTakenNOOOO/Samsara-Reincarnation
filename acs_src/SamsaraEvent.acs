@@ -450,7 +450,6 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	int startTime = Timer();
 	int endloop;
 	int canbuddha;
-	int storedhp, canresethp;
 	int armor, oarmor, type, otype;
 	int i;
 	int doommode, dukemode, hexmode, wolfmode, rottmode, blakemode, eradmode, ipogmode, halflifemode, previousvalue, cvalue;
@@ -462,15 +461,12 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	int sigilCounter;
 	int oldInstaGib;
 	int pariasLastRepairTimer;
-	int hudhealthmax;
 	int toPTimer;
 	int speedmod;
 	int XMASActive;
 
 	if(PlayerClass(pln) != playerClasses[pln])
 		playerClasses[pln] = ExecuteClassScripts(pln);
-		
-	if (GetActorProperty(0, APROP_SpawnHealth) == 0) { SetActorProperty(0, APROP_SpawnHealth, 100); }
 
 	if(bot)
 		ACS_NamedExecuteAlways("Samsara_BotAltClassHandler",0,pln,0,0);
@@ -513,13 +509,20 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	} else {
         if (isSinglePlayer() || isCoop())
         {
-            if (GetCVar("samsara_keepmaxhealth"))
+            SetInventory("SamsaraBaseSpawnHealth", 0);
+            SetInventory("SamsaraExtraBaseSpawnHealth", 0);
+            SetInventory("SamsaraExtraSpawnHealth", 0);
+
+            if (!GetCVar("samsara_keepmaxhealth"))
             {
-                if (CheckInventory("SamsaraHasMaxHealth")) { ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", CheckInventory("SamsaraHasMaxHealth"), 1); }
+                SetInventory("SamsaraExtraBaseSpawnHealthDeterminant", 0);
+                SetInventory("SamsaraExtraSpawnHealthDeterminant", 0);
+                SetInventory("SamsaraHasMaxHealth", 0);
             }
-            else { SetInventory("SamsaraHasMaxHealth", 0); }
         }
 	}
+
+    CalcPlayerSpawnHealth(); // added this here for stamina check later on
 
     if (GetCVar("samsara_backpackstart") && !CheckInventory("SamsaraBackpackGiven") && (!respawning || (respawning && !(isSinglePlayer() || isCoop()))))
     {
@@ -693,10 +696,10 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	case CLASS_STRIFE:
 		if (CheckInventory("StrifeguyStartingUpgradesHasBeenGiven"))
 		{
-            if (respawning && CheckInventory("StaminaUpgradeHealth"))
+            if (respawning)
             {
-                ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 100); // reset spawnhealth to make up for hardcoded lost stamina argh. the script handles the bonus stuff
-                ACS_NamedExecuteWithResult("SamsaraPlayerHealer");
+                if (CheckInventory("StaminaUpgradeHealth")) { ACS_NamedExecuteWithResult("SamsaraPlayerHealer"); }
+                if (CheckInventory("AccuracyUpgrade2")) { SetActorProperty(0, APROP_Accuracy, CheckInventory("AccuracyUpgrade2")); }
             }
 		}
 		else
@@ -714,7 +717,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					GiveInventory("AccuracyUpgrade1", 10);
 					GiveInventory("AccuracyUpgrade2", 10);
 
-                    ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 2, 100);
+                    ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 7, 100);
                     ACS_NamedExecuteWithResult("SamsaraPlayerHealer");
 
 					GiveInventory("StrifeUpgradeCount", 1);
@@ -770,6 +773,10 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         }
         break;
 
+    case CLASS_DEMONESS:
+        if (respawning) { SetActorProperty(0, APROP_Health, 70 + CheckInventory("Hexen2HealthAdd")); }
+        break;
+
     case CLASS_BOND:
         if (CheckInventory("Goldeneye_TankWeapon") && !CheckInventory("SamsaraGoldenEyePermanentTankCannon")) { TakeInventory("Goldeneye_TankWeapon", 1); }
         break;
@@ -819,18 +826,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
         SetInventory("SamsaraHasBonusStamina", GetActorProperty(0, APROP_Stamina));
 
-        if (samsaraClassNum() != CLASS_WITCHAVEN && samsaraClassNum() != CLASS_DEMONESS) // these two classes already call this stuff in their own loop scripts
-        {
-            storedhp = 100;
-
-            if (CheckInventory("PowerProsperity1") && GetCVar("prosperity_max_health") > storedhp) { storedhp = GetCVar("prosperity_max_health"); } // only take effect if cvar is greater than variable
-
-            if (CheckInventory("PowerProsperity1") || (!CheckInventory("PowerProsperity1") && canresethp)) { SetActorProperty(0, APROP_SpawnHealth, storedhp + CheckInventory("SamsaraHasMaxHealth") + CheckInventory("StaminaUpgradeHealth")); }
-
-            canresethp = CheckInventory("PowerProsperity1");
-
-            AdjustHealthOverMaxDisplay();
-        }
+        CalcPlayerSpawnHealth();
 
         AdjustArmorDisplays();
 
@@ -1785,14 +1781,6 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				}
 				break;
 			case CLASS_WITCHAVEN:
-                storedhp = 100 + (20 * (CheckInventory("WTLevel") - 1) - (20 * (CheckInventory("WTLevel") >= 7)));
-
-                if (CheckInventory("PowerProsperity1") && GetCVar("prosperity_max_health") > storedhp) { storedhp = GetCVar("prosperity_max_health"); } // only take effect if cvar is greater than variable
-
-                SetActorProperty(0, APROP_SpawnHealth, storedhp + CheckInventory("SamsaraHasMaxHealth") + CheckInventory("StaminaUpgradeHealth"));
-
-                AdjustHealthOverMaxDisplay();
-
 				if (!CheckInventory("WTSpellFlyHack")) { TakeInventory("WTSpellFly", 1); } // hexen
 				break;
 			case CLASS_HALFLIFE:

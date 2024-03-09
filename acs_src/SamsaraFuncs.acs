@@ -319,7 +319,7 @@ function void ApplyLMS(void)
                 GiveInventory("AccuracyUpgrade1", 10);
                 GiveInventory("AccuracyUpgrade2", 10);
 
-                ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 2, 100);
+                ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 7, 100);
                 ACS_NamedExecuteWithResult("SamsaraPlayerHealer");
 
                 GiveInventory("StrifeUpgradeCount", 1);
@@ -396,6 +396,8 @@ function void ApplyLMS(void)
             if (CheckInventory("WTExperience") < 50000) { SetInventory("WTExperience", 50000); }
             if (CheckInventory("WTLevel") < 6) { SetInventory("WTLevel", 6); }
         }
+
+        ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 100, 1, 8, 100);
 
         if (GetCVar("samsara_lmsuniques")) { GiveInventory("WTStrengthPhial", 10); }
     }
@@ -1579,4 +1581,68 @@ function void AdjustArmorDisplays (void)
         else { SetInventory("SamsaraArmorSavePercent", roundZandronum(GetArmorInfo(ARMORINFO_SAVEPERCENT) * 100)); }
     }
     else { SetInventory("SamsaraArmorSavePercent", 0); }
+}
+
+function void CalcPlayerSpawnHealth (void)
+{
+    int classNum = samsaraClassNum();
+    int storedhp = CheckInventory("SamsaraBaseSpawnHealth");
+
+    // get base max health if we're not forcing a custom one
+
+    if (!storedhp)
+    {
+        switch (classNum)
+        {
+          default:
+            storedhp = 100;
+            break;
+
+          case CLASS_DEMONESS:
+            storedhp = 70;
+            break;
+        }
+    }
+
+    // increase base max health through leveling
+
+    switch (classNum)
+    {
+      case CLASS_WITCHAVEN:
+        storedhp += CheckInventory("SamsaraWitchavenHealthIncrease");
+        break;
+
+      case CLASS_DEMONESS:
+        storedhp += CheckInventory("Hexen2HealthAdd");
+        break;
+    }
+
+    // increase base max health through these generic tokens
+
+    storedhp += CheckInventory("SamsaraExtraBaseSpawnHealth") + CheckInventory("SamsaraExtraBaseSpawnHealthDeterminant") + CheckInventory("SamsaraExtraBaseSpawnHealthPermanent");
+
+    // multi runes support: set base max health to whatever prosperity_max_health is set to if it's below the cvar
+
+    if (CheckInventory("PowerProsperity1") && GetCVar("prosperity_max_health") > storedhp) { storedhp = GetCVar("prosperity_max_health"); }
+
+    // add max health supplement through a similar manner to health upgrading through zandronum/gzdoom
+
+    switch (classNum)
+    {
+      case CLASS_STRIFE:
+        storedhp += CheckInventory("StaminaUpgradeHealth");
+        break;
+    }
+
+    // add max health supplement through these generic tokens plus another similar manner to health upgrading through zandronum
+
+    storedhp += CheckInventory("SamsaraExtraSpawnHealth") + CheckInventory("SamsaraExtraSpawnHealthDeterminant") + CheckInventory("SamsaraExtraSpawnHealthPermanent") + CheckInventory("SamsaraHasMaxHealth");
+
+    // set our max health now!
+
+    SetActorProperty(0, APROP_SpawnHealth, storedhp);
+
+    // apply finishing touch to hud
+
+    AdjustHealthOverMaxDisplay();
 }

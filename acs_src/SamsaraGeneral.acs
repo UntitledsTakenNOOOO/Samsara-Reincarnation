@@ -1981,6 +1981,13 @@ Script "Samsara_ResetInventory" (void)
 	TakeInventory("SamsaraSlotIGiven", INTMAX);
 	TakeInventory("SamsaraSlotIIGiven", INTMAX);
 	TakeInventory("SamsaraBackpackGiven", INTMAX);
+	TakeInventory("SamsaraBaseSpawnHealth", INTMAX);
+	TakeInventory("SamsaraExtraBaseSpawnHealth", INTMAX);
+	TakeInventory("SamsaraExtraBaseSpawnHealthDeterminant", INTMAX);
+	TakeInventory("SamsaraExtraBaseSpawnHealthPermanent", INTMAX);
+	TakeInventory("SamsaraExtraSpawnHealth", INTMAX);
+	TakeInventory("SamsaraExtraSpawnHealthDeterminant", INTMAX);
+	TakeInventory("SamsaraExtraSpawnHealthPermanent", INTMAX);
 	TakeInventory("SamsaraHasMaxHealth", INTMAX);
 	TakeInventory("SamsaraHasMaxArmor", INTMAX);
 	switch(PlayerClass(pln))
@@ -2494,6 +2501,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("WTFireProofPhial", INTMAX);
 			SetInventory("WTExperience", 0);
 			SetInventory("WTLevel", 1);
+			SetInventory("SamsaraWitchavenHealthIncrease", 0);
 
 			GiveInventory("Bow and Arrows", 1);
 			GiveInventory("Witchaven_Dagger", 1);
@@ -2680,7 +2688,6 @@ Script "Samsara_ResetInventory" (void)
 			SetInventory("Hexen2Wisdom", Random(11, 14));
 			SetInventory("Hexen2Dexterity", Random(9, 13));
 			SetInventory("Hexen2Strength", Random(11, 14));
-            SetInventory("Hexen2HealthAdd", 70);
 			GiveInventory("Hexen2BloodFire", 1);
 			GiveInventory("Hexen2Sickle", 1);
 			GiveInventory("Hexen2Class", 1);
@@ -7169,61 +7176,74 @@ script "SamsaraPlayerHealer" (int healamount, int healcap, int usemaxbonus)
 
 script "SamsaraPlayerSpawnHealthAdjust" (int amount, int add, int maxtype, int maxcap)
 {
-    str maxtoken = "Placeholder";
-
-    switch (maxtype)
+    if (add)
     {
-      case 1:
-        maxtoken = "SamsaraHasMaxHealth"; // Zandronum MaxHealth (mainly for max. health bonus)
-        break;
+        if (amount == 0) { terminate; }
 
-      case 2:
-        maxtoken = "StaminaUpgradeHealth"; // Strifeguy upgrade
-        break;
-    }
+        str maxtoken = "Placeholder";
 
-    int maxtokenorig = CheckInventory(maxtoken);
-
-    if (amount != 0)
-    {
-        // set new max health
-
-        if (add)
+        switch (maxtype)
         {
-            if (maxtype > 0)
-            {
-                if (amount > 0)
-                {
-                    if (CheckInventory(maxtoken) >= maxcap) { terminate; }
-                    else if (CheckInventory(maxtoken) + amount > maxcap)
-                    {
-                        SetInventory(maxtoken, maxcap);
-                        amount = CheckInventory(maxtoken) - maxtokenorig;
-                    }
-                    else { GiveInventory(maxtoken, amount); }
-                } else if (amount < 0) {
-                    if (CheckInventory(maxtoken) <= 0) { terminate; }
-                    else if (CheckInventory(maxtoken) + amount < 0)
-                    {
-                        SetInventory(maxtoken, 0);
-                        amount = -maxtokenorig;
-                    }
-                    else { TakeInventory(maxtoken, -amount); }
-                }
-            }
+          default:
+            terminate;
 
-            if (getMaxHealth(1) + amount > 0) { SetActorProperty(0, APROP_SpawnHealth, getMaxHealth(1) + amount); }
-            else { SetActorProperty(0, APROP_SpawnHealth, 1); } // clamp base minimum at 1
+          case 0:
+            maxtoken = "SamsaraExtraBaseSpawnHealth"; // Generic extra base health token (lost on respawn)
+            break;
 
-            AdjustHealthOverMaxDisplay();
-        } else {
-            if (amount > 0) // only take base into account
-            {
-                SetActorProperty(0, APROP_SpawnHealth, amount + CheckInventory("SamsaraHasMaxHealth") + CheckInventory("StaminaUpgradeHealth"));
-                AdjustHealthOverMaxDisplay();
-            }
+          case 1:
+            maxtoken = "SamsaraExtraBaseSpawnHealthDeterminant"; // Generic extra base health token (either lost or kept on respawn depending on samsara_keepmaxhealth)
+            break;
+
+          case 2:
+            maxtoken = "SamsaraExtraBaseSpawnHealthPermanent"; // Generic extra base health token (kept on respawn)
+            break;
+
+          case 3:
+            maxtoken = "SamsaraExtraSpawnHealth"; // Generic extra health token (lost on respawn)
+            break;
+
+          case 4:
+            maxtoken = "SamsaraExtraSpawnHealthDeterminant"; // Generic extra health token (either lost or kept on respawn depending on samsara_keepmaxhealth)
+            break;
+
+          case 5:
+            maxtoken = "SamsaraExtraSpawnHealthPermanent"; // Generic extra health token (kept on respawn)
+            break;
+
+          case 6:
+            maxtoken = "SamsaraHasMaxHealth"; // Zandronum max. health bonus (either lost or kept on respawn depending on samsara_keepmaxhealth)
+            break;
+
+          case 7:
+            maxtoken = "StaminaUpgradeHealth"; // Strifeguy stamina upgrade (kept on respawn)
+            break;
+
+          case 8:
+            maxtoken = "SamsaraWitchavenHealthIncrease"; // Grondoval extra health (kept on respawn)
+            break;
+
+          case 9:
+            maxtoken = "Hexen2HealthAdd"; // Hexen 2 classes extra health (kept on respawn)
+            break;
+        }
+
+        if (amount > 0)
+        {
+            if (maxcap <= 0) { maxcap = INTMAX; }
+
+            if (CheckInventory(maxtoken) >= maxcap) { terminate; }
+            else if (CheckInventory(maxtoken) + amount > maxcap) { SetInventory(maxtoken, maxcap); }
+            else { GiveInventory(maxtoken, amount); }
+        } else if (amount < 0) {
+            if (CheckInventory(maxtoken) <= 0) { terminate; }
+            else if (CheckInventory(maxtoken) + amount < 0) { SetInventory(maxtoken, 0); }
+            else { TakeInventory(maxtoken, -amount); }
         }
     }
+    else { SetInventory("SamsaraBaseSpawnHealth", amount); }
+
+    CalcPlayerSpawnHealth();
 }
 
 script "SamsaraAdjustHealthOverMaxDisplay" (void) { AdjustHealthOverMaxDisplay(); } // for CustomInventory triggers

@@ -277,7 +277,6 @@ Script "Hexen2_Hud" (void)
 			SetInventory("Hexen2Wisdom", random(11,14));
 			SetInventory("Hexen2Dexterity", random(9,13));
 			SetInventory("Hexen2Strength", random(11,14));
-			SetInventory("Hexen2HealthAdd", 70);
 			GiveInventory("Hexen2Started",1);
 			SetAmmoCapacity("Clip", 250*hasBackpack);
 			SetAmmoCapacity("Cell", 250*hasBackpack);
@@ -287,8 +286,6 @@ Script "Hexen2_Hud" (void)
 				GiveInventory("Hexen2Experience",36626);
 			}
 		}
-
-        int storedhp = CheckInventory("Hexen2HealthAdd");
 
 		//crouch
 		if(GetActorViewHeight(0) <=  GetActorViewHeight(0) / 2 << 16)
@@ -338,11 +335,6 @@ Script "Hexen2_Hud" (void)
 		{
 			if(CheckInventory("Hexen2Experience") > Hexen2_NextLevelXP[CheckInventory("Hexen2Level")-1])
 			{
-                hpincrease = Random(5, 10);
-                storedhp = CheckInventory("Hexen2HealthAdd") + hpincrease;
-                if (CheckInventory("PowerProsperity1") && GetCVar("prosperity_max_health") > storedhp) { storedhp = GetCVar("prosperity_max_health"); } // only take effect if cvar is greater than variable
-                SetActorProperty(0, APROP_SpawnHealth, storedhp + CheckInventory("SamsaraHasMaxHealth") + CheckInventory("StaminaUpgradeHealth"));
-                AdjustHealthOverMaxDisplay();
 				randomincrease = random(8,11)*2;
 				SetAmmoCapacity("Clip", GetAmmoCapacity("Clip")+randomincrease);
 				SetAmmoCapacity("Cell", GetAmmoCapacity("Cell")+randomincrease);
@@ -352,7 +344,7 @@ Script "Hexen2_Hud" (void)
 				TakeInventory("Hexen2GreenManaAdd", 2048);
 				GiveInventory("Hexen2BlueManaAdd", clipmax);
 				GiveInventory("Hexen2GreenManaAdd", cellmax);
-				GiveInventory("Hexen2HealthAdd", hpincrease);
+				ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", Random(5, 10), 1, 9, 2048);
 				GiveInventory("Hexen2Level", 1);
 				GiveInventory("Hexen2Intelligence", 1);
 				GiveInventory("Hexen2Wisdom", 1);
@@ -372,11 +364,6 @@ Script "Hexen2_Hud" (void)
 		{
 			if(CheckInventory("Hexen2Experience") > Hexen2_NextLevelXP[10]+(192700*(CheckInventory("Hexen2Level")-11)))
 			{
-                hpincrease = 3;
-                storedhp = CheckInventory("Hexen2HealthAdd") + hpincrease;
-                if (CheckInventory("PowerProsperity1") && GetCVar("prosperity_max_health") > storedhp) { storedhp = GetCVar("prosperity_max_health"); } // only take effect if cvar is greater than variable
-                SetActorProperty(0, APROP_SpawnHealth, storedhp + CheckInventory("SamsaraHasMaxHealth") + CheckInventory("StaminaUpgradeHealth"));
-                AdjustHealthOverMaxDisplay();
 				SetAmmoCapacity("Clip", GetAmmoCapacity("Clip")+6);
 				SetAmmoCapacity("Cell", GetAmmoCapacity("Cell")+8);
 				clipmax = GetAmmoCapacity("Clip")-(250*hasBackpack);
@@ -385,7 +372,7 @@ Script "Hexen2_Hud" (void)
 				TakeInventory("Hexen2GreenManaAdd", 2048);
 				GiveInventory("Hexen2BlueManaAdd", clipmax);
 				GiveInventory("Hexen2GreenManaAdd", cellmax);
-				GiveInventory("Hexen2HealthAdd", hpincrease);
+				ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 3, 1, 9, 2048);
 				GiveInventory("Hexen2Level", 1);
 				GiveInventory("Hexen2Intelligence", 1);
 				GiveInventory("Hexen2Wisdom", 1);
@@ -424,11 +411,6 @@ Script "Hexen2_Hud" (void)
 		
 		int drawbar = ACS_NamedExecuteWithResult("Hexen2_DrawExperienceBar",0,0,0,0);
 
-        storedhp = CheckInventory("Hexen2HealthAdd");
-        if (CheckInventory("PowerProsperity1") && GetCVar("prosperity_max_health") > storedhp) { storedhp = GetCVar("prosperity_max_health"); } // only take effect if cvar is greater than variable
-        SetActorProperty(0, APROP_SpawnHealth, storedhp + CheckInventory("SamsaraHasMaxHealth") + CheckInventory("StaminaUpgradeHealth"));
-        AdjustHealthOverMaxDisplay();
-		
 		Delay(1);
 		currenthealth = GetActorProperty(0,APROP_Health);
 		if(currenthealth != oldhealth && currenthealth < oldhealth)
@@ -447,19 +429,6 @@ Script "Hexen2_Hud" (void)
 				}
 			}
 		}
-	}
-}
-
-Script "Hexen2_Respawn" Respawn 
-{ 
-	if(CheckInventory("Hexen2Class")) 
-	{ 
-		if(CheckInventory("Hexen2HealthAdd") < 70) 
-		{  
-			TakeInventory("Hexen2HealthAdd",2048);
-			GiveInventory("Hexen2HealthAdd",70);
-		}
-		SetActorProperty(0,APROP_Health,CheckInventory("Hexen2HealthAdd")); 		
 	}
 }
 
