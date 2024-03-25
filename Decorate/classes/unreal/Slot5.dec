@@ -29,36 +29,28 @@ Actor Unreal_EightBall : UnrealWeapon
 
 		ReadyActual:
 			UN03 A 0 A_TakeInventory("SamsaraUnrealEightballLockDisabled")
-			UN03 A 0 A_GunFlash("ReadyActualTarget",GFF_NOEXTCHANGE)
-			UN03 A 2 A_WeaponReady
+			UN03 A 1 A_WeaponReady
 			loop
 
-		ReadyActualTarget:
-			TNT1 A 2 A_GiveInventory("SamsaraUnrealEightballTargetingHandler")
-			stop
-
 		Deselect:
-			UN02 A 0 A_GunFlash("DeselectTargetClear",GFF_NOEXTCHANGE)
-			UN02 A 0 A_TakeInventory("Unreal_EightBallSelected")
-			UN02 A 0 A_TakeInventory("SamsaraUnrealEightballLockDisabled")
-			UN02 A 0 A_TakeInventory("Unreal_EightballLockTimer")
-			UN02 A 0 A_TakeInventory("Unreal_TargetLocked")
-			UN02 A 0 A_TakeInventory("SamsaraUnrealEightballLockSoundRepeat")
-			UN02 A 2 A_JumpIfHealthLower(1,"DeselectInstant")
-			UN02 BCDE 2
+			UN03 A 0 A_TakeInventory("Unreal_EightBallSelected")
+			UN03 A 0 A_GiveInventory("SamsaraUnrealEightballLockDisabled")
+			UN03 A 0 A_TakeInventory("Unreal_EightballLockTimer")
+			UN03 A 0 A_TakeInventory("Unreal_TargetLocked")
+			UN03 A 0 A_TakeInventory("SamsaraUnrealEightballLockSoundRepeat")
+			UN03 A 2 A_JumpIfHealthLower(1,"DeselectInstant")
+			UN02 ABCD 2
+            UN02 E 0
 			goto DeselectInstant
-
-		DeselectTargetClear:
-			TNT1 A 0
-			stop
 
 		Ready: // our "Select" state
 			UN01 A 0 A_GiveInventory("Unreal_EightBallSelected")
 			UN01 A 0 A_PlaySound("Unreal/Eightball/Select")
-			UN01 A 0 A_TakeInventory("SamsaraUnrealEightballLockDisabled")
+			UN01 A 0 A_GiveInventory("SamsaraUnrealEightballLockDisabled")
 			UN01 A 0 A_TakeInventory("Unreal_EightballLockTimer")
 			UN01 A 0 A_TakeInventory("Unreal_TargetLocked")
 			UN01 A 0 A_TakeInventory("SamsaraUnrealEightballLockSoundRepeat")
+			UN01 A 0 ACS_NamedExecuteWithResult("UnrealWeaponTargeter", 1)
 			UN01 ABCDEFGH 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
 			goto ReadyActual
 
@@ -85,7 +77,6 @@ Actor Unreal_EightBall : UnrealWeapon
 			goto ChargeFinishDesyncHack
 			UN04 A 0 A_JumpIfInventory("SamsaraUnrealEightballRocketsLoaded",5,"ChargeFinishDesyncHack")
 			UN04 A 0 A_GiveInventory("SamsaraUnrealEightballChargeGiver")
-			UN04 A 0 A_GunFlash("ChargeTarget",GFF_NOEXTCHANGE)
 		ChargeModeCheck:
 			UN04 A 0 A_JumpIfInventory("SamsaraUnrealEightballSecondaryFiring",1,"AltFireCharge")
 			goto FireCharge
@@ -172,10 +163,6 @@ Actor Unreal_EightBall : UnrealWeapon
 			UN04 L 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 			goto ChargeReFire
 
-		ChargeTarget:
-			TNT1 AAAAAAAAAAAA 2 A_GiveInventory("SamsaraUnrealEightballTargetingHandler")
-			stop
-
 		ChargeReFire:
 			UN04 L 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
 			UN04 L 0 A_JumpIfInventory("RocketAmmo",1,1)
@@ -187,12 +174,7 @@ Actor Unreal_EightBall : UnrealWeapon
 			UN04 L 0 A_GiveInventory("SamsaraUnrealEightballChargeGiver")
 		ChargeFinish:
 			UN04 L 0 A_ClearReFire
-			UN04 L 0 A_GunFlash("ChargeFinishTargetClear",GFF_NOEXTCHANGE)
 			goto ChargeRelease
-
-		ChargeFinishTargetClear:
-			TNT1 A 0
-			stop
 
 		ChargeRelease:
 			UN05 A 0 A_GiveInventory("SamsaraUnrealEightballLockDisabled")
@@ -849,23 +831,6 @@ Actor Unreal_EightballGrenade
 }
 
 Actor Unreal_EightballGrenadeCoop : Unreal_EightballGrenade { +THRUSPECIES Species "Player" }
-
-actor SamsaraUnrealEightballTargetingHandler : Trigger
-{
-	States
-	{
-	// Targeting stuff
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
-	PickupDM:
-		TNT1 A 0 A_FireBullets(0,0,1,0,"Unreal_EightballTargeterPuff",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH)
-		stop
-	PickupCoop:
-		TNT1 A 0 A_FireBullets(0,0,1,0,"Unreal_EightballTargeterPuffCoop",FBF_NORANDOM|FBF_EXPLICITANGLE|FBF_NOFLASH)
-		stop
-	}
-}
 
 actor Unreal_EightballTargeterPuff
 {
