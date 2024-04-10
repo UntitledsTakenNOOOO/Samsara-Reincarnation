@@ -4,7 +4,7 @@ int msgColors[26] =
     "\cn", "\co", "\cp", "\cq", "\cr", "\cs", "\ct", "\cu", "\cv", "\cw", "\cx", "\cy", "\cz"
 };
 
-script "SamsaraClientClass" (int slot) clientside //228 -- SAMSARA_CLIENT_CLASS
+script "SamsaraClientClass" (int slot) CLIENTSIDE //228 -- SAMSARA_CLIENT_CLASS
 {
 	int alternativeclass;
     int toClass = SamsaraClientClass-1;
@@ -316,6 +316,7 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
             if (CheckInventory("SamsaraHeroMusicHalfLifeActive") && !CheckInventory("HalfLifeMusicPlayingToken"))
             {
                 GiveInventory("HLMusicWeapon",1);
+                SetInventory("HalfLifeMusicPlayingToken", 1);
             }		
 		}
 	}
@@ -352,7 +353,7 @@ script "SamsaraGiveUnique" (int alt) //231 -- SAMSARA_GIVEUNIQUE
     
     if (uniqueGet && IsServer)
     {
-        ACS_NamedExecuteAlways("SamsaraClientUniquePickup", 0, 0, 0, 0);
+        ACS_NamedExecuteAlways("SamsaraClientUniquePickup", 0, alt + 1, 0, 0);
 
         if (CheckInventory("SamsaraHeroMusicHalfLifeActive") && !CheckInventory("HalfLifeMusicPlayingToken"))
         {
@@ -366,13 +367,13 @@ script "SamsaraGiveUnique" (int alt) //231 -- SAMSARA_GIVEUNIQUE
 
 int QuoteStorage[MSGCOUNT];
 
-script "SamsaraClientWeaponPickup" (int slot, int soundmode, int dropped) clientside //616 -- SAMSARA_CLIENT_WEAPONPICKUP
+script "SamsaraClientWeaponPickup" (int slot, int soundmode, int dropped) CLIENTSIDE //616 -- SAMSARA_CLIENT_WEAPONPICKUP
 {
     int pln = PlayerNumber(), cpln = ConsolePlayerNumber();
     int pclass = samsaraClassNum();
     int i, j, quoteCount = 0;
     int logMsg;
-    int pickupsound = ClassPickupSounds[pclass][SamsaraAlternativeClass][slot];
+    str pickupsound = ClassPickupSounds[pclass][SamsaraAlternativeClass][slot];
     
     if (dropped) { pickupsound = ClassDropSounds[pclass][SamsaraAlternativeClass][slot]; }
     
@@ -411,15 +412,13 @@ script "SamsaraClientWeaponPickup" (int slot, int soundmode, int dropped) client
 	}
 }
 
-script "SamsaraClientUniquePickup" (int soundmode) clientside //633 -- SAMSARA_CLIENT_UNIQUEPICKUP
+script "SamsaraClientUniquePickup" (int alt, int soundmode) CLIENTSIDE //633 -- SAMSARA_CLIENT_UNIQUEPICKUP
 {
     int pln = PlayerNumber(), cpln = ConsolePlayerNumber();
     int pclass = samsaraClassNum();
     int i, j, quoteCount = 0;
     int logMsg;
-    int pickupsound;
-
-    pickupsound = ClassUniqueSounds[pclass][SamsaraAlternativeClass];
+    str pickupsound = ClassUniqueSounds[pclass][SamsaraAlternativeClass][alt];
     
     if (cpln == pln && GetCVar("msg") == 0)
     {
@@ -427,7 +426,7 @@ script "SamsaraClientUniquePickup" (int soundmode) clientside //633 -- SAMSARA_C
         {
             for (i = 0; i < MSGCOUNT; i++)
             {
-                j = ClassUniqueMessages[pclass][SamsaraAlternativeClass][i];
+                j = ClassUniqueMessages[pclass][SamsaraAlternativeClass][alt][i];
 
                 if (!StrLen(j)) { continue; }
                 QuoteStorage[quoteCount++] = j;
@@ -438,7 +437,7 @@ script "SamsaraClientUniquePickup" (int soundmode) clientside //633 -- SAMSARA_C
         }
         else
         {
-            logMsg = ClassUniqueMessages[pclass][SamsaraAlternativeClass][0];
+            logMsg = ClassUniqueMessages[pclass][SamsaraAlternativeClass][alt][0];
             
             if (!StrLen(logMsg)) { logMsg = "Oh bugger there's no message for this unique."; } 
         }
