@@ -1901,6 +1901,60 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                     TakeInventory("HLOPBarnacle", 1);
                 }
 
+                if (loadoutPrevValue[pln][SLOT_FIST] != CheckInventory("SamsaraHalfLifeLoadoutFallbackMelee"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_FIST, CheckInventory("SamsaraHalfLifeLoadoutFallbackMelee"), pln);
+                    loadoutPrevValue[pln][SLOT_FIST] = CheckInventory("SamsaraHalfLifeLoadoutFallbackMelee");
+                }
+
+                if (loadoutPrevValue[pln][SLOT_CHAINSAW] != CheckInventory("SamsaraHalfLifeLoadoutSlot1"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_CHAINSAW, CheckInventory("SamsaraHalfLifeLoadoutSlot1"), pln);
+                    loadoutPrevValue[pln][SLOT_CHAINSAW] = CheckInventory("SamsaraHalfLifeLoadoutSlot1");
+                }
+
+                if (loadoutPrevValue[pln][SLOT_SUPERSHOTGUN] != CheckInventory("SamsaraHalfLifeLoadoutSlot3"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_SUPERSHOTGUN, CheckInventory("SamsaraHalfLifeLoadoutSlot3"), pln);
+                    loadoutPrevValue[pln][SLOT_SUPERSHOTGUN] = CheckInventory("SamsaraHalfLifeLoadoutSlot3");
+                }
+
+                if (loadoutPrevValue[pln][SLOT_ROCKETLAUNCHER] != CheckInventory("SamsaraHalfLifeLoadoutSlot5"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_ROCKETLAUNCHER, CheckInventory("SamsaraHalfLifeLoadoutSlot5"), pln);
+                    loadoutPrevValue[pln][SLOT_ROCKETLAUNCHER] = CheckInventory("SamsaraHalfLifeLoadoutSlot5");
+                }
+
+                if (loadoutPrevValue[pln][SLOT_PLASMARIFLE] != CheckInventory("SamsaraHalfLifeLoadoutSlot6"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_PLASMARIFLE, CheckInventory("SamsaraHalfLifeLoadoutSlot6"), pln);
+                    loadoutPrevValue[pln][SLOT_PLASMARIFLE] = CheckInventory("SamsaraHalfLifeLoadoutSlot6");
+                }
+
+                if (loadoutPrevValue[pln][SLOT_BFG9000] != CheckInventory("SamsaraHalfLifeLoadoutSlot7"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_BFG9000, CheckInventory("SamsaraHalfLifeLoadoutSlot7"), pln);
+                    loadoutPrevValue[pln][SLOT_BFG9000] = CheckInventory("SamsaraHalfLifeLoadoutSlot7");
+                }
+
+                if (loadoutPrevValue[pln][SLOTCOUNT - 1 - SLOT_UNIQUE1] != CheckInventory("SamsaraHalfLifeLoadoutUnique1"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOTCOUNT - 1 - SLOT_UNIQUE1, CheckInventory("SamsaraHalfLifeLoadoutUnique1"), pln);
+                    loadoutPrevValue[pln][SLOTCOUNT - 1 - SLOT_UNIQUE1] = CheckInventory("SamsaraHalfLifeLoadoutUnique1");
+                }
+
+                if (loadoutPrevValue[pln][SLOTCOUNT - 1 - SLOT_UNIQUE2] != CheckInventory("SamsaraHalfLifeLoadoutUnique2"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOTCOUNT - 1 - SLOT_UNIQUE2, CheckInventory("SamsaraHalfLifeLoadoutUnique2"), pln);
+                    loadoutPrevValue[pln][SLOTCOUNT - 1 - SLOT_UNIQUE2] = CheckInventory("SamsaraHalfLifeLoadoutUnique2");
+                }
+
+                if (loadoutPrevValue[pln][SLOTCOUNT - 1 - SLOT_UNIQUE3] != CheckInventory("SamsaraHalfLifeLoadoutUnique3"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOTCOUNT - 1 - SLOT_UNIQUE3, CheckInventory("SamsaraHalfLifeLoadoutUnique3"), pln);
+                    loadoutPrevValue[pln][SLOTCOUNT - 1 - SLOT_UNIQUE3] = CheckInventory("SamsaraHalfLifeLoadoutUnique3");
+                }
+
 				break;
 
 			case CLASS_SW:
@@ -2216,11 +2270,12 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				break;
 
 			default:
-				if(cvalue != 1)
-				{
-					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln);
-					cvalue = 1;
-				}
+                if (cvalue != 1)
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, 0, pln);
+                    for (i = 0; i < SLOTCOUNT + UNIQUECOUNT; i++) { ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, i, 0, pln); }
+                    cvalue = 1;
+                }
 				break;
 		}
 
@@ -2977,12 +3032,20 @@ script "SamsaraEnterClient" (void) clientside //521 -- SAMSARA_ENTER_CLIENT
 	//Log(s:"Client ", n:pln+1, s:"\c- (", d:pln, s:") has left spawn (", d:startTime, s:" vs. ", d:ClientEnterTimes[pln], s:")");
 }
 
-script "SAMSARA_CLIENT_ALTERNATIVECLASS" (int set, int pln) clientside
+script "SAMSARA_CLIENT_ALTERNATIVECLASS" (int set, int pln) CLIENTSIDE
 {
 	int cpln = ConsolePlayerNumber();
 	if (cpln != pln) { terminate; }
 
 	SamsaraAlternativeClass = set;
+}
+
+script "SAMSARA_CLIENT_CLASSLOADOUT" (int slot, int set, int pln) CLIENTSIDE
+{
+	int cpln = ConsolePlayerNumber();
+	if (cpln != pln) { terminate; }
+
+	SamsaraEquipmentLoadout[slot] = set;
 }
 
 script "SAMSARA_BARATUSRANGECHECK" (void)
@@ -3007,9 +3070,10 @@ script "SAMSARA_BARATUSRANGECHECK" (void)
 
 }
 
-Script "SamsaraDisconnect" (int player) DISCONNECT
+script "SamsaraDisconnect" (int player) DISCONNECT
 {
-	playerClasses[player] = -1;
+    playerClasses[player] = -1;
+    for (int i = 0; i < SLOTCOUNT + UNIQUECOUNT; i++) { loadoutPrevValue[player][i] = 0; }
 }
 
 script "SamsaraDisconnectClient" (int pln) disconnect clientside //522 -- SAMSARA_DISCONNECT_CLIENT
@@ -3020,6 +3084,7 @@ script "SamsaraDisconnectClient" (int pln) disconnect clientside //522 -- SAMSAR
 
 	DisconnectClassScripts(pln);
 	SamsaraAlternativeClass = 0;
+    for (int i = 0; i < SLOTCOUNT + UNIQUECOUNT; i++) { SamsaraEquipmentLoadout[i] = 0; }
 	SamsaraClientClass  = 0;
 	SamsaraItemFlash	= Timer();
 }
