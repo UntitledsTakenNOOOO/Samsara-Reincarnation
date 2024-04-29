@@ -1,55 +1,50 @@
-actor "  Fist_2x5  " : Weapon
+actor "  Fist_2x5  " : SamsaraDarkForcesWeapon
 {
-  Weapon.SlotNumber     0
-    Weapon.BobStyle          Inverse
-    Weapon.BobSpeed          1.05
-    Weapon.BobRangeX      1.0
-    Weapon.BobRangeY      0.55  
-  Weapon.SelectionOrder 3700
-  Weapon.Kickback       100
-  +INVENTORY.UNDROPPABLE
-  +WEAPON.WIMPY_WEAPON
-  +WEAPON.MELEEWEAPON
-  +WEAPON.NOALERT
-  +PIERCEARMOR
-  Tag "Fist"
-  Obituary "%k beat %o senseless."
-  Inventory.RestrictedTo "KatarnPlayer"
-  Tag "Hand to Hand"
-  States
-  {
-    Ready:
-      KHAN A 1 A_WeaponReady
-      loop
+    Weapon.SlotNumber 0
+    Weapon.SelectionOrder 3700
+    Weapon.Kickback 100
+    Obituary "%k beat %o senseless."
+    Tag "Hand to Hand"
+    +MELEEWEAPON
+    +NOALERT
+    +PIERCEARMOR
+    +WIMPY_WEAPON
+    States
+    {
+      Ready:
+        KHAN A 1 A_WeaponReady
+        loop
 
-    Deselect:
-      TNT1 A 0 A_Lower
-      KHAN A 1 A_Lower
-      loop
+      Deselect:
+        TNT1 A 0 A_Lower
+        KHAN A 1 A_Lower
+        loop
 
-    Select: 
-      TNT1 A 0 A_Raise
-      KHAN A 1 A_Raise
-      loop
+      Select:
+        TNT1 A 0 A_Raise
+        KHAN A 1 A_Raise
+        loop
 
-    AltFire:
-    Fire:
-      TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"FastFire")
-      KPUN A 3 A_JumpIfInventory("KatarnFireRateUp",1,"FastFire")
-      KPUN B 5 A_GiveInventory("SamsaraDarkForcesFistAttackHandler")
-      KPUN C 6
-      KHAN A 5
-      KHAN A 5 A_ReFire
-      goto Ready
+      Fire:
+      AltFire:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"FireFast")
+        TNT1 A 0 A_JumpIfInventory("KatarnFireRateUp",1,"FireFast")
+      FireNormal:
+        KPUN A 3
+        KPUN B 5 A_GiveInventory("SamsaraDarkForcesFistAttackHandler")
+        KPUN C 6
+        KHAN A 5
+        KHAN A 5 A_ReFire
+        goto Ready
 
-    FastFire:
-      KPUN A 2
-      KPUN B 3 A_GiveInventory("SamsaraDarkForcesFistAttackHandler")
-      KPUN C 3
-      KHAN A 5
-      KHAN A 3 A_ReFire
-      goto Ready
-  }
+      FireFast:
+        KPUN A 2
+        KPUN B 3 A_GiveInventory("SamsaraDarkForcesFistAttackHandler")
+        KPUN C 3
+        KHAN A 5
+        KHAN A 3 A_ReFire
+        goto Ready
+    }
 }
 
 actor SamsaraDarkForcesFistAttackHandler : Trigger
@@ -80,3 +75,18 @@ actor SamsaraDarkForcesFistAttackHandler : Trigger
         stop
     }
 }
+
+actor BlankPuffKatarn
+{
+    +CLIENTSIDEONLY
+    States
+    {
+      Spawn:
+      Melee:
+      Crash:
+        TNT1 A 1 A_PlaySound("katarn/punchit")
+        stop
+    }
+}
+
+actor BlankPuffKatarnCoop : BlankPuffKatarn { +MTHRUSPECIES }

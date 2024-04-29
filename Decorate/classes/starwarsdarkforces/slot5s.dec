@@ -1,283 +1,252 @@
-Actor "I.M. Mines" : Weapon
+actor SamsaraDarkForcesMineSecondaryFiring : Boolean {}
+
+actor "I.M. Mines" : SamsaraDarkForcesWeapon
 {
-  Weapon.SelectionOrder 2000
-  Weapon.BobStyle		Inverse
-  Weapon.BobSpeed		1.05
-  Weapon.BobRangeX	  	1.0
-  Weapon.BobRangeY	  	0.55  
-  Weapon.AmmoUse        1
-  Weapon.AmmoUse2       1
-  Weapon.AmmoGive       5
-  Weapon.AmmoType       "RocketAmmo"
-  Weapon.AmmoType2      "RocketAmmo"
-  Weapon.SlotNumber     5
-  Weapon.SlotPriority 	1
-  Obituary              "%o tripped %k's I.M. mine."
-  +NOALERT
-  +THRUGHOST
-  +WEAPON.NOAUTOAIM
-  +WEAPON.NOAUTOFIRE
-  +WEAPON.EXPLOSIVE
-  +INVENTORY.UNDROPPABLE
-  Inventory.RestrictedTo "KatarnPlayer"
-  Tag "I.M. Mines"
-  States
-  {
-    Ready:
-      TNT1 A 0 A_JumpIfNoAmmo("ReadyAmmoLess")
-	  KHAN B 1 A_WeaponReady
-      Loop
-	  
-    ReadyAmmoLess:
-	  TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"Ready")
-	  KHAN H 1 A_WeaponReady
-	  Loop
+    Inventory.PickupMessage "Mines"
+    Weapon.SlotNumber 5
+    Weapon.SlotPriority 1
+    Weapon.SelectionOrder 2000
+    Weapon.AmmoType "RocketAmmo"
+    Weapon.AmmoGive 5
+    Weapon.AmmoUse 1
+    Obituary "%o tripped %k's I.M. mine."
+    Tag "I.M. Mines"
+    +ALT_USES_BOTH // only one ammo type with same ammo amount use, so this makes alt fire behave as intended
+    +EXPLOSIVE
+    +NOALERT
+    +NOAUTOAIM
+    +NOAUTOFIRE
+    States
+    {
+      Spawn:
+        IMIN A -1
+        stop
 
-    Deselect:
-      TNT1 A 0 A_JumpIfNoAmmo("DeselectAmmoLess")
-	  TNT1 A 0 A_Lower
-      KHAN B 1 A_Lower
-      Goto Deselect+1
-	  
-	DeselectAmmoLess:
-      KDET A 0 A_Lower
-      KHAN H 1 A_Lower
-	  Loop
+      Ready:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"ReadyAmmo")
+        goto ReadyNoAmmo
 
-    Select:
-      TNT1 A 0 A_JumpIfNoAmmo("SelectAmmoLess")
-	  TNT1 A 0 A_Raise
-      KHAN B 1 A_Raise
-      Goto Select+1
-	  
-	SelectAmmoLess:
-      KDET A 0 A_Raise
-      KHAN H 1 A_Raise
-	  Loop
-	  
-	Fire:
-      TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
-	  KHAN B 1
-	  KHAN C 1
-	  KHAN D 2
-	  KHAN E 2
-	  TNT1 A 2
-      TNT1 A 0 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
-	  TNT1 A 8 A_SpawnItemEx("DarkForcesIMMine",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
-	  TNT1 A 0 A_JumpIfNoAmmo("ReadyAmmoLess")
-      KHAN F 2
-	  KHAN G 2
-      KHAN B 2 A_ReFire
-	  Goto Ready
+      ReadyNoAmmo:
+        KHAN H 1 A_WeaponReady
+        goto Ready
 
-	FireNoAmmo:
-      TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFireNoAmmo")
-	  KHAN H 2
-	  KHAN I 2
-	  KHAN J 2
-	  TNT1 A 2
-      TNT1 A 0 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
-	  TNT1 A 8 A_SpawnItemEx("DarkForcesIMMine",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
-      KHAN J 2
-      KHAN I 2
-      KHAN H 2
-	  Goto Ready
-	  
-	CoopFire:
-	  KHAN B 1
-      KHAN C 1
-      KHAN D 2
-      KHAN E 2
-      TNT1 A 2
-      TNT1 A 0 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
-      TNT1 A 8 A_SpawnItemEx("DarkForcesIMMineCoop",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
-      TNT1 A 0 A_JumpIfNoAmmo("ReadyAmmoLess")
-      KHAN F 2
-      KHAN G 2
-      KHAN B 2 A_ReFire
-      Goto Ready
+      ReadyAmmo:
+        KHAN B 1 A_WeaponReady
+        goto Ready
 
-	CoopFireNoAmmo:
-	  KHAN H 2
-	  KHAN I 2
-	  KHAN J 2
-	  TNT1 A 2
-      TNT1 A 0 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
-	  TNT1 A 8 A_SpawnItemEx("DarkForcesIMMineCoop",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
-      KHAN J 2
-      KHAN I 2
-      KHAN H 2
-	  Goto Ready
-	  
-	AltFire:
-      TNT1 A 0 A_JumpIfInventory("DMModeOn", 1, "DMAltFire")
-	  KHAN B 1
-      KHAN C 1
-      KHAN D 2
-      KHAN E 2
-      TNT1 A 2
-      TNT1 A 0 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
-      TNT1 A 8 A_SpawnItemEx("DarkForcesIMMineProxy",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
-      TNT1 A 0 A_JumpIfNoAmmo("ReadyAmmoLess")
-      KHAN F 2
-      KHAN G 2
-      KHAN B 2 A_ReFire
-      Goto Ready
+      Deselect:
+        TNT1 A 0 A_Lower
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"DeselectAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"DeselectAmmo")
+        goto DeselectNoAmmo
 
-	AltFireNoAmmo:
-      TNT1 A 0 A_JumpIfInventory("DMModeOn", 1, "DMAltFireNoAmmo")
-	  KHAN H 2
-	  KHAN I 2
-	  KHAN J 2
-	  TNT1 A 2
-      TNT1 A 0 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
-	  TNT1 A 8 A_SpawnItemEx("DarkForcesIMMineProxy",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
-      KHAN J 2
-      KHAN I 2
-      KHAN H 2
-	  Goto Ready
-	  
-	DMAltFire:
-	  KHAN B 1
-      KHAN C 1
-      KHAN D 2
-      KHAN E 2
-      TNT1 A 2
-      TNT1 A 0 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
-      TNT1 A 8 A_SpawnItemEx("DarkForcesIMMineProxyDM",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
-      TNT1 A 0 A_JumpIfNoAmmo("ReadyAmmoLess")
-      KHAN F 2
-      KHAN G 2
-      KHAN B 2 A_ReFire
-      Goto Ready
+      DeselectNoAmmo:
+        KHAN H 1 A_Lower
+        goto Deselect
 
-	DMAltFireNoAmmo:
-	  KHAN H 2
-	  KHAN I 2
-	  KHAN J 2
-	  TNT1 A 2
-      TNT1 A 0 A_TakeInventory("RocketAmmo", 1, TIF_NOTAKEINFINITE)
-	  TNT1 A 8 A_SpawnItemEx("DarkForcesIMMineProxyDM",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
-      KHAN J 2
-      KHAN I 2
-      KHAN H 2
-	  Goto Ready
+      DeselectAmmo:
+        KHAN B 1 A_Lower
+        goto Deselect
 
-    Spawn:
-      IMIN A -1
-      Stop
-  }
+      Select:
+        TNT1 A 0 A_Raise
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"SelectAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"SelectAmmo")
+        goto SelectNoAmmo
+
+      SelectNoAmmo:
+        KHAN H 1 A_Raise
+        goto Select
+
+      SelectAmmo:
+        KHAN B 1 A_Raise
+        goto Select
+
+      Fire:
+        TNT1 A 0 A_TakeInventory("SamsaraDarkForcesMineSecondaryFiring")
+        goto FireStart
+
+      AltFire:
+        TNT1 A 0 A_GiveInventory("SamsaraDarkForcesMineSecondaryFiring")
+        goto FireStart
+
+      FireStart:
+        KHAN BC 1
+        KHAN DE 2
+        TNT1 A 2
+        TNT1 A 0 A_JumpIfInventory("SamsaraDarkForcesMineSecondaryFiring",1,2)
+        TNT1 A 0 A_GiveInventory("SamsaraDarkForcesMinePrimaryAttackHandler")
+        goto FireFinish
+        TNT1 A 0 A_GiveInventory("SamsaraDarkForcesMineSecondaryAttackHandler")
+        goto FireFinish
+
+      FireFinish:
+        TNT1 A 8
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+        goto Ready
+        KHAN FG 2
+        KHAN B 2 A_ReFire
+        goto Ready
+
+      FireNoAmmo:
+        KHAN HIJ 2
+        TNT1 A 2
+        TNT1 A 0 A_JumpIfInventory("SamsaraDarkForcesMineSecondaryFiring",1,2)
+        TNT1 A 0 A_GiveInventory("SamsaraDarkForcesMinePrimaryAttackHandler")
+        goto FireNoAmmoFinish
+        TNT1 A 0 A_GiveInventory("SamsaraDarkForcesMineSecondaryAttackHandler")
+        goto FireNoAmmoFinish
+
+      FireNoAmmoFinish:
+        TNT1 A 8
+        KHAN JIH 2
+        goto Ready
+    }
 }
 
-Actor DarkForcesIMMine
+actor SamsaraDarkForcesMinePrimaryAttackHandler : Trigger
 {
-	Radius      8
-	Height      5
-	Damage      (0)
-	Mass        100000
-	Scale		0.75
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_SpawnItemEx("DarkForcesIMMine",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_SpawnItemEx("DarkForcesIMMineCoop",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
+        stop
+    }
+}
+
+actor SamsaraDarkForcesMineSecondaryAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_SpawnItemEx("DarkForcesIMMineProxyDM",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_SpawnItemEx("DarkForcesIMMineProxy",0,0,0,0,0,0,0,SXF_SETMASTER|SXF_NOCHECKPOSITION)
+        stop
+    }
+}
+
+actor DarkForcesIMMine
+{
+    Projectile
+    Radius 8
+    Height 5
+    Damage (0)
+    DamageType "Explosive"
+    Mass 100000
+    Scale 0.75
     Tag "I.M. Mine"
-	PROJECTILE
-	-NOGRAVITY
-	-NOBLOCKMAP
-	-MISSILE
+    Obituary "%o tripped %k's I.M. mine."
+    +FORCERADIUSDMG
+    -MISSILE
     +MOVEWITHSECTOR
+    -NOBLOCKMAP
+    -NOGRAVITY
+    States
+    {
+      Spawn:
+        PMIN B 105 NoDelay A_PlaySound("katarn/minplce",CHAN_VOICE)
+        TNT1 A 0 A_PlaySound("katarn/exmiss",CHAN_VOICE)
+        TNT1 A 0 A_SpawnItemEx("explosion_immine",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 1 A_Explode(200,200)
+        stop
+    }
+}
+
+actor DarkForcesIMMineCoop : DarkForcesIMMine
+{
+    Species "Player"
+    +THRUSPECIES
+}
+
+actor DarkForcesIMMineProxy : DarkForcesIMMine
+{
+    +ISMONSTER
+    +LOOKALLAROUND
     +NEVERTARGET
-	+FORCERADIUSDMG
-	Obituary              "%k tripped %o's I.M. mine."
-	States
-	{
-	Spawn:
-      PMIN B 0 NoDelay A_PlaySound("katarn/minplce", CHAN_BODY)
-	  PMIN B 105
-      TNT1 A 0 A_PlaySound("katarn/exmiss",6,1.0,0,ATTN_NORM)
-      TNT1 A 0 A_AlertMonsters
-	  TNT1 A 0 BRIGHT A_Explode(200,200)
-      TNT1 A 5 A_SpawnItemEx("explosion_immine",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
-      Stop
-  }
+    +QUICKTORETALIATE
+    States
+    {
+      Spawn:
+        PMIN B 0 NoDelay A_PlaySound("katarn/minplce",CHAN_VOICE)
+        PMIN B 0 A_TransferPointer(AAPTR_TRACER,AAPTR_DEFAULT,AAPTR_TARGET,AAPTR_MASTER)
+        PMIN B 35 A_CopyFriendliness(AAPTR_MASTER)
+      SpawnLoop:
+        PMIN B 1 A_LookEx(0,0,96,96,0,"Death")
+        loop
+
+      Death:
+        PMIN B 35 A_PlaySound("katarn/minbeep",CHAN_VOICE)
+        TNT1 A 0 A_TransferPointer(AAPTR_TARGET,AAPTR_DEFAULT,AAPTR_MASTER,AAPTR_TARGET)
+      DeathFinish:
+        TNT1 A 0 A_PlaySound("katarn/exmiss",CHAN_VOICE)
+        TNT1 A 0 A_SpawnItemEx("explosion_immine",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 1 A_Explode(200,200)
+        stop
+    }
 }
 
-Actor DarkForcesIMMineCoop : DarkForcesIMMine { +THRUSPECIES +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES Species "Player" }
-
-Actor DarkForcesIMMineProxy
+actor DarkForcesIMMineProxyDM : DarkForcesIMMineProxy
 {
-	Radius      8
-	Height      5
-	Damage      (0)
-	Mass        100000
-	Scale		0.75
-    Tag "I.M. Mine"
-	PROJECTILE
-	-NOGRAVITY
-	-NOBLOCKMAP
-	-MISSILE
-	-COUNTKILL
-	-SHOOTABLE
-	+ISMONSTER
-    +MOVEWITHSECTOR
-    +NEVERTARGET
-	+FORCERADIUSDMG
-	+LOOKALLAROUND
-	+QUICKTORETALIATE
-	Obituary              "%k tripped %o's I.M. mine."
-	States
-	{
-	Spawn:
-      PMIN B 0 NoDelay A_PlaySound("katarn/minplce", CHAN_BODY)
-	  PMIN B 0 A_TransferPointer(AAPTR_TRACER,AAPTR_DEFAULT,AAPTR_TARGET,AAPTR_MASTER)
-	  PMIN B 0 A_CopyFriendliness(AAPTR_MASTER)
-	  PMIN B 35
-	SpawnLoop:
-	  PMIN B 1 A_LookEx(0, 0, 96, 96, 0, "Death")
-	  Loop
-    Death:
-	  PMIN B 35 A_PlaySound("katarn/minbeep",6,1.0,0,ATTN_NORM)
-	  TNT1 A 0 A_TransferPointer(AAPTR_TARGET,AAPTR_DEFAULT,AAPTR_MASTER,AAPTR_TARGET)
-	  TNT1 A 0 A_PlaySound("katarn/exmiss",6,1.0,0,ATTN_NORM)
-      TNT1 A 0 A_AlertMonsters
-	  TNT1 A 0 BRIGHT A_Explode(200,200)
-      TNT1 A 5 A_SpawnItemEx("explosion_immine",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
-      Stop
-  }
+    -ISMONSTER
+    States
+    {
+      Spawn:
+        PMIN B 35 NoDelay A_PlaySound("katarn/minplce",CHAN_VOICE)
+        goto SpawnLoop
+
+      Death:
+        PMIN B 35 A_PlaySound("katarn/minbeep",CHAN_VOICE)
+        goto DeathFinish
+    }
 }
 
-Actor DarkForcesIMMineProxyDM : DarkForcesIMMineProxy
+actor explosion_immine
 {
-	-ISMONSTER
-	States
-	{
-	Spawn:
-      PMIN B 0 NoDelay A_PlaySound("katarn/minplce", CHAN_BODY)
-	  PMIN B 35
-	SpawnLoop:
-	  PMIN B 1 A_LookEx(0, 0, 96, 96, 0, "Death")
-	  Loop
-    Death:
-	  PMIN B 35 A_PlaySound("katarn/minbeep",6,1.0,0,ATTN_NORM)
-	  TNT1 A 0 A_PlaySound("katarn/exmiss",6,1.0,0,ATTN_NORM)
-      TNT1 A 0 A_AlertMonsters
-	  TNT1 A 0 BRIGHT A_Explode(200,200)
-      TNT1 A 5 A_SpawnItemEx("explosion_immine",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
-      Stop
-	}
-}
-
-ACTOR explosion_immine
-{
-  Radius  6
-  Height  6
-  Scale   1.0
-  +NOGRAVITY
-  +CLIENTSIDEONLY
-  +NOINTERACTION
-  States
-  {
-    Spawn:
-      EXML A 0
-      EXML AB 2
-      EXML CDE 2 BRIGHT
-      EXML FGHIJKLM 2
-      Stop
-  }
+    Radius 6
+    Height 6
+    +CLIENTSIDEONLY
+    +NOINTERACTION
+    States
+    {
+      Spawn:
+        EXML AB 2
+        EXML CDE 2 Bright
+        EXML FGHIJKLM 2
+        stop
+    }
 }

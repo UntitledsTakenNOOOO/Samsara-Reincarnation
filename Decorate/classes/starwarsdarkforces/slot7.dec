@@ -1,238 +1,258 @@
-Actor "Assault Cannon" : Weapon
+actor "Assault Cannon" : SamsaraDarkForcesWeapon
 {
-  Weapon.SelectionOrder 2800
-  Weapon.BobStyle		Inverse
-  Weapon.BobSpeed		1.05
-  Weapon.BobRangeX	  	1.0
-  Weapon.BobRangeY	  	0.55   
-  Weapon.AmmoType1      "Shell"
-  Weapon.AmmoType2      "RocketAmmo"
-  Weapon.AmmoUse1       1
-  Weapon.AmmoUse2       3
-  Weapon.AmmoGive1      80
-  Weapon.AmmoGive2      10
-  Weapon.UpSound        "katarn/wepslct"
-  Obituary              "%k destroyed %o with the Assault Cannon."
-  +INVENTORY.UNDROPPABLE
-  +WEAPON.BFG
-  -WEAPON.NOAUTOAIM
-  -WEAPON.NOAUTOFIRE
-  Inventory.RestrictedTo "KatarnPlayer"
-  Tag "Assault Cannon"
-  States
-  {
-    Ready:
-      KASS A 2 A_WeaponReady
-      loop
+    Inventory.PickupMessage "Assault Cannon"
+    Weapon.UpSound "katarn/wepslct"
+    Weapon.SlotNumber 7
+    Weapon.SelectionOrder 2800
+    Weapon.AmmoType1 "Shell"
+    Weapon.AmmoGive1 80
+    Weapon.AmmoUse1 1
+    Weapon.AmmoType2 "RocketAmmo"
+    Weapon.AmmoGive2 10
+    Weapon.AmmoUse2 3
+    Obituary "%k destroyed %o with the Assault Cannon."
+    Tag "Assault Cannon"
+    +ALT_AMMO_OPTIONAL
+    +BFG
+    +EXPLOSIVE
+    +NOALERT
+    //+NOAUTOFIRE
+    States
+    {
+      Spawn:
+        IASS Z -1
+        stop
 
-    Deselect:
-      TNT1 A 0 A_Lower
-      KASS A 1 A_Lower
-      loop
+      Ready:
+        KASS A 1 A_WeaponReady
+        loop
 
-    Select:
-      TNT1 A 0 A_Raise
-      KASS A 1 A_Raise
-      loop
+      Deselect:
+        TNT1 A 0 A_Lower
+        KASS A 1 A_Lower
+        loop
 
-    Fire:
-      TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"FastFire")
-	  TNT1 A 0 A_JumpIfInventory("KatarnFireRateUp",1,"FastFire")
-      TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFire")
-      TNT1 A 0 A_PlayWeaponSound("katarn/assshot")
-      KASS B 0 A_FireCustomMissile("plasma_shot",0,1,8,0,0,0) 
-      KASS B 5 BRIGHT A_GunFlash
-      KASS B 2
-      KASS A 2 A_Refire
-      Goto Ready
+      Select:
+        TNT1 A 0 A_Raise
+        KASS A 1 A_Raise
+        loop
 
-    CoopFire:
-      TNT1 A 0 A_PlayWeaponSound("katarn/assshot")
-      KASS B 0 A_FireCustomMissile("plasma_shot2",0,1,8,0,0,0) 
-      KASS B 5 BRIGHT A_GunFlash
-      KASS B 2
-      KASS A 2 A_Refire
-      Goto Ready
+      Fire:
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"FireFast")
+        TNT1 A 0 A_JumpIfInventory("KatarnFireRateUp",1,"FireFast")
+      FireNormal:
+        TNT1 A 0 A_GunFlash
+        KASS B 5 Bright A_GiveInventory("SamsaraDarkForcesAssaultCannonPrimaryAttackHandler")
+        KASS B 2
+        KASS A 2 A_ReFire
+        goto Ready
 
-    Altfire:
-      TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"FastAltFire")
-	  TNT1 A 0 A_JumpIfInventory("KatarnFireRateUp",1,"FastAltFire")
-      TNT1 A 0 A_JumpIfInventory("RocketAmmo", 1, "AltFire2")
-      KASS A 40 A_PlayWeaponSound("katarn/repempt")
-      Goto Ready
+      FireFast:
+        TNT1 A 0 A_GunFlash
+        KASS B 3 Bright A_GiveInventory("SamsaraDarkForcesAssaultCannonPrimaryAttackHandler")
+        KASS B 1
+        KASS A 1 A_ReFire
+        goto Ready
 
-    AltFire2:
-      TNT1 A 0 A_GiveInventory("plasma_alt",1)
-      TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "AltFire3")
-      KASS C 7 BRIGHT
-	  KASS D 0 A_PlayWeaponSound("katarn/asssho2")
-      KASS D 0 A_FireCustomMissile("assault_missile",0,1,8,2)
-      KASS D 22 BRIGHT A_GunFlash
-	  KASS A 1 BRIGHT
-      KASS A 13
-	  KASS A 2 A_Refire
-      Goto Ready 
-	AltFire3:
-      KASS C 7 BRIGHT
-	  KASS D 0 A_PlayWeaponSound("katarn/asssho2")
-      KASS D 0 A_FireCustomMissile("assault_missile2",0,1,8,2)
-      KASS D 22 BRIGHT A_GunFlash
-	  KASS A 1 BRIGHT
-      KASS A 13
-	  KASS A 2 A_Refire
-      Goto Ready
+      AltFire:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireStart")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",3,"AltFireStart")
+        goto AltFireDry
 
-    FastFire:
-      TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "CoopFastFire")
-      TNT1 A 0 A_PlayWeaponSound("katarn/assshot")
-      KASS B 0 A_FireCustomMissile("plasma_shot",0,1,8,0,0,0) 
-      KASS B 3 BRIGHT A_GunFlash
-      KASS B 1
-      KASS A 1 A_Refire
-      Goto Ready
+      AltFireDry:
+        TNT1 A 0 A_ClearReFire
+        TNT1 A 0 A_PlaySound("katarn/repempt",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"AltFireDryFast")
+        TNT1 A 0 A_JumpIfInventory("KatarnFireRateUp",1,"AltFireDryFast")
+      AltFireDryNormal:
+        KASS A 40
+        goto Ready
 
-    CoopFastFire:
-      TNT1 A 0 A_PlayWeaponSound("katarn/assshot")
-      KASS B 0 A_FireCustomMissile("plasma_shot2",0,1,8,0,0,0) 
-      KASS B 3 BRIGHT A_GunFlash
-      KASS B 1
-      KASS A 1 A_Refire
-      Goto Ready
+      AltFireDryFast:
+        KASS A 20
+        goto Ready
 
-    FastAltfire:
-      TNT1 A 0 A_JumpIfInventory("RocketAmmo", 1, "FastAltFire2")
-      KASS A 20 A_PlayWeaponSound("katarn/repempt")
-      Goto Ready
+      AltFireStart:
+        TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"AltFireFast")
+        TNT1 A 0 A_JumpIfInventory("KatarnFireRateUp",1,"AltFireFast")
+      AltFireNormal:
+        KASS C 7 Bright
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",3,1)
+        goto AltFireNormalContinue
+        TNT1 A 0 A_GunFlash
+        goto AltFireNormalContinue
 
-    FastAltFire2:
-      TNT1 A 0 A_GiveInventory("plasma_alt",1)
-      TNT1 A 0 A_JumpIfInventory("CoopModeOn", 1, "FastAltFire3")
-      KASS C 4 BRIGHT
-	  KASS D 0 A_PlayWeaponSound("katarn/asssho2")
-      KASS D 0 A_FireCustomMissile("assault_missile",0,1,8,2)
-      KASS D 11 BRIGHT A_GunFlash
-	  KASS A 1 BRIGHT
-      KASS A 7
-	  KASS A 1 A_Refire
-      Goto Ready
-	FastAltFire3:
-      KASS C 4 BRIGHT
-	  KASS D 0 A_PlayWeaponSound("katarn/asssho2")
-      KASS D 0 A_FireCustomMissile("assault_missile2",0,1,8,2)
-      KASS D 11 BRIGHT A_GunFlash
-	  KASS A 1 BRIGHT
-      KASS A 7
-	  KASS A 1 A_Refire
-      Goto Ready
+      AltFireNormalContinue:
+        KASS D 22 Bright A_GiveInventory("SamsaraDarkForcesAssaultCannonSecondaryAttackHandler")
+        KASS A 1 Bright
+        KASS A 13
+        KASS A 2 A_ReFire
+        goto Ready
 
-    Flash:
-      TNT1 A 0 A_JumpIfInventory("plasma_alt",1,"AltFlash")
-      Stop
+      AltFireFast:
+        KASS C 4 Bright
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",3,1)
+        goto AltFireFastContinue
+        TNT1 A 0 A_GunFlash
+        goto AltFireFastContinue
 
-    AltFlash:
-      TNT1 A 1 A_Light(2)
-      TNT1 A 1 A_Light(1)
-      TNT1 A 1 A_Light(0)
-      TNT1 A 0 A_TakeInventory("plasma_alt",1)
-      Stop
+      AltFireFastContinue:
+        KASS D 11 Bright A_GiveInventory("SamsaraDarkForcesAssaultCannonSecondaryAttackHandler")
+        KASS A 1 Bright
+        KASS A 7
+        KASS A 1 A_ReFire
+        goto Ready
 
-    Spawn:
-      IASS Z -1
-      stop
-  }
+      AltFlash:
+        TNT1 A 1 A_Light2
+        TNT1 A 1 A_Light1
+        goto LightDone
+    }
 }
 
-ACTOR plasma_alt : Inventory
+actor SamsaraDarkForcesAssaultCannonPrimaryAttackHandler : Trigger
 {
-  Inventory.Amount 1
-  Inventory.MaxAmount 1
-  -INVBAR
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Shell",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("katarn/assshot",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("plasma_shot",0,false,8,0,0,0)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("plasma_shot2",0,false,8,0,0,0)
+        stop
+    }
 }
 
-ACTOR plasma_shot
+actor SamsaraDarkForcesAssaultCannonSecondaryAttackHandler : Trigger
 {
-  Radius      4
-  Height      4
-  Speed       50
-  Damage      (Random(60,85))
-  Damagetype  "DoomPlasma"
-  Obituary              "%k destroyed %o with the Assault Cannon."
-  +STRIFEDAMAGE
-  Scale       0.95
-  PROJECTILE
-  States
-  {
-    Spawn:
-      PASS ABCD 3 BRIGHT
-      Loop
-    
-    Death:
-      TNT1 A 0
-      TNT1 A 0 A_SpawnItemEx("plasma_puff",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
-	  TNT1 A 5 A_PlaySound("katarn/exmort",5,1.0,0,ATTN_NORM)
-      Stop
-  }
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",3,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",3)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("katarn/asssho2",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("assault_missile",0,false,8,2)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("assault_missile2",0,false,8,2)
+        stop
+    }
 }
 
-ACTOR plasma_shot2 : plasma_shot { +THRUSPECIES Species "Player" }
-
-ACTOR plasma_puff : spark_puff
+actor plasma_shot
 {
-  States
-  {
-    Spawn:
-      EXAS A 2 BRIGHT
-      EXAS BC 2 BRIGHT
-      EXAS DEF 2
-      Stop
-  }
+    Projectile
+    Radius 4
+    Height 4
+    Speed 50
+    Damage (random(60,85))
+    DamageType "DoomPlasma"
+    Scale 0.95
+    Obituary "%k destroyed %o with the Assault Cannon."
+    States
+    {
+      Spawn:
+        PASS ABCD 3 Bright
+        loop
+
+      Death:
+        TNT1 A 0 A_PlaySound("katarn/exmort",CHAN_VOICE)
+        TNT1 A 1 A_SpawnItemEx("plasma_puff",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+        stop
+    }
 }
 
-ACTOR assault_missile
+actor plasma_shot2 : plasma_shot
 {
-  Radius  5
-  Height  5
-  Speed   25
-  Damage  (30)
-  Scale   0.85
-  PROJECTILE
-  Obituary              "%o met a worthy opponent in %k. Too worthy."
-  +FORCERADIUSDMG
-  States
-  {
-    Spawn:
-      TNT1 A 0
-      TNT1 A 0 A_PlaySound("katarn/missfly",6,1.0,1,ATTN_NORM)
-	SpawnLoop:  
-      PMIS ABABABA 2 BRIGHT
-	  PMIS B 1 BRIGHT
-      Loop
-    
-    Death:
-      TNT1 A 1 A_StopSound(6)
-      TNT1 A 0 A_SpawnItemEx("assmissile_explosion",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
-      TNT1 A 0 A_PlaySound("katarn/exmiss",5,1.0,0,ATTN_NORM)
-      TNT1 A 5 A_Explode(400,200)
-      Stop
-  }
+    Species "Player"
+    +THRUSPECIES
 }
 
-ACTOR assault_missile2 : assault_missile { +DONTHARMCLASS +DONTHARMSPECIES +MTHRUSPECIES +THRUSPECIES Species "Player" }
-
-ACTOR assmissile_explosion
+actor plasma_puff : spark_puff
 {
-  Radius  6
-  Height  6
-  Scale   2.0
-  +NOGRAVITY
-  +CLIENTSIDEONLY
-  +NOINTERACTION
-  States
-  {
-    Spawn:
-      EXMI A 2 BRIGHT
-      EXMI BC 2 BRIGHT
-      EXMI DEFGHIJKL 2 BRIGHT
-      Stop
-  }
+    States
+    {
+      Spawn:
+        EXAS ABC 2 Bright
+        EXAS DEF 2
+        stop
+    }
+}
+
+actor assault_missile
+{
+    Projectile
+    Radius 5
+    Height 5
+    Speed 25
+    Damage (30)
+    DamageType "Explosive"
+    Scale 0.85
+    Obituary "%o met a worthy opponent in %k. Too worthy."
+    +FORCERADIUSDMG
+    States
+    {
+      Spawn:
+        PMIS A 2 Bright NoDelay A_PlaySound("katarn/missfly",CHAN_VOICE,1.0,true)
+        PMIS BABABA 2 Bright
+        PMIS B 1 Bright
+        loop
+
+      Death:
+        TNT1 A 0 A_PlaySound("katarn/exmiss",CHAN_VOICE)
+        TNT1 A 0 A_SpawnItemEx("assmissile_explosion",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+        TNT1 A 1 A_Explode(400,200)
+        stop
+    }
+}
+
+actor assault_missile2 : assault_missile
+{
+    Species "Player"
+    +THRUSPECIES
+}
+
+actor assmissile_explosion
+{
+    Radius 6
+    Height 6
+    Scale 2
+    +CLIENTSIDEONLY
+    +NOINTERACTION
+    States
+    {
+      Spawn:
+        EXMI ABC 2 Bright
+        EXMI DEFGHIJKL 2 Bright
+        stop
+    }
 }
