@@ -37,7 +37,7 @@ Actor BondWatchUIDeinit : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor BondWatchActivate : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor BondZoomToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor BondZoomAmount : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 20 }
-Actor BondZoomAmountModifyTerminate : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
+Actor BondZoomAmountModifyActive : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor BondAltToggle : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 2 }
 Actor BondPitchTokens : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 32768 }
 Actor BondAngleTokens : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 131072 }
@@ -61,50 +61,52 @@ Actor BondSecondaryToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor BondWeapons : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 12 }
 Actor BondDualiesToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 10 }
 
-Actor Goldeneye_BulletTracer : FastProjectile
+actor Goldeneye_BulletTracer : FastProjectile
 {
-	Projectile
-	Speed 64
-	Damage (0)
-	Height 4
-	Radius 2
-	Renderstyle Add
-	Alpha 0.5
-	Decal "Goldeneye_BulletChip"
-	var int user_damage;
-	DamageType "GEBullet"
-	ExplosionDamage 0
-	+NOEXTREMEDEATH
-	+HITTRACER
-	+FORCERADIUSDMG
-	+NODAMAGETHRUST
-	+DONTBLAST
-	+NOTIMEFREEZE
-	States
-	{
-		Spawn:
-			GE00 A 1 Bright
-			loop
-		Death:
-			TNT1 A 0 A_Playsound("Goldeneye/Ricochet", CHAN_5)
-			TNT1 AAAAAAAA 0 A_SpawnItemEx("Goldeneye_Debris", Random(-1, 1), Random(-1, 1), Random(-1, 1), Random(-1, 1), Random(-1, 1), Random(-1, 1), Random(-360, 360), SXF_NOCHECKPOSITION)
-			TNT1 A 3 A_SpawnItemEx("Goldeneye_BulletImpact", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION)
-			Stop
-		XDeath:
-			TNT1 A 0 A_Explode(CallACS("BondHitBox",user_damage),8,!XF_HURTSOURCE,0,8)
-			TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraBloodGeneratorOffsets")
-			TNT1 A 0 A_GiveInventory("GE_BloodGenerator",1,AAPTR_TRACER)
-			TNT1 A 3 A_ReArrangePointers(AAPTR_TRACER,AAPTR_NULL,AAPTR_NULL)
-			Stop
-		Crash:
-			TNT1 A 0 A_Playsound("Goldeneye/Ricochet", CHAN_5)
-			TNT1 AAAAAAAA 0 A_SpawnItemEx("Goldeneye_Debris", Random(-1, 1), Random(-1, 1), Random(-1, 1), Random(-1, 1), Random(-1, 1), Random(-1, 1), Random(-360, 360), SXF_NOCHECKPOSITION)
-			TNT1 A 3 A_SpawnItemEx("Goldeneye_BulletImpact_Smokeless", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION)
-			Stop
-	}
+    var int user_damage;
+    Projectile
+    Radius 2
+    Height 4
+    Speed 64
+    Damage (0)
+    DamageType "GEBullet"
+    RenderStyle "Add"
+    Alpha 0.5
+    Decal "Goldeneye_BulletChip"
+    +DONTBLAST
+    +FORCERADIUSDMG
+    +HITTRACER
+    +NODAMAGETHRUST
+    +NOEXTREMEDEATH
+    +NOTIMEFREEZE
+    States
+    {
+      Spawn:
+        GE00 A -1 Bright
+        stop
+
+      Death:
+        TNT1 A 0 A_PlaySound("Goldeneye/Ricochet")
+        TNT1 AAAAAAAA 0 A_SpawnItemEx("Goldeneye_Debris",random(-1,1),random(-1,1),random(-1,1),random(-1,1),random(-1,1),random(-1,1),random(-360,360),SXF_NOCHECKPOSITION)
+        TNT1 A 1 A_SpawnItemEx("Goldeneye_BulletImpact",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+        stop
+
+      XDeath:
+        TNT1 A 0 A_Explode(CallACS("BondHitBox", user_damage),8,0,false,8)
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraBloodGeneratorOffsets")
+        TNT1 A 0 A_GiveInventory("GE_BloodGenerator",1,AAPTR_TRACER)
+        TNT1 A 1 A_RearrangePointers(AAPTR_TRACER,AAPTR_NULL,AAPTR_NULL)
+        stop
+
+      Crash:
+        TNT1 A 0 A_PlaySound("Goldeneye/Ricochet")
+        TNT1 AAAAAAAA 0 A_SpawnItemEx("Goldeneye_Debris",random(-1,1),random(-1,1),random(-1,1),random(-1,1),random(-1,1),random(-1,1),random(-360,360),SXF_NOCHECKPOSITION)
+        TNT1 A 1 A_SpawnItemEx("Goldeneye_BulletImpact_Smokeless",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+        stop
+    }
 }
 
-Actor Goldeneye_BulletTracerThruGhost : Goldeneye_BulletTracer { +THRUGHOST }
+actor Goldeneye_BulletTracerThruGhost : Goldeneye_BulletTracer { +THRUGHOST }
 
 Actor Goldeneye_BulletImpact
 {
