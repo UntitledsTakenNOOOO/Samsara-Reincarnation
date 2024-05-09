@@ -177,7 +177,7 @@ Actor RTCW_Panzerfaust : RTCW_Weapon
 			goto FireDry
 
 		FireDry:
-			RW00 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"FireDrySoundEnemyTerritory")
+			TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"FireDrySoundEnemyTerritory")
 			TNT1 A 0 A_ClearReFire
 			TNT1 A 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
 			TNT1 A 0 A_GunFlash("FireDryFlash",GFF_NOEXTCHANGE)
@@ -254,8 +254,21 @@ Actor RTCW_Panzerfaust : RTCW_Weapon
 			goto ReadyActualNoAmmoCheck
 
 		FireContinueLastNoAmmo:
+			RW00 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"FireContinueLastNoAmmoSoundEnemyTerritory")
 			RW02 C 0 A_PlaySound("RTCW/NoAmmo",CHAN_5)
 			RW02 C 0 A_PlaySound("RTCW/Change",CHAN_7)
+			RW02 C 0 A_GunFlash("FireFlashLastNoAmmo")
+			RW02 C 0 A_GiveInventory("SamsaraRTCWPanzerfaustAttackHandler")
+			RW02 CDEFGHIJK 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+			RW02 L 0
+			TNT1 AAAAAAAAAAAAAAAAAA 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE) // "LMNOPQRSTUVWXYZ[\]"
+			TNT1 AAAAAAAAAAAAA 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE) // ABCDEFGHIJKLM
+			TNT1 A 0 A_SelectWeapon("RTCW_Luger")
+			goto DeselectInstant
+
+		FireContinueLastNoAmmoSoundEnemyTerritory:
+			RW02 C 0 A_PlaySound("RTCWET/NoAmmo",CHAN_5)
+			RW02 C 0 A_PlaySound("RTCWET/Change",CHAN_7)
 			RW02 C 0 A_GunFlash("FireFlashLastNoAmmo")
 			RW02 C 0 A_GiveInventory("SamsaraRTCWPanzerfaustAttackHandler")
 			RW02 CDEFGHIJK 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
@@ -333,28 +346,48 @@ actor SamsaraRTCWPanzerfaustAttackHandler : Trigger
 	Pickup:
 		TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"PickupReloadable")
 	PickupNonReloadable:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupSound")
 		TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
 		stop
 		TNT1 A 0 A_TakeInventory("RocketAmmo",1)
-		goto PickupAttack
+		goto PickupSound
 	PickupReloadable:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupSound")
 		TNT1 A 0 A_JumpIfInventory("RTCW_PanzerfaustMagazine",1,1)
 		stop
 		TNT1 A 0 A_TakeInventory("RTCW_PanzerfaustMagazine",1)
+		goto PickupSound
+
+	// Sound stuff
+	PickupSound:
+		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupSoundEnemyTerritory")
+		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupSoundConsole")
+		TNT1 A 0 A_PlaySound("RTCW/Panzerfaust/Fire",CHAN_WEAPON)
+		goto PickupAttack
+	PickupSoundConsole:
+		TNT1 A 0 A_PlaySound("RTCWConsole/Panzerfaust/Fire",CHAN_WEAPON)
+		goto PickupAttack
+	PickupSoundEnemyTerritory:
+		TNT1 A 0 A_PlaySound("RTCWET/Panzerfaust/Fire",CHAN_WEAPON)
 		goto PickupAttack
 
 	// Attack stuff
 	PickupAttack:
-		TNT1 A 0 A_PlaySound("RTCW/Panzerfaust/Fire",CHAN_WEAPON)
 		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackDMSoundEnemyTerritory")
 	PickupAttackDM:
 		TNT1 A 0 A_FireCustomMissile("RTCW_PanzerfaustRocket",0,false,8,5)
 		goto PickupFinish
+	PickupAttackDMSoundEnemyTerritory:
+		TNT1 A 0 A_FireCustomMissile("RTCW_PanzerfaustRocketSoundET",0,false,8,5)
+		goto PickupFinish
 	PickupAttackCoop:
+		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackCoopSoundEnemyTerritory")
 		TNT1 A 0 A_FireCustomMissile("RTCW_PanzerfaustRocketCoop",0,false,8,5)
+		goto PickupFinish
+	PickupAttackCoopSoundEnemyTerritory:
+		TNT1 A 0 A_FireCustomMissile("RTCW_PanzerfaustRocketCoopSoundET",0,false,8,5)
 		goto PickupFinish
 
 	// Finishing stuff
@@ -405,6 +438,31 @@ Actor RTCW_PanzerfaustRocket
 }
 
 Actor RTCW_PanzerfaustRocketCoop : RTCW_PanzerfaustRocket { +THRUSPECIES Species "Player" }
+
+Actor RTCW_PanzerfaustRocketSoundET : RTCW_PanzerfaustRocket
+{
+	States
+	{
+		Spawn:
+			RW00 A 0 NoDelay A_PlaySound("RTCWET/Panzerfaust/Fly",CHAN_5,0.5,1)
+			RW00 A 0 ACS_NamedExecuteWithResult("RTCW_SpawnRocketFlare")
+		SpawnLoop:
+			RW00 A 1
+			Loop
+		Crash:
+		Death:
+		XDeath:
+			RW00 AAAA 0 A_SpawnItemEx("RTCW_PanzerfaustSmokeExplosion",0,0,0,frandom(-0.5,0.5),frandom(-0.5,0.5),1)
+			RW00 AAAA 0 A_SpawnItemEx("RTCW_ExplosionSmokeDebris")
+			RW00 A 0 A_Quake(3,15,0,128,"")
+			RW00 A 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1,AAPTR_Target)
+			RW00 A 0 A_Explode(300,120,XF_HURTSOURCE,1,0)
+			TNT1 A 15 A_SpawnItemEx("RTCW_PanzerfaustRocketExplosionSoundET")
+			Stop
+	}
+}
+
+Actor RTCW_PanzerfaustRocketCoopSoundET : RTCW_PanzerfaustRocketSoundET { +THRUSPECIES Species "Player" }
 
 Actor RTCW_PanzerfaustShell : RTCW_Casing
 {
@@ -478,6 +536,21 @@ actor RTCW_PanzerfaustRocketExplosion : RTCW_GrenadeExplosion
         TNT1 A 0 A_PlaySound("RTCW/Panzerfaust/Explode",CHAN_VOICE)
         goto SpawnFinish
         TNT1 A 0 A_PlaySound("RTCW/Panzerfaust/ExplodeUnderwater",CHAN_VOICE)
+        goto SpawnFinish
+    }
+}
+
+actor RTCW_PanzerfaustRocketExplosionSoundET : RTCW_PanzerfaustRocketExplosion
+{
+    States
+    {
+      Spawn:
+        //We have to duplicate the sprites because of a zandronum bug
+        RW06 A 0 Bright NoDelay A_Quake(3,15,0,256,"")
+        TNT1 A 0 A_JumpIf(waterlevel > 0, 2)
+        TNT1 A 0 A_PlaySound("RTCWET/Panzerfaust/Explode",CHAN_VOICE)
+        goto SpawnFinish
+        TNT1 A 0 A_PlaySound("RTCWET/Panzerfaust/ExplodeUnderwater",CHAN_VOICE)
         goto SpawnFinish
     }
 }
