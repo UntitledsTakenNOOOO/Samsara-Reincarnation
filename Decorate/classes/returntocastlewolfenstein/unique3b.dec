@@ -180,22 +180,38 @@ actor SamsaraRTCWPineappleAttackHandler : Trigger
 	{
 	// Ammo checking/taking stuff
 	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupSound")
 		TNT1 A 0 A_JumpIfInventory("RTCW_AlliedAmmo3",1,1)
 		stop
 		TNT1 A 0 A_TakeInventory("RTCW_AlliedAmmo3",1)
 		goto PickupAttack
 
+	// Sound stuff
+	PickupSound:
+		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupSoundEnemyTerritory")
+		TNT1 A 0 A_PlaySound("RTCW/Grenade/Throw",CHAN_WEAPON)
+		goto PickupAttack
+	PickupSoundEnemyTerritory:
+		TNT1 A 0 A_PlaySound("RTCWET/Grenade/Throw",CHAN_WEAPON)
+		goto PickupAttack
+
 	// Attack stuff
 	PickupAttack:
-		TNT1 A 0 A_PlaySound("RTCW/Grenade/Throw",CHAN_WEAPON)
 		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackDMSoundEnemyTerritory")
 	PickupAttackDM:
 		TNT1 A 0 A_FireCustomMissile("RTCW_PineappleProjectile",0,false,8,4)
 		stop
+	PickupAttackDMSoundEnemyTerritory:
+		TNT1 A 0 A_FireCustomMissile("RTCW_PineappleProjectileSoundET",0,false,8,4)
+		stop
 	PickupAttackCoop:
+		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackCoopSoundEnemyTerritory")
 		TNT1 A 0 A_FireCustomMissile("RTCW_PineappleProjectileCoop",0,false,8,4)
+		stop
+	PickupAttackCoopSoundEnemyTerritory:
+		TNT1 A 0 A_FireCustomMissile("RTCW_PineappleProjectileCoopSoundET",0,false,8,4)
 		stop
 	}
 }
@@ -216,11 +232,19 @@ actor SamsaraRTCWPineappleOvercookAttackHandler : Trigger
 	PickupAttack:
 		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
 		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackDMSoundEnemyTerritory")
 	PickupAttackDM:
 		TNT1 A 0 A_FireCustomMissile("RTCW_PineappleProjectile",0,false,8,4)
 		stop
+	PickupAttackDMSoundEnemyTerritory:
+		TNT1 A 0 A_FireCustomMissile("RTCW_PineappleProjectileSoundET",0,false,8,4)
+		stop
 	PickupAttackCoop:
+		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackCoopSoundEnemyTerritory")
 		TNT1 A 0 A_FireCustomMissile("RTCW_PineappleProjectileCoop",0,false,8,4)
+		stop
+	PickupAttackCoopSoundEnemyTerritory:
+		TNT1 A 0 A_FireCustomMissile("RTCW_PineappleProjectileCoopSoundET",0,false,8,4)
 		stop
 	}
 }
@@ -272,3 +296,20 @@ Actor RTCW_PineappleProjectile : RTCW_GrenadeProjectile
 }
 
 Actor RTCW_PineappleProjectileCoop : RTCW_PineappleProjectile { +THRUSPECIES Species "Player" }
+
+Actor RTCW_PineappleProjectileSoundET : RTCW_PineappleProjectile
+{
+	BounceSound "RTCWET/Grenade/Bounce"
+	States
+	{
+		Detonate:
+			RW00 AAAA 0 A_SpawnItemEx("RTCW_PanzerfaustSmokeExplosion",0,0,0,frandom(-0.5,0.5),frandom(-0.5,0.5),1)
+			RW00 AAAA 0 A_SpawnItemEx("RTCW_ExplosionSmokeDebris")
+			RW00 A 0 A_GiveInventory("RTCW_BlazkoWeaponAlert",1,AAPTR_Target)
+			RW00 A 0 A_Explode(375,120,XF_HURTSOURCE,1,0) // 80 is too small // [tv50] values may need adjustment. hand detonation was 200,300
+			RW00 A 0 A_SpawnItemEx("RTCW_GrenadeExplosionSoundET")
+			Stop
+	}
+}
+
+Actor RTCW_PineappleProjectileCoopSoundET : RTCW_PineappleProjectileSoundET { +THRUSPECIES Species "Player" }
