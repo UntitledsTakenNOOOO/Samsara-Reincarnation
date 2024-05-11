@@ -119,39 +119,47 @@ Actor RTCW_Flamethrower : RTCW_Weapon
 
 actor SamsaraRTCWFlamethrowerAttackHandler : Trigger
 {
-	States
-	{
-	// Ammo checking/taking stuff
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
-		TNT1 A 0 A_JumpIfInventory("Cell",1,1)
-		stop
-		TNT1 A 0 A_JumpIfInventory("RTCW_FlamethrowerStreamAmmo",0,2)
-		TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerStreamAmmo")
-		goto PickupAttack
-		TNT1 A 0 A_TakeInventory("Cell",1)
-		TNT1 A 0 A_TakeInventory("RTCW_FlamethrowerStreamAmmo")
-		goto PickupAttack
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+        stop
+        TNT1 A 0 A_JumpIfInventory("RTCW_FlamethrowerStreamAmmo",0,2)
+        TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerStreamAmmo")
+        goto PickupAttack
+        TNT1 A 0 A_TakeInventory("Cell",1)
+        TNT1 A 0 A_TakeInventory("RTCW_FlamethrowerStreamAmmo")
+        goto PickupAttack
 
-	// Attack stuff
-	PickupAttack:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
-		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackDMSoundEnemyTerritory")
-	PickupAttackDM:
-		TNT1 A 0 A_FireCustomMissile("RTCW_FlamethrowerFire",frandom(-0.25,0.25),false,4,7,0,frandom(-0.25,0.25))
-		stop
-	PickupAttackDMSoundEnemyTerritory:
-		TNT1 A 0 A_FireCustomMissile("RTCW_FlamethrowerFire",frandom(-0.25,0.25),false,4,7,0,frandom(-0.25,0.25))
-		stop
-	PickupAttackCoop:
-		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackCoopSoundEnemyTerritory")
-		TNT1 A 0 A_FireCustomMissile("RTCW_FlamethrowerFireCoop",frandom(-0.25,0.25),false,4,7,0,frandom(-0.25,0.25))
-		stop
-	PickupAttackCoopSoundEnemyTerritory:
-		TNT1 A 0 A_FireCustomMissile("RTCW_FlamethrowerFireCoop",frandom(-0.25,0.25),false,4,7,0,frandom(-0.25,0.25))
-		stop
-	}
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackET")
+      // Return To Castle Wolfenstein sounds
+      PickupAttackRTCW:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackRTCWCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackRTCWCoop")
+      PickupAttackRTCWDM:
+        TNT1 A 0 A_FireCustomMissile("RTCW_FlamethrowerFire",frandom(-0.25,0.25),false,4,7,0,frandom(-0.25,0.25))
+        goto PickupFinish
+
+      PickupAttackRTCWCoop:
+        TNT1 A 0 A_FireCustomMissile("RTCW_FlamethrowerFireCoop",frandom(-0.25,0.25),false,4,7,0,frandom(-0.25,0.25))
+        goto PickupFinish
+
+      // Wolfenstein: Enemy Territory sounds
+      PickupAttackET:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackETCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackETCoop")
+      PickupAttackETDM:
+        TNT1 A 0 A_FireCustomMissile("RTCW_FlamethrowerFireSoundET",frandom(-0.25,0.25),false,4,7,0,frandom(-0.25,0.25))
+        goto PickupFinish
+
+      PickupAttackETCoop:
+        TNT1 A 0 A_FireCustomMissile("RTCW_FlamethrowerFireCoopSoundET",frandom(-0.25,0.25),false,4,7,0,frandom(-0.25,0.25))
+        goto PickupFinish
+    }
 }
 
 actor SamsaraRTCWFlamethrowerFireStartSoundPlayer : Trigger
@@ -160,11 +168,14 @@ actor SamsaraRTCWFlamethrowerFireStartSoundPlayer : Trigger
     {
       // Sound playing stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupEnemyTerritory")
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupET")
+      // Return To Castle Wolfenstein sounds
+      PickupRTCW:
         TNT1 A 0 A_PlaySound("RTCW/Flamethrower/Start",CHAN_5)
         stop
 
-      PickupEnemyTerritory:
+      // Wolfenstein: Enemy Territory sounds
+      PickupET:
         TNT1 A 0 A_PlaySound("RTCWET/Flamethrower/Start",CHAN_5)
         stop
     }
@@ -172,77 +183,92 @@ actor SamsaraRTCWFlamethrowerFireStartSoundPlayer : Trigger
 
 actor SamsaraRTCWFlamethrowerWeaponSoundStarter : Trigger
 {
-	States
-	{
-	// Sound starting stuff
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupSoundEnemyTerritory")
-		TNT1 A 0 A_PlaySound("RTCW/Flamethrower/Stream",CHAN_WEAPON,1.0,true)
-		TNT1 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerFiringSoundCheck")
-		stop
-	PickupSoundEnemyTerritory:
-		TNT1 A 0 A_PlaySound("RTCWET/Flamethrower/Stream",CHAN_WEAPON,1.0,true)
-		TNT1 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerFiringSoundCheck")
-		stop
-	}
+    States
+    {
+      // Sound playing stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupET")
+      // Return To Castle Wolfenstein sounds
+      PickupRTCW:
+        TNT1 A 0 A_PlaySound("RTCW/Flamethrower/Stream",CHAN_WEAPON,1.0,true)
+        goto PickupFinish
+
+      // Wolfenstein: Enemy Territory sounds
+      PickupET:
+        TNT1 A 0 A_PlaySound("RTCWET/Flamethrower/Stream",CHAN_WEAPON,1.0,true)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerFiringSoundCheck")
+        stop
+    }
 }
 
 actor SamsaraRTCWFlamethrowerWeaponSoundStopper : Trigger
 {
-	States
-	{
-	// Sound stopping stuff
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerFiringSoundCheck",1,1)
-		stop
-		TNT1 A 0 A_PlaySound("silence",CHAN_WEAPON)
-		TNT1 A 0 A_StopSound(CHAN_WEAPON)
-		TNT1 A 0 A_TakeInventory("SamsaraRTCWFlamethrowerFiringSoundCheck")
-		stop
-	}
+    States
+    {
+      // Sound stopping stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerFiringSoundCheck",1,1)
+        stop
+        TNT1 A 0 A_PlaySound("silence",CHAN_WEAPON)
+        TNT1 A 0 A_StopSound(CHAN_WEAPON)
+        TNT1 A 0 A_TakeInventory("SamsaraRTCWFlamethrowerFiringSoundCheck")
+        stop
+    }
 }
 
 actor SamsaraRTCWFlamethrowerNozzleIdleSoundStarter : Trigger
 {
-	States
-	{
-	// Sound starting stuff
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"PickupStopSound") // kill the sound if we're underwater
-		TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerFiringSoundCheck",1,"PickupStopSound") // don't play if we're firing the weapon
-		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupSoundEnemyTerritory")
-		TNT1 A 0 A_PlaySound("RTCW/Flamethrower/Blow",CHAN_6,0.2,true)
-		TNT1 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck")
-		stop
+    States
+    {
+      // Sound starting stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"PickupStopSound") // kill the sound if we're underwater
+        TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerFiringSoundCheck",1,"PickupStopSound") // don't play if we're firing the weapon
+      PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupPlaySoundET")
+      // Return To Castle Wolfenstein sounds
+      PickupPlaySoundRTCW:
+        TNT1 A 0 A_PlaySound("RTCW/Flamethrower/Blow",CHAN_6,0.2,true)
+        goto PickupPlaySoundFinish
 
-	PickupSoundEnemyTerritory:
-		TNT1 A 0 A_PlaySound("RTCWET/Flamethrower/Blow",CHAN_6,0.2,true)
-		TNT1 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck")
-		stop
+      // Wolfenstein: Enemy Territory sounds
+      PickupPlaySoundET:
+        TNT1 A 0 A_PlaySound("RTCWET/Flamethrower/Blow",CHAN_6,0.2,true)
+        goto PickupPlaySoundFinish
 
-	PickupStopSound:
-		TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck",1,1)
-		stop
-		TNT1 A 0 A_PlaySound("silence",CHAN_6)
-		TNT1 A 0 A_StopSound(CHAN_6)
-		TNT1 A 0 A_TakeInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck")
-		stop
-	}
+      // Finishing stuff
+      PickupPlaySoundFinish:
+        TNT1 A 0 A_GiveInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck")
+        stop
+
+      // Sound stopping stuff
+      PickupStopSound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck",1,1)
+        stop
+        TNT1 A 0 A_PlaySound("silence",CHAN_6)
+        TNT1 A 0 A_StopSound(CHAN_6)
+        TNT1 A 0 A_TakeInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck")
+        stop
+    }
 }
 
 actor SamsaraRTCWFlamethrowerNozzleIdleSoundStopper : Trigger
 {
-	States
-	{
-	// Sound stopping stuff
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck",1,1)
-		stop
-		TNT1 A 0 A_PlaySound("silence",CHAN_6)
-		TNT1 A 0 A_StopSound(CHAN_6)
-		TNT1 A 0 A_TakeInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck")
-		stop
-	}
+    States
+    {
+      // Sound stopping stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck",1,1)
+        stop
+        TNT1 A 0 A_PlaySound("silence",CHAN_6)
+        TNT1 A 0 A_StopSound(CHAN_6)
+        TNT1 A 0 A_TakeInventory("SamsaraRTCWFlamethrowerNozzleIdleSoundCheck")
+        stop
+    }
 }
 
 Actor RTCW_FlamethrowerFire : FastProjectile
@@ -266,13 +292,30 @@ Actor RTCW_FlamethrowerFire : FastProjectile
 			Goto Death
 		Death:
 			//TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerEndPoint",0)
-			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_FlamethrowerStreamRotate",16,41)
+			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_FlamethrowerStreamRotate",16,41,0,0)
 			TNT1 A 2
 			stop
 	}
 }
 
 Actor RTCW_FlamethrowerFireCoop : RTCW_FlamethrowerFire { +THRUSPECIES Species "Player" }
+
+Actor RTCW_FlamethrowerFireSoundET : RTCW_FlamethrowerFire
+{
+	States
+	{
+		Spawn:
+			TNT1 A 2
+			Goto Death
+		Death:
+			//TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerEndPointSoundET",0)
+			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_FlamethrowerStreamRotate",16,41,0,2)
+			TNT1 A 2
+			stop
+	}
+}
+
+Actor RTCW_FlamethrowerFireCoopSoundET : RTCW_FlamethrowerFireSoundET { +THRUSPECIES Species "Player" }
 
 Actor RTCW_FlamethrowerEndPoint
 {
@@ -345,6 +388,64 @@ Actor RTCW_FlamethrowerEndPoint
 	}
 }
 
+Actor RTCW_FlamethrowerEndPointCoop : RTCW_FlamethrowerEndPoint
+{
+    Species "Player"
+    +THRUSPECIES
+	States
+	{
+		Spawn:
+		Death:
+			RW03 C 0 NoDelay ACS_NamedExecuteWithResult("RTCW_FlamethrowerFireScale")
+			TNT1 A 0 A_PlaySound("RTCW/Flamethrower/Fire",CHAN_BODY,0.5)
+			RW03 CD 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW03 EF 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW03 GH 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW03 IJ 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW03 KL 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW03 MN 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW03 OP 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW03 QR 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW03 ST 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW03 UV 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW03 WX 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW03 YZ 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW04 AB 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW04 CD 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW04 EF 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW04 GH 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW04 IJ 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW04 KL 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW04 MN 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW04 OP 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW04 QR 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW04 S 2 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoop")
+			RW04 S 0 A_StopSound(CHAN_BODY)
+			Stop
+	}
+}
+
 Actor RTCW_FlamethrowerEndPointSoundET : RTCW_FlamethrowerEndPoint
 {
 	States
@@ -354,48 +455,106 @@ Actor RTCW_FlamethrowerEndPointSoundET : RTCW_FlamethrowerEndPoint
 			RW03 C 0 NoDelay ACS_NamedExecuteWithResult("RTCW_FlamethrowerFireScale")
 			TNT1 A 0 A_PlaySound("RTCWET/Flamethrower/Fire",CHAN_BODY,0.5)
 			RW03 CD 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW03 EF 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW03 GH 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW03 IJ 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW03 KL 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW03 MN 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW03 OP 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW03 QR 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW03 ST 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW03 UV 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW03 WX 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW03 YZ 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW04 AB 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW04 CD 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW04 EF 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW04 GH 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW04 IJ 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW04 KL 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW04 MN 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW04 OP 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
 			RW04 QR 2
-			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
-			RW04 S 2 A_GiveInventory("RTCW_FlamethrowerIgniteShooter")
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
+			RW04 S 2 A_GiveInventory("RTCW_FlamethrowerIgniteShooterSoundET")
+			RW04 S 0 A_StopSound(CHAN_BODY)
+			Stop
+	}
+}
+
+Actor RTCW_FlamethrowerEndPointCoopSoundET : RTCW_FlamethrowerEndPointSoundET
+{
+    Species "Player"
+    +THRUSPECIES
+	States
+	{
+		Spawn:
+		Death:
+			RW03 C 0 NoDelay ACS_NamedExecuteWithResult("RTCW_FlamethrowerFireScale")
+			TNT1 A 0 A_PlaySound("RTCWET/Flamethrower/Fire",CHAN_BODY,0.5)
+			RW03 CD 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW03 EF 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW03 GH 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW03 IJ 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW03 KL 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW03 MN 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW03 OP 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW03 QR 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW03 ST 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW03 UV 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW03 WX 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW03 YZ 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW04 AB 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW04 CD 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW04 EF 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW04 GH 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW04 IJ 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW04 KL 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW04 MN 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW04 OP 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW04 QR 2
+			TNT1 A 0 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
+			RW04 S 2 A_GiveInventory("RTCW_FlamethrowerIgniteShooterCoopSoundET")
 			RW04 S 0 A_StopSound(CHAN_BODY)
 			Stop
 	}
@@ -415,6 +574,60 @@ Actor RTCW_FlamethrowerIgniteShooter : Trigger
 			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracer",-16,0,225,CMF_AIMDIRECTION|CMF_TRACKOWNER)
 			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracer",-16,0,270,CMF_AIMDIRECTION|CMF_TRACKOWNER)
 			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracer",-16,0,315,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			stop
+	}
+}
+
+Actor RTCW_FlamethrowerIgniteShooterCoop : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_SetAngle(5*random(0,6))
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoop",-16,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoop",-16,0,45,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoop",-16,0,90,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoop",-16,0,135,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoop",-16,0,180,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoop",-16,0,225,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoop",-16,0,270,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoop",-16,0,315,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			stop
+	}
+}
+
+Actor RTCW_FlamethrowerIgniteShooterSoundET : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_SetAngle(5*random(0,6))
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerSoundET",-16,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerSoundET",-16,0,45,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerSoundET",-16,0,90,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerSoundET",-16,0,135,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerSoundET",-16,0,180,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerSoundET",-16,0,225,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerSoundET",-16,0,270,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerSoundET",-16,0,315,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			stop
+	}
+}
+
+Actor RTCW_FlamethrowerIgniteShooterCoopSoundET : Trigger
+{
+	States
+	{
+		Pickup:
+			TNT1 A 0 A_SetAngle(5*random(0,6))
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoopSoundET",-16,0,0,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoopSoundET",-16,0,45,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoopSoundET",-16,0,90,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoopSoundET",-16,0,135,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoopSoundET",-16,0,180,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoopSoundET",-16,0,225,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoopSoundET",-16,0,270,CMF_AIMDIRECTION|CMF_TRACKOWNER)
+			TNT1 A 0 A_CustomMissile("RTCW_FlamethrowerIgniteTracerCoopSoundET",-16,0,315,CMF_AIMDIRECTION|CMF_TRACKOWNER)
 			stop
 	}
 }
@@ -443,9 +656,32 @@ Actor RTCW_FlamethrowerIgniteTracer
 			Stop
 		Crash:
 		XDeath:
-			TNT1 A 2 ACS_NamedExecuteWithResult("RTCW_FlamethrowerTracer")
+			TNT1 A 2 ACS_NamedExecuteWithResult("RTCW_FlamethrowerTracer", 0)
 			Stop
 	}
+}
+
+Actor RTCW_FlamethrowerIgniteTracerCoop : RTCW_FlamethrowerIgniteTracer
+{
+    Species "Player"
+    +THRUSPECIES
+}
+
+Actor RTCW_FlamethrowerIgniteTracerSoundET : RTCW_FlamethrowerIgniteTracer
+{
+	States
+	{
+		Crash:
+		XDeath:
+			TNT1 A 2 ACS_NamedExecuteWithResult("RTCW_FlamethrowerTracer", 2)
+			Stop
+	}
+}
+
+Actor RTCW_FlamethrowerIgniteTracerCoopSoundET : RTCW_FlamethrowerIgniteTracerSoundET
+{
+    Species "Player"
+    +THRUSPECIES
 }
 
 Actor RTCW_FlamethrowerBurner
@@ -467,7 +703,7 @@ Actor RTCW_FlamethrowerBurner
 	{
 		Spawn:
 			TNT1 A 0
-			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_BurnHandler")
+			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_BurnHandler", 0)
 		Death:
 			TNT1 A 0 A_SetUserVar("user_radius",CallACS("RTCW_Decorate",45))
 			TNT1 A 0 A_SetUserVar("user_height",CallACS("RTCW_Decorate",45,1))
@@ -511,7 +747,7 @@ Actor RTCW_FlamethrowerBurnerSoundET : RTCW_FlamethrowerBurner
 	{
 		Spawn:
 			TNT1 A 0
-			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_BurnHandler")
+			TNT1 A 0 ACS_NamedExecuteWithResult("RTCW_BurnHandler", 2)
 		Death:
 			TNT1 A 0 A_SetUserVar("user_radius",CallACS("RTCW_Decorate",45))
 			TNT1 A 0 A_SetUserVar("user_height",CallACS("RTCW_Decorate",45,1))
@@ -541,11 +777,6 @@ Actor RTCW_FlamethrowerBurnerSoundET : RTCW_FlamethrowerBurner
 			TNT1 A 0 A_Explode(CallACS("RTCW_Decorate",46),16,!XF_HURTSOURCE,0,16)
 			TNT1 A 1 A_Warp(AAPTR_Tracer,0,0,0,0,WARPF_INTERPOLATE|WARPF_NOCHECKPOSITION)
 			Loop
-		Remove:
-			TNT1 A 0 A_TakeInventory("RTCW_FlamethrowerIgnition",65536,0,AAPTR_Tracer)
-			TNT1 A 0 A_TakeInventory("RTCW_FlamethrowerHitTarget",1,0,AAPTR_Tracer)
-			TNT1 A 0 A_TakeInventory("RTCW_FlamethrowerBurnt",1,0,AAPTR_Tracer)
-			Stop
 	}
 }
 
@@ -617,6 +848,7 @@ Actor RTCW_FlamethrowerFireVisual
 			TNT1 A 0
 			TNT1 A 3
 			RW03 P 0 A_PlaySound("RTCW/Flamethrower/Fire",CHAN_BODY,0.5)
+		SpawnFinish:
 			RW03 PQRSTUVWXYZ 2
 			RW04 ABCDEFGHIJKLMNOPQRS 2
 			RW04 S 0 A_StopSound(CHAN_BODY)
@@ -632,9 +864,6 @@ Actor RTCW_FlamethrowerFireVisualSoundET : RTCW_FlamethrowerFireVisual
 			TNT1 A 0
 			TNT1 A 3
 			RW03 P 0 A_PlaySound("RTCWET/Flamethrower/Fire",CHAN_BODY,0.5)
-			RW03 PQRSTUVWXYZ 2
-			RW04 ABCDEFGHIJKLMNOPQRS 2
-			RW04 S 0 A_StopSound(CHAN_BODY)
-			Stop
+			goto SpawnFinish
 	}
 }

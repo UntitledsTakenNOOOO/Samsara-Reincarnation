@@ -1099,7 +1099,6 @@ Script "RTCW_TeslaAim" (int xory)
 	int a = -randOff*182;
 	int lookAngle;
 	int attacked;
-	int pln = PlayerNumber();
 	if(xory) { lookAngle = (CheckInventory("RTCW_TeslaLookAngle") - amplitude) * 182; }
 	if(CheckInventory("RTCW_TeslaLook") < 5)
 	{
@@ -1112,14 +1111,7 @@ Script "RTCW_TeslaAim" (int xory)
 				{
 					attacked = 1;
 					GiveInventory("RTCW_TeslaLook",1);
-					if (GetUserCvar(pln,"samsara_cl_rtcwsounds") == 1)
-					{
-						LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),50,"RTCW_TeslaZapSoundConsole","RTCWTesla",1024.0);
-					}
-					else
-					{
-						LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),50,"RTCW_TeslaZap","RTCWTesla",1024.0);
-					}
+					LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),50,"RTCW_TeslaZap","RTCWTesla",1024.0);
 					Thing_ChangeTid(newTid,oldTid);
 					SetInventory("RTCW_TeslaLookAngle",a/182 + amplitude);
 					break;
@@ -1221,11 +1213,10 @@ Script "RTCW_TeslaArcing" (int tx, int ty, int tz, int user) clientside
 	SpawnForced("RTCW_TeslaLight", x+segmentx, y+segmenty, z+segmentz, 0);
 }
 
-Script "RTCW_FlamethrowerTracer" (void)
+Script "RTCW_FlamethrowerTracer" (int soundtype)
 {
 	int myOldTid = ActivatorTid();
 	int myTid = UniqueTid();
-	int pln = PlayerNumber();
 	Thing_ChangeTid(0, myTid);
 
 	SetActivator(0,AAPTR_Tracer);
@@ -1250,14 +1241,8 @@ Script "RTCW_FlamethrowerTracer" (void)
 				GiveInventory("RTCW_FlamethrowerBurnt",1);
 				GiveInventory("RTCW_FlamethrowerStacker",1);
 				int burnerTid = UniqueTid();
-				if (GetUserCvar(pln,"samsara_cl_rtcwsounds") == 2)
-				{
-					SpawnForced("RTCW_FlamethrowerBurnerSoundET",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid);
-				}
-				else
-				{
-					SpawnForced("RTCW_FlamethrowerBurner",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid);
-				}
+				if (soundtype >= 2) { SpawnForced("RTCW_FlamethrowerBurnerSoundET",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid); }
+				else { SpawnForced("RTCW_FlamethrowerBurner",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid); }
 				SetActivator(myTid,AAPTR_Target);
 				SetPointerExt(AAPTR_Target,0,burnerTid);
 				SetActivator(myTid,AAPTR_Tracer);
@@ -1298,11 +1283,13 @@ Script "RTCW_FlamethrowerTracer" (void)
 		Thing_ChangeTid(myTid, myOldTid);
 }
 
-Script "RTCW_FlamethrowerStreamRotate" (int space, int height, int user)// clientside
+Script "RTCW_FlamethrowerStreamRotate" (int space, int height, int user, int soundtype) //CLIENTSIDE
 {
 	int t, i, angle, pitch, x, y, z, tx, ty, tz, vx, vy, vz, mag, magI, horz, pitchoffset,angleoffset,relativeAngle,relativePitch;
 	int segmentx, segmenty, segmentz, bendcounter;
 	str segment = "RTCW_FlameStreamSegment";
+    bool isPVEGame = isSinglePlayer() || isCoop();
+
 	switch(user)
 	{
 		case 0: horz = 8; i = 32; break;
@@ -1379,11 +1366,27 @@ Script "RTCW_FlamethrowerStreamRotate" (int space, int height, int user)// clien
 		segmentx += FixedMul(cos(angle+angleoffset)*space,cos(pitch+pitchoffset));
 		segmenty += FixedMul(sin(angle+angleoffset)*space,cos(pitch+pitchoffset));
 		segmentz += sin(pitch+pitchoffset)*space;
-		if(timer() % 2 == 0)
-			SpawnForced("RTCW_FlamethrowerEndPoint", x+segmentx, y+segmenty, z+segmentz, damageTid);
-	}
-	else
-		SpawnForced("RTCW_FlamethrowerEndPoint", tx, ty, tz, damageTid);
+        if (timer() % 2 == 0)
+        {
+            if (isPVEGame)
+            {
+                if (soundtype >= 2) { SpawnForced("RTCW_FlamethrowerEndPointCoopSoundET", x + segmentx, y + segmenty, z + segmentz, damageTid); }
+                else { SpawnForced("RTCW_FlamethrowerEndPointCoop", x + segmentx, y + segmenty, z + segmentz, damageTid); }
+            } else {
+                if (soundtype >= 2) { SpawnForced("RTCW_FlamethrowerEndPointSoundET", x + segmentx, y + segmenty, z + segmentz, damageTid); }
+                else { SpawnForced("RTCW_FlamethrowerEndPoint", x + segmentx, y + segmenty, z + segmentz, damageTid); }
+            }
+        }
+    } else {
+        if (isPVEGame)
+        {
+            if (soundtype >= 2) { SpawnForced("RTCW_FlamethrowerEndPointCoopSoundET", tx, ty, tz, damageTid); }
+            else { SpawnForced("RTCW_FlamethrowerEndPointCoop", tx, ty, tz, damageTid); }
+        } else {
+            if (soundtype >= 2) { SpawnForced("RTCW_FlamethrowerEndPointSoundET", tx, ty, tz, damageTid); }
+            else { SpawnForced("RTCW_FlamethrowerEndPoint", tx, ty, tz, damageTid); }
+        }
+    }
 
 	SetPointerExt(AAPTR_Target,0,damagetid);
 }
@@ -1399,10 +1402,10 @@ Script "RTCW_EnemyBurn" (void)
 	}
 }
 
-Script "RTCW_BurnHandler" (void)
+Script "RTCW_BurnHandler" (int soundtype)
 {
 	int burnAmount;
-	if(ACS_NamedExecuteWithResult("RTCW_BurningOnPlayer"))
+	if(ACS_NamedExecuteWithResult("RTCW_BurningOnPlayer", soundtype))
 	{
 		while(ACS_NamedExecuteWithResult("RTCW_BurningPlayerIsAlive") && ClassifyActor(0) > 1)
 		{
@@ -1426,12 +1429,12 @@ Script "RTCW_BurningPlayerIsAlive" (void)
 		SetResultValue(0);
 }
 
-Script "RTCW_BurningOnPlayer" (void)
+Script "RTCW_BurningOnPlayer" (int soundtype)
 {
 	SetActivator(0,AAPTR_Tracer);
 	if(ClassifyActor(0) & ACTOR_Player || ClassifyActor(0) & ACTOR_Bot)
 	{
-		ACS_NamedExecuteWithResult("RTCW_ScreenBurn");
+		ACS_NamedExecuteWithResult("RTCW_ScreenBurn", soundtype);
 		SetResultValue(1);
 	}
 	else
@@ -1440,18 +1443,11 @@ Script "RTCW_BurningOnPlayer" (void)
 	}
 }
 
-Script "RTCW_ScreenBurn" (void) clientside
+Script "RTCW_ScreenBurn" (int soundtype) CLIENTSIDE
 {
-	int pln = PlayerNumber();
 	SetHudSize(16,16,1);
-	if (GetUserCvar(pln,"samsara_cl_rtcwsounds") == 2)
-	{
-		LocalAmbientSound("RTCWET/Flamethrower/Blow",255);
-	}
-	else
-	{
-		LocalAmbientSound("RTCW/Flamethrower/Blow",255);
-	}
+	if (soundtype >= 2) { LocalAmbientSound("RTCWET/Flamethrower/Blow",127); }
+	else { LocalAmbientSound("RTCW/Flamethrower/Blow",127); }
 	int alpha = 0.5;
 	for(int a = 0; a < 4; a++)
 	{
@@ -1579,7 +1575,7 @@ Script "RTCW_KnifeDamage" (int hint)
 	}
 }
 
-Script "RTCW_BulletDamage" (int damage)
+Script "RTCW_BulletDamage" (int damage, int soundtype)
 {
 	int bulletX = GetActorX(0);
 	int bulletY = GetActorY(0);
@@ -1591,30 +1587,17 @@ Script "RTCW_BulletDamage" (int damage)
 	int monsterHealth = GetActorProperty(0,APROP_Health);
 	int monsterHeight = GetActorProperty(0,APROP_Height);
 	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
-	int pln = PlayerNumber();
 
 	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
 	if(CheckInventory("RTCW_MetalMonster"))
 	{
-		if (GetUserCvar(pln,"samsara_cl_rtcwsounds") == 2)
-		{
-			PlaySound(0,"RTCWET/BulletHitMetal",CHAN_6,0.5,0,ATTN_NORM);
-		}
-		else
-		{
-			PlaySound(0,"RTCW/BulletHitMetal",CHAN_6,0.5,0,ATTN_NORM);
-		}
+		if (soundtype >= 2) { PlaySound(0,"RTCWET/BulletHitMetal",CHAN_6,0.5,0,ATTN_NORM); }
+		else { PlaySound(0,"RTCW/BulletHitMetal",CHAN_6,0.5,0,ATTN_NORM); }
 	}
 	else
 	{
-		if (GetUserCvar(pln,"samsara_cl_rtcwsounds") == 2)
-		{
-			PlaySound(0,"RTCWET/BulletHitFlesh",CHAN_6,0.5,0,ATTN_NORM);
-		}
-		else
-		{
-			PlaySound(0,"RTCW/BulletHitFlesh",CHAN_6,0.5,0,ATTN_NORM);
-		}
+		if (soundtype >= 2) { PlaySound(0,"RTCWET/BulletHitFlesh",CHAN_6,0.5,0,ATTN_NORM); }
+		else { PlaySound(0,"RTCW/BulletHitFlesh",CHAN_6,0.5,0,ATTN_NORM); }
 	}
 
 	if(monsterWidth >= monsterHeight && !CheckInventory("IsFatButBiped"))
