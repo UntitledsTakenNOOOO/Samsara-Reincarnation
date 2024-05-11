@@ -1099,6 +1099,7 @@ Script "RTCW_TeslaAim" (int xory)
 	int a = -randOff*182;
 	int lookAngle;
 	int attacked;
+	int pln = PlayerNumber();
 	if(xory) { lookAngle = (CheckInventory("RTCW_TeslaLookAngle") - amplitude) * 182; }
 	if(CheckInventory("RTCW_TeslaLook") < 5)
 	{
@@ -1111,7 +1112,14 @@ Script "RTCW_TeslaAim" (int xory)
 				{
 					attacked = 1;
 					GiveInventory("RTCW_TeslaLook",1);
-					LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),50,"RTCW_TeslaZap","RTCWTesla",1024.0);
+					if (GetUserCvar(pln,"samsara_cl_rtcwsounds") == 1)
+					{
+						LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),50,"RTCW_TeslaZapSoundConsole","RTCWTesla",1024.0);
+					}
+					else
+					{
+						LineAttack(0,GetActorAngle(0)+(a*!xory)+lookAngle,GetActorPitch(0)+(a*xory),50,"RTCW_TeslaZap","RTCWTesla",1024.0);
+					}
 					Thing_ChangeTid(newTid,oldTid);
 					SetInventory("RTCW_TeslaLookAngle",a/182 + amplitude);
 					break;
@@ -1217,6 +1225,7 @@ Script "RTCW_FlamethrowerTracer" (void)
 {
 	int myOldTid = ActivatorTid();
 	int myTid = UniqueTid();
+	int pln = PlayerNumber();
 	Thing_ChangeTid(0, myTid);
 
 	SetActivator(0,AAPTR_Tracer);
@@ -1241,7 +1250,14 @@ Script "RTCW_FlamethrowerTracer" (void)
 				GiveInventory("RTCW_FlamethrowerBurnt",1);
 				GiveInventory("RTCW_FlamethrowerStacker",1);
 				int burnerTid = UniqueTid();
-				SpawnForced("RTCW_FlamethrowerBurner",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid);
+				if (GetUserCvar(pln,"samsara_cl_rtcwsounds") == 2)
+				{
+					SpawnForced("RTCW_FlamethrowerBurnerSoundET",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid);
+				}
+				else
+				{
+					SpawnForced("RTCW_FlamethrowerBurner",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid);
+				}
 				SetActivator(myTid,AAPTR_Target);
 				SetPointerExt(AAPTR_Target,0,burnerTid);
 				SetActivator(myTid,AAPTR_Tracer);
@@ -1426,8 +1442,16 @@ Script "RTCW_BurningOnPlayer" (void)
 
 Script "RTCW_ScreenBurn" (void) clientside
 {
+	int pln = PlayerNumber();
 	SetHudSize(16,16,1);
-	LocalAmbientSound("RTCW/Flamethrower/Blow",255);
+	if (GetUserCvar(pln,"samsara_cl_rtcwsounds") == 2)
+	{
+		LocalAmbientSound("RTCWET/Flamethrower/Blow",255);
+	}
+	else
+	{
+		LocalAmbientSound("RTCW/Flamethrower/Blow",255);
+	}
 	int alpha = 0.5;
 	for(int a = 0; a < 4; a++)
 	{
@@ -1567,14 +1591,31 @@ Script "RTCW_BulletDamage" (int damage)
 	int monsterHealth = GetActorProperty(0,APROP_Health);
 	int monsterHeight = GetActorProperty(0,APROP_Height);
 	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
+	int pln = PlayerNumber();
 
 	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
 	if(CheckInventory("RTCW_MetalMonster"))
 	{
-		PlaySound(0,"RTCW/BulletHitMetal",CHAN_6,0.5,0,ATTN_NORM);
+		if (GetUserCvar(pln,"samsara_cl_rtcwsounds") == 2)
+		{
+			PlaySound(0,"RTCWET/BulletHitMetal",CHAN_6,0.5,0,ATTN_NORM);
+		}
+		else
+		{
+			PlaySound(0,"RTCW/BulletHitMetal",CHAN_6,0.5,0,ATTN_NORM);
+		}
 	}
 	else
-		PlaySound(0,"RTCW/BulletHitFlesh",CHAN_6,0.5,0,ATTN_NORM);
+	{
+		if (GetUserCvar(pln,"samsara_cl_rtcwsounds") == 2)
+		{
+			PlaySound(0,"RTCWET/BulletHitFlesh",CHAN_6,0.5,0,ATTN_NORM);
+		}
+		else
+		{
+			PlaySound(0,"RTCW/BulletHitFlesh",CHAN_6,0.5,0,ATTN_NORM);
+		}
+	}
 
 	if(monsterWidth >= monsterHeight && !CheckInventory("IsFatButBiped"))
 	{
