@@ -386,15 +386,15 @@ LoWang/Flirt4 "Sounds/ShadowWarrior/Player/SPWAIT15.ogg"
 LoWang/Flirt5 "Sounds/ShadowWarrior/Player/SPWAIT14.ogg"
 LoWang/Flirt6 "Sounds/ShadowWarrior/Player/SPWAIT08.ogg"
 LoWang/Flirt7 "Sounds/ShadowWarrior/Player/SPWAIT07.ogg"
-LoWang/Flirt8 "Sounds/ShadowWarrior/Player/SPTNT54.wav"
+LoWang/Flirt8 "Sounds/ShadowWarrior/Player/SPTNT54.flac"
 LoWang/Flirt9 "Sounds/ShadowWarrior/Player/SPTNT47.ogg"
 LoWang/Flirt10 "Sounds/ShadowWarrior/Player/SPTNT08.ogg"
 
 $random sw/prune/chatter { sw/prune/chatter1 sw/prune/chatter2 sw/prune/chatter3 sw/prune/chatter4 }
-sw/prune/chatter1		"Sounds/ShadowWarrior/Randoms/SW_LANI093.wav"
-sw/prune/chatter2		"Sounds/ShadowWarrior/Randoms/SW_LANI091.wav"
-sw/prune/chatter3		"Sounds/ShadowWarrior/Randoms/SW_LANI089.wav"
-sw/prune/chatter4		"Sounds/ShadowWarrior/Randoms/SW_LANI095.wav"
+sw/prune/chatter1		"Sounds/ShadowWarrior/Randoms/SW_LANI093.flac"
+sw/prune/chatter2		"Sounds/ShadowWarrior/Randoms/SW_LANI091.flac"
+sw/prune/chatter3		"Sounds/ShadowWarrior/Randoms/SW_LANI089.flac"
+sw/prune/chatter4		"Sounds/ShadowWarrior/Randoms/SW_LANI095.flac"
 $random sw/prune/cackle { sw/prune/cackle1 sw/prune/cackle2 sw/prune/cackle3 }
 sw/prune/cackle1		"Sounds/ShadowWarrior/Randoms/SW_CACKLE.wav"
 sw/prune/cackle2		"Sounds/ShadowWarrior/Randoms/SW_CACKLE2.wav"
@@ -404,7 +404,7 @@ sw/girl/uzi				"Sounds/ShadowWarrior/Randoms/SW_GIRLUZI.ogg"
 
 $random sw/wash/sing	{ sw/wash/sing1 sw/wash/sing2 }
 sw/wash/sing1			"Sounds/ShadowWarrior/Randoms/SW_ACHS010.wav"
-sw/wash/sing2			"Sounds/ShadowWarrior/Randoms/SW_ACHS016.wav"
+sw/wash/sing2			"Sounds/ShadowWarrior/Randoms/SW_ACHS016.flac"
 
 $random sw/girl/mad		{ sw/girl/mad1 sw/girl/mad2 }
 sw/girl/mad1			"Sounds/ShadowWarrior/Randoms/SW_ACHT1006.wav"
@@ -418,14 +418,14 @@ sw/mechgirl/talk4		"Sounds/ShadowWarrior/Randoms/SW_LANI079.wav"
 
 $random sw/cargirl/talk { sw/cargirl/talk1 sw/cargirl/talk2 sw/cargirl/talk3 sw/cargirl/talk4 }
 sw/cargirl/talk1		"Sounds/ShadowWarrior/Randoms/SW_LANI049.wav"
-sw/cargirl/talk2		"Sounds/ShadowWarrior/Randoms/SW_LANI051.wav"
-sw/cargirl/talk3		"Sounds/ShadowWarrior/Randoms/SW_LANI052.wav"
-sw/cargirl/talk4		"Sounds/ShadowWarrior/Randoms/SW_LANI054.wav"
+sw/cargirl/talk2		"Sounds/ShadowWarrior/Randoms/SW_LANI051.flac"
+sw/cargirl/talk3		"Sounds/ShadowWarrior/Randoms/SW_LANI052.flac"
+sw/cargirl/talk4		"Sounds/ShadowWarrior/Randoms/SW_LANI054.flac"
 
 $random sw/moongirl/talk { sw/moongirl/talk1 sw/moongirl/talk2 sw/moongirl/talk3 }
 sw/moongirl/talk1		"Sounds/ShadowWarrior/Randoms/SW_LANI063.wav"
-sw/moongirl/talk2		"Sounds/ShadowWarrior/Randoms/SW_LANI065.wav"
-sw/moongirl/talk3		"Sounds/ShadowWarrior/Randoms/SW_LANI066.wav"
+sw/moongirl/talk2		"Sounds/ShadowWarrior/Randoms/SW_LANI065.flac"
+sw/moongirl/talk3		"Sounds/ShadowWarrior/Randoms/SW_LANI066.flac"
 
 sw/moongirl/gift		"Sounds/ShadowWarrior/Randoms/SW_LANI060.wav"
 
