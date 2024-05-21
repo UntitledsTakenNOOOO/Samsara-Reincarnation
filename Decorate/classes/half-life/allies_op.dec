@@ -1454,30 +1454,71 @@ Actor HL_HECU_SawDrop : RandomSpawner
 	DropItem "HL_GrenadeWeapon2", 255, 2
 }
 
-ACTOR MP5Drop : SamsaraSlotFourDrop {
-	+DROPPED
-	States
+actor MP5Drop : SamsaraSlotFourDrop
+{
+    +DROPPED
+    +NEVERRESPAWN
+    States
     {
       Spawn:
         HL00 A -1
         stop
-	  Pickup:
-		TNT1 A 0 A_GiveInventory("Clip", 25)
-		TNT1 A 0 A_GiveInventory("RocketAmmo", 1)
-		Goto "Super::Pickup"
+
+      PickupSuccess:
+        TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupSuccessContinue")
+        TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupSuccessContinue")
+        goto PickupSuccessAmmo1Check
+
+      PickupSuccessAmmo1Check:
+      PickupSuccessAmmo1:
+        TNT1 A 0 A_GiveInventory("Clip",25)
+        goto PickupSuccessAmmo3Check
+
+      PickupSuccessAmmo3Check:
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupSuccessContinue")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupSuccessContinue")
+      PickupSuccessAmmo3:
+        TNT1 A 0 A_GiveInventory("RocketAmmo",1)
+        goto PickupSuccessContinue
+
+      PickupSuccessContinue:
+        TNT1 A 0
+        goto Super::PickupSuccess
     }
 }
 
-ACTOR AssaultShotgunDrop : SamsaraSlotTwoDrop {
-	+DROPPED
-	States
+actor AssaultShotgunDrop : SamsaraSlotTwoDrop
+{
+    +DROPPED
+    +NEVERRESPAWN
+    States
     {
       Spawn:
         HL00 A -1
         stop
-	  Pickup:
-		TNT1 A 0 A_GiveInventory("Shell", 8)
-		Goto "Super::Pickup"
+
+      PickupSuccess:
+        TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupSuccessContinue")
+        TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupSuccessContinue")
+        goto PickupSuccessAmmo2Check
+
+      PickupSuccessAmmo2Check:
+        TNT1 A 0 A_JumpIfInventory("WolfenClass",1,"PickupSuccessAmmo2CheckWolfenstein")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupSuccessContinue")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupSuccessContinue")
+        goto PickupSuccessAmmo2
+
+      PickupSuccessAmmo2CheckWolfenstein:
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"PickupSuccessAmmo2")
+        goto PickupSuccessContinue
+
+      PickupSuccessAmmo2:
+        TNT1 A 0 A_GiveInventory("Shell",8)
+        goto PickupSuccessContinue
+
+      PickupSuccessContinue:
+        TNT1 A 0
+        goto Super::PickupSuccess
     }
 }
 
@@ -1485,6 +1526,7 @@ ACTOR HL_GrenadeWeapon : SamsaraUniquePickup1
 {
 	Scale 0.6
 	+DROPPED
+    +NEVERRESPAWN
 	States
     {
       Spawn:
@@ -1497,6 +1539,7 @@ ACTOR HL_GrenadeWeapon2 : SamsaraUniquePickup3
 {
 	Scale 0.6
 	+DROPPED
+    +NEVERRESPAWN
 	States
     {
       Spawn:
