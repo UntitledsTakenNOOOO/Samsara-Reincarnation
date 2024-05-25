@@ -57,7 +57,7 @@ actor SamsaraHealthPickup : CustomInventory
 }
 
 // Health Bonus (x1)
-actor HealPack0 : SamsaraHealthPickup replaces HealthBonus
+actor HealPack0 : SamsaraHealthPickup
 {
     Alpha 0.9
     Scale 0.25
@@ -70,8 +70,9 @@ actor HealPack0 : SamsaraHealthPickup replaces HealthBonus
       SpawnActual:
         TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
         TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+      SpawnActualLoop:
         MEDI A 35 Bright Light("SAMSARA_HEALTH_CRUMB") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-        wait
+        loop
 
       Pickup:
         TNT1 A 0 A_Jump(256,"PickupDefault") // for inheriting actors
@@ -137,6 +138,11 @@ actor HealPack0 : SamsaraHealthPickup replaces HealthBonus
     }
 }
 
+actor DoomHealPack0 : HealPack0 replaces HealthBonus {}
+actor ChexHealPack0 : HealPack0 replaces GlassOfWater {}
+actor HereticHealPack0 : HealPack0 replaces GoldWandAmmo {}
+actor HexenHealPack0 : HealPack0 replaces ArtiPoisonBag {}
+
 // Maximum Health Bonus (x1)
 actor MaxHealthBonus : HealthBonus 5090 // skulltag compatibility
 {
@@ -144,7 +150,7 @@ actor MaxHealthBonus : HealthBonus 5090 // skulltag compatibility
     SpawnID 166
 }
 
-actor MaxHealPack0 : SamsaraHealthPickup replaces MaxHealthBonus
+actor MaxHealPack0 : SamsaraHealthPickup
 {
     Alpha 0.9
     Scale 0.25
@@ -157,8 +163,9 @@ actor MaxHealPack0 : SamsaraHealthPickup replaces MaxHealthBonus
       SpawnActual:
         TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
         TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+      SpawnActualLoop:
         MEDI B 35 Bright Light("SAMSARA_MAX_HEALTH") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-        wait
+        loop
 
       Pickup:
         TNT1 A 0 A_Jump(256,"PickupDefault") // for inheriting actors
@@ -229,8 +236,10 @@ actor MaxHealPack0 : SamsaraHealthPickup replaces MaxHealthBonus
     }
 }
 
+actor SkulltagMaxHealPack0 : MaxHealPack0 replaces MaxHealthBonus {}
+
 // Health Bonus (x4)
-actor HereticStuffDump : SamsaraHealthPickup replaces GoldWandHefty
+actor HealPack0Dump : SamsaraHealthPickup
 {
     Alpha 0.9
     Scale 0.3
@@ -243,8 +252,9 @@ actor HereticStuffDump : SamsaraHealthPickup replaces GoldWandHefty
       SpawnActual:
         TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
         TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+      SpawnActualLoop:
         MEDI V 35 Bright Light("SAMSARA_HEALTH_CRUMB") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-        wait
+        loop
 
       Pickup:
         TNT1 A 0 A_Jump(256,"PickupDefault") // for inheriting actors
@@ -319,8 +329,10 @@ actor HereticStuffDump : SamsaraHealthPickup replaces GoldWandHefty
     }
 }
 
+actor HereticHealPack0Dump : HealPack0Dump replaces GoldWandHefty {}
+
 // Stimpack
-actor HealPack1 : SamsaraHealthPickup replaces Stimpack
+actor HealPack1 : SamsaraHealthPickup
 {
     Alpha 0.9
     Scale 0.5
@@ -333,8 +345,9 @@ actor HealPack1 : SamsaraHealthPickup replaces Stimpack
       SpawnActual:
         TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
         TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+      SpawnActualLoop:
         MED2 A 35 Bright Light("SAMSARA_GREEN_HEALTH") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-        wait
+        loop
 
       Pickup:
         TNT1 A 0 A_JumpIfInventory("StrifeClass",1,"PickupStrife")
@@ -423,6 +436,10 @@ actor HealPack1 : SamsaraHealthPickup replaces Stimpack
     }
 }
 
+actor DoomHealPack1 : HealPack1 replaces Stimpack {}
+actor ChexHealPack1 : HealPack1 replaces BowlOfFruit {}
+actor RavenHealPack1 : HealPack1 replaces CrystalVial {}
+
 actor SamsaraHealPack1Inventory : CustomInventory
 {
     Inventory.UseSound ""
@@ -478,7 +495,7 @@ actor StrifeStimpack2 : SamsaraHealPack1Inventory
 }
 
 // Medikit
-actor HealPack2 : SamsaraHealthPickup replaces Medikit
+actor HealPack2 : SamsaraHealthPickup
 {
     Alpha 0.9
     Scale 0.75
@@ -491,8 +508,9 @@ actor HealPack2 : SamsaraHealthPickup replaces Medikit
       SpawnActual:
         TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
         TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+      SpawnActualLoop:
         MED3 A 35 Bright Light("SAMSARA_RED_HEALTH") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 90)
-        wait
+        loop
 
       Pickup:
         TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupHeretic")
@@ -644,22 +662,35 @@ actor HealPack2 : SamsaraHealthPickup replaces Medikit
         TNT1 A 0 A_PlaySound("RR/Wpickup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
         goto PickupSuccess
 
+      // Leonard's pickup messages need special treatment due to being given a random item.
+      // This determines which item to jump to.
       PickupDisplayRedneckInventory:
+        TNT1 A 0 A_Jump(256,"PickupDisplayRedneckInventoryCowPie","PickupDisplayRedneckInventoryBeer")
+      PickupDisplayRedneckInventoryCowPie:
+        TNT1 A 0 A_JumpIfInventory("RRCowPie",0,"PickupDisplayRedneckInventory")
         TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 5, 7)
         TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
         TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
         TNT1 A 0 A_PlaySound("RR/Wpickup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        goto PickupSuccess
+        goto PickupSuccessRedneckInventoryCowPie
+
+      PickupDisplayRedneckInventoryBeer:
+        TNT1 A 0 A_JumpIfInventory("RRBubbaBeer",0,"PickupDisplayRedneckInventory")
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 5, 8)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("RR/Wpickup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
+        goto PickupSuccessRedneckInventoryBeer
 
       PickupDisplayHexen2:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 5, random(8,9))
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 5, random(9,10))
         TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
         TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
         TNT1 A 0 A_PlaySound("Hexen2/ArtifactPickup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
         goto PickupSuccess
 
       PickupDisplayCatacomb:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 5, 10)
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 5, 11)
         TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
         TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
         TNT1 A 0 A_PlaySound("Catacomb/ItemGet5",CHAN_ITEM|CHAN_MAYBE_LOCAL)
@@ -731,14 +762,14 @@ actor HealPack2 : SamsaraHealthPickup replaces Medikit
         stop
 
       PickupSuccessRedneckInventory:
-        TNT1 A 0 A_Jump(256,"PickupSuccessRedneckInventory1","PickupSuccessRedneckInventory2")
-      PickupSuccessRedneckInventory1:
-        TNT1 A 0 A_JumpIfInventory("RRCowPie",0,"PickupSuccessRedneckInventory2")
+        TNT1 A 0 A_Jump(256,"PickupSuccessRedneckInventoryCowPie","PickupSuccessRedneckInventoryBeer")
+      PickupSuccessRedneckInventoryCowPie:
+        TNT1 A 0 A_JumpIfInventory("RRCowPie",0,"PickupSuccessRedneckInventory")
         TNT1 A 0 A_GiveInventory("RRCowPie",6)
         stop
 
-      PickupSuccessRedneckInventory2:
-        TNT1 A 0 A_JumpIfInventory("RRBubbaBeer",0,"PickupSuccessRedneckInventory1")
+      PickupSuccessRedneckInventoryBeer:
+        TNT1 A 0 A_JumpIfInventory("RRBubbaBeer",0,"PickupSuccessRedneckInventory")
         TNT1 A 0 A_GiveInventory("RRBubbaBeer",6)
         stop
 
@@ -782,6 +813,10 @@ actor HealPack2 : SamsaraHealthPickup replaces Medikit
         stop
     }
 }
+
+actor DoomHealPack2 : HealPack2 replaces Medikit {}
+actor ChexHealPack2 : HealPack2 replaces BowlOfVegetables {}
+actor RavenHealPack2 : HealPack2 replaces ArtiHealth {}
 
 actor SamsaraHealPack2Inventory : CustomInventory
 {
@@ -987,7 +1022,7 @@ actor Catacomb_SmallHealthPotion : SamsaraHealPack2Inventory
 }
 
 // Soulsphere
-actor SuperHealth : SamsaraHealthPickup replaces Soulsphere
+actor SuperHealth : SamsaraHealthPickup
 {
     Alpha 0.95
     Scale 0.75
@@ -1211,7 +1246,7 @@ actor SuperHealth : SamsaraHealthPickup replaces Soulsphere
         goto PickupSuccess
 
       PickupDisplayQuake3:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 6, 0)
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 6, 13)
         TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
         TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
         TNT1 A 0 ACS_NamedExecuteAlways("Q3_Announcer", 0, 4) //A_PlaySound("Quake3/Items/Regeneration",CHAN_ITEM)
@@ -1347,6 +1382,10 @@ actor SuperHealth : SamsaraHealthPickup replaces Soulsphere
         stop
     }
 }
+
+actor DoomSuperHealth : SuperHealth replaces Soulsphere {}
+actor ChexSuperHealth : SuperHealth replaces SuperchargeBreakfast {}
+actor RavenSuperHealth : SuperHealth replaces ArtiSuperHealth {}
 
 actor SamsaraSuperHealthInventory : CustomInventory
 {
@@ -1521,7 +1560,7 @@ actor Catacomb_LargeHealthPotion : SamsaraSuperHealthInventory
 }
 
 // Megasphere
-actor MegaPack : SamsaraHealthPickup replaces Megasphere
+actor MegaPack : SamsaraHealthPickup
 {
     RenderStyle "Normal"
     Scale 0.75
@@ -1736,6 +1775,9 @@ actor SamsaraMegaPackInventory : CustomInventory
         fail
     }
 }
+
+actor DoomMegaPack : MegaPack replaces Megasphere {}
+actor HexenMegaPack : MegaPack replaces ArtiDarkServant {}
 
 actor CorvusMegasphere : SamsaraMegaPackInventory
 {

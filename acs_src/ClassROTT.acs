@@ -104,14 +104,14 @@ SCRIPT "RoTT452" (void) CLIENTSIDE //452
 				dyingtimer++;
 			}
 			
-			if (CheckInventory("AsbestosArmor"))
+			if (CheckInventory("PowerAsbestosArmor"))
 			{
 				SetFont("FIREP");
 				SetHudSize(320, 200, 1);
 				HudMessage(s:"A"; 0, rottstartid+11379, 0, 209.1  , 11.1, 0.1);
 			}
 		
-			if (CheckInventory("BulletProofVest"))
+			if (CheckInventory("PowerBulletProofVest"))
 			{
 				SetFont("ARMORP");
 				SetHudSize(320, 200, 1);
@@ -759,40 +759,26 @@ Script "RoTTDogCheck" (void) // dog use check
 	}
 }
 
-Script "RottGasMask" (void)
+script "RottGasMask" (void) CLIENTSIDE
 {
-	if(CheckInventory("RottGasMask") != 0)
-	{
-		GiveInventory("RottGasMaskDuplicateToken", 1);
-		terminate;
-	}
-		
-	GiveInventory("RottGasMask", 1);
-	sethudsize(214,200,0);
-	setfont("P_GMASK");
-	HudMessage(s:"A";0,rottstartid+15700,0,107.0,100.0,70.0);
-	for(int a = 0; a < 46; a++)
-	{
-		if(CheckInventory("RottGasMaskDuplicateToken") != 0)
-			TakeInventory("RottGasMaskDuplicateToken", 1);
+    SetHudSize(214,200,0);
+    SetFont("P_GMASK");
+    HudMessage(s:"a"; 0, rottstartid + 15700, 0, 107.0, 100.0, 70.0);
 
-		HudMessage(s:"A";HUDMSG_LAYER_UNDERHUD|HUDMSG_NOTWITHFULLMAP,rottstartid+15700,0,107.0,100.0,70.0);
-		if(a % 3 == 0)
-		{
-			LocalAmbientSound("gen/gasmask", 127);
-		}
-		Delay(35);
-		
-		If(GetActorProperty(0, APROP_Health) <= 0)
-		{
-			break;
-		}
-	}
-	SetHudSize(0,0,0);
-	SetFont("");
-	HudMessage(s:"";0,rottstartid+15700,0,107.0,100.0,0);
-	TakeInventory("RottGasMask", 1);
+    while (CheckInventory("PowerIronFeetNoColor"))
+    {
+        HudMessage(s:"a"; HUDMSG_LAYER_UNDERHUD|HUDMSG_NOTWITHFULLMAP, rottstartid + 15700, 0, 107.0, 100.0, 70.0);
+
+        if (GetActorPowerupTics(0, "PowerIronFeetNoColor") % 105 == 0) { AmbientSound("gen/gasmask", 127); }
+
+        Delay(1);
+    }
+
+    SetHudSize(0, 0, 0);
+    SetFont("");
+    HudMessage(s:""; 0, rottstartid + 15700, 0, 107.0, 100.0, 0);
 }
+
 Script "RottDogModeHandler" (void)
 {
 	int oldtid = ActivatorTid();
@@ -1076,4 +1062,10 @@ Script "RottDamageOnEnemy" (void)
 			
 		Thing_ChangeTid(newtid,oldtid);
 	}
+}
+
+script "SamsaraROTTInvulnSwitchHack" (int invulntype) // A_SelectWeapon somehow doesn't work for whatever reason
+{
+    if (invulntype >= 1) { SetWeapon("Doggie"); }
+    else { SetWeapon("God Hand"); }
 }
