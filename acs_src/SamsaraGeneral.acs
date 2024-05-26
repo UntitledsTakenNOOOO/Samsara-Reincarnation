@@ -7391,7 +7391,7 @@ script "SamsaraPlayerHealer" (int healamount, int healcap, int usemaxbonus)
     int healthcapcheck = healthmax; // default cap
 
     // determine cap
-    if (healamount != 0) // only change if we're not doing full healing
+    if (healamount == -1 || healamount > 0)
     {
         if (healcap > 0) { healthcapcheck = healcap; } // custom cap
         else if (healcap < 0) { healthcapcheck = -healcap; } // custom "hardcoded" cap
@@ -7405,6 +7405,8 @@ script "SamsaraPlayerHealer" (int healamount, int healcap, int usemaxbonus)
             if (GetCVar("samsara_nohealthcap")) { healthcapcheck = INTMAX; }
             else if (healthcapcheck < 250 && CheckInventory("SamsaraHasProsperity")) { healthcapcheck = 250; }
         }
+    } else { // -2 checks based on SpawnHealth (ignoring samsara_nohealthcap), while 0 gives the full healing
+        if (healthcapcheck < 250 && CheckInventory("SamsaraHasProsperity")) { healthcapcheck = 250; }
     }
 
     // do checking or healing
@@ -7413,8 +7415,17 @@ script "SamsaraPlayerHealer" (int healamount, int healcap, int usemaxbonus)
         if (GetActorProperty(0, APROP_Health) + healamount > healthcapcheck) { SetActorProperty(0, APROP_Health, healthcapcheck); }
         else { SetActorProperty(0, APROP_Health, GetActorProperty(0, APROP_Health) + healamount); }
     }
-    else if (healamount == 0 && !isDead(0) && GetActorProperty(0, APROP_Health) < healthcapcheck) { SetActorProperty(0, APROP_Health, healthcapcheck); } // full healing
+    else if (healamount == 0 && !isDead(0) && GetActorProperty(0, APROP_Health) < healthcapcheck) { SetActorProperty(0, APROP_Health, healthcapcheck); } // full healing (ignores samsara_nohealthcap)
     else if (healamount < 0) { SetResultValue(healthcapcheck); } // check health
+}
+
+script "SamsaraPlayerHealerSurgeryKit" (void)
+{
+    int healthtogive = getMaxHealth(0);
+
+    if (healthtogive < 250 && CheckInventory("SamsaraHasProsperity")) { healthtogive = 250; }
+
+    ACS_NamedExecuteWithResult("SamsaraPlayerHealer", healthtogive);
 }
 
 script "SamsaraPlayerSpawnHealthAdjust" (int amount, int add, int maxtype, int maxcap)

@@ -1,71 +1,478 @@
-actor StrifeStimpack: CustomInventory replaces MedPatch
+actor StrifeStimpack : SamsaraHealthPickup replaces MedPatch
 {
-	ConversationID 125
-	+FLOORCLIP
-	+AUTOACTIVATE
-	Inventory.PickupMessage "$TXT_MEDPATCH" // "You picked up the Med patch."
-	Inventory.MaxAmount -1
-	States
-	{
-	Spawn:
-		STMP A -1
-		Stop
+    ConversationID 125
+    RenderStyle "Normal"
+    -FLOATBOB
+    +FLOORCLIP
+    States
+    {
+      Spawn:
+        STMP A 0
+        goto SpawnGameModeCheck
 
-	Pickup:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "Infinite")
-		TNT1 A 0 A_GiveInventory("MedPatch")
-		Stop
+      SpawnActual:
+        TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
+        STMP A -1 A_ChangeFlag("NOTIMEFREEZE",false)
+        stop
 
-	Infinite:
-		TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 10)
-		Stop
-	}
+      Pickup:
+        TNT1 A 0 A_Jump(256,"PickupDefault") // for inheriting actors
+        goto PickupDefault
+
+      PickupDefault:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupDefaultInfinite")
+        TNT1 A 0 A_JumpIfInventory("SamsaraMedPatchItem",0,"PickupFail")
+        goto PickupDisplay
+
+      PickupDefaultInfinite:
+        TNT1 A 0 A_JumpIfHealthLower(CallACS("SamsaraPlayerHealer", -1), "PickupDisplay")
+        fail
+
+      PickupDisplay:
+        TNT1 A 0 A_JumpIfInventory("MarathonClass",1,"PickupDisplayMarathon")
+        TNT1 A 0 A_Jump(256,"PickupDisplayDefault") // for inheriting actors
+        goto PickupDisplayDefault
+
+      PickupDisplayDefault:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 5, 0)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/i_pkup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
+        goto PickupSuccess
+
+      PickupDisplayMarathon:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 5, 0)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("F0F8FF",0.3,4) // Light Alice Blue
+        TNT1 A 0 A_PlaySound("misc/i_pkup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
+        goto PickupSuccess
+
+      PickupSuccess:
+        TNT1 A 0 A_JumpIfInventory("DeusExClass",1,"PickupSuccessDeusEx")
+        TNT1 A 0 A_Jump(256,"PickupSuccessDefault") // for inheriting actors
+        goto PickupSuccessDefault
+
+      PickupSuccessDefault:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSuccessDefaultInfinite")
+        TNT1 A 0 A_GiveInventory("SamsaraMedPatchItem")
+        stop
+
+      PickupSuccessDefaultInfinite:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 10)
+        stop
+
+      PickupSuccessDeusEx:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSuccessDeusExInfinite")
+        goto PickupSuccessDefault
+
+      PickupSuccessDeusExInfinite:
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",0,"PickupSuccessDeusExInfiniteMaster")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",3,"PickupSuccessDeusExInfiniteAdvanced")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",2,"PickupSuccessDeusExInfiniteProficient")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",1,"PickupSuccessDeusExInfiniteTrained")
+      PickupSuccessDeusExInfiniteUntrained:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 10)
+        goto PickupSuccessDeusExInfiniteFinish
+
+      PickupSuccessDeusExInfiniteTrained:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 12)
+        goto PickupSuccessDeusExInfiniteFinish
+
+      PickupSuccessDeusExInfiniteProficient:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 15)
+        goto PickupSuccessDeusExInfiniteFinish
+
+      PickupSuccessDeusExInfiniteAdvanced:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 17)
+        goto PickupSuccessDeusExInfiniteFinish
+
+      PickupSuccessDeusExInfiniteMaster:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 20)
+        goto PickupSuccessDeusExInfiniteFinish
+
+      PickupSuccessDeusExInfiniteFinish:
+        TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate", 25, 10)
+        stop
+    }
 }
 
-actor StrifeMedikit: CustomInventory replaces MedicalKit
+actor SamsaraMedPatchItem : CustomInventory
 {
-	ConversationID 126
-	+FLOORCLIP
-	+AUTOACTIVATE
-	Inventory.PickupMessage "$TXT_MEDICALKIT" // "You picked up the Med patch."
-	Inventory.MaxAmount -1
-	States
-	{
-	Spawn:
-		MDKT A -1
-		Stop
+    Inventory.UseSound ""
+    Inventory.Icon "I_STMP"
+    Inventory.MaxAmount 20
+    Inventory.InterHubAmount 20
+    Tag "$TAG_MEDPATCH"
+    +INVBAR
+    +UNDROPPABLE
+    States
+    {
+      Use:
+        TNT1 A 0 A_Jump(256,"UseDefault") // for inheriting actors
+        goto UseDefault
 
-	Pickup:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "Infinite")
-		TNT1 A 0 A_GiveInventory("MedicalKit")
-		Stop
+      UseDefault:
+        TNT1 A 0 A_JumpIfHealthLower(CallACS("SamsaraPlayerHealer", -1), "UsePlaySound")
+        fail
 
-	Infinite:
-		TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 25)
-		Stop
-	}
+      UsePlaySound:
+        TNT1 A 0 A_Jump(256,"UsePlaySoundDefault") // for inheriting actors
+        goto UsePlaySoundDefault
+
+      UsePlaySoundDefault:
+        TNT1 A 0 A_PlaySound("misc/invuse",CHAN_ITEM)
+        goto UseSuccess
+
+      UseSuccess:
+        TNT1 A 0 A_JumpIfInventory("DeusExClass",1,"UseSuccessDeusEx")
+        TNT1 A 0 A_Jump(256,"UseSuccessDefault") // for inheriting actors
+        goto UseSuccessDefault
+
+      UseSuccessDefault:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 10)
+        goto UseFinish
+
+      UseSuccessDeusEx:
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",0,"UseSuccessDeusExMaster")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",3,"UseSuccessDeusExAdvanced")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",2,"UseSuccessDeusExProficient")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",1,"UseSuccessDeusExTrained")
+      UseSuccessDeusExUntrained:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 10)
+        goto UseSuccessDeusExFinish
+
+      UseSuccessDeusExTrained:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 12)
+        goto UseSuccessDeusExFinish
+
+      UseSuccessDeusExProficient:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 15)
+        goto UseSuccessDeusExFinish
+
+      UseSuccessDeusExAdvanced:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 17)
+        goto UseSuccessDeusExFinish
+
+      UseSuccessDeusExMaster:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 20)
+        goto UseSuccessDeusExFinish
+
+      UseSuccessDeusExFinish:
+        TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate", 25, 10)
+        goto UseFinish
+
+      UseFinish:
+        TNT1 A 0 A_RailWait
+        stop
+
+      UseFail:
+        TNT1 A 0
+        fail
+    }
 }
 
-actor StrifeSoulsphere: CustomInventory replaces SurgeryKit
+actor StrifeMedikit : SamsaraHealthPickup replaces MedicalKit
 {
-	ConversationID 127
-	+FLOORCLIP
-	+AUTOACTIVATE
-	Inventory.PickupMessage "$TXT_SURGERYKIT" // "You picked up the Med patch."
-	Inventory.MaxAmount -1
-	States
-	{
-	Spawn:
-		FULL AB 35
-		Loop
+    ConversationID 126
+    RenderStyle "Normal"
+    -FLOATBOB
+    +FLOORCLIP
+    States
+    {
+      Spawn:
+        MDKT A 0
+        goto SpawnGameModeCheck
 
-	Pickup:
-		TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "Infinite")
-		TNT1 A 0 A_GiveInventory("SurgeryKit")
-		Stop
+      SpawnActual:
+        TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
+        MDKT A -1 A_ChangeFlag("NOTIMEFREEZE",false)
+        stop
 
-	Infinite:
-		TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 100)
-		Stop
-	}
+      Pickup:
+        TNT1 A 0 A_Jump(256,"PickupDefault") // for inheriting actors
+        goto PickupDefault
+
+      PickupDefault:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupDefaultInfinite")
+        TNT1 A 0 A_JumpIfInventory("SamsaraMedicalKitItem",0,"PickupFail")
+        goto PickupDisplay
+
+      PickupDefaultInfinite:
+        TNT1 A 0 A_JumpIfHealthLower(CallACS("SamsaraPlayerHealer", -1), "PickupDisplay")
+        fail
+
+      PickupDisplay:
+        TNT1 A 0 A_JumpIfInventory("MarathonClass",1,"PickupDisplayMarathon")
+        TNT1 A 0 A_Jump(256,"PickupDisplayDefault") // for inheriting actors
+        goto PickupDisplayDefault
+
+      PickupDisplayDefault:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 7, 0)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/i_pkup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
+        goto PickupSuccess
+
+      PickupDisplayMarathon:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 7, 0)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("F0F8FF",0.3,4) // Light Alice Blue
+        TNT1 A 0 A_PlaySound("misc/i_pkup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
+        goto PickupSuccess
+
+      PickupSuccess:
+        TNT1 A 0 A_JumpIfInventory("DeusExClass",1,"PickupSuccessDeusEx")
+        TNT1 A 0 A_Jump(256,"PickupSuccessDefault") // for inheriting actors
+        goto PickupSuccessDefault
+
+      PickupSuccessDefault:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSuccessDefaultInfinite")
+        TNT1 A 0 A_GiveInventory("SamsaraMedicalKitItem")
+        stop
+
+      PickupSuccessDefaultInfinite:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 25)
+        stop
+
+      PickupSuccessDeusEx:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSuccessDeusExInfinite")
+        goto PickupSuccessDefault
+
+      PickupSuccessDeusExInfinite:
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",0,"PickupSuccessDeusExInfiniteMaster")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",3,"PickupSuccessDeusExInfiniteAdvanced")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",2,"PickupSuccessDeusExInfiniteProficient")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",1,"PickupSuccessDeusExInfiniteTrained")
+      PickupSuccessDeusExInfiniteUntrained:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 25)
+        goto PickupSuccessDeusExInfiniteFinish
+
+      PickupSuccessDeusExInfiniteTrained:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 32)
+        goto PickupSuccessDeusExInfiniteFinish
+
+      PickupSuccessDeusExInfiniteProficient:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 38)
+        goto PickupSuccessDeusExInfiniteFinish
+
+      PickupSuccessDeusExInfiniteAdvanced:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 43)
+        goto PickupSuccessDeusExInfiniteFinish
+
+      PickupSuccessDeusExInfiniteMaster:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 50)
+        goto PickupSuccessDeusExInfiniteFinish
+
+      PickupSuccessDeusExInfiniteFinish:
+        TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate", 25, 25)
+        stop
+    }
+}
+
+actor SamsaraMedicalKitItem : CustomInventory
+{
+    Inventory.UseSound ""
+    Inventory.Icon "I_MDKT"
+    Inventory.MaxAmount 15
+    Inventory.InterHubAmount 15
+    Tag "$TAG_MEDICALKIT"
+    +INVBAR
+    +UNDROPPABLE
+    States
+    {
+      Use:
+        TNT1 A 0 A_Jump(256,"UseDefault") // for inheriting actors
+        goto UseDefault
+
+      UseDefault:
+        TNT1 A 0 A_JumpIfHealthLower(CallACS("SamsaraPlayerHealer", -1), "UsePlaySound")
+        fail
+
+      UsePlaySound:
+        TNT1 A 0 A_Jump(256,"UsePlaySoundDefault") // for inheriting actors
+        goto UsePlaySoundDefault
+
+      UsePlaySoundDefault:
+        TNT1 A 0 A_PlaySound("misc/invuse",CHAN_ITEM)
+        goto UseSuccess
+
+      UseSuccess:
+        TNT1 A 0 A_JumpIfInventory("DeusExClass",1,"UseSuccessDeusEx")
+        TNT1 A 0 A_Jump(256,"UseSuccessDefault") // for inheriting actors
+        goto UseSuccessDefault
+
+      UseSuccessDefault:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 25)
+        goto UseFinish
+
+      UseSuccessDeusEx:
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",0,"UseSuccessDeusExMaster")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",3,"UseSuccessDeusExAdvanced")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",2,"UseSuccessDeusExProficient")
+        TNT1 A 0 A_JumpIfInventory("DeusEx_MedicineSkill",1,"UseSuccessDeusExTrained")
+      UseSuccessDeusExUntrained:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 25)
+        goto UseSuccessDeusExFinish
+
+      UseSuccessDeusExTrained:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 32)
+        goto UseSuccessDeusExFinish
+
+      UseSuccessDeusExProficient:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 38)
+        goto UseSuccessDeusExFinish
+
+      UseSuccessDeusExAdvanced:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 43)
+        goto UseSuccessDeusExFinish
+
+      UseSuccessDeusExMaster:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 50)
+        goto UseSuccessDeusExFinish
+
+      UseSuccessDeusExFinish:
+        TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate", 25, 25)
+        goto UseFinish
+
+      UseFinish:
+        TNT1 A 0 A_RailWait
+        stop
+
+      UseFail:
+        TNT1 A 0
+        fail
+    }
+}
+
+actor StrifeSoulsphere : SamsaraHealthPickup replaces SurgeryKit
+{
+    ConversationID 127
+    RenderStyle "Normal"
+    -FLOATBOB
+    +FLOORCLIP
+    States
+    {
+      Spawn:
+        FULL A 0
+        goto SpawnGameModeCheck
+
+      SpawnActual:
+        TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
+        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
+      SpawnActualLoop:
+        FULL AB 35
+        loop
+
+      Pickup:
+        TNT1 A 0 A_Jump(256,"PickupDefault") // for inheriting actors
+        goto PickupDefault
+
+      PickupDefault:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupDefaultInfinite")
+        TNT1 A 0 A_JumpIfInventory("SamsaraSurgeryKitItem",0,"PickupFail")
+        goto PickupDisplay
+
+      PickupDefaultInfinite:
+        TNT1 A 0 A_JumpIfHealthLower(CallACS("SamsaraPlayerHealer", -1), "PickupDisplay")
+        fail
+
+      PickupDisplay:
+        TNT1 A 0 A_JumpIfInventory("MarathonClass",1,"PickupDisplayMarathon")
+        TNT1 A 0 A_Jump(256,"PickupDisplayDefault") // for inheriting actors
+        goto PickupDisplayDefault
+
+      PickupDisplayDefault:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 9, 0)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("D7BA45",0.3,4)
+        TNT1 A 0 A_PlaySound("misc/i_pkup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
+        goto PickupSuccess
+
+      PickupDisplayMarathon:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 0, 9, 0)
+        TNT1 A 0 A_JumpIfInventory("PickupFlashesAreDisabled",1,2)
+        TNT1 A 0 A_SetBlend("F0F8FF",0.3,4) // Light Alice Blue
+        TNT1 A 0 A_PlaySound("misc/i_pkup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
+        goto PickupSuccess
+
+      PickupSuccess:
+        TNT1 A 0 A_JumpIfInventory("DeusExClass",1,"PickupSuccessDeusEx")
+        TNT1 A 0 A_Jump(256,"PickupSuccessDefault") // for inheriting actors
+        goto PickupSuccessDefault
+
+      PickupSuccessDefault:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSuccessDefaultInfinite")
+        TNT1 A 0 A_GiveInventory("SamsaraSurgeryKitItem")
+        stop
+
+      PickupSuccessDefaultInfinite:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealerSurgeryKit")
+        stop
+
+      PickupSuccessDeusEx:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSuccessDeusExInfinite")
+        goto PickupSuccessDefault
+
+      PickupSuccessDeusExInfinite:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealerSurgeryKit")
+        goto PickupSuccessDeusExInfiniteFinish
+
+      PickupSuccessDeusExInfiniteFinish:
+        TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate", 25, 100)
+        stop
+    }
+}
+
+actor SamsaraSurgeryKitItem : CustomInventory
+{
+    Inventory.UseSound ""
+    Inventory.Icon "I_FULL"
+    Inventory.MaxAmount 5
+    Inventory.InterHubAmount 5
+    Tag "$TAG_SURGERYKIT"
+    +INVBAR
+    +UNDROPPABLE
+    States
+    {
+      Use:
+        TNT1 A 0 A_Jump(256,"UseDefault") // for inheriting actors
+        goto UseDefault
+
+      UseDefault:
+        TNT1 A 0 A_JumpIfHealthLower(CallACS("SamsaraPlayerHealer", -1), "UsePlaySound")
+        fail
+
+      UsePlaySound:
+        TNT1 A 0 A_Jump(256,"UsePlaySoundDefault") // for inheriting actors
+        goto UsePlaySoundDefault
+
+      UsePlaySoundDefault:
+        TNT1 A 0 A_PlaySound("misc/invuse",CHAN_ITEM)
+        goto UseSuccess
+
+      UseSuccess:
+        TNT1 A 0 A_JumpIfInventory("DeusExClass",1,"UseSuccessDeusEx")
+        TNT1 A 0 A_Jump(256,"UseSuccessDefault") // for inheriting actors
+        goto UseSuccessDefault
+
+      UseSuccessDefault:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealerSurgeryKit")
+        goto UseFinish
+
+      UseSuccessDeusEx:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealerSurgeryKit")
+        goto UseSuccessDeusExFinish
+
+      UseSuccessDeusExFinish:
+        TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate", 25, 100)
+        goto UseFinish
+
+      UseFinish:
+        TNT1 A 0 A_RailWait
+        stop
+
+      UseFail:
+        TNT1 A 0
+        fail
+    }
 }
