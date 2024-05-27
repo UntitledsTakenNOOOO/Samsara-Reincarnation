@@ -377,20 +377,120 @@ actor SamsaraPowerInvisibilityGiverTranslucent : SamsaraPowerInvisibilityGiver {
 actor SamsaraPowerGhostGiver : SamsaraPowerupGiver { Powerup.Type "Ghost" }
 actor SamsaraPowerShadowGiver : SamsaraPowerupGiver { Powerup.Type "Shadow" }
 
-actor SamsaraPartialInvisibilityInventory : PowerupGiver
+actor SamsaraPartialInvisibilityInventory : CustomInventory
 {
-    Powerup.Type "Invisibility"
+    Inventory.UseSound ""
+    +INVBAR
     +UNDROPPABLE
+    States
+    {
+      Use:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UseHeretic")
+        TNT1 A 0 A_JumpIfInventory("StrifeClass",1,"UseStrife")
+        TNT1 A 0 A_JumpIfInventory("JonClass",1,"UsePowerSlave")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"UseHexen2")
+        TNT1 A 0 A_Jump(256,"UseDefault") // for inheriting actors
+        goto UseDefault
+
+      UseDefault:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 0, 0), "UseFail")
+        goto UsePlaySound
+
+      UseHeretic:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 0, 1), "UseFail")
+        goto UsePlaySound
+
+      UseStrife:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 0, 2), 1)
+        goto UsePlaySound
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraInvisibilityCumulativeChecker"), "UseFail") // not the best method, but it works
+        goto UsePlaySound
+
+      UsePowerSlave:
+        goto UseHeretic
+
+      UseHexen2:
+        goto UseHeretic
+
+      UsePlaySound:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UsePlaySoundHeretic")
+        TNT1 A 0 A_JumpIfInventory("StrifeClass",1,"UsePlaySoundStrife")
+        TNT1 A 0 A_JumpIfInventory("WitchavenClass",1,"UsePlaySoundWitchaven")
+        TNT1 A 0 A_JumpIfInventory("JonClass",1,"UsePlaySoundPowerSlave")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"UsePlaySoundHexen2")
+        TNT1 A 0 A_Jump(256,"UsePlaySoundDefault") // for inheriting actors
+        goto UsePlaySoundDefault
+
+      UsePlaySoundDefault:
+        goto UseSuccess
+
+      UsePlaySoundHeretic:
+        TNT1 A 0 A_PlaySound("heretic/itemuse",CHAN_ITEM)
+        goto UseSuccess
+
+      UsePlaySoundStrife:
+        TNT1 A 0 A_PlaySound("strife/itempickup",CHAN_ITEM)
+        goto UseSuccess
+
+      UsePlaySoundWitchaven:
+        TNT1 A 0 A_PlaySound("gplayer/drink",CHAN_ITEM)
+        goto UseSuccess
+
+      UsePlaySoundPowerSlave:
+        TNT1 A 0 A_PlaySound("Jon/itemuse",CHAN_ITEM)
+        goto UseSuccess
+
+      UsePlaySoundHexen2:
+        TNT1 A 0 A_PlaySound("Hexen2/ArtiUse",CHAN_ITEM)
+        goto UseSuccess
+
+      UseSuccess:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UseSuccessHeretic")
+        TNT1 A 0 A_JumpIfInventory("StrifeClass",1,"UseSuccessStrife")
+        TNT1 A 0 A_JumpIfInventory("WitchavenClass",1,"UseSuccessWitchaven")
+        TNT1 A 0 A_JumpIfInventory("JonClass",1,"UseSuccessPowerSlave")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"UseSuccessHexen2")
+        TNT1 A 0 A_Jump(256,"UseSuccessDefault") // for inheriting actors
+        goto UseSuccessDefault
+
+      UseSuccessDefault:
+        TNT1 A 0 A_GiveInventory("SamsaraPowerInvisibilityGiver")
+        goto UseFinish
+
+      UseSuccessHeretic:
+        TNT1 A 0 A_GiveInventory("SamsaraPowerGhostGiver")
+        goto UseFinish
+
+      UseSuccessStrife:
+        TNT1 A 0 A_GiveInventory("SamsaraPowerShadowGiver")
+        goto UseFinish
+
+      UseSuccessWitchaven:
+        TNT1 A 0 A_GiveInventory("SamsaraPowerInvisibilityGiverWitchaven")
+        goto UseFinish
+
+      UseSuccessPowerSlave:
+        goto UseSuccessHeretic
+
+      UseSuccessHexen2:
+        goto UseSuccessHeretic
+
+      UseFinish:
+        TNT1 A 0 A_RailWait
+        stop
+
+      UseFail:
+        TNT1 A 0
+        fail
+    }
 }
 
 actor PortGhostly : SamsaraPartialInvisibilityInventory
 {
-    Inventory.UseSound "heretic/itemuse"
     Inventory.Icon "ARTINVSI"
     Inventory.MaxAmount 16
     Inventory.InterHubAmount 16
     Inventory.RestrictedTo "CorvusPlayer"
-    Powerup.Type "Ghost"
     Tag "Shadowsphere"
 }
 
@@ -398,45 +498,39 @@ actor QuakeInvisTimer: Counter {}
 
 actor PortShadowArmor : SamsaraPartialInvisibilityInventory
 {
-    Inventory.UseSound "strife/itempickup"
     Inventory.Icon "I_SHDO"
     Inventory.MaxAmount 2
     Inventory.InterHubAmount 2
     Inventory.RestrictedTo "StrifeguyPlayer"
-    Powerup.Type "Shadow"
     Tag "Shadow Armor"
 }
 
 actor WTInvisibilityPhial : SamsaraPartialInvisibilityInventory
 {
-    Inventory.UseSound "gplayer/drink"
     Inventory.Icon "WIN0F0"
     Inventory.MaxAmount 10
     Inventory.InterHubAmount 10
     Inventory.RestrictedTo "GrondovalPlayer"
-    Powerup.Duration -30
     Tag "Invisibility Potion"
 }
 
+actor SamsaraPowerInvisibilityGiverWitchaven : SamsaraPowerInvisibilityGiver { Powerup.Duration -30 }
+
 actor EyeOfSiaItem_EX : SamsaraPartialInvisibilityInventory
 {
-    Inventory.UseSound "Jon/itemuse"
     Inventory.Icon "_EX3E0"
     Inventory.MaxAmount 3
     Inventory.InterHubAmount 3
     Inventory.RestrictedTo "PSPlayer"
-    Powerup.Type "Ghost"
     Tag "Eye of Sia"
 }
 
 actor PortGhostly2 : SamsaraPartialInvisibilityInventory
 {
-    Inventory.UseSound "Hexen2/ArtiUse"
     Inventory.Icon "H2INVT08"
     Inventory.MaxAmount 16
     Inventory.InterHubAmount 16
     Inventory.RestrictedTo "Demoness"
-    Powerup.Type "Ghost"
     Tag "Shadowsphere"
 }
 
@@ -814,60 +908,116 @@ actor PowerFakeInvulnerable : PowerProtection
     DamageFactor "Normal", 0
 }
 
-actor SamsaraInvulnPowerupInventory : PowerupGiver
+actor SamsaraInvulnPowerupInventory : CustomInventory
 {
-    Powerup.Type "FakeInvulnerable"
-    Powerup.Color "InverseMap"
-    +UNDROPPABLE
-}
-
-actor SamsaraPowerFakeInvulnerableGiverDoom64 : SamsaraPowerFakeInvulnerableGiver { Powerup.Color "White", 0.35 }
-
-actor PortRingInvuln : SamsaraInvulnPowerupInventory
-{
-    Inventory.UseSound "heretic/itemuse"
-    Inventory.Icon "ARTIINVU"
-    Inventory.MaxAmount 16
-    Inventory.InterHubAmount 16
-    Inventory.RestrictedTo "CorvusPlayer"
-    Powerup.Color "GoldMap"
-    Tag "Ring of Invincibility"
-}
-
-actor PortIconDefender : CustomInventory // special handling
-{
-    Inventory.UseSound "" // netplay hack
-    Inventory.Icon "ARTIDFND"
-    Inventory.MaxAmount 16
-    Inventory.InterHubAmount 16
-    Inventory.RestrictedTo "HexenPlayer"
-    Tag "Icon of the Defender"
+    Inventory.UseSound ""
     +INVBAR
     +UNDROPPABLE
     States
     {
-      // Parias (Reincarnation/Classic) (Ghost Invulnerability)
       Use:
-        TNT1 A 0 A_JumpIfInventory("PowerFakeInvulnerableCleric",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerFakeInvulnerableMage",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerFakeInvulnerableFighter",1,"UseFail")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"UseHexen1")
+        TNT1 A 0 A_Jump(256,"UseDefault") // for inheriting actors
+        goto UseDefault
+
+      UseDefault:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 1, 0), "UseFail")
+        goto UsePlaySound
+
+      UseHexen1:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 1, 1), "UseFail")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 1, 2), "UseFail")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 1, 3), "UseFail")
+        goto UsePlaySound
+
+      UsePlaySound:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UsePlaySoundHeretic")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"UsePlaySoundHexen1")
+        TNT1 A 0 A_JumpIfInventory("JonClass",1,"UsePlaySoundPowerSlave")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"UsePlaySoundHexen2")
+        TNT1 A 0 A_Jump(256,"UsePlaySoundDefault") // for inheriting actors
+        goto UsePlaySoundDefault
+
+      UsePlaySoundDefault:
+        goto UseSuccess
+
+      UsePlaySoundHeretic:
+        TNT1 A 0 A_PlaySound("heretic/itemuse",CHAN_ITEM)
+        goto UseSuccess
+
+      UsePlaySoundHexen1:
         TNT1 A 0 A_PlaySound("hexen/artiuse",CHAN_ITEM)
-        TNT1 A 0 A_JumpIfInventory("HexenClassMode",3,"UseFighter")
-        TNT1 A 0 A_JumpIfInventory("HexenClassMode",2,"UseMage")
-      UseCleric:
-        TNT1 A 0 A_GiveInventory("PowerFakeInvulnerableCleric")
+        goto UseSuccess
+
+      UsePlaySoundPowerSlave:
+        TNT1 A 0 A_PlaySound("Jon/itemuse",CHAN_ITEM)
+        goto UseSuccess
+
+      UsePlaySoundHexen2:
+        TNT1 A 0 A_PlaySound("Hexen2/ArtiUse",CHAN_ITEM)
+        goto UseSuccess
+
+      UseSuccess:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UseSuccessHeretic")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"UseSuccessHexen1")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"UseSuccessHexen2")
+        TNT1 A 0 A_Jump(256,"UseSuccessDefault") // for inheriting actors
+        goto UseSuccessDefault
+
+      UseSuccessDefault:
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFakeInvulnerableGiver")
+        goto UseFinish
+
+      UseSuccessHeretic:
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFakeInvulnerableGiverHeretic")
+        goto UseFinish
+
+      // Parias (Reincarnation/Classic) (Ghost Invulnerability)
+      UseSuccessHexen1:
+        TNT1 A 0 A_JumpIfInventory("HexenClassMode",3,"UseSuccessFighter")
+        TNT1 A 0 A_JumpIfInventory("HexenClassMode",2,"UseSuccessMage")
+      UseSuccessCleric:
+        TNT1 A 0 A_JumpIfInventory("PowerFakeInvulnerableCleric",1,"UseSuccessClericSubsequent")
+        TNT1 A 0 A_TakeInventory("PowerFakeInvulnerableMage")
+        TNT1 A 0 A_TakeInventory("PowerFakeInvulnerableFighter")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFakeInvulnerableGiverCleric")
         TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraHexenInvulnerabilityEffect", 0)
-        stop
+        goto UseFinish
+
+      UseSuccessClericSubsequent:
+        TNT1 A 0 A_TakeInventory("PowerFakeInvulnerableMage")
+        TNT1 A 0 A_TakeInventory("PowerFakeInvulnerableFighter")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFakeInvulnerableGiverCleric")
+        goto UseFinish
 
       // Daedolon (Reflective Invulnerability)
-      UseMage:
-        TNT1 A 0 A_GiveInventory("PowerFakeInvulnerableMage")
+      UseSuccessMage:
+        TNT1 A 0 A_JumpIfInventory("PowerFakeInvulnerableMage",1,"UseSuccessMageSubsequent")
+        TNT1 A 0 A_TakeInventory("PowerFakeInvulnerableCleric")
+        TNT1 A 0 A_TakeInventory("PowerFakeInvulnerableFighter")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFakeInvulnerableGiverMage")
         TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraHexenInvulnerabilityEffect", 1)
-        stop
+        goto UseFinish
+
+      UseSuccessMageSubsequent:
+        TNT1 A 0 A_TakeInventory("PowerFakeInvulnerableCleric")
+        TNT1 A 0 A_TakeInventory("PowerFakeInvulnerableFighter")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFakeInvulnerableGiverMage")
+        goto UseFinish
 
       // Baratus (Normal Invulnerability)
-      UseFighter:
-        TNT1 A 0 A_GiveInventory("PowerFakeInvulnerableFighter")
+      UseSuccessFighter:
+        TNT1 A 0 A_TakeInventory("PowerFakeInvulnerableCleric")
+        TNT1 A 0 A_TakeInventory("PowerFakeInvulnerableMage")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFakeInvulnerableGiverFighter")
+        goto UseFinish
+
+      UseSuccessHexen2:
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFakeInvulnerableGiverHexen2")
+        goto UseFinish
+
+      UseFinish:
+        TNT1 A 0 A_RailWait
         stop
 
       UseFail:
@@ -876,9 +1026,51 @@ actor PortIconDefender : CustomInventory // special handling
     }
 }
 
-actor PowerFakeInvulnerableCleric : PowerFakeInvulnerable { Powerup.Color "Gray", 0.1 }
-actor PowerFakeInvulnerableMage : PowerFakeInvulnerable { Powerup.Color "Gray", 0.1 }
-actor PowerFakeInvulnerableFighter : PowerFakeInvulnerable { Powerup.Color "Gray", 0.1 }
+actor SamsaraPowerFakeInvulnerableGiverDoom64 : SamsaraPowerFakeInvulnerableGiver { Powerup.Color "White", 0.35 }
+
+actor PortRingInvuln : SamsaraInvulnPowerupInventory
+{
+    Inventory.Icon "ARTIINVU"
+    Inventory.MaxAmount 16
+    Inventory.InterHubAmount 16
+    Inventory.RestrictedTo "CorvusPlayer"
+    Tag "Ring of Invincibility"
+}
+
+actor SamsaraPowerFakeInvulnerableGiverHeretic : SamsaraPowerFakeInvulnerableGiver { Powerup.Color "GoldMap" }
+
+actor PortIconDefender : SamsaraInvulnPowerupInventory
+{
+    Inventory.Icon "ARTIDFND"
+    Inventory.MaxAmount 16
+    Inventory.InterHubAmount 16
+    Inventory.RestrictedTo "HexenPlayer"
+    Tag "Icon of the Defender"
+}
+
+actor SamsaraPowerFakeInvulnerableGiverCleric : SamsaraPowerupGiver
+{
+    Powerup.Type "FakeInvulnerableCleric"
+    Powerup.Color "Gray", 0.1
+}
+
+actor PowerFakeInvulnerableCleric : PowerFakeInvulnerable {}
+
+actor SamsaraPowerFakeInvulnerableGiverMage : SamsaraPowerupGiver
+{
+    Powerup.Type "FakeInvulnerableMage"
+    Powerup.Color "Gray", 0.1
+}
+
+actor PowerFakeInvulnerableMage : PowerFakeInvulnerable {}
+
+actor SamsaraPowerFakeInvulnerableGiverFighter : SamsaraPowerupGiver
+{
+    Powerup.Type "FakeInvulnerableFighter"
+    Powerup.Color "Gray", 0.1
+}
+
+actor PowerFakeInvulnerableFighter : PowerFakeInvulnerable {}
 
 actor SamsaraPowerFakeInvulnerableGiverDuke : SamsaraPowerFakeInvulnerableGiver { Powerup.Color "GoldMap" }
 
@@ -896,7 +1088,6 @@ actor SamsaraPowerFakeInvulnerableGiverRMR : SamsaraPowerFakeInvulnerableGiver {
 
 actor DivineScarab_Ex : SamsaraInvulnPowerupInventory
 {
-    Inventory.UseSound "Jon/itemuse"
     Inventory.Icon "_EX3F0"
     Inventory.MaxAmount 2
     Inventory.InterHubAmount 2
@@ -906,14 +1097,14 @@ actor DivineScarab_Ex : SamsaraInvulnPowerupInventory
 
 actor PortIconDefender2 : SamsaraInvulnPowerupInventory
 {
-    Inventory.UseSound "Hexen2/ArtiUse"
     Inventory.Icon "H2INVT07"
     Inventory.MaxAmount 16
     Inventory.InterHubAmount 16
     Inventory.RestrictedTo "Demoness"
-    Powerup.Color "Gray", 0.1
     Tag "Icon of the Defender"
 }
+
+actor SamsaraPowerFakeInvulnerableGiverHexen2 : SamsaraPowerFakeInvulnerableGiver { Powerup.Color "Gray", 0.1 }
 
 actor SamsaraPowerFakeInvulnerableGiverDeusEx1 : SamsaraPowerFakeInvulnerableGiver {}
 actor SamsaraPowerFakeInvulnerableGiverDeusEx2 : SamsaraPowerFakeInvulnerableGiver { Powerup.Duration -37 }
@@ -1125,10 +1316,49 @@ actor SamsaraPowerIronFeetGiverNoColor : SamsaraPowerupGiver { Powerup.Type "Iro
 
 actor PowerIronFeetNoColor : PowerIronFeet { Powerup.Color "Green", 0 } // can't remove the color in PowerupGiver, so a powerup-inherited actor it is
 
-actor SamsaraBioSuitInventory : PowerupGiver
+actor SamsaraBioSuitInventory : CustomInventory
 {
-    Powerup.Type "IronFeet"
+    Inventory.UseSound ""
+    +INVBAR
     +UNDROPPABLE
+    States
+    {
+      Use:
+        TNT1 A 0 A_Jump(256,"UseDefault") // for inheriting actors
+        goto UseDefault
+
+      UseDefault:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 2, 0), "UseFail")
+        goto UsePlaySound
+
+      UsePlaySound:
+        TNT1 A 0 A_JumpIfInventory("StrifeClass",1,"UsePlaySoundStrife")
+        TNT1 A 0 A_Jump(256,"UsePlaySoundDefault") // for inheriting actors
+        goto UsePlaySoundDefault
+
+      UsePlaySoundDefault:
+        goto UseSuccess
+
+      UsePlaySoundStrife:
+        TNT1 A 0 A_PlaySound("strife/itempickup",CHAN_ITEM)
+        goto UseSuccess
+
+      UseSuccess:
+        TNT1 A 0 A_Jump(256,"UseSuccessDefault") // for inheriting actors
+        goto UseSuccessDefault
+
+      UseSuccessDefault:
+        TNT1 A 0 A_GiveInventory("SamsaraPowerIronFeetGiver")
+        goto UseFinish
+
+      UseFinish:
+        TNT1 A 0 A_RailWait
+        stop
+
+      UseFail:
+        TNT1 A 0
+        fail
+    }
 }
 
 actor SamsaraPowerIronFeetGiverDoom64 : SamsaraPowerIronFeetGiver { Powerup.Color "Green", 0.15 }
@@ -1137,7 +1367,6 @@ actor SamsaraPowerIronFeetGiverROTT : SamsaraPowerIronFeetGiverNoColor { Powerup
 
 actor PortEnviSuit : SamsaraBioSuitInventory
 {
-    Inventory.UseSound "strife/itempickup"
     Inventory.Icon "I_GASM"
     Inventory.MaxAmount 5
     Inventory.InterHubAmount 5
@@ -1252,8 +1481,7 @@ actor Visor : SamsaraPowerupPickup
         goto PickupDisplay
 
       PickupHexen1:
-        TNT1 A 0 A_JumpIfInventory("PortTorch2",0,"PickupFail")
-        goto PickupDisplay
+        goto PickupHeretic
 
       PickupDuke:
         TNT1 A 0 A_JumpIfInventory("DukePortNiVi",1,1)
@@ -1379,8 +1607,7 @@ actor Visor : SamsaraPowerupPickup
         stop
 
       PickupSuccessHexen1:
-        TNT1 A 0 A_GiveInventory("PortTorch2")
-        stop
+        goto PickupSuccessHeretic
 
       PickupSuccessDuke:
         TNT1 A 0 A_GiveInventory("DukePortNiVi")
@@ -1457,51 +1684,128 @@ actor ChexVisor : Visor 2045 //replaces UltraGoggles
 actor RavenVisor : Visor replaces ArtiTorch {}
 
 actor SamsaraPowerLightAmpGiver : SamsaraPowerupGiver { Powerup.Type "LightAmp" }
+actor SamsaraPowerTorchGiver : SamsaraPowerupGiver { Powerup.Type "Torch" }
 
-actor SamsaraVisorInventory : PowerupGiver
+actor SamsaraVisorInventory : CustomInventory
 {
-    Powerup.Type "LightAmp"
+    Inventory.UseSound ""
+    +INVBAR
     +UNDROPPABLE
+    States
+    {
+      Use:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UseHeretic")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"UseHexen1")
+        TNT1 A 0 A_JumpIfInventory("JonClass",1,"UsePowerSlave")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"UseHexen2")
+        TNT1 A 0 A_Jump(256,"UseDefault") // for inheriting actors
+        goto UseDefault
+
+      UseDefault:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 3, 0), "UseFail")
+        goto UsePlaySound
+
+      UseHeretic:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 3, 1), "UseFail")
+        goto UsePlaySound
+
+      UseHexen1:
+        goto UseHeretic
+
+      UsePowerSlave:
+        goto UseHeretic
+
+      UseHexen2:
+        goto UseHeretic
+
+      UsePlaySound:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UsePlaySoundHeretic")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"UsePlaySoundHexen1")
+        TNT1 A 0 A_JumpIfInventory("JonClass",1,"UsePlaySoundPowerSlave")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"UsePlaySoundHexen2")
+        TNT1 A 0 A_Jump(256,"UsePlaySoundDefault") // for inheriting actors
+        goto UsePlaySoundDefault
+
+      UsePlaySoundDefault:
+        goto UseSuccess
+
+      UsePlaySoundHeretic:
+        TNT1 A 0 A_PlaySound("heretic/itemuse",CHAN_ITEM)
+        goto UseSuccess
+
+      UsePlaySoundHexen1:
+        TNT1 A 0 A_PlaySound("hexen/artiuse",CHAN_ITEM)
+        goto UseSuccess
+
+      UsePlaySoundPowerSlave:
+        TNT1 A 0 A_PlaySound("Jon/itemuse",CHAN_ITEM)
+        goto UseSuccess
+
+      UsePlaySoundHexen2:
+        TNT1 A 0 A_PlaySound("Hexen2/ArtiUse",CHAN_ITEM)
+        goto UseSuccess
+
+      UseSuccess:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UseSuccessHeretic")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"UseSuccessHexen1")
+        TNT1 A 0 A_JumpIfInventory("JonClass",1,"UseSuccessPowerSlave")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"UseSuccessHexen2")
+        TNT1 A 0 A_Jump(256,"UseSuccessDefault") // for inheriting actors
+        goto UseSuccessDefault
+
+      UseSuccessDefault:
+        TNT1 A 0 A_GiveInventory("SamsaraPowerLightAmpGiver")
+        goto UseFinish
+
+      UseSuccessHeretic:
+        TNT1 A 0 A_GiveInventory("SamsaraPowerTorchGiver")
+        goto UseFinish
+
+      UseSuccessHexen1:
+        goto UseSuccessHeretic
+
+      UseSuccessPowerSlave:
+        goto UseSuccessHeretic
+
+      UseSuccessHexen2:
+        goto UseSuccessHeretic
+
+      UseFinish:
+        TNT1 A 0 A_RailWait
+        stop
+
+      UseFail:
+        TNT1 A 0
+        fail
+    }
 }
 
 actor PortTorch : SamsaraVisorInventory
 {
-    Inventory.UseSound "heretic/itemuse"
     Inventory.Icon "ARTITRCH"
     Inventory.MaxAmount 16
     Inventory.InterHubAmount 16
-    Inventory.RestrictedTo "CorvusPlayer"
-    Powerup.Type "Torch"
+    Inventory.RestrictedTo "CorvusPlayer", "HexenPlayer"
     Tag "Torch"
-}
-
-actor PortTorch2 : PortTorch
-{
-    Inventory.UseSound "hexen/artiuse"
-    Inventory.RestrictedTo "HexenPlayer"
 }
 
 actor SamsaraPowerLightAmpGiverMarathon : SamsaraPowerLightAmpGiver { Powerup.Color "BlueMap" }
 
 actor LighterofGumercindo_EX : SamsaraVisorInventory
 {
-    Inventory.UseSound "Jon/itemuse"
     Inventory.Icon "_EX3D0"
     Inventory.MaxAmount 6
     Inventory.InterHubAmount 6
     Inventory.RestrictedTo "PSPlayer"
-    Powerup.Type "Torch"
     Tag "Lighter of Gumercindo"
 }
 
-actor PortTorch3 : PowerupGiver
+actor PortTorch3 : SamsaraVisorInventory
 {
-    Inventory.UseSound "Hexen2/ArtiUse"
     Inventory.Icon "H2INVT03"
     Inventory.MaxAmount 16
     Inventory.InterHubAmount 16
     Inventory.RestrictedTo "Demoness"
-    Powerup.Type "Torch"
     Tag "Torch"
 }
 
@@ -1684,18 +1988,17 @@ actor SamsaraLesserTome : SamsaraPowerupPickup
 
 actor SamsaraHereticLesserTome : SamsaraLesserTome replaces ArtiTomeOfPower {}
 
+actor SamsaraPowerLesserTomeGiver : SamsaraPowerupGiver
+{
+    Powerup.Type "SamsaraLesserTome"
+    Powerup.Color "Red", 0.1
+}
+
 actor PowerSamsaraLesserTome : PowerDamage
 {
     Powerup.Duration -30
-    Powerup.Color "Red", 0.1
     DamageFactor "Normal", 2
 }
-
-actor PowerSamsaraLesserTomeDeusEx1 : PowerSamsaraLesserTome {}
-actor PowerSamsaraLesserTomeDeusEx2 : PowerSamsaraLesserTome { Powerup.Duration -37 }
-actor PowerSamsaraLesserTomeDeusEx3 : PowerSamsaraLesserTome { Powerup.Duration -45 }
-actor PowerSamsaraLesserTomeDeusEx4 : PowerSamsaraLesserTome { Powerup.Duration -53 }
-actor PowerSamsaraLesserTomeDeusEx5 : PowerSamsaraLesserTome { Powerup.Duration -60 }
 
 actor SamsaraLesserTomeItem : CustomInventory
 {
@@ -1710,20 +2013,11 @@ actor SamsaraLesserTomeItem : CustomInventory
     States
     {
       Use:
-        TNT1 A 0 A_JumpIfInventory("DeusExClass",1,"UseDeusEx")
         TNT1 A 0 A_Jump(256,"UseDefault") // for inheriting actors
         goto UseDefault
 
       UseDefault:
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraLesserTome",1,"UseFail")
-        goto UsePlaySound
-
-      UseDeusEx:
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraLesserTomeDeusEx1",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraLesserTomeDeusEx2",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraLesserTomeDeusEx3",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraLesserTomeDeusEx4",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraLesserTomeDeusEx5",1,"UseFail")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 4, 0), "UseFail")
         goto UsePlaySound
 
       UsePlaySound:
@@ -1750,7 +2044,7 @@ actor SamsaraLesserTomeItem : CustomInventory
         goto UseSuccessDefault
 
       UseSuccessDefault:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraLesserTome")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerLesserTomeGiver")
         goto UseFinish
 
       UseSuccessDeusEx:
@@ -1759,23 +2053,23 @@ actor SamsaraLesserTomeItem : CustomInventory
         TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill",2,"UseSuccessDeusExProficient")
         TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill",1,"UseSuccessDeusExTrained")
       UseSuccessDeusExUntrained:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraLesserTomeDeusEx1")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerLesserTomeGiverDeusEx1")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExTrained:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraLesserTomeDeusEx2")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerLesserTomeGiverDeusEx2")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExProficient:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraLesserTomeDeusEx3")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerLesserTomeGiverDeusEx3")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExAdvanced:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraLesserTomeDeusEx4")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerLesserTomeGiverDeusEx4")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExMaster:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraLesserTomeDeusEx5")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerLesserTomeGiverDeusEx5")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExFinish:
@@ -1798,6 +2092,12 @@ actor SamsaraLesserTomeItemRaven : SamsaraLesserTomeItem
     Inventory.RestrictedTo "CorvusPlayer", "HexenPlayer"
     Tag "Novice's Tome of Strength"
 }
+
+actor SamsaraPowerLesserTomeGiverDeusEx1 : SamsaraPowerLesserTomeGiver {}
+actor SamsaraPowerLesserTomeGiverDeusEx2 : SamsaraPowerLesserTomeGiver { Powerup.Duration -37 }
+actor SamsaraPowerLesserTomeGiverDeusEx3 : SamsaraPowerLesserTomeGiver { Powerup.Duration -45 }
+actor SamsaraPowerLesserTomeGiverDeusEx4 : SamsaraPowerLesserTomeGiver { Powerup.Duration -53 }
+actor SamsaraPowerLesserTomeGiverDeusEx5 : SamsaraPowerLesserTomeGiver { Powerup.Duration -60 }
 
 // Teleportation
 actor SamsaraTeleportPickup : SamsaraPowerupPickup
@@ -2072,29 +2372,19 @@ actor SamsaraFlightPickup : SamsaraPowerupPickup
 
 actor SamsaraRavenFlightPickup : SamsaraFlightPickup replaces ArtiFly {}
 
-actor PowerSamsaraFlight : PowerFlight
+actor SamsaraPowerFlightGiver : SamsaraPowerupGiver
 {
-    Inventory.Icon "TNT1A0" // can't use ""
+    Powerup.Type "SamsaraFlight"
     Powerup.Color "Yellow", 0.1
 }
 
-actor PowerSamsaraFlightRaven : PowerFlight { Inventory.Icon "HERFLY0" }
-
-actor PowerSamsaraFlightDeusEx1 : PowerSamsaraFlight {}
-actor PowerSamsaraFlightDeusEx2 : PowerSamsaraFlight { Powerup.Duration -75 }
-actor PowerSamsaraFlightDeusEx3 : PowerSamsaraFlight { Powerup.Duration -90 }
-actor PowerSamsaraFlightDeusEx4 : PowerSamsaraFlight { Powerup.Duration -105 }
-actor PowerSamsaraFlightDeusEx5 : PowerSamsaraFlight { Powerup.Duration -120 }
+actor PowerSamsaraFlight : PowerFlight { Inventory.Icon "TNT1A0" } // can't use ""
 
 // Online games need this because for some reason, the powerup won't
 // last forever in Hexen netgames like it's supposed to.
-actor PowerSamsaraFlightInfinite : PowerSamsaraFlight
-{
-    Powerup.Duration 0x7FFFFFFD
-    Powerup.Color "Yellow", 0
-}
+actor SamsaraPowerFlightInfiniteGiver : SamsaraPowerupGiver { Powerup.Type "SamsaraFlightInfinite" }
 
-actor PowerSamsaraFlightInfiniteRaven : PowerSamsaraFlightRaven { Powerup.Duration 0x7FFFFFFD }
+actor PowerSamsaraFlightInfinite : PowerSamsaraFlight { Powerup.Duration 0x7FFFFFFD }
 
 actor SamsaraFlightPickupItem : CustomInventory
 {
@@ -2111,31 +2401,21 @@ actor SamsaraFlightPickupItem : CustomInventory
       Use:
         TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UseHeretic")
         TNT1 A 0 A_JumpIfInventory("HexenClass",1,"UseHexen1")
-        TNT1 A 0 A_JumpIfInventory("DeusExClass",1,"UseDeusEx")
         TNT1 A 0 A_Jump(256,"UseDefault") // for inheriting actors
         goto UseDefault
 
       UseDefault:
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlight",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlightInfinite",1,"UseFail")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 5, 0), "UseFail")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 5, 2), "UseFail")
         goto UsePlaySound
 
       UseHeretic:
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlightRaven",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlightInfiniteRaven",1,"UseFail")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 5, 1), "UseFail")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 5, 3), "UseFail")
         goto UsePlaySound
 
       UseHexen1:
         goto UseHeretic
-
-      UseDeusEx:
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlightDeusEx1",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlightDeusEx2",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlightDeusEx3",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlightDeusEx4",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlightDeusEx5",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlightInfinite",1,"UseFail")
-        goto UsePlaySound
 
       UsePlaySound:
         TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UsePlaySoundHeretic")
@@ -2167,20 +2447,20 @@ actor SamsaraFlightPickupItem : CustomInventory
 
       UseSuccessDefault:
         TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 49) == 8, "UseSuccessDefaultInfinite")
-        TNT1 A 0 A_GiveInventory("PowerSamsaraFlight")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightGiver")
         goto UseFinish
 
       UseSuccessDefaultInfinite:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraFlightInfinite")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightInfiniteGiver")
         goto UseFinish
 
       UseSuccessHeretic:
         TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 49) == 8, "UseSuccessHereticInfinite")
-        TNT1 A 0 A_GiveInventory("PowerSamsaraFlightRaven")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightGiverRaven")
         goto UseFinish
 
       UseSuccessHereticInfinite:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraFlightInfiniteRaven")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightInfiniteGiverRaven")
         goto UseFinish
 
       UseSuccessHexen1:
@@ -2216,27 +2496,27 @@ actor SamsaraFlightPickupItem : CustomInventory
         TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill",2,"UseSuccessDeusExProficient")
         TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill",1,"UseSuccessDeusExTrained")
       UseSuccessDeusExUntrained:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraFlightDeusEx1")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightGiverDeusEx1")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExTrained:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraFlightDeusEx2")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightGiverDeusEx2")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExProficient:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraFlightDeusEx3")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightGiverDeusEx3")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExAdvanced:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraFlightDeusEx4")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightGiverDeusEx4")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExMaster:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraFlightDeusEx5")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightGiverDeusEx5")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExInfinite:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraFlightInfinite")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightInfiniteGiver")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExFinish:
@@ -2259,6 +2539,20 @@ actor SamsaraFlightPickupItemRaven : SamsaraFlightPickupItem
     Inventory.RestrictedTo "CorvusPlayer", "HexenPlayer"
     Tag "Wings of Wrath"
 }
+
+actor SamsaraPowerFlightGiverRaven : SamsaraPowerupGiver { Powerup.Type "SamsaraFlightRaven" }
+
+actor PowerSamsaraFlightRaven : PowerFlight { Inventory.Icon "HERFLY0" }
+
+actor SamsaraPowerFlightGiverDeusEx1 : SamsaraPowerFlightGiver {}
+actor SamsaraPowerFlightGiverDeusEx2 : SamsaraPowerFlightGiver { Powerup.Duration -75 }
+actor SamsaraPowerFlightGiverDeusEx3 : SamsaraPowerFlightGiver { Powerup.Duration -90 }
+actor SamsaraPowerFlightGiverDeusEx4 : SamsaraPowerFlightGiver { Powerup.Duration -105 }
+actor SamsaraPowerFlightGiverDeusEx5 : SamsaraPowerFlightGiver { Powerup.Duration -120 }
+
+actor SamsaraPowerFlightInfiniteGiverRaven : SamsaraPowerupGiver { Powerup.Type "SamsaraFlightInfiniteRaven" }
+
+actor PowerSamsaraFlightInfiniteRaven : PowerSamsaraFlightRaven { Powerup.Duration 0x7FFFFFFD }
 
 // Hexen Powerups
 
@@ -2358,19 +2652,13 @@ actor SamsaraSpeedBootsPickup : SamsaraPowerupPickup
 
 actor SamsaraHexenSpeedBootsPickup : SamsaraSpeedBootsPickup replaces ArtiSpeedBoots {}
 
-actor PowerSamsaraSpeedBoots : PowerSpeed
+actor SamsaraPowerSpeedBootsGiver : SamsaraPowerupGiver
 {
-    Inventory.Icon ""
+    Powerup.Type "SamsaraSpeedBoots"
     Powerup.Color "Orange", 0.1
 }
 
-actor PowerSamsaraSpeedBootsRaven : PowerSpeed { Inventory.Icon "HXSPD0" }
-
-actor PowerSamsaraSpeedBootsDeusEx1 : PowerSamsaraSpeedBoots {}
-actor PowerSamsaraSpeedBootsDeusEx2 : PowerSamsaraSpeedBoots { Powerup.Duration -56 }
-actor PowerSamsaraSpeedBootsDeusEx3 : PowerSamsaraSpeedBoots { Powerup.Duration -68 }
-actor PowerSamsaraSpeedBootsDeusEx4 : PowerSamsaraSpeedBoots { Powerup.Duration -79 }
-actor PowerSamsaraSpeedBootsDeusEx5 : PowerSamsaraSpeedBoots { Powerup.Duration -90 }
+actor PowerSamsaraSpeedBoots : PowerSpeed { Inventory.Icon "" }
 
 actor SamsaraSpeedBootsPickupItem : CustomInventory
 {
@@ -2387,28 +2675,19 @@ actor SamsaraSpeedBootsPickupItem : CustomInventory
       Use:
         TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UseHeretic")
         TNT1 A 0 A_JumpIfInventory("HexenClass",1,"UseHexen1")
-        TNT1 A 0 A_JumpIfInventory("DeusExClass",1,"UseDeusEx")
         TNT1 A 0 A_Jump(256,"UseDefault") // for inheriting actors
         goto UseDefault
 
       UseDefault:
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraSpeedBoots",1,"UseFail")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 6, 0), "UseFail")
         goto UsePlaySound
 
       UseHeretic:
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraSpeedBootsRaven",1,"UseFail")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 6, 1), "UseFail")
         goto UsePlaySound
 
       UseHexen1:
         goto UseHeretic
-
-      UseDeusEx:
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraSpeedBootsDeusEx1",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraSpeedBootsDeusEx2",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraSpeedBootsDeusEx3",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraSpeedBootsDeusEx4",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraSpeedBootsDeusEx5",1,"UseFail")
-        goto UsePlaySound
 
       UsePlaySound:
         TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"UsePlaySoundHeretic")
@@ -2436,11 +2715,11 @@ actor SamsaraSpeedBootsPickupItem : CustomInventory
         goto UseSuccessDefault
 
       UseSuccessDefault:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraSpeedBoots")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerSpeedBootsGiver")
         goto UseFinish
 
       UseSuccessHeretic:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraSpeedBootsRaven")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerSpeedBootsGiverRaven")
         goto UseFinish
 
       UseSuccessHexen1:
@@ -2452,23 +2731,23 @@ actor SamsaraSpeedBootsPickupItem : CustomInventory
         TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill",2,"UseSuccessDeusExProficient")
         TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill",1,"UseSuccessDeusExTrained")
       UseSuccessDeusExUntrained:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraSpeedBootsDeusEx1")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerSpeedBootsGiverDeusEx1")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExTrained:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraSpeedBootsDeusEx2")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerSpeedBootsGiverDeusEx2")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExProficient:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraSpeedBootsDeusEx3")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerSpeedBootsGiverDeusEx3")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExAdvanced:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraSpeedBootsDeusEx4")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerSpeedBootsGiverDeusEx4")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExMaster:
-        TNT1 A 0 A_GiveInventory("PowerSamsaraSpeedBootsDeusEx5")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerSpeedBootsGiverDeusEx5")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExFinish:
@@ -2491,6 +2770,16 @@ actor SamsaraSpeedBootsPickupItemRaven : SamsaraSpeedBootsPickupItem
     Inventory.RestrictedTo "CorvusPlayer", "HexenPlayer"
     Tag "Boots of Speed"
 }
+
+actor SamsaraPowerSpeedBootsGiverRaven : SamsaraPowerupGiver { Powerup.Type "SamsaraSpeedBootsRaven" }
+
+actor PowerSamsaraSpeedBootsRaven : PowerSpeed { Inventory.Icon "HXSPD0" }
+
+actor SamsaraPowerSpeedBootsGiverDeusEx1 : SamsaraPowerSpeedBootsGiver {}
+actor SamsaraPowerSpeedBootsGiverDeusEx2 : SamsaraPowerSpeedBootsGiver { Powerup.Duration -56 }
+actor SamsaraPowerSpeedBootsGiverDeusEx3 : SamsaraPowerSpeedBootsGiver { Powerup.Duration -68 }
+actor SamsaraPowerSpeedBootsGiverDeusEx4 : SamsaraPowerSpeedBootsGiver { Powerup.Duration -79 }
+actor SamsaraPowerSpeedBootsGiverDeusEx5 : SamsaraPowerSpeedBootsGiver { Powerup.Duration -90 }
 
 // Banishment
 actor SamsaraTeleportOtherPickup : SamsaraPowerupPickup
