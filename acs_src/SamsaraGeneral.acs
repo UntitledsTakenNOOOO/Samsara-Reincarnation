@@ -20,7 +20,6 @@
 
 script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORATE
 {
-	int clipcount;
 	int result;
 	int i, j, k;
 	int x, y, z;
@@ -115,12 +114,9 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 		break;
 
 	case 9:
-		clipcount = CheckInventory("Clip");
-
-		if (clipcount < 50)
+		if (CheckInventory("Clip") < 50)
 		{
-			GiveInventory("Clip", 50 - clipcount);
-			TakeInventory("Clip", CheckInventory("Clip") - 50);
+			SetInventory("Clip", 50);
 			result = 1;
 		}
 		break;
@@ -7428,13 +7424,28 @@ script "SamsaraPlayerHealer" (int healamount, int healcap, int usemaxbonus)
     else if (healamount < 0) { SetResultValue(healthcapcheck); } // check health
 }
 
-script "SamsaraPlayerHealerSurgeryKit" (void)
+script "SamsaraPlayerHealerStrife" (int mode)
 {
+    int result = 0;
     int healthtogive = getMaxHealth(0);
 
     if (healthtogive < 250 && CheckInventory("SamsaraHasProsperity")) { healthtogive = 250; }
 
-    ACS_NamedExecuteWithResult("SamsaraPlayerHealer", healthtogive);
+    if (mode >= 1) // Health Fillup
+    {
+        healthtogive /= 2;
+
+        if (GetActorProperty(0, APROP_Health) < ACS_NamedExecuteWithResult("SamsaraPlayerHealer", -1, -healthtogive))
+        {
+            ACS_NamedExecuteWithResult("SamsaraPlayerHealer", healthtogive, -healthtogive);
+            result = 1;
+        }
+    } else { // Surgery Kit
+        ACS_NamedExecuteWithResult("SamsaraPlayerHealer", healthtogive);
+        result = 1;
+    }
+
+    SetResultValue(result);
 }
 
 script "SamsaraPlayerSpawnHealthAdjust" (int amount, int add, int maxtype, int maxcap)
