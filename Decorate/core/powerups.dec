@@ -1248,8 +1248,14 @@ actor BioSuit : SamsaraPowerupPickup
         goto PickupSuccessDefault
 
       PickupSuccessROTT:
-        TNT1 A 0 A_JumpIfInventory("PowerIronFeetNoColor",1,2)
-        TNT1 A 0 ACS_NamedExecuteAlways("RottGasMask")
+        TNT1 A 0 A_JumpIfInventory("PowerIronFeetNoColor",1,"PickupSuccessROTTSubsequent")
+        TNT1 A 0 A_TakeInventory("PowerBulletProofVest")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerIronFeetGiverROTT")
+        TNT1 A 0 A_GiveInventory("AsbestosArmor")
+        TNT1 A 0 ACS_NamedExecuteWithResult("RottGasMask")
+        stop
+
+      PickupSuccessROTTSubsequent:
         TNT1 A 0 A_TakeInventory("PowerBulletProofVest")
         TNT1 A 0 A_GiveInventory("SamsaraPowerIronFeetGiverROTT")
         TNT1 A 0 A_GiveInventory("AsbestosArmor")
@@ -2352,9 +2358,19 @@ actor PowerSamsaraFlight : PowerFlight { Inventory.Icon "TNT1A0" } // can't use 
 
 // Online games need this because for some reason, the powerup won't
 // last forever in Hexen netgames like it's supposed to.
-actor SamsaraPowerFlightInfiniteGiver : SamsaraPowerupGiver { Powerup.Type "SamsaraFlightInfinite" }
+actor SamsaraPowerFlightGiverInfinite : SamsaraPowerFlightGiver
+{
+    Powerup.Duration 0x7FFFFFFD
+    Powerup.Color "Yellow", 0
+}
 
-actor PowerSamsaraFlightInfinite : PowerSamsaraFlight { Powerup.Duration 0x7FFFFFFD }
+actor SamsaraPowerFlightInfiniteHUDDummyGiver : SamsaraPowerupGiver { Powerup.Type "SamsaraFlightInfiniteHUDDummy" } // in case some custom HUD wants to hide the timer for hexen
+
+actor PowerSamsaraFlightInfiniteHUDDummy : Powerup
+{
+    Powerup.Duration 0x7FFFFFFD
+    +HUBPOWER
+}
 
 actor SamsaraFlightPickupInventory : CustomInventory
 {
@@ -2376,12 +2392,10 @@ actor SamsaraFlightPickupInventory : CustomInventory
 
       UseDefault:
         TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 6, 0), "UseFail")
-        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 6, 2), "UseFail")
         goto UsePlaySound
 
       UseHeretic:
         TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 6, 1), "UseFail")
-        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 6, 3), "UseFail")
         goto UsePlaySound
 
       UseHexen1:
@@ -2421,7 +2435,8 @@ actor SamsaraFlightPickupInventory : CustomInventory
         goto UseFinish
 
       UseSuccessDefaultInfinite:
-        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightInfiniteGiver")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightGiverInfinite")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightInfiniteHUDDummyGiver")
         goto UseFinish
 
       UseSuccessHeretic:
@@ -2430,7 +2445,8 @@ actor SamsaraFlightPickupInventory : CustomInventory
         goto UseFinish
 
       UseSuccessHereticInfinite:
-        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightInfiniteGiverRaven")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightGiverRavenInfinite")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightInfiniteHUDDummyGiver")
         goto UseFinish
 
       UseSuccessHexen1:
@@ -2448,15 +2464,13 @@ actor SamsaraFlightPickupInventory : CustomInventory
         goto UseSuccessDefault
 
       UseSuccessRMR:
-        TNT1 A 0 A_TakeInventory("RMRFlyAbilityHack")
-        TNT1 A 0 A_TakeInventory("RMRFlyAbility")
-        TNT1 A 0 A_TakeInventory("RMRFlyAbility_2Hack")
-        TNT1 A 0 A_TakeInventory("RMRFlyAbility_2")
+        TNT1 A 0 A_TakeInventory("PowerRMRFlyAbility")
+        TNT1 A 0 A_TakeInventory("PowerRMRFlyAbilityHack")
         goto UseSuccessDefault
 
       UseSuccessWitchaven:
-        TNT1 A 0 A_TakeInventory("WTSpellFlyHack")
-        TNT1 A 0 A_TakeInventory("WTSpellFly")
+        TNT1 A 0 A_TakeInventory("PowerWTSpellFly")
+        TNT1 A 0 A_TakeInventory("PowerWTSpellFlyHack")
         goto UseSuccessDefault
 
       UseSuccessDeusEx:
@@ -2486,7 +2500,8 @@ actor SamsaraFlightPickupInventory : CustomInventory
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExInfinite:
-        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightInfiniteGiver")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightGiverInfinite")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerFlightInfiniteHUDDummyGiver")
         goto UseSuccessDeusExFinish
 
       UseSuccessDeusExFinish:
@@ -2520,9 +2535,7 @@ actor SamsaraPowerFlightGiverDeusEx3 : SamsaraPowerFlightGiver { Powerup.Duratio
 actor SamsaraPowerFlightGiverDeusEx4 : SamsaraPowerFlightGiver { Powerup.Duration -105 }
 actor SamsaraPowerFlightGiverDeusEx5 : SamsaraPowerFlightGiver { Powerup.Duration -120 }
 
-actor SamsaraPowerFlightInfiniteGiverRaven : SamsaraPowerupGiver { Powerup.Type "SamsaraFlightInfiniteRaven" }
-
-actor PowerSamsaraFlightInfiniteRaven : PowerSamsaraFlightRaven { Powerup.Duration 0x7FFFFFFD }
+actor SamsaraPowerFlightGiverRavenInfinite : SamsaraPowerFlightGiverRaven { Powerup.Duration 0x7FFFFFFD }
 
 // Hexen Powerups
 

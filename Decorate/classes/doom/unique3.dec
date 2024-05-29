@@ -6,45 +6,40 @@ actor DGStrHasWPK : Counter { Inventory.MaxAmount 3 }
 
 actor SamsaraDoomguyStrWeaponPowerItem : CustomInventory
 {
-	Inventory.PickupMessage "Picked up a weapon powerup kit."
-	Inventory.PickupSound "doomguy/itemget"
-	Inventory.UseSound ""
-	Inventory.Icon "POWIA0"
-	Inventory.MaxAmount 3
-	Inventory.InterHubAmount 3
-	Inventory.RestrictedTo "DoomguyPlayer"
-	Scale 0.75
-	Tag "Weapon Powerup Kit"
-	+INVBAR
-	+UNDROPPABLE
-	States
-	{
-	Spawn:
-		POWP A -1 Bright
-		stop
+    Inventory.UseSound ""
+    Inventory.Icon "POWIA0"
+    Inventory.MaxAmount 3
+    Inventory.InterHubAmount 3
+    Inventory.RestrictedTo "DoomguyPlayer"
+    Tag "Weapon Powerup Kit"
+    +INVBAR
+    +UNDROPPABLE
+    States
+    {
+      Use:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"UseFailPPW")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 8, 0), "UseFail")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteInventory",1,2)
+        TNT1 A 0 A_TakeInventory("DGStrHasWPK",1)
+        TNT1 A 0 A_GiveInventory("SamsaraPowerDoomguyStrWeaponPowerGiver")
+        stop
 
-	Use:
-		TNT1 A 0 A_JumpIfInventory("SamsaraDoomguyStrWeaponPower",1,"UseFail")
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"UseFail2")
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteInventory",1,2)
-		TNT1 A 0 A_TakeInventory("DGStrHasWPK",1)
-		TNT1 A 0 A_GiveInventory("SamsaraDoomguyStrWeaponPower")
-		stop
+      UseFail:
+        TNT1 A 0
+        fail
 
-	UseFail:
-		TNT1 A 0 A_Print("$STRWEAPONPOWERUPKITCOOLDOWN")
-		fail
-
-	UseFail2:
-		TNT1 A 0 A_Print("$STRWEAPONPOWERUPKITCOOLDOWN2")
-		fail
-	}
+      UseFailPPW:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 18, 0)
+        fail
+    }
 }
 
 // Powerup
 
-actor SamsaraDoomguyStrWeaponPower : Powerup
+actor SamsaraPowerDoomguyStrWeaponPowerGiver : SamsaraPowerupGiver
 {
-	Powerup.Duration -60
-	Powerup.Color "80 00 FF", 0.1
+    Powerup.Type "SamsaraDoomguyStrWeaponPower"
+    Powerup.Color "80 00 FF", 0.1
 }
+
+actor PowerSamsaraDoomguyStrWeaponPower : Powerup { Powerup.Duration -60 }

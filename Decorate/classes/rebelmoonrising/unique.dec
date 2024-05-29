@@ -1,56 +1,64 @@
 actor RMRJetPack : CustomInventory
 {
-    Inventory.PickupMessage "Jetpack"
-    Inventory.PickupSound "RMR/pickup"
-    Inventory.UseSound "RMR/useitem"
+    Inventory.UseSound ""
     Inventory.Icon "RM8ZC0"
     Inventory.MaxAmount 3
     Inventory.InterHubAmount 3
     Inventory.RestrictedTo "RebelMoonCommando"
-    Scale 0.5
     Tag "Jetpack"
     +INVBAR
     +UNDROPPABLE
     States
     {
       Use:
-        TNT1 A 0 A_JumpIfInventory("PowerFlight",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlight",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlightInfinite",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("RMRFlyAbility",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("RMRFlyAbility_2",1,"UseFail")
+        TNT1 A 0 A_JumpIfInventory("PowerFlight",1,"UseFailFlying")
+        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlight",1,"UseFailFlying")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 11, 0), "UseFail")
+        TNT1 A 0 A_PlaySound("RMR/useitem",CHAN_ITEM)
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"UseCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"UseCoop")
       UseDM:
-        TNT1 A 0 A_GiveInventory("RMRFlyAbility_2Hack")
-        TNT1 A 0 A_GiveInventory("RMRFlyAbility_2")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerRMRFlyAbilityGiver")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerRMRFlyAbilityHackGiver")
         stop
 
       UseCoop:
-        TNT1 A 0 A_GiveInventory("RMRFlyAbilityHack")
-        TNT1 A 0 A_GiveInventory("RMRFlyAbility")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerRMRFlyAbilityGiverCoop")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerRMRFlyAbilityHackGiverCoop")
         stop
 
       UseFail:
-        TNT1 A 0 A_Print("You are already flying!")
+        TNT1 A 0
+        fail
+
+      UseFailFlying:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 7)
         fail
     }
 }
 
-actor RMRFlyAbility : PowerFlight
+actor SamsaraPowerRMRFlyAbilityGiver : SamsaraPowerupGiver
 {
-    Inventory.Icon "TNT1A0" // can't use ""
-    Powerup.Duration -70
-    -HUBPOWER
-}
-
-actor RMRFlyAbilityHack : Powerup { Powerup.Duration -70 } // hexen
-
-actor RMRFlyAbility_2 : PowerFlight
-{
-    Inventory.Icon "TNT1A0" // can't use ""
+    Powerup.Type "RMRFlyAbility"
     Powerup.Duration -55
+}
+
+actor SamsaraPowerRMRFlyAbilityGiverCoop : SamsaraPowerRMRFlyAbilityGiver { Powerup.Duration -70 }
+
+actor PowerRMRFlyAbility : PowerFlight
+{
+    Inventory.Icon "TNT1A0" // can't use ""
     -HUBPOWER
 }
 
-actor RMRFlyAbility_2Hack : Powerup { Powerup.Duration -55 } // hexen
+// Hack for Hexen
+
+actor SamsaraPowerRMRFlyAbilityHackGiver : SamsaraPowerupGiver
+{
+    Powerup.Type "RMRFlyAbilityHack"
+    Powerup.Duration -55
+}
+
+actor SamsaraPowerRMRFlyAbilityHackGiverCoop : SamsaraPowerRMRFlyAbilityHackGiver { Powerup.Duration -70 }
+
+actor PowerRMRFlyAbilityHack : Powerup { Powerup.Duration -60 }

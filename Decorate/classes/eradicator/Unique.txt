@@ -1,36 +1,32 @@
 actor " Eradicator Enhancement Chip " : CustomInventory
-{ 
-	Inventory.MaxAmount 3
-	Inventory.InterHubAmount 3
-	Inventory.Icon "D7X_H0"  
-	inventory.pickupmessage "Weapon Enhancement Chip!"
-	inventory.pickupsound "EradAmmo/PUP"
-	Inventory.UseSound ""
-	Inventory.RestrictedTo "Eleena"   
-	Tag "Weapon Enhancement Chip"  
-	+INVBAR
-	+COUNTITEM
-	+INVENTORY.FANCYPICKUPSOUND
-	+Inventory.Undroppable
-	+FLOATBOB
-	states
-	{
-		Spawn:
-			D7X_ ABCDEFG 3 Bright
-			Loop
-		Use:
-			TNT1 A 0 A_JumpIfInventory("EradEnWP",1,"UseFail")
-			TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"UseFail2")
-			TNT1 A 0 A_PlaySound("Erad/ItemUse",CHAN_ITEM)
-			TNT1 A 0 A_GiveInventory("EradEnWP")
-			stop
-		UseFail:
-			TNT1 A 0 A_Print("$ENHANCEMENTCHIPCOOLDOWN")
-			fail
-		UseFail2:
-			TNT1 A 0 A_Print("$ENHANCEMENTCHIPCOOLDOWN2")
-			fail
-	}
+{
+    Inventory.UseSound ""
+    Inventory.Icon "D7X_H0"
+    Inventory.MaxAmount 3
+    Inventory.InterHubAmount 3
+    Inventory.RestrictedTo "Eleena"
+    Tag "Weapon Enhancement Chip"
+    +INVBAR
+    +UNDROPPABLE
+    States
+    {
+      Use:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasPermaWeaponLevel2",1,"UseFailPPW")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 10, 0), "UseFail")
+        TNT1 A 0 A_PlaySound("Erad/ItemUse",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("SamsaraPowerEradEnWPGiver")
+        stop
+
+      UseFail:
+        TNT1 A 0
+        fail
+
+      UseFailPPW:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 18, 2)
+        fail
+    }
 }
 
-actor EradEnWP : Powerup { Powerup.Duration -120 }
+actor SamsaraPowerEradEnWPGiver : SamsaraPowerupGiver { Powerup.Type "EradEnWP" }
+
+actor PowerEradEnWP : Powerup { Powerup.Duration -120 }
