@@ -87,12 +87,15 @@ Script "DescentMovement" (void)
 	
 		if(ClassifyActor(0) & ACTOR_ALIVE)
 		{
-			int descentFlight = GetCvar("samsara_descentflight");
-			if(!descentFlight)
-				GiveInventory("DescentGravityGiver",1);
-			else
+			int descentFlight = GetCVar("samsara_descentflight");
+
+			if(descentFlight)
+			{
 				GiveInventory("DescentGravityTaker",1);
-				
+			} else {
+				if (!CheckInventory("PowerFlight") && !CheckInventory("PowerSamsaraFlight")) { GiveInventory("DescentGravityGiver",1); }
+			}
+
 			if(GZDoom)
 				GiveInventory("DescentThirdPersonChecker",1);
 			else
@@ -332,9 +335,11 @@ Script "DescentMovement" (void)
 				if(!CheckInventory("DescentGuidedController"))
 				{
 					if(descentFlight)
+					{
 						SetPlayerProperty(0,1,PROP_FLY);
-					else
-						SetPlayerProperty(0,0,PROP_FLY);
+					} else {
+						if (!CheckInventory("PowerFlight") && !CheckInventory("PowerSamsaraFlight")) { SetPlayerProperty(0,0,PROP_FLY); }
+					}
 				}
 
                 if (((GetActorVelX(0) / 1.0) != 0 || (GetActorVelY(0) / 1.0) != 0 || (GetActorVelZ(0) / 1.0) != 0) && Timer() % 4 == 0)
