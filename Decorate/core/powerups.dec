@@ -4027,448 +4027,332 @@ Actor SamsaraPowerDamageBoosterDXEnviro4Giver : PowerupGiver
 /*
     Zandronum's random powerup item has the player get an item that corresponds to the
     sprite, so if they picked up a random powerup that switched to the Megasphere's
-    sprite, than they will get the megasphere. In order to keep things simple internally,
+    sprite, then they will get the megasphere. In order to keep things simple internally,
     Samsara has the player get a randomly chosen powerup, even if they picked it up 48 tics later.
     This removes the strategization that can come from waiting for a desired powerup, but it
     makes things way easier to handle for programming, especially with future updates.
 */
 
-Actor RandomPowerup : CustomInventory 5039 //replaces RandomPowerup
+actor RandomPowerup : SamsaraPowerupPickup 5039 //replaces RandomPowerup
 {
     Game Doom
     SpawnID 176
-    RenderStyle Add
     Alpha 0.95
     Scale 0.75
-    +NOGRAVITY
-    +FLOATBOB
-    +INVENTORY.PICKUPFLASH
     +COUNTITEM
-    +INVENTORY.QUIET
-    Inventory.PickupSound "nosoundforyoubitch"
+    +NOGRAVITY
+    +PICKUPFLASH
     States
     {
-    Spawn:
-        STPQ A 0
-        STPQ A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
-        wait
-    Pickup:
-        TNT1 A -1 A_Jump(256, "PickupMegasphere", "PickupSoulsphere", "PickupGuardsphere", "PickupPartialInvisibility", "PickupTimeFreezeSphere", "PickupInvisibilitySphere", "PickupDoomsphere", "PickupTurbosphere")
-        wait
-    PickupMegasphere:
-        TNT1 A 0 A_SpawnItemEx("SamsaraRandomPowerupMegaPack", 0, 0, 0, 0, 0, 0, 0)
-        STPQ A 2 BRIGHT
-        stop
-    PickupSoulsphere:
-        TNT1 A 0 A_SpawnItemEx("SamsaraRandomPowerupSuperHealth", 0, 0, 0, 0, 0, 0, 0)
-        STPQ A 2 BRIGHT
-        stop
-    PickupGuardsphere:
-        TNT1 A 0 A_SpawnItemEx("SamsaraRandomPowerupGuardsphere", 0, 0, 0, 0, 0, 0, 0)
-        STPQ A 2 BRIGHT
-        stop
-    PickupPartialInvisibility:
-        TNT1 A 0 A_SpawnItemEx("SamsaraRandomPowerupPartialInvisibility", 0, 0, 0, 0, 0, 0, 0)
-        STPQ A 2 BRIGHT
-        stop
-    PickupTimeFreezeSphere:
-        TNT1 A 0 A_SpawnItemEx("SamsaraRandomPowerupTimeFreezeSphere", 0, 0, 0, 0, 0, 0, 0)
-        STPQ A 2 BRIGHT
-        stop
-    PickupInvisibilitySphere:
-        TNT1 A 0 A_SpawnItemEx("SamsaraRandomPowerupInvisibilitySphere", 0, 0, 0, 0, 0, 0, 0)
-        STPQ A 2 BRIGHT
-        stop
-    PickupDoomsphere:
-        TNT1 A 0 A_SpawnItemEx("SamsaraRandomPowerupDoomsphere", 0, 0, 0, 0, 0, 0, 0)
-        STPQ A 2 BRIGHT
-        stop
-    PickupTurbosphere:
-        TNT1 A 0 A_SpawnItemEx("SamsaraRandomPowerupTurbosphere", 0, 0, 0, 0, 0, 0, 0)
-        STPQ A 2 BRIGHT
-        stop
-    PickupFail:
-        STPQ A 1 BRIGHT
-        fail
-    }
-}
-
-Actor SamsaraRandomPowerupMegaPack : MegaPack
-{
-    -COUNTITEM
-    States
-    {
-    Spawn:
-        TNT1 A 0
+      Spawn:
+        STPQ A 0 Bright Light("RANDOMPOWERUP")
         goto SpawnGameModeCheck
-    SpawnActual:
+
+      SpawnActual:
         TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
         TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
-        TNT1 A 2
-        wait
-    PickupFail:
-        TNT1 A 1
-        fail
-    }
-}
-
-Actor SamsaraRandomPowerupSuperHealth : SuperHealth
-{
-    -COUNTITEM
-    States
-    {
-    Spawn:
-        TNT1 A 0
-        goto SpawnGameModeCheck
-    SpawnActual:
-        TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
-        TNT1 A 0 A_ChangeFlag("NOTIMEFREEZE",false)
-        TNT1 A 2
-        wait
-    PickupFail:
-        TNT1 A 1
-        fail
-    }
-}
-
-Actor SamsaraRandomPowerupPartialInvisibility : PartialInvisibility
-{
-    -COUNTITEM
-    States
-    {
-    Spawn:
-        TNT1 A 2
+      SpawnActualLoop:
+        STPQ A 35 Bright Light("RANDOMPOWERUP") ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
         loop
-    PickupFail:
-        TNT1 A 1
-        fail
-    }
-}
 
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupHeretic")
+        TNT1 A 0 A_Jump(256,"PickupDefault") // for inheriting actors
+        goto PickupDefault
 
-// Skulltag powerups will have to be manually
-// copied over due to errors involving GZDoom
-Actor SamsaraRandomPowerupGuardsphere : CustomInventory
-{
-    -COUNTITEM
-    +NOGRAVITY
-    Inventory.MaxAmount 0
-    Inventory.PickupMessage "$PICKUP_GUARDSPHERE"
-    Inventory.PickupSound "nosoundforyoubitch"
-    Inventory.PickupAnnouncerEntry "guardsphere"
-    States
-    {
-    Spawn:
-        TNT1 A 2
-        Loop
+      PickupDefault:
+        goto PickupJump
 
-    Pickup:
-        TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"PickupDoomStr")
-        TNT1 A 1 A_JumpIfInventory("CorvusClass", 1, "PickupHeretic")
-        TNT1 A 0 A_PlaySound("misc/p_pkup", CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 1 A_GiveInventory("PowerQuarterDamage")
-        TNT1 A 1 A_GiveInventory("PowerGuardsphereColor")
-        Stop
+      PickupHeretic:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 32), 3) // samsara_nohealth
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupJump") // samsara_nohealthcap
+        TNT1 A 0 A_JumpIfInventory("CorvusMegasphere",0,1)
+        goto PickupJump
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 32), 3) // samsara_nohealth
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupJump") // samsara_nohealthcap
+        TNT1 A 0 A_JumpIfInventory("PortSuperHealth",0,1)
+        goto PickupJump
+        TNT1 A 0 A_JumpIfInventory("GuardsphereHeretic",0,1)
+        goto PickupJump
+        TNT1 A 0 A_JumpIfInventory("PortGhostly",0,1)
+        goto PickupJump
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 28), 4) // samsara_noinvuln
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 38), 2) // samsara_notimefreeze
+        TNT1 A 0 A_JumpIfInventory("TimeFreezeSphereHeretic",0,2)
+        goto PickupJump
+        TNT1 A 0 A_JumpIfInventory("PortRingInvuln",0,1)
+        goto PickupJump
+        TNT1 A 0 A_JumpIfInventory("InvisibilitySphereHeretic",0,1)
+        goto PickupJump
+        TNT1 A 0 A_JumpIfInventory("DoomsphereHeretic",0,1)
+        goto PickupJump
+        TNT1 A 0 A_JumpIfInventory("SamsaraSpeedBootsPickupInventoryRaven",0,"PickupFail")
+        goto PickupJump
 
-    PickupDoomStr:
-        TNT1 A 0 A_PlaySound("misc/p_pkup", CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 A_GiveInventory("PowerQuarterDamage")
-        TNT1 A 0 A_GiveInventory("PowerGuardsphereColorStr")
-        Stop
+      PickupJump:
+        TNT1 A 0 A_Jump(256,"PickupMegasphere","PickupSoulsphere","PickupGuardsphere","PickupBlurSphere","PickupTimeFreezeSphere","PickupInvisibilitySphere","PickupDoomsphere","PickupTurbosphere")
+        goto PickupMegasphere
 
-    PickupHeretic:
-        TNT1 A 0 A_JumpIfInventory("GuardsphereHeretic", 0, "PickupFail")
-        TNT1 A 0 A_PlaySound("heretic/itemget")
-        TNT1 A 1 A_GiveInventory("GuardsphereHeretic")
-        Stop
+      // Megasphere
+      PickupMegasphere:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 32), "PickupJump") // samsara_nohealth
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupMegasphereHeretic")
+        TNT1 A 0 A_Jump(256,"PickupMegasphereDefault") // for inheriting actors
+        goto PickupMegasphereDefault
 
-    PickupFail:
-        TNT1 A 1
-        Fail
-    }
-}
+      PickupMegasphereDefault:
+        goto PickupMegasphereSuccess
 
-Actor SamsaraRandomPowerupTimeFreezeSphere : InvulnPowerup
-{
-    -COUNTITEM
-    Inventory.PickupMessage "$PICKUP_TIMEFREEZER"
-    RenderStyle Normal
-    Alpha 1
-    -BIGPOWERUP
-    -FLOATBOB
-    +NOGRAVITY
-    -PICKUPFLASH
-    -NOTIMEFREEZE // to remove
-    -THRUACTORS // to remove
-    States
-    {
-    Spawn:
-        NVSI A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 38), "SpawnInvuln") // Placeholder sprite
-        NVSI A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 75)
-        wait
-    SpawnInvuln:
-        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate",28,0,0) == 1, "NoInvuln")
-        NVLN A 35 BRIGHT ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 4, 100, 95)
-        wait
-    Pickup:
-        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 38), "PickupInvuln")
-    PickupTimeFreeze:
-        TNT1 A 0 A_JumpIfInventory("DoomClassMode",2,"PickupTimeFreezeDoomguyStr")
-        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupTimeFreezeCorvus")
-        TNT1 A -1 A_Jump(256,"PickupTimeFreezeNormal")
-        wait
+      PickupMegasphereHeretic:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupMegasphereSuccess") // samsara_nohealthcap
+        TNT1 A 0 A_JumpIfInventory("CorvusMegasphere",0,"PickupJump")
+        goto PickupMegasphereSuccess
 
-    PickupTimeFreezeNormal:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 10, 0)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 A_PlaySound("misc/p_pkup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 5)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerTimeFreezeNormalGiver")
-        Stop
-    PickupTimeFreezeDoomguyStr:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 10, 0)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 A_PlaySound("misc/p_pkup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 5)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerTimeFreezeStrongholdGiver")
-        Stop
-    PickupTimeFreezeCorvus:
-        TNT1 A 0 A_JumpIfInventory("TimeFreezeSphereHeretic",0,"PickupFail")
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 10, 0)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 A_PlaySound("heretic/itemget",CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 5)
-        TNT1 A 0 A_GiveInventory("TimeFreezeSphereHeretic")
-        Stop
-    PickupTimeFreezeDeusEx:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 10, 0)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 A_PlaySound("misc/p_pkup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 5)
-        TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate", 26, 200)
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 4, "PickupTimeFreezeDeusExEnviro4")
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 3, "PickupTimeFreezeDeusExEnviro3")
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 2, "PickupTimeFreezeDeusExEnviro2")
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 1, "PickupTimeFreezeDeusExEnviro1")
-        TNT1 A 1 A_GiveInventory("SamsaraPowerTimeFreezeNormalGiver")
+      PickupMegasphereSuccess:
+        TNT1 A 0 A_GiveInventory("MegaPack")
         stop
-    PickupTimeFreezeDeusExEnviro1:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerTimeFreezeDXEnviro1Giver")
-        stop
-    PickupTimeFreezeDeusExEnviro2:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerTimeFreezeDXEnviro2Giver")
-        stop
-    PickupTimeFreezeDeusExEnviro3:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerTimeFreezeDXEnviro3Giver")
-        stop
-    PickupTimeFreezeDeusExEnviro4:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerTimeFreezeDXEnviro4Giver")
-        stop
-    PickupFail:
-        NVSI A 1 bright
-        Fail
-    }
-}
 
-Actor SamsaraRandomPowerupInvisibilitySphere : CustomInventory
-{
-    -COUNTITEM
-    +NOGRAVITY
-    +VISIBILITYPULSE
-    Inventory.MaxAmount 0
-    RenderStyle Translucent
-    Inventory.PickupMessage "$PICKUP_INVISIBILITY"
-    Inventory.PickupSound "nosoundforyoubitch"
-    Inventory.PickupAnnouncerEntry "invisibility"
-    States
-    {
-    Spawn:
-        TNT1 A 2
-        Loop
+      // Soulsphere
+      PickupSoulsphere:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 32), "PickupJump") // samsara_nohealth
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupSoulsphereHeretic")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupSoulsphereHexen1")
+        TNT1 A 0 A_JumpIfInventory("StrifeClass",1,"PickupSoulsphereStrife")
+        TNT1 A 0 A_JumpIfInventory("RMRClass",1,"PickupSoulsphereRMR")
+        // Leonard always picks it up due to different pickup system
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupSoulsphereHexen2")
+        TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupSoulsphereCatacomb")
+        TNT1 A 0 A_Jump(256,"PickupSoulsphereDefault") // for inheriting actors
+        goto PickupSoulsphereDefault
 
-    Pickup:
-        TNT1 A 1 A_JumpIfInventory("CorvusClass", 1, "PickupHeretic")
-        TNT1 A 1 A_JumpIfInventory("HexenClass", 1, "PickupHexen")
-        TNT1 A 1 A_JumpIfInventory("MarathonClass", 1, "PickupMarathon")
-        TNT1 A 1 A_JumpIfInventory("QuakeClass", 1, "PickupQuake")
-        TNT1 A 0 A_PlaySound("misc/p_pkup", CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 1 A_GiveInventory("PowerTranslucency")
-        Stop
+      PickupSoulsphereDefault:
+        goto PickupSoulsphereSuccess
 
-    PickupHeretic:
-        TNT1 A 0 A_JumpIfInventory("InvisibilitySphereHeretic", 0, "PickupHereticFail")
-        TNT1 A 0 A_PlaySound("heretic/itemget")
-        TNT1 A 1 A_GiveInventory("InvisibilitySphereHeretic")
-        Stop
+      PickupSoulsphereHeretic:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSoulsphereSuccess") // samsara_nohealthcap
+        TNT1 A 0 A_JumpIfInventory("PortSuperHealth",0,"PickupJump")
+        goto PickupSoulsphereSuccess
 
-    PickupHereticFail:
-        SINV A 1 bright
-        Fail
+      PickupSoulsphereHexen1:
+        goto PickupSoulsphereHeretic
 
-    PickupHexen:
-        TNT1 A 0 A_PlaySound("misc/p_pkup", CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 1 A_GiveInventory("PowerGhost")
-        Stop
+      PickupSoulsphereStrife:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSoulsphereSuccess") // samsara_nohealthcap
+        TNT1 A 0 A_JumpIfInventory("StrifeSurgeryKit2",0,"PickupJump")
+        goto PickupSoulsphereSuccess
 
-    PickupMarathon:
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 A_PlaySound("marathon/bigitemget")
-        TNT1 A 1 A_GiveInventory("PowerShadow")
-        TNT1 A 1 A_GiveInventory("PowerShadow")
-        Stop
+      PickupSoulsphereRMR:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSoulsphereSuccess") // samsara_nohealthcap
+        TNT1 A 0 A_JumpIfInventory("RMROxygenRecycler",0,"PickupJump")
+        goto PickupSoulsphereSuccess
 
-    PickupQuake:
-        TNT1 A 0 A_GiveInventory("QuakeInvisTimer", 1050)
-        Stop
-    }
-}
+      PickupSoulsphereHexen2:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSoulsphereSuccess") // samsara_nohealthcap
+        TNT1 A 0 A_JumpIfInventory("PortSuperHealth3",0,"PickupJump")
+        goto PickupSoulsphereSuccess
 
-Actor SamsaraRandomPowerupDoomSphere : CustomInventory
-{
-    -COUNTITEM
-    +NOGRAVITY
-    Inventory.MaxAmount 0
-    Inventory.PickupMessage "$PICKUP_DOOMSPHERE"
-    Inventory.PickupSound "nosoundforyoubitch"
-    Inventory.PickupAnnouncerEntry "doomsphere"
-    States
-    {
-    Spawn:
-        CPRT N 0 BRIGHT
-        CPRT N 35 BRIGHT
-        wait
-    Pickup:
-        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupCorvus")
-        TNT1 A 0 A_JumpIfInventory("DeusExClass",1,"PickupDeusEx")
-        TNT1 A -1 A_Jump(256,"PickupNormal")
-        wait
+      PickupSoulsphereCatacomb:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupSoulsphereSuccess") // samsara_nohealthcap
+        TNT1 A 0 A_JumpIfInventory("Catacomb_LargeHealthPotion",0,"PickupJump")
+        goto PickupSoulsphereSuccess
 
-    PickupNormal:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 13, 0)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 A_PlaySound("damageboostget", CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 8)
-        TNT1 A 1 A_GiveInventory("SamsaraPowerDamageBoosterNormalGiver")
+      PickupSoulsphereSuccess:
+        TNT1 A 0 A_GiveInventory("SuperHealth")
         stop
-    PickupCorvus:
-        TNT1 A 0 A_JumpIfInventory("DoomsphereHeretic",0,"PickupFail")
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 13, 1)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 A_PlaySound("heretic/itemget", CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 8)
-        TNT1 A 1 A_GiveInventory("DoomsphereHeretic")
-        stop
-    PickupDeusEx:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 13, 0)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate",23)
-        TNT1 A 0 A_PlaySound("damageboostget", CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 8)
-        TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate", 26, 250)
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 4, "PickupDeusExEnviro4")
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 3, "PickupDeusExEnviro3")
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 2, "PickupDeusExEnviro2")
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 1, "PickupDeusExEnviro1")
-        TNT1 A 1 A_GiveInventory("SamsaraPowerDamageBoosterNormalGiver")
-        stop
-    PickupDeusExEnviro1:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerDamageBoosterDXEnviro1Giver")
-        stop
-    PickupDeusExEnviro2:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerDamageBoosterDXEnviro2Giver")
-        stop
-    PickupDeusExEnviro3:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerDamageBoosterDXEnviro3Giver")
-        stop
-    PickupDeusExEnviro4:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerDamageBoosterDXEnviro4Giver")
-        stop
-    PickupFail:
-        CPRT N 1 bright
-        Fail
-    }
-}
 
-Actor SamsaraRandomPowerupTurbosphere : CustomInventory
-{
-    -COUNTITEM
-    +NOGRAVITY
-    Inventory.MaxAmount 0
-    Inventory.PickupMessage "$PICKUP_TURBOSPHERE"
-    Inventory.PickupSound "nosoundforyoubitch"
-    Inventory.PickupAnnouncerEntry "turbosphere"
-    States
-    {
-    Spawn:
-        CPRT O 0 BRIGHT
-        CPRT O 35 BRIGHT
-        wait
+      // Defense Booster
+      PickupGuardsphere:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupGuardsphereHeretic")
+        TNT1 A 0 A_Jump(256,"PickupGuardsphereDefault") // for inheriting actors
+        goto PickupGuardsphereDefault
 
-    Pickup:
-        TNT1 A 0 A_JumpIfInventory("CorvusClass", 1, "CheckCorvus")
-        TNT1 A 0 A_JumpIfInventory("HexenClass", 1, "CheckHexen")
-        TNT1 A -1 A_Jump(256,"PickupActual")
-        wait
-    CheckCorvus:
-        TNT1 A 0 A_JumpIfInventory("SamsaraSpeedBootsPickupInventoryRaven", 0, "PickupFail")
-        goto PickupActual
-    CheckHexen:
-        TNT1 A 0 A_JumpIfInventory("SamsaraSpeedBootsPickupInventoryRaven", 0, "PickupFail")
-        goto PickupActual
-    PickupActual:
-        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupCorvus")
-        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupHexen")
-        TNT1 A 0 A_JumpIfInventory("DeusExClass",1,"PickupDeusEx")
-        TNT1 A -1 A_Jump(256,"PickupNormal")
-        wait
-    PickupNormal:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 11, 0)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 A_PlaySound("damageboostget", CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 6)
-        TNT1 A 1 A_GiveInventory("SamsaraPowerSpeedBoosterNormalGiver")
+      PickupGuardsphereDefault:
+        goto PickupGuardsphereSuccess
+
+      PickupGuardsphereHeretic:
+        TNT1 A 0 A_JumpIfInventory("GuardsphereHeretic",0,"PickupJump")
+        goto PickupGuardsphereSuccess
+
+      PickupGuardsphereSuccess:
+        TNT1 A 0 A_GiveInventory("Guardsphere")
         stop
-    PickupCorvus:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 19, 1)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 A_PlaySound("heretic/itemget", CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 6)
-        TNT1 A 1 A_GiveInventory("SamsaraSpeedBootsPickupInventoryRaven")
+
+      // Partial Invisibility
+      PickupBlurSphere:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupBlurSphereHeretic")
+        TNT1 A 0 A_JumpIfInventory("DukeClass",1,"PickupBlurSphereDuke")
+        TNT1 A 0 A_JumpIfInventory("StrifeClass",1,"PickupBlurSphereStrife")
+        TNT1 A 0 A_JumpIfInventory("WitchavenClass",1,"PickupBlurSphereWitchaven")
+        TNT1 A 0 A_JumpIfInventory("JonClass",1,"PickupBlurSpherePowerSlave")
+        TNT1 A 0 A_JumpIfInventory("BittermanClass",1,"PickupBlurSphereQuake2")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupBlurSphereHexen2")
+        TNT1 A 0 A_Jump(256,"PickupBlurSphereDefault") // for inheriting actors
+        goto PickupBlurSphereDefault
+
+      PickupBlurSphereDefault:
+        goto PickupBlurSphereSuccess
+
+      PickupBlurSphereHeretic:
+        TNT1 A 0 A_JumpIfInventory("PortGhostly",0,"PickupJump")
+        goto PickupBlurSphereSuccess
+
+      PickupBlurSphereDuke:
+        TNT1 A 0 A_JumpIfInventory("ItemHoloduke",0,"PickupJump")
+        goto PickupBlurSphereSuccess
+
+      PickupBlurSphereStrife:
+        TNT1 A 0 A_JumpIfInventory("PortShadowArmor",0,"PickupJump")
+        goto PickupBlurSphereSuccess
+
+      PickupBlurSphereWitchaven:
+        TNT1 A 0 A_JumpIfInventory("WTInvisibilityPhial",0,"PickupJump")
+        goto PickupBlurSphereSuccess
+
+      PickupBlurSpherePowerSlave:
+        TNT1 A 0 A_JumpIfInventory("EyeOfSiaItem_EX",0,"PickupJump")
+        goto PickupBlurSphereSuccess
+
+      PickupBlurSphereQuake2:
+        TNT1 A 0 A_JumpIfInventory("Q2Silencer",0,1)
+        goto PickupBlurSphereSuccess
+        TNT1 A 0 A_JumpIfInventory("Q2DualFireDamage",0,"PickupJump")
+        goto PickupBlurSphereSuccess
+
+      PickupBlurSphereHexen2:
+        TNT1 A 0 A_JumpIfInventory("PortGhostly2",0,"PickupJump")
+        goto PickupBlurSphereSuccess
+
+      PickupBlurSphereSuccess:
+        TNT1 A 0 A_GiveInventory("PartialInvisibility")
         stop
-    PickupHexen:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 19, 1)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 A_PlaySound("hexen/artiget", CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 6)
-        TNT1 A 1 A_GiveInventory("SamsaraSpeedBootsPickupInventoryRaven")
+
+      // Time Freeze
+      PickupTimeFreezeSphere:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 28), "PickupJump") // samsara_noinvuln
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 38), "PickupInvulnerabilitySphere") // samsara_notimefreeze
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupTimeFreezeSphereHeretic")
+        TNT1 A 0 A_Jump(256,"PickupTimeFreezeSphereDefault") // for inheriting actors
+        goto PickupTimeFreezeSphereDefault
+
+      PickupTimeFreezeSphereDefault:
+        goto PickupTimeFreezeSphereSuccess
+
+      PickupTimeFreezeSphereHeretic:
+        TNT1 A 0 A_JumpIfInventory("TimeFreezeSphereHeretic",0,"PickupJump")
+        goto PickupTimeFreezeSphereSuccess
+
+      PickupTimeFreezeSphereSuccess:
+        TNT1 A 0 A_GiveInventory("TimeFreezeSphere")
         stop
-    PickupDeusEx:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 11, 0)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate",23)
-        TNT1 A 0 A_PlaySound("damageboostget", CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 6)
-        TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate", 26, 150)
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 4, "PickupDeusExEnviro4")
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 3, "PickupDeusExEnviro3")
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 2, "PickupDeusExEnviro2")
-        TNT1 A 0 A_JumpIfInventory("DeusEx_EnviroSkill", 1, "PickupDeusExEnviro1")
-        TNT1 A 1 A_GiveInventory("SamsaraPowerDamageBoosterNormalGiver")
+
+      // Invulnerability (only used if samsara_notimefreeze is on)
+      PickupInvulnerabilitySphere:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupInvulnerabilitySphereHeretic")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupInvulnerabilitySphereHexen1")
+        TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupInvulnerabilitySphereROTT")
+        TNT1 A 0 A_JumpIfInventory("POGreedClass",1,"PickupInvulnerabilitySphereIPOG")
+        TNT1 A 0 A_JumpIfInventory("JonClass",1,"PickupInvulnerabilitySpherePowerSlave")
+        TNT1 A 0 A_JumpIfInventory("BittermanClass",1,"PickupInvulnerabilitySphereQuake2")
+        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupInvulnerabilitySphereHexen2")
+        TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupInvulnerabilitySphereCatacomb")
+        TNT1 A 0 A_Jump(256,"PickupInvulnerabilitySphereDefault") // for inheriting actors
+        goto PickupInvulnerabilitySphereDefault
+
+      PickupInvulnerabilitySphereDefault:
+        goto PickupInvulnerabilitySphereSuccess
+
+      PickupInvulnerabilitySphereHeretic:
+        TNT1 A 0 A_JumpIfInventory("PortRingInvuln",0,"PickupJump")
+        goto PickupInvulnerabilitySphereSuccess
+
+      PickupInvulnerabilitySphereHexen1:
+        TNT1 A 0 A_JumpIfInventory("PortIconDefender",0,"PickupJump")
+        goto PickupInvulnerabilitySphereSuccess
+
+      PickupInvulnerabilitySphereROTT:
+        TNT1 A 0 A_JumpIfInventory("GodProtection",1,"PickupJump")
+        TNT1 A 0 A_JumpIfInventory("DogProtection",1,"PickupJump")
+        goto PickupInvulnerabilitySphereSuccess
+
+      PickupInvulnerabilitySphereIPOG:
+        TNT1 A 0 A_JumpIfInventory("IPOGReversoPill",0,"PickupJump")
+        goto PickupInvulnerabilitySphereSuccess
+
+      PickupInvulnerabilitySpherePowerSlave:
+        TNT1 A 0 A_JumpIfInventory("DivineScarab_Ex",0,"PickupJump")
+        goto PickupInvulnerabilitySphereSuccess
+
+      PickupInvulnerabilitySphereQuake2:
+        TNT1 A 0 A_JumpIfInventory("Q2Invulnerability",0,"PickupJump")
+        goto PickupInvulnerabilitySphereSuccess
+
+      PickupInvulnerabilitySphereHexen2:
+        TNT1 A 0 A_JumpIfInventory("PortIconDefender2",0,"PickupJump")
+        goto PickupInvulnerabilitySphereSuccess
+
+      PickupInvulnerabilitySphereCatacomb:
+        TNT1 A 0 A_JumpIfInventory("Catacomb_Hourglass",1,1)
+        goto PickupInvulnerabilitySphereSuccess
+        TNT1 A 0 A_JumpIfInventory("Catacomb_HourglassCooldown",1,"PickupInvulnerabilitySphereSuccess")
+        goto PickupJump
+
+      PickupInvulnerabilitySphereSuccess:
+        TNT1 A 0 A_GiveInventory("InvulnPowerup")
         stop
-    PickupDeusExEnviro1:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerSpeedBoosterDXEnviro1Giver")
+
+      // Full Invisibility
+      PickupInvisibilitySphere:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupInvisibilitySphereHeretic")
+        TNT1 A 0 A_Jump(256,"PickupInvisibilitySphereDefault") // for inheriting actors
+        goto PickupInvisibilitySphereDefault
+
+      PickupInvisibilitySphereDefault:
+        goto PickupInvisibilitySphereSuccess
+
+      PickupInvisibilitySphereHeretic:
+        TNT1 A 0 A_JumpIfInventory("InvisibilitySphereHeretic",0,"PickupJump")
+        goto PickupInvisibilitySphereSuccess
+
+      PickupInvisibilitySphereSuccess:
+        TNT1 A 0 A_GiveInventory("InvisibilitySphere")
         stop
-    PickupDeusExEnviro2:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerSpeedBoosterDXEnviro2Giver")
+
+      // Damage Booster
+      PickupDoomsphere:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupDoomsphereHeretic")
+        TNT1 A 0 A_Jump(256,"PickupDoomsphereDefault") // for inheriting actors
+        goto PickupDoomsphereDefault
+
+      PickupDoomsphereDefault:
+        goto PickupDoomsphereSuccess
+
+      PickupDoomsphereHeretic:
+        TNT1 A 0 A_JumpIfInventory("DoomsphereHeretic",0,"PickupJump")
+        goto PickupDoomsphereSuccess
+
+      PickupDoomsphereSuccess:
+        TNT1 A 0 A_GiveInventory("Doomsphere")
         stop
-    PickupDeusExEnviro3:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerSpeedBoosterDXEnviro3Giver")
+
+      // Speed Booster
+      PickupTurbosphere:
+        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupTurbosphereHeretic")
+        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupTurbosphereHexen1")
+        TNT1 A 0 A_Jump(256,"PickupTurbosphereDefault") // for inheriting actors
+        goto PickupTurbosphereDefault
+
+      PickupTurbosphereDefault:
+        goto PickupTurbosphereSuccess
+
+      PickupTurbosphereHeretic:
+        TNT1 A 0 A_JumpIfInventory("SamsaraSpeedBootsPickupInventoryRaven",0,"PickupJump")
+        goto PickupTurbosphereSuccess
+
+      PickupTurbosphereHexen1:
+        goto PickupTurbosphereHeretic
+
+      PickupTurbosphereSuccess:
+        TNT1 A 0 A_GiveInventory("Turbosphere")
         stop
-    PickupDeusExEnviro4:
-        TNT1 A 1 A_GiveInventory("SamsaraPowerSpeedBoosterDXEnviro4Giver")
-        stop
-    PickupFail:
-        CPRT O 1 bright
-        Fail
     }
 }
