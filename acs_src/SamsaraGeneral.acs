@@ -7592,13 +7592,21 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
 {
     // armorgivetype is as follows:
     // 0 = normal armor, 1 = normal armor (ignores max armor boost),
-    // 2 = armor bonus, 3 = armor bonus (ignores max armor boost)
+    // 2 = armor bonus, 3 = armor bonus (ignores max armor boost),
+    // -1 = normal armor (ignores samsara_noarmorcap), -2 = normal armor (ignores samsara_noarmorcap and max armor boost),
+    // -3 = armor bonus (ignores samsara_noarmorcap), -4 = armor bonus (ignores samsara_noarmorcap and max armor boost)
 
     // initialize armor mode
     SetArmorMode();
 
+    // initialize armor bonus variable
+    bool treatasbonus = armorgivetype <= -3 || armorgivetype >= 2;
+
+    // initialize samsara_noarmorcap ignoring variable
+    bool alwayscap = armorgivetype <= -1;
+
     // initialize max armor boost ignoring variable
-    bool ignoremaxboost = armorgivetype == 1 || armorgivetype >= 3;
+    bool ignoremaxboost = armorgivetype <= -4 || armorgivetype == -2 || armorgivetype == 1 || armorgivetype >= 3;
 
     // determine armor type/amount/cap/save percent
     str armortypetogive = "NoArmor";
@@ -8048,7 +8056,7 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     // if armorcap is greater than 0, the amount of armor to cap at is added onto the default SaveAmount (or MaxSaveAmount if available). if negative, the amount overrides the default
     // this is buggily hardcoded to 250 at all times when prosperity is active. can't do anything with that, unfortunately
     if (CheckInventory("SamsaraHasProsperity")) { armoramounttocap = 250; }
-    else if (GetCVar("samsara_noarmorcap")) { armoramounttocap = INTMAX; }
+    else if (GetCVar("samsara_noarmorcap") && !alwayscap) { armoramounttocap = INTMAX; }
     else
     {
         if (armorcap > 0) { armoramounttocap += armorcap; }
@@ -8071,7 +8079,7 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     // check if our current armor is hitting the cap
     if (currentarmor > 0)
     {
-        if (GetCVar("samsara_armorpickupbehavior") >= 1 && (armorgivetype <= 0 || armorgivetype == 1))
+        if (GetCVar("samsara_armorpickupbehavior") >= 1 && !treatasbonus)
         {
             if (currentarmor > armoramounttocap || (currentarmor == armoramounttocap && currentarmorsavepercent >= armorsavepercent)) { terminate; }
         } else {
@@ -8081,7 +8089,7 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
 
     // reset armor type for the purposes of setting the new type if we're not treating it like a bonus or if we had no armor to begin with
     // if samsara_armorpickupbehavior is 2 (Zandronum+), only reset armor if our absorption is less than what the pickup provides
-    if ((armorgivetype <= 0 || armorgivetype == 1) || !currentarmor)
+    if (!treatasbonus || !currentarmor)
     {
         if (GetCVar("samsara_armorpickupbehavior") < 2 || (GetCVar("samsara_armorpickupbehavior") >= 2 && currentarmorsavepercent < armorsavepercent) || !currentarmor)
         {
@@ -8113,19 +8121,29 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     }
 }
 
+script "SamsaraArmorAdjustMultiRunesRegen" (void) { ACS_NamedExecuteWithResult("SamsaraArmorAdjust", ARMOR_BONUS1, -GetCVar("ArmorRegenerationMultiplier"), 0, -3); } // multi runes compatibility; to be used with ArmorScrapMultiRunesRegen
+
 script "SamsaraArmorCapCheck" (int armortype, int armorcap, int maxbonuscap, int armorgivetype)
 {
     // armorgivetype is as follows:
     // 0 = normal armor, 1 = normal armor (ignores max armor boost),
-    // 2 = armor bonus, 3 = armor bonus (ignores max armor boost)
+    // 2 = armor bonus, 3 = armor bonus (ignores max armor boost),
+    // -1 = normal armor (ignores samsara_noarmorcap), -2 = normal armor (ignores samsara_noarmorcap and max armor boost),
+    // -3 = armor bonus (ignores samsara_noarmorcap), -4 = armor bonus (ignores samsara_noarmorcap and max armor boost)
 
     int result = 0;
 
     // initialize armor mode
     SetArmorMode();
 
+    // initialize armor bonus variable
+    bool treatasbonus = armorgivetype <= -3 || armorgivetype >= 2;
+
+    // initialize samsara_noarmorcap ignoring variable
+    bool alwayscap = armorgivetype <= -1;
+
     // initialize max armor boost ignoring variable
-    bool ignoremaxboost = armorgivetype == 1 || armorgivetype >= 3;
+    bool ignoremaxboost = armorgivetype <= -4 || armorgivetype == -2 || armorgivetype == 1 || armorgivetype >= 3;
 
     // determine armor type/cap/save percent/max bonus cap
     str armortypetogive = "NoArmor";
@@ -8519,7 +8537,7 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int maxbonuscap, int
     // if armorcap is greater than 0, the amount of armor to cap at is added onto the default SaveAmount (or MaxSaveAmount if available). if negative, the amount overrides the default
     // this is buggily hardcoded to 250 at all times when prosperity is active. can't do anything with that, unfortunately
     if (CheckInventory("SamsaraHasProsperity")) { armoramounttocap = 250; }
-    else if (GetCVar("samsara_noarmorcap")) { armoramounttocap = INTMAX; }
+    else if (GetCVar("samsara_noarmorcap") && !alwayscap) { armoramounttocap = INTMAX; }
     else
     {
         if (armorcap > 0) { armoramounttocap += armorcap; }
@@ -8547,7 +8565,7 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int maxbonuscap, int
     // check if our current armor is hitting the cap, and if we've hit the limit on max armor boost
     if (currentarmor > 0)
     {
-        if (GetCVar("samsara_armorpickupbehavior") >= 1 && (armorgivetype <= 0 || armorgivetype == 1))
+        if (GetCVar("samsara_armorpickupbehavior") >= 1 && !treatasbonus)
         {
             if ((currentarmor > armoramounttocap || (currentarmor == armoramounttocap && currentarmorsavepercent >= armorsavepercent)) && currentmaxarmor >= armormaxbonusmax) { result = 1; }
         } else {
