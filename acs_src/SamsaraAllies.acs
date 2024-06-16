@@ -7,32 +7,32 @@ int pickrandomitems = 0;
 #DEFINE MISC_HLOP 2
 
 str miscCharGameTypesStr[CLASSCOUNT] =
-{	
-	"", 
-	"", 
-	"", 
-	"", 
+{
 	"",
-	"samsara_misccharspawn_duke3d", 
+	"",
+	"",
+	"",
+	"",
+	"samsara_misccharspawn_duke3d",
 	"",
 	"",
 	"samsara_misccharspawn_rott",
 	"",
-	"samsara_misccharspawn_blood", 
+	"samsara_misccharspawn_blood",
 	"samsara_misccharspawn_strife",
 	"",
 	"",
-	"samsara_misccharspawn_rmr", 
+	"samsara_misccharspawn_rmr",
 	"",
 	"",
 	"",
 	"",
-	"samsara_misccharspawn_halflife", 
-	"samsara_misccharspawn_sw", 
+	"samsara_misccharspawn_halflife",
+	"samsara_misccharspawn_sw",
 	"",
-	"samsara_misccharspawn_ps", 
-	"samsara_misccharspawn_rr", 
-	"samsara_misccharspawn_quake2", 
+	"samsara_misccharspawn_ps",
+	"samsara_misccharspawn_rr",
+	"samsara_misccharspawn_quake2",
 	"samsara_misccharspawn_hexen2",
 	"",
 	"",
@@ -42,19 +42,25 @@ str miscCharGameTypesStr[CLASSCOUNT] =
 	"",
 	""
 };
-			
+
 
 Script "DetermineValidSpawn" (void)
 {
+	// Don't bother with checking spawn conditions when random characters won't spawn anyway
+	if (GetCVar("samsara_randomcharacters") <= 0)
+	{
+		terminate;
+	}
+
 	// Check for Lexicon compatibility
 	int LexiconTid = UniqueTid();
-	
+
 	if(SpawnForced("IKPuff",0,0,0,LexiconTid))
 	{
 		Thing_Remove(LexiconTid);
 		Delay(5);
 	}
-	
+
 	for(int a = 512; a <= 0.5; a+=1024)
 	{
 		for(int b = 512; b <= 0.5; b+=1024)
@@ -66,13 +72,13 @@ Script "DetermineValidSpawn" (void)
 			if(b > 0)
 				b = -b - 1024;
 			else
-				b = -b;			
+				b = -b;
 		}
 		if(a > 0)
 			a = -a - 1024;
 		else
-			a = -a;	
-	}	
+			a = -a;
+	}
 }
 
 script "CellDoneScanning" (void)
@@ -83,7 +89,7 @@ script "CellDoneScanning" (void)
 		for(int b = -512; b < 512; b+=64)
 		{
 			if(random(1,1500) <= (GetCvar("samsara_randomcharacters")*GetCvar("samsara_randomcharacters"))/10)
-			{	
+			{
 				SpawnForced("DetermineValidSpawnTestObject",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),0,newtid);
 				if(GetCVar("samsara_zscriptready") == 1)
 					Spawn("DetermineValidSpawnZS",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
@@ -105,18 +111,18 @@ script "IsThisSpawnSpotorCell" (int type)
 script "HeroOnMap" Open
 {
 	if(GameType () == GAME_TITLE_MAP) { terminate; }
-	
+
 	int clients = PlayerCount();
 	int playervalue;
 	int setBasedSpawns = GetCvar("samsara_misccharacterspawnmode");
-	
+
 	for(int a = 0; a < CLASSCOUNT; a++)
 	{
 		activetokenselectors[a] = 0;
 	}
-	
+
 	for(int p = 0; p < clients; p++)
-	{	
+	{
 		if(PlayerInGame(p) == true)
 		{
 			for(int b = 0; b < CLASSCOUNT; b++)
@@ -125,17 +131,17 @@ script "HeroOnMap" Open
 				{
 					if(b == 5 || b == 8 || b == 10 || b == 11 || b == 14 || b == 19 || b == 20 || b == 22 || b == 23 || b == 24 || b == 25)
 						pickrandos = 1;
-						
+
 					switch(b)
 					{
 						default:
 							activetokenselectors[b] = 1;
 							break;
-						case 5: 
+						case 5:
 							if(!(activetokenselectors[b] & 1<<GetUserCvar(p,"samsara_cl_dukemode")))
 								activetokenselectors[b] += 1<<GetUserCvar(p,"samsara_cl_dukemode");
 							break;
-						case 19: 
+						case 19:
 							if(!(activetokenselectors[b] & 1<<GetUserCvar(p,"samsara_cl_shephardmode")))
 								activetokenselectors[b] += 1<<GetUserCvar(p,"samsara_cl_shephardmode");
 							break;
@@ -153,7 +159,7 @@ script "HeroOnMap" Open
 			clients += 1;
 		}
 	}
-	
+
 	if(pickrandos == true)
 		ACS_NamedExecuteWithResult("DetermineValidSpawn",0,0,0,0);
 }
@@ -163,7 +169,7 @@ Script "Samsara2689" (void)  //2689
 	int myPosX = GetActorX(0);
 	int myPosY = GetActorY(0);
 	int myPosZ = GetActorZ(0);
-	
+
 	int randomAngle = random(0,256);
 	int randomPick = random(0,256);
 	SetActorAngle(0,randomAngle<<8);
@@ -173,26 +179,26 @@ Script "Samsara2689" (void)  //2689
 	Thing_ChangeTid(0,myTid);
 	int maxAttempts = 0;
 	int zandronumGameMode = (isLMS() || isDeathMatch() || isInvasion() || isFreeForAll() || isTeamGame());
-	
+
 	int setBasedSpawns = GetCvar("samsara_misccharacterspawnmode");
 	int dukeMode = GetCvar("samsara_misccharspawn_duke3d");
 	int HLMode = GetCvar("samsara_misccharspawn_halflife");
-	
+
 	int newX = GetActorX(0)/1.0;
 	int newY = GetActorY(0)/1.0;
-	
+
 	int floor1 = GetSectorFloorZ(0,newX-32,newY);
 	int floor2 = GetSectorFloorZ(0,newX+32,newY);
 	int floor3 = GetSectorFloorZ(0,newX,newY-32);
 	int floor4 = GetSectorFloorZ(0,newX,newY+32);
-	
+
 	if(floor1 != floor2 || floor1 != floor3 || floor1 != floor4)
 		terminate;
-	
+
 	while(maxAttempts <= 100)
 	{
 		int a, b;
-		
+
 		if(activetokenselectors[a] > 0)
 		{
 			switch(a)
@@ -212,13 +218,13 @@ Script "Samsara2689" (void)  //2689
 						}
 						else
 							if (zandronumGameMode) { SpawnSpotFacing("Duke3DBabeDeathmatch", 0, 0); }
-							else { SpawnSpotFacing("Duke3DBabe", 0, 0); }	
+							else { SpawnSpotFacing("Duke3DBabe", 0, 0); }
 						break;
 					}
 					else if (dukeMode == 2)
 					{
 						if (zandronumGameMode) { SpawnSpotFacing("Duke3DBabeDeathmatch", 0, 0); }
-						else { SpawnSpotFacing("Duke3DBabe", 0, 0); }	
+						else { SpawnSpotFacing("Duke3DBabe", 0, 0); }
 						break;
 					}
 					else if (dukeMode == 3)
@@ -230,10 +236,10 @@ Script "Samsara2689" (void)  //2689
 					else if (dukeMode == 4)
 					{
 						if(random(0,2) <= 1)
-							SpawnSpotFacing("Duke3DBeachBabeSpawner", 0, 0);	
+							SpawnSpotFacing("Duke3DBeachBabeSpawner", 0, 0);
 						else
 							if (zandronumGameMode) { SpawnSpotFacing("Duke3DBabeDeathmatch", 0, 0); }
-							else { SpawnSpotFacing("Duke3DBabe", 0, 0); }	
+							else { SpawnSpotFacing("Duke3DBabe", 0, 0); }
 						break;
 					}
 				case 8:
@@ -251,7 +257,7 @@ Script "Samsara2689" (void)  //2689
 					break;
 				case 10:
 					if(random(0,2) <= 1)
-						SpawnSpotFacing("BloodInnocentMime", 0, 0);	
+						SpawnSpotFacing("BloodInnocentMime", 0, 0);
 					else
 						SpawnSpotFacing("BloodInnocentMoron", 0, 0);
 					break;
@@ -382,7 +388,7 @@ Script "Samsara2689" (void)  //2689
 		{
 			a = random(0,CLASSCOUNT);
 		}
-		
+
 		maxAttempts++;
 	}
 }
@@ -420,14 +426,14 @@ str ipogdropstrings[4] = {"DropCyborg","DropLizard","DropSpecimen","DropDominatr
 
 Script "Samsara2999" (int class, int mode)
 {
-	int resultcounter = 0;	
+	int resultcounter = 0;
 	int maxallies = 2;
 	if(class == 1)
 		mode = ceilZandronum((mode*1.0)/100); //the shit I have to do to cleanup Zandronum's mistakes
-	
+
 	Switch(class)
 	{
-		Case 1:	
+		Case 1:
 		maxallies = 5;
 		For(int a = 0; a < 36; a++)
 		{
@@ -439,19 +445,19 @@ Script "Samsara2999" (int class, int mode)
 					SetActorState(0,"Death",TRUE);
 					terminate;
 				}
-				
+
 				if(mode != resultcounter)
 				{
 					//PrintBold(d:resultcounter);
 					SetActorState(0,rottdropstrings[resultcounter],TRUE);
 				}
-					
+
 				a=0;
 				resultcounter++;
 			}
 		}
 		break;
-		Case 2:	
+		Case 2:
 		maxallies = 2;
 		For(int b = 0; b < 36; b++)
 		{
@@ -489,7 +495,7 @@ Script "Samsara2999" (int class, int mode)
 			}
 		}
 		break;
-		Case 3:	
+		Case 3:
 		maxallies = 3;
 		For(int c = 0; c < 36; c++)
 		{
@@ -507,7 +513,7 @@ Script "Samsara2999" (int class, int mode)
 			}
 		}
 		break;
-		Case 4:	
+		Case 4:
 		maxallies = 4;
 		For(int d = 0; d < 36; d++)
 		{
@@ -718,15 +724,21 @@ Script "Samsara_AllyHealthRegen" (void)
 
 Script "DetermineValidSpawnItems" (void)
 {
+	// Don't bother with checking spawn conditions when random items won't spawn anyway
+	if (GetCVar("samsara_randomitems") <= 0)
+	{
+		terminate;
+	}
+
 	// Check for Lexicon compatibility
 	int LexiconTid = UniqueTid();
-	
+
 	if(SpawnForced("IKPuff",0,0,0,LexiconTid))
 	{
 		Thing_Remove(LexiconTid);
 		Delay(5);
 	}
-	
+
 	for(int a = 512; a <= 0.5; a+=1024)
 	{
 		for(int b = 512; b <= 0.5; b+=1024)
@@ -738,13 +750,13 @@ Script "DetermineValidSpawnItems" (void)
 			if(b > 0)
 				b = -b - 1024;
 			else
-				b = -b;			
+				b = -b;
 		}
 		if(a > 0)
 			a = -a - 1024;
 		else
-			a = -a;	
-	}	
+			a = -a;
+	}
 }
 
 script "CellDoneScanningItems" (void)
@@ -755,7 +767,7 @@ script "CellDoneScanningItems" (void)
 		for(int b = -512; b < 512; b+=64)
 		{
 			if(random(1,1500) <= (GetCvar("samsara_randomitems")*GetCvar("samsara_randomitems"))/10)
-			{	
+			{
 				SpawnForced("DetermineValidSpawnTestObject",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),0,newtid);
 				if(GetCVar("samsara_zscriptready") == 1)
 					Spawn("DetermineValidSpawnItemsZS",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
@@ -773,9 +785,9 @@ script "ItemsOnMap" Open
 
 	int clients = PlayerCount();
 	int playervalue;
-	
+
 	for(int p = 0; p < clients; p++)
-	{	
+	{
 		if(PlayerInGame(p) == true)
 		{
 			pickrandomitems = 1;
@@ -785,7 +797,7 @@ script "ItemsOnMap" Open
 			clients += 1;
 		}
 	}
-	
+
 	if(pickrandomitems == true)
 		ACS_NamedExecuteWithResult("DetermineValidSpawnItems",0,0,0,0);
 }
@@ -795,7 +807,7 @@ Script "Samsara2689_Items" (void)
 	int myPosX = GetActorX(0);
 	int myPosY = GetActorY(0);
 	int myPosZ = GetActorZ(0);
-	
+
 	int randomAngle = random(0,256);
 	int randomPick = random(0,256);
 	SetActorAngle(0,randomAngle<<8);
@@ -804,20 +816,20 @@ Script "Samsara2689_Items" (void)
 	int myTid = UniqueTid();
 	Thing_ChangeTid(0,myTid);
 	int maxAttempts = 0;
-	
+
 	int newX = GetActorX(0)/1.0;
 	int newY = GetActorY(0)/1.0;
-	
+
 	int floor1 = GetSectorFloorZ(0,newX-32,newY);
 	int floor2 = GetSectorFloorZ(0,newX+32,newY);
 	int floor3 = GetSectorFloorZ(0,newX,newY-32);
 	int floor4 = GetSectorFloorZ(0,newX,newY+32);
-	
+
 	int setItemSpawns = GetCvar("samsara_currentgame");
-	
+
 	if(floor1 != floor2 || floor1 != floor3 || floor1 != floor4)
 		terminate;
-	
+
 	while(maxAttempts <= 100)
 	{
 		if(GetCvar("samsara_randomitemextras"))
@@ -860,7 +872,7 @@ Script "Samsara2689_Items" (void)
 		}
 		Thing_Remove(0);
 		terminate;
-		
+
 		maxAttempts++;
 	}
 }
