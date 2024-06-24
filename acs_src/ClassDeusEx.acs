@@ -761,14 +761,14 @@ Script "DeusEx_AugmentationsPlayer" (void)
 				}
 				if(CheckInventory("DeusEx_Augmentation_AggressiveDefenseSystemToken"))
 				{
-					if(GetCvar("samsara_zscriptready"))
+					if(GetCvar("samsara_zscriptready") == 2)
 						GiveInventory("DeusEx_Augmentation_AggressiveDefenseSystemTrigger",1);
 					else
 						GiveInventory("DeusEx_Augmentation_AggressiveDefenseSystemZandronumEnable",1);
 				}
 				else
 				{
-					if(!GetCvar("samsara_zscriptready"))
+					if(!GetCvar("samsara_zscriptready") == 2)
 						GiveInventory("DeusEx_Augmentation_AggressiveDefenseSystemZandronumDisable",1);
 				}
 				
@@ -858,6 +858,7 @@ Script "DeusEx_SpyDrone" (int droneTid)
 	int moveX, moveY, use, destroy, stop;
 	int lookX = GetActorAngle(droneTid);
 	int lookY = GetActorPitch(droneTid);
+	int GZDoom = (GetCvar("samsara_zscriptready") == 2);
 	int startTimer = timer();
 	SetActorProperty(0,APROP_Health,100*CheckInventory("DeusEx_Augmentation_SpyDrone"));
 	while(ClassifyActor(droneTid) > 1)
@@ -888,11 +889,11 @@ Script "DeusEx_SpyDrone" (int droneTid)
 		else if(GetActorPitch(droneTid) < -0.25) lookY = -0.25;
 		
 		SetActivator(droneTid);
-		Warp(0,FixedMul(moveY,cos(GetActorPitch(droneTid))),moveX,-FixedMul(moveY,sin(GetActorPitch(droneTid))),0,WARPF_INTERPOLATE * GetCvar("samsara_zscriptready"));
+		Warp(0,FixedMul(moveY,cos(GetActorPitch(droneTid))),moveX,-FixedMul(moveY,sin(GetActorPitch(droneTid))),0,WARPF_INTERPOLATE * GZDoom);
 		SetActorAngle(0,lookX);
 		SetActorPitch(0,lookY);
 		if((stop && (timer() > startTimer + 5))) { SetActorState(droneTid,"StopIt",true); break; }
-		if(use && GetCvar("samsara_zscriptready")) GiveInventory("DeusEx_DroneActivator",1);
+		if(use && GZDoom) GiveInventory("DeusEx_DroneActivator",1);
 		if(destroy) { Thing_Damage2(droneTid,5000,"Normal"); break; }
 		SetActivator(droneTid,AAPTR_MASTER);
 		if(!(ClassifyActor(0) & ACTOR_ALIVE) || !CheckInventory("DeusEx_Augmentation_SpyDroneToken")) { SetActorState(droneTid,"StopIt",true); break; }
@@ -1108,7 +1109,8 @@ Script "DeusEx_Decorate" (int funct, int arg1, int arg2, int arg3)
 				{
 					objDistance = VectorLength(VectorLength(lastobjectX - ACS_NamedExecuteWithResult("getTargetX",0,AAPTR_Tracer),lastobjectY - ACS_NamedExecuteWithResult("getTargetY",0,AAPTR_Tracer)),lastobjectZ - ACS_NamedExecuteWithResult("getTargetZ",0,AAPTR_Tracer));
 					int objectPitch = -ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
-					Warp(AAPTR_Tracer,48*cos(objectPitch),0,32.0+(48*sin(objectPitch)),0,WARPF_USEPTR|(WARPF_INTERPOLATE * GetCvar("samsara_zscriptready")));
+					int GZDoom = (GetCvar("samsara_zscriptready") == 2);
+					Warp(AAPTR_Tracer,48*cos(objectPitch),0,32.0+(48*sin(objectPitch)),0,WARPF_USEPTR|(WARPF_INTERPOLATE * GZDoom));
 					int lastAngle = ACS_NamedExecuteWithResult("getPointerAngle",0,AAPTR_Tracer);
 					int lastPitch = ACS_NamedExecuteWithResult("getPointerPitch",0,AAPTR_Tracer);
 					int objectSight = ACS_NamedExecuteWithResult("DeusEx_Decorate",15);
@@ -1699,7 +1701,7 @@ Script "DeusEx_AugmentationsUI" (void)
 	int upgradeDisplayTimer = 0;
 	int upgradedSlot = 0;
 	int upgradedSubSlot = 0;
-	int GZDoom = GetCvar("samsara_zscriptready"); //Fairly new change, so we will use this CVAR
+	int GZDoom = (GetCvar("samsara_zscriptready") == 2); //Fairly new change, so we will use this CVAR
 
 	While(CheckInventory("DeusEx_AugmentationsMenu") && Classifyactor(0) & ACTOR_ALIVE)
 	{
