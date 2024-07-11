@@ -672,9 +672,29 @@ str armorstrings[40] = {"HEV/Armor5","HEV/Armor10","HEV/Armor15","HEV/Armor20","
 "PCV/Fuzz","PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz", "PCV/Fuzz",
 "PCV/Fuzz"};
 
-str pickupstrings[20] = {"HEV/Hornet","HEV/Magnum","HEV/Shotgun","HEV/SMG","HEV/RPG",
-"HEV/Gauss","HEV/Egon","HEV/Crossbow","","HEV/Longjump","PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip",
-"PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip","PCV/Blip"};
+str pickupstrings[20][2] =
+{
+    {"HEV/Hornet",   "HEV/ShockRoach"},
+    {"HEV/Magnum",   "HEV/Deagle"},
+    {"HEV/Shotgun"},
+    {"HEV/SMG"},
+    {"HEV/RPG",      "HEV/SporeLauncher"},
+    {"HEV/Gauss",    "HEV/SAW"},
+    {"HEV/Egon",     "HEV/Displacer"},
+    {"HEV/Crossbow", "HEV/Sniper"},
+    {"HEV/Snark",    "HEV/Grenade"},
+    {"HEV/Longjump", "HEV/Barnacle"},
+    {"PCV/Blip",     "PCV/Blip"},
+    {"PCV/Blip",     "PCV/Blip"},
+    {"PCV/Blip"},
+    {"PCV/Blip"},
+    {"PCV/Blip",     "PCV/Blip"},
+    {"PCV/Blip",     "PCV/Blip"},
+    {"PCV/Blip",     "PCV/Blip"},
+    {"PCV/Blip",     "PCV/Blip"},
+    {"PCV/Blip",     "PCV/Blip"},
+    {"PCV/Blip",     "PCV/Blip"},
+};
 
 str HL_HUD_Colors[6] = { "HEVBlue", "HEVBlue", "HEVYellow", "PCVGreen", "HEVRed", "HEVRed"  }; //HLUpper, OPUpper, HLNormal, OPNormal, HLLower, OPLower
 str HL_HUD_HealthArmorGraphics[6] = { "HLHEALTB", "OPFHLTHB", "HLHEALTH", "OPFHLTH0", "HHEALTHR", "OPFHLTHR"  }; //HLHigh, OPHigh, HLMed, OPMEd, HLLow, OPLow
@@ -745,7 +765,7 @@ str HL_HUD_AmmoStrings[10][2][9] =
     {
         {"HL Squeaks",      "HLSqueakAmmo",      "",           "HPKUP11", "OPFAMM10", "",           "", "",       ""},
         {"HL Squeaks",      "RocketAmmo",        "",           "HPKUP11", "OPFAMM10", "",           "", "",       ""},
-    }
+    },
 };
 
 // prilowamount1, prilowamount2, removepricounterwhenempty, seclowamount1, seclowamount2, removeseccounterwhenempty
@@ -937,9 +957,10 @@ script "Freeman_HEV_Enter" (void) clientside//hev suit
 				{
 					GiveInventory("HLHEVIsTalking", 1);
 					ACS_NamedExecuteAlways("HLHEVTalk",0,3,0,0);
-					LocalAmbientSound(pickupstrings[CheckInventory("HLHEVPickupID")+(10*CheckInventory("HalfLifeOpposingForce"))],127);
+					LocalAmbientSound(pickupstrings[CheckInventory("HLHEVPickupID") + (10 * CheckInventory("HalfLifeOpposingForce"))][CheckInventory("HLHEVLoadoutID")], 127);
 				}
 				TakeInventory("HLHEVPickupID", 255);
+				TakeInventory("HLHEVLoadoutID", 255);
 			}	
 		}
 		
@@ -1328,18 +1349,40 @@ Script "HL_HUD_DMGTypes" (void)
 	}
 }
 
-str HLPickupIDsNew[2][10] = 
+str HLPickupIDsNew[2][10][2] =
 {
-	{ "HPKUP20H", "HPKUP12H", "HPKUP14H", "HPKUP13H", "HPKUP17H", "HPKUP18H", "HPKUP19H", "HPKUP16H", "HPKUP15H", "HPKUP10H" },
-	{ "OPFSL01H", "OPFSL02H", "OPFSL03H", "OPFSL04H", "OPFSL05H", "OPFSL06H", "OPFSL07H", "OPFSL08H", "OPFSL09H", "OPFSL00H" }
+    {
+        {"HPKUP20H", "HPKUP20H"},
+        {"HPKUP12H", "HPKUP12H"},
+        {"HPKUP14H"},
+        {"HPKUP13H"},
+        {"HPKUP17H", "HPKUP17H"},
+        {"HPKUP18H", "HPKUP18H"},
+        {"HPKUP19H", "HPKUP19H"},
+        {"HPKUP16H", "HPKUP16H"},
+        {"HPKUP15H", "HPKUP15H"},
+        {"HPKUP10H", "HPKUP10H"},
+    },
+    {
+        {"OPFSL01H", "OPFSL01H"},
+        {"OPFSL02H", "OPFSL02H"},
+        {"OPFSL03H"},
+        {"OPFSL04H"},
+        {"OPFSL05H", "OPFSL05H"},
+        {"OPFSL06H", "OPFSL06H"},
+        {"OPFSL07H", "OPFSL07H"},
+        {"OPFSL08H", "OPFSL08H"},
+        {"OPFSL09H", "OPFSL09H"},
+        {"OPFSL00H", "OPFSL00H"},
+    },
 };
 
-Script "HL_HUD_Pickups" (int cause)
+Script "HL_HUD_Pickups" (int cause, int loadout)
 {
 	if(CheckInventory("HalfLifeClass") && GetCVAR("screenblocks") == 11 && CheckInventory("SamsaraUsingNewFullscreenHUD"))
 	{
 		SetHUDSize(640, 480, 1);
-		SetFont(HLPickupIDsNew[CheckInventory("HalfLifeOpposingForce")][cause]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_FADEINOUT, 23781, 0, 720.2, 400.2, 0.333,1.0,3.0);
+		SetFont(HLPickupIDsNew[CheckInventory("HalfLifeOpposingForce")][cause][loadout]); HudMessage(s: "A"; HUDMSG_PLAIN|HUDMSG_ADDBLEND|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_FADEINOUT, 23781, 0, 720.2, 400.2, 0.333,1.0,3.0);
 		SetHUDSize(0,0,0);		
 	}
 }
@@ -1551,9 +1594,24 @@ script "HL2685" (int cause) clientside //2685
 	}
 	else
 	{
+        int pickuptype = cause - 11;
+        int loadouttype = 0;
+
+        if (pickuptype == 0) { loadouttype = CheckInventory("SamsaraHalfLifeLoadoutSlot1"); }
+        else if (pickuptype == 1) { loadouttype = CheckInventory("SamsaraHalfLifeLoadoutSlot3"); }
+        else if (pickuptype == 4) { loadouttype = CheckInventory("SamsaraHalfLifeLoadoutSlot5"); }
+        else if (pickuptype == 5) { loadouttype = CheckInventory("SamsaraHalfLifeLoadoutSlot6"); }
+        else if (pickuptype == 6) { loadouttype = CheckInventory("SamsaraHalfLifeLoadoutSlot7"); }
+        else if (pickuptype == 7) { loadouttype = CheckInventory("SamsaraHalfLifeLoadoutUnique2"); }
+        else if (pickuptype == 8) { loadouttype = CheckInventory("SamsaraHalfLifeLoadoutUnique1"); }
+        else if (pickuptype == 9) { loadouttype = CheckInventory("SamsaraHalfLifeLoadoutUnique3"); }
+
 		TakeInventory("HLHEVPickupID", 255);
-		GiveInventory("HLHEVPickupID", cause-11);
-		ACS_NamedExecuteWithResult("HL_HUD_Pickups", cause-11);
+		GiveInventory("HLHEVPickupID", pickuptype);
+
+        SetInventory("HLHEVLoadoutID", loadouttype);
+
+		ACS_NamedExecuteWithResult("HL_HUD_Pickups", pickuptype, loadouttype);
 	}
 }
 
