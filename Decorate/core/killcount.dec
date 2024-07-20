@@ -1,37 +1,23 @@
-actor KillCountAmount : inventory { -INVBAR +INVENTORY.UNDROPPABLE +INVENTORY.HUBPOWER inventory.maxamount 999 }
-actor KillCountAmountTrue : inventory { -INVBAR +INVENTORY.UNDROPPABLE +INVENTORY.HUBPOWER inventory.maxamount 999999999 }
-actor KillCountNotch : inventory { -INVBAR +INVENTORY.UNDROPPABLE inventory.maxamount 9 }
-actor KillCountBar : inventory { -INVBAR +INVENTORY.UNDROPPABLE +INVENTORY.HUBPOWER inventory.maxamount 250 }
+actor KillCountAmount : Counter { Inventory.MaxAmount 999 }
+actor KillCountAmountTrue : Counter { Inventory.MaxAmount 999999999 }
+actor KillCountNotch : Counter { Inventory.MaxAmount 9 }
+actor KillCountBar : Counter { Inventory.MaxAmount 250 }
 
-actor KillCount : CustomInventory
+actor KillCount : Trigger
 {
-    -INVBAR
-    +INVENTORY.UNDROPPABLE
-    +INVENTORY.AUTOACTIVATE
-    Inventory.maxamount 1000
     States
     {
-        //Pickup:
-        //TNT1 A 15
-        //stop
       Pickup:
-        TNT1 A 0 A_GiveInventory("KillCountAmountTrue",1)
-        TNT1 A 0 A_JumpIfInventory("KillCountAmount",999,"GetANotch")
-        TNT1 A 0 A_GiveInventory("KillCountAmount",1)
-		TNT1 A 0 A_GiveInventory("KillCountBar",1)
-        TNT1 A 15
+        TNT1 A 0 A_GiveInventory("KillCountAmountTrue")
+        TNT1 A 0 A_GiveInventory("KillCountBar")
+        TNT1 A 0 A_JumpIfInventory("KillCountAmount",0,"PickupNotch")
+        TNT1 A 0 A_GiveInventory("KillCountAmount")
         stop
 
-      GetANotch:
-        TNT1 A 0 A_JumpIfInventory("KillCountNotch",9,"NothingAtAll")
-        TNT1 A 0 A_GiveInventory("KillCountNotch",1)
-        TNT1 A 0 A_TakeInventory("KillCountAmount",999999999)
-        TNT1 A 15
-        stop
-
-      NothingAtAll:
-        TNT1 A 15
+      PickupNotch:
+        TNT1 A 0 A_JumpIfInventory("KillCountNotch",0,"PickupStop")
+        TNT1 A 0 A_GiveInventory("KillCountNotch")
+        TNT1 A 0 A_TakeInventory("KillCountAmount")
         stop
     }
 }
-
