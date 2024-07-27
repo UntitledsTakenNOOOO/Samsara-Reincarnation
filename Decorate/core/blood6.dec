@@ -1,172 +1,138 @@
-// LEVEL 6: DBTHANATOS GIBS
+// LEVEL 6: TREMOR GIBS (basically quake gibs)
 // ========================
 
-Actor DBT_Blood : GenericGoreActor
+ACTOR Tremor_BloodParticle : GenericGoreActor
 {
-	+NOINTERACTION
-	Scale 0.375
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_Jump(255,"Death1","Death2","Death3")
-		Goto Death1
-	Death1:
-		X051 A 1
-		X051 B 1 A_Stop
-		X051 CDEFGHIJ 1
-		X051 KLMNOPQRS 1 A_FadeOut
-		Stop
-	Death2:
-		X052 A 1
-		X052 B 1 A_Stop
-		X052 CDEFGHI 1
-		X052 JKLMNOPQR 1 A_FadeOut
-		Stop
-	Death3:
-		X053 A 1
-		X053 B 1 A_Stop
-		X053 CD 1
-		X053 EFGHIJKLM 1 A_FadeOut
-		Stop
-	}
-}
-
-Actor DBT_BloodParticle : GenericGoreActor
-{
-	+NOINTERACTION
-	Scale 0.375
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_Jump(255,"Death1","Death2","Death3")
-		Goto Death1
-	Death1:
-		X051 ABCDEFGHIJ 1
-		X051 KLMNOPQRS 1 A_FadeOut
-		Stop
-	Death2:
-		X052 ABCDEFGHI 1
-		X052 JKLMNOPQR 1 A_FadeOut
-		Stop
-	Death3:
-		X053 ABCD 1
-		X053 EFGHIJKLM 1 A_FadeOut
-		Stop
-	}
-}
-
-Actor DBT_Bloodmist : GenericGoreActor
-{
-	+NOINTERACTION
-	Scale 0.45
-	States
-	{
-	Spawn:
-		X050 A 1 A_SetScale(scalex+0.025)
-		X050 A 0 A_FadeOut(0.04)
-		Loop
-	}
-}
-
-Actor DBT_BloodmistBig : DBT_Bloodmist { Scale 0.8 }
-
-Actor DBT_AEODGib1 : GenericGoreActorFadeOut
-{
-	+CORPSE
+	Radius 1
+	Height 1
+	Projectile
+	VSpeed 0
+	Speed 0
 	+DROPOFF
+	+SKYEXPLODE
 	+NOBLOCKMONST
-	+CORPSE
-	+NOTONAUTOMAP
-	-MOVEWITHSECTOR
-	-NOLIFTDROP
-	Scale 0.6
-	Radius 6
-	Height 5
-	Gravity 0.65
+	+THRUACTORS
+	+NOCLIP
+	Scale 1
+	Gravity 0.125
+	Damage (0)
 	States
 	{
 	Spawn:
-		X054 ABCD 5 A_SpawnItemEx("DBT_BloodParticle",random(3,-3),random(3,-3),random(3,-3),0,0,0,0,1)
+		BPAR C 0
+		BPAR C 0 A_Jump(256, "Shade1", "Shade3", "Shade5")
+	Shade1:
+		BPAR C 10 A_Gravity
+	A:
+		BPAR C 1 A_FadeOut(0.1)
 		Loop
-	Crash:
-		X054 E 0
-		Goto Super::FadeGore
+	Shade3:
+		BPAR D 10 A_Gravity
+	B:
+		BPAR D 1 A_FadeOut(0.1)
+		Loop
+	Shade5:
+		BPAR E 10 A_Gravity
+	C:
+		BPAR E 1 A_FadeOut(0.1)
+		Loop
 	}
 }
 
-Actor DBT_AEODGib2 : DBT_AEODGib1
+actor Tremor_Gib1 : GenericGoreActor
 {
-	Scale 0.4
-	Speed 7
+	Radius 4
+	Height 4
+	Speed 0
+	Projectile
+	Gravity 0.5
+	BounceType Doom
+	BounceFactor 0.5
+	BounceCount 5
+	-NOGRAVITY
+	+MOVEWITHSECTOR
+	+THRUACTORS
+	+CLIENTSIDEONLY
+	Health 2
 	States
 	{
 	Spawn:
-		X054 FGHI 5 A_SpawnItemEx("DBT_BloodParticle",random(3,-3),random(3,-3),random(3,-3),0,0,0,0,1)
-		Loop
-	Crash:
-		X054 J 0
-		Goto Super::FadeGore
+		QD11 A 2 A_SpawnItemEx("Tremor_BloodParticle",random(-2,2)*5,random(-2,2)*5,random(-2,2)*5,0,0,0,0,SXF_TRANSFERTRANSLATION)
+		loop
+	Death:
+		QD11 A 0 A_SpawnItemEx("Tremor_Gib1Static",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION,128)
+		Stop
 	}
 }
 
-Actor DBT_AEODGib3 : DBT_AEODGib1
+actor Tremor_Gib1Static : GenericGoreActorFadeOut
 {
-	Scale 0.6
-	Speed 7
-	States
-	{
-	Spawn:
-		X054 KLMN 5 A_SpawnItemEx("DBT_BloodParticle",random(3,-3),random(3,-3),random(3,-3),0,0,0,0,1)
-		Loop
-	Crash:
-		X054 O 0
-		Goto Super::FadeGore
-	}
-}
-
-Actor DBT_AEODGib4 : DBT_AEODGib1
-{
-	Scale 0.6
-	Speed 7
-	States
-	{
-	Spawn:
-		X054 PQRS 5 A_SpawnItemEx("DBT_BloodParticle",random(3,-3),random(3,-3),random(3,-3),0,0,0,0,1)
-		Loop
-	Crash:
-		X054 T 0
-		Goto Super::FadeGore
-	}
-}
-
-Actor DBT_QCDEGib : GenericGoreActorFadeOut
-{
-	-NOLIFTDROP
-	+DROPOFF
-	+BOUNCEONWALLS
-	+BOUNCEONFLOORS
-	Radius 6
-	Height 5
-	Gravity 0.65
 	States
 	{
 	Spawn:
 		TNT1 A 0
-		TNT1 A 0 A_Jump(256,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20)
-		X055 ABCDEFGHIJLKMNOPQRST 0 A_Jump(256,"Active")
-	Active:
-		X055 "#" 6 A_SpawnItemEx("DBT_BloodParticle",random(3,-3),random(3,-3),random(3,-3),0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION,128)
-		X055 "#" 0 A_CheckFloor("Rest")
-		Loop
-	Rest:
-		X055 "#" 0
+		QD11 A 0
 		Goto Super::FadeGore
 	}
 }
 
-actor DBT_OnlineSound
+actor Tremor_Gib2 : Tremor_Gib1
+{
+	Health 3
+	States
+	{
+	Spawn:
+		QD11 AABBCCDDEEFFGGHH 2 A_SpawnItemEx("Tremor_BloodParticle",random(-2,2)*5,random(-2,2)*5,random(-2,2)*5,0,0,0,0,SXF_TRANSFERTRANSLATION)
+		loop
+	Death:
+		QD11 A 0 A_SpawnItemEx("Tremor_Gib2Static",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION,128)
+		Stop
+	}
+}
+
+actor Tremor_Gib2Static : GenericGoreActorFadeOut
+{
+	States
+	{
+	Spawn:
+		TNT1 A 0
+		TNT1 A 0 A_Jump(256,1,2,3,4,5,6,7)
+		QD11 ABCDEFGH 0 A_Jump(256,"Rest")
+	Rest:
+		QD11 "#" 0
+		Goto Super::FadeGore
+	}
+}
+
+actor Tremor_Gib3 : Tremor_Gib1
+{
+	Health 4
+	States
+	{
+	Spawn:
+		QD11 AABBCCDDEEFFGGHH 2 A_SpawnItemEx("Tremor_BloodParticle",random(-2,2)*5,random(-2,2)*5,random(-2,2)*5,0,0,0,0,SXF_TRANSFERTRANSLATION)
+		loop
+	Death:
+		QD11 A 0 A_SpawnItemEx("Tremor_Gib3Static",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_TRANSFERTRANSLATION,128)
+		Stop
+	}
+}
+
+actor Tremor_Gib3Static : GenericGoreActorFadeOut
+{
+	States
+	{
+	Spawn:
+		TNT1 A 0
+		TNT1 A 0 A_Jump(256,1,2,3,4,5,6,7)
+		QD11 ABCDEFGH 0 A_Jump(256,"Rest")
+	Rest:
+		QD11 "#" 0
+		Goto Super::FadeGore
+	}
+}
+
+actor Tremor_OnlineSound
 {
 	+NOCLIP
 	-SOLID
@@ -176,39 +142,7 @@ actor DBT_OnlineSound
 	{
 	Spawn:
 		TNT1 A 0
-		TNT1 A 1 A_PlaySound("DBThanatos/Gib",CHAN_5)
+		TNT1 A 1 A_PlaySound("Tremor/Gib",CHAN_5)
 		Stop
-	}
-}
-
-Actor DBT_IceChunk : GenericGoreActor
-{
-	Radius 3
-	Height 4
-	Mass 5
-	Gravity 0.35
-	Projectile
-	+THRUACTORS
-	+FLOORCLIP
-	-NOGRAVITY
-	Scale 0.06
-	RenderStyle "Add"
-	Alpha 0.9
-	Translation "0:255=%[0.57,0.6,0.84]:[0.9,0.9,0.9]"
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_Jump(256,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,
-				24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,
-				46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,
-				68,69,70,71,72,73,74,75)
-		X056 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1	
-		X057 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1
-		X058 ABCDEFGHIJKLMNOPQRSTUVWX 1
-		Goto Spawn+3
-	Death:
-		"####" "#" 3 A_FadeOut(0.02)
-		Loop
 	}
 }
