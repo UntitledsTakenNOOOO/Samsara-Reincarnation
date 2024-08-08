@@ -1094,304 +1094,124 @@ function int HandleBuffCVars(int respawning)
 	return 1;
 }
 
-function void HandleAmmoCapacities(void)
+function void HandleAmmoCapacities (void)
 {
-	int maxClip = GetCvar("samsara_max_clip");
-	int maxShell = GetCvar("samsara_max_shell");
-	int maxRocket = GetCvar("samsara_max_rockets");
-	int maxCell = GetCvar("samsara_max_cell");
-	int hasBackPack = 1 + (CheckInventory("Backpack") || CheckInventory("BagOfHolding") || CheckInventory("AmmoSatchel") || CheckInventory("Zorchpack"));
-	int noAmmoCap = GetCVar("samsara_noammocap");
-	bool increasingAmmo = GetCVar("samsara_increasingammo");
+    int maxClip = GetCVar("samsara_max_clip");
+    int maxShell = GetCVar("samsara_max_shell");
+    int maxRocket = GetCVar("samsara_max_rockets");
+    int maxCell = GetCVar("samsara_max_cell");
+    int hasBackPack = 1 + (CheckInventory("Backpack") || CheckInventory("BagOfHolding") || CheckInventory("AmmoSatchel") || CheckInventory("Zorchpack"));
 
-	int backPacks = max(0, (CheckInventory("SamsaraBackpacksInInventory") - 1));
-	int increasingClip = ((GetCvar("samsara_max_clip")) * ((GetCvar("samsara_increasingammopercent")) * backPacks) / 100);
-	int increasingShell = ((GetCvar("samsara_max_shell")) * ((GetCvar("samsara_increasingammopercent")) * backPacks) / 100);
-	int increasingRockets = ((GetCvar("samsara_max_rockets")) * ((GetCvar("samsara_increasingammopercent")) * backPacks) / 100);
-	int increasingCell = ((GetCvar("samsara_max_cell")) * ((GetCvar("samsara_increasingammopercent")) * backPacks) / 100);
+    int increasingClip = 0;
+    int increasingShell = 0;
+    int increasingRockets = 0;
+    int increasingCell = 0;
 
-	if(!CheckInventory("Hexen2Class"))
-	{
-		if (noAmmoCap >= 1)
-		{
-			SetAmmoCapacity("Clip",INTMAXSAFE);
-			SetAmmoCapacity("Shell",INTMAXSAFE);
-			SetAmmoCapacity("RocketAmmo",INTMAXSAFE);
-			SetAmmoCapacity("Cell",INTMAXSAFE);
-		}
-		else if (increasingAmmo)
-		{
-			SetAmmoCapacity("Clip",((maxClip*hasBackPack)+increasingClip));
-			SetAmmoCapacity("Shell",((maxShell*hasBackPack)+increasingShell));
-			SetAmmoCapacity("RocketAmmo",((maxRocket*hasBackPack)+increasingRockets));
-			SetAmmoCapacity("Cell",((maxCell*hasBackPack)+increasingCell));
-		}
-		else
-		{
-			SetAmmoCapacity("Clip",maxClip*hasBackPack);
-			SetAmmoCapacity("Shell",maxShell*hasBackPack);
-			SetAmmoCapacity("RocketAmmo",maxRocket*hasBackPack);
-			SetAmmoCapacity("Cell",maxCell*hasBackPack);
-		}
-	}
-	else
-	{
-		if (noAmmoCap >= 1)
-		{
-			SetAmmoCapacity("Clip",INTMAXSAFE);
-			SetAmmoCapacity("Cell",INTMAXSAFE);
-		}
-		else if (increasingAmmo)
-		{
-			SetAmmoCapacity("Clip",(((maxClip*5)/4)*hasBackPack)+increasingClip + CheckInventory("Hexen2BlueManaAdd"));
-			SetAmmoCapacity("Cell",(((maxCell*5)/6)*hasBackPack)+increasingCell + CheckInventory("Hexen2GreenManaAdd"));
-		}
-		else
-		{
-			SetAmmoCapacity("Clip",((maxClip*5)/4)*hasBackPack + CheckInventory("Hexen2BlueManaAdd"));
-			SetAmmoCapacity("Cell",((maxCell*5)/6)*hasBackPack + CheckInventory("Hexen2GreenManaAdd"));
-		}
-	}
+    if (GetCVar("samsara_increasingammo"))
+    {
+        int backPacks = max(0, CheckInventory("SamsaraBackpacksInInventory") - 1);
 
-	// Doomguy Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("DoomguyStrGas",INTMAXSAFE);
-		SetAmmoCapacity("DoomguyStrMines",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("DoomguyStrGas",((maxCell*hasBackPack)/5)*4);
-		SetAmmoCapacity("DoomguyStrMines",((maxRocket*hasBackPack)/5)*2);
-	}
+        increasingClip = (maxClip * (GetCVar("samsara_increasingammopercent") * backPacks) / 100);
+        increasingShell = (maxShell * (GetCVar("samsara_increasingammopercent") * backPacks) / 100);
+        increasingRockets = (maxRocket * (GetCVar("samsara_increasingammopercent") * backPacks) / 100);
+        increasingCell = (maxCell * (GetCVar("samsara_increasingammopercent") * backPacks) / 100);
+    }
 
-	// Blazko Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("Totenkopf_FlameThrowerFuel",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("Totenkopf_FlameThrowerFuel",((maxCell*hasBackPack)/3)*2);
-	}
+    bool noAmmoCap = GetCVar("samsara_noammocap");
 
-	// Marathon Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("KnifeAmmo",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("KnifeAmmo",2);
-	}
+    // Standard Ammo
+    if (CheckInventory("Hexen2Class"))
+    {
+        SetAmmoCapacity("Clip", noAmmoCap ? INTMAXSAFE : (((maxClip * 5) / 4) * hasBackPack) + increasingClip + CheckInventory("Hexen2BlueManaAdd"));
+        SetAmmoCapacity("Cell", noAmmoCap ? INTMAXSAFE : (((maxCell * 5) / 6) * hasBackPack) + increasingCell + CheckInventory("Hexen2GreenManaAdd"));
+    } else {
+        SetAmmoCapacity("Clip", noAmmoCap ? INTMAXSAFE : (maxClip * hasBackPack) + increasingClip);
+        SetAmmoCapacity("Shell", noAmmoCap ? INTMAXSAFE : (maxShell * hasBackPack) + increasingShell);
+        SetAmmoCapacity("RocketAmmo", noAmmoCap ? INTMAXSAFE : (maxRocket * hasBackPack) + increasingRockets);
+        SetAmmoCapacity("Cell", noAmmoCap ? INTMAXSAFE : (maxCell * hasBackPack) + increasingCell);
+    }
 
-	// Duke Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("ShrinkerAmmo",INTMAXSAFE);
-		SetAmmoCapacity("ExpanderAmmo",INTMAXSAFE);
-		SetAmmoCapacity("Duke64DumDums",INTMAXSAFE);
-		SetAmmoCapacity("Duke64ExplosiveShells",INTMAXSAFE);
-		SetAmmoCapacity("Duke64HeatSeekingRockets",INTMAXSAFE);
-		SetAmmoCapacity("Duke64ShrinkerAmmo",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("ShrinkerAmmo",(maxCell*hasBackPack)/10);
-		SetAmmoCapacity("ExpanderAmmo",(maxCell*hasBackPack)/3);
-		SetAmmoCapacity("Duke64DumDums",((maxClip*hasBackPack)/100)*12);
-		SetAmmoCapacity("Duke64ExplosiveShells",(maxShell*hasBackPack)/10);
-		SetAmmoCapacity("Duke64HeatSeekingRockets",((maxRocket*hasBackPack*2)/8));
-		SetAmmoCapacity("Duke64ShrinkerAmmo",(maxCell*hasBackPack)/15);
-	}
+    // Stronghold Ammo
+    SetAmmoCapacity("DoomguyStrMines", noAmmoCap ? INTMAXSAFE : ((maxRocket * hasBackPack) / 5) * 2);
+    SetAmmoCapacity("DoomguyStrGas", noAmmoCap ? INTMAXSAFE : ((maxCell * hasBackPack) / 5) * 4);
 
-	// Ranger Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("LavaNails",INTMAXSAFE);
-		SetAmmoCapacity("MultiRocketAmmo",INTMAXSAFE);
-		SetAmmoCapacity("PlasmaCell",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("LavaNails",((maxClip*hasBackPack)/4)*3);
-		SetAmmoCapacity("MultiRocketAmmo",((maxRocket*hasBackPack)/5)*2);
-		SetAmmoCapacity("PlasmaCell",(maxCell*hasBackPack)/20);
-	}
+    // Totenkopf Ammo
+    SetAmmoCapacity("Totenkopf_FlameThrowerFuel", noAmmoCap ? INTMAXSAFE : ((maxCell * hasBackPack) / 3) * 2);
 
-	// RoTT Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("HSMissiles",INTMAXSAFE);
-		SetAmmoCapacity("RoTTMissiles",INTMAXSAFE);
-		SetAmmoCapacity("SMissiles",INTMAXSAFE);
-		SetAmmoCapacity("FBMissiles",INTMAXSAFE);
-		SetAmmoCapacity("DMMissiles",INTMAXSAFE);
-		SetAmmoCapacity("FWMissiles",INTMAXSAFE);
-		SetAmmoCapacity("DMissiles",INTMAXSAFE);
-		SetAmmoCapacity("BMissiles",INTMAXSAFE);
-		SetAmmoCapacity("DSEnergy",INTMAXSAFE);
-	}
-	else if (increasingAmmo)
-	{
-		SetAmmoCapacity("HSMissiles",((maxClip*hasBackPack)+increasingClip)/2);
-		SetAmmoCapacity("RoTTMissiles",((maxShell*hasBackPack)+increasingShell)/2);
-		SetAmmoCapacity("SMissiles",((maxCell*hasBackPack)+increasingCell)/3);
-		SetAmmoCapacity("FBMissiles",((maxRocket*hasBackPack)+increasingRockets)/2);
-		SetAmmoCapacity("DMMissiles",((maxRocket*hasBackPack)+increasingRockets)/2);
-		SetAmmoCapacity("FWMissiles",((maxCell*hasBackPack)+increasingCell)/30);
-		SetAmmoCapacity("DMissiles",((maxCell*hasBackPack)+increasingCell)/5);
-		SetAmmoCapacity("BMissiles",(maxCell+increasingCell)/30);
-		SetAmmoCapacity("DSEnergy",(maxCell+increasingCell)/30);
-	}
-	else
-	{
-		SetAmmoCapacity("HSMissiles",(maxClip*hasBackPack)/2);
-		SetAmmoCapacity("RoTTMissiles",(maxShell*hasBackPack)/2);
-		SetAmmoCapacity("SMissiles",(maxCell*hasBackPack)/3);
-		SetAmmoCapacity("FBMissiles",(maxRocket*hasBackPack)/2);
-		SetAmmoCapacity("DMMissiles",(maxRocket*hasBackPack)/2);
-		SetAmmoCapacity("FWMissiles",(maxCell*hasBackPack)/30);
-		SetAmmoCapacity("DMissiles",(maxCell*hasBackPack)/5);
-		SetAmmoCapacity("BMissiles",(maxCell)/30);
-		SetAmmoCapacity("DSEnergy",(maxCell)/30);
-	}
+    // Duke 3D Ammo
+    SetAmmoCapacity("ShrinkerAmmo", noAmmoCap ? INTMAXSAFE : (maxCell * hasBackPack) / 10);
+    SetAmmoCapacity("ExpanderAmmo", noAmmoCap ? INTMAXSAFE : (maxCell * hasBackPack) / 3);
 
-	// Strife Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("StrifePoisonAmmo",INTMAXSAFE);
-		SetAmmoCapacity("WhitePhosGrenade",INTMAXSAFE);
-		SetAmmoCapacity("StrifeGasGrenadeAmmo",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("StrifePoisonAmmo",(maxShell*hasBackPack)/2);
-		SetAmmoCapacity("WhitePhosGrenade",(maxRocket*hasBackPack)/5);
-		SetAmmoCapacity("StrifeGasGrenadeAmmo",(maxRocket*hasBackPack)/5);
-	}
+    // Duke 64 Ammo
+    SetAmmoCapacity("Duke64DumDums", noAmmoCap ? INTMAXSAFE : ((maxClip * hasBackPack) / 100) * 12);
+    SetAmmoCapacity("Duke64ExplosiveShells", noAmmoCap ? INTMAXSAFE : (maxShell * hasBackPack) / 10);
+    SetAmmoCapacity("Duke64HeatSeekingRockets", noAmmoCap ? INTMAXSAFE : (maxRocket * hasBackPack * 2) / 8);
+    SetAmmoCapacity("Duke64ShrinkerAmmo", noAmmoCap ? INTMAXSAFE : (maxCell * hasBackPack) / 15);
 
-	// Caleb Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("SprayCanAmmo",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("SprayCanAmmo",((maxCell*hasBackPack)/48)*48);
-	}
+    // Marathon Ammo
+    SetAmmoCapacity("KnifeAmmo", noAmmoCap ? INTMAXSAFE : 2);
 
-	// Disruptor Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("DisruptorHiFreq",INTMAXSAFE);
-		SetAmmoCapacity("DisruptorBinaryLockOn",INTMAXSAFE);
-		SetAmmoCapacity("DisruptorPSIEnergy",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("DisruptorHiFreq",((maxClip*hasBackPack)/4)*3);
-		SetAmmoCapacity("DisruptorBinaryLockOn",((maxRocket*hasBackPack)/5)*2);
-		SetAmmoCapacity("DisruptorPSIEnergy",((maxCell*hasBackPack)*2)/3);
-	}
+    // Q1 Ammo
+    SetAmmoCapacity("LavaNails", noAmmoCap ? INTMAXSAFE : ((maxClip * hasBackPack) / 4) * 3);
+    SetAmmoCapacity("MultiRocketAmmo", noAmmoCap ? INTMAXSAFE : ((maxRocket * hasBackPack) / 5) * 2);
+    SetAmmoCapacity("PlasmaCell", noAmmoCap ? INTMAXSAFE : (maxCell * hasBackPack) / 20);
 
-	// C7 Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("C7ProxyMineAmmo",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("C7ProxyMineAmmo",(maxRocket*hasBackPack*3)/5);
-	}
+    // RoTT Ammo
+    SetAmmoCapacity("HSMissiles", noAmmoCap ? INTMAXSAFE : ((maxClip * hasBackPack) + increasingClip) / 2);
+    SetAmmoCapacity("RoTTMissiles", noAmmoCap ? INTMAXSAFE : ((maxShell * hasBackPack) + increasingShell) / 2);
+    SetAmmoCapacity("FBMissiles", noAmmoCap ? INTMAXSAFE : ((maxRocket * hasBackPack) + increasingRockets) / 2);
+    SetAmmoCapacity("DMissiles", noAmmoCap ? INTMAXSAFE : ((maxCell * hasBackPack) + increasingCell) / 5);
+    SetAmmoCapacity("SMissiles", noAmmoCap ? INTMAXSAFE : ((maxCell * hasBackPack) + increasingCell) / 3);
+    SetAmmoCapacity("DMMissiles", noAmmoCap ? INTMAXSAFE : ((maxRocket * hasBackPack) + increasingRockets) / 2);
+    SetAmmoCapacity("FWMissiles", noAmmoCap ? INTMAXSAFE : ((maxCell * hasBackPack) + increasingCell) / 30);
+    SetAmmoCapacity("BMissiles", noAmmoCap ? INTMAXSAFE : (maxCell + increasingCell) / 30);
+    SetAmmoCapacity("DSEnergy", noAmmoCap ? INTMAXSAFE : (maxCell + increasingCell) / 30);
 
-	// RR Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("MotoGunAmmo",INTMAXSAFE);
-		SetAmmoCapacity("ChickenAmmo",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("MotoGunAmmo",(maxClip*hasBackPack*3)/2);
-		SetAmmoCapacity("ChickenAmmo",(maxRocket*hasBackPack/5)*2);
-	}
+    // Blood Ammo
+    SetAmmoCapacity("SprayCanAmmo", noAmmoCap ? INTMAXSAFE : ((maxCell * hasBackPack) / 48) * 48);
 
-	// Q2 Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("Q2Flechettes",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("Q2Flechettes",(maxClip*hasBackPack));
-	}
+    // Strife Ammo
+    SetAmmoCapacity("StrifePoisonAmmo", noAmmoCap ? INTMAXSAFE : (maxShell * hasBackPack) / 2);
+    SetAmmoCapacity("WhitePhosGrenade", noAmmoCap ? INTMAXSAFE : (maxRocket * hasBackPack) / 5);
+    SetAmmoCapacity("StrifeGasGrenadeAmmo", noAmmoCap ? INTMAXSAFE : (maxRocket * hasBackPack) / 5);
 
-	// GE Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo",INTMAXSAFE);
-		SetAmmoCapacity("Goldeneye_GoldenGunRounds",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo",(maxShell*hasBackPack)/8);
-		SetAmmoCapacity("Goldeneye_GoldenGunRounds",(maxCell*hasBackPack)/30);
-	}
+    // C7 Ammo
+    SetAmmoCapacity("C7ProxyMineAmmo", noAmmoCap ? INTMAXSAFE : (maxRocket * hasBackPack * 3) / 5);
 
-	// PK Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("Painkiller_FlamerAmmo",INTMAXSAFE);
-		SetAmmoCapacity("Painkiller_FreezerAmmo",INTMAXSAFE);
-		SetAmmoCapacity("Painkiller_HeaterAmmo",INTMAXSAFE);
-		SetAmmoCapacity("Painkiller_ElectroAmmo",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("Painkiller_FlamerAmmo",((maxClip*hasBackPack)*3)/4);
-		SetAmmoCapacity("Painkiller_FreezerAmmo",(maxShell*hasBackPack)/10);
-		SetAmmoCapacity("Painkiller_HeaterAmmo",((maxCell*hasBackPack)*2)/3);
-		SetAmmoCapacity("Painkiller_ElectroAmmo",(maxCell*hasBackPack*2)/3);
-	}
-	
-	// RTCW Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("RTCW_AlliedAmmo1",INTMAXSAFE);
-		SetAmmoCapacity("RTCW_AlliedAmmo2",INTMAXSAFE);
-		SetAmmoCapacity("RTCW_AlliedAmmo3",INTMAXSAFE);
-		SetAmmoCapacity("RTCW_AlliedAmmo4",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("RTCW_AlliedAmmo1",(maxClip*hasBackPack)/2);
-		SetAmmoCapacity("RTCW_AlliedAmmo2",(maxShell*hasBackPack)/2);
-		SetAmmoCapacity("RTCW_AlliedAmmo3",(maxRocket*hasBackPack)/2);
-		SetAmmoCapacity("RTCW_AlliedAmmo4",(maxCell*hasBackPack)/2);
-	}
+    // Disruptor Ammo
+    SetAmmoCapacity("DisruptorHiFreq", noAmmoCap ? INTMAXSAFE : ((maxClip * hasBackPack) / 4) * 3);
+    SetAmmoCapacity("DisruptorBinaryLockOn", noAmmoCap ? INTMAXSAFE : ((maxRocket * hasBackPack) / 5) * 2);
+    SetAmmoCapacity("DisruptorPSIEnergy", noAmmoCap ? INTMAXSAFE : ((maxCell * hasBackPack) * 2) / 3);
 
-	// Q3 Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("Q3GrenadeLauncherAmmo",INTMAXSAFE);
-		SetAmmoCapacity("Q3ChaingunAmmo",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("Q3GrenadeLauncherAmmo",(maxRocket*hasBackPack/2)*3);
-		SetAmmoCapacity("Q3ChaingunAmmo",(maxClip*hasBackPack/2)*3);
-	}
+    // RR Ammo
+    SetAmmoCapacity("MotoGunAmmo", noAmmoCap ? INTMAXSAFE : (maxClip * hasBackPack * 3) / 2);
+    SetAmmoCapacity("ChickenAmmo", noAmmoCap ? INTMAXSAFE : (maxRocket * hasBackPack / 5) * 2);
 
-	// JC Denton Ammo
-	if (noAmmoCap >= 1)
-	{
-		SetAmmoCapacity("DeusEx_LAWAmmo",INTMAXSAFE);
-	}
-	else
-	{
-		SetAmmoCapacity("DeusEx_LAWAmmo",(maxRocket/50)*3);
-	}
+    // Q2 Ammo
+    SetAmmoCapacity("Q2Flechettes", noAmmoCap ? INTMAXSAFE : maxClip * hasBackPack);
+
+    // GE Ammo
+    SetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo", noAmmoCap ? INTMAXSAFE : (maxShell * hasBackPack) / 8);
+    SetAmmoCapacity("Goldeneye_GoldenGunRounds", noAmmoCap ? INTMAXSAFE : (maxCell * hasBackPack) / 30);
+
+    // PK Ammo
+    SetAmmoCapacity("Painkiller_FlamerAmmo", noAmmoCap ? INTMAXSAFE : ((maxClip * hasBackPack) * 3) / 4);
+    SetAmmoCapacity("Painkiller_FreezerAmmo", noAmmoCap ? INTMAXSAFE : (maxShell * hasBackPack) / 10);
+    SetAmmoCapacity("Painkiller_HeaterAmmo", noAmmoCap ? INTMAXSAFE : ((maxCell * hasBackPack) * 2) / 3);
+    SetAmmoCapacity("Painkiller_ElectroAmmo", noAmmoCap ? INTMAXSAFE : (maxCell * hasBackPack * 2) / 3);
+    
+    // RTCW Ammo
+    SetAmmoCapacity("RTCW_AlliedAmmo1", noAmmoCap ? INTMAXSAFE : (maxClip * hasBackPack) / 2);
+    SetAmmoCapacity("RTCW_AlliedAmmo2", noAmmoCap ? INTMAXSAFE : (maxShell * hasBackPack) / 2);
+    SetAmmoCapacity("RTCW_AlliedAmmo3", noAmmoCap ? INTMAXSAFE : (maxRocket * hasBackPack) / 2);
+    SetAmmoCapacity("RTCW_AlliedAmmo4", noAmmoCap ? INTMAXSAFE : (maxCell * hasBackPack) / 2);
+
+    // Q3 Ammo
+    SetAmmoCapacity("Q3ChaingunAmmo", noAmmoCap ? INTMAXSAFE : (maxClip * hasBackPack / 2) * 3);
+    SetAmmoCapacity("Q3GrenadeLauncherAmmo", noAmmoCap ? INTMAXSAFE : (maxRocket * hasBackPack / 2) * 3);
+
+    // Deus Ex Ammo
+    SetAmmoCapacity("DeusEx_LAWAmmo", noAmmoCap ? INTMAXSAFE : (maxRocket / 50) * 3);
 }
 
 function str GetBloodStateModifier(str state, int bloodSize)

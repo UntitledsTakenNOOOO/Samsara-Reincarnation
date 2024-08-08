@@ -167,27 +167,38 @@ script "SamsaraHexenWeaponPaletteBlend" (int weapon) CLIENTSIDE
     FadeTo(0, 0, 0, 0.0, 0.0);
 }
 
-script "SamsaraHexenAmmoRefill" (int ammotype)
+script "SamsaraHexenAmmoRefill" (int ammotype) // technically used by hexen 2 as well
 {
     str ammoname = "Placeholder";
     int ammoamount = 0;
 
     int maxClip = GetCVar("samsara_max_clip");
     int maxCell = GetCVar("samsara_max_cell");
-    int hasBackpack = 1 + (CheckInventory("Backpack") || CheckInventory("BagOfHolding") || CheckInventory("AmmoSatchel") || CheckInventory("Zorchpack"));
+    int hasBackPack = 1 + (CheckInventory("Backpack") || CheckInventory("BagOfHolding") || CheckInventory("AmmoSatchel") || CheckInventory("Zorchpack"));
+
+    int increasingClip = 0;
+    int increasingCell = 0;
+
+    if (GetCVar("samsara_increasingammo"))
+    {
+        int backPacks = max(0, CheckInventory("SamsaraBackpacksInInventory") - 1);
+
+        increasingClip = (maxClip * (GetCVar("samsara_increasingammopercent") * backPacks) / 100);
+        increasingCell = (maxCell * (GetCVar("samsara_increasingammopercent") * backPacks) / 100);
+    }
 
     switch (ammotype)
     {
       case 0:
         ammoname = "Clip";
-        if (CheckInventory("Hexen2Class")) { ammoamount = (((maxClip * 5) / 4) * hasBackpack + CheckInventory("Hexen2BlueManaAdd")) / 2; }
-        else { ammoamount = (maxClip * hasBackpack) / 2; }
+        if (CheckInventory("Hexen2Class")) { ammoamount = ((((maxClip * 5) / 4) * hasBackPack) + increasingClip + CheckInventory("Hexen2BlueManaAdd")) / 2; }
+        else { ammoamount = ((maxClip * hasBackPack) + increasingClip) / 2; }
         break;
 
       case 1:
         ammoname = "Cell";
-        if (CheckInventory("Hexen2Class")) { ammoamount = (((maxCell * 5) / 6) * hasBackpack + CheckInventory("Hexen2GreenManaAdd")) / 2; }
-        else { ammoamount = (maxCell * hasBackpack) / 2; }
+        if (CheckInventory("Hexen2Class")) { ammoamount = ((((maxCell * 5) / 6) * hasBackPack) + increasingCell + CheckInventory("Hexen2GreenManaAdd")) / 2; }
+        else { ammoamount = ((maxCell * hasBackPack) + increasingCell) / 2; }
         break;
 
       default:

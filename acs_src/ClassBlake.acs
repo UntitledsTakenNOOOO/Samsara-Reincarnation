@@ -29,28 +29,43 @@ script "SamsaraBStoneAmmoRefill" (int ammotype)
     int maxShell = GetCVar("samsara_max_shell");
     int maxRocket = GetCVar("samsara_max_rockets");
     int maxCell = GetCVar("samsara_max_cell");
-    int hasBackpack = 1 + (CheckInventory("Backpack") || CheckInventory("BagOfHolding") || CheckInventory("AmmoSatchel") || CheckInventory("Zorchpack"));
+    int hasBackPack = 1 + (CheckInventory("Backpack") || CheckInventory("BagOfHolding") || CheckInventory("AmmoSatchel") || CheckInventory("Zorchpack"));
+
+    int increasingClip = 0;
+    int increasingShell = 0;
+    int increasingRockets = 0;
+    int increasingCell = 0;
+
+    if (GetCVar("samsara_increasingammo"))
+    {
+        int backPacks = max(0, CheckInventory("SamsaraBackpacksInInventory") - 1);
+
+        increasingClip = (maxClip * (GetCVar("samsara_increasingammopercent") * backPacks) / 100);
+        increasingShell = (maxShell * (GetCVar("samsara_increasingammopercent") * backPacks) / 100);
+        increasingRockets = (maxRocket * (GetCVar("samsara_increasingammopercent") * backPacks) / 100);
+        increasingCell = (maxCell * (GetCVar("samsara_increasingammopercent") * backPacks) / 100);
+    }
 
     switch (ammotype)
     {
       case 0:
         ammoname = "Clip";
-        ammoamount = (maxClip * hasBackpack) / 4;
+        ammoamount = ((maxClip * hasBackPack) + increasingClip) / 4;
         break;
 
       case 1:
         ammoname = "Shell";
-        ammoamount = (maxShell * hasBackpack) / 4;
+        ammoamount = ((maxShell * hasBackPack) + increasingShell) / 4;
         break;
 
       case 2:
         ammoname = "RocketAmmo";
-        ammoamount = (maxRocket * hasBackpack) / 4;
+        ammoamount = ((maxRocket * hasBackPack) + increasingRockets) / 4;
         break;
 
       case 3:
         ammoname = "Cell";
-        ammoamount = (maxCell * hasBackpack) / 4;
+        ammoamount = ((maxCell * hasBackPack) + increasingCell) / 4;
         break;
 
       default:
