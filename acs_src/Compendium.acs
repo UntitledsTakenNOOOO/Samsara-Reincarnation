@@ -4515,6 +4515,8 @@ str FTUTMessages[CLASSCOUNT][10][8] =
 	},
 };
 
+str FTUTWarnings[2] = { "SAMSARA_INCOMPATIBILITY_GZDOOMMP", "SAMSARA_INCOMPATIBILITY_BRUTALDOOM" };
+
 function int FTUTConfigCheck (int pClass)
 {
 	int tClass = 1<<pClass;
@@ -4537,6 +4539,23 @@ Script "FTUTResetClass" (int player) Disconnect clientside
 
 Script "SamsaraFirstTimeUserTutorialSystem" (int player) clientside
 {
+	int FTUTWarning = 0;
+	int incompatibilityTid = UniqueTid();
+	if (PlayerCount() > 1 && isZDoom())
+	{
+		FTUTWarning = 1; // Warn the player about playing Samsara in GZDoom multiplayer
+	}
+	if (SpawnForced("Brutal_Blood", 0, 0, 0, incompatibilityTid, 0))
+	{
+		FTUTWarning = 2; // Warn the player about playing Samsara with Brutal Doom
+		Thing_Remove(incompatibilityTid);
+	}
+	if (FTUTWarning >= 1)
+	{
+		ACS_NamedExecuteWithResult("SamsaraFirstTimeUserTutorialSystemWarnings", FTUTWarning, 0, 0);
+		terminate;
+	}
+	
 	if(player != ConsolePlayerNumber()) terminate;
 	if(!(ClassifyActor(0) & ACTOR_PLAYER)) terminate;
 	int pClass = PlayerClass(player);
@@ -4544,6 +4563,7 @@ Script "SamsaraFirstTimeUserTutorialSystem" (int player) clientside
 	int extraMessageTime = 0;
 	str message = "";
 	if(FTUTConfigCheck(pClass)) terminate;
+	if (!CheckInventory("IsSamsaraClass")) { terminate; }
 	
 	SetFont("SAMCMPBG");
 	SetHudSize(400,300,1);
@@ -4582,6 +4602,43 @@ Script "SamsaraFirstTimeUserTutorialSystem" (int player) clientside
 		HudMessage(s:"\c[Gold]", l:"SAMSARA_TIP_MOREINFO_PART1", s:"\c[Red](",k:"samsara_compendium",s:")", s: "\c[Gold]", l:"SAMSARA_TIP_MOREINFO_PART2"; HUDMSG_TYPEON|HUDMSG_LAYER_OVERHUD, 3400, CR_UNTRANSLATED, 154.1, 304.1, 5000.0, 0.02, 1.0);
 		Delay(270);
 		HudMessage(s:"\c[Gold]", l:"SAMSARA_TIP_MOREINFO_PART1", s:"\c[Red](",k:"samsara_compendium",s:")", s: "\c[Gold]", l:"SAMSARA_TIP_MOREINFO_PART2"; HUDMSG_FADEOUT|HUDMSG_LAYER_OVERHUD, 3400, CR_UNTRANSLATED, 154.1, 304.1, 0.0, 1.0);
+		SetHudClipRect(0,0,0,0,0);
+		SetFont("SAMCMPBG");
+		SetHudSize(400,300,1);
+		HudMessage(s:"a"; HUDMSG_FADEOUT|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 3402, CR_UNTRANSLATED, 72.1, 248.2, 0.0, 1.0, 0.66);
+		SetHudSize(1800,1350,1);
+		SetFont("CMPTUTGF");
+		HudMessage(s:"a"; HUDMSG_FADEOUT|HUDMSG_LAYER_OVERHUD, 3401, CR_UNTRANSLATED, 200.1, 1136.2, 0.0, 1.0);
+	}
+	GiveInventory("SamsaraFTUTSystemToken",1);
+}
+
+Script "SamsaraFirstTimeUserTutorialSystemWarnings" (int warning) clientside
+{
+	int extraMessageTime = 0;
+	str message = "";
+	
+	SetFont("SAMCMPBG");
+	SetHudSize(400,300,1);
+	HudMessage(s:"a"; HUDMSG_FADEINOUT|HUDMSG_LAYER_OVERHUD|HUDMSG_ALPHA, 3402, CR_UNTRANSLATED, 72.1, 248.2, 5000.0, 1.0, 1.0, 0.66);
+	SetHudSize(1800,1350,1);
+	SetFont("CMPTUTGF");
+	HudMessage(s:"a"; HUDMSG_FADEINOUT|HUDMSG_LAYER_OVERHUD, 3401, CR_UNTRANSLATED, 200.1, 1136.2, 5000.0, 1.0, 1.0, 0.5);
+	SetFont("CMPSDOOM");
+	Delay(35);
+	SetHudSize(600,450,1);
+	SetHudClipRect(154,304,336,100,332);
+	message = StrParam(s:message, s:"\c[Gold]", l:FTUTWarnings[warning-1]);
+	extraMessageTime = (strLen(FTUTWarnings[warning])<<16)/100;
+	HudMessage(s:message; HUDMSG_TYPEON|HUDMSG_LAYER_OVERHUD, 3400, CR_UNTRANSLATED, 154.1, 304.1, 5000.0, 0.02, 1.0);
+	Delay(245+((extraMessageTime>>16)*35));
+	HudMessage(s:message; HUDMSG_FADEOUT|HUDMSG_LAYER_OVERHUD, 3400, CR_UNTRANSLATED, 154.1, 304.1, 0.0, 1.0);
+	Delay(35);
+	SetHudClipRect(0,0,0,0,0);
+	message = "";
+	
+	if(ClassifyActor(0) & ACTOR_PLAYER)
+	{
 		SetHudClipRect(0,0,0,0,0);
 		SetFont("SAMCMPBG");
 		SetHudSize(400,300,1);
