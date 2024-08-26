@@ -654,6 +654,18 @@ script "SamsaraClientDecorate" (int which, int a1, int a2) clientside //212 -- S
         if (a1 >= 1) { Print(l:"WITCHAVENSPELLDISABLED"); }
         else { Print(l:"WITCHAVENSPELLNOAMMO"); }
         break;
+
+    case 20:
+        if (a1 == 2) { Print(l:"NOSTEROIDS3"); }
+        else if (a1 == 1) { Print(l:"NOSTEROIDS2"); }
+        else { Print(l:"NOSTEROIDS1"); }
+        break;
+
+    case 21:
+        if (a1 == 2) { Print(l:"ALREADYSTEROIDS3"); }
+        else if (a1 == 1) { Print(l:"ALREADYSTEROIDS2"); }
+        else { Print(l:"ALREADYSTEROIDS1"); }
+        break;
 	}
 
 	SetResultValue(result);
@@ -2181,6 +2193,14 @@ Script "Samsara_ResetInventory" (void)
 			SetInventory("DukeVisionFuel", 0);
 			TakeInventory("DukeNightVision", INTMAX);
 			TakeInventory("ItemHoloDuke", INTMAX);
+			TakeInventory("DukePortSteroids", INTMAX);
+			TakeInventory("DukePortSteroidsLAB", INTMAX);
+			TakeInventory("DukePortSteroids64", INTMAX);
+			SetInventory("DukeSteroidsFuel", 0);
+			TakeInventory("DukeSteroidsActive", INTMAX);
+			TakeInventory("DukeSteroidsSpawnRemove", INTMAX);
+			TakeInventory("DukeSteroidsSpeed", INTMAX);
+			TakeInventory("DukeSteroidsDamage", INTMAX);
 			TakeInventory("Shotgun", INTMAX);
 			TakeInventory("Explosive Shotgun", INTMAX);
 			TakeInventory("Chaingun Cannon", INTMAX);
@@ -3183,9 +3203,19 @@ script "Samsara_FillInventory" (void)
 			GiveInventory("PortIconDefender",16);
 			break;
 		case 5:
-			GiveInventory("DukePortNivi", 1);
+			if (CheckInventory("DukeClassMode") >= 2) { GiveInventory("DukePortNiVi64", 1); }
+			else if (CheckInventory("DukeClassMode") == 1) { GiveInventory("DukePortNiViLAB", 1); }
+			else { GiveInventory("DukePortNiVi", 1); }
 			GiveInventory("DukeVisionFuel", 100);
 			GiveInventory("ItemHoloDuke", 3);
+			if (CheckInventory("DukeClassMode") >= 2) { GiveInventory("DukePortSteroids64", 1); }
+			else if (CheckInventory("DukeClassMode") == 1) { GiveInventory("DukePortSteroidsLAB", 1); }
+			else { GiveInventory("DukePortSteroids", 1); }
+			GiveInventory("DukeSteroidsFuel", 100);
+			SetInventory("DukeSteroidsActive", 0);
+			SetInventory("DukeSteroidsSpawnRemove", 0);
+			TakeInventory("DukeSteroidsSpeed", 1);
+			TakeInventory("DukeSteroidsDamage", 1);
 			GiveInventory("DukeHasShrinker", 999);
 			GiveInventory("DukeHasExpander", 999);
 			GiveInventory("SamsaraDukeHasGoldenDesertEagle", 999);
@@ -4737,7 +4767,7 @@ Script "Samsara_PlayerShrinker" (int condition)
 		SetActorProperty(0,APROP_ScaleX,shrunkenscalex);
 		SetActorProperty(0,APROP_ScaleY,shrunkenscaley);
 
-		while(shrinktimer <= 420)
+		while (shrinktimer <= 420 && !CheckInventory("DukeSteroidsActive"))
 		{
 			if((ClassifyActor(0) & ACTOR_DEAD))
 				terminate;
