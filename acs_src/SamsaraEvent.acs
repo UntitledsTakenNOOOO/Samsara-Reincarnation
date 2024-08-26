@@ -1517,6 +1517,11 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						GiveInventory("DukeClassMode", dukemode);
 						if(dukemode == 1)
 						{
+							if(CheckInventory("SamsaraDukeHasGoldenDesertEagle"))
+							{
+								GiveInventory("Golden Desert Eagle", 1);
+							}
+
 							if(CheckInventory("DukeHasShrinker"))
 							{
 								GiveInventory("Shrinker", 1);
@@ -1526,16 +1531,22 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							{
 								GiveInventory("Expander", 1);
 							}
-							
-							if(CheckInventory("SamsaraDukeHasGoldenDesertEagle"))
-							{
-								GiveInventory("Golden Desert Eagle", 1);
-							}
+
+                            if (CheckInventory("DukePortNiVi") || CheckInventory("DukePortNiVi64")) { GiveInventory("DukePortNiViLAB", 1); }
+
+							TakeInventory("DukePortNiVi", 1);
+							TakeInventory("DukePortNiVi64", 1);
 
 							SetActorProperty(0,APROP_SoundClass,"DukePlayer");
 						}
 						else if(dukemode == 2)
 						{
+							if(CheckInventory("SamsaraDukeHasGoldenDesertEagle"))
+							{
+								if(CheckWeapon("Golden Desert Eagle"))
+									SetWeapon("Chaingun Cannon");
+							}
+
 							if(CheckInventory("DukeHasShrinker"))
 							{
 								if(CheckWeapon("Shrinker"))
@@ -1547,21 +1558,24 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 								if(CheckWeapon("Expander"))
 									SetWeapon("Freezethrower");
 							}
-							
-							if(CheckInventory("SamsaraDukeHasGoldenDesertEagle"))
-							{
-								if(CheckWeapon("Golden Desert Eagle"))
-									SetWeapon("Chaingun Cannon");
-							}
 
+                            if (CheckInventory("DukePortNiVi") || CheckInventory("DukePortNiViLAB")) { GiveInventory("DukePortNiVi64", 1); }
+
+							TakeInventory("Golden Desert Eagle", 1);
 							TakeInventory("Shrinker", 1);
 							TakeInventory("Expander", 1);
-							TakeInventory("Golden Desert Eagle", 1);
+							TakeInventory("DukePortNiVi", 1);
+							TakeInventory("DukePortNiViLAB", 1);
 
 							SetActorProperty(0,APROP_SoundClass,"Duke64Player");
 						}
 						else
 						{
+							if(CheckInventory("SamsaraDukeHasGoldenDesertEagle"))
+							{
+								GiveInventory("Golden Desert Eagle", 1);
+							}
+
 							if(CheckInventory("DukeHasShrinker"))
 							{
 								GiveInventory("Shrinker", 1);
@@ -1571,11 +1585,11 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							{
 								GiveInventory("Expander", 1);
 							}
-							
-							if(CheckInventory("SamsaraDukeHasGoldenDesertEagle"))
-							{
-								GiveInventory("Golden Desert Eagle", 1);
-							}
+
+                            if (CheckInventory("DukePortNiViLAB") || CheckInventory("DukePortNiVi64")) { GiveInventory("DukePortNiVi", 1); }
+
+							TakeInventory("DukePortNiViLAB", 1);
+							TakeInventory("DukePortNiVi64", 1);
 
 							SetActorProperty(0,APROP_SoundClass,"DukePlayer");
 							}
@@ -1583,6 +1597,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					ACS_NamedExecuteAlways("SAMSARA_CLIENT_ALTERNATIVECLASS", 0, dukemode, pln);
 					previousvalue = dukemode;
 				}
+
+                SetInventory("DukePortJetpack", (dukemode == 0 || dukemode == 1) && CheckInventory("DukePortJetpackGiven"));
+                SetInventory("DukePortJetpack64", dukemode == 2 && CheckInventory("DukePortJetpackGiven"));
 				break;
 
 			case CLASS_MARATHON:
@@ -2462,10 +2479,12 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			SetInventory("SamsaraCorvusArtiEgg", 0);
 		}
 
-		if (GetCVar("samsara_banjetpack") && CheckInventory("DukePortJetpack"))
+		if (GetCVar("samsara_banjetpack") && CheckInventory("DukePortJetpackGiven"))
 		{
 			GiveInventory("DukeBootserk", 1);
+			TakeInventory("DukePortJetpackGiven", 0x7FFFFFFF);
 			TakeInventory("DukePortJetpack", 0x7FFFFFFF);
+			TakeInventory("DukePortJetpack64", 0x7FFFFFFF);
 			TakeInventory("DukeJetpackFuel", 0x7FFFFFFF);
 			Print(s:"The jetpack is disabled. Received 8x boot damage instead.");
 		}
