@@ -455,7 +455,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 	ACS_NamedExecuteWithResult("SamsaraFirstTimeUserTutorialSystem", PlayerNumber(), 0, 0);
 
-	if (!CheckInventory("IsSamsaraClass")) { terminate; }
+	if (!CheckInventory("IsSamsaraClass")) { ACS_NamedExecuteWithResult("SamsaraGameplayModCrap", respawning); terminate; }
 
 	if(PlayerClass(pln) != playerClasses[pln])
 		playerClasses[pln] = ExecuteClassScripts(pln);
@@ -3413,6 +3413,50 @@ script "SamsaraDoom64DeathMessage" (int randmsg) CLIENTSIDE
 	str deathmsg = StrParam(s:"DOOM64MOCKPLAYER", d:randmsg);
 
 	if (pln == cpln) { Log(l:deathmsg); }
+}
+
+script "SamsaraGameplayModCrap" (int respawning)
+{
+	int pln = PlayerNumber();
+	int startTime = Timer();
+	int endloop;
+	int i;
+	int sigilCounter;
+
+	while (!endloop && ServerEnterTimes[pln] == startTime)
+	{
+		HandleBuffCVars(respawning);
+		sigilCounter = SamsaraGlobal[2]+SamsaraGlobal[3]+SamsaraGlobal[4]+SamsaraGlobal[5]+SamsaraGlobal[6];
+		for (i = 0; i < SIGILCOUNT; i++)
+		{
+			if (SamsaraGlobal[GLOBAL_SIGILBASE+i+1])
+			{
+				if (!CheckInventory(SigilSplinters[i]))
+				{
+					GiveInventory(SigilSplinters[i], 1);
+					if(i > 0)
+					{
+						for(int a = 0; a < SIGILCOUNT; a++)
+						{
+							TakeInventory(SpectralTogglers[a], 0x7FFFFFFF);
+						}
+					}
+					TakeInventory("StrifeSigilPiece",5);
+					GiveInventory("StrifeSigilPiece",sigilCounter);
+					GiveInventory(SpectralTogglers[sigilCounter-1], 1);
+				}
+		   }
+		}
+
+		// Hexen requires an increased jumping height
+		if (isZDoom() && GetCvar("samsara_currentgame") == 8 && samsaraClassNum() != CLASS_HEXEN) { GiveInventory("SamsaraIncreasedJumpHeightForHexen", 1); }
+		else { TakeInventory("SamsaraIncreasedJumpHeightForHexen", 0x7FFFFFFF); }
+
+		// Strife requires a decreased step height
+		if (GetCvar("samsara_currentgame") == 16) { SetActorProperty(0, APROP_MaxStepHeight, 16.0); }
+
+		Delay(1);
+	}
 }
 
 script "HandleInstagibWeapons" (void)
