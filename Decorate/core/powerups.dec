@@ -595,10 +595,8 @@ actor InvulnPowerup : SamsaraPowerupPickup
     States
     {
       Spawn:
-        NVLN A 0 Bright Light("SAMSARA_INVULNERABILITY")
-      SpawnGameModeCheck:
-        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 28), "SpawnNothing")
-        goto Super::SpawnGameModeCheck
+        NVLN A 0 Bright Light("SAMSARA_INVULNERABILITY") NoDelay ACS_NamedExecuteWithResult("Samsara_SwitchableObject", 20)
+        goto SpawnGameModeCheck
 
       SpawnActual:
         TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
@@ -3479,10 +3477,8 @@ actor SamsaraTimeFreeze : SamsaraPowerupPickup
     States
     {
       Spawn:
-        CPRT M 0 Bright Light("SAMSARA_TIMEFREEZE")
-      SpawnGameModeCheck:
-        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 28), "SpawnNothing")
-        goto Super::SpawnGameModeCheck
+        CPRT M 0 Bright Light("SAMSARA_TIMEFREEZE") NoDelay ACS_NamedExecuteWithResult("Samsara_SwitchableObject", 28)
+        goto SpawnGameModeCheck
 
       SpawnActual:
         TNT1 A 0 A_ChangeFlag("THRUACTORS",false)
@@ -3490,7 +3486,6 @@ actor SamsaraTimeFreeze : SamsaraPowerupPickup
         stop
 
       Pickup:
-        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 38), "PickupInvuln")
         TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupHeretic")
         TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupCatacomb")
         TNT1 A 0 A_Jump(256,"PickupDefault") // for inheriting actors
@@ -3602,10 +3597,6 @@ actor SamsaraTimeFreeze : SamsaraPowerupPickup
 
       PickupSuccessDeusExFinish:
         TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_Decorate", 26, 200)
-        stop
-
-      PickupInvuln: // no random jumps to be done, and failing works as intended, so we can safely give the invuln here
-        TNT1 A 0 A_GiveInventory("InvulnPowerup")
         stop
     }
 }
@@ -4365,8 +4356,6 @@ actor SamsaraRandomPowerup : SamsaraPowerupPickup
         goto PickupJump
         TNT1 A 0 A_JumpIfInventory("PortGhostly",0,1)
         goto PickupJump
-        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 28), 4) // samsara_noinvuln
-        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 38), 2) // samsara_notimefreeze
         TNT1 A 0 A_JumpIfInventory("SamsaraTimeFreezeInventoryHeretic",0,2)
         goto PickupJump
         TNT1 A 0 A_JumpIfInventory("PortRingInvuln",0,1)
@@ -4518,8 +4507,6 @@ actor SamsaraRandomPowerup : SamsaraPowerupPickup
 
       // Time Freeze
       PickupTimeFreezeSphere:
-        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 28), "PickupJump") // samsara_noinvuln
-        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 38), "PickupInvulnerabilitySphere") // samsara_notimefreeze
         TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupTimeFreezeSphereHeretic")
         TNT1 A 0 A_JumpIfInventory("CatacombClass",1,"PickupTimeFreezeSphereCatacomb")
         TNT1 A 0 A_Jump(256,"PickupTimeFreezeSphereDefault") // for inheriting actors
@@ -4540,55 +4527,6 @@ actor SamsaraRandomPowerup : SamsaraPowerupPickup
 
       PickupTimeFreezeSphereSuccess:
         TNT1 A 0 A_GiveInventory("SamsaraTimeFreeze")
-        stop
-
-      // Invulnerability (only used if samsara_notimefreeze is on)
-      PickupInvulnerabilitySphere:
-        TNT1 A 0 A_JumpIfInventory("CorvusClass",1,"PickupInvulnerabilitySphereHeretic")
-        TNT1 A 0 A_JumpIfInventory("HexenClass",1,"PickupInvulnerabilitySphereHexen1")
-        TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupInvulnerabilitySphereROTT")
-        TNT1 A 0 A_JumpIfInventory("POGreedClass",1,"PickupInvulnerabilitySphereIPOG")
-        TNT1 A 0 A_JumpIfInventory("JonClass",1,"PickupInvulnerabilitySpherePowerSlave")
-        TNT1 A 0 A_JumpIfInventory("BittermanClass",1,"PickupInvulnerabilitySphereQuake2")
-        TNT1 A 0 A_JumpIfInventory("Hexen2Class",1,"PickupInvulnerabilitySphereHexen2")
-        TNT1 A 0 A_Jump(256,"PickupInvulnerabilitySphereDefault") // for inheriting actors
-        goto PickupInvulnerabilitySphereDefault
-
-      PickupInvulnerabilitySphereDefault:
-        goto PickupInvulnerabilitySphereSuccess
-
-      PickupInvulnerabilitySphereHeretic:
-        TNT1 A 0 A_JumpIfInventory("PortRingInvuln",0,"PickupJump")
-        goto PickupInvulnerabilitySphereSuccess
-
-      PickupInvulnerabilitySphereHexen1:
-        TNT1 A 0 A_JumpIfInventory("PortIconDefender",0,"PickupJump")
-        goto PickupInvulnerabilitySphereSuccess
-
-      PickupInvulnerabilitySphereROTT:
-        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 56), "PickupInvulnerabilitySphereDefault")
-        TNT1 A 0 A_JumpIfInventory("GodProtection",1,"PickupJump")
-        TNT1 A 0 A_JumpIfInventory("DogProtection",1,"PickupJump")
-        goto PickupInvulnerabilitySphereSuccess
-
-      PickupInvulnerabilitySphereIPOG:
-        TNT1 A 0 A_JumpIfInventory("IPOGReversoPill",0,"PickupJump")
-        goto PickupInvulnerabilitySphereSuccess
-
-      PickupInvulnerabilitySpherePowerSlave:
-        TNT1 A 0 A_JumpIfInventory("DivineScarab_Ex",0,"PickupJump")
-        goto PickupInvulnerabilitySphereSuccess
-
-      PickupInvulnerabilitySphereQuake2:
-        TNT1 A 0 A_JumpIfInventory("Q2Invulnerability",0,"PickupJump")
-        goto PickupInvulnerabilitySphereSuccess
-
-      PickupInvulnerabilitySphereHexen2:
-        TNT1 A 0 A_JumpIfInventory("PortIconDefender2",0,"PickupJump")
-        goto PickupInvulnerabilitySphereSuccess
-
-      PickupInvulnerabilitySphereSuccess:
-        TNT1 A 0 A_GiveInventory("InvulnPowerup")
         stop
 
       // Full Invisibility
