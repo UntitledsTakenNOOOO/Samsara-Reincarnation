@@ -5190,17 +5190,21 @@ script "Samsara_SwitchableObject" (int type, int enemydrop)
         if (value <= -1) { Thing_Remove(0); }
         else if (!enemydrop)
         {
+            str itemActor = itemReplacementNames[value - 1];
             int itemTID = UniqueTID();
             bool canCountItem = value == 2 || value == 8 || value == 14 || (value >= 16 && value <= 20) || (value == 21 && GetCVar("samsara_currentgame") != 8) || (value >= 22 && value <= 29);
             bool hasCountItem = CheckFlag(0, "COUNTITEM");
             bool hasNeverRespawn = CheckFlag(0, "NEVERRESPAWN");
+            bool canNoGravity = value != 15 && !(value >= 30 && value <= 40);
             bool hasNoGravity = CheckFlag(0, "NOGRAVITY");
 
-            SpawnForced(itemReplacementNames[value - 1], GetActorX(0), GetActorY(0), GetActorZ(0), itemTID);
+            if (!StrCmp(itemActor, "SamsaraUniquePickup")) { itemActor = StrParam(s:"SamsaraUniquePickup", d:Random(1, 3)); } // bypass RandomSpawner
+
+            SpawnForced(itemActor, GetActorX(0), GetActorY(0), GetActorZ(0), itemTID);
             SetActorProperty(itemTID, APROP_Dropped, GetActorProperty(0, APROP_Dropped));
             if (canCountItem && hasCountItem) { GiveActorInventory(itemTID, "SamsaraCountItemEnabler", 1); }
             if (hasNeverRespawn) { GiveActorInventory(itemTID, "SamsaraNeverRespawnEnabler", 1); }
-            if (hasNoGravity) { GiveActorInventory(itemTID, "SamsaraNoGravityEnabler", 1); }
+            if (canNoGravity && hasNoGravity) { GiveActorInventory(itemTID, "SamsaraNoGravityEnabler", 1); }
             GiveActorInventory(itemTID, "SamsaraItemReplaced", 1);
 
             Thing_Remove(0);
