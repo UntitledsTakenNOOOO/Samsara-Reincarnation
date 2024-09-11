@@ -62,20 +62,26 @@ script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
     int regenX, regenY;
     int healthGiven, healthMax;
     int opowercount, powercount, offset;
-    
-    if (GetCVar("samsara_restorehealth"))
+    int baseHealthUpgrade;
+
+    if (GetCVar("samsara_restorehealth") > 0)
     {
         health = GetActorProperty(0, APROP_Health);
-        if (samsaraClassNum() == CLASS_DEMONESS)
+
+        baseHealthUpgrade = CheckInventory("SamsaraExtraBaseSpawnHealth") + CheckInventory("SamsaraExtraBaseSpawnHealthDeterminant") + CheckInventory("SamsaraExtraBaseSpawnHealthPermanent");
+
+        if (GetCVar("samsara_restorehealth") == 1)
         {
-            SetActorProperty(0, APROP_Health, max(health, 70));
-        }
-        else if (samsaraClassNum() != CLASS_QUAKE && samsaraClassNum() != CLASS_BITTERMAN)
-        {
-            SetActorProperty(0, APROP_Health, max(health, 100));
+            if (samsaraClassNum() == CLASS_WITCHAVEN) { SetActorProperty(0, APROP_Health, max(health, (100 + CheckInventory("SamsaraWitchavenHealthIncrease") + baseHealthUpgrade) / 2)); }
+            else if (samsaraClassNum() == CLASS_DEMONESS) { SetActorProperty(0, APROP_Health, max(health, (70 + CheckInventory("Hexen2HealthAdd") + baseHealthUpgrade) / 2)); }
+            else if (samsaraClassNum() != CLASS_QUAKE && samsaraClassNum() != CLASS_BITTERMAN) { SetActorProperty(0, APROP_Health, max(health, (100 + baseHealthUpgrade) / 2)); }
+        } else if (GetCVar("samsara_restorehealth") >= 2) {
+            if (samsaraClassNum() == CLASS_WITCHAVEN) { SetActorProperty(0, APROP_Health, max(health, 100 + CheckInventory("SamsaraWitchavenHealthIncrease") + baseHealthUpgrade)); }
+            else if (samsaraClassNum() == CLASS_DEMONESS) { SetActorProperty(0, APROP_Health, max(health, 70 + CheckInventory("Hexen2HealthAdd") + baseHealthUpgrade)); }
+            else if (samsaraClassNum() != CLASS_QUAKE && samsaraClassNum() != CLASS_BITTERMAN) { SetActorProperty(0, APROP_Health, max(health, 100 + baseHealthUpgrade)); }
         }
     }
-    
+
     if (samsaraClassNum() != CLASS_QUAKE && samsaraClassNum() != CLASS_BITTERMAN) { terminate; }
 
     quadTimer   = CheckQuad();
@@ -380,8 +386,13 @@ script "SamsaraQPowers" (int startTime) //636 -- SAMSARA_QPOWERS
         if (UnloadingNow)
         {
             SetActorProperty(0, APROP_Health, middle(health, getMaxHealth(0), health - healthGiven));
+
             health = GetActorProperty(0, APROP_Health);
-            SetActorProperty(0, APROP_Health, max(health, 50)); // getMaxHealth(0) / 2
+
+            baseHealthUpgrade = CheckInventory("SamsaraExtraBaseSpawnHealth") + CheckInventory("SamsaraExtraBaseSpawnHealthDeterminant") + CheckInventory("SamsaraExtraBaseSpawnHealthPermanent");
+
+            if (GetCVar("samsara_restorehealth") >= 2) { SetActorProperty(0, APROP_Health, max(health, 100 + baseHealthUpgrade)); } // getMaxHealth(0) / 2
+            else { SetActorProperty(0, APROP_Health, max(health, (100 + baseHealthUpgrade) / 2)); } // getMaxHealth(0) / 2
             break;
         }
 
