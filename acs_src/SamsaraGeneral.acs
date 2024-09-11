@@ -202,10 +202,6 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 		TakeInventory("TimeBombPause", 1);
 		break;
 
-	case 24:
-		result = GetCVar("samsara_noult");
-		break;
-
 	case 25:
 		if (GameType() == GAME_NET_COOPERATIVE)
 		{ AmbientSound("quake/invisannouncer",127); }
@@ -5155,11 +5151,11 @@ script "SamsaraActorStopSound" (void)
     StopSound(0, CHAN_7);
 }
 
-str itemTypeCVars[7] =
+str itemTypeCVars[9] =
 {
-    "samsara_replace_computermap", "samsara_replace_lightamplifier", "samsara_replace_berserk",
-    "samsara_replace_blursphere", "samsara_replace_teleport", "samsara_replace_banishment",
-    "samsara_replace_invisibilitysphere"
+    "samsara_replace_computermap", "samsara_replace_berserk", "samsara_replace_blursphere",
+    "samsara_replace_lightamplifier", "samsara_replace_teleport", "samsara_replace_banishment",
+    "samsara_replace_invisibilitysphere", "samsara_replace_bfg9000", "samsara_replace_bfg10k"
 };
 
 str itemReplacementNames[40] =
@@ -5176,30 +5172,32 @@ str itemReplacementNames[40] =
     "SamsaraSlotSevenPickup", "SamsaraSlotSevenSkulltagPickup"
 };
 
-script "Samsara_SwitchableObject" (int type)
+script "Samsara_SwitchableObject" (int type, int enemydrop)
 {
     if (CheckInventory("SamsaraItemReplaced")) { terminate; }
 
     int value = GetCVar(itemTypeCVars[type]);
 
     if (value == 0 ||
-        (type == 0 && value == 14) || (type == 1 && value == 18) || (type == 2 && value == 15) ||
-        (type == 3 && value == 16) || (type == 4 && value == 20) || (type == 5 && value == 23) ||
-        (type == 6 && value == 24))
+        (type == 0 && value == 14) || (type == 1 && value == 15) || (type == 2 && value == 16) ||
+        (type == 3 && value == 18) || (type == 4 && value == 20) || (type == 5 && value == 23) ||
+        (type == 6 && value == 24) || (type == 7 && value == 39) || (type == 8 && value == 40))
     { terminate; }
     else
     {
         if (value <= -1) { Thing_Remove(0); }
-        else
+        else if (!enemydrop)
         {
             int itemTID = UniqueTID();
             bool canCountItem = value == 2 || value == 8 || value == 14 || (value >= 16 && value <= 20) || (value == 21 && GetCVar("samsara_currentgame") != 8) || (value >= 22 && value <= 29);
             bool hasCountItem = CheckFlag(0, "COUNTITEM");
+            bool hasNeverRespawn = CheckFlag(0, "NEVERRESPAWN");
             bool hasNoGravity = CheckFlag(0, "NOGRAVITY");
 
             SpawnForced(itemReplacementNames[value - 1], GetActorX(0), GetActorY(0), GetActorZ(0), itemTID);
             SetActorProperty(itemTID, APROP_Dropped, GetActorProperty(0, APROP_Dropped));
             if (canCountItem && hasCountItem) { GiveActorInventory(itemTID, "SamsaraCountItemEnabler", 1); }
+            if (hasNeverRespawn) { GiveActorInventory(itemTID, "SamsaraNeverRespawnEnabler", 1); }
             if (hasNoGravity) { GiveActorInventory(itemTID, "SamsaraNoGravityEnabler", 1); }
             GiveActorInventory(itemTID, "SamsaraItemReplaced", 1);
 
@@ -6210,7 +6208,6 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Pickup Spawn Options
 		SetCVar("samsara_noinvuln", false);
-		SetCVar("samsara_noult", false);
 		SetCVar("samsara_skulltagspawn", 0);
 		SetCVar("samsara_skulltagreplace", true);
 
@@ -6224,6 +6221,8 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_replace_teleport", 0);
 		SetCVar("samsara_replace_banishment", 0);
 		SetCVar("samsara_replace_invisibilitysphere", 0);
+		SetCVar("samsara_replace_bfg9000", 0);
+		SetCVar("samsara_replace_bfg10k", 0);
 
 		// Random Character Spawn Options
 		SetCVar("samsara_misccharspawn_duke3d", 0);
@@ -6467,7 +6466,6 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Pickup Spawn Options
 		SetCVar("samsara_noinvuln", false);
-		SetCVar("samsara_noult", false);
 		SetCVar("samsara_skulltagspawn", 0);
 		SetCVar("samsara_skulltagreplace", true);
 
@@ -6481,6 +6479,8 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_replace_teleport", 0);
 		SetCVar("samsara_replace_banishment", 0);
 		SetCVar("samsara_replace_invisibilitysphere", 0);
+		SetCVar("samsara_replace_bfg9000", 0);
+		SetCVar("samsara_replace_bfg10k", 0);
 
 		// Random Character Spawn Options
 		SetCVar("samsara_misccharspawn_duke3d", 0);
@@ -6724,7 +6724,6 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Pickup Spawn Options
 		SetCVar("samsara_noinvuln", false);
-		SetCVar("samsara_noult", false);
 		SetCVar("samsara_skulltagspawn", 1);
 		SetCVar("samsara_skulltagreplace", true);
 
@@ -6738,6 +6737,8 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_replace_teleport", 0);
 		SetCVar("samsara_replace_banishment", 0);
 		SetCVar("samsara_replace_invisibilitysphere", 0);
+		SetCVar("samsara_replace_bfg9000", 0);
+		SetCVar("samsara_replace_bfg10k", 0);
 
 		// Random Character Spawn Options
 		SetCVar("samsara_misccharspawn_duke3d", 1);
@@ -6982,7 +6983,6 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Pickup Spawn Options
 		SetCVar("samsara_noinvuln", false);
-		SetCVar("samsara_noult", false);
 		SetCVar("samsara_skulltagspawn", 1);
 		SetCVar("samsara_skulltagreplace", false);
 
@@ -6996,6 +6996,8 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_replace_teleport", 0);
 		SetCVar("samsara_replace_banishment", 0);
 		SetCVar("samsara_replace_invisibilitysphere", 0);
+		SetCVar("samsara_replace_bfg9000", 0);
+		SetCVar("samsara_replace_bfg10k", 0);
 
 		// Random Character Spawn Options
 		SetCVar("samsara_misccharspawn_duke3d", 0);
@@ -7241,7 +7243,6 @@ script "SamsaraServerSidePresetSelection" (void)
 
 			// Pickup Spawn Options
 			SetCVar("samsara_noinvuln", false);
-			SetCVar("samsara_noult", false);
 			SetCVar("samsara_skulltagspawn", 0);
 			SetCVar("samsara_skulltagreplace", false);
 
@@ -7255,6 +7256,8 @@ script "SamsaraServerSidePresetSelection" (void)
 			SetCVar("samsara_replace_teleport", 0);
 			SetCVar("samsara_replace_banishment", 0);
 			SetCVar("samsara_replace_invisibilitysphere", 0);
+			SetCVar("samsara_replace_bfg9000", 0);
+			SetCVar("samsara_replace_bfg10k", 0);
 
 			// Random Character Spawn Options
 			SetCVar("samsara_misccharspawn_duke3d", 4);
@@ -7495,7 +7498,6 @@ script "SamsaraServerSidePresetSelection" (void)
 
 			// Pickup Spawn Options
 			SetCVar("samsara_noinvuln", false);
-			SetCVar("samsara_noult", false);
 			SetCVar("samsara_skulltagspawn", 0);
 			SetCVar("samsara_skulltagreplace", false);
 
@@ -7509,6 +7511,8 @@ script "SamsaraServerSidePresetSelection" (void)
 			SetCVar("samsara_replace_teleport", 0);
 			SetCVar("samsara_replace_banishment", 0);
 			SetCVar("samsara_replace_invisibilitysphere", 0);
+			SetCVar("samsara_replace_bfg9000", 0);
+			SetCVar("samsara_replace_bfg10k", 0);
 
 			// Random Character Spawn Options
 			SetCVar("samsara_misccharspawn_duke3d", 0);
