@@ -2383,36 +2383,37 @@ Script "Painkiller_BlackTarot_CardLoop" (int type, int extra)
 	Playsound(0,"Painkiller/BulletTimeStop",CHAN_NOPAUSE|CHAN_5,1.0,0,ATTN_NORM);
 }
 
-Script "Painkiller_SoulCatcher" (int type)
+script "Painkiller_SoulCatcher" (int type)
 {
-	int newtid = UniqueTid();
+    int newtid = UniqueTID();
 
-	if (type == 0)
-		SpawnSpotFacingForced("Painkiller_SoulTarget",0,newtid);
-	else if(type == 1)
-		SpawnSpotFacingForced("Painkiller_SoulTargetRed",0,newtid);
-	else if(type == 2)
-		SpawnSpotFacingForced("Painkiller_CoinTarget",0,newtid);
-	else if(type == 3)
-		SpawnSpotFacingForced("Painkiller_RingTarget",0,newtid);
+    if (type >= 3) { SpawnSpotFacingForced("Painkiller_RingTarget", 0, newtid); }
+    else if (type == 2) { SpawnSpotFacingForced("Painkiller_CoinTarget", 0, newtid); }
+    else if (type == 1) { SpawnSpotFacingForced("Painkiller_SoulTargetRed", 0, newtid); }
+    else { SpawnSpotFacingForced("Painkiller_SoulTarget", 0, newtid); }
 
-	while(ClassifyActor(0) != ACTOR_WORLD && ClassifyActor(newtid) != ACTOR_NONE)
-	{
-		if(ACS_NamedExecuteWithResult("hasValidPointer",newtid,AAPTR_Target) && ACS_NamedExecuteWithResult("Painkiller_CheckMagnet",newtid))
-			Warp(newtid,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION);
-		else
-			Warp(newtid,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION|WARPF_MOVEPTR);
-		Delay(1);
-	}
+    while (ClassifyActor(0) != ACTOR_WORLD && ClassifyActor(newtid) != ACTOR_NONE)
+    {
+        if (ACS_NamedExecuteWithResult("hasValidPointer", newtid, AAPTR_TARGET) && ACS_NamedExecuteWithResult("Painkiller_CheckMagnet", type, newtid)) { Warp(newtid, 0, 0, 0, 0, WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION); }
+        else { Warp(newtid, 0, 0, 0, 0, WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION|WARPF_MOVEPTR); }
 
-	Thing_Remove(0);
-	Thing_Remove(newtid);
+        Delay(1);
+    }
+
+    Thing_Remove(0);
+    Thing_Remove(newtid);
 }
 
-Script "Painkiller_CheckMagnet" (int newtid)
+script "Painkiller_CheckMagnet" (int type, int newtid)
 {
-	SetActivator(newtid,AAPTR_Target);
-	SetResultValue(CheckInventory("Painkiller_GoldMagnet_Power"));
+    int result = 0;
+
+    SetActivator(newtid, AAPTR_TARGET);
+
+    if (type >= 2) { result = CheckInventory("Painkiller_GoldMagnet_Power"); }
+    else { result = CheckInventory("Painkiller_SoulCatcher_Power"); }
+
+    SetResultValue(result);
 }
 
 Script "Painkiller_IsItGibbed" (void)
