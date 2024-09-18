@@ -99,6 +99,19 @@ script "SamsaraOpen" OPEN  //623 -- SAMSARA_OPEN
 	}
 }
 
+script "SamsaraOpenClient" OPEN CLIENTSIDE
+{
+	while (1)
+	{
+        for (int c = 0; c < PLAYERMAX; c++) // REOPEN doesn't exist in zandronum, so this is what we have to work with
+        {
+            if (!PlayerInGame(c)) { playerClassesClient[c] = -1; }
+        }
+
+		Delay(1);
+	}
+}
+
 script "SamsaraEnter" ENTER { ACS_NamedExecuteWithResult("SamsaraSpawn"); } //611 -- SAMSARA_ENTER
 script "SamsaraRespawn" RESPAWN { ACS_NamedExecuteWithResult("SamsaraSpawn", 1); } //618 -- SAMSARA_RESPAWN
 script "SamsaraReturn" RETURN //613 -- SAMSARA_RETURN
@@ -136,7 +149,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 	if (!CheckInventory("IsSamsaraClass")) { ACS_NamedExecuteWithResult("SamsaraGameplayModCrap", respawning); terminate; }
 
-    ExecuteClassScripts(pln);
+    ExecuteClassScripts(pln, 0);
 
 	if(bot)
 		ACS_NamedExecuteAlways("Samsara_BotAltClassHandler",0,pln,0,0);
@@ -2792,6 +2805,8 @@ script "SamsaraEnterClient" (void) clientside //521 -- SAMSARA_ENTER_CLIENT
 
 	//if (GetCVar("samsara_cl_exists") != SAMSARA_CL_VERSION) {}
 
+    ExecuteClassScripts(pln, 1);
+
 	for (i = 0; i < RESCOUNT; i++)
 	{
 		ACS_NamedExecuteAlways("SamsaraResonate", 0, i, 16, 0);
@@ -2907,6 +2922,7 @@ script "SamsaraDisconnectClient" (int pln) disconnect clientside //522 -- SAMSAR
     for (int i = 0; i < SLOTCOUNT + UNIQUECOUNT; i++) { SamsaraEquipmentLoadout[i] = 0; }
 	SamsaraClientClass  = 0;
 	SamsaraItemFlash	= Timer();
+    playerClassesClient[pln] = -1;
 }
 
 script "SamsaraPuke" (int values, int pln) net //226 - SAMSARA_PUKE
