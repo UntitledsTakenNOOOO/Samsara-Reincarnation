@@ -2208,8 +2208,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			SetInventory("SamsaraCorvusArtiEgg", 0);
 		}
 
-		if (GetCVar("samsara_banjetpack") && CheckInventory("DukePortJetpackGiven"))
-		{
+        if (GetCVar("samsara_banjetpack") && CheckInventory("DukePortJetpackGiven"))
+        {
             if (!(CheckInventory("DukePortSteroids") || CheckInventory("DukePortSteroidsLAB") || CheckInventory("DukePortSteroids64")) || CheckInventory("DukeSteroidsFuel") < 100)
             {
                 SetInventory("DukeSteroidsActive", 0);
@@ -2232,11 +2232,19 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
             }
             else { Print(l:"DUKEJETPACKDISABLED1"); }
 
-			TakeInventory("DukePortJetpackGiven", 0x7FFFFFFF);
-			TakeInventory("DukePortJetpack", 0x7FFFFFFF);
-			TakeInventory("DukePortJetpack64", 0x7FFFFFFF);
-			TakeInventory("DukeJetpackFuel", 0x7FFFFFFF);
-		}
+            if (CheckInventory("DukeFlying"))
+            {
+                PlaySound(0, "duke/jetpackoff", CHAN_ITEM);
+                GiveInventory("DukeJetpackIdleSoundStopper", 1);
+                SetInventory("DukeFlying", 0);
+                TakeInventory("DukePetjack", 1);
+            }
+
+            SetInventory("DukeJetpackFuel", 0);
+            SetInventory("DukePortJetpackGiven", 0);
+            SetInventory("DukePortJetpack", 0);
+            SetInventory("DukePortJetpack64", 0);
+        }
 
 		if (GetCVar("samsara_banjetpack") && CheckInventory("RMRJetPack"))
 		{
@@ -2968,6 +2976,8 @@ script "SamsaraDeath" DEATH //619 -- SAMSARA_DEATH
 		break;
 
 	case CLASS_DUKE:
+        GiveInventory("DukeJetpackIdleSoundStopper", 1);
+
 		Delay(20);
 
 		if (isDead(0))

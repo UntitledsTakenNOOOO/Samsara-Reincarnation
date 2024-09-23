@@ -5,73 +5,89 @@ actor DukeJetpackFuel: Counter { Inventory.MaxAmount 100 }
 
 actor DukePortJetpack : CustomInventory
 {
-	tag "Jetpack"
-	+INVBAR
-	+INVENTORY.UNDROPPABLE
-	Inventory.Icon ARTIJETP
-	+inventory.hubpower
-	Inventory.PickupSound "duke/itemget"
-	Inventory.PickupMessage "You got the Jetpack!"
-	Inventory.UseSound ""
-	Inventory.MaxAmount 1
-	Inventory.RestrictedTo "DukePlayer"
-	States
-	{
-	Spawn:
-		DKJT A -1
-		Stop
+    Inventory.UseSound ""
+    Inventory.Icon "ARTIJETP"
+    Inventory.MaxAmount 1
+    Inventory.InterHubAmount 1
+    Inventory.RestrictedTo "DukePlayer"
+    Tag "Jetpack"
+    +INVBAR
+    +UNDROPPABLE
+    States
+    {
+      Use:
+        TNT1 A 0 A_JumpIfInventory("PowerFlight",1,"UseFailFlying")
+        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlight",1,"UseFailFlying")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteInventory",1,"UseActivateCheck")
+        TNT1 A 0 A_JumpIfInventory("DukeJetpackFuel",1,"UseActivateCheck")
+        fail
 
-	Use:
-		TNT1 A 0 A_JumpIfInventory("PowerFlight",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("PowerSamsaraFlight",1,"UseFail")
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteInventory",1,"CanStartFlying")
-		TNT1 A 0 A_JumpIfInventory("DukeJetpackFuel",1,"CanStartFlying")
-		TNT1 A 1 ACS_NamedExecuteAlways("SamsaraClientDecorate",0,5)
-		fail
+      UseActivateCheck:
+        TNT1 A 0 A_JumpIfInventory("DukeFlying",1,"UseDeactivate")
+      UseActivate:
+        TNT1 A 0 A_PlaySound("duke/jetpack",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("DukeJetpackIdleSoundPlayer")
+        TNT1 A 0 A_GiveInventory("DukeFlying")
+        TNT1 A 0 ThrustThingZ(0,32,0,0)
+        TNT1 A 0 A_GiveInventory("DukePetjack")
+        TNT1 A 0 ACS_NamedExecuteAlways("DukeResourceDrain", 0, 1)
+        fail
 
-	CanStartFlying:
-		TNT1 A 0 A_JumpIfInventory("DukeFlying",1,"IsFlying")
+      UseDeactivate:
+        TNT1 A 0 A_PlaySound("duke/jetpackoff",CHAN_ITEM)
+        TNT1 A 0 A_GiveInventory("DukeJetpackIdleSoundStopper")
+        TNT1 A 0 A_TakeInventory("DukeFlying")
+        TNT1 A 0 A_TakeInventory("DukePetjack")
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteInventory",1,"UseFail")
+        TNT1 A 0 A_TakeInventory("DukeJetpackFuel",1)
+        TNT1 A 0 A_JumpIfInventory("DukeJetpackFuel",1,"UseFail")
+      UseDeactivateDepleted: // unlike weapons, we can take the inventory item itself regardless of order
+        TNT1 A 0 A_TakeInventory("DukePortJetpackGiven")
+        TNT1 A 0 A_TakeInventory("DukePortJetpack")
+        TNT1 A 0 A_TakeInventory("DukePortJetpack64")
+        stop
 
-	NotFlying:
-		TNT1 A 0 A_PlaySound("duke/jetpack",CHAN_ITEM)
-		TNT1 A 0 A_GiveInventory("DukeFlying")
-		TNT1 A 0 ThrustThingZ(0,32,0,0)
-		TNT1 A 0 A_GiveInventory("DukePetjack")
-		TNT1 A 0 ACS_NamedExecuteAlways("DukeResourceDrain",0,1)
-		fail
+      UseFail:
+        TNT1 A 0
+        fail
 
-	IsFlying:
-		TNT1 A 0 A_PlaySound("duke/jetpackoff",CHAN_ITEM)
-		TNT1 A 0 A_GiveInventory("DukeJetPackIdleRemover")
-		TNT1 A 0 A_TakeInventory("DukeFlying")
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteInventory",1,2)
-		TNT1 A 0 A_TakeInventory("DukeJetpackFuel",1)
-		TNT1 A 0 A_TakeInventory("DukePetjack")
-		fail
-
-	UseFail:
-		TNT1 A 0 ACS_NamedExecuteAlways("SamsaraClientDecorate",0,7)
-		fail
-	}
+      UseFailFlying:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraClientDecorate", 0, 7)
+        fail
+    }
 }
 
 actor DukePortJetpack64 : DukePortJetpack { Inventory.Icon "ARTIJET2" }
 
-actor DukeJetPackIdleRemover : CustomInventory
+actor DukeJetpackIdleSoundPlayer : Trigger
 {
-	+INVENTORY.AUTOACTIVATE
-	States
-	{
-		Pickup:
-			TNT1 A 0
-			TNT1 A 0 A_StopSound(CHAN_BODY)
-			stop
-	}
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("DukeJPMotor",1,"PickupStop")
+        TNT1 A 0 A_PlaySound("duke/jetpackidle",CHAN_BODY,1.0,true)
+        TNT1 A 0 A_GiveInventory("DukeJPMotor")
+        stop
+    }
+}
+
+actor DukeJetpackIdleSoundStopper : Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("DukeJPMotor",1,1)
+        stop
+        TNT1 A 0 A_StopSound(CHAN_BODY)
+        TNT1 A 0 A_TakeInventory("DukeJPMotor")
+        stop
+    }
 }
 
 actor DukePetjack : PowerFlight
 {
     Inventory.Icon "TNT1A0" // can't use ""
-	Powerup.Duration 0x7FFFFFFD
-	Powerup.Color "Yellow", 0.05
+    Powerup.Duration 0x7FFFFFFD
+    Powerup.Color "Yellow", 0.05
+    -HUBPOWER
 }
