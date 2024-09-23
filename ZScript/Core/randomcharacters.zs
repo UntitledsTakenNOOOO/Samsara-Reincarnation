@@ -45,6 +45,9 @@ Class DetermineValidSpawnZS : Actor
 		Radius 32;
 		+CORPSE
 		+SOLID
+        +CANNOTPUSH
+        +NOTELEPORT
+        +NOTELESTOMP
 	}
 	States
 	{
@@ -132,6 +135,9 @@ Class DetermineValidSpawnItemsZS : Actor
 		Radius 32;
 		+CORPSE
 		+SOLID
+        +CANNOTPUSH
+        +NOTELEPORT
+        +NOTELESTOMP
 	}
 	States
 	{
