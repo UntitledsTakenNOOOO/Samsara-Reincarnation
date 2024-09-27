@@ -436,8 +436,22 @@ actor "ONI-71 Wave Motion Cannon" : SamsaraMarathonWeapon
         WMC2 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
       FireStart1:
         TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireStart1Reloadable")
+      FireStart1NonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireAttack1")
+        TNT1 A 0 A_JumpIfInventory("Cell",5,"FireAttack1")
+        goto FireContinue1
+
+      FireStart1Reloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireAttack1")
+        TNT1 A 0 A_JumpIfInventory("WMCAmmo",1,"FireAttack1")
+        goto FireContinue1
+
+      FireAttack1:
+        TNT1 A 0 //A_GunFlash
+      FireContinue1:
         TNT1 A 0 A_GiveInventory("SamsaraMarathonWMCPrimaryLevel1AttackHandler")
-        goto FireContinue
+        goto FireFinish
 
       FireCharge2:
         TNT1 A 0 A_TakeInventory("SamsaraWMCChargeTime")
@@ -458,8 +472,22 @@ actor "ONI-71 Wave Motion Cannon" : SamsaraMarathonWeapon
         WMC3 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
       FireStart2:
         TNT1 A 0 A_AlertMonsters
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireStart2Reloadable")
+      FireStart2NonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireAttack2")
+        TNT1 A 0 A_JumpIfInventory("Cell",5,"FireAttack2") // attack could be called with less than intended amount
+        goto FireContinue2
+
+      FireStart2Reloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireAttack2")
+        TNT1 A 0 A_JumpIfInventory("WMCAmmo",1,"FireAttack2") // attack could be called with less than intended amount
+        goto FireContinue2
+
+      FireAttack2:
+        TNT1 A 0 //A_GunFlash
+      FireContinue2:
         TNT1 A 0 A_GiveInventory("SamsaraMarathonWMCPrimaryLevel2AttackHandler")
-        goto FireContinue
+        goto FireFinish
 
       FireCharge3:
         TNT1 A 0 A_TakeInventory("SamsaraWMCChargeTime")
@@ -478,10 +506,24 @@ actor "ONI-71 Wave Motion Cannon" : SamsaraMarathonWeapon
         WMC4 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
       FireStart3:
         TNT1 A 0 A_AlertMonsters
-        TNT1 A 0 A_GiveInventory("SamsaraMarathonWMCPrimaryLevel3AttackHandler")
-        goto FireContinue
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireStart3Reloadable")
+      FireStart3NonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireAttack3")
+        TNT1 A 0 A_JumpIfInventory("Cell",5,"FireAttack3") // attack could be called with less than intended amount
+        goto FireContinue3
 
-      FireContinue:
+      FireStart3Reloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireAttack3")
+        TNT1 A 0 A_JumpIfInventory("WMCAmmo",1,"FireAttack3") // attack could be called with less than intended amount
+        goto FireContinue3
+
+      FireAttack3:
+        TNT1 A 0 //A_GunFlash
+      FireContinue3:
+        TNT1 A 0 A_GiveInventory("SamsaraMarathonWMCPrimaryLevel3AttackHandler")
+        goto FireFinish
+
+      FireFinish:
         TNT1 A 0 A_TakeInventory("SamsaraWMCChargeTime")
         TNT1 A 0 A_ZoomFactor(0.99,ZOOM_INSTANT)
         MWMC B 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
@@ -524,18 +566,32 @@ actor "ONI-71 Wave Motion Cannon" : SamsaraMarathonWeapon
         TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Ready")
         TNT1 A 0 A_AlertMonsters
         MWMC A 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"AltFireStartReloadable")
+      AltFireStartNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",5,"AltFireAttack")
+        goto AltFireContinue
+
+      AltFireStartReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"AltFireAttack")
+        TNT1 A 0 A_JumpIfInventory("MortarAmmo",1,"AltFireAttack")
+        goto AltFireContinue
+
+      AltFireAttack:
+        TNT1 A 0 A_GunFlash("AltFlash",GFF_NOEXTCHANGE)
+      AltFireContinue:
         TNT1 A 0 A_GiveInventory("SamsaraMarathonWMCSecondaryAttackHandler")
-        TNT1 A 0 A_Light2
-        MWMC K 4 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        TNT1 A 0 A_Light1
-        MWMC L 4 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        TNT1 A 0 A_Light0
-        MWMC M 4 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        MWMC KLM 4 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         MWMC N 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         MWMC O 5 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         MWMC A 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         TNT1 A 0 A_ReFire
         goto Ready
+
+      AltFlash:
+        TNT1 A 4 A_Light2
+        TNT1 A 4 A_Light1
+        goto LightDone
 
       // yep
       Reload:
