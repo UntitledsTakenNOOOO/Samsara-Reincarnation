@@ -388,18 +388,40 @@ actor "SPNKR-XP SSM Launcher" : SamsaraMarathonWeapon
         TNT1 A 0 A_JumpIfInventory("SamsaraCurrentWaterLevel",0,"Ready")
         TNT1 A 0 A_AlertMonsters
         MSPN A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireStartReloadable")
+      FireStartNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireAttack")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"FireAttack")
+        goto FireContinue
+
+      FireStartReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireAttack")
+        TNT1 A 0 A_JumpIfInventory("SpankerAmmo",1,"FireAttack")
+        goto FireContinue
+
+      FireAttack:
         TNT1 A 0 A_GiveInventory("SamsaraMarathonSpankerAttackHandler")
         MSPN C 3 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        TNT1 A 0 A_Light2
-        MSPN D 3 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        TNT1 A 0 A_Light1
-        MSPN E 3 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        TNT1 A 0 A_Light0
+        TNT1 A 0 A_GunFlash("Flash",GFF_NOEXTCHANGE) // A_Light calls are done a few tics after the projectile call, interestingly enough
+        goto FireFinish
+
+      FireContinue:
+        TNT1 A 0 A_GiveInventory("SamsaraMarathonSpankerAttackHandler")
+        MSPN C 3 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto FireFinish
+
+      FireFinish:
+        MSPN DE 3 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         MSPN F 4 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         MSPN EDC 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         MSPN B 6 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         TNT1 A 0 A_ReFire
         goto Ready
+
+      Flash:
+        TNT1 A 3 A_Light2
+        TNT1 A 3 A_Light1
+        goto LightDone
 
       // yep
       Reload:
