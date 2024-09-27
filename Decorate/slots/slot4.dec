@@ -5,12 +5,17 @@ actor SamsaraSlotFourPickup : SamsaraSlotPickup replaces Chaingun
 	{
 	Spawn:
 		TNT1 A 0
-		TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 29) == 1, "InstagibNope") // Prevents weapons from spawning in Instagib
-		TNT1 A 1 A_JumpIf(CallACS("SamsaraDecorate", 1, 0) == 1, "IWasDropped")
+		TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 29), "InstagibNope") // Prevents weapons from spawning in Instagib
+		TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 1, 1), "IWasTossed")
+		TNT1 A 1 A_JumpIf(CallACS("SamsaraDecorate", 1, 0), "IWasDropped")
 		TNT1 A 0 ACS_NamedExecuteWithResult("Samsara_SpawnSlotSkulltag",1,1)
 		Goto SpawnLoop
 
 	IWasDropped:
+		TNT1 A 0 A_SpawnItemEx("SamsaraSlotFourNoStay",0,0,0,velx,vely,velz,0,SXF_ABSOLUTEMOMENTUM)
+		Stop
+
+	IWasTossed:
 		TNT1 A 0 A_SpawnItemEx("SamsaraSlotFourDrop",0,0,0,velx,vely,velz,0,SXF_ABSOLUTEMOMENTUM)
 		Stop
 
@@ -181,7 +186,7 @@ actor SamsaraSlotFourPickup : SamsaraSlotPickup replaces Chaingun
 	}
 }
 
-actor SamsaraSlotFourDrop : SamsaraSlotFourPickup
+actor SamsaraSlotFourNoStay : SamsaraSlotFourPickup
 {
 	States
 	{
@@ -206,16 +211,70 @@ actor SamsaraSlotFourDrop : SamsaraSlotFourPickup
 	}
 }
 
+actor SamsaraSlotFourDrop : SamsaraSlotFourPickup
+{
+	States
+	{
+	Spawn:
+		TNT1 A 0
+		Goto SpawnLoop
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("StrifeClass", 1, "CheckStrife")
+		TNT1 A 0 A_JumpIf((CallACS("SamsaraGiveWeapon", 4, 2) & 1) == 1, "PickupSuccess")
+		Goto PickupFailure
+	CheckStrife:
+		TNT1 A 0 A_JumpIfInventory("StrifeGuyInStrife", 1, "StrifeCheck")
+		TNT1 A 0 A_JumpIfInventory("GotWeapon4", 1, "StrifeCheck")
+		TNT1 A 0 A_GiveInventory("StrifeSigilPiece",1)
+		TNT1 A 0 A_GiveInventory(" Sigil ", 1)
+		TNT1 A 0 A_TakeInventory("StrifeSigilPiecePreferred",5)
+		TNT1 A 0 A_GiveInventory("StrifeSigilPiecePreferred", CallACS("StrifeSigilPreferred"))
+		Goto StrifeCheck
+	StrifeCheck:
+		TNT1 A 0 A_JumpIf((CallACS("SamsaraGiveWeapon", 4, 2) & 1) == 1, "PickupSuccess")
+		Goto PickupFailure
+	}
+}
+
 actor SamsaraSlotFourPickupStanding : SamsaraSlotFourPickup
 {
 	ConversationID 189
 	States
 	{
 	IWasDropped:
+		TNT1 A 0 A_SpawnItemEx("SamsaraSlotFourNoStayStanding",0,0,0,velx,vely,velz,0,SXF_ABSOLUTEMOMENTUM)
+		Stop
+
+	IWasTossed:
 		TNT1 A 0 A_SpawnItemEx("SamsaraSlotFourDropStanding",0,0,0,velx,vely,velz,0,SXF_ABSOLUTEMOMENTUM)
 		Stop
 
 	Strifeguy: SGRF B 35 A_ChangeFlag("FLOATBOB", 0) Goto SpawnLoop
+	}
+}
+
+actor SamsaraSlotFourNoStayStanding : SamsaraSlotFourPickupStanding
+{
+	States
+	{
+	Spawn:
+		TNT1 A 0
+		Goto SpawnLoop
+	Pickup:
+		TNT1 A 0 A_JumpIfInventory("StrifeClass", 1, "CheckStrife")
+		TNT1 A 0 A_JumpIf((CallACS("SamsaraGiveWeapon", 4, 1) & 1) == 1, "PickupSuccess")
+		Goto PickupFailure
+	CheckStrife:
+		TNT1 A 0 A_JumpIfInventory("StrifeGuyInStrife", 1, "StrifeCheck")
+		TNT1 A 0 A_JumpIfInventory("GotWeapon4", 1, "StrifeCheck")
+		TNT1 A 0 A_GiveInventory("StrifeSigilPiece",1)
+		TNT1 A 0 A_GiveInventory(" Sigil ", 1)
+		TNT1 A 0 A_TakeInventory("StrifeSigilPiecePreferred",5)
+		TNT1 A 0 A_GiveInventory("StrifeSigilPiecePreferred", CallACS("StrifeSigilPreferred"))
+		Goto StrifeCheck
+	StrifeCheck:
+		TNT1 A 0 A_JumpIf((CallACS("SamsaraGiveWeapon", 4, 1) & 1) == 1, "PickupSuccess")
+		Goto PickupFailure
 	}
 }
 
@@ -228,7 +287,7 @@ actor SamsaraSlotFourDropStanding : SamsaraSlotFourPickupStanding
 		Goto SpawnLoop
 	Pickup:
 		TNT1 A 0 A_JumpIfInventory("StrifeClass", 1, "CheckStrife")
-		TNT1 A 0 A_JumpIf((CallACS("SamsaraGiveWeapon", 4, 1) & 1) == 1, "PickupSuccess")
+		TNT1 A 0 A_JumpIf((CallACS("SamsaraGiveWeapon", 4, 2) & 1) == 1, "PickupSuccess")
 		Goto PickupFailure
 	CheckStrife:
 		TNT1 A 0 A_JumpIfInventory("StrifeGuyInStrife", 1, "StrifeCheck")
@@ -239,7 +298,7 @@ actor SamsaraSlotFourDropStanding : SamsaraSlotFourPickupStanding
 		TNT1 A 0 A_GiveInventory("StrifeSigilPiecePreferred", CallACS("StrifeSigilPreferred"))
 		Goto StrifeCheck
 	StrifeCheck:
-		TNT1 A 0 A_JumpIf((CallACS("SamsaraGiveWeapon", 4, 1) & 1) == 1, "PickupSuccess")
+		TNT1 A 0 A_JumpIf((CallACS("SamsaraGiveWeapon", 4, 2) & 1) == 1, "PickupSuccess")
 		Goto PickupFailure
 	}
 }
