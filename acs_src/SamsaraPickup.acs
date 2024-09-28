@@ -17,8 +17,6 @@ script "SamsaraClientClass" (int slot) CLIENTSIDE //228 -- SAMSARA_CLIENT_CLASS
     }
     int oldslot = slot;
     int success = 0;
-
-    slot = itemToSlot(slot);
     
     int hasSlot = SamsaraClientWeps[slot];
 
@@ -237,23 +235,22 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
     // clients were running this before, that's bad
     if (!IsServer) { terminate; }
 
-    slot = itemToSlot(slot);
-    if (slot == -1) { terminate; }   
+    if (slot < 0 || slot >= SLOTCOUNT) { terminate; }    
 
     int weaponStay = !!GetCVar("sv_weaponstay");
 
     int weaponGet  = 0;
     int pclass = samsaraClassNum();
     int hasWep = HasClassWeapon(pclass, slot);
-	
+
     if (slot == SLOT_BFG9000 || slot == SLOT_BFG10K) { weaponStay = !!GetCVar("samsara_permault"); }
-    
+
     int a1cnt  = 0, a2cnt = 0;
     int a1max  = 0, a2max = 0;
     int a1max2 = 0, a2max2 = 0;
     int a1Full = 0, a2Full = 0;
     int a1diff = 0, a2diff = 0;
-    
+
     int weapon  = ClassWeapons[pclass][slot][S_WEP],        wepbool = !!StrLen(weapon); 
     int ammo1   = ClassWeapons[pclass][slot][S_AMMO1],      a1bool  = !!StrLen(ammo1);
     int ammo2   = ClassWeapons[pclass][slot][S_AMMO2],      a2bool  = !!StrLen(ammo2);
@@ -267,7 +264,7 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
         SetResultValue(weaponStay * WEPFLAGS_WEAPONSTAY);
         terminate;
     }
-    
+
     if (a1bool)
     {
         a1cnt   = CheckInventory(ammo1);
@@ -276,17 +273,17 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
         // so that when shaving off half the given ammo, we don't run into the ammo cap
         // and note an erroneous amount of ammo given
     }
-    
+
     if (a2bool)
     {
         a2cnt   = CheckInventory(ammo2);
         a2max   = GetAmmoCapacity(ammo2);
         a2max2  = a2max * 4; // ditto
     }
-    
+
     if (a1Bool) { a1Full = (CheckInventory(ammo1) == a1max); }
     if (a2Bool) { a2Full = (CheckInventory(ammo2) == a2max); }
-    
+
     if (dropped >= 2)
     {
         if (!GetCVar("samsara_noammocap"))
@@ -295,7 +292,7 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
 			if (a2bool) { SetAmmoCapacity(ammo2, a2max2); }
 		}
     }
-    
+
     // check for both the weapon AND the check item
     // if we miss either, or we're using more advanced
     // behavior using a script, we're giving the weapon
@@ -342,7 +339,7 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
             if (CheckInventory("SamsaraHeroMusicHalfLifeActive") && !CheckInventory("HalfLifeMusicPlayingToken")) { GiveInventory("HLMusicWeapon", 1); }
 		}
 	}
-	
+
     if (dropped >= 2)
     {
         // shave off half the ammo given
@@ -353,7 +350,7 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
 		if (a1bool) { SetAmmoCapacity(ammo1, a1max); }
 		if (a2bool) { SetAmmoCapacity(ammo2, a2max); }
 	}
-    
+
     // make sure we're not over max ammo capacity
     TakeInventory(ammo1, CheckInventory(ammo1) - a1max);
     TakeInventory(ammo2, CheckInventory(ammo2) - a2max);
