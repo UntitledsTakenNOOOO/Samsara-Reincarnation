@@ -394,6 +394,10 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
     case 58:
         LocalAmbientSound("Painkiller/Pickup/Soul", 127);
         break;
+
+    case 59:
+        result = GetCVar("samsara_bloodakimbomode");
+        break;
 	}
 
 	SetResultValue(result);
@@ -628,9 +632,10 @@ script "SamsaraClientDecorate" (int which, int a1, int a2) clientside //212 -- S
 		break;
 
     case 17:
-        if (a1 >= 10) { Print(l:"HOURGLASSCOOLDOWN"); }
-        else if (a1 == 9) { Print(l:"HEXEN2TOMECOOLDOWN"); }
-        else if (a1 == 8) { Print(l:"BEACONCOOLDOWN"); }
+        if (a1 >= 11) { Print(l:"HOURGLASSCOOLDOWN"); }
+        else if (a1 == 10) { Print(l:"HEXEN2TOMECOOLDOWN"); }
+        else if (a1 == 9) { Print(l:"BEACONCOOLDOWN"); }
+        else if (a1 == 8) { Print(l:"GUNSAKIMBOCOOLDOWN"); }
         else if (a1 == 7) { Print(l:"QUADCOOLDOWN"); }
         else if (a1 == 6) { Print(l:"HOLOCOOLDOWN"); }
         else if (a1 == 5) { Print(l:"DSCOOLDOWN"); }
@@ -1338,22 +1343,14 @@ Script "Samsara_UniqueKeys" (int key) net
 	switch(PlayerClass(pln))
 	{
 		case 10:
-			if(GetCvar("samsara_permakimbo"))
-			{
-				if(CheckInventory("GunsAkimboP"))
-					TakeInventory("GunsAkimboP",1);
-				else
-					GiveInventory("GunsAkimboP",1);
-			}
+            if (CheckInventory("SamsaraBloodGunsAkimboToggleMemory")) { TakeInventory("SamsaraBloodGunsAkimboToggleMemory", 1); }
+            else { GiveInventory("SamsaraBloodGunsAkimboToggleMemory", 1); }
 			break;
 		case 13:
 			ACS_NamedExecuteWithResult("Corridor7ActivateVisor");
 			break;
 		case 19:
 			ACS_NamedExecuteWithResult("HL2677",0,0,0);
-			break;
-			if(key == 0)
-				ACS_NamedExecuteWithResult("HL2677",0,0,0);
 			break;
 		case CLASS_RR:
 			if(key == 0)
@@ -1389,12 +1386,10 @@ Script "Samsara_UniqueKeys" (int key) net
 				ACS_NamedExecuteWithResult("Painkiller_GoldTarot_Activate",0,0,0,0);
 			break;
 		case 29:
-			if(key == 0)
-				ACS_NamedExecuteWithResult("Unreal_RevertUpgrade",0,0,0);
+			ACS_NamedExecuteWithResult("Unreal_RevertUpgrade",0,0,0);
 			break;
 		case 30:
-			if(key == 0)
-				ACS_NamedExecuteWithResult("RTCW_Kick",0,0,0);
+			ACS_NamedExecuteWithResult("RTCW_Kick",0,0,0);
 			break;
 		case 32:
 			if (isZDoom() && (GetCVar("samsara_zscriptready") == 2) && GetCVar("samsara_descentflight") && !CheckInventory("DescentGuidedController") && !CheckInventory("CompendiumOpened") && !isDead(0)) { GiveInventory("DescentRollToken", 1); }
@@ -2335,8 +2330,9 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("BloodFlamethrower", INTMAX);
 			TakeInventory("LifeLeech", INTMAX);
 			TakeInventory("BloodNaturomDemonto", INTMAX);
-			TakeInventory("GunsAkimboP", INTMAX);
-			TakeInventory("GunsAkimboItem", INTMAX);
+			TakeInventory("SamsaraBloodGunsAkimboInventory", INTMAX);
+			TakeInventory("SamsaraBloodGunsAkimboToggleMemory", INTMAX);
+			TakeInventory("SamsaraBloodGunsAkimboToggled", INTMAX);
 			TakeInventory("VoodooDoll", INTMAX);
 			TakeInventory("SprayCan", INTMAX);
 			TakeInventory("Flaregun2", INTMAX);
@@ -2346,9 +2342,9 @@ Script "Samsara_ResetInventory" (void)
 
 			GiveInventory("CalebClass", 1);
 			GiveInventory("IsSamsaraClass", 1);
-			GiveInventory(" Revolver ", 1);
+			GiveInventory("   Revolver   ", 1);
 			GiveInventory("Pitchfork", 1);
-			SetWeapon(" Revolver ");
+			SetWeapon("   Revolver   ");
 			break;
 		case 11:
 			TakeInventory(" Sigil ", INTMAX);
@@ -2380,8 +2376,8 @@ Script "Samsara_ResetInventory" (void)
 			GiveInventory("IsSamsaraClass", 1);
 			GiveInventory("StrifeClass", 1);
 			GiveInventory("Punch Dagger", 1);
-			GiveInventory(" Pistol ", 1);
-			SetWeapon(" Pistol ");
+			GiveInventory("   Pistol   ", 1);
+			SetWeapon("   Pistol   ");
 			break;
 		case 12:
 			TakeInventory(" Arachnicator ", INTMAX);
@@ -2396,9 +2392,9 @@ Script "Samsara_ResetInventory" (void)
 
 			GiveInventory("EradClass", 1);
 			GiveInventory("IsSamsaraClass", 1);
-			GiveInventory("Claw", 1);
-			GiveInventory("Ripper Disc", 1);
-			SetWeapon("Ripper Disc");
+			GiveInventory("  Claw  ", 1);
+			GiveInventory("  Ripper Disc  ", 1);
+			SetWeapon("  Ripper Disc  ");
 			break;
 		case 13:
 			TakeInventory("M24CAW", INTMAX);
@@ -6296,7 +6292,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_permaquad", false);
 		SetCVar("samsara_vanillaquake", false);
 		SetCVar("samsara_banrottgodmode", false);
-		SetCVar("samsara_permakimbo", false);
+		SetCVar("samsara_bloodakimbomode", 0);
 		SetCVar("samsara_nodemonmorph", false);
 		SetCVar("samsara_notarotcardlimit", false);
 		SetCVar("samsara_nopainkillercorpseremoval", false);
@@ -6557,7 +6553,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_permaquad", false);
 		SetCVar("samsara_vanillaquake", false);
 		SetCVar("samsara_banrottgodmode", false);
-		SetCVar("samsara_permakimbo", false);
+		SetCVar("samsara_bloodakimbomode", 0);
 		SetCVar("samsara_nodemonmorph", false);
 		SetCVar("samsara_notarotcardlimit", false);
 		SetCVar("samsara_nopainkillercorpseremoval", false);
@@ -6818,7 +6814,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_permaquad", true);
 		SetCVar("samsara_vanillaquake", false);
 		SetCVar("samsara_banrottgodmode", false);
-		SetCVar("samsara_permakimbo", false);
+		SetCVar("samsara_bloodakimbomode", 0);
 		SetCVar("samsara_nodemonmorph", false);
 		SetCVar("samsara_notarotcardlimit", false);
 		SetCVar("samsara_nopainkillercorpseremoval", false);
@@ -7080,7 +7076,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_permaquad", false);
 		SetCVar("samsara_vanillaquake", false);
 		SetCVar("samsara_banrottgodmode", true);
-		SetCVar("samsara_permakimbo", true);
+		SetCVar("samsara_bloodakimbomode", 3);
 		SetCVar("samsara_nodemonmorph", false);
 		SetCVar("samsara_notarotcardlimit", false);
 		SetCVar("samsara_nopainkillercorpseremoval", true);
@@ -7343,7 +7339,7 @@ script "SamsaraServerSidePresetSelection" (void)
 			SetCVar("samsara_permaquad", true);
 			SetCVar("samsara_vanillaquake", false);
 			SetCVar("samsara_banrottgodmode", false);
-			SetCVar("samsara_permakimbo", false);
+			SetCVar("samsara_bloodakimbomode", 2);
 			SetCVar("samsara_nodemonmorph", false);
 			SetCVar("samsara_notarotcardlimit", false);
 			SetCVar("samsara_nopainkillercorpseremoval", false);
@@ -7601,7 +7597,7 @@ script "SamsaraServerSidePresetSelection" (void)
 			SetCVar("samsara_permaquad", true);
 			SetCVar("samsara_vanillaquake", false);
 			SetCVar("samsara_banrottgodmode", false);
-			SetCVar("samsara_permakimbo", false);
+			SetCVar("samsara_bloodakimbomode", 2);
 			SetCVar("samsara_nodemonmorph", false);
 			SetCVar("samsara_notarotcardlimit", false);
 			SetCVar("samsara_nopainkillercorpseremoval", false);
@@ -9383,8 +9379,16 @@ script "SamsaraPowerupTimerActiveChecker" (int category, int powerup)
         }
         break;
 
-      // Eradicator Characters Powerups
+      // Caleb Powerups
       case 15:
+        switch (powerup)
+        {
+          case 0: powerupname = "PowerSamsaraBloodGunsAkimbo"; break;
+        }
+        break;
+
+      // Eradicator Characters Powerups
+      case 16:
         switch (powerup)
         {
           case 0: powerupname = "PowerEradEnWP"; break;
@@ -9392,7 +9396,7 @@ script "SamsaraPowerupTimerActiveChecker" (int category, int powerup)
         break;
 
       // LDF Commando Powerups
-      case 16:
+      case 17:
         switch (powerup)
         {
           case 0: powerupname = "PowerRMRFlyAbilityHack"; break;
@@ -9400,7 +9404,7 @@ script "SamsaraPowerupTimerActiveChecker" (int category, int powerup)
         break;
 
       // A.V.C. Team Members Powerups
-      case 17:
+      case 18:
         switch (powerup)
         {
           case 0: powerupname = "PowerIPOGCharge"; break;
@@ -9409,7 +9413,7 @@ script "SamsaraPowerupTimerActiveChecker" (int category, int powerup)
         break;
 
       // Demoness Powerups
-      case 18:
+      case 19:
         switch (powerup)
         {
           case 0: powerupname = "PowerHexen2WeaponLevel2"; break;
@@ -9417,7 +9421,7 @@ script "SamsaraPowerupTimerActiveChecker" (int category, int powerup)
         break;
 
       // Petton Everhail Powerups
-      case 19:
+      case 20:
         switch (powerup)
         {
           case 0: powerupname = "PowerCatacomb_TimeFreeze"; break;
