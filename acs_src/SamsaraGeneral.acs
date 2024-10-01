@@ -4551,20 +4551,20 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			
             if (!CheckInventory("Q2BFG10K"))
             {
-                if (!isCompetitiveGameMode())
+                if (isSinglePlayer() || isCoop())
 				{
 					GiveInventory("Q2QuadDamage", 1);
 				}
 				result = 1;
             }
 			
-            if (!CheckInventory("Q2QuadDamage") && !weaponStay && !isCompetitiveGameMode())
+            if (!CheckInventory("Q2QuadDamage") && !weaponStay && (isSinglePlayer() || isCoop()))
             {
                 GiveInventory("Q2QuadDamage", 1);
 				result = 1;
             }
 			
-			if(weaponStay && (timer() - 2100 >= CheckInventory("SamsaraQuake2QuadDamageLastPickupTime")) && !isCompetitiveGameMode())
+			if(weaponStay && (timer() - 2100 >= CheckInventory("SamsaraQuake2QuadDamageLastPickupTime")) && (isSinglePlayer() || isCoop()))
 			{
 				SetInventory("SamsaraQuake2QuadDamageLastPickupTime", timer());
 				GiveInventory("Q2QuadDamage", 1);
@@ -4742,6 +4742,82 @@ script "Samsara_SpawnSlotSkulltag" (int slot, int toss)
 
 		Thing_ChangeTid(newTid,0);
 	}
+}
+
+//======================================================================================================================
+//                                            Spawn Slots that are dropped
+//======================================================================================================================
+
+script "Samsara_SpawnSlotDropped" (int slot, int droptype)
+{
+    int newTID = UniqueTID();
+    str slotweapon = "Placeholder";
+
+    bool hasCountItem = CheckFlag(0, "COUNTITEM");
+    bool hasDropped = CheckFlag(0, "DROPPED");
+    bool hasNeverRespawn = CheckFlag(0, "NEVERRESPAWN");
+    bool hasNoGravity = CheckFlag(0, "NOGRAVITY");
+    bool hasTossed = CheckFlag(0, "TOSSED");
+
+    if (droptype >= 1)
+    {
+        switch (slot)
+        {
+          case SLOT_FIST: slotweapon = "SamsaraFallbackMeleeDrop"; break;
+          case SLOT_CHAINSAW: slotweapon = "SamsaraSlotOneDrop"; break;
+          case SLOT_PISTOL: slotweapon = "SamsaraFallbackRangedDrop"; break;
+          case SLOT_SHOTGUN: slotweapon = "SamsaraSlotTwoDrop"; break;
+          case SLOT_SUPERSHOTGUN: slotweapon = "SamsaraSlotThreeDrop"; break;
+          case SLOT_CHAINGUN: slotweapon = "SamsaraSlotFourDrop"; break;
+          case SLOT_MINIGUN: slotweapon = "SamsaraSlotFourSkulltagDrop"; break;
+          case SLOT_ROCKETLAUNCHER: slotweapon = "SamsaraSlotFiveDrop"; break;
+          case SLOT_GRENADELAUNCHER: slotweapon = "SamsaraSlotFiveSkulltagDrop"; break;
+          case SLOT_PLASMARIFLE: slotweapon = "SamsaraSlotSixDrop"; break;
+          case SLOT_RAILGUN: slotweapon = "SamsaraSlotSixSkulltagDrop"; break;
+          case SLOT_BFG9000: slotweapon = "SamsaraSlotSevenDrop"; break;
+          case SLOT_BFG10K: slotweapon = "SamsaraSlotSevenSkulltagDrop"; break;
+        }
+    } else {
+        switch (slot)
+        {
+          case SLOT_FIST: slotweapon = "SamsaraFallbackMeleeNoStay"; break;
+          case SLOT_CHAINSAW: slotweapon = "SamsaraSlotOneNoStay"; break;
+          case SLOT_PISTOL: slotweapon = "SamsaraFallbackRangedNoStay"; break;
+          case SLOT_SHOTGUN: slotweapon = "SamsaraSlotTwoNoStay"; break;
+          case SLOT_SUPERSHOTGUN: slotweapon = "SamsaraSlotThreeNoStay"; break;
+          case SLOT_CHAINGUN: slotweapon = "SamsaraSlotFourNoStay"; break;
+          case SLOT_MINIGUN: slotweapon = "SamsaraSlotFourSkulltagNoStay"; break;
+          case SLOT_ROCKETLAUNCHER: slotweapon = "SamsaraSlotFiveNoStay"; break;
+          case SLOT_GRENADELAUNCHER: slotweapon = "SamsaraSlotFiveSkulltagNoStay"; break;
+          case SLOT_PLASMARIFLE: slotweapon = "SamsaraSlotSixNoStay"; break;
+          case SLOT_RAILGUN: slotweapon = "SamsaraSlotSixSkulltagNoStay"; break;
+          case SLOT_BFG9000: slotweapon = "SamsaraSlotSevenNoStay"; break;
+          case SLOT_BFG10K: slotweapon = "SamsaraSlotSevenSkulltagNoStay"; break;
+        }
+    }
+        
+    SpawnForced(slotweapon, GetActorX(0), GetActorY(0), GetActorZ(0), newTID, GetActorAngle(0));
+    SetActorVelocity(newTID, GetActorVelX(0), GetActorVelY(0), GetActorVelZ(0), false, false);
+
+    if (hasDropped) { GiveActorInventory(newTID, "SamsaraDroppedEnabler", 1); }
+    else { GiveActorInventory(newTID, "SamsaraDroppedDisabler", 1); }
+
+    if (hasTossed) { GiveActorInventory(newTID, "SamsaraTossedEnabler", 1); }
+    else { GiveActorInventory(newTID, "SamsaraTossedDisabler", 1); }
+
+    if (hasTossed) { GiveActorInventory(newTID, "SamsaraCountItemDisabler", 1); } // precautionary
+    else if (hasCountItem) { GiveActorInventory(newTID, "SamsaraCountItemEnabler", 1); }
+
+    if (hasNeverRespawn) { GiveActorInventory(newTID, "SamsaraNeverRespawnEnabler", 1); }
+
+    if (hasTossed) { GiveActorInventory(newTID, "SamsaraNoGravityDisabler", 1); } // precautionary
+    else if (hasNoGravity) { GiveActorInventory(newTID, "SamsaraNoGravityEnabler", 1); }
+
+    if (CheckInventory("SamsaraItemReplaced")) { GiveActorInventory(newTID, "SamsaraItemReplaced", 1); } // allow items replaced by slot 7/7S to continue being slot 7/7S
+
+    GiveInventory("SamsaraCountItemDisabler", 1); // precautionary
+    Thing_Remove(0);
+    Thing_ChangeTid(newTID, 0);
 }
 
 //======================================================================================================================
@@ -5164,7 +5240,7 @@ str itemReplacements[44][4] =
     {"Ammo4Big",                       "",                                   "",                     "CanNoGravity"},
     {"AmmoBackpack",                   "",                                   "",                     "CanNoGravity"},
     {"SamsaraAllmap",                  "samsara_replace_computermap",        "CanCountItem",         "CanNoGravity"},
-    {"SamsaraUniquePickup",            "samsara_replace_berserk",            "",                     ""},
+    {"SamsaraUniquePickupRandom",      "samsara_replace_berserk",            "",                     ""},
     {"SamsaraUniquePickup1",           "",                                   "",                     ""},
     {"SamsaraUniquePickup2",           "",                                   "",                     ""},
     {"SamsaraUniquePickup3",           "",                                   "",                     ""},
@@ -5221,9 +5297,10 @@ script "Samsara_SwitchableObject" (int type)
         bool hasNoGravity = CheckFlag(0, "NOGRAVITY");
         bool hasTossed = CheckFlag(0, "TOSSED");
 
-        if (!StrCmp(itemActor, "SamsaraUniquePickup")) { itemActor = StrParam(s:"SamsaraUniquePickup", d:Random(1, 3)); } // bypass RandomSpawner
+        if (!StrCmp(itemActor, "SamsaraUniquePickupRandom")) { itemActor = StrParam(s:"SamsaraUniquePickup", d:Random(1, 3)); } // bypass RandomSpawner
 
-        SpawnForced(itemActor, GetActorX(0), GetActorY(0), GetActorZ(0), itemTID);
+        SpawnForced(itemActor, GetActorX(0), GetActorY(0), GetActorZ(0), itemTID, GetActorAngle(0));
+        SetActorVelocity(itemTID, GetActorVelX(0), GetActorVelY(0), GetActorVelZ(0), false, false);
 
         if (hasDropped) { GiveActorInventory(itemTID, "SamsaraDroppedEnabler", 1); }
         else { GiveActorInventory(itemTID, "SamsaraDroppedDisabler", 1); }
@@ -7758,16 +7835,16 @@ Script "DisableVoodooDoll" (void)
 }
 
 str PinataDoomCommonQuality[MAXPINATACOMMONQUALITY] = { "Ammo1Small", "Ammo2Small", "HealPack0", "ArmorScrap", "HealPack1", "Ammo1Big", "Ammo2Big", "SamsaraSlotTwoNoStay", "SamsaraSlotFourNoStay" };
-str PinataDoomUncommonQuality[MAXPINATAUNCOMMONQUALITY] = { "Ammo1Small", "Ammo2Small", "Ammo3Small", "Ammo4Small", "HealPack1", "Ammo1Big", "Ammo2Big", "HealPack2", "PartialInvisibility", "Visor", "SamsaraAllmap", "SamsaraSlotOneNoStay", "SamsaraSlotTwoNoStay", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "ArmorPack1", "AmmoBackpack", "SamsaraUniquePickup" };
-str PinataDoomRareQuality[MAXPINATARAREQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "HealPack2", "Ammo3Small", "Ammo4Small", "AmmoBackpack", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "SamsaraSlotFiveNoStay", "SamsaraSlotSixNoStay", "PartialInvisibility", "Visor", "SamsaraAllmap", "SuperHealth", "ArmorPack3", "SamsaraUniquePickup", "SamsaraSlotFourSkulltagNoStay", "SamsaraSlotFiveSkulltagNoStay", "SamsaraSlotSixSkulltagNoStay", "MegaPack" };
-str PinataDoomEpicQuality[MAXPINATAEPICQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoBackpack", "HealPack2", "PartialInvisibility", "Visor", "SamsaraAllmap", "ArmorPack3", "SamsaraSlotSixNoStay", "SamsaraSlotSixSkulltagNoStay", "SamsaraUniquePickup", "SuperHealth", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "MegaPack" };
-str PinataDoomLegendaryQuality[MAXPINATALEGENDARYQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "SuperHealth", "ArmorPack3", "AmmoBackpack", "SamsaraUniquePickup", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "MegaPack" };
+str PinataDoomUncommonQuality[MAXPINATAUNCOMMONQUALITY] = { "Ammo1Small", "Ammo2Small", "Ammo3Small", "Ammo4Small", "HealPack1", "Ammo1Big", "Ammo2Big", "HealPack2", "PartialInvisibility", "Visor", "SamsaraAllmap", "SamsaraSlotOneNoStay", "SamsaraSlotTwoNoStay", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "ArmorPack1", "AmmoBackpack", "SamsaraUniquePickupRandom" };
+str PinataDoomRareQuality[MAXPINATARAREQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "HealPack2", "Ammo3Small", "Ammo4Small", "AmmoBackpack", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "SamsaraSlotFiveNoStay", "SamsaraSlotSixNoStay", "PartialInvisibility", "Visor", "SamsaraAllmap", "SuperHealth", "ArmorPack3", "SamsaraUniquePickupRandom", "SamsaraSlotFourSkulltagNoStay", "SamsaraSlotFiveSkulltagNoStay", "SamsaraSlotSixSkulltagNoStay", "MegaPack" };
+str PinataDoomEpicQuality[MAXPINATAEPICQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoBackpack", "HealPack2", "PartialInvisibility", "Visor", "SamsaraAllmap", "ArmorPack3", "SamsaraSlotSixNoStay", "SamsaraSlotSixSkulltagNoStay", "SamsaraUniquePickupRandom", "SuperHealth", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "MegaPack" };
+str PinataDoomLegendaryQuality[MAXPINATALEGENDARYQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "SuperHealth", "ArmorPack3", "AmmoBackpack", "SamsaraUniquePickupRandom", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "MegaPack" };
 
 str PinataDoomCommonExQuality[MAXPINATACOMMONEXTRASQUALITY] = { "Ammo1Small", "Ammo2Small", "HealPack0", "ArmorScrap", "HealPack0Dump", "HealPack1", "ArmorScrapDump", "Ammo1Medium", "Ammo2Medium", "Ammo1Big", "Ammo2Big", "SamsaraSlotTwoNoStay", "SamsaraSlotFourNoStay" };
-str PinataDoomUncommonExQuality[MAXPINATAUNCOMMONEXTRASQUALITY] = { "Ammo1Small", "Ammo2Small", "Ammo3Small", "Ammo4Small", "AmmoComboSmall", "HealPack0Dump", "HealPack1", "Ammo1Medium", "Ammo2Medium", "Ammo3Medium", "Ammo4Medium", "Ammo1Big", "Ammo2Big", "HealPack2", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit", "SamsaraSlotOneNoStay", "SamsaraSlotTwoNoStay", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "ArmorPack1", "ArmorPackBonusLight", "AmmoBackpack", "SamsaraUniquePickup" };
-str PinataDoomRareExQuality[MAXPINATARAREEXTRASQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "HealPack2", "MaxHealPack0", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit", "SamsaraLesserTome", "SamsaraTeleportPickup", "SamsaraFlightPickup", "SamsaraSpeedBootsPickup", "SamsaraTeleportOtherPickup", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "SamsaraSlotFiveNoStay", "SamsaraSlotSixNoStay", "SuperHealth", "ArmorPack2", "ArmorPack3", "ArmorPackBonusHeavy", "SamsaraUniquePickup", "SamsaraSlotFourSkulltagNoStay", "SamsaraSlotFiveSkulltagNoStay", "SamsaraSlotSixSkulltagNoStay", "AmmoBackpack", "MegaPack" };
-str PinataDoomEpicExQuality[MAXPINATAEPICEXTRASQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "HealPack2", "MaxHealPack0", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit", "SamsaraLesserTome", "SamsaraTeleportPickup", "SamsaraFlightPickup", "SamsaraSpeedBootsPickup", "SamsaraTeleportOtherPickup", "SamsaraSlotSixNoStay", "SamsaraSlotSixSkulltagNoStay", "SamsaraUniquePickup", "SamsaraSpeedBooster", "SamsaraDefenseBooster", "SamsaraDamageBooster", "SamsaraFullInvisibility", "SamsaraTimeFreeze", "SuperHealth", "ArmorPack3", "ArmorPackBonusHeavy", "ArmorPack4", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "AmmoBackpack", "MegaPack", "SamsaraRandomPowerup" };
-str PinataDoomLegendaryExQuality[MAXPINATALEGENDARYEXTRASQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "SuperHealth", "ArmorPack4", "ArmorPack5", "AmmoBackpack", "SamsaraUniquePickup", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "MegaPack" };
+str PinataDoomUncommonExQuality[MAXPINATAUNCOMMONEXTRASQUALITY] = { "Ammo1Small", "Ammo2Small", "Ammo3Small", "Ammo4Small", "AmmoComboSmall", "HealPack0Dump", "HealPack1", "Ammo1Medium", "Ammo2Medium", "Ammo3Medium", "Ammo4Medium", "Ammo1Big", "Ammo2Big", "HealPack2", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit", "SamsaraSlotOneNoStay", "SamsaraSlotTwoNoStay", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "ArmorPack1", "ArmorPackBonusLight", "AmmoBackpack", "SamsaraUniquePickupRandom" };
+str PinataDoomRareExQuality[MAXPINATARAREEXTRASQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "HealPack2", "MaxHealPack0", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit", "SamsaraLesserTome", "SamsaraTeleportPickup", "SamsaraFlightPickup", "SamsaraSpeedBootsPickup", "SamsaraTeleportOtherPickup", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "SamsaraSlotFiveNoStay", "SamsaraSlotSixNoStay", "SuperHealth", "ArmorPack2", "ArmorPack3", "ArmorPackBonusHeavy", "SamsaraUniquePickupRandom", "SamsaraSlotFourSkulltagNoStay", "SamsaraSlotFiveSkulltagNoStay", "SamsaraSlotSixSkulltagNoStay", "AmmoBackpack", "MegaPack" };
+str PinataDoomEpicExQuality[MAXPINATAEPICEXTRASQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "HealPack2", "MaxHealPack0", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit", "SamsaraLesserTome", "SamsaraTeleportPickup", "SamsaraFlightPickup", "SamsaraSpeedBootsPickup", "SamsaraTeleportOtherPickup", "SamsaraSlotSixNoStay", "SamsaraSlotSixSkulltagNoStay", "SamsaraUniquePickupRandom", "SamsaraSpeedBooster", "SamsaraDefenseBooster", "SamsaraDamageBooster", "SamsaraFullInvisibility", "SamsaraTimeFreeze", "SuperHealth", "ArmorPack3", "ArmorPackBonusHeavy", "ArmorPack4", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "AmmoBackpack", "MegaPack", "SamsaraRandomPowerup" };
+str PinataDoomLegendaryExQuality[MAXPINATALEGENDARYEXTRASQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "SuperHealth", "ArmorPack4", "ArmorPack5", "AmmoBackpack", "SamsaraUniquePickupRandom", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "MegaPack" };
 
 //f me
 int PinataDoomCommonQualityInt[MAXPINATACOMMONQUALITY] = { 50, 50, 50, 50, 25, 10, 10, 5, 5 };
