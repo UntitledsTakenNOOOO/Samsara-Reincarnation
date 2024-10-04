@@ -5,33 +5,24 @@ script "SamsaraPDWTAK" DEATH //675 -- SAMSARA_PDWTAK
     int bombtimer, yourTID;
     int myTID = defaultTID(-1);
     int classNum = samsaraClassNum();
-    int x,y,z,z2;
+    int x, y, z, z2;
     int rVel, rAng, rPit, rTID;
-    int i,j,k,l;
+    int i, j, k, l;
 
     x  = GetActorX(myTID);
     y  = GetActorY(myTID);
     z  = GetActorZ(myTID) + 32.0;
     z2 = GetActorZ(myTID);
 
-    SetActivatorToTarget(0);
+    SetActivator(0, AAPTR_TARGET);
 
-    if (PlayerNumber() == -1)
-    {
-        bombtimer = 35;
-    }
+    if (PlayerNumber() == -1) { bombtimer = 35; }
     else
     {
         yourTID = ActivatorTID();
 
-        if (yourTID == myTID)
-        {
-            bombtimer = 0;
-        }
-        else
-        {
-            bombtimer = 24;
-        }
+        if (yourTID == myTID) { bombtimer = 0; }
+        else { bombtimer = 24; }
 
         if (yourTID == 0)
         {
@@ -50,32 +41,18 @@ script "SamsaraPDWTAK" DEATH //675 -- SAMSARA_PDWTAK
 
         if (bombtimer % 18 == 0)
         {
-            if (classNum != -1)
-            {
-                j = PeopleDiePulses[classNum];
-            }
-            else
-            {
-                j = "DoomguysDiePulse";
-            }
+            if (classNum != -1) { j = PeopleDieStuff[classNum][1]; }
+            else { j = "DoomguysDiePulse"; }
 
-            SpawnForced(j, x,y,z, rTID);
-        }
-        else if (Timer() % 2)
-        {
-            if (classNum != -1)
-            {
-                j = PeopleDieParticles[classNum];
-            }
-            else
-            {
-                j = "DoomguysDieParticle";
-            }
+            SpawnForced(j, x, y, z, rTID);
+        } else if (Timer() % 2) {
+            if (classNum != -1) { j = PeopleDieStuff[classNum][0]; }
+            else { j = "DoomguysDieParticle"; }
 
-            SpawnForced(j, 
-                      x + FixedMul(FixedMul(rVel, cos(rAng)), cos(rPit)),
-                      y + FixedMul(FixedMul(rVel, sin(rAng)), cos(rPit)),
-                      z + FixedMul(rVel, sin(rPit)),
+            SpawnForced(j,
+                        x + FixedMul(FixedMul(rVel, cos(rAng)), cos(rPit)),
+                        y + FixedMul(FixedMul(rVel, sin(rAng)), cos(rPit)),
+                        z + FixedMul(rVel, sin(rPit)),
                         rTID);
 
             rVel = random(0, 1.0);
@@ -84,10 +61,10 @@ script "SamsaraPDWTAK" DEATH //675 -- SAMSARA_PDWTAK
             rPit = random(-0.25, 0.25);
 
             SetActorVelocity(rTID,
-                            FixedMul(FixedMul(rVel, cos(rAng)), cos(rPit)) / 2,
-                            FixedMul(FixedMul(rVel, sin(rAng)), cos(rPit)) / 2,
-                            FixedMul(rVel, sin(rPit))*2,
-                            0, 0);
+                              FixedMul(FixedMul(rVel, cos(rAng)), cos(rPit)) / 2,
+                              FixedMul(FixedMul(rVel, sin(rAng)), cos(rPit)) / 2,
+                              FixedMul(rVel, sin(rPit)) * 2,
+                              false, false);
         }
 
         Delay(1);
@@ -97,17 +74,16 @@ script "SamsaraPDWTAK" DEATH //675 -- SAMSARA_PDWTAK
     j = GetActorY(yourTID);
     k = GetActorZ(yourTID);
 
-    SetActorPosition(yourTID, x,y,z2, 0);
-    if (GetCVar("samsara_pdwtak_damage") > 0) { GiveActorInventory(yourTID, PDWTAKItems[classNum == CLASS_CHEX], 1); }
-    SetActorPosition(yourTID, i,j,k, 0);
+    SetActorPosition(yourTID, x, y, z2, false);
 
+    if (GetCVar("samsara_pdwtak_damage") > 0)
+    {
+        if (classNum != -1) { GiveActorInventory(yourTID, PeopleDieStuff[classNum][3], 1); }
+        else { GiveActorInventory(yourTID, "InvPeopleDie", 1); }
+    }
 
-    if (classNum != -1)
-    {
-        SpawnForced(PeopleDieBlasts[classNum], x,y,z);
-    }
-    else
-    {
-        SpawnForced("DoomguyDiesWhenHeIsKilled", x,y,z);
-    }
+    SetActorPosition(yourTID, i, j, k, false);
+
+    if (classNum != -1) { SpawnForced(PeopleDieStuff[classNum][2], x, y, z); }
+    else { SpawnForced("DoomguyDiesWhenHeIsKilled", x, y, z); }
 }
