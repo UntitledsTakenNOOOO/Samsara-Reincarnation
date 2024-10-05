@@ -1039,47 +1039,67 @@ function int HandleBuffCVars (void)
     int classnum = samsaraClassNum(), altclassnum = samsaraAltClassNum();
     if (classnum == -1) { return 0; }
 
-    int i, j;
-
     // Since the CVars can be negative, we add to the cvar readings a value we know
     //   points to the "zero" index in the DamageModes/DefenseModes arrays.
     //   That way, -10 points to index 0 if the zero point is at index 10.
+
     // Before, this ran a couple loops to determine the correct item. This is not
     //   necessary when the items are static and causes a lot more memory to be used
 
-    int dmgcvar = DamageAndDefenseCVars[classnum][altclassnum][0];
-    int damagelevel  = min(max(GetCVar(dmgcvar) + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
-    int generaldamagelevel  = min(max(GetCVar("samsara_generaldamage") + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
+    //int i, j;
 
-    for (i = 0; i < DAMAGEDEFENSEMODES; i++)
+    int dmgcvar = DamageAndDefenseCVars[classnum][altclassnum][0];
+    int damagelevel = min(max(GetCVar(dmgcvar) + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
+    str damageitem = "Placeholder";
+    int generaldamagelevel = min(max(GetCVar("samsara_generaldamage") + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
+    str generaldamageitem = "Placeholder";
+
+    damageitem = CVarDamageAndDefenseItems[damagelevel][0];
+    if (StrLen(damageitem)) { GiveInventory(damageitem, 1); }
+
+    generaldamageitem = CVarDamageAndDefenseItems[generaldamagelevel][0];
+    if (StrLen(generaldamageitem)) { GiveInventory(generaldamageitem, 1); }
+
+    /*for (i = 0; i < DAMAGEDEFENSEMODES; i++)
     {
         j = CVarDamageAndDefenseItems[i][0];
         if (!StrLen(j)) { continue; }
 
         SetInventory(j, damagelevel == i || generaldamagelevel == i);
-    }
+    }*/
 
     int defcvar = DamageAndDefenseCVars[classnum][altclassnum][1];
     int defenselevel = min(max(GetCVar(defcvar) + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
+    str defenseitem = "Placeholder";
     int generaldefenselevel = min(max(GetCVar("samsara_generaldefense") + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
+    str generaldefenseitem = "Placeholder";
 
-    for (i = 0; i < DAMAGEDEFENSEMODES; i++)
+    defenseitem = CVarDamageAndDefenseItems[defenselevel][1];
+    if (StrLen(defenseitem)) { GiveInventory(defenseitem, 1); }
+
+    generaldefenseitem = CVarDamageAndDefenseItems[generaldefenselevel][1];
+    if (StrLen(generaldefenseitem)) { GiveInventory(generaldefenseitem, 1); }
+
+    /*for (i = 0; i < DAMAGEDEFENSEMODES; i++)
     {
         j = CVarDamageAndDefenseItems[i][1];
         if (!StrLen(j)) { continue; }
 
         SetInventory(j, defenselevel == i || generaldefenselevel == i);
-    }
+    }*/
 
-    int speedlevel = min(max(GetCVar("samsara_speedmod") + SPEEDZEROINDEX, 0), SPEEDMODES-1);
+    int speedlevel = min(max(GetCVar("samsara_speedmod") + SPEEDZEROINDEX, 0), SPEEDMODES - 1);
+    str speeditem = CVarSpeedItems[speedlevel];
 
-    for (i = 0; i < SPEEDMODES; i++)
+    if (StrLen(speeditem)) { GiveInventory(speeditem, 1); }
+
+    /*for (i = 0; i < SPEEDMODES; i++)
     {
         j = CVarSpeedItems[i];
         if (!StrLen(j)) { continue; }
 
         SetInventory(j, speedlevel == i);
-    }
+    }*/
 
     return 1;
 }
