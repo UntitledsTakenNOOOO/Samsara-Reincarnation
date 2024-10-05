@@ -1018,7 +1018,7 @@ function int HandleInstagib(int turnedOff)
 	return 1;
 }
 
-function int HandleBans(void)
+function int HandleBans (void)
 {
     int classnum = samsaraClassNum(), altclassnum = samsaraAltClassNum();
     if (classnum == -1) { return 0; }
@@ -1034,61 +1034,54 @@ function int HandleBans(void)
     return 0;
 }
 
-function int HandleBuffCVars(int respawning)
+function int HandleBuffCVars (void)
 {
-	int classnum = samsaraClassNum();
-	if (classnum == -1) { return 0; }
+    int classnum = samsaraClassNum(), altclassnum = samsaraAltClassNum();
+    if (classnum == -1) { return 0; }
 
-	int dmgcvar = DamageAndDefenseCVars[classnum][0];
-	int defcvar = DamageAndDefenseCVars[classnum][1];
+    int i, j;
 
-	// Since the CVars can be negative, we add to the cvar readings a value we know
-	//   points to the "zero" index in the DamageModes/DefenseModes arrays.
-	//   That way, -10 points to index 0 if the zero point is at index 10.
-	// Before, this ran a couple loops to determine the correct item. This is not
-	//   necessary when the items are static and causes a lot more memory to be used
+    // Since the CVars can be negative, we add to the cvar readings a value we know
+    //   points to the "zero" index in the DamageModes/DefenseModes arrays.
+    //   That way, -10 points to index 0 if the zero point is at index 10.
+    // Before, this ran a couple loops to determine the correct item. This is not
+    //   necessary when the items are static and causes a lot more memory to be used
 
-	int damagelevel  = min(max(GetCVar(dmgcvar) + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
-	int defenselevel = min(max(GetCVar(defcvar) + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
-	int generaldamagelevel  = min(max(GetCVar("samsara_generaldamage") + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
-	int generaldefenselevel = min(max(GetCVar("samsara_generaldefense") + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
-	int speedlevel = min(max(GetCVar("samsara_speedmod") + SPEEDZEROINDEX, 0), SPEEDMODES-1);
-	GiveInventory(CVarDamageAndDefenseItems[damagelevel][0], 1);
-	GiveInventory(CVarDamageAndDefenseItems[defenselevel][1], 1);
-	GiveInventory(CVarDamageAndDefenseItems[generaldamagelevel][0], 1);
-	GiveInventory(CVarDamageAndDefenseItems[generaldefenselevel][1], 1);
-	GiveInventory(CVarSpeedItems[speedlevel], 1);
+    int dmgcvar = DamageAndDefenseCVars[classnum][altclassnum][0];
+    int damagelevel  = min(max(GetCVar(dmgcvar) + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
+    int generaldamagelevel  = min(max(GetCVar("samsara_generaldamage") + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
 
-	/*
-	int i, j;
-	for (i = 0; i < DAMAGEMODES; i++)
-	{
-		j = CVarDamageItems[i];
-		if (!StrLen(j)) { continue; }
-		if (damagelevel == i)
-		{
-			if (!CheckInventory(j)) { GiveInventory(j, 1); }
-		}
-		else
-		{
-			TakeInventory(j, INTMAX);
-		}
-	}
-	for (i = 0; i < DEFENSEMODES; i++)
-	{
-		j = CVarDefenseItems[i];
-		if (!StrLen(j)) { continue; }
-		if (defenselevel == i)
-		{
-			if (!CheckInventory(j)) { GiveInventory(j, 1); }
-		}
-		else
-		{
-			TakeInventory(j, INTMAX);
-		}
-	}*/
+    for (i = 0; i < DAMAGEDEFENSEMODES; i++)
+    {
+        j = CVarDamageAndDefenseItems[i][0];
+        if (!StrLen(j)) { continue; }
 
-	return 1;
+        SetInventory(j, damagelevel == i || generaldamagelevel == i);
+    }
+
+    int defcvar = DamageAndDefenseCVars[classnum][altclassnum][1];
+    int defenselevel = min(max(GetCVar(defcvar) + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
+    int generaldefenselevel = min(max(GetCVar("samsara_generaldefense") + DAMAGEDEFENSEZEROINDEX, 0), DAMAGEDEFENSEMODES - 1);
+
+    for (i = 0; i < DAMAGEDEFENSEMODES; i++)
+    {
+        j = CVarDamageAndDefenseItems[i][1];
+        if (!StrLen(j)) { continue; }
+
+        SetInventory(j, defenselevel == i || generaldefenselevel == i);
+    }
+
+    int speedlevel = min(max(GetCVar("samsara_speedmod") + SPEEDZEROINDEX, 0), SPEEDMODES-1);
+
+    for (i = 0; i < SPEEDMODES; i++)
+    {
+        j = CVarSpeedItems[i];
+        if (!StrLen(j)) { continue; }
+
+        SetInventory(j, speedlevel == i);
+    }
+
+    return 1;
 }
 
 function void HandleAmmoCapacities (int pickedup)
