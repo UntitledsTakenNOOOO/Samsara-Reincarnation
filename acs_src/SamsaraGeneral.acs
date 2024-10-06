@@ -1641,17 +1641,13 @@ Script "Samsara_KillCount" (int override)
 
 	if(CheckInventory("Painkiller_DamageCredit") && ((CheckFlag(0, "BOSS") == false) && CheckFlag(0, "NOBLOOD") == false && CheckFlag(0, "NODECAL") == false) && (!CheckInventory("IsSamsaraClass"))) ACS_NamedExecuteWithResult("Painkiller_MonsterKill",0,0,0);
 
-	if (GetCVar("samsara_pdwtak_distance") > 0)
-	{
-		if (GetCVar("samsara_pdwtak_damage") > 0 && (GetCVar("samsara_pdwtak_monsters")))
-		{
-			GiveActorInventory(ActivatorTID(), "InvPeopleDie", 1);
-			if(isBoss)
-				SpawnForced("BossesDieWhenTheyAreKilled", x, y, z);	
-			else
-				SpawnForced("MonstersDieWhenTheyAreKilled", x, y, z);	
-		}
-	}
+    if (GetCVar("samsara_pdwtak_monsters") && GetCVar("samsara_pdwtak_distance") > 0)
+    {
+        if (GetCVar("samsara_pdwtak_damage") > 0) { GiveActorInventory(ActivatorTID(), "InvPeopleDie", 1); }
+
+        if (isBoss) { SpawnForced("BossesDieWhenTheyAreKilled", x, y, z); }
+        else { SpawnForced("MonstersDieWhenTheyAreKilled", x, y, z); }
+    }
 
 	SetActivatorToTarget(0);
 
@@ -8245,235 +8241,185 @@ Script "DisableVoodooDoll" (void)
 		SetActorState(0,"DisableVoodooDoll",true);
 }
 
-str PinataDoomCommonQuality[MAXPINATACOMMONQUALITY] = { "Ammo1Small", "Ammo2Small", "HealPack0", "ArmorScrap", "HealPack1", "Ammo1Big", "Ammo2Big", "SamsaraSlotTwoNoStay", "SamsaraSlotFourNoStay" };
-str PinataDoomUncommonQuality[MAXPINATAUNCOMMONQUALITY] = { "Ammo1Small", "Ammo2Small", "Ammo3Small", "Ammo4Small", "HealPack1", "Ammo1Big", "Ammo2Big", "HealPack2", "PartialInvisibility", "Visor", "SamsaraAllmap", "SamsaraSlotOneNoStay", "SamsaraSlotTwoNoStay", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "ArmorPack1", "AmmoBackpack", "SamsaraUniquePickupRandom" };
-str PinataDoomRareQuality[MAXPINATARAREQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "HealPack2", "Ammo3Small", "Ammo4Small", "AmmoBackpack", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "SamsaraSlotFiveNoStay", "SamsaraSlotSixNoStay", "PartialInvisibility", "Visor", "SamsaraAllmap", "SuperHealth", "ArmorPack3", "SamsaraUniquePickupRandom", "SamsaraSlotFourSkulltagNoStay", "SamsaraSlotFiveSkulltagNoStay", "SamsaraSlotSixSkulltagNoStay", "MegaPack" };
-str PinataDoomEpicQuality[MAXPINATAEPICQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoBackpack", "HealPack2", "PartialInvisibility", "Visor", "SamsaraAllmap", "ArmorPack3", "SamsaraSlotSixNoStay", "SamsaraSlotSixSkulltagNoStay", "SamsaraUniquePickupRandom", "SuperHealth", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "MegaPack" };
-str PinataDoomLegendaryQuality[MAXPINATALEGENDARYQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "SuperHealth", "ArmorPack3", "AmmoBackpack", "SamsaraUniquePickupRandom", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "MegaPack" };
-
-str PinataDoomCommonExQuality[MAXPINATACOMMONEXTRASQUALITY] = { "Ammo1Small", "Ammo2Small", "HealPack0", "ArmorScrap", "HealPack0Dump", "HealPack1", "ArmorScrapDump", "Ammo1Medium", "Ammo2Medium", "Ammo1Big", "Ammo2Big", "SamsaraSlotTwoNoStay", "SamsaraSlotFourNoStay" };
-str PinataDoomUncommonExQuality[MAXPINATAUNCOMMONEXTRASQUALITY] = { "Ammo1Small", "Ammo2Small", "Ammo3Small", "Ammo4Small", "AmmoComboSmall", "HealPack0Dump", "HealPack1", "Ammo1Medium", "Ammo2Medium", "Ammo3Medium", "Ammo4Medium", "Ammo1Big", "Ammo2Big", "HealPack2", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit", "SamsaraSlotOneNoStay", "SamsaraSlotTwoNoStay", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "ArmorPack1", "ArmorPackBonusLight", "AmmoBackpack", "SamsaraUniquePickupRandom" };
-str PinataDoomRareExQuality[MAXPINATARAREEXTRASQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "HealPack2", "MaxHealPack0", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit", "SamsaraLesserTome", "SamsaraTeleportPickup", "SamsaraFlightPickup", "SamsaraSpeedBootsPickup", "SamsaraTeleportOtherPickup", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "SamsaraSlotFiveNoStay", "SamsaraSlotSixNoStay", "SuperHealth", "ArmorPack2", "ArmorPack3", "ArmorPackBonusHeavy", "SamsaraUniquePickupRandom", "SamsaraSlotFourSkulltagNoStay", "SamsaraSlotFiveSkulltagNoStay", "SamsaraSlotSixSkulltagNoStay", "AmmoBackpack", "MegaPack" };
-str PinataDoomEpicExQuality[MAXPINATAEPICEXTRASQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "HealPack2", "MaxHealPack0", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit", "SamsaraLesserTome", "SamsaraTeleportPickup", "SamsaraFlightPickup", "SamsaraSpeedBootsPickup", "SamsaraTeleportOtherPickup", "SamsaraSlotSixNoStay", "SamsaraSlotSixSkulltagNoStay", "SamsaraUniquePickupRandom", "SamsaraSpeedBooster", "SamsaraDefenseBooster", "SamsaraDamageBooster", "SamsaraFullInvisibility", "SamsaraTimeFreeze", "SuperHealth", "ArmorPack3", "ArmorPackBonusHeavy", "ArmorPack4", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "AmmoBackpack", "MegaPack", "SamsaraRandomPowerup" };
-str PinataDoomLegendaryExQuality[MAXPINATALEGENDARYEXTRASQUALITY] = { "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "SuperHealth", "ArmorPack4", "ArmorPack5", "AmmoBackpack", "SamsaraUniquePickupRandom", "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "MegaPack" };
-
-//f me
-int PinataDoomCommonQualityInt[MAXPINATACOMMONQUALITY] = { 50, 50, 50, 50, 25, 10, 10, 5, 5 };
-int PinataDoomUncommonQualityInt[MAXPINATAUNCOMMONQUALITY] = { 50, 50, 50, 50, 50, 25, 25, 25, 25, 25, 25, 10, 10, 10, 10, 5, 5, 5 };
-int PinataDoomRareQualityInt[MAXPINATARAREQUALITY] = { 50, 50, 30, 30, 30, 30, 30, 25, 15, 15, 15, 15, 10, 10, 10, 5, 5, 5, 5, 5, 5, 2 };
-int PinataDoomEpicQualityInt[MAXPINATAEPICQUALITY] = { 50, 50, 50, 50, 50, 50, 30, 30, 30, 30, 30, 25, 25, 15, 10, 5, 5, 5 };
-int PinataDoomLegendaryQualityInt[MAXPINATALEGENDARYQUALITY] = { 80, 80, 80, 80, 50, 50, 50, 25, 25, 25, 10 };
-
-int PinataDoomCommonExQualityInt[MAXPINATACOMMONEXTRASQUALITY] = { 50, 50, 50, 50, 25, 25, 25, 15, 15, 10, 10, 5, 5 };
-int PinataDoomUncommonExQualityInt[MAXPINATAUNCOMMONEXTRASQUALITY] = { 50, 50, 50, 50, 50, 50, 50, 40, 40, 40, 40, 25, 25, 25, 25, 25, 25, 25, 10, 10, 10, 10, 5, 5, 5, 5 };
-int PinataDoomRareExQualityInt[MAXPINATARAREEXTRASQUALITY] = { 50, 50, 50, 50, 50, 30, 30, 30, 25, 25, 25, 25, 25, 25, 25, 25, 25, 15, 15, 15, 15, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2 };
-int PinataDoomEpicExQualityInt[MAXPINATAEPICEXTRASQUALITY] = { 75, 75, 75, 75, 50, 30, 30, 30, 25, 25, 25, 25, 25, 25, 25, 25, 25, 15, 10, 10, 10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2 };
-int PinataDoomLegendaryExQualityInt[MAXPINATALEGENDARYEXTRASQUALITY] = { 80, 80, 80, 80, 80, 50, 50, 50, 25, 25, 25, 10 };
-
-Script "Samsara_PinataHandler" (int health, int radius, int height, int friendly)
+str PinataItemActors[10][34] =
 {
-	if(!GetCVar("samsara_pinataparty"))
-		terminate;
+    { // Common
+        "Ammo1Small", "Ammo2Small", "HealPack0", "ArmorScrap", "HealPack1", "Ammo1Big", "Ammo2Big",
+        "SamsaraSlotTwoNoStay", "SamsaraSlotFourNoStay"
+    },
+    { // Uncommon
+        "Ammo1Small", "Ammo2Small", "Ammo3Small", "Ammo4Small", "HealPack1", "Ammo1Big",
+        "Ammo2Big", "HealPack2", "PartialInvisibility", "Visor", "SamsaraAllmap",
+        "SamsaraSlotOneNoStay", "SamsaraSlotTwoNoStay", "SamsaraSlotThreeNoStay",
+        "SamsaraSlotFourNoStay", "ArmorPack1", "AmmoBackpack", "SamsaraUniquePickupRandom"
+    },
+    { // Rare
+        "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "HealPack2", "Ammo3Small", "Ammo4Small",
+        "AmmoBackpack", "SamsaraSlotThreeNoStay", "SamsaraSlotFourNoStay", "SamsaraSlotFiveNoStay",
+        "SamsaraSlotSixNoStay", "PartialInvisibility", "Visor", "SamsaraAllmap", "SuperHealth",
+        "ArmorPack3", "SamsaraUniquePickupRandom", "SamsaraSlotFourSkulltagNoStay",
+        "SamsaraSlotFiveSkulltagNoStay", "SamsaraSlotSixSkulltagNoStay", "MegaPack"
+    },
+    { // Epic
+        "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoBackpack", "HealPack2",
+        "PartialInvisibility", "Visor", "SamsaraAllmap", "ArmorPack3", "SamsaraSlotSixNoStay",
+        "SamsaraSlotSixSkulltagNoStay", "SamsaraUniquePickupRandom", "SuperHealth",
+        "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "MegaPack"
+    },
+    { // Legendary
+        "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "SuperHealth", "ArmorPack3",
+        "AmmoBackpack", "SamsaraUniquePickupRandom", "SamsaraSlotSevenNoStay",
+        "SamsaraSlotSevenSkulltagNoStay", "MegaPack" 
+    },
+    { // Common (Extras)
+        "Ammo1Small", "Ammo2Small", "HealPack0", "ArmorScrap", "HealPack0Dump", "HealPack1",
+        "ArmorScrapDump", "Ammo1Medium", "Ammo2Medium", "Ammo1Big", "Ammo2Big",
+        "SamsaraSlotTwoNoStay", "SamsaraSlotFourNoStay"
+    },
+    { // Uncommon (Extras)
+        "Ammo1Small", "Ammo2Small", "Ammo3Small", "Ammo4Small", "AmmoComboSmall", "HealPack0Dump",
+        "HealPack1", "Ammo1Medium", "Ammo2Medium", "Ammo3Medium", "Ammo4Medium", "Ammo1Big",
+        "Ammo2Big", "HealPack2", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit",
+        "SamsaraSlotOneNoStay", "SamsaraSlotTwoNoStay", "SamsaraSlotThreeNoStay",
+        "SamsaraSlotFourNoStay", "ArmorPack1", "ArmorPackBonusLight", "AmmoBackpack",
+        "SamsaraUniquePickupRandom"
+    },
+    { // Rare (Extras)
+        "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "HealPack2",
+        "MaxHealPack0", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit",
+        "SamsaraLesserTome", "SamsaraTeleportPickup", "SamsaraFlightPickup",
+        "SamsaraSpeedBootsPickup", "SamsaraTeleportOtherPickup", "SamsaraSlotThreeNoStay",
+        "SamsaraSlotFourNoStay", "SamsaraSlotFiveNoStay", "SamsaraSlotSixNoStay", "SuperHealth",
+        "ArmorPack2", "ArmorPack3", "ArmorPackBonusHeavy", "SamsaraUniquePickupRandom",
+        "SamsaraSlotFourSkulltagNoStay", "SamsaraSlotFiveSkulltagNoStay",
+        "SamsaraSlotSixSkulltagNoStay", "AmmoBackpack", "MegaPack"
+    },
+    { // Epic (Extras)
+        "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "HealPack2",
+        "MaxHealPack0", "PartialInvisibility", "Visor", "SamsaraAllmap", "BioSuit",
+        "SamsaraLesserTome", "SamsaraTeleportPickup", "SamsaraFlightPickup",
+        "SamsaraSpeedBootsPickup", "SamsaraTeleportOtherPickup", "SamsaraSlotSixNoStay",
+        "SamsaraSlotSixSkulltagNoStay", "SamsaraUniquePickupRandom", "SamsaraSpeedBooster",
+        "SamsaraDefenseBooster", "SamsaraDamageBooster", "SamsaraFullInvisibility",
+        "SamsaraTimeFreeze", "SuperHealth", "ArmorPack3", "ArmorPackBonusHeavy", "ArmorPack4",
+        "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "AmmoBackpack", "MegaPack",
+        "SamsaraRandomPowerup"
+    },
+    { // Legendary (Extras)
+        "Ammo1Big", "Ammo2Big", "Ammo3Big", "Ammo4Big", "AmmoComboBig", "SuperHealth",
+        "ArmorPack4", "ArmorPack5", "AmmoBackpack", "SamsaraUniquePickupRandom",
+        "SamsaraSlotSevenNoStay", "SamsaraSlotSevenSkulltagNoStay", "MegaPack"
+    },
+};
 
-	int spawneditems, randomchance, randomitem;
-	int newtid = UniqueTID();
-	int maxitems = ((height*4)*(radius*radius))/4096;
-	if(GetActorProperty(0,APROP_MASS) == 2 && GetCVar("samsara_merrychristmas"))
-	{
-		while(spawneditems < maxitems)
-		{
-			SpawnForced("SamsaraXmasCoal",GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0);
-			ThrustThing(random(0,256),2,0,newtid);
-			ThrustThingZ(newtid,random(17,35),0,1);
-			Thing_ChangeTID(newtid,0);
-			spawneditems++;
-		}
-	}
-	else if(health < 200)
-	{
-		if(GetCVar("samsara_pinatapartyextras"))
-		{
-			while(spawneditems < maxitems)
-			{
-				randomchance = random(0,100);
-				randomitem = random(0,MAXPINATACOMMONEXTRASQUALITY-1);
-				if(randomchance < PinataDoomCommonExQualityInt[randomitem])
-				{
-					if (!StrCmp(PinataDoomCommonExQuality[randomitem], "HealPack1") && Random(0, 100) > 99 && GetCVar("samsara_merrychristmas")) { SpawnForced("BecauseTermSaidSo",GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0); }
-					else { SpawnForced(PinataDoomCommonExQuality[randomitem],GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0); }
+int PinataItemChances[10][34] =
+{
+    { // Common
+        50, 50, 50, 50, 25, 10, 10, 5, 5
+    },
+    { // Uncommon
+        50, 50, 50, 50, 50, 25, 25, 25, 25, 25, 25, 10, 10, 10, 10, 5, 5, 5
+    },
+    { // Rare
+        50, 50, 30, 30, 30, 30, 30, 25, 15, 15, 15, 15, 10, 10, 10, 5, 5, 5, 5, 5, 5, 2
+    },
+    { // Epic
+        50, 50, 50, 50, 50, 50, 30, 30, 30, 30, 30, 25, 25, 15, 10, 5, 5, 5
+    },
+    { // Legendary
+        80, 80, 80, 80, 50, 50, 50, 25, 25, 25, 10
+    },
+    { // Common (Extras)
+        50, 50, 50, 50, 25, 25, 25, 15, 15, 10, 10, 5, 5
+    },
+    { // Uncommon (Extras)
+        50, 50, 50, 50, 50, 50, 50, 40, 40, 40, 40, 25, 25, 25, 25, 25, 25, 25, 10, 10, 10, 10, 5,
+        5, 5, 5
+    },
+    { // Rare (Extras)
+        50, 50, 50, 50, 50, 30, 30, 30, 25, 25, 25, 25, 25, 25, 25, 25, 25, 15, 15, 15, 15, 10, 10,
+        10, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2
+    },
+    { // Epic (Extras)
+        75, 75, 75, 75, 50, 30, 30, 30, 25, 25, 25, 25, 25, 25, 25, 25, 25, 15, 10, 10, 10, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 2
+    },
+    { // Legendary (Extras)
+        80, 80, 80, 80, 80, 50, 50, 50, 25, 25, 25, 10
+    },
+};
 
-					ThrustThing(random(0,256),2,0,newtid);
-					ThrustThingZ(newtid,random(17,35),0,1);
-					Thing_ChangeTID(newtid,0);
-					spawneditems++;
-				}
-			}
-		}
-		else
-		{
-			while(spawneditems < maxitems)
-			{
-				randomchance = random(0,100);
-				randomitem = random(0,MAXPINATACOMMONQUALITY-1);
-				if(randomchance < PinataDoomCommonQualityInt[randomitem])
-				{
-					if (!StrCmp(PinataDoomCommonQuality[randomitem], "HealPack1") && Random(0, 100) > 99 && GetCVar("samsara_merrychristmas")) { SpawnForced("BecauseTermSaidSo",GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0); }
-					else { SpawnForced(PinataDoomCommonQuality[randomitem],GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0); }
+script "Samsara_PinataHandler" (int health, int radius, int height, int friendly)
+{
+    if (!GetCVar("samsara_pinataparty")) { terminate; }
 
-					ThrustThing(random(0,256),2,0,newtid);
-					ThrustThingZ(newtid,random(17,35),0,1);
-					Thing_ChangeTID(newtid,0);
-					spawneditems++;
-				}
-			}
-		}
-	}
-	else if(health < 1000)
-	{
-		if(GetCVar("samsara_pinatapartyextras"))
-		{
-			while(spawneditems < maxitems)
-			{
-				randomchance = random(0,100);
-				randomitem = random(0,MAXPINATAUNCOMMONEXTRASQUALITY-1);
-				if(randomchance < PinataDoomUncommonExQualityInt[randomitem])
-				{
-					if (!StrCmp(PinataDoomUncommonExQuality[randomitem], "HealPack1") && Random(0, 100) > 99 && GetCVar("samsara_merrychristmas")) { SpawnForced("BecauseTermSaidSo",GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0); }
-					else { SpawnForced(PinataDoomUncommonExQuality[randomitem],GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0); }
+    int currentpooltier, currentpoolamount;
+    int spawneditems, randomchance, randomitem;
+    int newtid = UniqueTID();
+    int maxitems = ((height * 4) * (radius * radius)) / 4096;
+    bool xmas = GetCVar("samsara_merrychristmas");
+    bool naughty = GetActorProperty(0, APROP_Mass) == 2 && xmas;
 
-					ThrustThing(random(0,256),2,0,newtid);
-					ThrustThingZ(newtid,random(17,35),0,1);
-					Thing_ChangeTID(newtid,0);
-					spawneditems++;
-				}
-			}
-		}
-		else
-		{
-			while(spawneditems < maxitems)
-			{
-				randomchance = random(0,100);
-				randomitem = random(0,MAXPINATAUNCOMMONQUALITY-1);
-				if(randomchance < PinataDoomUncommonQualityInt[randomitem])
-				{
-					if (!StrCmp(PinataDoomUncommonQuality[randomitem], "HealPack1") && Random(0, 100) > 99 && GetCVar("samsara_merrychristmas")) { SpawnForced("BecauseTermSaidSo",GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0); }
-					else { SpawnForced(PinataDoomUncommonQuality[randomitem],GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0); }
+    if (!naughty)
+    {
+        // Start at Common
+        currentpooltier = GetCVar("samsara_pinatapartyextras") ? 5 : 0;
+        currentpoolamount = GetCVar("samsara_pinatapartyextras") ? 13 : 9;
 
-					ThrustThing(random(0,256),2,0,newtid);
-					ThrustThingZ(newtid,random(17,35),0,1);
-					Thing_ChangeTID(newtid,0);
-					spawneditems++;
-				}
-			}
-		}
-	}
-	else if(health < 2500)
-	{
-		if(GetCVar("samsara_pinatapartyextras"))
-		{
-			while(spawneditems < maxitems)
-			{
-				randomchance = random(0,100);
-				randomitem = random(0,MAXPINATARAREEXTRASQUALITY-1);
-				if(randomchance < PinataDoomRareExQualityInt[randomitem])
-				{
-					SpawnForced(PinataDoomRareExQuality[randomitem],GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0);
-					ThrustThing(random(0,256),2,0,newtid);
-					ThrustThingZ(newtid,random(17,35),0,1);
-					Thing_ChangeTID(newtid,0);
-					spawneditems++;
-				}
-			}
-		}
-		else
-		{
-			while(spawneditems < maxitems)
-			{
-				randomchance = random(0,100);
-				randomitem = random(0,MAXPINATARAREQUALITY-1);
-				if(randomchance < PinataDoomRareQualityInt[randomitem])
-				{
-					SpawnForced(PinataDoomRareQuality[randomitem],GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0);
-					ThrustThing(random(0,256),2,0,newtid);
-					ThrustThingZ(newtid,random(17,35),0,1);
-					Thing_ChangeTID(newtid,0);
-					spawneditems++;
-				}
-			}
-		}
-	}
-	else if(health < 5000)
-	{
-		if(GetCVar("samsara_pinatapartyextras"))
-		{
-			while(spawneditems < maxitems)
-			{
-				randomchance = random(0,100);
-				randomitem = random(0,MAXPINATAEPICEXTRASQUALITY-1);
-				if(randomchance < PinataDoomEpicExQualityInt[randomitem])
-				{
-					SpawnForced(PinataDoomEpicExQuality[randomitem],GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0);
-					ThrustThing(random(0,256),2,0,newtid);
-					ThrustThingZ(newtid,random(17,35),0,1);
-					Thing_ChangeTID(newtid,0);
-					spawneditems++;
-				}
-			}
-		}
-		else
-		{
-			while(spawneditems < maxitems)
-			{
-				randomchance = random(0,100);
-				randomitem = random(0,MAXPINATAEPICQUALITY-1);
-				if(randomchance < PinataDoomEpicQualityInt[randomitem])
-				{
-					SpawnForced(PinataDoomEpicQuality[randomitem],GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0);
-					ThrustThing(random(0,256),2,0,newtid);
-					ThrustThingZ(newtid,random(17,35),0,1);
-					Thing_ChangeTID(newtid,0);
-					spawneditems++;
-				}
-			}
-		}
-	}
-	else
-	{
-		if(GetCVar("samsara_pinatapartyextras"))
-		{
-			while(spawneditems < maxitems)
-			{
-				randomchance = random(0,100);
-				randomitem = random(0,MAXPINATALEGENDARYEXTRASQUALITY-1);
-				if(randomchance < PinataDoomLegendaryExQualityInt[randomitem])
-				{
-					GiveActorInventory(newtid,"GravityToken",1);
-					SpawnForced(PinataDoomLegendaryExQuality[randomitem],GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0);
-					ThrustThing(random(0,256),2,0,newtid);
-					ThrustThingZ(newtid,random(17,35),0,1);
-					Thing_ChangeTID(newtid,0);
-					spawneditems++;
-				}
-			}
-		}
-		else
-		{
-			while(spawneditems < maxitems)
-			{
-				randomchance = random(0,100);
-				randomitem = random(0,MAXPINATALEGENDARYQUALITY-1);
-				if(randomchance < PinataDoomLegendaryQualityInt[randomitem])
-				{
-					GiveActorInventory(newtid,"GravityToken",1);
-					SpawnForced(PinataDoomLegendaryQuality[randomitem],GetActorX(0),GetActorY(0),GetActorZ(0),newtid,0);
-					ThrustThing(random(0,256),2,0,newtid);
-					ThrustThingZ(newtid,random(17,35),0,1);
-					Thing_ChangeTID(newtid,0);
-					spawneditems++;
-				}
-			}
-		}
-	}
+        // Upgrade to Uncommon
+        if (health >= 200)
+        {
+            currentpooltier++;
+            currentpoolamount = GetCVar("samsara_pinatapartyextras") ? 26 : 18;
+        }
+
+        // Upgrade to Rare
+        if (health >= 1000)
+        {
+            currentpooltier++;
+            currentpoolamount = GetCVar("samsara_pinatapartyextras") ? 30 : 22;
+        }
+
+        // Upgrade to Epic
+        if (health >= 2500)
+        {
+            currentpooltier++;
+            currentpoolamount = GetCVar("samsara_pinatapartyextras") ? 33 : 17;
+        }
+
+        // Upgrade to Legendary
+        if (health >= 5000)
+        {
+            currentpooltier++;
+            currentpoolamount = GetCVar("samsara_pinatapartyextras") ? 13 : 11;
+        }
+    }
+
+    str itemtospawn = "Placeholder";
+
+    if (naughty) { itemtospawn = "SamsaraXmasCoal"; }
+
+    while (spawneditems < maxitems)
+    {
+        if (!naughty)
+        {
+            randomchance = Random(0, 100);
+            randomitem = Random(0, currentpoolamount - 1);
+
+            itemtospawn = PinataItemActors[currentpooltier][randomitem];
+
+            if (!StrCmp(itemtospawn, "HealPack1") && Random(0, 100) > 99 && xmas) { itemtospawn = "BecauseTermSaidSo"; }
+        }
+
+        if (naughty || randomchance < PinataItemChances[currentpooltier][randomitem])
+        {
+            SpawnForced(itemtospawn, GetActorX(0), GetActorY(0), GetActorZ(0), newtid);
+            ThrustThing(Random(0, 256), 2, 0, newtid);
+            ThrustThingZ(newtid, Random(17, 35), 0, 1);
+            Thing_ChangeTID(newtid, 0);
+            spawneditems++;
+        }
+    }
 }
 
 script "SamsaraPlayerHealer" (int healamount, int healcap, int usemaxbonus)
