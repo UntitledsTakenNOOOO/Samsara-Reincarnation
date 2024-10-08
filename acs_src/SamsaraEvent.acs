@@ -441,8 +441,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				GiveInventory("BlackBirdInStrife", 1);
 			}
 
-			if(!GetUserCvar(pln,"samsara_cl_ballgag"))
-				GiveInventory("BlackBirdReady", 1);
+			if (!GetUserCVar(pln, "samsara_cl_ballgag")) { GiveInventory("BlackBirdReady", 1); }
 		}
 		break;
 
@@ -576,78 +575,14 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		if(CheckInventory("ShrunkPlayer"))
 			GiveInventory("StepDeathLogic1",1);
 
-		if (GetUserCvar(pln,"samsara_cl_ballgag") || CheckInventory("IsMorphed"))
-		{
-			switch (samsaraClassNum())
-			{
-				case CLASS_DUKE:
-					GiveInventory("DukeBallgag", 1);
-					break;
+        SetInventory("SamsaraBallgag", (GetUserCVar(pln, "samsara_cl_ballgag") || CheckInventory("IsMorphed")) &&
+                                       (samsaraClassNum() == CLASS_DUKE || samsaraClassNum() == CLASS_CALEB || samsaraClassNum() == CLASS_STRIFE ||
+                                        samsaraClassNum() == CLASS_ERAD || samsaraClassNum() == CLASS_SW || samsaraClassNum() == CLASS_JON ||
+                                        samsaraClassNum() == CLASS_RR));
 
-				case CLASS_CALEB:
-					GiveInventory("CalebBallgag", 1);
-					break;
-
-				case CLASS_Strife:
-					GiveInventory("BlackBirdBallgag", 1);
-					break;
-
-				case CLASS_ERAD:
-					GiveInventory("EleenaBallgag", 1);
-					break;
-
-				case CLASS_SW:
-					GiveInventory("LoWangBallgag", 1);
-					break;
-
-				case CLASS_Jon:
-					GiveInventory("JonBallgag", 1);
-					break;
-
-				case CLASS_RR:
-					GiveInventory("LeonardBallgag", 1);
-					break;
-			}
-		}
-		else
-		{
-			TakeInventory("DukeBallgag", 0x7FFFFFFF);
-			TakeInventory("CalebBallgag", 0x7FFFFFFF);
-			TakeInventory("EleenaBallgag", 0x7FFFFFFF);
-			TakeInventory("LoWangBallgag", 0x7FFFFFFF);
-			TakeInventory("JonBallgag", 0x7FFFFFFF);
-			TakeInventory("LeonardBallgag", 0x7FFFFFFF);
-			TakeInventory("BlackBirdBallgag", 0x7FFFFFFF);
-		}
-
-		if (GetUserCvar(pln,"samsara_cl_idleballgag") || CheckInventory("CompendiumOpened") || CheckInventory("IsMorphed"))
-		{
-			switch (samsaraClassNum())
-			{
-				case CLASS_DUKE:
-					GiveInventory("DukeIdleBallgag", 1);
-					break;
-
-				case CLASS_CALEB:
-					GiveInventory("CalebIdleBallgag", 1);
-					break;
-
-				case CLASS_SW:
-					GiveInventory("LoWangIdleBallgag", 1);
-					break;
-
-				case CLASS_RR:
-					GiveInventory("LeonardIdleBallgag", 1);
-					break;
-			}
-		}
-		else
-		{
-			TakeInventory("DukeIdleBallgag", 0x7FFFFFFF);
-			TakeInventory("CalebIdleBallgag", 0x7FFFFFFF);
-			TakeInventory("LoWangIdleBallgag", 0x7FFFFFFF);
-			TakeInventory("LeonardIdleBallgag", 0x7FFFFFFF);
-		}
+        SetInventory("SamsaraIdleBallgag", (GetUserCVar(pln, "samsara_cl_idleballgag") || CheckInventory("CompendiumOpened") || CheckInventory("IsMorphed")) &&
+                                           (samsaraClassNum() == CLASS_DUKE || samsaraClassNum() == CLASS_CALEB || samsaraClassNum() == CLASS_SW ||
+                                            samsaraClassNum() == CLASS_RR));
 
 		if (GetUserCvar(pln,"samsara_cl_smoothanims")) { GiveInventory("SamsaraUsingSmoothAnims", 1); }
 		else { TakeInventory("SamsaraUsingSmoothAnims", 0x7FFFFFFF); }
@@ -661,8 +596,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		{ GiveInventory("SamsaraUsingNewFullscreenHUD", 1); }
 		else { TakeInventory("SamsaraUsingNewFullscreenHUD", 0x7FFFFFFF); }
 
-        SetInventory("SamsaraBloodGunsAkimboHUDDisplay", GetCVar("samsara_bloodakimbomode"));
-        SetInventory("SamsaraBloodGunsAkimboToggled", GetCVar("samsara_bloodakimbomode") >= 3 && CheckInventory("SamsaraBloodGunsAkimboToggleMemory"));
+        if (samsaraClassNum() == CLASS_CALEB) { SetInventory("SamsaraBloodGunsAkimboHUDDisplay", GetCVar("samsara_bloodakimbomode")); }
+        SetInventory("SamsaraBloodGunsAkimboToggled", GetCVar("samsara_bloodakimbomode") >= 3 && CheckInventory("SamsaraBloodGunsAkimboToggleMemory") && samsaraClassNum() == CLASS_CALEB);
 
 		if (GetUserCvar(pln,"samsara_cl_teamtext") && isTeamGame())
 		{
@@ -1484,7 +1419,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				SetInventory(" Grenade Launcher Gas ", CheckInventory(" Grenade Launcher "));
 				SetInventory(" Mauler Torpedo ", CheckInventory(" Mauler "));
 
-				if (!CheckInventory("BlackBirdBallgag") && !CheckInventory("BlackBirdTauntCooldown") && !CheckInventory("BlackBirdInStrife"))
+				if (!CheckInventory("SamsaraBallgag") && !CheckInventory("BlackBirdTauntCooldown") && !CheckInventory("BlackBirdInStrife"))
 				{
 					if (strifeCeilingHeight != GetActorCeilingZ(0) && random(0, 100) <= 1 && (!CheckInventory("DMModeOn")))
 					{
