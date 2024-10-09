@@ -138,7 +138,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	int strifeCeilingHeight = GetActorCeilingZ(0); //strife related
 	int strifeLastKillCount;
 	int strifeDead;
-	int sigilCounter;
+	int sigilCounter, sigilCounterPartyMode;
 	int oldInstaGib;
 	int pariasLastRepairTimer;
 	int toPTimer;
@@ -2212,6 +2212,39 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			}
 		}
 
+		if ((GetCVar("samsara_sigilmode") >= 1) && (GetCVar("samsara_currentgame") != 16))
+		{
+			sigilCounterPartyMode = GetCVar("samsara_sigilmode");
+			for (i = 0; i < SIGILCOUNT; i++)
+			{
+				if (!CheckInventory(SigilSplinters[i]))
+				{
+					if(samsaraClassNum() == CLASS_STRIFE) { break; }
+					else
+					{
+						if(i > 0)
+						{
+							for(int a = 0; a < SIGILCOUNT; a++)
+							{
+								TakeInventory(SpectralTogglers[a], 0x7FFFFFFF);
+							}
+						}
+						TakeInventory("StrifeSigilPiece",5);
+						GiveInventory("StrifeSigilPiece",sigilCounterPartyMode);
+						GiveInventory(SpectralTogglers[sigilCounterPartyMode-1], 1);
+					}
+				}
+			}
+		}
+		else if ((GetCVar("samsara_sigilmode") <= 0) && (GetCVar("samsara_currentgame") != 16))
+		{
+			for (i = 0; i < SIGILCOUNT; i++)
+			{
+				TakeInventory(SpectralTogglers[i], 0x7FFFFFFF);
+			}
+			TakeInventory("StrifeSigilPiece",5);
+		}
+
 		sigilCounter = SamsaraGlobal[2]+SamsaraGlobal[3]+SamsaraGlobal[4]+SamsaraGlobal[5]+SamsaraGlobal[6];
 		for (i = 0; i < SIGILCOUNT; i++)
 		{
@@ -2235,9 +2268,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					{
 						if(i > 0)
 						{
-							for(int a = 0; a < SIGILCOUNT; a++)
+							for(int b = 0; a < SIGILCOUNT; b++)
 							{
-								TakeInventory(SpectralTogglers[a], 0x7FFFFFFF);
+								TakeInventory(SpectralTogglers[b], 0x7FFFFFFF);
 							}
 						}
 						TakeInventory("StrifeSigilPiece",5);
