@@ -218,7 +218,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
           case CLASS_WOLFEN:
             GiveInventory("Backpack", 1);
 
-            if (GetUserCVar(pln, "samsara_cl_wolfmode") == 2) { GiveInventory("Totenkopf_IHaveDualPistols", 1); }
+            if (GetUserCVar(pln, "samsara_cl_wolfmode") >= 2) { GiveInventory("Totenkopf_IHaveDualPistols", 1); }
             else
             {
                 GiveInventory("Clip", 8);
@@ -236,7 +236,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
           case CLASS_DUKE:
             GiveInventory("Backpack", 1);
 
-            if (GetUserCVar(pln, "samsara_cl_dukemode") == 2)
+            if (GetUserCVar(pln, "samsara_cl_dukemode") >= 2)
             {
                 GiveInventory("Duke64DumDums", 6);
                 GiveInventory("Duke64ExplosiveShells", 2);
@@ -549,7 +549,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         SetInventory("SamsaraHasSpread", CheckInventory("PowerSpread") || CheckInventory("RuneSpread") || CheckInventory("CustomSpread") ||
                                          CheckInventory("PowerSpread1"));
 
-		SetInventory("SamsaraReloadMode", GetCVar("samsara_reloadmode"));
+        SetInventory("SamsaraReloadMode", GetCVar("samsara_reloadmode"));
 
         if (GetCVar("sv_infiniteammo") ||
             CheckInventory("PowerInfiniteAmmo") || CheckInventory("RuneInfiniteAmmo") || CheckInventory("CustomInfiniteAmmo") || // the latter two don't exist, but are there just in case
@@ -557,15 +557,17 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         { SetInventory("SamsaraHasInfiniteAmmo", 1 + GetCVar("samsara_bottomlessmagazines")); }
         else { SetInventory("SamsaraHasInfiniteAmmo", 0); }
 
-        SetInventory("SamsaraWeaponOverheatingDisabled", GetCVar("samsara_weaponoverheating") <= 0 || (GetCVar("samsara_weaponoverheating") == 1 && CheckInventory("SamsaraHasInfiniteAmmo")));
+        bool weaponoverheating = GetCVar("samsara_weaponoverheating");
 
-		SetInventory("SamsaraHasInfiniteInventory", GetCVar("sv_infiniteinventory"));
+        SetInventory("SamsaraWeaponOverheatingDisabled", weaponoverheating <= 0 || (weaponoverheating == 1 && CheckInventory("SamsaraHasInfiniteAmmo")));
 
-		SetInventory("SamsaraHasDisabledInventoryCooldown", GetCVar("sv_infiniteinventory") && GetCVar("samsara_noinventorycooldown"));
+        SetInventory("SamsaraHasInfiniteInventory", GetCVar("sv_infiniteinventory"));
 
-		SetInventory("SamsaraCurrentWaterLevel", GetActorProperty(0, APROP_WaterLevel));
+        SetInventory("SamsaraHasDisabledInventoryCooldown", CheckInventory("SamsaraHasInfiniteInventory") && GetCVar("samsara_noinventorycooldown"));
 
-		SetInventory("WolfenMovement", GetUserCVar(pln, "samsara_cl_wolfmove") && !GetCVar("samsara_banwolfmove"));
+        SetInventory("SamsaraCurrentWaterLevel", GetActorProperty(0, APROP_WaterLevel));
+
+        SetInventory("WolfenMovement", GetUserCVar(pln, "samsara_cl_wolfmove") && !GetCVar("samsara_banwolfmove"));
 
 		if (bot && Random(0, 1024) == 0)
 		{
@@ -578,35 +580,31 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         SetInventory("SamsaraBallgag", GetUserCVar(pln, "samsara_cl_ballgag") || CheckInventory("IsMorphed"));
         SetInventory("SamsaraIdleBallgag", GetUserCVar(pln, "samsara_cl_idleballgag") || CheckInventory("CompendiumOpened") || CheckInventory("IsMorphed"));
 
-		if (GetUserCvar(pln,"samsara_cl_smoothanims")) { GiveInventory("SamsaraUsingSmoothAnims", 1); }
-		else { TakeInventory("SamsaraUsingSmoothAnims", 0x7FFFFFFF); }
+        SetInventory("SamsaraUsingSmoothAnims", GetUserCVar(pln, "samsara_cl_smoothanims"));
 
-		if (GetUserCvar(pln,"samsara_cl_weaponhud")) { GiveInventory("ExpandedHud", 1); }
-		else { TakeInventory("ExpandedHud", 0x7FFFFFFF); }
+        SetInventory("ExpandedHud", GetUserCVar(pln, "samsara_cl_weaponhud"));
 
         SetInventory("SamsaraUsingNewFullscreenHUD", !GetUserCVar(pln, "samsara_cl_legacyfullscreenhud"));
 
         SetInventory("SamsaraBloodGunsAkimboHUDDisplay", GetCVar("samsara_bloodakimbomode"));
         SetInventory("SamsaraBloodGunsAkimboToggled", GetCVar("samsara_bloodakimbomode") >= 3 && CheckInventory("SamsaraBloodGunsAkimboToggleMemory"));
 
-		if (GetUserCvar(pln,"samsara_cl_teamtext") && isTeamGame())
-		{
-			SetInventory("SamsaraTeamTextActivated", 1);
-			SetInventory("SamsaraCurrentTeamIndicator", GetPlayerInfo(pln, PLAYERINFO_TEAM) + 1);
-		} else {
-			SetInventory("SamsaraTeamTextActivated", 0);
-			SetInventory("SamsaraCurrentTeamIndicator", 0);
-		}
+        if (GetUserCVar(pln,"samsara_cl_teamtext") && isTeamGame())
+        {
+            SetInventory("SamsaraTeamTextActivated", 1);
+            SetInventory("SamsaraCurrentTeamIndicator", GetPlayerInfo(pln, PLAYERINFO_TEAM) + 1);
+        } else {
+            SetInventory("SamsaraTeamTextActivated", 0);
+            SetInventory("SamsaraCurrentTeamIndicator", 0);
+        }
 
-		if (GetCvar("samsara_skulltagspawn") >= 1) { GiveInventory("SamsaraSkulltagWeaponsAreEnabled", 1); }
-		else { TakeInventory("SamsaraSkulltagWeaponsAreEnabled", 0x7FFFFFFF); }
+        SetInventory("SamsaraSkulltagWeaponsAreEnabled", GetCVar("samsara_skulltagspawn") >= 1);
 
-		if (GetCvar("samsara_extraweapons") == 1) { GiveInventory("SamsaraExtraWeaponsAreEnabled", 1); }
-		else { TakeInventory("SamsaraExtraWeaponsAreEnabled", 0x7FFFFFFF); }
+        SetInventory("SamsaraExtraWeaponsAreEnabled", GetCVar("samsara_extraweapons"));
 
-		SetInventory("SamsaraReverseDualWieldFiring", GetUserCVar(pln, "samsara_cl_dualwieldswap"));
+        SetInventory("SamsaraReverseDualWieldFiring", GetUserCVar(pln, "samsara_cl_dualwieldswap"));
 
-		SetInventory("SamsaraQuietFootsteps", !GetUserCVar(pln, "samsara_cl_footstepsounds") && !GetCVar("samsara_forcefootstepsounds"));
+        SetInventory("SamsaraQuietFootsteps", !GetUserCVar(pln, "samsara_cl_footstepsounds") && !GetCVar("samsara_forcefootstepsounds"));
 
 		switch (samsaraClassNum())
 		{
@@ -649,7 +647,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					SetInventory("SamsaraDoomguyStrBFGReadySoundCheck", 0);
 				}
 
-				doommode = GetUserCvar(pln,"samsara_cl_doommode");
+				doommode = GetUserCVar(pln, "samsara_cl_doommode");
 
                 if (doommode > 2) { doommode = 2; }
                 else if (doommode < 0) { doommode = 0; }
@@ -720,11 +718,11 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						}
 						TakeInventory("Pyro Cannon", 1);
 					}
-					SetInventory("SamsaraAlternateSoundToken", GetUserCvar(pln,"samsara_cl_strongholddoomsounds"));
+					SetInventory("SamsaraAlternateSoundToken", GetUserCVar(pln, "samsara_cl_strongholddoomsounds"));
 				}
 				else
 				{
-					SetInventory("SamsaraAlternateSoundToken", GetUserCvar(pln,"samsara_cl_originaldoomsounds"));
+					SetInventory("SamsaraAlternateSoundToken", GetUserCVar(pln, "samsara_cl_originaldoomsounds"));
 				}
 
 				if(doommode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
@@ -949,7 +947,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				break;
 
 			case CLASS_WOLFEN:
-				wolfmode = GetUserCvar(pln,"samsara_cl_wolfmode");
+				wolfmode = GetUserCVar(pln, "samsara_cl_wolfmode");
 
                 if (wolfmode > 2) { wolfmode = 2; }
                 else if (wolfmode < 0) { wolfmode = 0; }
@@ -1007,7 +1005,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				break;
 
 			case CLASS_HEXEN:
-				hexmode = GetUserCvar(pln,"samsara_cl_hexclass");
+				hexmode = GetUserCVar(pln, "samsara_cl_hexclass");
 
                 if (hexmode > 3) { hexmode = 3; }
                 else if (hexmode < 0) { hexmode = 0; }
@@ -1027,15 +1025,15 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							SetActorProperty(0,APROP_Speed,1.125);
 							SetActorProperty(0,APROP_SoundClass,"HexenPlayer");
 							GiveInventory("Mace of Contrition", 1);
-							if (GetCvar("instagib") == 1) {
-								if (GetCvar("samsara_slotmode") == 0) {
+							if (GetCVar("instagib")) {
+								if (GetCVar("samsara_slotmode") == 0) {
 									TakeInventory("Sapphire Wand", 1);
 								}
-								else if (GetCvar("samsara_slotmode") == 1) {
+								else if (GetCVar("samsara_slotmode") == 1) {
 									GiveInventory("Sapphire Wand", 1);
 									TakeInventory("Mace of Contrition", 1);
 								}
-									else if (GetCvar("samsara_slotmode") >= 2) {
+									else if (GetCVar("samsara_slotmode") >= 2) {
 										TakeInventory("Sapphire Wand", 1);
 										TakeInventory("Mace of Contrition", 1);
 									}
@@ -1059,7 +1057,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							SetActorProperty(0,APROP_SoundClass,"HexenDaedalon");
 							if (CheckWeapon("Mace of Contrition")) { SetWeapon("Sapphire Wand"); }
 							TakeInventory("Mace of Contrition", 1);
-							if ((GetCvar("instagib") == 1 && (GetCvar("samsara_slotmode") == 0 || GetCvar("samsara_slotmode") == 1))) {
+							if ((GetCVar("instagib") && (GetCVar("samsara_slotmode") == 0 || GetCVar("samsara_slotmode") == 1))) {
 								GiveInventory("Sapphire Wand", 1);
 							}
 							TakeInventory("Bloodscourge", 0x7FFFFFFF);
@@ -1080,15 +1078,15 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							SetActorProperty(0,APROP_Speed,1.125);
 							SetActorProperty(0,APROP_SoundClass,"HexenBaratus");
 							GiveInventory("Mace of Contrition", 1);
-							if (GetCvar("instagib") == 1) {
-								if (GetCvar("samsara_slotmode") == 0) {
+							if (GetCVar("instagib")) {
+								if (GetCVar("samsara_slotmode") == 0) {
 									TakeInventory("Sapphire Wand", 1);
 								}
-								else if (GetCvar("samsara_slotmode") == 1) {
+								else if (GetCVar("samsara_slotmode") == 1) {
 									GiveInventory("Sapphire Wand", 1);
 									TakeInventory("Mace of Contrition", 1);
 								}
-								else if (GetCvar("samsara_slotmode") >= 2) {
+								else if (GetCVar("samsara_slotmode") >= 2) {
 									TakeInventory("Sapphire Wand", 1);
 									TakeInventory("Mace of Contrition", 1);
 								}
@@ -1114,15 +1112,15 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						SetActorProperty(0,APROP_SoundClass,"HexenPlayer");
 						TakeInventory("HexenClassMode", 0x7FFFFFFF);
 						GiveInventory("Mace of Contrition", 1);
-						if (GetCvar("instagib") == 1) {
-							if (GetCvar("samsara_slotmode") == 0) {
+						if (GetCVar("instagib")) {
+							if (GetCVar("samsara_slotmode") == 0) {
 								TakeInventory("Sapphire Wand", 1);
 							}
-							else if (GetCvar("samsara_slotmode") == 1) {
+							else if (GetCVar("samsara_slotmode") == 1) {
 								GiveInventory("Sapphire Wand", 1);
 								TakeInventory("Mace of Contrition", 1);
 							}
-								else if (GetCvar("samsara_slotmode") >= 2) {
+								else if (GetCVar("samsara_slotmode") >= 2) {
 									TakeInventory("Sapphire Wand", 1);
 									TakeInventory("Mace of Contrition", 1);
 							}
@@ -1142,7 +1140,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					SetInventory("SamsaraDuke64PlasmaCannonLoopSoundCheck", 0);
 				}
 
-				dukemode = GetUserCvar(pln,"samsara_cl_dukemode");
+				dukemode = GetUserCVar(pln, "samsara_cl_dukemode");
 
                 if (dukemode > 2) { dukemode = 2; }
                 else if (dukemode < 0) { dukemode = 0; }
@@ -1309,11 +1307,13 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				break;
 
 			case CLASS_QUAKE:
-				SetInventory("Grenade Launcher DOE", CheckInventory("Grenade Launcher") && !GetCVar("samsara_vanillaquake"));
-				SetInventory("Nailgun DOE", CheckInventory("Nailgun") && !GetCVar("samsara_vanillaquake"));
-				SetInventory("  Rocket Launcher DOE  ", CheckInventory("  Rocket Launcher  ") && !GetCVar("samsara_vanillaquake"));
-				SetInventory("Super Nailgun DOE", CheckInventory("Super Nailgun") && !GetCVar("samsara_vanillaquake"));
-				SetInventory("Thunderbolt DOE", CheckInventory("Thunderbolt") && !GetCVar("samsara_vanillaquake"));
+                bool vanillaquake = GetCVar("samsara_vanillaquake");
+
+				SetInventory("Grenade Launcher DOE", CheckInventory("Grenade Launcher") && !vanillaquake);
+				SetInventory("Nailgun DOE", CheckInventory("Nailgun") && !vanillaquake);
+				SetInventory("  Rocket Launcher DOE  ", CheckInventory("  Rocket Launcher  ") && !vanillaquake);
+				SetInventory("Super Nailgun DOE", CheckInventory("Super Nailgun") && !vanillaquake);
+				SetInventory("Thunderbolt DOE", CheckInventory("Thunderbolt") && !vanillaquake);
 
 				SetInventory("UsingDoEAmmo", CheckWeapon("Grenade Launcher DOE") || CheckWeapon("Nailgun DOE") || CheckWeapon("  Rocket Launcher DOE  ") || CheckWeapon("Super Nailgun DOE") || CheckWeapon("Thunderbolt DOE"));
 
@@ -1328,7 +1328,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			case CLASS_ROTT:
 				GiveInventory("RottDamageEnemyBeneath",1);
 
-				rottmode = GetUserCvar(pln,"samsara_cl_rottmode");
+				rottmode = GetUserCVar(pln, "samsara_cl_rottmode");
 
                 if (rottmode > 4) { rottmode = 4; }
                 else if (rottmode < 0) { rottmode = 0; }
@@ -1386,7 +1386,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 				TakeInventory("SamsaraBStoneAutoChargePistolCooldown", 1 + CheckInventory("SamsaraHasDoubleFiringSpeed"));
 
-				blakemode = GetUserCvar(pln,"samsara_cl_bsaog");
+				blakemode = GetUserCVar(pln, "samsara_cl_bsaog");
 				if(blakemode != previousvalue)
 				{
 					SetInventory("SamsaraModeCounter",blakemode);
@@ -1433,7 +1433,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				break;
 			/*
 			case CLASS_ERAD:
-				eradmode = GetUserCvar(pln,"samsara_cl_eradmode");
+				eradmode = GetUserCVar(pln, "samsara_cl_eradmode");
 
                 if (eradmode > 3) { eradmode = 3; }
                 else if (eradmode < 0) { eradmode = 0; }
@@ -1480,7 +1480,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
                 if (!CheckInventory("PowerRMRFlyAbilityHack")) { TakeInventory("PowerRMRFlyAbility", 1); } // hexen
 
-				SetInventory("SamsaraAlternateSoundToken", GetUserCvar(pln,"samsara_cl_rebelmoonrisingsounds"));
+				SetInventory("SamsaraAlternateSoundToken", GetUserCVar(pln, "samsara_cl_rebelmoonrisingsounds"));
 				break;
 			case CLASS_KATARN:
                 if (CheckInventory("KatarnBlazeIt"))
@@ -1494,7 +1494,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                 else { SetInventory("KatarnFireRateUp", 0); }
 				break;
 			case CLASS_POGREED:
-				ipogmode = GetUserCvar(pln,"samsara_cl_ipogmode");
+				ipogmode = GetUserCVar(pln, "samsara_cl_ipogmode");
 
                 if (ipogmode > 4) { ipogmode = 4; }
                 else if (ipogmode < 0) { ipogmode = 0; }
@@ -1567,7 +1567,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					SetInventory("HLOPBarnacleTetherActive", 0);
 				}
 
-				halflifemode = GetUserCvar(pln,"samsara_cl_shephardmode");
+				halflifemode = GetUserCVar(pln, "samsara_cl_shephardmode");
 				if(halflifemode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
 				{
 					SetInventory("SamsaraModeCounter",halflifemode);
@@ -1919,7 +1919,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				break;
 
 			case CLASS_UNREAL:
-				SetInventory("SamsaraAlternateSoundToken", GetUserCvar(pln,"samsara_cl_unrealsounds"));
+				SetInventory("SamsaraAlternateSoundToken", GetUserCVar(pln, "samsara_cl_unrealsounds"));
 
 				if (CheckInventory("Unreal_ZoomedIn") && !CheckWeapon("Unreal_Rifle")) { SetInventory("Unreal_ZoomedIn", 0); }
 
@@ -1957,7 +1957,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				break;
 
 			case CLASS_RTCW:
-				SetInventory("SamsaraAlternateSoundToken", GetUserCvar(pln,"samsara_cl_rtcwsounds"));
+				SetInventory("SamsaraAlternateSoundToken", GetUserCVar(pln, "samsara_cl_rtcwsounds"));
 
 				if (CheckInventory("RTCW_Scoped") && !CheckWeapon("RTCW_Mauser") && !CheckWeapon("RTCW_FG42") && !CheckWeapon("RTCW_Snooper")) { SetInventory("RTCW_Scoped", 0); }
 
@@ -1984,7 +1984,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				break;
 
 			case CLASS_QUAKE3:
-				SetInventory("SamsaraAlternateSoundToken", GetUserCvar(pln,"samsara_cl_quake3sounds"));
+				SetInventory("SamsaraAlternateSoundToken", GetUserCVar(pln, "samsara_cl_quake3sounds"));
 
 				if (CheckInventory("SamsaraQuake3GauntletFiringSoundCheck") && !CheckWeapon("Q3Gauntlet"))
 				{
@@ -2041,91 +2041,56 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 				break;
 		}
 
-		if (GetCVar("samsara_runninginzdoom") == 1)
-		{
-			TakeInventory("SamsaraIsPlayingInZandronum", 1);
+        SetInventory("SamsaraIsPlayingInZandronum", !isZDoom());
 
-			if (GetCVar("sv_nobfgaim") == 1) { GiveInventory("DoomNoBFGAim", 1); }
-			else { TakeInventory("DoomNoBFGAim",  0x7FFFFFFF); }
-		}
+        SetInventory("DoomNoBFGAim", (GetCVar("sv_nobfgaim") && isZDoom()) || (!GetCVar("sv_bfgfreeaim") && !isZDoom()));
 
-		if (GetCVar("samsara_runninginzandro") == 1)
-		{
-			GiveInventory("SamsaraIsPlayingInZandronum", 1);
+        SetInventory("SamsaraImprovedDoomguyBalance", GetCVar("samsara_doomguybalance") == 1 || (GetCVar("samsara_doomguybalance") >= 2 && GetCVar("samsara_mixerloaded")));
 
-			if (GetCVar("sv_bfgfreeaim") == 0) { GiveInventory("DoomNoBFGAim", 1); }
-			else { TakeInventory("DoomNoBFGAim",  0x7FFFFFFF); }
-		}
+        SetInventory("SamsaraRecoilIsDisabled", CheckSamsaraRecoilSettings(pln));
 
-		SetInventory("SamsaraImprovedDoomguyBalance", (GetCVar("samsara_doomguybalance") == 1 || (GetCVar("samsara_doomguybalance") >= 2 && GetCVar("samsara_mixerloaded"))) && (samsaraClassNum() == CLASS_DOOM || samsaraClassNum() == CLASS_CHEX));
+        bool noflashes = GetUserCVar(pln, "samsara_cl_noflashes");
 
-		if (CheckSamsaraRecoilSettings(1)) { GiveInventory("SamsaraRecoilIsDisabled", 1); }
-		else { TakeInventory("SamsaraRecoilIsDisabled", 0x7FFFFFFF); }
+        SetInventory("PickupFlashesAreDisabled", noflashes == 1 || noflashes >= 3);
+        SetInventory("WeaponFlashesAreDisabled", noflashes >= 2);
 
-		SetInventory("PickupFlashesAreDisabled", GetUserCVar(pln, "samsara_cl_noflashes") == 1 || GetUserCVar(pln, "samsara_cl_noflashes") >= 3);
-		SetInventory("WeaponFlashesAreDisabled", GetUserCVar(pln, "samsara_cl_noflashes") >= 2);
+        SetInventory("ChexClassicLaz", GetCVar("samsara_classiclaz"));
 
-		if (GetCVar("samsara_classiclaz") == 1) { GiveInventory("ChexClassicLaz", 1); }
-		else { TakeInventory("ChexClassicLaz", 0x7FFFFFFF); }
+        //SetInventory("RJingModeOn", GetCVar("samsara_allcanrj")); // "Maybe someday..."
 
-		/*if (GetCVar("samsara_allcanrj") == 1) { GiveInventory("RJingModeOn", 1); }
-		else { TakeInventory("RJingModeOn", 0x7FFFFFFF); }*/	// Goodbye, rocket jumping mode!
+        SetInventory("PistolModeOn", GetCVar("samsara_pistolammo"));
 
-		if (GetCVar("samsara_pistolammo") == 1) { GiveInventory("PistolModeOn", 1); }
-		else { TakeInventory("PistolModeOn", 0x7FFFFFFF); }
+        SetInventory("QuakeModeOn", GetCVar("samsara_vanillaquake"));
 
-		if (GetCVar("samsara_vanillaquake") == 1) { GiveInventory("QuakeModeOn", 1); }
-		else { TakeInventory("QuakeModeOn", 0x7FFFFFFF); }
+        SetInventory("Painkiller_NoDemonMorph", GetCVar("samsara_nodemonmorph"));
 
-		if (GetCVar("samsara_nodemonmorph") == 1) { GiveInventory("Painkiller_NoDemonMorph", 1); }
-		else { TakeInventory("Painkiller_NoDemonMorph", 0x7FFFFFFF); }
+        SetInventory("Painkiller_NoTarotCardLimit", GetCVar("samsara_notarotcardlimit"));
 
-		if (GetCVar("samsara_notarotcardlimit") == 1) { GiveInventory("Painkiller_NoTarotCardLimit", 1); }
-		else { TakeInventory("Painkiller_NoTarotCardLimit", 0x7FFFFFFF); }
+        SetInventory("DeusEx_MovementPenaltyEnabled", GetCVar("samsara_deusexmovementpenalty"));
 
-		if (GetCVar("samsara_deusexmovementpenalty") == 1) { GiveInventory("DeusEx_MovementPenaltyEnabled", 1); }
-		else { TakeInventory("DeusEx_MovementPenaltyEnabled", 0x7FFFFFFF); }
+        SetInventory("DeusEx_StartingSkills", GetCVar("samsara_deusexstartingskills"));
 
-		if (GetCVar("samsara_deusexstartingskills") >= 1) { SetInventory("DeusEx_StartingSkills", GetCVar("samsara_deusexstartingskills")); }
-		else { TakeInventory("DeusEx_StartingSkills", 0x7FFFFFFF); }
+        SetInventory("SamsaraAlliesAreBanned", GetCVar("samsara_banallies"));
 
-		if (GetCVar("samsara_banallies") == 1) { GiveInventory("SamsaraAlliesAreBanned", 1); }
-		else { TakeInventory("SamsaraAlliesAreBanned", 0x7FFFFFFF); }
+        bool dukesoundboard = GetCVar("samsara_dukesoundboard");
 
-		if (GetCVar("samsara_dukesoundboard") == 1) { if (CheckInventory("DukeClass") == 1) {
-		GiveInventory("Soundboard - Boss Kill",1);
-		GiveInventory("Soundboard - Deathmatch Kill",1);
-		GiveInventory("Soundboard - Dukematch Kill",1);
-		GiveInventory("Soundboard - Boss Sight",1);
-		GiveInventory("Soundboard - Enemy Kill",1);
-		GiveInventory("Soundboard - Boot Kill",1);
-		GiveInventory("Soundboard - Gib Kill",1);
-		GiveInventory("Soundboard - Weapon Acquired",1);
-		GiveInventory("Soundboard - Level Intro",1);
-		GiveInventory("Soundboard - Idle Taunt",1);
-		GiveInventory("Soundboard - Critical Heal",1);
-		GiveInventory("Soundboard - Death Taunt",1);
-		GiveInventory("Soundboard - Doug Huggem",1); }}
-		else { TakeInventory("Soundboard - Boss Kill",1);
-		TakeInventory("Soundboard - Deathmatch Kill",1);
-		TakeInventory("Soundboard - Dukematch Kill",1);
-		TakeInventory("Soundboard - Boss Sight",1);
-		TakeInventory("Soundboard - Enemy Kill",1);
-		TakeInventory("Soundboard - Boot Kill",1);
-		TakeInventory("Soundboard - Gib Kill",1);
-		TakeInventory("Soundboard - Weapon Acquired",1);
-		TakeInventory("Soundboard - Level Intro",1);
-		TakeInventory("Soundboard - Idle Taunt",1);
-		TakeInventory("Soundboard - Critical Heal",1);
-		TakeInventory("Soundboard - Death Taunt",1);
-		TakeInventory("Soundboard - Doug Huggem",1); }
+        SetInventory("Soundboard - Boss Kill", dukesoundboard);
+        SetInventory("Soundboard - Deathmatch Kill", dukesoundboard);
+        SetInventory("Soundboard - Dukematch Kill", dukesoundboard);
+        SetInventory("Soundboard - Boss Sight", dukesoundboard);
+        SetInventory("Soundboard - Enemy Kill", dukesoundboard);
+        SetInventory("Soundboard - Boot Kill", dukesoundboard);
+        SetInventory("Soundboard - Gib Kill", dukesoundboard);
+        SetInventory("Soundboard - Weapon Acquired", dukesoundboard);
+        SetInventory("Soundboard - Level Intro", dukesoundboard);
+        SetInventory("Soundboard - Idle Taunt", dukesoundboard);
+        SetInventory("Soundboard - Critical Heal", dukesoundboard);
+        SetInventory("Soundboard - Death Taunt", dukesoundboard);
+        SetInventory("Soundboard - Doug Huggem", dukesoundboard);
 
-		if (GetCVar("samsara_cl_legacydukevoices") == 1) { GiveInventory("DukeLegacyVoices", 1); }
-		else { TakeInventory("DukeLegacyVoices", 0x7FFFFFFF); }
+        SetInventory("DukeLegacyVoices", GetUserCVar(pln, "samsara_cl_legacydukevoices"));
 
-		SetInventory("SamsaraHasPermaWeaponLevel2", GetCVar("samsara_permaweaponlevel2") &&
-		                                            (samsaraClassNum() == CLASS_DOOM || samsaraClassNum() == CLASS_HERETIC || samsaraClassNum() == CLASS_ERAD ||
-		                                             samsaraClassNum() == CLASS_KATARN || samsaraClassNum() == CLASS_DEMONESS || samsaraClassNum() == CLASS_PAINKILLER));
+        SetInventory("SamsaraHasPermaWeaponLevel2", GetCVar("samsara_permaweaponlevel2"));
 
 		HandleAmmoCapacities(0);
 		HandleBans();
@@ -2135,7 +2100,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		TakeInventory("WeaponGetYaaaay2", 1);
 		//if (GetCvar("samsara_lmsrules") == 0) { ConvertClassWeapons(-1); } seems pointless to have this, but will leave commented for now
 
-		if (GetCVar("samsara_runninginzandro") && GetCVar("samsara_banmorphovum") && CheckInventory("SamsaraCorvusArtiEgg"))
+		if (!isZDoom() && GetCVar("samsara_banmorphovum") && CheckInventory("SamsaraCorvusArtiEgg"))
 		{
 			for (i = 0; i < CheckInventory("SamsaraCorvusArtiEgg"); i++)
 			{
