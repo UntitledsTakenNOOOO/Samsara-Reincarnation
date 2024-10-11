@@ -2167,74 +2167,57 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 			}
 		}
 
-		if ((GetCVar("samsara_sigilmode") >= 1) && (GetCVar("samsara_currentgame") != 16))
-		{
-			sigilCounterPartyMode = GetCVar("samsara_sigilmode");
-			for (i = 0; i < SIGILCOUNT; i++)
-			{
-				if (!CheckInventory(SigilSplinters[i]))
-				{
-					if(samsaraClassNum() == CLASS_STRIFE) { break; }
-					else
-					{
-						if(i > 0)
-						{
-							for(int a = 0; a < SIGILCOUNT; a++)
-							{
-								TakeInventory(SpectralTogglers[a], 0x7FFFFFFF);
-							}
-						}
-						TakeInventory("StrifeSigilPiece",5);
-						GiveInventory("StrifeSigilPiece",sigilCounterPartyMode);
-						GiveInventory(SpectralTogglers[sigilCounterPartyMode-1], 1);
-					}
-				}
-			}
-		}
-		else if ((GetCVar("samsara_sigilmode") <= 0) && (GetCVar("samsara_currentgame") != 16))
-		{
-			for (i = 0; i < SIGILCOUNT; i++)
-			{
-				TakeInventory(SpectralTogglers[i], 0x7FFFFFFF);
-			}
-			TakeInventory("StrifeSigilPiece",5);
-		}
+        if (GetCVar("samsara_currentgame") != 16)
+        {
+            if (samsaraClassNum() != CLASS_STRIFE)
+            {
+                sigilCounterPartyMode = GetCVar("samsara_sigilmode");
 
-		sigilCounter = SamsaraGlobal[2]+SamsaraGlobal[3]+SamsaraGlobal[4]+SamsaraGlobal[5]+SamsaraGlobal[6];
-		for (i = 0; i < SIGILCOUNT; i++)
-		{
-			if (SamsaraGlobal[GLOBAL_SIGILBASE+i+1])
-			{
-				if(CheckWeapon("Sigil"))
-					SetWeapon(ClassWeapons[samsaraClassNum()][0][0]);
+                if (sigilCounterPartyMode > 5) { sigilCounterPartyMode = 5; }
 
-				if (!CheckInventory(SigilSplinters[i]))
-				{
-					GiveInventory(SigilSplinters[i], 1);
-					if(samsaraClassNum() == CLASS_STRIFE && CheckInventory("StrifeSigilPiece") < sigilCounter)
-					{
-						TakeInventory("StrifeSigilPiece",5);
-						GiveInventory("StrifeSigilPiece",sigilCounter);
-						TakeInventory("StrifeSigilPiecePreferred",5);
-						GiveInventory("StrifeSigilPiecePreferred",sigilCounter);
-						GiveInventory(" Sigil ",1);
-					}
-					else
-					{
-						if(i > 0)
-						{
-							for(int b = 0; a < SIGILCOUNT; b++)
-							{
-								TakeInventory(SpectralTogglers[b], 0x7FFFFFFF);
-							}
-						}
-						TakeInventory("StrifeSigilPiece",5);
-						GiveInventory("StrifeSigilPiece",sigilCounter);
-						GiveInventory(SpectralTogglers[sigilCounter-1], 1);
-					}
-				}
-		   }
-		}
+                for (i = 0; i < SIGILCOUNT; i++)
+                {
+                    if (sigilCounterPartyMode == i + 1)
+                    {
+                        SetInventory("StrifeSigilPiece", i + 1);
+                        SetInventory(SpectralTogglers[i], 1);
+                    }
+                    else { SetInventory(SpectralTogglers[i], 0); }
+                }
+
+                if (sigilCounterPartyMode <= 0) { SetInventory("StrifeSigilPiece", 0); }
+            }
+        } else {
+            sigilCounter = SamsaraGlobal[2] + SamsaraGlobal[3] + SamsaraGlobal[4] + SamsaraGlobal[5] + SamsaraGlobal[6];
+
+            for (i = 0; i < SIGILCOUNT; i++)
+            {
+                if (SamsaraGlobal[GLOBAL_SIGILBASE + i + 1])
+                {
+                    if (CheckWeapon("Sigil")) { SetWeapon(ClassWeapons[samsaraClassNum()][0][0]); }
+
+                    if (!CheckInventory(SigilSplinters[i]))
+                    {
+                        SetInventory(SigilSplinters[i], 1);
+
+                        if (samsaraClassNum() == CLASS_STRIFE && CheckInventory("StrifeSigilPiece") < sigilCounter)
+                        {
+                            SetInventory("StrifeSigilPiece", sigilCounter);
+                            SetInventory("StrifeSigilPiecePreferred", sigilCounter);
+                            GiveInventory(" Sigil ", 1);
+                        } else {
+                            if (i > 0)
+                            {
+                                for (int a = 0; a < SIGILCOUNT; a++) { SetInventory(SpectralTogglers[a], 0); }
+                            }
+
+                            SetInventory("StrifeSigilPiece", sigilCounter);
+                            SetInventory(SpectralTogglers[sigilCounter - 1], 1);
+                        }
+                    }
+                }
+            }
+        }
 
 		// triggers buddha mode when Original/Lost Missions Blazko has an extra life
 		if (CheckInventory("WolfExtraLife") && !canbuddha) { SetPlayerProperty(0, 1, 16); }
