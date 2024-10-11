@@ -5,13 +5,13 @@ int SpectreTarget;
 #define ACCURACYCOUNT 10
 #define SIGILCOUNT    5
 
-int SigilSplinters[SIGILCOUNT] = 
+int SigilSplinters[SIGILCOUNT][2] = 
 {
-    "SigilSplinter1",
-    "SigilSplinter2",
-    "SigilSplinter3",
-    "SigilSplinter4",
-    "SigilSplinter5",
+    {"SigilSplinter1", "SigilSplinter1PVP"},
+    {"SigilSplinter2", "SigilSplinter2PVP"},
+    {"SigilSplinter3", "SigilSplinter3PVP"},
+    {"SigilSplinter4", "SigilSplinter4PVP"},
+    {"SigilSplinter5", "SigilSplinter5PVP"},
 };
 
 int SpectralTogglers[SIGILCOUNT] = 
@@ -1852,16 +1852,23 @@ script "SamsaraSpectres" (int mode, int arg1, int arg2) //316 -- SAMSARA_SPECTRE
         break;
 
       case 1:
-        SamsaraGlobal[GLOBAL_SIGILBASE+1] = 1;
+        //if (isSinglePlayer() || isCoop()) { SamsaraGlobal[GLOBAL_SIGILBASE + 1] = 1; } // actually called from programmer
+
         Floor_LowerToLowest(999, 4);
+
         SetActivatorToTarget(0);
+        //if (!(isSinglePlayer() || isCoop())) { GiveInventory(SigilSplinters[0][1], 1); } // actually called from programmer
+
         GiveInventory("Communicator", 1);
         SendToCommunicator(95, 0, 0, 0);
         break;
 
       case 2:
-        SamsaraGlobal[GLOBAL_SIGILBASE+2] = 1;
+        if (isSinglePlayer() || isCoop()) { SamsaraGlobal[GLOBAL_SIGILBASE + 2] = 1; }
+
         SetActivatorToTarget(0);
+        if (!(isSinglePlayer() || isCoop())) { GiveInventory(SigilSplinters[1][1], 1); }
+
         Print(l:"TXT_KILLED_BISHOP");
         GiveInventory("Communicator", 1);
         GiveInventory("QuestItem21", 1);
@@ -1869,10 +1876,14 @@ script "SamsaraSpectres" (int mode, int arg1, int arg2) //316 -- SAMSARA_SPECTRE
         break;
 
       case 3:
-        SamsaraGlobal[GLOBAL_SIGILBASE+3] = 1;
+        if (isSinglePlayer() || isCoop()) { SamsaraGlobal[GLOBAL_SIGILBASE + 3] = 1; }
+
         Door_Open(222, 8);
-        KilledOracle = 1;        
+        KilledOracle = 1;
+  
         SetActivatorToTarget(0);
+        if (!(isSinglePlayer() || isCoop())) { GiveInventory(SigilSplinters[2][1], 1); }
+
         GiveInventory("Communicator", 1);
         Print(l:"TXT_KILLED_ORACLE");
         GiveInventory("QuestItem23", 1);
@@ -1888,8 +1899,11 @@ script "SamsaraSpectres" (int mode, int arg1, int arg2) //316 -- SAMSARA_SPECTRE
         break;
 
       case 4:
-        SamsaraGlobal[GLOBAL_SIGILBASE+4] = 1;
+        if (isSinglePlayer() || isCoop()) { SamsaraGlobal[GLOBAL_SIGILBASE + 4] = 1; }
+
         SetActivatorToTarget(0);
+        if (!(isSinglePlayer() || isCoop())) { GiveInventory(SigilSplinters[3][1], 1); }
+
         Print(l:"TXT_KILLED_MACIL");
         GiveInventory("Communicator", 1);
         GiveInventory("QuestItem24", 1);
@@ -1899,9 +1913,12 @@ script "SamsaraSpectres" (int mode, int arg1, int arg2) //316 -- SAMSARA_SPECTRE
         break;
 
       case 5:
-        SamsaraGlobal[GLOBAL_SIGILBASE+5] = 1;
+        if (isSinglePlayer() || isCoop()) { SamsaraGlobal[GLOBAL_SIGILBASE + 5] = 1; }
+
         Floor_LowerToLowest(666, 4);
+
         SetActivatorToTarget(0);
+        if (!(isSinglePlayer() || isCoop())) { GiveInventory(SigilSplinters[4][1], 1); }
 
         Print(l:"TXT_KILLED_LOREMASTER");
         GiveInventory("Communicator", 1);
@@ -1927,7 +1944,8 @@ script "SamsaraSpectres" (int mode, int arg1, int arg2) //316 -- SAMSARA_SPECTRE
             break;
         }
 
-        SamsaraGlobal[GLOBAL_SIGILBASE + arg1] = !!arg2;
+        if (isSinglePlayer() || isCoop()) { SamsaraGlobal[GLOBAL_SIGILBASE + arg1] = !!arg2; }
+        else { GiveInventory(SigilSplinters[arg1 - 1][1], 1); }
         break;
 
       case -1:

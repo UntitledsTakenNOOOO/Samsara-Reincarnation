@@ -435,11 +435,11 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 		if (!respawning)
 		{
-			if(ThingCountName("Candle",0) > 0 )
-			{
-				GiveInventory("StrifeGuyInStrife", 1);
-				GiveInventory("BlackBirdInStrife", 1);
-			}
+            if (GetCVar("samsara_currentgame") == 16)
+            {
+                GiveInventory("StrifeGuyInStrife", 1);
+                if (isSinglePlayer() || isCoop()) { GiveInventory("BlackBirdInStrife", 1); }
+            }
 
 			if (!GetUserCVar(pln, "samsara_cl_ballgag")) { GiveInventory("BlackBirdReady", 1); }
 		}
@@ -2184,17 +2184,18 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                 if (sigilCounterPartyMode <= 0) { SetInventory("StrifeSigilPiece", 0); }
             }
         } else {
-            sigilCounter = SamsaraGlobal[2] + SamsaraGlobal[3] + SamsaraGlobal[4] + SamsaraGlobal[5] + SamsaraGlobal[6];
+            if (isSinglePlayer() || isCoop()) { sigilCounter = SamsaraGlobal[2] + SamsaraGlobal[3] + SamsaraGlobal[4] + SamsaraGlobal[5] + SamsaraGlobal[6]; }
+            else { sigilCounter = CheckInventory("SigilSplinter1PVP") + CheckInventory("SigilSplinter2PVP") + CheckInventory("SigilSplinter3PVP") + CheckInventory("SigilSplinter4PVP") + CheckInventory("SigilSplinter5PVP"); }
 
             for (i = 0; i < SIGILCOUNT; i++)
             {
-                if (SamsaraGlobal[GLOBAL_SIGILBASE + i + 1])
+                if (((isSinglePlayer() || isCoop()) && SamsaraGlobal[GLOBAL_SIGILBASE + i + 1]) || (!(isSinglePlayer() || isCoop()) && CheckInventory(SigilSplinters[i][1])))
                 {
                     if (CheckWeapon("Sigil")) { SetWeapon(ClassWeapons[samsaraClassNum()][0][0]); }
 
-                    if (!CheckInventory(SigilSplinters[i]))
+                    if (!CheckInventory(SigilSplinters[i][0]))
                     {
-                        SetInventory(SigilSplinters[i], 1);
+                        SetInventory(SigilSplinters[i][0], 1);
 
                         if (samsaraClassNum() == CLASS_STRIFE)
                         {
@@ -3028,27 +3029,28 @@ script "SamsaraGameplayModCrap" (int respawning)
 	while (!endloop && ServerEnterTimes[pln] == startTime)
 	{
 		HandleBuffCVars();
-		sigilCounter = SamsaraGlobal[2]+SamsaraGlobal[3]+SamsaraGlobal[4]+SamsaraGlobal[5]+SamsaraGlobal[6];
-		for (i = 0; i < SIGILCOUNT; i++)
-		{
-			if (SamsaraGlobal[GLOBAL_SIGILBASE+i+1])
-			{
-				if (!CheckInventory(SigilSplinters[i]))
-				{
-					GiveInventory(SigilSplinters[i], 1);
-					if(i > 0)
-					{
-						for(int a = 0; a < SIGILCOUNT; a++)
-						{
-							TakeInventory(SpectralTogglers[a], 0x7FFFFFFF);
-						}
-					}
-					TakeInventory("StrifeSigilPiece",5);
-					GiveInventory("StrifeSigilPiece",sigilCounter);
-					GiveInventory(SpectralTogglers[sigilCounter-1], 1);
-				}
-		   }
-		}
+
+        if (GetCVar("samsara_currentgame") == 16)
+        {
+            if (isSinglePlayer() || isCoop()) { sigilCounter = SamsaraGlobal[2] + SamsaraGlobal[3] + SamsaraGlobal[4] + SamsaraGlobal[5] + SamsaraGlobal[6]; }
+            else { sigilCounter = CheckInventory("SigilSplinter1PVP") + CheckInventory("SigilSplinter2PVP") + CheckInventory("SigilSplinter3PVP") + CheckInventory("SigilSplinter4PVP") + CheckInventory("SigilSplinter5PVP"); }
+
+            for (i = 0; i < SIGILCOUNT; i++)
+            {
+                if (((isSinglePlayer() || isCoop()) && SamsaraGlobal[GLOBAL_SIGILBASE + i + 1]) || (!(isSinglePlayer() || isCoop()) && CheckInventory(SigilSplinters[i][1])))
+                {
+                    if (!CheckInventory(SigilSplinters[i][0]))
+                    {
+                        SetInventory(SigilSplinters[i][0], 1);
+
+                        for (int a = 0; a < SIGILCOUNT; a++) { SetInventory(SpectralTogglers[a], 0); }
+
+                        SetInventory("StrifeSigilPiece", sigilCounter);
+                        SetInventory(SpectralTogglers[sigilCounter - 1], 1);
+                    }
+                }
+            }
+        }
 
 		// Hexen requires an increased jumping height
 		if (isZDoom() && GetCvar("samsara_currentgame") == 8 && samsaraClassNum() != CLASS_HEXEN) { GiveInventory("SamsaraIncreasedJumpHeightForHexen", 1); }
