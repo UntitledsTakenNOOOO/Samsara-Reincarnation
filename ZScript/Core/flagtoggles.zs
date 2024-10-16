@@ -1,4 +1,4 @@
-Class SamsaraCountKillEnabler : CustomInventory
+Class SamsaraCountKillEnablerZS : CustomInventory
 {
 	States
 	{
@@ -9,7 +9,7 @@ Class SamsaraCountKillEnabler : CustomInventory
 	}
 }
 
-Class SamsaraCountKillDisabler : CustomInventory
+Class SamsaraCountKillDisablerZS : CustomInventory
 {
 	States
 	{
