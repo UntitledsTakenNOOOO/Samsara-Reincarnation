@@ -104,11 +104,11 @@ Script "BurningManSpeed" (void) // will just have to wait until 4.0 before you c
 
 script "SamsaraBloodGunsAkimboCooldown" (void)
 {
-    while (CheckInventory("SamsaraBloodGunsAkimboCooldown"))
-    {
-        Delay(35);
-        TakeInventory("SamsaraBloodGunsAkimboCooldown", 1);
-    }
+	while (CheckInventory("SamsaraBloodGunsAkimboCooldown"))
+	{
+		Delay(35);
+		TakeInventory("SamsaraBloodGunsAkimboCooldown", 1);
+	}
 }
 
 script "SamsaraBloodGunsAkimboCooldownDecrement" (void) { SetInventory("SamsaraBloodGunsAkimboCooldown", CheckInventory("SamsaraBloodGunsAkimboCooldown") / 2); }
@@ -160,13 +160,13 @@ Script "CalebThrowStrength" (void)
 	SetPointerExt(AAPTR_MASTER,0,newTid);
 	SetActivator(0,AAPTR_TARGET);
 	int power = CheckInventory("ThrowPower");
-    int projfired = CheckInventory("SamsaraHasSpread") ? 3 : 1;
-    GiveInventory("SamsaraBloodThrowChecks", 1);
-    if (CheckInventory("SamsaraBloodThrowChecks") >= projfired)
-    {
-        SetInventory("ThrowPower", 0);
-        SetInventory("SamsaraBloodThrowChecks", 0);
-    }
+	int projfired = CheckInventory("SamsaraHasSpread") ? 3 : 1;
+	GiveInventory("SamsaraBloodThrowChecks", 1);
+	if (CheckInventory("SamsaraBloodThrowChecks") >= projfired)
+	{
+		SetInventory("ThrowPower", 0);
+		SetInventory("SamsaraBloodThrowChecks", 0);
+	}
 	SetResultValue(power);
 }
 
@@ -181,13 +181,13 @@ Script "CalebCheckThrowTimer" (void)
 {
 	SetActivator(0,AAPTR_TARGET);
 	int power = CheckInventory("ThrowPowerBig");
-    int projfired = CheckInventory("SamsaraHasSpread") ? 3 : 1;
-    GiveInventory("SamsaraBloodThrowChecksBig", 1);
-    if (CheckInventory("SamsaraBloodThrowChecksBig") >= projfired)
-    {
-        SetInventory("ThrowPowerBig", 0);
-        SetInventory("SamsaraBloodThrowChecksBig", 0);
-    }
+	int projfired = CheckInventory("SamsaraHasSpread") ? 3 : 1;
+	GiveInventory("SamsaraBloodThrowChecksBig", 1);
+	if (CheckInventory("SamsaraBloodThrowChecksBig") >= projfired)
+	{
+		SetInventory("ThrowPowerBig", 0);
+		SetInventory("SamsaraBloodThrowChecksBig", 0);
+	}
 	SetResultValue(power);
 }
 
@@ -337,19 +337,42 @@ Script "CalebTeslaTurnOffBrightness" (void)
 
 script "CalebBeastVisionDrain" (void)
 {
-    if (CheckInventory("CalebVision"))
-    {
-        if (CheckInventory("CalebVisionFuel") || CheckInventory("SamsaraHasInfiniteInventory"))
-        {
-            Delay(10);
-            if (!CheckInventory("SamsaraHasInfiniteInventory")) { TakeInventory("CalebVisionFuel", 1); }
-            restart;
-        } else {
-            //PlaySound(0, "Caleb/Powerup", CHAN_ITEM);
-            SetInventory("CalebVision", 0);
-            TakeInventory("PowerLightAmp", 1);
-        }
-    }
+	if (CheckInventory("CalebVision"))
+	{
+		if (CheckInventory("CalebVisionFuel") || CheckInventory("SamsaraHasInfiniteInventory"))
+		{
+			Delay(10);
+			if (!CheckInventory("SamsaraHasInfiniteInventory")) { TakeInventory("CalebVisionFuel", 1); }
+			restart;
+		} else {
+			//PlaySound(0, "Caleb/Powerup", CHAN_ITEM);
+			SetInventory("CalebVision", 0);
+			TakeInventory("PowerLightAmp", 1);
+		}
+	}
 
-    if (!CheckInventory("CalebVisionFuel") && !CheckInventory("SamsaraHasInfiniteInventory")) { SetInventory("BeastVision", 0); }
+	if (!CheckInventory("CalebVisionFuel") && !CheckInventory("SamsaraHasInfiniteInventory")) { SetInventory("BeastVision", 0); }
+}
+
+script "CalebTetheredEffect" (int type) clientside
+{
+	int effectTid = UniqueTID();
+	str effectClassName;
+
+	switch (type)
+	{
+		case 0: effectClassName = "FlareFireStar"; break;
+		case 1: effectClassName = "FlareAltStar"; break;
+		case 2: effectClassName = "TeslaProjectileBall"; break;
+	}
+
+	int missileTid = spawnMissileEffect(effectClassName, effectTid);
+
+	while (ClassifyActor(missileTid) & ACTOR_MISSILE)
+	{
+		Warp(missileTid,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION);
+		Delay(1);
+	}
+
+	Thing_Remove(effectTid);
 }
