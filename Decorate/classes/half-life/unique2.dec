@@ -3,7 +3,7 @@ actor SamsaraHalfLifeLoadoutUnique2 : Boolean {}
 actor HLXBowIsZoomed : Counter { Inventory.MaxAmount 2 } // 1 = crossbow, 2 = sniper
 actor SamsaraHalfLifeSniperReloadCooldown : Counter {}
 
-Actor "HL Crossbow" : HLWeapon
+actor "HL Crossbow" : HLWeapon
 {
     Inventory.PickupMessage "You found a crossbow!"
     Weapon.SlotNumber 8
@@ -1471,14 +1471,61 @@ actor SamsaraHalfLifeCrossbowAttackHandler : Trigger
       // Attack stuff
       PickupAttack:
         TNT1 A 0 A_PlaySound("HLXBow/Fire",CHAN_WEAPON)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
-      PickupAttackDM:
+        TNT1 A 0 A_JumpIfInventory("HLXBowIsZoomed",1,"PickupAttackScoped")
+      // Unscoped
+      PickupAttackUnscoped:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 62) == 1, "PickupAttackUnscopedExplosive")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 62) >= 3, "PickupAttackUnscopedExplosive")
+      // Non-explosive bolts
+      PickupAttackUnscopedNonExplosive:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackUnscopedNonExplosiveCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackUnscopedNonExplosiveCoop")
+      PickupAttackUnscopedNonExplosiveDM:
         TNT1 A 0 A_FireCustomMissile("HLXBowBolt",0,false,4)
         goto PickupFinish
 
-      PickupAttackCoop:
+      PickupAttackUnscopedNonExplosiveCoop:
         TNT1 A 0 A_FireCustomMissile("HLXBowBoltCoop",0,false,4)
+        goto PickupFinish
+
+      // Explosive bolts
+      PickupAttackUnscopedExplosive:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackUnscopedExplosiveCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackUnscopedExplosiveCoop")
+      PickupAttackUnscopedExplosiveDM:
+        TNT1 A 0 A_FireCustomMissile("HLXBowBoltExplosive",0,false,4)
+        goto PickupFinish
+
+      PickupAttackUnscopedExplosiveCoop:
+        TNT1 A 0 A_FireCustomMissile("HLXBowBoltExplosiveCoop",0,false,4)
+        goto PickupFinish
+
+      // Scoped
+      PickupAttackScoped:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 62) == 2, "PickupAttackScopedExplosive")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 62) >= 3, "PickupAttackScopedExplosive")
+      // Non-explosive bolts
+      PickupAttackScopedNonExplosive:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackScopedNonExplosiveCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackScopedNonExplosiveCoop")
+      PickupAttackScopedNonExplosiveDM:
+        TNT1 A 0 A_FireCustomMissile("HLXBowBolt",0,false,4)
+        goto PickupFinish
+
+      PickupAttackScopedNonExplosiveCoop:
+        TNT1 A 0 A_FireCustomMissile("HLXBowBoltCoop",0,false,4)
+        goto PickupFinish
+
+      // Explosive bolts
+      PickupAttackScopedExplosive:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackScopedExplosiveCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackScopedExplosiveCoop")
+      PickupAttackScopedExplosiveDM:
+        TNT1 A 0 A_FireCustomMissile("HLXBowBoltExplosive",0,false,4)
+        goto PickupFinish
+
+      PickupAttackScopedExplosiveCoop:
+        TNT1 A 0 A_FireCustomMissile("HLXBowBoltExplosiveCoop",0,false,4)
         goto PickupFinish
 
       // Finishing stuff
@@ -1495,90 +1542,101 @@ actor HLXBowAmmoCounter : Ammo
     +IGNORESKILL
 }
 
-Actor HLXBowSpark
+actor HLXBowBolt
 {
-    Radius 1
-    Height 1
-    +NOBLOCKMAP
-    +THRUACTORS
-    +NOGRAVITY
-    +CLIENTSIDEONLY
-    RenderStyle Add
-    Scale 0.5
-    States
-    {
-        Spawn:
-            TNT1 A 0
-            HWX4 A 3
-            stop
-    }
-}
-
-Actor HLXBowBolt
-{
-    PROJECTILE
+    Projectile
     Radius 2
     Height 4
-    Mass 5
     Speed 55
     Damage (0)
     DamageType "HLBullet"
-    +NOEXTREMEDEATH
+    Mass 5
+    Scale 0.5
     +BLOODSPLATTER
     +FORCERADIUSDMG
-    +NODAMAGETHRUST
     +HITTRACER
-    Scale 0.5
-    states
+    +NODAMAGETHRUST
+    +NOEXTREMEDEATH
+    States
     {
-    Spawn:
-        BOLT A 5 A_PlaySound("HLXbow/Fly", CHAN_6, 0.5, true)
+      Spawn:
+        BOLT A 5 A_PlaySound("HLXbow/Fly",CHAN_VOICE,0.5,true)
         loop
-    Crash:
-        TNT1 A 0 A_StopSound(CHAN_6)
-        TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",125),8,!XF_HURTSOURCE,0,8)
-        TNT1 A 0 A_Playsound("HLXbow/Hit/Wall", CHAN_5)
-        TNT1 A 0 A_Jump(128,1,2,3,4,5,6,7)        
-        TNT1 AAAAAA 0 A_SpawnItemEx("HLPuffSpark",0,0,0,FRandom(1,4),0,Random(0,3),Random(-90,90))
-        TNT1 A 0
-        TNT1 A 0 A_SpawnItemEx("HLXBowSpark", 0, 0, 0, 0, 0, 0, 0, 288)
-        TNT1 A 5
+
+      Death:
+        BOLT A 0 A_StopSound(CHAN_VOICE) // just in case
+        BOLT A 0 A_PlaySound("HLXbow/Hit/Wall",CHAN_VOICE)
+        BOLT A 0 A_Jump(128,1,2,3,4,5,6,7)
+        BOLT AAAAAA 0 A_SpawnItemEx("HLPuffSpark",0,0,0,frandom(1,4),0,random(0,3),random(-90,90))
+        BOLT A 350 A_SpawnItemEx("HLXBowSpark",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
         stop
-    Death:
-        //TNT1 A 0 A_CheckCeiling("Terminate")
-        //TNT1 A 0 A_CheckFloor("Terminate")
-        TNT1 A 0 A_StopSound(CHAN_6)
-        TNT1 A 0 A_Playsound("HLXbow/Hit/Wall", CHAN_5)
-        TNT1 A 0 A_Jump(128,1,2,3,4,5,6,7)        
-        TNT1 AAAAAA 0 A_SpawnItemEx("HLPuffSpark",0,0,0,FRandom(1,4),0,Random(0,3),Random(-90,90))
-        TNT1 A 0
-        TNT1 A 0 A_SpawnItemEx("HLXBowSpark", 0, 0, 0, 0, 0, 0, 0, 288)
-        TNT1 A 0 A_SetDamageType("HLExplosive")
-        BOLT A 17
-        TNT1 A 0 A_AlertMonsters
-        TNT1 A 0 A_Explode(120,70)
-        TNT1 A 0 A_PlaySound("halflife/mp5_grenadehit",CHAN_BODY)
-        TNT1 A 5 A_SpawnItemEx("HLSmallExplosionBoom",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+
+      XDeath:
+        TNT1 A 0 A_StopSound(CHAN_VOICE) // just in case
+        TNT1 A 0 A_PlaySound("HLXbow/Hit/Body",CHAN_VOICE)
+        TNT1 A 5 A_Explode(CallACS("HalfLife_BulletDamage",125),8,0,false,8)
         stop
-    XDeath:
-        TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",125),8,!XF_HURTSOURCE,0,8)
-        TNT1 A 0 A_StopSound(CHAN_6)
-        TNT1 A 0 A_Playsound("HLXbow/Hit/Body", CHAN_5)
-        TNT1 A 5
-        stop
-    Terminate:
-        TNT1 A 0 A_StopSound(CHAN_6)
-        TNT1 A 0 A_Playsound("HLXbow/Hit/Wall", CHAN_5)
+
+      Crash:
+        TNT1 A 0 A_StopSound(CHAN_VOICE) // just in case
+        TNT1 A 0 A_PlaySound("HLXbow/Hit/Wall",CHAN_VOICE)
+        TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",125),8,0,false,8)
         TNT1 A 0 A_Jump(128,1,2,3,4,5,6,7)
-        TNT1 AAAAAA 0 A_SpawnItemEx("HLPuffSpark",0,0,0,FRandom(1,4),0,Random(0,3),Random(-90,90))
-        TNT1 A 0
-        TNT1 A 0 A_SpawnItemEx("HLXBowSpark", 0, 0, 0, 0, 0, 0, 0, 288)
-        TNT1 A 5
+        TNT1 AAAAAA 0 A_SpawnItemEx("HLPuffSpark",0,0,0,frandom(1,4),0,random(0,3),random(-90,90))
+        TNT1 A 5 A_SpawnItemEx("HLXBowSpark",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
         stop
     }
 }
 
-Actor HLXBowBoltCoop : HLXBowBolt { Species "Player" +THRUSPECIES Speed 60 }
+actor HLXBowBoltCoop : HLXBowBolt
+{
+    Speed 60
+    Species "Player"
+    +THRUSPECIES
+}
+
+actor HLXBowBoltExplosive : HLXBowBolt
+{
+    States
+    {
+      Death:
+        BOLT A 0 A_StopSound(CHAN_VOICE) // just in case
+        BOLT A 0 A_PlaySound("HLXbow/Hit/Wall",CHAN_VOICE)
+        BOLT A 0 A_Jump(128,1,2,3,4,5,6,7)
+        BOLT AAAAAA 0 A_SpawnItemEx("HLPuffSpark",0,0,0,frandom(1,4),0,random(0,3),random(-90,90))
+        BOLT A 17 A_SpawnItemEx("HLXBowSpark",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+        TNT1 A 0 A_SetDamageType("HLExplosive")
+        TNT1 A 0 A_Explode(120,70,XF_HURTSOURCE,true)
+        TNT1 A 0 A_PlaySound("halflife/mp5_grenadehit")
+        TNT1 A 5 A_SpawnItemEx("HLSmallExplosionBoom",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+        stop
+    }
+}
+
+actor HLXBowBoltExplosiveCoop : HLXBowBoltExplosive
+{
+    Speed 60
+    Species "Player"
+    +THRUSPECIES
+}
+
+actor HLXBowSpark
+{
+    Radius 1
+    Height 1
+    RenderStyle "Add"
+    Scale 0.5
+    +CLIENTSIDEONLY
+    +NOBLOCKMAP
+    +NOGRAVITY
+    +THRUACTORS
+    States
+    {
+      Spawn:
+        HWX4 A 3
+        stop
+    }
+}
 
 // M40A1 Sniper Rifle
 
@@ -1662,9 +1720,10 @@ Actor HLM40A1Bullet : HLBullet
         XDeath:
             TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
             Goto Super::XDeath
-    }        
+    }
 }
-Actor HLM40A1BulletCoop : HLBulletCoop
+
+actor HLM40A1BulletCoop : HLBulletCoop
 {
     DamageType "HLBullet"
     Damage (0)
@@ -1684,11 +1743,11 @@ Actor HLM40A1BulletCoop : HLBulletCoop
             Goto Super::Death
         XDeath:
             TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
-            Goto Super::XDeath            
+            Goto Super::XDeath
     }
 }
 
-Actor HLM40A1Puff : HLBulletPuff
+actor HLM40A1Puff : HLBulletPuff
 {
     +NODAMAGETHRUST
     +NOEXTREMEDEATH
@@ -1701,9 +1760,11 @@ Actor HLM40A1Puff : HLBulletPuff
         XDeath:
             TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
             Goto Super::Spawn
-    }        
+    }
 }
-Actor HLM40A1PuffCoop : HLBulletPuffCoop {
+
+actor HLM40A1PuffCoop : HLBulletPuffCoop
+{
     +NODAMAGETHRUST
     +NOEXTREMEDEATH
     +NOTIMEFREEZE
@@ -1715,9 +1776,11 @@ Actor HLM40A1PuffCoop : HLBulletPuffCoop {
         XDeath:
             TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
             Goto Super::Spawn
-    }        
+    }
 }
-Actor HLM40A1PuffZoomed : HLBulletPuff {
+
+actor HLM40A1PuffZoomed : HLBulletPuff
+{
     +NODAMAGETHRUST
     +NOEXTREMEDEATH
     +NOTIMEFREEZE
@@ -1733,9 +1796,11 @@ Actor HLM40A1PuffZoomed : HLBulletPuff {
             TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
             TNT1 A 1
             Stop
-    }        
+    }
 }
-Actor HLM40A1PuffZoomedCoop : HLBulletPuffCoop {
+
+actor HLM40A1PuffZoomedCoop : HLBulletPuffCoop
+{
     +NODAMAGETHRUST
     +NOEXTREMEDEATH
     +NOTIMEFREEZE
@@ -1750,5 +1815,5 @@ Actor HLM40A1PuffZoomedCoop : HLBulletPuffCoop {
             TNT1 A 0 A_Explode(CallACS("HalfLife_BulletDamage",150),8,!XF_HURTSOURCE,0,8)
             TNT1 A 1
             Stop
-    }        
+    }
 }
