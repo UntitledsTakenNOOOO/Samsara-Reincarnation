@@ -70,6 +70,9 @@ Script "DescentMovement" (void)
 	int gimbalDelay, rollBack, rolling, thirdPerson;
 
 	bool isPVEGame = isSinglePlayer() || isCoop();
+    bool isLocked = false;
+    bool isTotallyLocked = false;
+    bool isFlying = false;
 
 	if(PlayerIsBot(PlayerNumber())) { GiveInventory("DescentBotTrigger",1); }
 			
@@ -89,7 +92,7 @@ Script "DescentMovement" (void)
 		{
 			int descentFlight = GetCVar("samsara_descentflight");
 
-			if(descentFlight)
+			if(descentFlight >= 1)
 			{
 				GiveInventory("DescentGravityTaker",1);
 			} else {
@@ -106,16 +109,28 @@ Script "DescentMovement" (void)
 					TakeInventory("DescentThirdPerson",1);
 			}
 
-			if(GZDoom)
+			if(GZDoom && descentFlight >= 2)
 			{
+                if (!CheckInventory("PowerFlight") && !CheckInventory("PowerSamsaraFlight") && isFlying)
+                {
+                    SetPlayerProperty(0, false, PROP_FLY);
+                    isFlying = false;
+                }
+
 				if(!CheckInventory("DescentGuidedController") && !CheckInventory("CompendiumOpened"))
 				{
-					if(descentFlight)
-						SetPlayerProperty(0,1,PROP_FROZEN);
-					else
-						SetPlayerProperty(0,0,PROP_FROZEN);
+                    if (descentFlight >= 2)
+                    {
+                        SetPlayerProperty(0, true, PROP_FROZEN);
+                        isLocked = true;
+                    } else {
+                        SetPlayerProperty(0, false, PROP_FROZEN);
+                        isLocked = false;
+                    }
 
-					SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+                    SetPlayerProperty(0, false, PROP_TOTALLYFROZEN);
+                    isTotallyLocked = false;
+
 					buttons = GetPlayerInput(-1, INPUT_BUTTONS);
 					forward = GetPlayerInput(-1, INPUT_FORWARDMOVE);
 					side = -GetPlayerInput(-1, INPUT_SIDEMOVE) * gimbalLock;
@@ -134,8 +149,12 @@ Script "DescentMovement" (void)
 				}
 				else
 				{
-					SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
-					SetPlayerProperty(0,0,PROP_FROZEN);
+                    SetPlayerProperty(0, true, PROP_TOTALLYFROZEN);
+                    isTotallyLocked = true;
+
+                    SetPlayerProperty(0, false, PROP_FROZEN);
+                    isLocked = false;
+
 					buttons = 0;
 					forward = 0;
 					side = 0;
@@ -244,7 +263,7 @@ Script "DescentMovement" (void)
 				}
 
 				//Set the rotation to the new ones
-				if(descentFlight)
+				if(descentFlight >= 2)
 				{
 					if(mouseYaw != 0) SetActorAngle(0,angle);
 					if(mousePitch != 0) SetActorPitch(0,pitch);
@@ -309,7 +328,7 @@ Script "DescentMovement" (void)
 						s:"\nY Movement is: ",f:moveY,
 						s:"\nZ Movement is: ",f:moveZ);*/
 		
-				if(!descentFlight)
+				if(descentFlight <= 1)
 				{
 					horizontalThrustX = 0;
 					horizontalThrustY = 0;
@@ -318,7 +337,7 @@ Script "DescentMovement" (void)
 
 				velX = moveX + horizontalThrustX;
 				velY = moveY + horizontalThrustY;
-				velZ = descentFlight ? moveZ + verticalThrust : GetActorVelZ(0);
+				velZ = descentFlight >= 2 ? moveZ + verticalThrust : GetActorVelZ(0);
 
 				if(verticalOscillate >= verticalOscillateThreshold)
 				{
@@ -326,7 +345,7 @@ Script "DescentMovement" (void)
 					verticalToggle *= -1;
 				}
 
-				if(descentFlight)
+				if(descentFlight >= 2)
 					SetActorVelocity(0,velX,velY,velZ,0,0);
 
 				verticalOscillate++;
@@ -334,27 +353,52 @@ Script "DescentMovement" (void)
 			}
 			else
 			{
+                if (isLocked)
+                {
+                    SetPlayerProperty(0, false, PROP_FROZEN);
+                    isLocked = false;
+                }
+
+                if (isTotallyLocked)
+                {
+                    SetPlayerProperty(0, false, PROP_TOTALLYFROZEN);
+                    isTotallyLocked = false;
+                }
+
 				if(!CheckInventory("DescentGuidedController"))
 				{
-					if(descentFlight)
-					{
-						SetPlayerProperty(0,1,PROP_FLY);
-					} else {
-						if (!CheckInventory("PowerFlight") && !CheckInventory("PowerSamsaraFlight")) { SetPlayerProperty(0,0,PROP_FLY); }
-					}
+                    if (descentFlight >= 1)
+                    {
+                        SetPlayerProperty(0, true, PROP_FLY);
+                        isFlying = true;
+                    } else {
+                        if (!CheckInventory("PowerFlight") && !CheckInventory("PowerSamsaraFlight"))
+                        {
+                            SetPlayerProperty(0, false, PROP_FLY);
+                            isFlying = false;
+                        }
+                    }
 				}
 
-                if (((GetActorVelX(0) / 1.0) != 0 || (GetActorVelY(0) / 1.0) != 0 || (GetActorVelZ(0) / 1.0) != 0) && Timer() % 4 == 0)
+                int simpleMoveX = GetActorVelX(0) / 1.0;
+                int simpleMoveY = GetActorVelY(0) / 1.0;
+                int simpleMoveZ = GetActorVelZ(0) / 1.0;
+
+                if ((simpleMoveX != 0 || simpleMoveY != 0 || simpleMoveZ != 0) && Timer() % 4 == 0)
                 {
                     if (CheckInventory("SamsaraHasSpread"))
                     {
-                        if (isPVEGame) { LineAttack(0, VectorAngle((GetActorVelX(0) / 1.0), (GetActorVelY(0) / 1.0)), GetActorPitch(0), 5 * 3, "DescentRamPuffCoop", "None", 41.0); }
-                        else { LineAttack(0, VectorAngle((GetActorVelX(0) / 1.0), (GetActorVelY(0) / 1.0)), GetActorPitch(0), 5 * 3, "DescentRamPuff", "None", 41.0); }
+                        if (isPVEGame) { LineAttack(0, VectorAngle(simpleMoveX, simpleMoveY), GetActorPitch(0), 5 * 3, "DescentRamPuffCoop", "None", 41.0); }
+                        else { LineAttack(0, VectorAngle(simpleMoveX, simpleMoveY), GetActorPitch(0), 5 * 3, "DescentRamPuff", "None", 41.0); }
                     } else {
-                        if (isPVEGame) { LineAttack(0, VectorAngle((GetActorVelX(0) / 1.0), (GetActorVelY(0) / 1.0)), GetActorPitch(0), 5, "DescentRamPuffCoop", "None", 41.0); }
-                        else { LineAttack(0, VectorAngle((GetActorVelX(0) / 1.0), (GetActorVelY(0) / 1.0)), GetActorPitch(0), 5, "DescentRamPuff", "None", 41.0); }
+                        if (isPVEGame) { LineAttack(0, VectorAngle(simpleMoveX, simpleMoveY), GetActorPitch(0), 5, "DescentRamPuffCoop", "None", 41.0); }
+                        else { LineAttack(0, VectorAngle(simpleMoveX, simpleMoveY), GetActorPitch(0), 5, "DescentRamPuff", "None", 41.0); }
                     }
                 }
+
+				horizontalThrustX = 0;
+				horizontalThrustY = 0;
+				verticalThrust = 0;	
 			}
 		}
 		else if(ClassifyActor(0) & ACTOR_DEAD)
