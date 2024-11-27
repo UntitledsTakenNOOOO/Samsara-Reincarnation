@@ -1050,17 +1050,23 @@ Script "RoTTNetMouse" (int currentweapon) //813
 	restart;
 }
 
-Script "RottDamageOnEnemy" (void)
+script "RottDamageOnEnemy" (void)
 {
-	int oldtid = PickActor(0, 0, 0.25, 64.0, 0, MF_SHOOTABLE, ML_BLOCKEVERYTHING, PICKAF_RETURNTID);
-	int newtid = UniqueTid();
-	if(PickActor(0, 0, 0.25, 64.0, newtid, MF_SHOOTABLE, ML_BLOCKEVERYTHING, PICKAF_FORCETID))
-	{
-		if(GetActorZ(0) - (GetActorZ(newtid) + GetActorProperty(newtid,APROP_Height)) <= 0 && (ClassifyActor(newtid) & ACTOR_ALIVE) && !CheckFlag(0,"BOSS"))
-			LineAttack(0,0,0.25,2,"Nothing2","None",128.0,0);
-			
-		Thing_ChangeTid(newtid,oldtid);
-	}
+    int oldtid = PickActor(0, 0, 0.25, 64.0, 0, MF_SHOOTABLE, ML_BLOCKEVERYTHING, PICKAF_RETURNTID);
+    int newtid = UniqueTid();
+
+    bool isPVEGame = isSinglePlayer() || isCoop();
+
+    if (PickActor(0, 0, 0.25, 64.0, newtid, MF_SHOOTABLE, ML_BLOCKEVERYTHING, PICKAF_FORCETID))
+    {
+        if (GetActorZ(0) - (GetActorZ(newtid) + GetActorProperty(newtid, APROP_Height)) <= 0 && (ClassifyActor(newtid) & ACTOR_ALIVE) && !CheckFlag(0, "BOSS"))
+        {
+            if (isPVEGame) { LineAttack(0, 0, 0.25, 2, "NothingEnemyBeneathCoop", "None", 128.0, 0); }
+            else { LineAttack(0, 0, 0.25, 2, "NothingEnemyBeneath", "None", 128.0, 0); }
+        }
+
+        Thing_ChangeTid(newtid, oldtid);
+    }
 }
 
 script "SamsaraROTTInvulnSwitchHack" (int invulntype) // A_SelectWeapon somehow doesn't work for whatever reason
