@@ -1,0 +1,295 @@
+actor DogPlayer : IPFreeley
+{
+    Player.ColorRange 112, 127
+    Player.ViewHeight 16
+    Player.AttackZOffset 8
+    Player.MorphWeapon "Doggie"
+    Gravity 0.9
+    //MaxStepHeight 25
+    XScale 0.68
+    YScale 0.65
+    +NODAMAGE
+    +NOPAIN
+    States
+    {
+      Spawn:
+        IPDG A -1
+        stop
+
+      See:
+        IPDG ABCD 4
+        loop
+
+      Missile:
+        IPDG E 3
+        goto Spawn
+    }
+}
+
+actor DoggyMorph : SamsaraPowerupGiver { Powerup.Type "DoggyMorph" }
+
+actor PowerDoggyMorph : PowerMorph
+{
+    PowerMorph.PlayerClass "DogPlayer"
+    PowerMorph.MorphStyle MRF_WHENINVULNERABLE|MRF_LOSEACTUALWEAPON
+    PowerMorph.MorphFlash "DogMorphFlash"
+    PowerMorph.UnMorphFlash "DogUnMorphFlash"
+    Powerup.Duration -30
+}
+
+actor DogProtection : SamsaraPowerupGiver { Powerup.Type "DogProtection" }
+
+actor PowerDogProtection : PowerProtection
+{
+    Powerup.Duration -30
+    DamageFactor "Normal", 0
+}
+
+actor DogMorphFlash
+{
+    +NOTIMEFREEZE
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        TNT1 A 1
+        stop
+    }
+}
+
+actor DogUnMorphFlash
+{
+    +NOTIMEFREEZE
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        TNT1 A 0 A_PlaySound("gen/dogdown",CHAN_AUTO)
+        TNT1 A 1 //A_PlaySound("gen/losepower",CHAN_AUTO)
+        stop
+    }
+}
+
+actor SamsaraROTTDogModeMeleeAttackSilentSound : Boolean {}
+
+actor Doggie : SamsaraROTTWeapon
+{
+    Inventory.PickupMessage "Dog Mode!"
+    //Weapon.UpSound "gen/wepswitch"
+    Weapon.SelectionOrder 350
+    Scale 0.5
+    Obituary "%o was mauled by %k."
+    Tag "Dog Mode"
+    +BFG
+    +CHEATNOTWEAPON
+    States
+    {
+      Spawn:
+        DOGM MNOPQRST 2 Bright
+        loop
+
+      Ready:
+        TNT1 A 0 A_TakeInventory("UsingFirearm")
+        TNT1 A 0 A_JumpIf(CallACS("RottDogCheck"), "ReadyUsing")
+        DOGM A 7 A_WeaponReady
+        TNT1 A 0 A_JumpIf(CallACS("RottDogCheck"), "ReadyUsing")
+        DOGM A 7 A_WeaponReady
+        TNT1 A 0 A_JumpIf(CallACS("RottDogCheck"), "ReadyUsing")
+        DOGM A 7 A_WeaponReady
+        TNT1 A 0 A_JumpIf(CallACS("RottDogCheck"), "ReadyUsing")
+        DOGM A 7 A_WeaponReady
+        TNT1 A 0 A_JumpIf(CallACS("RottDogCheck"), "ReadyUsing")
+        DOGM A 7 A_WeaponReady
+        TNT1 A 0 A_JumpIf(CallACS("RottDogCheck"), "ReadyUsing")
+        DOGM A 7 A_WeaponReady
+        TNT1 A 0 A_JumpIf(CallACS("RottDogCheck"), "ReadyUsing")
+        DOGM A 7 A_WeaponReady
+        TNT1 A 0 A_JumpIf(CallACS("RottDogCheck"), "ReadyUsing")
+        DOGM A 7 A_WeaponReady
+        TNT1 A 0 A_JumpIf(CallACS("RottDogCheck"), "ReadyUsing")
+        DOGM A 7 A_WeaponReady
+        TNT1 A 0 A_JumpIf(CallACS("RottDogCheck"), "ReadyUsing")
+        DOGM A 7 A_WeaponReady
+        TNT1 A 0 A_Jump(128,"ReadyIdle1","ReadyIdle2","ReadyIdle3")
+        loop
+
+      ReadyIdle1:
+        DOGM BC 4 A_WeaponReady
+        TNT1 A 0 A_PlaySound("rdog/lick")
+        DOGM DEA 4 A_WeaponReady
+        goto Ready
+
+      ReadyIdle2:
+        DOGM BC 4 A_WeaponReady
+        TNT1 A 0 A_PlaySound("rdog/bark")
+        DOGM DEA 4 A_WeaponReady
+        goto Ready
+
+      ReadyIdle3:
+        DOGM BC 4 A_WeaponReady
+        TNT1 A 0 A_PlaySound("rdog/pan")
+        DOGM DEA 4 A_WeaponReady
+        goto Ready
+
+      ReadyUsing:
+        DOGM IJKL 4
+        goto Ready
+
+      Deselect: // can't really stop this from being called during select
+        TNT1 A 0 A_JumpIfHealthLower(1,"DeselectInstant")
+        DOGM A 1 A_Lower
+        loop
+
+      Select:
+        DOGM A 1 A_Raise
+        loop
+
+      Fire:
+        DOGM A 5
+        TNT1 A 0 A_ReFire("FireCharge1")
+        goto FireMelee
+
+      FireCharge1:
+        DOGM A 8
+        DOGM A 9 A_PlaySound("rdog/charge1",CHAN_WEAPON)
+        TNT1 A 0 A_ReFire("FireCharge2")
+        goto Ready
+
+      FireCharge2:
+        DOGM A 8
+        DOGM A 9 A_PlaySound("rdog/charge2",CHAN_WEAPON)
+        TNT1 A 0 A_ReFire("FireCharge3")
+        goto Ready
+
+      FireCharge3:
+        DOGM A 8
+        DOGM A 9 A_PlaySound("rdog/charge3",CHAN_WEAPON)
+        TNT1 A 0 A_ReFire("FireCharge4")
+        goto Ready
+
+      FireCharge4:
+        DOGM A 8
+        DOGM A 9 A_PlaySound("rdog/charge4",CHAN_WEAPON)
+        TNT1 A 0 A_ReFire("FireCharge5")
+        goto Ready
+
+      FireCharge5:
+        DOGM A 8
+        DOGM A 9 A_PlaySound("rdog/charge5",CHAN_WEAPON)
+        TNT1 A 0 A_ReFire("FireCharge6")
+        goto Ready
+
+      FireCharge6:
+        DOGM A 8
+        DOGM A 9 A_PlaySound("rdog/charge6",CHAN_WEAPON)
+        TNT1 A 0 A_ReFire("FireStart")
+        goto Ready
+
+      FireStart:
+        DOGM F 4 A_GiveInventory("SamsaraROTTDogModeRangedAttackHandler")
+        DOGM GH 4
+        DOGM A 6
+        goto Ready
+
+      FireMelee:
+        TNT1 A 0 A_TakeInventory("SamsaraROTTDogModeMeleeAttackSilentSound")
+        DOGM F 2 A_GiveInventory("SamsaraROTTDogModeMeleeAttackHandler")
+        DOGM FF 1 A_GiveInventory("SamsaraROTTDogModeMeleeAttackHandler")
+        DOGM G 2
+        DOGM GG 1 A_GiveInventory("SamsaraROTTDogModeMeleeAttackHandler")
+        DOGM H 2
+        DOGM HH 1 A_GiveInventory("SamsaraROTTDogModeMeleeAttackHandler")
+        DOGM A 8
+        goto Ready
+    }
+}
+
+actor SamsaraROTTDogModeRangedAttackHandler : Trigger
+{
+    States
+    {
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_PlaySound("rdog/blast",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
+        TNT1 A 0 A_FireCustomMissile("Barkblast",0,false,0,-5)
+        goto PickupFinish
+
+      PickupCoop:
+        TNT1 A 0 A_FireCustomMissile("BarkblastCoop",0,false,0,-5)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 ThrustThingZ(0,32,0,0)
+        stop
+    }
+}
+
+actor SamsaraROTTDogModeMeleeAttackHandler : Trigger
+{
+    States
+    {
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraROTTDogModeMeleeAttackSilentSound",1,2)
+        TNT1 A 0 A_PlaySound("rdog/chew",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasSpread",1,"PickupDMSpread")
+        TNT1 A 0 A_CustomPunch(10,true,0,"BlankPuff")
+        goto PickupFinish
+
+      PickupDMSpread:
+        TNT1 A 0 A_CustomPunch(10*3,true,0,"BlankPuff")
+        goto PickupFinish
+
+      PickupCoop:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasSpread",1,"PickupCoopSpread")
+        TNT1 A 0 A_CustomPunch(10,true,0,"BlankPuffCoop")
+        goto PickupFinish
+
+      PickupCoopSpread:
+        TNT1 A 0 A_CustomPunch(10*3,true,0,"BlankPuffCoop")
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_GiveInventory("SamsaraROTTDogModeMeleeAttackSilentSound")
+        stop
+    }
+}
+
+actor Barkblast
+{
+    Projectile
+    Radius 8
+    Height 6
+    Damage 50 // was redefined with 5 for some reason
+    DamageType "RottExplosive"
+    ReactionTime 1
+    Scale 0.5
+    +EXTREMEDEATH
+    +FOILINVUL
+    +NODAMAGETHRUST
+    States
+    {
+      Spawn:
+        TNT1 A 5
+        TNT1 A 1 A_Countdown
+        loop
+
+      Death:
+        TNT1 A 1 A_Explode(1750,1024,0)
+        stop
+    }
+}
+
+actor BarkblastCoop : Barkblast
+{
+    Species "Player"
+    +THRUSPECIES
+}

@@ -407,7 +407,7 @@ SCRIPT "RoTT452" (void) CLIENTSIDE //452
 				SetFont("GDMODEP");
 				SetHudSize(320, 200, 1);
 				SetHudClipRect(184,0,16,13); 
-				HudMessage(s:"A"; HUDMSG_NOTWITHFULLMAP, rottstartid+11380, 0, 192.1  , 23.1 - ((GetActorPowerupTics(0,"GodProtection")/81) * 1.0), 0.1);
+				HudMessage(s:"A"; HUDMSG_NOTWITHFULLMAP, rottstartid+11380, 0, 192.1  , 23.1 - ((GetActorPowerupTics(0,"PowerGodProtection")/81) * 1.0), 0.1);
 				SetHudClipRect(0,0,0,0);
 			}
 
@@ -420,7 +420,7 @@ SCRIPT "RoTT452" (void) CLIENTSIDE //452
 				SetFont("DGMODEP");
 				SetHudSize(320, 200, 1);
 				SetHudClipRect(184,0,16,13); 
-				HudMessage(s:"A"; HUDMSG_NOTWITHFULLMAP, rottstartid+11380, 0, 192.1 , 23.1 - ((GetActorPowerupTics(0,"DogProtection")/81) * 1.0), 0.1);
+				HudMessage(s:"A"; HUDMSG_NOTWITHFULLMAP, rottstartid+11380, 0, 192.1 , 23.1 - ((GetActorPowerupTics(0,"PowerDoggyMorph")/81) * 1.0), 0.1);
 				SetHudClipRect(0,0,0,0);
 			}
 
@@ -656,27 +656,20 @@ Script "RoTT456" (void) Clientside //456
 	eyey = 0.1;
 }
 
-Script "RoTTGodHand" (void) // God hand script -- 987
-{	
-	Delay(35*30);
-	ActivatorSound("gen/godoff", 127);
-	ActivatorSound("gen/powerlose", 127);
-	GiveInventory("GodRevert", 1);
-	TakeInventory("God Hand", 1);
-	TakeInventory("GodProtection", 1);
-}
-
-Script "RoTT992" (void) // bat hold check -- 992
+script "SamsaraROTTGodMode" (void) // God hand script -- 987
 {
-	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS); // Checks what keys the player is pressing
-	if (buttonPress & BT_Attack)
-	{
-		SetResultValue (1);
-	}
-	else
-	{
-		SetResultValue (0);
-	}
+    while (CheckInventory("PowerGodProtection"))
+    {
+        if (CheckInventory("God Hand") && !CheckWeapon("God Hand") && !CheckInventory("PowerDoggyMorph")) { SetWeapon("God Hand"); } // forcibly switch to this weapon for the duration of the powerup
+
+        Delay(1);
+    }
+
+    if (CheckInventory("God Hand")) // this weapon can get removed on map change; don't play the sounds in that case
+    {
+        ActivatorSound("gen/goddown", 127);
+        //ActivatorSound("gen/losepower", 127);
+    }
 }
 
 Script "RoTTLudicrousGibs" (void) //996
@@ -710,34 +703,13 @@ Script "RoTTLudicrousGibs" (void) //996
 	}
 }
 
-Script "DogRevert" (void) // Dog mode script
-{	
-	Delay(35*30);
-	TakeInventory("Doggie", 1);
-	TakeInventory("DogProtection", 1);
-}
-
 script "RottSplitMissile" (void)
 {
-	GiveInventory("SMissileSplitToken",1);
-	while(GetPlayerInput (-1, INPUT_BUTTONS) & BT_Attack)
-	{
-		Delay(1);
-	}
-	TakeInventory("SMissileSplitToken",1);
-}
+    SetInventory("SMissileSplitToken", 0);
 
-Script "RoTTBatCheck" (void)
-{
-	int buttonPress = GetPlayerInput (-1, INPUT_BUTTONS); // Checks what keys the player is pressing
-	if (buttonPress & BT_Attack)
-	{
-		SetResultValue (1);
-	}
-	else
-	{
-		SetResultValue (0);
-	}
+    while (!isDead(0) && !CheckInventory("CompendiumOpened") && keyDown(BT_ATTACK)) { Delay(1); }
+
+    SetInventory("SMissileSplitToken", 1);
 }
 
 Script "RoTTDogCheck" (void) // dog use check
@@ -778,26 +750,40 @@ script "RottGasMask" (void) CLIENTSIDE
     HudMessage(s:""; 0, rottstartid + 15700, 0, 107.0, 100.0, 0);
 }
 
-Script "RottDogModeHandler" (void)
+script "SamsaraROTTDogModeInit" (void)
 {
-	int oldtid = ActivatorTid();
-	int usertid = UniqueTid(0);
-	int dummytid = UniqueTid(0);
-	
-	SpawnSpotForced("TranslationDummy",0,dummytid,0);
-	Thing_SetTranslation(dummytid, -1);
-	
-	Delay(1);
-	
-	GiveInventory("DogMode", 1);
-	
-	Thing_ChangeTid(0, usertid);
-	SetActivator(dummytid, AAPTR_Default);
-	Thing_SetTranslation(usertid, -1);
-	SetActivator(usertid, AAPTR_Default);
-	Thing_ChangeTid(usertid, oldtid);
-	SetResultValue(1);
+    int oldtid = ActivatorTid();
+    int usertid = UniqueTid();
+    int dummytid = UniqueTid();
+
+    SpawnSpotForced("TranslationDummy", 0, dummytid, 0);
+    Thing_SetTranslation(dummytid, -1);
+
+    int armorAmount = CheckInventory("BasicArmor");
+    str armorType = GetArmorInfo(ARMORINFO_CLASSNAME);
+
+    Delay(1);
+
+    GiveInventory("Doggie", 1);
+
+    if (StrLen(armorType) > 0 && armorAmount > 0)
+    {
+        GiveInventory(armorType, 1);
+        AdjustArmorDisplays();
+
+        if (CheckInventory("BasicArmor") < armorAmount) { GiveInventory("InfiniteArmorBonus", armorAmount - CheckInventory("BasicArmor")); }
+        else if (CheckInventory("BasicArmor") > armorAmount) { SetInventory("BasicArmor", armorAmount); }
+    }
+
+    Thing_ChangeTID(0, usertid);
+    SetActivator(dummytid, AAPTR_DEFAULT);
+    Thing_SetTranslation(usertid, -1);
+    SetActivator(usertid, AAPTR_DEFAULT);
+    Thing_ChangeTID(usertid, oldtid);
+
+    SetWeapon("Doggie");
 }
+
 Script "RottExcalibatThrow" (void)
 {
 	int newTid = UniqueTid();
@@ -1059,7 +1045,7 @@ script "RottDamageOnEnemy" (void)
 
     if (PickActor(0, 0, 0.25, 64.0, newtid, MF_SHOOTABLE, ML_BLOCKEVERYTHING, PICKAF_FORCETID))
     {
-        if (GetActorZ(0) - (GetActorZ(newtid) + GetActorProperty(newtid, APROP_Height)) <= 0 && (ClassifyActor(newtid) & ACTOR_ALIVE) && !CheckFlag(0, "BOSS"))
+        if (GetActorZ(0) - (GetActorZ(newtid) + GetActorProperty(newtid, APROP_Height)) <= 0 && (ClassifyActor(newtid) & ACTOR_ALIVE) && !CheckFlag(newtid, "BOSS"))
         {
             if (isPVEGame) { LineAttack(0, 0, 0.25, 2, "NothingEnemyBeneathCoop", "None", 128.0, 0); }
             else { LineAttack(0, 0, 0.25, 2, "NothingEnemyBeneath", "None", 128.0, 0); }
@@ -1067,10 +1053,4 @@ script "RottDamageOnEnemy" (void)
 
         Thing_ChangeTid(newtid, oldtid);
     }
-}
-
-script "SamsaraROTTInvulnSwitchHack" (int invulntype) // A_SelectWeapon somehow doesn't work for whatever reason
-{
-    if (invulntype >= 1) { SetWeapon("Doggie"); }
-    else { SetWeapon("God Hand"); }
 }

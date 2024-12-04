@@ -1,11 +1,11 @@
 // All monsters need species "Monster" added to them for firewall to work properly
-Actor GibDelay : PowerDamage { powerup.duration -2 damagefactor "normal", 1.0 }
+Actor GibDelay : Powerup { powerup.duration -2 }
 Actor DisplayMenu : Ammo { inventory.maxamount 1 ammo.backpackamount 0 }
-Actor UsingFireArm : Inventory { inventory.amount 1 inventory.maxamount 1 }
-Actor RottClass : Inventory { -INVBAR +INVENTORY.UNDROPPABLE Inventory.MaxAmount 1 }
-Actor RottGasMask : Inventory { -INVBAR +INVENTORY.UNDROPPABLE Inventory.MaxAmount 1 }
-Actor RottGasMaskDuplicateToken : Inventory { -INVBAR +INVENTORY.UNDROPPABLE Inventory.MaxAmount 1 }
-Actor RottMode : Inventory { -INVBAR +INVENTORY.UNDROPPABLE Inventory.MaxAmount 4 }
+Actor UsingFireArm : Boolean {}
+Actor RottClass : Boolean {}
+Actor RottGasMask : Boolean {}
+Actor RottGasMaskDuplicateToken : Boolean {}
+Actor RottMode : Counter { Inventory.MaxAmount 4 }
 
 Actor IPFreeley : SamsaraPlayerPawnNormalRedBlood
 {
@@ -103,7 +103,7 @@ Actor IPFreeley : SamsaraPlayerPawnNormalRedBlood
     DamageFactor "Kamikaze", 1.23333333333
     DamageFactor "ZorchKamikaze", 1.23333333333
 	DamageFactor "EnemyInfightDamage", 0.0	
-	DamageFactor "CMDMGSHIT", 0.0    
+	DamageFactor "CMDMGSHIT", 0.0
 	Damagefactor "RottExplosive", 0.94
 	DamageFactor "RottFire", 0.94
 	DamageFactor "RottBullet", 0.99
@@ -148,15 +148,15 @@ Actor IPFreeley : SamsaraPlayerPawnNormalRedBlood
 			IPFW A 0 A_JumpIfInventory("RottMode", 3, 18)
 			IPFW A 0 A_JumpIfInventory("RottMode", 2, 12)
 			IPFW A 0 A_JumpIfInventory("RottMode", 1, 6)
-			IPFW ABCD 4 
+			IPFW ABCD 4
 			IPFW A -1 A_Jump(256,"See")
-			AL15 BCDE 4 
+			AL15 BCDE 4
 			AL15 A -1 A_Jump(256,"See")
-			AL16 BCDE 4 
+			AL16 BCDE 4
 			AL16 A -1 A_Jump(256,"See")
-			AL17 BCDE 4 
+			AL17 BCDE 4
 			AL17 A -1 A_Jump(256,"See")
-			AL18 BCDE 4 
+			AL18 BCDE 4
 			AL18 A -1 A_Jump(256,"See")
 			Loop
 		Missile:
@@ -164,7 +164,7 @@ Actor IPFreeley : SamsaraPlayerPawnNormalRedBlood
 			TNT1 A 0 A_JumpIfInventory("Usingfirearm", 1, "Missile2")
 			TNT1 A 0 A_JumpIfInventory("RottMode", 4, 20) //Doug
 			TNT1 A 0 A_JumpIfInventory("RottMode", 3, 15) //Lorelei
-			TNT1 A 0 A_JumpIfInventory("RottMode", 2, 11) //Thi
+			TNT1 A 0 A_JumpIfInventory("RottMode", 2, 10) //Thi
 			TNT1 A 0 A_JumpIfInventory("RottMode", 1, 5) //Taradino
 			
 			IPMS D 3
@@ -190,12 +190,13 @@ Actor IPFreeley : SamsaraPlayerPawnNormalRedBlood
 			AL18 H 3
 			AL18 I 3 BRIGHT
 			TNT1 A 0 A_TakeInventory("Hexen2EnemyFireDetector", 1)
+			TNT1 A -1 A_Jump(256,"Spawn")
 			
 			Goto Spawn
 		Missile2:
 			TNT1 A 0 A_JumpIfInventory("RottMode", 4, 20) //Doug
 			TNT1 A 0 A_JumpIfInventory("RottMode", 3, 15) //Lorelei
-			TNT1 A 0 A_JumpIfInventory("RottMode", 2, 11) //Thi
+			TNT1 A 0 A_JumpIfInventory("RottMode", 2, 10) //Thi
 			TNT1 A 0 A_JumpIfInventory("RottMode", 1, 5) //Taradino
 			
 			IPFS B 3
@@ -323,11 +324,11 @@ Actor IPFreeley : SamsaraPlayerPawnNormalRedBlood
 		Death.RottFire:
 		Burn:
 			TNT1 A 0 A_UnsetSolid
-			TNT1 A 0 A_SpawnItem("BurningSkeleton") 
+			TNT1 A 0 A_SpawnItem("BurningSkeleton")
 			TNT1 A -1
 			Stop
 		Pain.ShrinkerDMG:
-			TNT1 A 0 A_JumpIfInventory("GodProtection",1,"Spawn")
+			TNT1 A 0 A_JumpIfInventory("PowerGodProtection",1,"Spawn")
 			TNT1 A 0 A_ChangeFlag("NOPAIN",true)
 			TNT1 A 0 A_ChangeFlag("NODAMAGE",true)
 			TNT1 A 0 A_JumpIfInventory("RottMode", 4, "ShrinkDoug")
@@ -673,7 +674,7 @@ Actor IPFreeley_Shrink : IPFreeley
 		Death.VoodooPuff:
 		Death.DynamiteCoop:
 		Death.Dynamite:
-		Death.Shock:  
+		Death.Shock:
 		Death.Tesla:
 		Death.CalebBullet:
 		Disintegrate:
@@ -1035,25 +1036,28 @@ Actor LudicrousGibsItem : CustomInventory {
 
 Actor SlimeToken : Inventory { Inventory.MaxAmount 1 -INVENTORY.INVBAR }
 
-Actor ROTTNetNoWeapon : Weapon
+actor ROTTNetNoWeapon : Weapon
 {
-	Weapon.SelectionOrder 1
-	Weapon.SlotNumber 1
+    Weapon.SlotNumber 1
+    Weapon.SelectionOrder 1
     Tag "Net"
-	+WEAPON.CHEATNOTWEAPON
-	States
-	{
-		Select:
-			TNT1 AAAAAAAAAAAAA 1 A_Raise
-		Loop
-		Deselect:
-		Goto Ready
-		Fire:
-		Goto Ready
-		Ready:
-			TNT1 A 1 A_WeaponReady
-		Loop
-	}
+    +CHEATNOTWEAPON
+    States
+    {
+      Ready:
+        TNT1 A 1 A_WeaponReady
+        loop
+
+      Deselect:
+        goto Ready
+
+      Select:
+        TNT1 AAAAAAAAAAAAA 1 A_Raise
+        loop
+
+      Fire:
+        goto Ready
+    }
 }
 
 actor ROTTPlayerPainSoundTrigger : Trigger
@@ -1158,14 +1162,14 @@ actor ROTTPlayerFallingSoundTrigger : ROTTPlayerDeathSoundTrigger
     }
 }
 
-Actor RottDamageEnemyBeneath : Trigger
+actor RottDamageEnemyBeneath : Trigger
 {
-	States
-	{
-		Pickup:
-			TNT1 A 0 ACS_NamedExecuteWithResult("RottDamageOnEnemy")
-			Stop
-	}
+    States
+    {
+      Pickup:
+        TNT1 A 0 ACS_NamedExecuteWithResult("RottDamageOnEnemy")
+        stop
+    }
 }
 
 actor NothingEnemyBeneath
