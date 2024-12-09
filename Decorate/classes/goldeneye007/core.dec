@@ -4,8 +4,11 @@ Actor Goldeneye_KnifeToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1
 Actor Goldeneye_KF7Token : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
 Actor Goldeneye_AutoShotgunToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
 Actor Goldeneye_AR33Token : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
+Actor Goldeneye_PhantomToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
 Actor Goldeneye_RocketLauncherToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
+Actor Goldeneye_GrenadeLauncherToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
 Actor Goldeneye_RCP90Token : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
+Actor Goldeneye_CougarToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
 Actor Goldeneye_LaserToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
 Actor Goldeneye_GoldenGunToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
 Actor Goldeneye_SniperToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
@@ -15,8 +18,11 @@ Actor Goldeneye_ThrowingKnivesDualToken : Inventory { -INVENTORY.INVBAR Inventor
 Actor Goldeneye_KF7DualToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor Goldeneye_AutoShotgunDualToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor Goldeneye_AR33DualToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
+Actor Goldeneye_PhantomDualToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor Goldeneye_RocketLauncherDualToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
+Actor Goldeneye_GrenadeLauncherDualToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor Goldeneye_RCP90DualToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
+Actor Goldeneye_CougarDualToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor Goldeneye_LaserDualToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor Goldeneye_GoldenGunDualToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor Goldeneye_SniperDualToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
@@ -41,8 +47,8 @@ Actor BondZoomAmountModifyActive : Inventory { -INVENTORY.INVBAR Inventory.MaxAm
 Actor BondAltToggle : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 2 }
 Actor BondPitchTokens : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 32768 }
 Actor BondAngleTokens : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 131072 }
-Actor BondWeaponToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 19 }
-Actor BondWeaponSwitchToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 19 }
+Actor BondWeaponToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 23 }
+Actor BondWeaponSwitchToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 23 }
 Actor BondAltActivationToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor BondDualWieldToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
 Actor BondDualWieldSpamProtector : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 }
@@ -82,7 +88,9 @@ actor Goldeneye_BulletTracer : FastProjectile
     States
     {
       Spawn:
-        GE00 A -1 Bright
+		TNT1 A 0
+		TNT1 A 1
+        GE00 A -1 Bright A_ChangeVelocity(velx*2,vely*2,velz*2,CVF_REPLACE)
         stop
 
       Death:
@@ -236,6 +244,7 @@ Actor Goldeneye_Cartridge_Standard
 	Mass 8
 	Radius 2
 	Height 2
+	Scale 0.75
 	+MISSILE
 	+CLIENTSIDEONLY
 	+THRUACTORS
@@ -246,17 +255,16 @@ Actor Goldeneye_Cartridge_Standard
 	States
 	{
 		Spawn:
-			GE00 A 1
+			TNT1 A 0
+			TNT1 A 0 A_SetPitch(pitch+frandom(-25,25))
+			TNT1 A 0 A_SetAngle(angle+frandom(-10,10))
+		SpawnLoop:
+			GE00 A 0 A_SetAngle(angle+2.0)
+			GE00 A 1 A_SetPitch(pitch+5.0)
 			loop
 		Death:
-			GE00 A 0 A_JumpIf(waterlevel != 0,"Done")
-			GE00 A 0 A_PlaySound("Goldeneye/Casing",CHAN_BODY)
-			GE00 A 0 ThrustThingZ(0,4,0,0)
-			goto Done
-		Done:
-			GE00 A 500
-			GE00 A 1 A_FadeOut
-			Wait
+			TNT1 A 1 A_PlaySound("Goldeneye/Casing",CHAN_BODY)
+			Stop
 	}
 }
 
