@@ -595,19 +595,20 @@ actor Goldeneye_PP7TracerCoopSoundSource : Goldeneye_PP7TracerSoundSource
 }
 
 // TO MERGE WITH THE PP7 AS A LOADOUT WEAPON
-actor SamsaraGoldeneyeKlobbFiredOnce : Boolean {}
+actor SamsaraGoldenEyeKlobbFiredOnce : Boolean {}
+actor SamsaraGoldenEyeKlobbReloadedOnce : Boolean {}
 
 actor Goldeneye_Klobb : SamsaraGoldenEyeWeapon
 {
     Inventory.PickupMessage "Picked up a Klobb."
-    Inventory.Icon "GEWPP712"
+    Inventory.Icon "GEWKLO12"
     Weapon.SlotNumber 1
     Weapon.SlotPriority 1
     Weapon.SelectionOrder 16
     Weapon.AmmoType "Goldeneye_KlobbMagazine"
     Weapon.AmmoUse 1
-    Obituary "%o was one of the many victims of %k's Walther PP7."
-    Tag "PP7 Special Issue (Silenced)"
+    Obituary "%o was Klobbered by %k."
+    Tag "Klobb"
     +WIMPY_WEAPON
     States
     {
@@ -699,6 +700,8 @@ actor Goldeneye_Klobb : SamsaraGoldenEyeWeapon
       FireAmmoCheck:
         GE01 B 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireAmmoCheckReloadable")
       FireAmmoCheckNonReloadable:
+        GE01 B 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto FireStart
         GE01 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
         GE01 B 0 A_JumpIfInventory("Clip",1,"FireStart")
         goto FireDry
@@ -721,6 +724,8 @@ actor Goldeneye_Klobb : SamsaraGoldenEyeWeapon
         GE01 B 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         GE01 C 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireStartReloadable")
       FireStartNonReloadable:
+        GE01 C 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto FireAttack
         GE01 C 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireAttack")
         GE01 C 0 A_JumpIfInventory("Clip",1,"FireAttack")
         goto FireContinue1
@@ -739,6 +744,8 @@ actor Goldeneye_Klobb : SamsaraGoldenEyeWeapon
       FireReFireCheck:
         GE01 E 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireReFireCheckReloadable")
       FireReFireCheckNonReloadable:
+        GE01 E 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto FireReFire
         GE01 E 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireReFire")
         GE01 E 0 A_JumpIfInventory("Clip",1,"FireReFire")
         goto FireContinue2
@@ -810,8 +817,13 @@ actor Goldeneye_Klobb : SamsaraGoldenEyeWeapon
         GE02 I 0 A_JumpIfInventory("Clip",1,1)
         goto ReloadFinish
         GE02 I 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-        GE02 I 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        GE02 I 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadAmmoReserveGiveMagazine")
+        GE02 I 0 A_JumpIfInventory("SamsaraGoldenEyeKlobbReloadedOnce",0,2)
+        GE02 I 0 A_GiveInventory("SamsaraGoldenEyeKlobbReloadedOnce")
+        goto ReloadAmmoReserveGiveMagazine
         GE02 I 0 A_TakeInventory("Clip",1)
+        GE02 I 0 A_TakeInventory("SamsaraGoldenEyeKlobbReloadedOnce")
+      ReloadAmmoReserveGiveMagazine:
         GE02 I 0 A_GiveInventory("Goldeneye_KlobbMagazine")
         goto ReloadAmmo
 
@@ -918,6 +930,8 @@ actor Goldeneye_Klobb : SamsaraGoldenEyeWeapon
       FireDual:
         GE11 B 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireDualReloadable")
       FireDualNonReloadable:
+        GE11 B 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto FireStartDual
         GE11 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStartDual")
         GE11 B 0 A_JumpIfInventory("Clip",1,"FireStartDual")
         goto FireDryDual
@@ -935,10 +949,12 @@ actor Goldeneye_Klobb : SamsaraGoldenEyeWeapon
         goto FireSetDualOrderDual
 
       FireStartDual:
-        GE11 B 0 Bright A_GiveInventory("BondFiringToken")
+        GE11 B 0 A_GiveInventory("BondFiringToken")
         GE11 B 1 Bright A_AlertMonsters
         GE11 C 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireStartDualReloadable")
       FireStartDualNonReloadable:
+        GE11 C 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto FireDualAttack
         GE11 C 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireDualAttack")
         GE11 C 0 A_JumpIfInventory("Clip",1,"FireDualAttack")
         goto FireDualContinue1
@@ -957,6 +973,8 @@ actor Goldeneye_Klobb : SamsaraGoldenEyeWeapon
       FireDualReFireCheck:
         GE11 E 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireDualReFireCheckReloadable")
       FireDualReFireCheckNonReloadable:
+        GE11 E 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto FireDualReFire
         GE11 E 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireDualReFire")
         GE11 E 0 A_JumpIfInventory("Clip",1,"FireDualReFire")
         goto FireDualContinue2
@@ -1019,8 +1037,13 @@ actor Goldeneye_Klobb : SamsaraGoldenEyeWeapon
         GE12 I 0 A_JumpIfInventory("Clip",1,1)
         goto ReloadFinishDual
         GE12 I 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-        GE12 I 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        GE12 I 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadAmmoReserveGiveMagazineDual")
+        GE12 I 0 A_JumpIfInventory("SamsaraGoldenEyeKlobbReloadedOnce",0,2)
+        GE12 I 0 A_GiveInventory("SamsaraGoldenEyeKlobbReloadedOnce")
+        goto ReloadAmmoReserveGiveMagazineDual
         GE12 I 0 A_TakeInventory("Clip",1)
+        GE12 I 0 A_TakeInventory("SamsaraGoldenEyeKlobbReloadedOnce")
+      ReloadAmmoReserveGiveMagazineDual:
         GE12 I 0 A_GiveInventory("Goldeneye_KlobbDualMagazine")
         goto ReloadAmmoDual
     }
@@ -1041,7 +1064,11 @@ actor SamsaraGoldenEyeKlobbSingleAttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("Clip",1,1)
         stop
+        TNT1 A 0 A_JumpIfInventory("SamsaraGoldenEyeKlobbFiredOnce",0,2)
+        TNT1 A 0 A_GiveInventory("SamsaraGoldenEyeKlobbFiredOnce")
+        goto PickupAttack
         TNT1 A 0 A_TakeInventory("Clip",1)
+        TNT1 A 0 A_TakeInventory("SamsaraGoldenEyeKlobbFiredOnce")
         goto PickupAttack
 
       PickupReloadable:
@@ -1097,7 +1124,11 @@ actor SamsaraGoldenEyeKlobbDualAttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("Clip",1,1)
         stop
+        TNT1 A 0 A_JumpIfInventory("SamsaraGoldenEyeKlobbFiredOnce",0,2)
+        TNT1 A 0 A_GiveInventory("SamsaraGoldenEyeKlobbFiredOnce")
+        goto PickupAttack
         TNT1 A 0 A_TakeInventory("Clip",1)
+        TNT1 A 0 A_TakeInventory("SamsaraGoldenEyeKlobbFiredOnce")
         goto PickupAttack
 
       PickupReloadable:
@@ -1143,14 +1174,14 @@ actor SamsaraGoldenEyeKlobbDualAttackHandler : Trigger
 actor Goldeneye_KlobbMagazine : Ammo
 {
     Inventory.MaxAmount 20
-    Tag "Klobb (Right)"
+    Tag "Klobb Magazine (Right)"
     +IGNORESKILL
 }
 
 actor Goldeneye_KlobbDualMagazine : Ammo
 {
     Inventory.MaxAmount 20
-    Tag "Klobb (Left)"
+    Tag "Klobb Magazine (Left)"
     +IGNORESKILL
 }
 
@@ -1160,7 +1191,7 @@ actor Goldeneye_KlobbTracer : Goldeneye_BulletTracer
     States
     {
       XDeath:
-        TNT1 A 0 A_SetUserVar("user_damage",10)
+        TNT1 A 0 A_SetUserVar("user_damage",6)
         goto Super::XDeath
     }
 }
@@ -1177,7 +1208,7 @@ actor Goldeneye_KlobbTracerSoundSource : Goldeneye_BulletTracerSoundSource
     States
     {
       XDeath:
-        TNT1 A 0 A_SetUserVar("user_damage",10)
+        TNT1 A 0 A_SetUserVar("user_damage",6)
         goto Super::XDeath
     }
 }
