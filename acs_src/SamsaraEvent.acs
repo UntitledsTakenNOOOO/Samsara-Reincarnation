@@ -621,6 +621,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
         SetInventory("SamsaraQuietFootsteps", !GetUserCVar(pln, "samsara_cl_footstepsounds") && !GetCVar("samsara_forcefootstepsounds"));
 
+        SetInventory("SamsaraHasAllLoadoutEquipment", GetCVar("samsara_allloadoutequipment"));
+
 		switch (samsaraClassNum())
 		{
 			case CLASS_DOOM:
@@ -1845,6 +1847,72 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 				if (CheckInventory("BondWatchDetonatorToken") && !CheckWeapon("Goldeneye_WatchDetonator")) { SetInventory("BondWatchDetonatorToken", 0); }
 
+                if (GetCVar("samsara_bond_fallbackranged") > 0) { SetInventory("SamsaraGoldenEyeLoadoutFallbackRanged", GetCVar("samsara_bond_fallbackranged") - 1); }
+                else { SetInventory("SamsaraGoldenEyeLoadoutFallbackRanged", GetUserCVar(pln, "samsara_cl_bond_fallbackranged")); }
+
+                if (GetCVar("samsara_bond_unique2") > 0) { SetInventory("SamsaraGoldenEyeLoadoutUnique2", GetCVar("samsara_bond_unique2") - 1); }
+                else { SetInventory("SamsaraGoldenEyeLoadoutUnique2", GetUserCVar(pln, "samsara_cl_bond_unique2")); }
+
+                if (loadoutPrevValue[pln][SLOT_PISTOL] != CheckInventory("SamsaraGoldenEyeLoadoutFallbackRanged"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_PISTOL, CheckInventory("SamsaraGoldenEyeLoadoutFallbackRanged"), pln);
+                    loadoutPrevValue[pln][SLOT_PISTOL] = CheckInventory("SamsaraGoldenEyeLoadoutFallbackRanged");
+                }
+
+                if (loadoutPrevValue[pln][SLOTCOUNT - 1 - SLOT_UNIQUE2] != CheckInventory("SamsaraGoldenEyeLoadoutUnique2"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOTCOUNT - 1 - SLOT_UNIQUE2, CheckInventory("SamsaraGoldenEyeLoadoutUnique2"), pln);
+                    loadoutPrevValue[pln][SLOTCOUNT - 1 - SLOT_UNIQUE2] = CheckInventory("SamsaraGoldenEyeLoadoutUnique2");
+                }
+
+                if (CheckInventory("Goldeneye_PP7Silenced") || CheckInventory("Goldeneye_Klobb"))
+                {
+                    if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
+                    {
+                        SetInventory("Goldeneye_PP7Silenced", 1);
+                        SetInventory("Goldeneye_Klobb", 1);
+                    } else {
+                        if (!CheckInventory("SamsaraGoldenEyeLoadoutFallbackRanged"))
+                        {
+                            SetInventory("Goldeneye_PP7Silenced", 1);
+
+                            if (CheckWeapon("Goldeneye_Klobb") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon("Goldeneye_PP7Silenced"); }
+
+                            SetInventory("Goldeneye_Klobb", 0);
+                        } else if (CheckInventory("SamsaraGoldenEyeLoadoutFallbackRanged")) {
+                            SetInventory("Goldeneye_Klobb", 1);
+
+                            if (CheckWeapon("Goldeneye_PP7Silenced") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon("Goldeneye_Klobb"); }
+
+                            SetInventory("Goldeneye_PP7Silenced", 0);
+                        }
+                    }
+                }
+
+                if (CheckInventory("Goldeneye_SilencedD5K") || CheckInventory("Goldeneye_ZMG"))
+                {
+                    if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
+                    {
+                        SetInventory("Goldeneye_SilencedD5K", 1);
+                        SetInventory("Goldeneye_ZMG", 1);
+                    } else {
+                        if (!CheckInventory("SamsaraGoldenEyeLoadoutUnique2"))
+                        {
+                            SetInventory("Goldeneye_SilencedD5K", 1);
+
+                            if (CheckWeapon("Goldeneye_ZMG")) { SetWeapon("Goldeneye_SilencedD5K"); }
+
+                            SetInventory("Goldeneye_ZMG", 0);
+                        } else if (CheckInventory("SamsaraGoldenEyeLoadoutUnique2")) {
+                            SetInventory("Goldeneye_ZMG", 1);
+
+                            if (CheckWeapon("Goldeneye_SilencedD5K")) { SetWeapon("Goldeneye_ZMG"); }
+
+                            SetInventory("Goldeneye_SilencedD5K", 0);
+                        }
+                    }
+                }
+
                 if (CheckInventory("Goldeneye_Slapper") &&
                     (CheckInventory("Goldeneye_PP7Silenced") || CheckInventory("Goldeneye_Klobb")) &&
                     CheckInventory("Goldeneye_ThrowingKnives") && CheckInventory("Goldeneye_KF7Soviet") && CheckInventory("Goldeneye_AutoShotgun") &&
@@ -1864,24 +1932,6 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                     CheckInventory("Goldeneye_SniperDualToken") && CheckInventory("Goldeneye_D5KDualToken") && CheckInventory("Goldeneye_GoldPP7") &&
                     !CheckInventory("Goldeneye_GoldPP7DualToken"))
                 { GiveInventory("Goldeneye_GoldPP7DualToken", 1); }
-
-                if (GetCVar("samsara_bond_fallbackranged") > 0) { SetInventory("SamsaraGoldenEyeLoadoutFallbackRanged", GetCVar("samsara_bond_fallbackranged") - 1); }
-                else { SetInventory("SamsaraGoldenEyeLoadoutFallbackRanged", GetUserCVar(pln, "samsara_cl_bond_fallbackranged")); }
-
-                if (GetCVar("samsara_bond_unique2") > 0) { SetInventory("SamsaraGoldenEyeLoadoutUnique2", GetCVar("samsara_bond_unique2") - 1); }
-                else { SetInventory("SamsaraGoldenEyeLoadoutUnique2", GetUserCVar(pln, "samsara_cl_bond_unique2")); }
-
-                if (loadoutPrevValue[pln][SLOT_PISTOL] != CheckInventory("SamsaraGoldenEyeLoadoutFallbackRanged"))
-                {
-                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_PISTOL, CheckInventory("SamsaraGoldenEyeLoadoutFallbackRanged"), pln);
-                    loadoutPrevValue[pln][SLOT_PISTOL] = CheckInventory("SamsaraGoldenEyeLoadoutFallbackRanged");
-                }
-
-                if (loadoutPrevValue[pln][SLOTCOUNT - 1 - SLOT_UNIQUE2] != CheckInventory("SamsaraGoldenEyeLoadoutUnique2"))
-                {
-                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOTCOUNT - 1 - SLOT_UNIQUE2, CheckInventory("SamsaraGoldenEyeLoadoutUnique2"), pln);
-                    loadoutPrevValue[pln][SLOTCOUNT - 1 - SLOT_UNIQUE2] = CheckInventory("SamsaraGoldenEyeLoadoutUnique2");
-                }
 				break;
 
 			case CLASS_CATACOMB:
@@ -2151,6 +2201,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		TakeInventory("WeaponGetYaaaay",  1);
 		TakeInventory("WeaponGetYaaaay2", 1);
 		//if (GetCvar("samsara_lmsrules") == 0) { ConvertClassWeapons(-1); } seems pointless to have this, but will leave commented for now
+		TakeInventory("SamsaraPistolStartMapChangeHack", 1);
 
 		if (!isZDoom() && GetCVar("samsara_banmorphovum") && CheckInventory("SamsaraCorvusArtiEgg"))
 		{
