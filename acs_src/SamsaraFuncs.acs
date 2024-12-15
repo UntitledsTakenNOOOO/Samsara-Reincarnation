@@ -162,7 +162,7 @@ function void ApplyLMS(void)
 	{
 		for (i = 0; i < UNIQUECOUNT; i++)
 		{
-			if ((!CheckInventory("DoomguyClass") && !CheckInventory("WolfenClass")) || ((CheckInventory("DoomguyClass") || CheckInventory("WolfenClass")) && i == 0)) { GiveUnique(classnum, i); } // temporary hack for having triplicated unique entries for altclass messages
+			if ((!CheckInventory("DoomguyClass") && !CheckInventory("WolfenClass")) || ((CheckInventory("DoomguyClass") || CheckInventory("WolfenClass")) && i == 0)) { GiveUnique(classnum, i, 2); } // temporary hack for having triplicated unique entries for altclass messages
 		}
 	}
 
@@ -498,11 +498,6 @@ function void ApplyLMS(void)
 				GiveInventory("Goldeneye_GoldenGunDualToken", 1);
 			}
 		}
-
-		if (GetCVar("samsara_lmsuniques")) {
-			GiveInventory("Goldeneye_SniperDualToken", 1);
-			GiveInventory("Goldeneye_D5KDualToken", 1);
-		}
 	}
 
 	// Daniel Garner
@@ -724,14 +719,14 @@ function int SamsaraClientVars(void)
 	return (switchOnPickup << 4) + (weaponBar << 3) + (ballgag << 2) + (smoothAnims << 1) + wolfmove;
 }
 
-function int GiveUnique(int cnum, int unum)
+function int GiveUnique(int cnum, int unum, int startmode) // startmode 1 = uniquestart, 2 = LMS
 {
-	return _giveunique(cnum, unum, 0, 0);
+	return _giveunique(cnum, unum, 0, 0, startmode);
 }
 
 int TempUniques[UNIQUECOUNT];
 
-function int _giveunique(int cnum, int unum, int ignoreinv, int nopd)
+function int _giveunique(int cnum, int unum, int ignoreinv, int nopd, int startmode)
 {
 	int success;
 	int i, j, tmpcount;
@@ -753,6 +748,8 @@ function int _giveunique(int cnum, int unum, int ignoreinv, int nopd)
 
 		unum = TempUniques[random(0, tmpcount-1)];
 	}
+
+    int ounum = unum; // for custom unique giving script
 
 	unum *= 2;
 	int uanum = unum + 1;
@@ -780,18 +777,22 @@ function int _giveunique(int cnum, int unum, int ignoreinv, int nopd)
 	//   or
 	//  - You can have multiple duplicates of the unique, and you're not full
 
-	if (strcmp(unique, "") &&
-		((!CheckInventory(unique) || ignoreinv) ||
-		  (uniqueMax <= 1 && (!strcmp(unammo, "") || unammoMax == 0)) ||
-		  (unammoMax != 0 && (CheckInventory(unammo) != unammoMax || ignoreinv)) ||
-		  (uniqueMax > 1 && (CheckInventory(unique) != uniqueMax || ignoreinv))
-		)
-	   )
-	{
-		GiveInventory(unique, unCount);
-		GiveInventory(unammo, unammoCount);
-		success = 1;
-	}
+    if (CanGiveCustomUnique[cnum][ounum]) { success = ACS_NamedExecuteWithResult("Samsara_GiveCustomUnique", ounum, startmode); }
+    else
+    {
+        if (strcmp(unique, "") &&
+            ((!CheckInventory(unique) || ignoreinv) ||
+              (uniqueMax <= 1 && (!strcmp(unammo, "") || unammoMax == 0)) ||
+              (unammoMax != 0 && (CheckInventory(unammo) != unammoMax || ignoreinv)) ||
+              (uniqueMax > 1 && (CheckInventory(unique) != uniqueMax || ignoreinv))
+            )
+           )
+        {
+            GiveInventory(unique, unCount);
+            GiveInventory(unammo, unammoCount);
+            success = 1;
+        }
+    }
 
 	return success;
 }
@@ -860,7 +861,7 @@ function int ConvertClassWeapons(int classnum)
 				k = j;
 				TakeUnique(i, j);
 
-				while (!_giveunique(classnum, k, 1, 0) && k >= 0) { k--; }
+				while (!_giveunique(classnum, k, 1, 0, 0) && k >= 0) { k--; }
 			}
 		}
 	}
@@ -921,7 +922,7 @@ function int HandleUniqueSpawn(int respawning)
 			// Fallthrough
 
 		case 3:
-			GiveUnique(classnum, -1);
+			GiveUnique(classnum, -1, 1);
 			break;
 
 		case 2:
@@ -931,7 +932,7 @@ function int HandleUniqueSpawn(int respawning)
 		case 4:
 			for (i = 0; i < UNIQUECOUNT; i++)
 			{
-				if ((!CheckInventory("DoomguyClass") && !CheckInventory("WolfenClass")) || ((CheckInventory("DoomguyClass") || CheckInventory("WolfenClass")) && i == 0)) { GiveUnique(classnum, i); } // temporary hack for having triplicated unique entries for altclass messages
+				if ((!CheckInventory("DoomguyClass") && !CheckInventory("WolfenClass")) || ((CheckInventory("DoomguyClass") || CheckInventory("WolfenClass")) && i == 0)) { GiveUnique(classnum, i, 1); } // temporary hack for having triplicated unique entries for altclass messages
 			}
 			break;
 	}

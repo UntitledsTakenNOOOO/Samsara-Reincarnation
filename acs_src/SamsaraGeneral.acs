@@ -4879,6 +4879,110 @@ Script "Samsara_MapInventoryLogger" (int message) clientside
 	Log(s:msgColors[GetCVar("msg0color")], s:logmsg);
 }
 
+script "Samsara_GiveCustomUnique" (int unum, int startmode)
+{
+    int result = 0;
+
+    bool hasdualtoken = false;
+
+    int pln = PlayerNumber();
+    str altclass = "Placeholder";
+    str clientloadout = "Placeholder";
+    str serverloadout = "Placeholder";
+    int loadoutchoice = 0;
+    bool completeloadout = GetCVar("samsara_allloadoutequipment");
+
+    switch (samsaraClassNum())
+    {
+      case CLASS_BOND:
+        switch (unum)
+        {
+          case 0: // Unique 1
+            hasdualtoken = CheckInventory("Goldeneye_SniperDualToken");
+
+            if (!CheckInventory("Goldeneye_SniperRifle"))
+            {
+                GiveInventory("Goldeneye_SniperRifle", 1);
+                if (startmode >= 2) { GiveInventory("Goldeneye_SniperDualToken", 1); }
+                GiveInventory("Shell", 5);
+                result = 1;
+            } else if (!hasdualtoken) {
+                GiveInventory("Goldeneye_SniperDualToken", 1);
+                GiveInventory("Shell", 10); // 5 + 5
+                result = 1;
+            } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell")) {
+                GiveInventory("Shell", 10); // 5 + 5
+                result = 1;
+            }
+            break;
+
+          case 1: // Unique 2
+            clientloadout = "samsara_cl_bond_unique2";
+            serverloadout = "samsara_bond_unique2";
+
+            if (GetCVar(serverloadout) > 0) { loadoutchoice = GetCVar(serverloadout) - 1; }
+            else { loadoutchoice = GetUserCVar(pln, clientloadout); }
+
+            hasdualtoken = CheckInventory("Goldeneye_D5KDualToken");
+
+            if (loadoutchoice <= 0 || completeloadout) // Silenced D5K
+            {
+                if (!CheckInventory("Goldeneye_SilencedD5K"))
+                {
+                    GiveInventory("Goldeneye_SilencedD5K", 1);
+                    if (startmode >= 2) { GiveInventory("Goldeneye_D5KDualToken", 1); }
+                    GiveInventory("Clip", 40); // 10 + 30
+                    result = 1;
+                } else if (!hasdualtoken) {
+                    GiveInventory("Goldeneye_D5KDualToken", 1);
+                    GiveInventory("Clip", 20); // 10 + 10
+                    result = 1;
+                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip")) {
+                    GiveInventory("Clip", 20); // 10 + 10
+                    result = 1;
+                }
+            }
+
+            if (loadoutchoice >= 1 || completeloadout) // ZMG
+            {
+                if (!CheckInventory("Goldeneye_ZMG"))
+                {
+                    GiveInventory("Goldeneye_ZMG", 1);
+                    if (startmode >= 2) { GiveInventory("Goldeneye_D5KDualToken", 1); }
+                    GiveInventory("Clip", 42); // 10 + 32
+                    result = 1;
+                } else if (!hasdualtoken) {
+                    GiveInventory("Goldeneye_D5KDualToken", 1);
+                    GiveInventory("Clip", 20); // 10 + 10
+                    result = 1;
+                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip")) {
+                    GiveInventory("Clip", 20); // 10 + 10
+                    result = 1;
+                }
+            }
+            break;
+
+          case 2: // Unique 3
+            if (!CheckInventory("Goldeneye_WatchMagnet") && !CheckInventory("Goldeneye_WatchLaser") && !CheckInventory("Goldeneye_WatchDetonator") &&
+                !CheckInventory("Goldeneye_TimedMines") && !CheckInventory("Goldeneye_ProximityMines") && !CheckInventory("Goldeneye_RemoteMines"))
+            {
+                GiveInventory("Goldeneye_GadgetGranter", 1);
+                result = 1;
+            } else if (CheckInventory("RocketAmmo") < GetAmmoCapacity("RocketAmmo")) {
+                GiveInventory("Goldeneye_GadgetGranter", 1);
+                result = 1;
+            }
+            break;
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    SetResultValue(result);
+}
+
 //======================================================================================================================
 //											Spawn Slots that respawn in the map
 //======================================================================================================================
