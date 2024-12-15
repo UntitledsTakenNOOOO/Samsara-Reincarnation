@@ -4883,14 +4883,20 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
 {
     int result = 0;
 
-    bool hasdualtoken = false;
-
     int pln = PlayerNumber();
+
     str altclass = "Placeholder";
+    int altclasschoice = 0;
+
     str clientloadout = "Placeholder";
     str serverloadout = "Placeholder";
     int loadoutchoice = 0;
-    bool completeloadout = GetCVar("samsara_allloadoutequipment");
+    bool completeloadout = false;
+
+    if (startmode >= 1) { completeloadout = GetCVar("samsara_allloadoutequipment"); }
+    else { completeloadout = CheckInventory("SamsaraHasAllLoadoutEquipment"); }
+
+    bool hasdualtoken = false;
 
     switch (samsaraClassNum())
     {
@@ -4917,11 +4923,15 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
             break;
 
           case 1: // Unique 2
-            clientloadout = "samsara_cl_bond_unique2";
-            serverloadout = "samsara_bond_unique2";
+            if (startmode >= 1)
+            {
+                clientloadout = "samsara_cl_bond_unique2";
+                serverloadout = "samsara_bond_unique2";
 
-            if (GetCVar(serverloadout) > 0) { loadoutchoice = GetCVar(serverloadout) - 1; }
-            else { loadoutchoice = GetUserCVar(pln, clientloadout); }
+                if (GetCVar(serverloadout) > 0) { loadoutchoice = GetCVar(serverloadout) - 1; }
+                else { loadoutchoice = GetUserCVar(pln, clientloadout); }
+            }
+            else { loadoutchoice = CheckInventory("SamsaraGoldenEyeLoadoutUnique2"); }
 
             hasdualtoken = CheckInventory("Goldeneye_D5KDualToken");
 
