@@ -43,6 +43,55 @@ str miscCharGameTypesStr[CLASSCOUNT] =
 	""
 };
 
+function void createCellCheckers(str cellCheckClass)
+{
+	for (int a = 512; a <= 0.5; a += 1024)
+	{
+		int fixedA = a * 1.0;
+
+		for (int b = 512; b <= 0.5; b += 1024)
+		{
+			int fixedB = b * 1.0;
+
+			SpawnForced(cellCheckClass, fixedA, fixedB, 0, 0);
+
+			if (b > 0)
+				b = -b - 1024;
+			else
+				b = -b;
+		}
+
+		if (a > 0)
+			a = -a - 1024;
+		else
+			a = -a;
+	}
+}
+
+function void createSpawnCheckers(str spawnCheckClass, int cvarValue)
+{
+	int chanceToSpawn = (cvarValue * cvarValue)/10;
+
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int newTid = UniqueTID();
+
+	for (int a = -512; a < 512; a += 64)
+	{
+		int xPos = x + (a * 1.0);
+
+		for (int b = -512; b < 512; b += 64)
+		{
+			if (random(1,1500) <= chanceToSpawn)
+			{
+				int yPos = y + (b * 1.0);
+
+				SpawnForced("DetermineValidSpawnTestObject", xPos, yPos, 0, newtid);
+				Spawn(spawnCheckClass, xPos, yPos, GetActorFloorZ(newtid), 0);
+			}
+		}
+	}
+}
 
 Script "DetermineValidSpawn" (void)
 {
@@ -52,43 +101,17 @@ Script "DetermineValidSpawn" (void)
 		terminate;
 	}
 
-	for(int a = 512; a <= 0.5; a+=1024)
-	{
-		for(int b = 512; b <= 0.5; b+=1024)
-		{
-			if(GetCVar("samsara_zscriptready") >= 1)
-				SpawnForced("DetermineValidCellZS",a*1.0,b*1.0,0,0);
-			else
-				SpawnForced("DetermineValidCell",a*1.0,b*1.0,0,0);
-			if(b > 0)
-				b = -b - 1024;
-			else
-				b = -b;
-		}
-		if(a > 0)
-			a = -a - 1024;
-		else
-			a = -a;
-	}
+	str cellCheckClass = GetCVar("samsara_zscriptready") >= 1 ? "DetermineValidCellZS" : "DetermineValidCell";
+
+	createCellCheckers(cellCheckClass);
 }
 
 script "CellDoneScanning" (void)
 {
-	int newtid = UniqueTid();
-	for(int a = -512; a < 512; a+=64)
-	{
-		for(int b = -512; b < 512; b+=64)
-		{
-			if(random(1,1500) <= (GetCvar("samsara_randomcharacters")*GetCvar("samsara_randomcharacters"))/10)
-			{
-				SpawnForced("DetermineValidSpawnTestObject",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),0,newtid);
-				if(GetCVar("samsara_zscriptready") >= 1)
-					Spawn("DetermineValidSpawnZS",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
-				else
-					Spawn("DetermineValidSpawn",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
-			}
-		}
-	}
+	str spawnCheckClass = GetCVar("samsara_zscriptready") >= 1 ? "DetermineValidSpawnZS" : "DetermineValidSpawn";
+	int randomCharactersCVar = GetCVar("samsara_randomcharacters");
+
+	createSpawnCheckers(spawnCheckClass, randomCharactersCVar);
 }
 
 script "IsThisSpawnSpotorCell" (int type)
@@ -723,43 +746,17 @@ Script "DetermineValidSpawnItems" (void)
 		terminate;
 	}
 
-	for(int a = 512; a <= 0.5; a+=1024)
-	{
-		for(int b = 512; b <= 0.5; b+=1024)
-		{
-			if(GetCVar("samsara_zscriptready") >= 1)
-				SpawnForced("DetermineValidCellItemsZS",a*1.0,b*1.0,0,0);
-			else
-				SpawnForced("DetermineValidCellItems",a*1.0,b*1.0,0,0);
-			if(b > 0)
-				b = -b - 1024;
-			else
-				b = -b;
-		}
-		if(a > 0)
-			a = -a - 1024;
-		else
-			a = -a;
-	}
+	str cellCheckClass = GetCVar("samsara_zscriptready") >= 1 ? "DetermineValidCellItemsZS" : "DetermineValidCellItems";
+
+	createCellCheckers(cellCheckClass);
 }
 
 script "CellDoneScanningItems" (void)
 {
-	int newtid = UniqueTid();
-	for(int a = -512; a < 512; a+=64)
-	{
-		for(int b = -512; b < 512; b+=64)
-		{
-			if(random(1,1500) <= (GetCvar("samsara_randomitems")*GetCvar("samsara_randomitems"))/10)
-			{
-				SpawnForced("DetermineValidSpawnTestObject",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),0,newtid);
-				if(GetCVar("samsara_zscriptready") >= 1)
-					Spawn("DetermineValidSpawnItemsZS",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
-				else
-					Spawn("DetermineValidSpawnItems",GetActorX(0)+(a*1.0),GetActorY(0)+(b*1.0),GetActorFloorZ(newtid),0);
-			}
-		}
-	}
+	str spawnCheckClass = GetCVar("samsara_zscriptready") >= 1 ? "DetermineValidSpawnItemsZS" : "DetermineValidSpawnItems";
+	int randomItemsCVar = GetCVar("samsara_randomitems");
+
+	createSpawnCheckers(spawnCheckClass, randomItemsCVar);
 }
 
 script "ItemsOnMap" Open
