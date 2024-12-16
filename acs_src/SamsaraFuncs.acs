@@ -2,12 +2,12 @@
 #define BLOOD_SMALL 2
 #define BLOOD_SPRAY 3
 
-function int GiveClassWeapon(int class, int slot, int ammoMode)
+function int GiveClassWeapon(int class, int slot, int ammoMode, int startmode) // startmode 1 = equipmentstart (or similar), 2 = LMS
 {
-	return _giveclassweapon(class, slot, ammoMode, 0, 0);
+	return _giveclassweapon(class, slot, ammoMode, 0, 0, startmode);
 }
 
-function int _giveclassweapon(int class, int slot, int ammoMode, int dropped, int nopd)
+function int _giveclassweapon(int class, int slot, int ammoMode, int dropped, int nopd, int startmode)
 {
 	int weapon = ClassWeapons[class][slot][S_WEP];
 	int ammo1  = ClassWeapons[class][slot][S_AMMO1];
@@ -40,8 +40,12 @@ function int _giveclassweapon(int class, int slot, int ammoMode, int dropped, in
 	{
 		if (StrLen(SlotItems[slot])) { GiveInventory(SlotItems[slot], 1); }
 
-		success = 1;
-		GiveInventory(weapon, 1);
+        if (CanGiveCustomSlot[class][slot]) { success = ACS_NamedExecuteWithResult("Samsara_GiveCustomSlot", slot, dropped, startmode, ammomode); }
+        else
+        {
+            success = 1;
+            GiveInventory(weapon, 1);
+        }
 
 		if ((success && array_pickupswitch[PlayerNumber()] && !hasWep &&
 			(array_pickupswitch[PlayerNumber()] >= 2 || slot > ClassWeaponSlot())
@@ -65,6 +69,9 @@ function int _giveclassweapon(int class, int slot, int ammoMode, int dropped, in
 			case 2:
 				if (hasAmmo & 1) { TakeInventory(ammo1, (CheckInventory(ammo1) - a1count) / 2); }
 				if (hasAmmo & 2) { TakeInventory(ammo2, (CheckInventory(ammo2) - a2count) / 2); }
+				break;
+
+			default:
 				break;
 		}
 	}
@@ -151,11 +158,11 @@ function void ApplyLMS(void)
 	else if (CheckInventory("Q3Class")) { GiveInventory("Q3AmmoRegenerationDummy", 1); }
 	else if (!CheckInventory("CatacombClass")) { GiveInventory("Backpack", 1); }
 
-	for (i = SLOT_FIST; i < SLOT_BFG9000; i++) { GiveClassWeapon(classNum, i, 1); }
+	for (i = SLOT_FIST; i < SLOT_BFG9000; i++) { GiveClassWeapon(classNum, i, 1, 2); }
 
 	if (GetCVAR("samsara_lmsskulltag"))
 	{
-		for (i = SLOT_MINIGUN; i < SLOT_BFG10K; i++) { GiveClassWeapon(classNum, i, 1); }
+		for (i = SLOT_MINIGUN; i < SLOT_BFG10K; i++) { GiveClassWeapon(classNum, i, 1, 2); }
 	}
 
 	if (GetCVar("samsara_lmsuniques"))
@@ -169,10 +176,10 @@ function void ApplyLMS(void)
 	//if (StrLen(LMSItems[classNum])) { GiveInventory(LMSItems[classNum], 1); }
 	if (GetCVar("samsara_lmsult"))
 	{
-		GiveClassWeapon(classNum, SLOT_BFG9000, 1);
+		GiveClassWeapon(classNum, SLOT_BFG9000, 1, 2);
 		if (GetCVAR("samsara_lmsskulltag"))
 		{
-			GiveClassWeapon(classNum, SLOT_BFG10K, 1);
+			GiveClassWeapon(classNum, SLOT_BFG10K, 1, 2);
 		}
 	}
 
@@ -475,30 +482,8 @@ function void ApplyLMS(void)
 		}
 	}
 
-	// Bond
-	if (CheckInventory("BondClass")) {
-		GiveInventory("Goldeneye_PP7DualToken", 1);
-		GiveInventory("Goldeneye_ThrowingKnivesDualToken", 1);
-		GiveInventory("Goldeneye_KF7DualToken", 1);
-		GiveInventory("Goldeneye_AutoShotgunDualToken", 1);
-		GiveInventory("Goldeneye_AR33DualToken", 1);
-		GiveInventory("Goldeneye_RocketLauncherDualToken", 1);
-		GiveInventory("Goldeneye_RCP90DualToken", 1);
-
-		if (GetCVar("samsara_lmsskulltag")) {
-			GiveInventory("Goldeneye_PhantomDualToken", 1);
-			GiveInventory("Goldeneye_GrenadeLauncherDualToken", 1);
-			GiveInventory("Goldeneye_CougarDualToken", 1);
-		}
-
-		if (GetCVar("samsara_lmsult")) {
-			GiveInventory("Goldeneye_LaserDualToken", 1);
-
-			if (GetCVar("samsara_lmsskulltag")) {
-				GiveInventory("Goldeneye_GoldenGunDualToken", 1);
-			}
-		}
-	}
+    // Bond
+    if (CheckInventory("BondClass")) { GiveInventory("Goldeneye_PP7DualToken", 1); }
 
 	// Daniel Garner
 	if (CheckInventory("PainkillerClass")) {
@@ -719,7 +704,7 @@ function int SamsaraClientVars(void)
 	return (switchOnPickup << 4) + (weaponBar << 3) + (ballgag << 2) + (smoothAnims << 1) + wolfmove;
 }
 
-function int GiveUnique(int cnum, int unum, int startmode) // startmode 1 = uniquestart, 2 = LMS
+function int GiveUnique(int cnum, int unum, int startmode) // startmode 1 = uniquestart (or similar), 2 = LMS
 {
 	return _giveunique(cnum, unum, 0, 0, startmode);
 }
@@ -849,7 +834,7 @@ function int ConvertClassWeapons(int classnum)
 			if (HasClassWeapon(i, j))
 			{
 				TakeInventory(ClassWeapons[i][j][S_WEP], INTMAX);
-				if (classnum != -1) { GiveClassWeapon(classnum, j, 1); }
+				if (classnum != -1) { GiveClassWeapon(classnum, j, 1, 0); }
 				ret += 1;
 			}
 		}
@@ -951,7 +936,7 @@ function int HandleChainsawSpawn(int respawning)
 	if (cs == 2) { ammomode = 1; }
 	
 	if (!CheckInventory("SamsaraSlotIGiven"))
-		GiveClassWeapon(classnum, SLOT_CHAINSAW, ammomode);
+		GiveClassWeapon(classnum, SLOT_CHAINSAW, ammomode, 1);
 	
 	if (CheckInventory("MarathonClass")) {
 		GiveInventory("CanDualPistols", 1);
@@ -972,7 +957,7 @@ function int HandleShotgunSpawn(int respawning)
 	if (cs == 2) { ammomode = 1; }
 
 	if (!CheckInventory("SamsaraSlotIIGiven"))
-		GiveClassWeapon(classnum, SLOT_SHOTGUN, ammomode);
+		GiveClassWeapon(classnum, SLOT_SHOTGUN, ammomode, 1);
 	
 	GiveInventory("SamsaraSlotIIGiven", 1);
 	return 1;
