@@ -104,6 +104,8 @@ actor SamsaraDarkForcesBowcasterAttackHandler : Trigger
 
 actor bowcaster_shot
 {
+    var int user_angle;
+    var int user_counter;
     Projectile
     Radius 4
     Height 4
@@ -112,13 +114,11 @@ actor bowcaster_shot
     DamageType "DoomPlasma"
     Scale 0.75
     Obituary "%k destroyed %o with the Wookie Bowcaster."
-    var int user_counter;
-    var int user_angle;
     +FORCERADIUSDMG
     States
     {
       Spawn:
-        TNT1 A 0
+        PFUS E 0 Bright
         TNT1 A 0 A_SetUserVar("user_counter",0)
         TNT1 A 0 A_SetUserVar("user_angle",0)
       SpawnLoop:
@@ -129,12 +129,11 @@ actor bowcaster_shot
         TNT1 A 0 A_PlaySound("katarn/exmort",CHAN_VOICE)
         TNT1 A 0 A_Explode(random(84,108),128)
         TNT1 A 8 A_SpawnItemEx("bowcaster_puff",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
-        Goto DeathLoop
       DeathLoop:
         TNT1 A 0 A_CustomMissile("fusion_shot",0,0,user_angle,CMF_AIMDIRECTION|CMF_TRACKOWNER)
         TNT1 A 0 A_SetUserVar("user_counter",user_counter+1)
         TNT1 A 0 A_SetUserVar("user_angle",user_angle+30)
-        TNT1 A 0 A_JumpIf(user_counter<=12,"DeathLoop")
+        TNT1 A 0 A_JumpIf(user_counter <= 12, "DeathLoop")
         stop
     }
 }
@@ -145,6 +144,10 @@ actor bowcaster_shot2 : bowcaster_shot
     +THRUSPECIES
     States
     {
+      Death:
+        TNT1 A 0 A_PlaySound("katarn/exmort",CHAN_VOICE)
+        TNT1 A 0 A_Explode(random(84,108),128)
+        TNT1 A 8 A_SpawnItemEx("bowcaster_puff",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
       DeathLoop:
         TNT1 A 0 A_CustomMissile("fusion_shot2",0,0,user_angle,CMF_AIMDIRECTION|CMF_TRACKOWNER)
         TNT1 A 0 A_SetUserVar("user_counter",user_counter+1)
@@ -156,8 +159,8 @@ actor bowcaster_shot2 : bowcaster_shot
 
 actor bowcaster_puff : spark_puff
 {
+    RenderStyle "Normal"
     Scale 0.75
-    Renderstyle Normal
     States
     {
       Spawn:
