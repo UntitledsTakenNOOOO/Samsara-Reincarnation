@@ -2,7 +2,7 @@
 #define BLOOD_SMALL 2
 #define BLOOD_SPRAY 3
 
-function int GiveClassWeapon(int class, int slot, int ammoMode, int startmode) // startmode 1 = equipmentstart (or similar), 2 = LMS
+function int GiveClassWeapon(int class, int slot, int ammoMode, int startmode) // startmode -1 = LMS, 1 or higher = equipmentstart (or similar)
 {
 	return _giveclassweapon(class, slot, ammoMode, 0, 0, startmode);
 }
@@ -40,7 +40,7 @@ function int _giveclassweapon(int class, int slot, int ammoMode, int dropped, in
 	{
 		if (StrLen(SlotItems[slot])) { GiveInventory(SlotItems[slot], 1); }
 
-        int giveScriptResult = ACS_NamedExecuteWithResult("Samsara_GiveCustomSlot", slot, dropped, startmode, ammomode);
+        int giveScriptResult = ACS_NamedExecuteWithResult("Samsara_GiveCustomSlot", slot, dropped, startmode);
 
         if (giveScriptResult > -1) { success = giveScriptResult; }
         else
@@ -160,28 +160,28 @@ function void ApplyLMS(void)
 	else if (CheckInventory("Q3Class")) { GiveInventory("Q3AmmoRegenerationDummy", 1); }
 	else if (!CheckInventory("CatacombClass")) { GiveInventory("Backpack", 1); }
 
-	for (i = SLOT_FIST; i < SLOT_BFG9000; i++) { GiveClassWeapon(classNum, i, 1, 2); }
+	for (i = SLOT_FIST; i < SLOT_BFG9000; i++) { GiveClassWeapon(classNum, i, 1, -1); }
 
 	if (GetCVAR("samsara_lmsskulltag"))
 	{
-		for (i = SLOT_MINIGUN; i < SLOT_BFG10K; i++) { GiveClassWeapon(classNum, i, 1, 2); }
+		for (i = SLOT_MINIGUN; i < SLOT_BFG10K; i++) { GiveClassWeapon(classNum, i, 1, -1); }
 	}
 
 	if (GetCVar("samsara_lmsuniques"))
 	{
 		for (i = 0; i < UNIQUECOUNT; i++)
 		{
-			if ((!CheckInventory("DoomguyClass") && !CheckInventory("WolfenClass")) || ((CheckInventory("DoomguyClass") || CheckInventory("WolfenClass")) && i == 0)) { GiveUnique(classnum, i, 2); } // temporary hack for having triplicated unique entries for altclass messages
+			if ((!CheckInventory("DoomguyClass") && !CheckInventory("WolfenClass")) || ((CheckInventory("DoomguyClass") || CheckInventory("WolfenClass")) && i == 0)) { GiveUnique(classnum, i, -1); } // temporary hack for having triplicated unique entries for altclass messages
 		}
 	}
 
 	//if (StrLen(LMSItems[classNum])) { GiveInventory(LMSItems[classNum], 1); }
 	if (GetCVar("samsara_lmsult"))
 	{
-		GiveClassWeapon(classNum, SLOT_BFG9000, 1, 2);
+		GiveClassWeapon(classNum, SLOT_BFG9000, 1, -1);
 		if (GetCVAR("samsara_lmsskulltag"))
 		{
-			GiveClassWeapon(classNum, SLOT_BFG10K, 1, 2);
+			GiveClassWeapon(classNum, SLOT_BFG10K, 1, -1);
 		}
 	}
 
@@ -696,7 +696,7 @@ function int SamsaraClientVars(void)
 	return (switchOnPickup << 4) + (weaponBar << 3) + (ballgag << 2) + (smoothAnims << 1) + wolfmove;
 }
 
-function int GiveUnique(int cnum, int unum, int startmode) // startmode 1 = uniquestart (or similar), 2 = LMS
+function int GiveUnique(int cnum, int unum, int startmode) // startmode -1 = LMS, 1 or higher = uniquestart (or similar)
 {
 	return _giveunique(cnum, unum, 0, 0, startmode);
 }
@@ -893,7 +893,10 @@ function int HandleUniqueSpawn(int respawning)
 	int classnum = samsaraClassNum();
 	int i;
 
-    if (isLMS() || GetCVar("samsara_lmsrules")) { return 0; }
+    if (cs > 4) { cs = 4; }
+    else if (cs < 0) { cs = 0; }
+
+    if (cs == 0 || isLMS() || GetCVar("samsara_lmsrules")) { return 0; }
 
 	switch (cs)
 	{
@@ -902,7 +905,7 @@ function int HandleUniqueSpawn(int respawning)
 			// Fallthrough
 
 		case 3:
-			GiveUnique(classnum, -1, 1);
+			GiveUnique(classnum, -1, cs);
 			break;
 
 		case 2:
@@ -912,7 +915,7 @@ function int HandleUniqueSpawn(int respawning)
 		case 4:
 			for (i = 0; i < UNIQUECOUNT; i++)
 			{
-				if ((!CheckInventory("DoomguyClass") && !CheckInventory("WolfenClass")) || ((CheckInventory("DoomguyClass") || CheckInventory("WolfenClass")) && i == 0)) { GiveUnique(classnum, i, 1); } // temporary hack for having triplicated unique entries for altclass messages
+				if ((!CheckInventory("DoomguyClass") && !CheckInventory("WolfenClass")) || ((CheckInventory("DoomguyClass") || CheckInventory("WolfenClass")) && i == 0)) { GiveUnique(classnum, i, cs); } // temporary hack for having triplicated unique entries for altclass messages
 			}
 			break;
 	}
@@ -926,12 +929,15 @@ function int HandleChainsawSpawn(int respawning)
 	int classnum = samsaraClassNum();
 	int ammomode = 3;
 
+    if (cs > 2) { cs = 2; }
+    else if (cs < 0) { cs = 0; }
+
 	if (cs == 0 || (respawning && isCoop()) || isLMS() || GetCVar("samsara_lmsrules")) { return 0; }
 
 	if (cs == 2) { ammomode = 1; }
 	
 	if (!CheckInventory("SamsaraSlotIGiven"))
-		GiveClassWeapon(classnum, SLOT_CHAINSAW, ammomode, 1);
+		GiveClassWeapon(classnum, SLOT_CHAINSAW, ammomode, cs);
 	
 	if (CheckInventory("MarathonClass")) {
 		GiveInventory("CanDualPistols", 1);
@@ -947,12 +953,15 @@ function int HandleShotgunSpawn(int respawning)
 	int classnum = samsaraClassNum();
 	int ammomode = 3;
 
+    if (cs > 2) { cs = 2; }
+    else if (cs < 0) { cs = 0; }
+
 	if (cs == 0 || (respawning && isCoop()) || isLMS() || GetCVar("samsara_lmsrules")) { return 0; }
 
 	if (cs == 2) { ammomode = 1; }
 
 	if (!CheckInventory("SamsaraSlotIIGiven"))
-		GiveClassWeapon(classnum, SLOT_SHOTGUN, ammomode, 1);
+		GiveClassWeapon(classnum, SLOT_SHOTGUN, ammomode, cs);
 	
 	GiveInventory("SamsaraSlotIIGiven", 1);
 	return 1;
