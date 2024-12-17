@@ -153,13 +153,7 @@ function void ApplyLMS(void)
 	if (GetActorProperty(0, APROP_Health) < healthinit && !isDead(0)) { SetActorProperty(0, APROP_Health, healthinit); }
 
 	// Handle backpacks for different classes
-    GiveInventory("SamsaraBackpacksInInventory", 1);
-    HandleAmmoCapacities(1);
-
-	if (CheckInventory("HexenClass")) { GiveInventory("PortKraterOfMight", 1); }
-	else if (CheckInventory("Hexen2Class")) { GiveInventory("PortKraterOfMight2", 1); }
-	else if (CheckInventory("Q3Class")) { GiveInventory("Q3AmmoRegenerationDummy", 1); }
-	else if (!CheckInventory("CatacombClass")) { GiveInventory("Backpack", 1); }
+    ACS_NamedExecuteWithResult("Samsara_GiveBackpack", -1);
 
 	for (i = SLOT_FIST; i < SLOT_BFG9000; i++) { GiveClassWeapon(classNum, i, 1, -1); }
 
@@ -237,16 +231,8 @@ function void ApplyLMS(void)
 		GiveInventory("DoomguyStrMines", GetAmmoCapacity("DoomguyStrMines") - CheckInventory("DoomguyStrMines"));
 	}
 
-	// Chex Warrior
-    if (CheckInventory("ChexClass"))
-    {
-        if ((GetCVar("samsara_chex_fallbackranged") <= 0 && GetUserCVar(pln, "samsara_cl_chex_fallbackranged") <= 0) || GetCVar("samsara_chex_fallbackranged") == 1 || GetCVar("samsara_allloadoutequipment")) { GiveInventory("Dual Mini-Zorchers", 1); }
-        if ((GetCVar("samsara_chex_fallbackranged") <= 0 && GetUserCVar(pln, "samsara_cl_chex_fallbackranged") >= 1) || GetCVar("samsara_chex_fallbackranged") >= 2 || GetCVar("samsara_allloadoutequipment")) { GiveInventory("Dual Micro-Zorchers", 1); }
-    }
-
 	// Blazkowicz
 	if (CheckInventory("WolfenClass")) {
-		GiveInventory("Totenkopf_IHaveDualPistols", 1);
 		GiveInventory("Totenkopf_IHaveMauser", 1);
 		GiveInventory("Totenkopf_IHaveDualMausers", 1);
 		GiveInventory("Wolfen_IHaveSlot2", 1);
@@ -265,8 +251,6 @@ function void ApplyLMS(void)
     if (CheckInventory("HexenClass"))
     {
         if (GetCVar("samsara_lmsult") && GetCVar("samsara_lmsskulltag")) { GiveInventory("SamsaraClassicPariasHasBloodscourge", 1); }
-
-        GiveInventory("SamsaraClassicPariasHasSpikedGauntlet", 1);
     }
 
 	// Duke Nukem
@@ -289,9 +273,7 @@ function void ApplyLMS(void)
 	if (CheckInventory("MarathonClass")) {
 		GiveInventory("CanDualPistols", 1);
 		GiveInventory("CanDualShotties", 1);
-		GiveInventory("Talon Ceramic Combat Blade", 1);
 		GiveInventory("KnifeAmmo", GetAmmoCapacity("KnifeAmmo") - CheckInventory("KnifeAmmo"));
-		GiveInventory("Tech.50 Pacifier", 1);
 	}
 
 	// Ranger
@@ -384,8 +366,6 @@ function void ApplyLMS(void)
             GiveInventory("KatarnBlazeIt", 2100);
             GiveInventory("KatarnBlazeItTimer", 60);
         }
-
-        GiveInventory("Palandrix Stun Gauntlets", 1);
     }
 
 	// Mooman
@@ -475,9 +455,6 @@ function void ApplyLMS(void)
 			GiveInventory("Hexen2ForceCube", 20); // I don't think it's needed, but just in case
 		}
 	}
-
-    // Bond
-    if (CheckInventory("BondClass")) { GiveInventory("Goldeneye_PP7DualToken", 1); }
 
 	// Daniel Garner
 	if (CheckInventory("PainkillerClass")) {
@@ -889,84 +866,92 @@ function int GiveQuad(int toAdd)
 	return quadcount;
 }
 
-function int HandleUniqueSpawn(int respawning)
+function int HandleUniqueSpawn (int respawning)
 {
-	int cs = GetCVar("samsara_uniquestart");
-	int classnum = samsaraClassNum();
-	int i;
+    int cs = GetCVar("samsara_uniquestart");
+    int classnum = samsaraClassNum();
+    int i;
 
     if (cs > 4) { cs = 4; }
     else if (cs < 0) { cs = 0; }
 
     if (cs == 0 || isLMS() || GetCVar("samsara_lmsrules")) { return 0; }
 
-	switch (cs)
-	{
-		case 1:
-			if (respawning && isCoop()) { return 0; }
-			// Fallthrough
+    switch (cs)
+    {
+      case 1:
+        if (respawning && (isSinglePlayer() || isCoop())) { return 0; }
+        // Fallthrough
 
-		case 3:
-			GiveUnique(classnum, -1, cs);
-			break;
+      case 3:
+        GiveUnique(classnum, -1, cs);
+        break;
 
-		case 2:
-			if (respawning && isCoop()) { return 0; }
-			// Fallthrough
+      case 2:
+        if (respawning && (isSinglePlayer() || isCoop())) { return 0; }
+        // Fallthrough
 
-		case 4:
-			for (i = 0; i < UNIQUECOUNT; i++)
-			{
-				if ((!CheckInventory("DoomguyClass") && !CheckInventory("WolfenClass")) || ((CheckInventory("DoomguyClass") || CheckInventory("WolfenClass")) && i == 0)) { GiveUnique(classnum, i, cs); } // temporary hack for having triplicated unique entries for altclass messages
-			}
-			break;
-	}
+      case 4:
+        for (i = 0; i < UNIQUECOUNT; i++)
+        {
+            if ((!CheckInventory("DoomguyClass") && !CheckInventory("WolfenClass")) || ((CheckInventory("DoomguyClass") || CheckInventory("WolfenClass")) && i == 0)) { GiveUnique(classnum, i, cs); } // temporary hack for having triplicated unique entries for altclass messages
+        }
+        break;
+    }
 
-	return 1;
+    return 1;
 }
 
-function int HandleChainsawSpawn(int respawning)
+function int HandleChainsawSpawn (int respawning) // gonna merge all the slots into one someday
 {
-	int cs = GetCVar("samsara_chainsawstart");
-	int classnum = samsaraClassNum();
-	int ammomode = 3;
+    int cs = GetCVar("samsara_chainsawstart");
+    int classnum = samsaraClassNum();
+    int ammomode = 3;
 
     if (cs > 2) { cs = 2; }
     else if (cs < 0) { cs = 0; }
 
-	if (cs == 0 || (respawning && isCoop()) || isLMS() || GetCVar("samsara_lmsrules")) { return 0; }
+    if (cs == 0 || (respawning && (isSinglePlayer() || isCoop())) || isLMS() || GetCVar("samsara_lmsrules") || CheckInventory("SamsaraSlotIGiven")) { return 0; }
 
-	if (cs == 2) { ammomode = 1; }
-	
-	if (!CheckInventory("SamsaraSlotIGiven"))
-		GiveClassWeapon(classnum, SLOT_CHAINSAW, ammomode, cs);
-	
-	if (CheckInventory("MarathonClass")) {
-		GiveInventory("CanDualPistols", 1);
-	}
-	
-	GiveInventory("SamsaraSlotIGiven", 1);
-	return 1;
+    if (cs == 2) { ammomode = 1; }
+
+    GiveClassWeapon(classnum, SLOT_CHAINSAW, ammomode, cs);
+
+    if (CheckInventory("MarathonClass")) { GiveInventory("CanDualPistols", 1); }
+
+    GiveInventory("SamsaraSlotIGiven", 1);
+    return 1;
 }
 
-function int HandleShotgunSpawn(int respawning)
+function int HandleShotgunSpawn (int respawning)
 {
-	int cs = GetCVar("samsara_shotgunstart");
-	int classnum = samsaraClassNum();
-	int ammomode = 3;
+    int cs = GetCVar("samsara_shotgunstart");
+    int classnum = samsaraClassNum();
+    int ammomode = 3;
 
     if (cs > 2) { cs = 2; }
     else if (cs < 0) { cs = 0; }
 
-	if (cs == 0 || (respawning && isCoop()) || isLMS() || GetCVar("samsara_lmsrules")) { return 0; }
+    if (cs == 0 || (respawning && (isSinglePlayer() || isCoop())) || isLMS() || GetCVar("samsara_lmsrules") || CheckInventory("SamsaraSlotIIGiven")) { return 0; }
 
-	if (cs == 2) { ammomode = 1; }
+    if (cs == 2) { ammomode = 1; }
 
-	if (!CheckInventory("SamsaraSlotIIGiven"))
-		GiveClassWeapon(classnum, SLOT_SHOTGUN, ammomode, cs);
-	
-	GiveInventory("SamsaraSlotIIGiven", 1);
-	return 1;
+    GiveClassWeapon(classnum, SLOT_SHOTGUN, ammomode, cs);
+
+    GiveInventory("SamsaraSlotIIGiven", 1);
+    return 1;
+}
+
+function int HandleBackpackSpawn (int respawning)
+{
+    bool cs = GetCVar("samsara_backpackstart");
+
+    if (!cs || (respawning && (isSinglePlayer() || isCoop())) || isLMS() || GetCVar("samsara_lmsrules") || CheckInventory("SamsaraBackpackGiven")) { return 0; }
+
+    ACS_NamedExecuteWithResult("Samsara_GiveBackpack", cs);
+
+    GiveInventory("SamsaraBackpackGiven", 1);
+    return 1;
 }
 
 function void CheckMapArmors(void)

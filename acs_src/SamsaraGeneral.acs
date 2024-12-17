@@ -4612,7 +4612,6 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     int invokerZ = GetActorZ(0) >> 16;
     int inventoryX, inventoryY, inventoryZ;
 
-    str altclass = "Placeholder";
     int altclasschoice = 0;
 
     str clientloadout = "Placeholder";
@@ -4628,9 +4627,17 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
 
     switch (samsaraClassNum())
     {
+      default:
+        result = -1;
+        break;
+
       case CLASS_CHEX:
         switch (slot)
         {
+          default:
+            result = -1;
+            break;
+
           case SLOT_PISTOL:
             if (startmode != 0)
             {
@@ -4662,16 +4669,16 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 }
             }
             break;
-
-          default:
-            result = -1;
-            break;
         }
         break;
 
       case CLASS_BOND:
         switch (slot)
         {
+          default:
+            result = -1;
+            break;
+
           case SLOT_CHAINSAW:
             hasweapon = CheckInventory("Goldeneye_ThrowingKnives");
             hasdualtoken = CheckInventory("Goldeneye_ThrowingKnivesDualToken");
@@ -5165,15 +5172,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 SetInventory("Goldeneye_GoldenGunPickedUpZ", invokerZ + 65536);
             }
             break;
-
-          default:
-            result = -1;
-            break;
         }
-        break;
-
-      default:
-        result = -1;
         break;
     }
 
@@ -5186,7 +5185,6 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
 
     int pln = PlayerNumber();
 
-    str altclass = "Placeholder";
     int altclasschoice = 0;
 
     str clientloadout = "Placeholder";
@@ -5202,9 +5200,17 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
 
     switch (samsaraClassNum())
     {
+      default:
+        result = -1;
+        break;
+
       case CLASS_DISRUPTOR:
         switch (unum)
         {
+          default:
+            result = -1;
+            break;
+
           case SLOT_UNIQUE1:
             hasweapon = CheckInventory("DisruptorEnergyBall") || CheckInventory("DisruptorTeraBall");
 
@@ -5218,16 +5224,16 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
                 result = 1;
             }
             break;
-
-          default:
-            result = -1;
-            break;
         }
         break;
 
       case CLASS_BOND:
         switch (unum)
         {
+          default:
+            result = -1;
+            break;
+
           case SLOT_UNIQUE1:
             hasweapon = CheckInventory("Goldeneye_SniperRifle");
             hasdualtoken = CheckInventory("Goldeneye_SniperDualToken");
@@ -5312,19 +5318,206 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
                 result = 1;
             }
             break;
-
-          default:
-            result = -1;
-            break;
         }
-        break;
-
-      default:
-        result = -1;
         break;
     }
 
     SetResultValue(result);
+}
+
+script "Samsara_GiveBackpack" (int startmode)
+{
+    int pln = PlayerNumber();
+
+    int altclasschoice = 0;
+
+    str clientloadout = "Placeholder";
+    str serverloadout = "Placeholder";
+    int loadoutchoice = 0;
+    bool completeloadout = false;
+
+    if (startmode != 0) { completeloadout = GetCVar("samsara_allloadoutequipment"); }
+    else { completeloadout = CheckInventory("SamsaraHasAllLoadoutEquipment"); }
+
+    GiveInventory("SamsaraBackpacksInInventory", 1);
+    HandleAmmoCapacities(1);
+
+    switch (samsaraClassNum())
+    {
+      default:
+        GiveInventory("Backpack", 1);
+        break;
+
+      case CLASS_CHEX:
+        GiveInventory("Backpack", 1);
+
+        if (startmode != 0)
+        {
+            clientloadout = "samsara_cl_chex_fallbackranged";
+            serverloadout = "samsara_chex_fallbackranged";
+
+            if (GetCVar(serverloadout) > 0) { loadoutchoice = GetCVar(serverloadout) - 1; }
+            else { loadoutchoice = GetUserCVar(pln, clientloadout); }
+        }
+        else { loadoutchoice = CheckInventory("SamsaraChexLoadoutFallbackRanged"); }
+
+        if (loadoutchoice <= 0 || completeloadout) { GiveInventory("Dual Mini-Zorchers", 1); } // Dual Mini-Zorchers
+        if (loadoutchoice >= 1 || completeloadout) { GiveInventory("Dual Micro-Zorchers", 1); } // Dual Micro-Zorchers
+        break;
+
+      case CLASS_WOLFEN:
+        if (startmode != 0) { altclasschoice = GetUserCVar(pln, "samsara_cl_wolfmode"); }
+        else { altclasschoice = CheckInventory("WolfenClassMode"); }
+
+        if (altclasschoice > 2) { altclasschoice = 2; }
+        else if (altclasschoice < 0) { altclasschoice = 0; }
+
+        switch (altclasschoice)
+        {
+          default: // Original/Lost Missions
+            int curshells = CheckInventory("Shell");
+
+            GiveInventory("Backpack", 1);
+            GiveInventory("Clip", 8);
+            SetInventory("Shell", curshells); // leave our shells untouched because we cannot use them
+            if (startmode <= -1) { GiveInventory("Totenkopf_IHaveDualPistols", 1); } // give this in accordance to LMS stuff
+            GiveInventory("Samsara_ModeWeaponChange", 1);
+            break;
+
+          case 2: // Castle Totenkopf SDL
+            GiveInventory("Backpack", 1);
+            GiveInventory("Totenkopf_IHaveDualPistols", 1);
+            GiveInventory("Samsara_ModeWeaponChange", 1);
+            break;
+        }
+        break;
+
+      case CLASS_HEXEN:
+        GiveInventory("PortKraterOfMight", 1);
+        GiveInventory("SamsaraClassicPariasHasSpikedGauntlet", 1);
+        GiveInventory("Samsara_ModeWeaponChange", 1);
+        break;
+
+      case CLASS_DUKE:
+        if (startmode != 0) { altclasschoice = GetUserCVar(pln, "samsara_cl_dukemode"); }
+        else { altclasschoice = CheckInventory("DukeClassMode"); }
+
+        if (altclasschoice > 2) { altclasschoice = 2; }
+        else if (altclasschoice < 0) { altclasschoice = 0; }
+
+        switch (altclasschoice)
+        {
+          default: // Original/Life's a Beach
+            GiveInventory("Backpack", 1);
+            break;
+
+          case 2: // Duke Nukem 64
+            GiveInventory("Backpack", 1);
+
+            if (startmode >= 0) // do not give in LMS
+            {
+                GiveInventory("Duke64DumDums", 6);
+                GiveInventory("Duke64ExplosiveShells", 2);
+                GiveInventory("Duke64HeatSeekingRockets", 3);
+                GiveInventory("Duke64ShrinkerAmmo", 2);
+            }
+            break;
+        }
+        break;
+
+      case CLASS_MARATHON:
+        GiveInventory("Backpack", 1);
+        GiveInventory("Talon Ceramic Combat Blade", 1);
+        GiveInventory("Tech.50 Pacifier", 1);
+        break;
+
+      case CLASS_KATARN:
+        GiveInventory("Backpack", 1);
+        GiveInventory("Palandrix Stun Gauntlets", 1);
+        break;
+
+      case CLASS_DEMONESS:
+        GiveInventory("PortKraterOfMight2", 1);
+        break;
+
+      case CLASS_BOND:
+        GiveInventory("Backpack", 1);
+        GiveInventory("Goldeneye_PP7DualToken", 1);
+        break;
+
+      case CLASS_CATACOMB:
+        GiveInventory("Catacomb_Waves", Random(1, 2));
+        GiveInventory("Catacomb_XTerminators", Random(1, 2));
+        GiveInventory("Catacomb_Nukes", Random(1, 2));
+        GiveInventory("Catacomb_Bolts", Random(1, 2));
+        GiveInventory("Catacomb_Zappers", Random(1, 2));
+        GiveInventory("Catacomb_Bursts", Random(1, 2));
+
+        if (startmode >= 0) // do not give in LMS
+        {
+            if (GetCVar("samsara_nohealthcap")) { ACS_NamedExecuteWithResult("SamsaraPlayerHealer", Random(1, 2) * 25); }
+            else { GiveInventory("Catacomb_SmallHealthPotion", Random(1, 2)); }
+        }
+        break;
+
+      case CLASS_PAINKILLER:
+        GiveInventory("Backpack", 1);
+        GiveInventory("Clip", 35);
+        GiveInventory("Painkiller_FlamerAmmo", 10);
+        GiveInventory("Shell", 8);
+        GiveInventory("Painkiller_FreezerAmmo", 1);
+        GiveInventory("RocketAmmo", 5);
+        GiveInventory("Painkiller_HeaterAmmo", 20);
+        GiveInventory("Cell", 10);
+        GiveInventory("Painkiller_ElectroAmmo", 20);
+
+        if (CheckInventory("Painkiller_Replenish_Power"))
+        {
+            GiveInventory("Backpack", 1);
+            GiveInventory("Clip", 35);
+            GiveInventory("Painkiller_FlamerAmmo", 10);
+            GiveInventory("Shell", 8);
+            GiveInventory("Painkiller_FreezerAmmo", 1);
+            GiveInventory("RocketAmmo", 5);
+            GiveInventory("Painkiller_HeaterAmmo", 20);
+            GiveInventory("Cell", 10);
+            GiveInventory("Painkiller_ElectroAmmo", 20);
+        }
+        break;
+
+      case CLASS_UNREAL:
+        GiveInventory("Backpack", 1);
+
+        if (CheckInventory("UDPistolUpgrade") < 4)
+        {
+            GiveInventory("UDPistolUpgrade", 1);
+
+            if (startmode != 0) { SetInventory("UDPistolUpgradePreferred", CheckInventory("UDPistolUpgrade")); }
+            else { GiveInventory("UnrealDoUpgradeRevert", 1); }
+
+            GiveInventory("UnrealRevertDirection", 1);
+        }
+        break;
+
+      case CLASS_QUAKE3:
+        GiveInventory("Q3AmmoRegenerationDummy", 1);
+        break;
+
+      case CLASS_DESCENT:
+        GiveInventory("Backpack", 1);
+        GiveInventory("DescentLaserLevel", 1);
+        break;
+
+      case CLASS_DEUSEX:
+        GiveInventory("Backpack", 1);
+        GiveInventory("Backpack", 1);
+        GiveInventory("Clip", 20);
+        GiveInventory("RocketAmmo", 3);
+        if (startmode >= 0) { ACS_NamedExecuteWithResult("DeusEx_Decorate", 23); } // do not give in LMS; already given for us there
+        GiveInventory("DeusEx_StealthPistol", 1);
+        GiveInventory("DeusEx_LAM", 1);
+        break;
+    }
 }
 
 //======================================================================================================================
