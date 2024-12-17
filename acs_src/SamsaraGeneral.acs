@@ -2798,6 +2798,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Goldeneye_KF7Soviet", INTMAX);
 			TakeInventory("Goldeneye_KF7DualToken", INTMAX);
 			TakeInventory("Goldeneye_AutoShotgun", INTMAX);
+			TakeInventory("Goldeneye_Shotgun", INTMAX);
 			TakeInventory("Goldeneye_AutoShotgunDualToken", INTMAX);
 			TakeInventory("Goldeneye_AR33", INTMAX);
 			TakeInventory("Goldeneye_AR33DualToken", INTMAX);
@@ -2844,6 +2845,8 @@ Script "Samsara_ResetInventory" (void)
 			GiveInventory("Goldeneye_KF7DualMagazine", 30);
 			GiveInventory("Goldeneye_AutoShotgunMagazine", 5);
 			GiveInventory("Goldeneye_AutoShotgunDualMagazine", 5);
+			GiveInventory("Goldeneye_ShotgunMagazine", 5);
+			GiveInventory("Goldeneye_ShotgunDualMagazine", 5);
 			GiveInventory("Goldeneye_AR33Magazine", 30);
 			GiveInventory("Goldeneye_AR33DualMagazine", 30);
 			GiveInventory("Goldeneye_PhantomMagazine", 50);
@@ -4604,6 +4607,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     bool weaponstay = GetCVar("sv_weaponstay");
     if (slot == SLOT_BFG9000 || slot == SLOT_BFG10K) { weaponstay = GetCVar("samsara_permault"); }
 
+    bool setcoords = false;
     int maxDistance = 80;
     int invokerX = GetActorX(0) >> 16;
     int invokerY = GetActorY(0) >> 16;
@@ -4744,43 +4748,84 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             break;
 
           case SLOT_SUPERSHOTGUN:
-            hasweapon = CheckInventory("Goldeneye_AutoShotgun");
+            if (startmode != 0)
+            {
+                clientloadout = "samsara_cl_bond_slot3";
+                serverloadout = "samsara_bond_slot3";
+
+                if (GetCVar(serverloadout) > 0) { loadoutchoice = GetCVar(serverloadout) - 1; }
+                else { loadoutchoice = GetUserCVar(pln, clientloadout); }
+            }
+            else { loadoutchoice = CheckInventory("SamsaraGoldenEyeLoadoutSlot3"); }
+
+            hasweapon = CheckInventory("Goldeneye_AutoShotgun") || CheckInventory("Goldeneye_Shotgun");
             hasdualtoken = CheckInventory("Goldeneye_AutoShotgunDualToken");
 
-            if (!hasweapon)
+            if (loadoutchoice <= 0 || completeloadout) // Automatic Shotgun
             {
-                GiveInventory("Goldeneye_AutoShotgun", 1);
-
-                if (dropped <= 0 && startmode == 0 && weaponstay)
+                if (!hasweapon)
                 {
-                    SetInventory("Goldeneye_AutoShotgunPickedUpX", invokerX + 65536);
-                    SetInventory("Goldeneye_AutoShotgunPickedUpY", invokerY + 65536);
-                    SetInventory("Goldeneye_AutoShotgunPickedUpZ", invokerZ + 65536);
-                }
-
-                if (startmode <= -1) { GiveInventory("Goldeneye_AutoShotgunDualToken", 1); }
-                result = 1;
-            } else if (!hasdualtoken) {
-                inventoryX = CheckInventory("Goldeneye_AutoShotgunPickedUpX") - 65536;
-                inventoryY = CheckInventory("Goldeneye_AutoShotgunPickedUpY") - 65536;
-                inventoryZ = CheckInventory("Goldeneye_AutoShotgunPickedUpZ") - 65536;
-
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
-                {
-                    if (dropped <= 0 && startmode == 0 && weaponstay)
-                    {
-                        SetInventory("Goldeneye_AutoShotgunPickedUpX", invokerX + 65536);
-                        SetInventory("Goldeneye_AutoShotgunPickedUpY", invokerY + 65536);
-                        SetInventory("Goldeneye_AutoShotgunPickedUpZ", invokerZ + 65536);
-                    }
-
                     GiveInventory("Goldeneye_AutoShotgun", 1);
-                    GiveInventory("Goldeneye_AutoShotgunDualToken", 1);
+
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                    if (startmode <= -1) { GiveInventory("Goldeneye_AutoShotgunDualToken", 1); }
+                    GiveInventory("Shell", 5);
+                    result = 1;
+                } else if (!hasdualtoken) {
+                    inventoryX = CheckInventory("Goldeneye_AutoShotgunPickedUpX") - 65536;
+                    inventoryY = CheckInventory("Goldeneye_AutoShotgunPickedUpY") - 65536;
+                    inventoryZ = CheckInventory("Goldeneye_AutoShotgunPickedUpZ") - 65536;
+
+                    if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                    {
+                        if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                        GiveInventory("Goldeneye_AutoShotgunDualToken", 1);
+                        GiveInventory("Shell", 5);
+                        result = 1;
+                    }
+                } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Shell", 5);
                     result = 1;
                 }
-            } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
-                GiveInventory("Goldeneye_AutoShotgun", 1);
-                result = 1;
+            }
+
+            if (loadoutchoice >= 1 || completeloadout) // Shotgun
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory("Goldeneye_Shotgun", 1);
+
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                    if (startmode <= -1) { GiveInventory("Goldeneye_AutoShotgunDualToken", 1); }
+                    GiveInventory("Shell", 5);
+                    result = 1;
+                } else if (!hasdualtoken) {
+                    inventoryX = CheckInventory("Goldeneye_AutoShotgunPickedUpX") - 65536;
+                    inventoryY = CheckInventory("Goldeneye_AutoShotgunPickedUpY") - 65536;
+                    inventoryZ = CheckInventory("Goldeneye_AutoShotgunPickedUpZ") - 65536;
+
+                    if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                    {
+                        if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                        GiveInventory("Goldeneye_AutoShotgunDualToken", 1);
+                        GiveInventory("Shell", 5);
+                        result = 1;
+                    }
+                } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Shell", 5);
+                    result = 1;
+                }
+            }
+
+            if (setcoords)
+            {
+                SetInventory("Goldeneye_AutoShotgunPickedUpX", invokerX + 65536);
+                SetInventory("Goldeneye_AutoShotgunPickedUpY", invokerY + 65536);
+                SetInventory("Goldeneye_AutoShotgunPickedUpZ", invokerZ + 65536);
             }
             break;
 
@@ -6193,6 +6238,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique2", true);
 		SetCVar("samsara_cl_shephard_unique3", true);
 		SetCVar("samsara_cl_bond_fallbackranged", false);
+		SetCVar("samsara_cl_bond_slot3", false);
 		SetCVar("samsara_cl_bond_unique2", false);
 		break;
 
@@ -6327,6 +6373,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique2", true);
 		SetCVar("samsara_cl_shephard_unique3", true);
 		SetCVar("samsara_cl_bond_fallbackranged", false);
+		SetCVar("samsara_cl_bond_slot3", false);
 		SetCVar("samsara_cl_bond_unique2", false);
 		break;
 
@@ -6461,6 +6508,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique2", true);
 		SetCVar("samsara_cl_shephard_unique3", true);
 		SetCVar("samsara_cl_bond_fallbackranged", false);
+		SetCVar("samsara_cl_bond_slot3", false);
 		SetCVar("samsara_cl_bond_unique2", false);
 		break;
 
@@ -6598,6 +6646,7 @@ script "SamsaraClientSidePresetSelection" (void)
 			SetCVar("samsara_cl_shephard_unique2", true);
 			SetCVar("samsara_cl_shephard_unique3", true);
 			SetCVar("samsara_cl_bond_fallbackranged", false);
+			SetCVar("samsara_cl_bond_slot3", false);
 			SetCVar("samsara_cl_bond_unique2", false);
 		} else {
 			// General Player Preferences
@@ -6729,6 +6778,7 @@ script "SamsaraClientSidePresetSelection" (void)
 			SetCVar("samsara_cl_shephard_unique2", true);
 			SetCVar("samsara_cl_shephard_unique3", true);
 			SetCVar("samsara_cl_bond_fallbackranged", false);
+			SetCVar("samsara_cl_bond_slot3", false);
 			SetCVar("samsara_cl_bond_unique2", false);
 		}
 		break;
@@ -6864,6 +6914,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique2", true);
 		SetCVar("samsara_cl_shephard_unique3", false);
 		SetCVar("samsara_cl_bond_fallbackranged", true);
+		SetCVar("samsara_cl_bond_slot3", true);
 		SetCVar("samsara_cl_bond_unique2", false);
 		break;
 	}
@@ -7202,6 +7253,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_shephard_unique2", 0);
 		SetCVar("samsara_shephard_unique3", 0);
 		SetCVar("samsara_bond_fallbackranged", 0);
+		SetCVar("samsara_bond_slot3", 0);
 		SetCVar("samsara_bond_unique2", 0);
 		break;
 
@@ -7534,6 +7586,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_shephard_unique2", 0);
 		SetCVar("samsara_shephard_unique3", 0);
 		SetCVar("samsara_bond_fallbackranged", 0);
+		SetCVar("samsara_bond_slot3", 0);
 		SetCVar("samsara_bond_unique2", 0);
 		break;
 
@@ -7866,6 +7919,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_shephard_unique2", 0);
 		SetCVar("samsara_shephard_unique3", 0);
 		SetCVar("samsara_bond_fallbackranged", 0);
+		SetCVar("samsara_bond_slot3", 0);
 		SetCVar("samsara_bond_unique2", 0);
 		break;
 
@@ -8199,6 +8253,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_shephard_unique2", 0);
 		SetCVar("samsara_shephard_unique3", 0);
 		SetCVar("samsara_bond_fallbackranged", 0);
+		SetCVar("samsara_bond_slot3", 0);
 		SetCVar("samsara_bond_unique2", 0);
 		break;
 
@@ -8533,6 +8588,7 @@ script "SamsaraServerSidePresetSelection" (void)
 			SetCVar("samsara_shephard_unique2", 0);
 			SetCVar("samsara_shephard_unique3", 0);
 			SetCVar("samsara_bond_fallbackranged", 0);
+			SetCVar("samsara_bond_slot3", 0);
 			SetCVar("samsara_bond_unique2", 0);
 		} else { // this is mainly tweaked for invasion on the zandronum side
 			// General Options
@@ -8862,6 +8918,7 @@ script "SamsaraServerSidePresetSelection" (void)
 			SetCVar("samsara_shephard_unique2", 0);
 			SetCVar("samsara_shephard_unique3", 0);
 			SetCVar("samsara_bond_fallbackranged", 0);
+			SetCVar("samsara_bond_slot3", 0);
 			SetCVar("samsara_bond_unique2", 0);
 		}
 		break;
