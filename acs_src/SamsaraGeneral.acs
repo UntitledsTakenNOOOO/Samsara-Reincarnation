@@ -2107,6 +2107,7 @@ Script "Samsara_ResetInventory" (void)
 		case 1:
 			TakeInventory("Super Bootspork", INTMAX);
 			TakeInventory("Dual Mini-Zorchers", INTMAX);
+			TakeInventory("Dual Micro-Zorchers", INTMAX);
 			TakeInventory("Large Zorcher", INTMAX);
 			TakeInventory("Super Large Zorcher", INTMAX);
 			TakeInventory("Rapid Zorcher", INTMAX);
@@ -3261,9 +3262,6 @@ script "Samsara_FillInventory" (void)
 			GiveInventory("DGStrHasHomingRocketLauncher",1);
 			GiveInventory("DGStrHasPlasmaRepeater",1);
 			GiveInventory("DGStrHasWPK",3);
-			break;
-		case 1:
-			GiveInventory("Dual Mini-Zorchers", 1);
 			break;
 		case 2:
 			GiveInventory("PortQuartzFlask",16);
@@ -4630,6 +4628,47 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
 
     switch (samsaraClassNum())
     {
+      case CLASS_CHEX:
+        switch (slot)
+        {
+          case SLOT_PISTOL:
+            if (startmode != 0)
+            {
+                clientloadout = "samsara_cl_chex_fallbackranged";
+                serverloadout = "samsara_chex_fallbackranged";
+
+                if (GetCVar(serverloadout) > 0) { loadoutchoice = GetCVar(serverloadout) - 1; }
+                else { loadoutchoice = GetUserCVar(pln, clientloadout); }
+            }
+            else { loadoutchoice = CheckInventory("SamsaraChexLoadoutFallbackRanged"); }
+
+            hasweapon = CheckInventory("Mini-Zorcher") || CheckInventory("Micro-Zorcher");
+
+            if (loadoutchoice <= 0 || completeloadout) // Mini-Zorcher
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory("Mini-Zorcher", 1);
+                    result = 1;
+                }
+            }
+
+            if (loadoutchoice >= 1 || completeloadout) // Micro-Zorcher
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory("Micro-Zorcher", 1);
+                    result = 1;
+                }
+            }
+            break;
+
+          default:
+            result = -1;
+            break;
+        }
+        break;
+
       case CLASS_BOND:
         switch (slot)
         {

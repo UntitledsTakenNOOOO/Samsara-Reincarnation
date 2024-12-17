@@ -213,7 +213,9 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         {
           case CLASS_CHEX:
             GiveInventory("Backpack", 1);
-            GiveInventory("Dual Mini-Zorchers", 1);
+
+            if ((GetCVar("samsara_chex_fallbackranged") <= 0 && GetUserCVar(pln, "samsara_cl_chex_fallbackranged") <= 0) || GetCVar("samsara_chex_fallbackranged") == 1 || GetCVar("samsara_allloadoutequipment")) { GiveInventory("Dual Mini-Zorchers", 1); }
+            if ((GetCVar("samsara_chex_fallbackranged") <= 0 && GetUserCVar(pln, "samsara_cl_chex_fallbackranged") >= 1) || GetCVar("samsara_chex_fallbackranged") >= 2 || GetCVar("samsara_allloadoutequipment")) { GiveInventory("Dual Micro-Zorchers", 1); }
             break;
 		
           case CLASS_WOLFEN:
@@ -929,6 +931,54 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
             {
                 ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_PISTOL, CheckInventory("SamsaraChexLoadoutFallbackRanged"), pln);
                 loadoutPrevValue[pln][SLOT_PISTOL] = CheckInventory("SamsaraChexLoadoutFallbackRanged");
+            }
+
+            if (CheckInventory("Mini-Zorcher") || CheckInventory("Micro-Zorcher"))
+            {
+                if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
+                {
+                    SetInventory("Mini-Zorcher", 1);
+                    SetInventory("Micro-Zorcher", 1);
+                } else {
+                    if (!CheckInventory("SamsaraChexLoadoutFallbackRanged"))
+                    {
+                        SetInventory("Mini-Zorcher", 1);
+
+                        if (CheckWeapon("Micro-Zorcher") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon("Mini-Zorcher"); }
+
+                        SetInventory("Micro-Zorcher", 0);
+                    } else if (CheckInventory("SamsaraChexLoadoutFallbackRanged")) {
+                        SetInventory("Micro-Zorcher", 1);
+
+                        if (CheckWeapon("Mini-Zorcher") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon("Micro-Zorcher"); }
+
+                        SetInventory("Mini-Zorcher", 0);
+                    }
+                }
+            }
+
+            if (CheckInventory("Dual Mini-Zorchers") || CheckInventory("Dual Micro-Zorchers"))
+            {
+                if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
+                {
+                    SetInventory("Dual Mini-Zorchers", 1);
+                    SetInventory("Dual Micro-Zorchers", 1);
+                } else {
+                    if (!CheckInventory("SamsaraChexLoadoutFallbackRanged"))
+                    {
+                        SetInventory("Dual Mini-Zorchers", 1);
+
+                        if (CheckWeapon("Dual Micro-Zorchers")) { SetWeapon("Dual Mini-Zorchers"); }
+
+                        SetInventory("Dual Micro-Zorchers", 0);
+                    } else if (CheckInventory("SamsaraChexLoadoutFallbackRanged")) {
+                        SetInventory("Dual Micro-Zorchers", 1);
+
+                        if (CheckWeapon("Dual Mini-Zorchers")) { SetWeapon("Dual Micro-Zorchers"); }
+
+                        SetInventory("Dual Mini-Zorchers", 0);
+                    }
+                }
             }
             break;
 
