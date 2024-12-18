@@ -280,16 +280,13 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
         a2max2  = a2max * 4; // ditto
     }
 
-    if (a1Bool) { a1Full = (CheckInventory(ammo1) == a1max); }
-    if (a2Bool) { a2Full = (CheckInventory(ammo2) == a2max); }
+    if (a1bool) { a1Full = CheckInventory(ammo1) >= a1max; }
+    if (a2bool) { a2Full = CheckInventory(ammo2) >= a2max; }
 
-    if (dropped >= 2)
+    if (dropped >= 2 && !GetCVar("samsara_noammocap"))
     {
-        if (!GetCVar("samsara_noammocap"))
-		{
-			if (a1bool) { SetAmmoCapacity(ammo1, a1max2); }
-			if (a2bool) { SetAmmoCapacity(ammo2, a2max2); }
-		}
+		if (a1bool) { SetAmmoCapacity(ammo1, a1max2); }
+		if (a2bool) { SetAmmoCapacity(ammo2, a2max2); }
     }
 
     // check for both the weapon AND the check item
@@ -342,8 +339,11 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
     if (dropped >= 2)
     {
         // shave off half the ammo given
-		TakeInventory(ammo1, (CheckInventory(ammo1) - a1cnt) / 2);
-		TakeInventory(ammo2, (CheckInventory(ammo2) - a2cnt) / 2);
+        int a1drop = (CheckInventory(ammo1) - a1cnt) / 2;
+        int a2drop = (CheckInventory(ammo2) - a2cnt) / 2;
+
+        SetInventory(ammo1, a1cnt + a1drop);
+        SetInventory(ammo2, a2cnt + a2drop);
 
         // go back to normal ammo capacity
 		if (a1bool) { SetAmmoCapacity(ammo1, a1max); }
@@ -351,8 +351,17 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
 	}
 
     // make sure we're not over max ammo capacity
-    TakeInventory(ammo1, CheckInventory(ammo1) - a1max);
-    TakeInventory(ammo2, CheckInventory(ammo2) - a2max);
+    if (CheckInventory(ammo1) > GetAmmoCapacity(ammo1))
+    {
+        if (a1cnt > GetAmmoCapacity(ammo1)) { SetInventory(ammo1, a1cnt); }
+        else { SetInventory(ammo1, GetAmmoCapacity(ammo1)); }
+    }
+
+    if (CheckInventory(ammo2) > GetAmmoCapacity(ammo2))
+    {
+        if (a2cnt > GetAmmoCapacity(ammo2)) { SetInventory(ammo2, a2cnt); }
+        else { SetInventory(ammo2, GetAmmoCapacity(ammo2)); }
+    }
 
     // tell the pickup if weaponstay was on, and if the pickup succeeded
     SetResultValue((weaponStay * WEPFLAGS_WEAPONSTAY) + (success * WEPFLAGS_GOTWEAPON));
