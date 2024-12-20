@@ -834,7 +834,7 @@ str HLWeaponGraphics[2][10][10] =
 		{ "HPKUP13", "HPKUP14", "HPKUP16", "", "", "", "", "", "", "" },
 		{ "HPKUP17", "HPKUP18", "HPKUP19", "HPKUP20", "", "", "", "", "", "" },
 		{ "HPKUP15", "", "", "", "", "", "", "", "", "" },
-		{ "", "", "", "", "", "", "", "", "", "" },
+		{ "HPKUP18", "", "", "", "", "", "", "", "", "" },
 		{ "HPKUP17", "HPKUP20", "", "", "", "", "", "", "", "" },
 		{ "", "", "", "", "", "", "", "", "", "" },
 		{ "", "", "", "", "", "", "", "", "", "" },
@@ -844,7 +844,7 @@ str HLWeaponGraphics[2][10][10] =
 		{ "OPFSL11", "OPFSL11", "OPFSL00", "", "", "", "", "", "", "" },
 		{ "OPFSL10", "OPFSL02", "OPFSL02", "", "", "", "", "", "", "" },
 		{ "OPFSL04", "OPFSL03", "", "", "", "", "", "", "", "" },
-		{ "OPFSL05", "OPFSL01", "", "", "", "", "", "", "", "" },
+		{ "OPFSL05", "OPFSL06", "OPFSL01", "", "", "", "", "", "", "" },
 		{ "OPFSL09", "", "", "", "", "", "", "", "", "" },
 		{ "OPFSL06", "OPFSL07", "OPFSL08", "", "", "", "", "", "", "" },
 		{ "OPFSL05", "OPFSL01", "", "", "", "", "", "", "", "" },
@@ -2621,6 +2621,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("SamsaraHalfLifeRPGNotLoaded", 1);
 			TakeInventory("Spore Launcher", 1);
 			TakeInventory("Gauss Cannon", 1);
+			TakeInventory("M249 Squad Automatic Weapon", 1);
 			SetInventory("HLSawSkipFire", 0);
 			TakeInventory("E.G.O.N.", 1);
 			TakeInventory("HL Squeaks", 1);
@@ -3717,14 +3718,6 @@ Script "Samsara_MapInventory" (int item, int dropped)
 					GiveInventory("Samsara_ModeWeaponChange",1);
 					result = 1;
 				}
-			}
-			break;
-		case 10:
-			if(!CheckInventory("Gauss Cannon")) { result = 1; }
-
-			if(result == 1)
-			{
-				ACS_NamedExecuteAlways("HL2685",0,19);
 			}
 			break;
 		case 11:
@@ -5057,6 +5050,38 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             }
 
             if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 18); }
+            break;
+
+          case SLOT_PLASMARIFLE:
+            hasweapon = CheckInventory("Gauss Cannon") || CheckInventory("M249 Squad Automatic Weapon");
+
+            if (loadoutchoice <= 0 || completeloadout) // Tau Cannon
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory("Gauss Cannon", 1);
+                    GiveInventory("Cell", dmextraammo ? 70 / tossedammo * 5 / 2 : 70 / tossedammo);
+                    result = 1;
+                } else if (CheckInventory("Cell") < GetAmmoCapacity("Cell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Cell", 70 / tossedammo);
+                    result = 1;
+                }
+            }
+
+            if (loadoutchoice >= 1 || completeloadout) // M249 Squad Automatic Weapon
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory("M249 Squad Automatic Weapon", 1);
+                    GiveInventory("Cell", dmextraammo ? 100 / tossedammo * 5 / 2 : 100 / tossedammo);
+                    result = 1;
+                } else if (CheckInventory("Cell") < GetAmmoCapacity("Cell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Cell", 100 / tossedammo);
+                    result = 1;
+                }
+            }
+
+            if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 19); }
             break;
         }
         break;
