@@ -830,7 +830,7 @@ str HLWeaponGraphics[2][10][10] =
 {
 	{
 		{ "HPKUP00", "HPKUP00", "", "", "", "", "", "", "", "" },
-		{ "HPKUP01", "HPKUP12", "", "", "", "", "", "", "", "" },
+		{ "HPKUP01", "HPKUP12", "HPKUP12", "", "", "", "", "", "", "" },
 		{ "HPKUP13", "HPKUP14", "HPKUP16", "", "", "", "", "", "", "" },
 		{ "HPKUP17", "HPKUP18", "HPKUP19", "HPKUP20", "", "", "", "", "", "" },
 		{ "HPKUP15", "", "", "", "", "", "", "", "", "" },
@@ -842,7 +842,7 @@ str HLWeaponGraphics[2][10][10] =
 	},
 	{
 		{ "OPFSL11", "OPFSL11", "OPFSL00", "", "", "", "", "", "", "" },
-		{ "OPFSL10", "OPFSL02", "", "", "", "", "", "", "", "" },
+		{ "OPFSL10", "OPFSL02", "OPFSL02", "", "", "", "", "", "", "" },
 		{ "OPFSL04", "OPFSL03", "", "", "", "", "", "", "", "" },
 		{ "OPFSL01", "", "", "", "", "", "", "", "", "" },
 		{ "OPFSL09", "", "", "", "", "", "", "", "", "" },
@@ -2608,15 +2608,11 @@ Script "Samsara_ResetInventory" (void)
 			SetWeapon("Bow and Arrows");
 			break;
 		case 19:
-			TakeInventory("HLHEVIsTalking", 1);
-			TakeInventory("HLHEVPickupID", 1);
-			TakeInventory("HLHEVLoadoutID", 1);
-			TakeInventory("HLHEVDamageType", 1);
-			TakeInventory("HLSpeedTokens", 1);
 			TakeInventory("Hornetgun", 1);
 			TakeInventory("Shock Roach", 1);
 			TakeInventory("Assault Shotgun", 1);
 			TakeInventory(".357 Python", 1);
+			TakeInventory("Desert Eagle", 1);
 			TakeInventory("HLDeagleLaserActivated", 1);
 			TakeInventory("HLDeagleLaserMemory", 1);
 			TakeInventory("MP5", 1);
@@ -3720,14 +3716,6 @@ Script "Samsara_MapInventory" (int item, int dropped)
 					GiveInventory("Samsara_ModeWeaponChange",1);
 					result = 1;
 				}
-			}
-			break;
-		case 7:
-			if(!CheckInventory(".357 Python")) { result = 1; }
-
-			if(result == 1)
-			{
-				ACS_NamedExecuteAlways("HL2685",0,16);
 			}
 			break;
 		case 9:
@@ -4995,6 +4983,38 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             }
 
             if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 15); }
+            break;
+
+          case SLOT_SUPERSHOTGUN:
+            hasweapon = CheckInventory(".357 Python") || CheckInventory("Desert Eagle");
+
+            if (loadoutchoice <= 0 || completeloadout) // .357 Python
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory(".357 Python", 1);
+                    GiveInventory("Shell", dmextraammo ? 6 / tossedammo * 5 / 2 : 6 / tossedammo);
+                    result = 1;
+                } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Shell", 6 / tossedammo);
+                    result = 1;
+                }
+            }
+
+            if (loadoutchoice >= 1 || completeloadout) // Desert Eagle
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory("Desert Eagle", 1);
+                    GiveInventory("Shell", dmextraammo ? 7 / tossedammo * 5 / 2 : 7 / tossedammo);
+                    result = 1;
+                } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Shell", 7 / tossedammo);
+                    result = 1;
+                }
+            }
+
+            if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 16); }
             break;
 
           case SLOT_CHAINGUN:
