@@ -835,7 +835,7 @@ str HLWeaponGraphics[2][10][10] =
 		{ "HPKUP17", "HPKUP18", "HPKUP19", "HPKUP20", "", "", "", "", "", "" },
 		{ "HPKUP15", "", "", "", "", "", "", "", "", "" },
 		{ "", "", "", "", "", "", "", "", "", "" },
-		{ "HPKUP20", "", "", "", "", "", "", "", "", "" },
+		{ "HPKUP17", "HPKUP20", "", "", "", "", "", "", "", "" },
 		{ "", "", "", "", "", "", "", "", "", "" },
 		{ "", "", "", "", "", "", "", "", "", "" },
 		{ "", "", "", "", "", "", "", "", "", "" },
@@ -844,7 +844,7 @@ str HLWeaponGraphics[2][10][10] =
 		{ "OPFSL11", "OPFSL11", "OPFSL00", "", "", "", "", "", "", "" },
 		{ "OPFSL10", "OPFSL02", "OPFSL02", "", "", "", "", "", "", "" },
 		{ "OPFSL04", "OPFSL03", "", "", "", "", "", "", "", "" },
-		{ "OPFSL01", "", "", "", "", "", "", "", "", "" },
+		{ "OPFSL05", "OPFSL01", "", "", "", "", "", "", "", "" },
 		{ "OPFSL09", "", "", "", "", "", "", "", "", "" },
 		{ "OPFSL06", "OPFSL07", "OPFSL08", "", "", "", "", "", "", "" },
 		{ "OPFSL05", "OPFSL01", "", "", "", "", "", "", "", "" },
@@ -2619,6 +2619,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory(" RPG ", 1);
 			TakeInventory("SamsaraHalfLifeRPGLaserActivated", 1);
 			TakeInventory("SamsaraHalfLifeRPGNotLoaded", 1);
+			TakeInventory("Spore Launcher", 1);
 			TakeInventory("Gauss Cannon", 1);
 			SetInventory("HLSawSkipFire", 0);
 			TakeInventory("E.G.O.N.", 1);
@@ -3716,14 +3717,6 @@ Script "Samsara_MapInventory" (int item, int dropped)
 					GiveInventory("Samsara_ModeWeaponChange",1);
 					result = 1;
 				}
-			}
-			break;
-		case 9:
-			if(!CheckInventory(" RPG ")) { result = 1; }
-
-			if(result == 1)
-			{
-				ACS_NamedExecuteAlways("HL2685",0,18);
 			}
 			break;
 		case 10:
@@ -5032,6 +5025,38 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             }
 
             if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 17); }
+            break;
+
+          case SLOT_ROCKETLAUNCHER:
+            hasweapon = CheckInventory(" RPG ") || CheckInventory("Spore Launcher");
+
+            if (loadoutchoice <= 0 || completeloadout) // RPG
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory(" RPG ", 1);
+                    GiveInventory("RocketAmmo", dmextraammo ? 10 / tossedammo * 5 / 2 : 10 / tossedammo);
+                    result = 1;
+                } else if (CheckInventory("RocketAmmo") < GetAmmoCapacity("RocketAmmo") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("RocketAmmo", 10 / tossedammo);
+                    result = 1;
+                }
+            }
+
+            if (loadoutchoice >= 1 || completeloadout) // Spore Launcher
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory("Spore Launcher", 1);
+                    GiveInventory("RocketAmmo", dmextraammo ? 10 / tossedammo * 5 / 2 : 10 / tossedammo);
+                    result = 1;
+                } else if (CheckInventory("RocketAmmo") < GetAmmoCapacity("RocketAmmo") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("RocketAmmo", 10 / tossedammo);
+                    result = 1;
+                }
+            }
+
+            if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 18); }
             break;
         }
         break;
