@@ -834,7 +834,7 @@ str HLWeaponGraphics[2][10][10] =
 		{ "HPKUP13", "HPKUP14", "HPKUP16", "", "", "", "", "", "", "" },
 		{ "HPKUP17", "HPKUP18", "HPKUP19", "HPKUP20", "", "", "", "", "", "" },
 		{ "HPKUP15", "", "", "", "", "", "", "", "", "" },
-		{ "HPKUP18", "", "", "", "", "", "", "", "", "" },
+		{ "HPKUP18", "HPKUP19", "", "", "", "", "", "", "", "" },
 		{ "HPKUP17", "HPKUP20", "", "", "", "", "", "", "", "" },
 		{ "", "", "", "", "", "", "", "", "", "" },
 		{ "", "", "", "", "", "", "", "", "", "" },
@@ -844,7 +844,7 @@ str HLWeaponGraphics[2][10][10] =
 		{ "OPFSL11", "OPFSL11", "OPFSL00", "", "", "", "", "", "", "" },
 		{ "OPFSL10", "OPFSL02", "OPFSL02", "", "", "", "", "", "", "" },
 		{ "OPFSL04", "OPFSL03", "", "", "", "", "", "", "", "" },
-		{ "OPFSL05", "OPFSL06", "OPFSL01", "", "", "", "", "", "", "" },
+		{ "OPFSL05", "OPFSL06", "OPFSL07", "OPFSL01", "", "", "", "", "", "" },
 		{ "OPFSL09", "", "", "", "", "", "", "", "", "" },
 		{ "OPFSL06", "OPFSL07", "OPFSL08", "", "", "", "", "", "", "" },
 		{ "OPFSL05", "OPFSL01", "", "", "", "", "", "", "", "" },
@@ -2624,6 +2624,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("M249 Squad Automatic Weapon", 1);
 			SetInventory("HLSawSkipFire", 0);
 			TakeInventory("E.G.O.N.", 1);
+			TakeInventory("Displacer Cannon", 1);
 			TakeInventory("HL Squeaks", 1);
 			TakeInventory("HL Crossbow", 1);
 			TakeInventory("HLOPHasBarnacleLongJump", 1);
@@ -3718,14 +3719,6 @@ Script "Samsara_MapInventory" (int item, int dropped)
 					GiveInventory("Samsara_ModeWeaponChange",1);
 					result = 1;
 				}
-			}
-			break;
-		case 11:
-			if(!CheckInventory("E.G.O.N.")) { result = 1; }
-
-			if(result == 1)
-			{
-				ACS_NamedExecuteAlways("HL2685",0,20);
 			}
 			break;
 		case 19: GiveInventory("CanDualPistols",1); break;
@@ -5082,6 +5075,38 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             }
 
             if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 19); }
+            break;
+
+          case SLOT_BFG9000:
+            hasweapon = CheckInventory("E.G.O.N.") || CheckInventory("Displacer Cannon");
+
+            if (loadoutchoice <= 0 || completeloadout) // Gluon Gun
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory("E.G.O.N.", 1);
+                    GiveInventory("Cell", dmextraammo ? 50 / tossedammo * 5 / 2 : 50 / tossedammo);
+                    result = 1;
+                } else if (CheckInventory("Cell") < GetAmmoCapacity("Cell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Cell", 50 / tossedammo);
+                    result = 1;
+                }
+            }
+
+            if (loadoutchoice >= 1 || completeloadout) // Displacer Cannon
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory("Displacer Cannon", 1);
+                    GiveInventory("Cell", dmextraammo ? 60 / tossedammo * 5 / 2 : 60 / tossedammo);
+                    result = 1;
+                } else if (CheckInventory("Cell") < GetAmmoCapacity("Cell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Cell", 60 / tossedammo);
+                    result = 1;
+                }
+            }
+
+            if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 20); }
             break;
         }
         break;
