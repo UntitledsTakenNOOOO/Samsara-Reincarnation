@@ -1717,16 +1717,6 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                     SetInventory("SamsaraHalfLifeLoadoutUnique3", loadoutmode);
                 }
 
-                if (CheckInventory("HLOPHasBarnacleLongJump") && CheckInventory("SamsaraHalfLifeLoadoutUnique3") && !GetCVar("samsara_banjetpack")) { GiveInventory("HLOPBarnacle", 1); }
-                else
-                {
-                    TakeInventory("freeman_unique3selected", 1);
-                    TakeInventory("HLOPBarnacleReleaseTether", 1);
-                    TakeInventory("HLOPBarnacleLatchedTether", 1);
-                    TakeInventory("HLOPBarnacleTetherActive", 1);
-                    TakeInventory("HLOPBarnacle", 1);
-                }
-
                 if (loadoutPrevValue[pln][SLOT_FIST] != CheckInventory("SamsaraHalfLifeLoadoutFallbackMelee"))
                 {
                     ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_FIST, CheckInventory("SamsaraHalfLifeLoadoutFallbackMelee"), pln);
@@ -1965,6 +1955,52 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                             SetInventory("HL Crossbow", 0);
                         }
                     }
+                }
+
+                if (CheckInventory("HLOPHasBarnacleLongJump") && !GetCVar("samsara_banjetpack"))
+                {
+                    if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
+                    {
+                        SetInventory("SamsaraHalfLifeCanLongJump", 1);
+                        SetInventory("HLOPBarnacle", 1);
+                    } else {
+                        if (!CheckInventory("SamsaraHalfLifeLoadoutUnique3"))
+                        {
+                            SetInventory("SamsaraHalfLifeCanLongJump", 1);
+
+                            if (CheckInventory("SamsaraHalfLifeBarnacleGrappleSoundLoop"))
+                            {
+                                StopSound(0, CHAN_WEAPON);
+
+                                SetInventory("SamsaraHalfLifeBarnacleGrappleSoundLoop", 0);
+                            }
+
+                            SetInventory("HLOPBarnacleReleaseTether", 0);
+                            SetInventory("HLOPBarnacleLatchedTether", 0);
+                            SetInventory("HLOPBarnacleTetherActive", 0);
+
+                            SetInventory("HLOPBarnacle", 0);
+                        } else if (CheckInventory("SamsaraHalfLifeLoadoutUnique3")) {
+                            SetInventory("HLOPBarnacle", 1);
+
+                            SetInventory("SamsaraHalfLifeCanLongJump", 0);
+                        }
+                    }
+                } else {
+                    SetInventory("SamsaraHalfLifeCanLongJump", 0);
+
+                    if (CheckInventory("SamsaraHalfLifeBarnacleGrappleSoundLoop"))
+                    {
+                        StopSound(0, CHAN_WEAPON);
+
+                        SetInventory("SamsaraHalfLifeBarnacleGrappleSoundLoop", 0);
+                    }
+
+                    SetInventory("HLOPBarnacleReleaseTether", 0);
+                    SetInventory("HLOPBarnacleLatchedTether", 0);
+                    SetInventory("HLOPBarnacleTetherActive", 0);
+
+                    SetInventory("HLOPBarnacle", 0);
                 }
 				break;
 

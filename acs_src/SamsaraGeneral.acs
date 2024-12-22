@@ -829,7 +829,7 @@ Script "Samsara_OriginalSlots" (int mode)
 str HLWeaponGraphics[2][10][10] =
 {
 	{
-		{ "HPKUP00", "HPKUP00", "", "", "", "", "", "", "", "" },
+		{ "HPKUP00", "HPKUP00", "HPKUP20", "", "", "", "", "", "", "" },
 		{ "HPKUP01", "HPKUP12", "HPKUP12", "", "", "", "", "", "", "" },
 		{ "HPKUP13", "HPKUP14", "HPKUP16", "", "", "", "", "", "", "" },
 		{ "HPKUP17", "HPKUP18", "HPKUP19", "HPKUP20", "", "", "", "", "", "" },
@@ -2629,6 +2629,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("HL Crossbow", 1);
 			TakeInventory("M40A1 Sniper Rifle", 1);
 			TakeInventory("HLOPHasBarnacleLongJump", 1);
+			TakeInventory("SamsaraHalfLifeCanLongJump", 1);
 			TakeInventory("HLOPBarnacleReleaseTether", 1);
 			TakeInventory("HLOPBarnacleLatchedTether", 1);
 			TakeInventory("HLOPBarnacleTetherActive", 1);
@@ -5803,6 +5804,33 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
             }
 
             if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 22); }
+            break;
+
+          case SLOT_UNIQUE3: // this time, will jump to unique 2 if we already have this (the other two have a limit based on ammo pickup)
+            hasweapon = CheckInventory("HLOPHasBarnacleLongJump");
+
+            if (!GetCVar("samsara_banjetpack"))
+            {
+                if (loadoutchoice <= 0 || completeloadout) // Long Jump Module
+                {
+                    if (!hasweapon) { GiveInventory("SamsaraHalfLifeCanLongJump", 1); }
+                }
+
+                if (loadoutchoice >= 1 || completeloadout) // Barnacle Grapple
+                {
+                    if (!hasweapon) { GiveInventory("HLOPBarnacle", 1); }
+                }
+            }
+
+            if (!hasweapon)
+            {
+                GiveInventory("HLOPHasBarnacleLongJump", 1);
+                result = 1;
+            }
+
+            if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 23); }
+
+            if (result == 1) { GiveInventory("Samsara_ModeWeaponChange", 1); }
             break;
         }
         break;
