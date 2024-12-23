@@ -1,45 +1,39 @@
+// Tokens
+
+actor SamsaraHalfLifeAcquiredUnique1 : Boolean {}
 actor freeman_uniqueselected : Boolean { Inventory.InterHubAmount 0 }
 actor SamsaraHalfLifeLoadoutUnique1 : Boolean {}
-actor HLGrenadeFuse : Counter { Inventory.MaxAmount 105 }
 
-Actor "HL Squeaks" : HLWeapon
+// Snarks
+
+actor SamsaraHalfLifeSnarksAvailable : Boolean {}
+
+actor "HL Squeaks" : HLWeapon
 {
-    Inventory.PickupMessage "You found some squeaks!"
+    Inventory.PickupMessage "You found some snarks!"
     Weapon.SlotNumber 9
     Weapon.SelectionOrder 1600
-    Weapon.AmmoType1 "HLSqueakAmmo"
-    Weapon.AmmoGive1 5
-    Weapon.AmmoUse1 1
-    Weapon.AmmoType2 "RocketAmmo"
-    Weapon.AmmoGive2 3
-    Weapon.AmmoUse2 1
+    Weapon.AmmoType "HLSqueakAmmo"
+    //Weapon.AmmoGive 5
+    Weapon.AmmoUse 1
     Tag "Snarks"
     +EXPLOSIVE
     States
     {
       Spawn:
-        HWU0 ABCDEFGHIJKLMNO 2 bright
+        HWU0 ABCDEFGHIJKLMNO 1
         loop
 
-      // Snarks
       // Gordon Freeman
       ReadyActual:
-        HW32 A 0 A_JumpIfInventory("SamsaraHalfLifeLoadoutUnique1",1,"ReadyActualGrenades")
-        HW32 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyActualAmmo")
-        HW32 A 0 A_JumpIfInventory("HLSqueakAmmo",1,"ReadyActualAmmo")
-        goto ReadyActualNoAmmo
-
-      ReadyActualNoAmmo:
-        TNT1 A 2 A_WeaponReady
-        goto ReadyActualNoAmmoCheck
-
-      ReadyActualAmmo:
+        HW32 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        HW32 A 0 A_JumpIfInventory("HLSqueakAmmo",1,1)
+        goto NoAmmoSwitch
         HW32 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualAmmoShephard")
         HW32 A 2 A_WeaponReady
         goto ReadyActualJump
 
       ReadyActualJump:
-        HW32 A 0 A_JumpIfInventory("SamsaraHalfLifeLoadoutUnique1",1,"ReadyActualJumpGrenades")
         HW32 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyActualJumpStart")
         HW32 A 0 A_JumpIfInventory("HLSqueakAmmo",1,"ReadyActualJumpStart")
         goto ReadyActual
@@ -48,7 +42,6 @@ Actor "HL Squeaks" : HLWeapon
         HW32 A 0 A_Jump(4,"ReadyActual")
         HW32 A 0 A_Jump(3,"ReadyActual")
         HW32 A 0 A_Jump(2,"ReadyActual")
-        HW32 A 0 A_JumpIfInventory("SamsaraHalfLifeLoadoutUnique1",1,"ReadyActualJumpStartGrenades")
         HW32 A 0 A_Jump(1,"ReadyActualIdle1","ReadyActualIdle2","ReadyActualIdle3")
         goto ReadyActual
 
@@ -77,7 +70,6 @@ Actor "HL Squeaks" : HLWeapon
         goto ReadyActual
 
       ReadyActualNoAmmoCheck:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHalfLifeLoadoutUnique1",1,"ReadyActualNoAmmoCheckGrenades")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStart")
         TNT1 A 0 A_JumpIfInventory("HLSqueakAmmo",1,"ReloadStart")
         goto ReadyActual
@@ -98,7 +90,6 @@ Actor "HL Squeaks" : HLWeapon
         goto Super::Select
 
       Ready: // our "Select" state
-        TNT1 A 0 A_JumpIfInventory("SamsaraHalfLifeLoadoutUnique1",1,"ReadyGrenades")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyAmmo")
         TNT1 A 0 A_JumpIfInventory("HLSqueakAmmo",1,"ReadyAmmo")
         goto ReadyNoAmmo
@@ -119,7 +110,6 @@ Actor "HL Squeaks" : HLWeapon
 
       Fire:
         HW41 A 0 A_JumpIfInventory("HLOriginalKeySwitcherOpen",1,"ReadyActual")
-        HW41 A 0 A_JumpIfInventory("SamsaraHalfLifeLoadoutUnique1",1,"FireGrenades")
         HW41 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
         HW41 A 0 A_JumpIfInventory("HLSqueakAmmo",1,"FireStart")
         goto FireDry
@@ -137,7 +127,6 @@ Actor "HL Squeaks" : HLWeapon
         goto ReadyActualNoAmmoCheck
 
       ReloadStart:
-        HW39 W 0 A_JumpIfInventory("SamsaraHalfLifeLoadoutUnique1",1,"ReloadStartGrenades")
         HW39 W 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReloadStartShephard")
         HW39 WXYZ 1 A_WeaponReady
         HW40 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
@@ -187,157 +176,13 @@ Actor "HL Squeaks" : HLWeapon
         SW41 ABCDEFGHIJKLMNOPQRST 1 A_WeaponReady
         goto ReadyActual
 
-      // Mk 2 Grenades
-      // Gordon Freeman
-      ReadyActualGrenades:
-        0P00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyActualAmmoGrenades")
-        0P00 A 0 A_JumpIfInventory("RocketAmmo",1,"ReadyActualAmmoGrenades")
-        goto ReadyActualNoAmmoGrenades
-
-      ReadyActualNoAmmoGrenades:
-        TNT1 A 2 A_WeaponReady
-        goto ReadyActualNoAmmoCheck
-
-      ReadyActualAmmoGrenades:
-        0P00 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualAmmoGrenadesShephard")
-        0P00 A 2 A_WeaponReady
-        goto ReadyActualJump
-
-      ReadyActualJumpGrenades:
-        0P00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyActualJumpStart")
-        0P00 A 0 A_JumpIfInventory("RocketAmmo",1,"ReadyActualJumpStart")
-        goto ReadyActual
-
-      ReadyActualJumpStartGrenades:
-        0P00 A 0 A_Jump(1,"ReadyActualIdle1Grenades","ReadyActualIdle2Grenades")
-        goto ReadyActual
-
-      ReadyActualIdle1Grenades:
-        0P00 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualIdle1GrenadesShephard")
-        0P00 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-        0P01 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-        0P02 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-        0P03 ABCDEFGHIJKL 1 A_WeaponReady
-        goto ReadyActual
-
-      ReadyActualIdle2Grenades:
-        0P00 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualIdle2GrenadesShephard")
-        0P00 A 1 A_WeaponReady
-        0P04 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-        0P05 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-        0P06 ABCDEFGHIJKLMNOPQRSTUVWX 1 A_WeaponReady
-        goto ReadyActual
-
-      ReadyActualNoAmmoCheckGrenades:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStart")
-        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"ReloadStart")
-        goto ReadyActual
-
-      ReadyGrenades:
-        0P13 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyAmmoGrenades")
-        0P13 B 0 A_JumpIfInventory("RocketAmmo",1,"ReadyAmmoGrenades")
-        goto ReadyNoAmmoGrenades
-
-      ReadyNoAmmoGrenades:
-        TNT1 AAAAAAAAAAAAA 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
-        goto ReadyActual
-
-      ReadyAmmoGrenades:
-        0P13 B 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyAmmoGrenadesShephard")
-        0P13 BCDEFGHIJKLMN 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
-        goto ReadyActual
-
-      FireGrenades:
-        0P08 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStartGrenades")
-        0P08 A 0 A_JumpIfInventory("RocketAmmo",1,"FireStartGrenades")
-        goto FireDryGrenades
-
-      FireDryGrenades:
+      // "No ammo" switch
+      NoAmmoSwitch:
         TNT1 A 0 A_ClearReFire
-        TNT1 A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        goto ReadyActualNoAmmoCheck
-
-      FireStartGrenades:
-        0P08 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireStartGrenadesShephard")
-        0P08 ABCDEFGHIJKLMNOPQRSTUVWW 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        0P08 W 0 A_TakeInventory("HLGrenadeFuse") // reset
-        0P08 W 0 A_GiveInventory("HLGrenadeFuse",105)
-      FireLoopGrenades:
-        0P08 W 0 A_TakeInventory("HLGrenadeFuse",1)
-        0P08 W 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        0P08 W 0 A_ReFire("FireLoopGrenades")
-        0P09 A 0 A_GiveInventory("SamsaraHalfLifeGrenadeAttackHandler")
-        0P09 A 0 A_Jump(256,"FireFinish1Grenades","FireFinish2Grenades","FireFinish3Grenades")
-      FireFinish1Grenades:
-        0P09 ABCDEFGHIJKLMNOPQQ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        goto ReadyActualNoAmmoCheck
-
-      FireFinish2Grenades:
-        0P10 ABCDEFGHIJKLMNOPQQ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        goto ReadyActualNoAmmoCheck
-
-      FireFinish3Grenades:
-        0P11 ABCDEFGHIJKLMNOPQQ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        goto ReadyActualNoAmmoCheck
-
-      ReloadStartGrenades:
-        0P13 B 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReloadStartGrenadesShephard")
-        0P13 BCDEFGHIJKLMN 1 A_WeaponReady
-        goto ReadyActual
-
-      // Adrian Shephard
-      ReadyActualAmmoGrenadesShephard:
-        OP00 A 2 A_WeaponReady
-        goto ReadyActualJump
-
-      ReadyActualIdle1GrenadesShephard:
-        OP00 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-        OP01 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-        OP02 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-        OP03 ABCDEFGHIJKL 1 A_WeaponReady
-        goto ReadyActual
-
-      ReadyActualIdle2GrenadesShephard:
-        OP00 A 1 A_WeaponReady
-        OP04 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-        OP05 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-        OP06 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
-        OP07 ABCDEFGHIJKL 1 A_WeaponReady
-        goto ReadyActual
-
-      ReadyAmmoGrenadesShephard:
-        OP13 BCEFGHIJKLMNO 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
-        goto ReadyActual
-
-      FireStartGrenadesShephard:
-        OP08 ABCDEFGHIJKLMNOPQRSTUVWX 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        OP08 X 0 A_TakeInventory("HLGrenadeFuse") // reset
-        OP08 X 0 A_GiveInventory("HLGrenadeFuse",105)
-      FireLoopGrenadesShephard:
-        OP08 X 0 A_TakeInventory("HLGrenadeFuse",1)
-        OP08 X 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        OP08 X 0 A_ReFire("FireLoopGrenadesShephard")
-        OP09 A 0 A_GiveInventory("SamsaraHalfLifeGrenadeAttackHandler")
-        OP09 A 0 A_Jump(256,"FireFinish1GrenadesShephard","FireFinish2GrenadesShephard","FireFinish3GrenadesShephard")
-      FireFinish1GrenadesShephard:
-        OP09 ABCDEFGHIJKLMNOPQR 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        goto ReadyActualNoAmmoCheck
-
-      FireFinish2GrenadesShephard:
-        OP10 ABCDEFGHIJKLMNOPQR 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        goto ReadyActualNoAmmoCheck
-
-      FireFinish3GrenadesShephard:
-        OP11 ABCDEFGHIJKLMNOPQR 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        goto ReadyActualNoAmmoCheck
-
-      ReloadStartGrenadesShephard:
-        OP13 BCEFGHIJKLMNO 1 A_WeaponReady
-        goto ReadyActual
+        TNT1 A 0 A_SelectWeapon("9mm Pistol")
+        goto Deselect
     }
 }
-
-// Snarks
 
 actor SamsaraHalfLifeSqueakAttackHandler : Trigger
 {
@@ -580,6 +425,192 @@ Actor HLSqueakCheckHitObjectCoop : HLSqueakCheckHitObject
 }
 
 // Mk 2 Grenades
+
+actor HLGrenadeFuse : Counter { Inventory.MaxAmount 105 }
+
+actor "Mk 2 Grenades" : HLWeapon
+{
+    Inventory.PickupMessage "You found some hand grenades!"
+    Weapon.SlotNumber 9
+    Weapon.SelectionOrder 1600
+    Weapon.AmmoType "RocketAmmo"
+    //Weapon.AmmoGive 3
+    Weapon.AmmoUse 1
+    Tag "Mk 2 Grenades"
+    +EXPLOSIVE
+    States
+    {
+      Spawn:
+        OWU0 A -1
+        stop
+
+      // Gordon Freeman
+      ReadyActual:
+        0P00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyActualAmmo")
+        0P00 A 0 A_JumpIfInventory("RocketAmmo",1,"ReadyActualAmmo")
+        goto ReadyActualNoAmmo
+
+      ReadyActualNoAmmo:
+        TNT1 A 2 A_WeaponReady
+        goto ReadyActualNoAmmoCheck
+
+      ReadyActualAmmo:
+        0P00 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualAmmoShephard")
+        0P00 A 2 A_WeaponReady
+        goto ReadyActualJump
+
+      ReadyActualJump:
+        0P00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyActualJumpStart")
+        0P00 A 0 A_JumpIfInventory("RocketAmmo",1,"ReadyActualJumpStart")
+        goto ReadyActual
+
+      ReadyActualJumpStart:
+        0P00 A 0 A_Jump(4,"ReadyActual")
+        0P00 A 0 A_Jump(3,"ReadyActual")
+        0P00 A 0 A_Jump(2,"ReadyActual")
+        0P00 A 0 A_Jump(1,"ReadyActualIdle1","ReadyActualIdle2")
+        goto ReadyActual
+
+      ReadyActualIdle1:
+        0P00 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualIdle1Shephard")
+        0P00 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        0P01 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        0P02 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        0P03 ABCDEFGHIJKL 1 A_WeaponReady
+        goto ReadyActual
+
+      ReadyActualIdle2:
+        0P00 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyActualIdle2Shephard")
+        0P00 A 1 A_WeaponReady
+        0P04 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        0P05 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        0P06 ABCDEFGHIJKLMNOPQRSTUVWX 1 A_WeaponReady
+        goto ReadyActual
+
+      ReadyActualNoAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStart")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"ReloadStart")
+        goto ReadyActual
+
+      Select:
+        TNT1 A 0 A_TakeInventory("freeman_fistselected")
+        TNT1 A 0 A_TakeInventory("freeman_pistolselected")
+        TNT1 A 0 A_TakeInventory("freeman_slot1selected")
+        TNT1 A 0 A_TakeInventory("freeman_slot2selected")
+        TNT1 A 0 A_TakeInventory("freeman_slot3selected")
+        TNT1 A 0 A_TakeInventory("freeman_slot4selected")
+        TNT1 A 0 A_TakeInventory("freeman_slot5selected")
+        TNT1 A 0 A_TakeInventory("freeman_slot6selected")
+        TNT1 A 0 A_TakeInventory("freeman_slot7selected")
+        TNT1 A 0 A_GiveInventory("freeman_uniqueselected")
+        TNT1 A 0 A_TakeInventory("freeman_unique2selected")
+        TNT1 A 0 A_TakeInventory("freeman_unique3selected")
+        goto Super::Select
+
+      Ready: // our "Select" state
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"ReadyAmmo")
+        goto ReadyNoAmmo
+
+      ReadyNoAmmo:
+        TNT1 AAAAAAAAAAAAA 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+        goto ReadyActual
+
+      ReadyAmmo:
+        0P13 B 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReadyAmmoShephard")
+        0P13 BCDEFGHIJKLMN 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+        goto ReadyActual
+
+      Fire:
+        0P08 A 0 A_JumpIfInventory("HLOriginalKeySwitcherOpen",1,"ReadyActual")
+        0P08 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
+        0P08 A 0 A_JumpIfInventory("RocketAmmo",1,"FireStart")
+        goto FireDry
+
+      FireDry:
+        TNT1 A 0 A_ClearReFire
+        TNT1 A 4 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto ReadyActualNoAmmoCheck
+
+      FireStart:
+        0P08 A 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"FireStartShephard")
+        0P08 ABCDEFGHIJKLMNOPQRSTUVWW 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        0P08 W 0 A_TakeInventory("HLGrenadeFuse") // reset
+        0P08 W 0 A_GiveInventory("HLGrenadeFuse",105)
+      FireLoop:
+        0P08 W 0 A_TakeInventory("HLGrenadeFuse",1)
+        0P08 W 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        0P08 W 0 A_ReFire("FireLoop")
+        0P09 A 0 A_GiveInventory("SamsaraHalfLifeGrenadeAttackHandler")
+        0P09 A 0 A_Jump(256,"FireFinish1","FireFinish2","FireFinish3")
+      FireFinish1:
+        0P09 ABCDEFGHIJKLMNOPQQ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto ReadyActualNoAmmoCheck
+
+      FireFinish2:
+        0P10 ABCDEFGHIJKLMNOPQQ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto ReadyActualNoAmmoCheck
+
+      FireFinish3:
+        0P11 ABCDEFGHIJKLMNOPQQ 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto ReadyActualNoAmmoCheck
+
+      ReloadStart:
+        0P13 B 0 A_JumpIfInventory("HalfLifeOpposingForce",1,"ReloadStartShephard")
+        0P13 BCDEFGHIJKLMN 1 A_WeaponReady
+        goto ReadyActual
+
+      // Adrian Shephard
+      ReadyActualAmmoShephard:
+        OP00 A 2 A_WeaponReady
+        goto ReadyActualJump
+
+      ReadyActualIdle1Shephard:
+        OP00 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        OP01 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        OP02 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        OP03 ABCDEFGHIJKL 1 A_WeaponReady
+        goto ReadyActual
+
+      ReadyActualIdle2Shephard:
+        OP00 A 1 A_WeaponReady
+        OP04 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        OP05 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        OP06 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_WeaponReady
+        OP07 ABCDEFGHIJKL 1 A_WeaponReady
+        goto ReadyActual
+
+      ReadyAmmoShephard:
+        OP13 BCEFGHIJKLMNO 1 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE)
+        goto ReadyActual
+
+      FireStartShephard:
+        OP08 ABCDEFGHIJKLMNOPQRSTUVWX 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP08 X 0 A_TakeInventory("HLGrenadeFuse") // reset
+        OP08 X 0 A_GiveInventory("HLGrenadeFuse",105)
+      FireLoopShephard:
+        OP08 X 0 A_TakeInventory("HLGrenadeFuse",1)
+        OP08 X 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        OP08 X 0 A_ReFire("FireLoopShephard")
+        OP09 A 0 A_GiveInventory("SamsaraHalfLifeGrenadeAttackHandler")
+        OP09 A 0 A_Jump(256,"FireFinish1Shephard","FireFinish2Shephard","FireFinish3Shephard")
+      FireFinish1Shephard:
+        OP09 ABCDEFGHIJKLMNOPQR 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto ReadyActualNoAmmoCheck
+
+      FireFinish2Shephard:
+        OP10 ABCDEFGHIJKLMNOPQR 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto ReadyActualNoAmmoCheck
+
+      FireFinish3Shephard:
+        OP11 ABCDEFGHIJKLMNOPQR 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto ReadyActualNoAmmoCheck
+
+      ReloadStartShephard:
+        OP13 BCEFGHIJKLMNO 1 A_WeaponReady
+        goto ReadyActual
+    }
+}
 
 actor SamsaraHalfLifeGrenadeAttackHandler : Trigger
 {
