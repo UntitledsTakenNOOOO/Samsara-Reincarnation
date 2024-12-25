@@ -2202,6 +2202,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Serpent Staff", INTMAX);
 			TakeInventory("Bloodscourge", INTMAX);
 			TakeInventory("Spiked Gauntlet", INTMAX);
+			SetInventory("SamsaraHexenHasSlot7", 0);
 			SetInventory("SamsaraClassicPariasHasBloodscourge", 0);
 			SetInventory("SamsaraClassicPariasHasSpikedGauntlet", 0);
 			TakeInventory("Hammer of Retribution", INTMAX);
@@ -3297,6 +3298,7 @@ script "Samsara_FillInventory" (void)
 			break;
 		case 4:
 			GiveInventory("AllyCellphone",1);
+			GiveInventory("SamsaraHexenHasSlot7", 1);
 			GiveInventory("SamsaraClassicPariasHasBloodscourge", 1);
 			GiveInventory("SamsaraClassicPariasHasSpikedGauntlet", 1);
 			TakeInventory("FlechetteCooldown",65536);
@@ -4274,42 +4276,6 @@ Script "Samsara_MapInventory" (int item, int dropped)
 		case 43:
 			if(!CheckInventory("BloodProximityTNT")) { GiveInventory("BloodRemoteTNT", 1); result = 1; }
 			break;
-		case 44:
-			weaponStay = GetCVar("samsara_permault");
-
-			GiveInventory("SamsaraClassicPariasHasBloodscourge", 1);
-
-			if(!CheckInventory("Bloodscourge"))
-			{
-				if(dropped >= 2)
-				{
-					GiveInventory("Samsara_ModeWeaponChange",1);
-					GiveInventory("Clip",15);
-					GiveInventory("Cell",15);
-					result = 1;
-				}
-				else
-				{
-					GiveInventory("Samsara_ModeWeaponChange",1);
-					GiveInventory("Clip",30);
-					GiveInventory("Cell",30);
-					result = 1;
-				}
-			}
-			else
-			{
-				if(dropped >= 2)
-				{
-					if(CheckInventory("Clip") < GetAmmoCapacity("Clip")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Clip",15); GiveInventory("Cell",15); result = 1; }}
-					else if(CheckInventory("Cell") < GetAmmoCapacity("Cell")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Clip",15); GiveInventory("Cell",15); result = 1; }}
-				}
-				else
-				{
-					if(CheckInventory("Clip") < GetAmmoCapacity("Clip")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Clip",30); GiveInventory("Cell",30); result = 1; }}
-					else if(CheckInventory("Cell") < GetAmmoCapacity("Cell")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Clip",30); GiveInventory("Cell",30); result = 1; }}
-				}
-			}
-			break;
 		case 45:
 			GiveInventory("SamsaraDukeHasGoldenDesertEagle", 1);
 
@@ -4684,6 +4650,8 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     }
                 }
 
+                if (startmode != 0) { result = 1; } // allow giving tokens specific to altclass switching at all times in LMS or equipment start
+
                 if (result == 1)
                 {
                     GiveInventory("DGHasBFG9000", 1);
@@ -4722,6 +4690,8 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     GiveInventory("Cell", 40 / tossedammo);
                     result = 1;
                 }
+
+                if (startmode != 0) { result = 1; }
 
                 if (result == 1)
                 {
@@ -4765,6 +4735,8 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     }
                 }
 
+                if (startmode != 0) { result = 1; }
+
                 if (result == 1)
                 {
                     GiveInventory("DGHasBFG9000", 1);
@@ -4804,6 +4776,124 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     GiveInventory("Micro-Zorcher", 1);
                     result = 1;
                 }
+            }
+            break;
+        }
+        break;
+
+      case CLASS_HEXEN:
+        switch (altclasschoice)
+        {
+          default:
+            result = -1;
+            break;
+
+          case 0: // Parias (Reincarnation)
+          case 2: // Daedolon
+          case 3: // Baratus
+            switch (slot)
+            {
+              default:
+                result = -1;
+                break;
+
+              case SLOT_BFG9000:
+                if (!CheckInventory("Wraithverge"))
+                {
+                    GiveInventory("Wraithverge", 1);
+                    GiveInventory("Clip", dmextraammo ? 25 * 5 / 2 : 25);
+                    GiveInventory("Cell", dmextraammo ? 25 * 5 / 2 : 25);
+                    result = 1;
+                } else if ((CheckInventory("Clip") < (GetAmmoCapacity("Clip") / tosseddiv) || CheckInventory("Cell") < (GetAmmoCapacity("Cell") / tosseddiv)) && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Clip", 25);
+                    GiveInventory("Cell", 25);
+                    result = 1;
+                }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    GiveInventory("SamsaraHexenHasSlot7", 1);
+                    GiveInventory("Samsara_ModeWeaponChange", 1);
+                }
+                break;
+
+              case SLOT_BFG10K:
+                if (!CheckInventory("Wraithverge"))
+                {
+                    GiveInventory("Wraithverge", 1);
+                    GiveInventory("Clip", dmextraammo ? 25 * 5 / 2 : 25);
+                    GiveInventory("Cell", dmextraammo ? 25 * 5 / 2 : 25);
+                    result = 1;
+                } else if ((CheckInventory("Clip") < (GetAmmoCapacity("Clip") / tosseddiv) || CheckInventory("Cell") < (GetAmmoCapacity("Cell") / tosseddiv)) && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Clip", 25);
+                    GiveInventory("Cell", 25);
+                    result = 1;
+                }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    GiveInventory("SamsaraClassicPariasHasBloodscourge", 1);
+                    GiveInventory("GotWeapon7", 1);
+                    GiveInventory("Samsara_ModeWeaponChange", 1);
+                }
+                break;
+            }
+            break;
+
+          case 1: // Parias (Classic)
+            switch (slot)
+            {
+              default:
+                result = -1;
+                break;
+
+              case SLOT_BFG9000:
+                if (!CheckInventory("Wraithverge"))
+                {
+                    GiveInventory("Wraithverge", 1);
+                    GiveInventory("Clip", dmextraammo ? 25 * 5 / 2 : 25);
+                    GiveInventory("Cell", dmextraammo ? 25 * 5 / 2 : 25);
+                    result = 1;
+                } else if ((CheckInventory("Clip") < (GetAmmoCapacity("Clip") / tosseddiv) || CheckInventory("Cell") < (GetAmmoCapacity("Cell") / tosseddiv)) && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Clip", 25);
+                    GiveInventory("Cell", 25);
+                    result = 1;
+                }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    GiveInventory("SamsaraHexenHasSlot7", 1);
+                    GiveInventory("Samsara_ModeWeaponChange", 1);
+                }
+                break;
+
+              case SLOT_BFG10K:
+                if (!CheckInventory("Bloodscourge"))
+                {
+                    GiveInventory("Bloodscourge", 1);
+                    GiveInventory("Clip", dmextraammo ? 30 * 5 / 2 : 30);
+                    GiveInventory("Cell", dmextraammo ? 30 * 5 / 2 : 30);
+                    result = 1;
+                } else if ((CheckInventory("Clip") < (GetAmmoCapacity("Clip") / tosseddiv) || CheckInventory("Cell") < (GetAmmoCapacity("Cell") / tosseddiv)) && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Clip", 30);
+                    GiveInventory("Cell", 30);
+                    result = 1;
+                }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    GiveInventory("SamsaraClassicPariasHasBloodscourge", 1);
+                    GiveInventory("Samsara_ModeWeaponChange", 1);
+                }
+                break;
             }
             break;
         }
@@ -5919,6 +6009,8 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
 
             if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 23); }
 
+            if (startmode != 0) { result = 1; }
+
             if (result == 1) { GiveInventory("Samsara_ModeWeaponChange", 1); }
             break;
         }
@@ -6143,7 +6235,7 @@ script "Samsara_GiveBackpack" (int startmode)
             GiveInventory("Backpack", 1);
             GiveInventory("Clip", 8);
             SetInventory("Shell", curshells); // leave our shells untouched because we cannot use them
-            if (startmode <= -1) { GiveInventory("Totenkopf_IHaveDualPistols", 1); } // give this in accordance to LMS stuff
+            GiveInventory("Totenkopf_IHaveDualPistols", 1);
             GiveInventory("Samsara_ModeWeaponChange", 1);
             break;
 
