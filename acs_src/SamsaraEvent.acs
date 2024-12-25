@@ -757,6 +757,13 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					previousvalue = doommode;
 				}
 
+                loadoutmode = GetCVar("samsara_doomguy_fallbackranged") > 0 && !CheckInventory("SamsaraHasAllLoadoutEquipment") ? GetCVar("samsara_doomguy_fallbackranged") - 1 : GetUserCVar(pln, "samsara_cl_doomguy_fallbackranged");
+
+                if (loadoutmode > 1) { loadoutmode = 1; }
+                else if (loadoutmode < 0) { loadoutmode = 0; }
+
+                SetInventory("SamsaraDoomOriginalLoadoutFallbackRanged", loadoutmode);
+
                 loadoutmode = GetCVar("samsara_doomguy_slot7") > 0 && !CheckInventory("SamsaraHasAllLoadoutEquipment") ? GetCVar("samsara_doomguy_slot7") - 1 : GetUserCVar(pln, "samsara_cl_doomguy_slot7");
 
                 if (loadoutmode > 1) { loadoutmode = 1; }
@@ -766,10 +773,25 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
                 if (doommode >= 1)
                 {
+                    if (loadoutPrevValue[pln][SLOT_PISTOL] != 0)
+                    {
+                        ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_PISTOL, 0, pln);
+                        loadoutPrevValue[pln][SLOT_PISTOL] = 0;
+                    }
+
                     if (loadoutPrevValue[pln][SLOT_BFG9000] != 0)
                     {
                         ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_BFG9000, 0, pln);
                         loadoutPrevValue[pln][SLOT_BFG9000] = 0;
+                    }
+
+                    if (CheckInventory(" Rifle "))
+                    {
+                        SetInventory(" Pistol ", 1);
+
+                        if (CheckWeapon(" Rifle ") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon(" Pistol "); }
+
+                        SetInventory(" Rifle ", 0);
                     }
 
                     if (CheckInventory("B.F.G. 2704"))
@@ -785,10 +807,40 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                         SetInventory("B.F.G. 2704", 0);
                     }
                 } else {
+                    if (loadoutPrevValue[pln][SLOT_PISTOL] != CheckInventory("SamsaraDoomOriginalLoadoutFallbackRanged"))
+                    {
+                        ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_PISTOL, CheckInventory("SamsaraDoomOriginalLoadoutFallbackRanged"), pln);
+                        loadoutPrevValue[pln][SLOT_PISTOL] = CheckInventory("SamsaraDoomOriginalLoadoutFallbackRanged");
+                    }
+
                     if (loadoutPrevValue[pln][SLOT_BFG9000] != CheckInventory("SamsaraDoomOriginalLoadoutSlot7"))
                     {
                         ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_BFG9000, CheckInventory("SamsaraDoomOriginalLoadoutSlot7"), pln);
                         loadoutPrevValue[pln][SLOT_BFG9000] = CheckInventory("SamsaraDoomOriginalLoadoutSlot7");
+                    }
+
+                    if (CheckInventory(" Pistol ") || CheckInventory(" Rifle "))
+                    {
+                        if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
+                        {
+                            SetInventory(" Pistol ", 1);
+                            SetInventory(" Rifle ", 1);
+                        } else {
+                            if (!CheckInventory("SamsaraDoomOriginalLoadoutFallbackRanged"))
+                            {
+                                SetInventory(" Pistol ", 1);
+
+                                if (CheckWeapon(" Rifle ") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon(" Pistol "); }
+
+                                SetInventory(" Rifle ", 0);
+                            } else if (CheckInventory("SamsaraDoomOriginalLoadoutFallbackRanged")) {
+                                SetInventory(" Rifle ", 1);
+
+                                if (CheckWeapon(" Pistol ") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon(" Rifle "); }
+
+                                SetInventory(" Pistol ", 0);
+                            }
+                        }
                     }
 
                     if (CheckInventory("B.F.G. 9000") || CheckInventory("B.F.G. 2704"))
