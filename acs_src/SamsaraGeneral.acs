@@ -4120,15 +4120,6 @@ Script "Samsara_MapInventory" (int item, int dropped)
 				}
 			}
 			break;
-		case 34:
-			weaponStay = GetCVar("samsara_permault");
-			if(timer() - 2100 >= CheckInventory("Painkiller_TarotLastPickupTime"))
-			{
-				SetInventory("Painkiller_TarotLastPickupTime",timer());
-				result = 1;
-			}
-			else if(!weaponStay || dropped >= 1) { result = 1; }
-			break;
 		case 35:
 			GiveInventory("DGStrHasAutoShotgun", 1);
 
@@ -4226,26 +4217,6 @@ Script "Samsara_MapInventory" (int item, int dropped)
 			break;
 		case 43:
 			if(!CheckInventory("BloodProximityTNT")) { GiveInventory("BloodRemoteTNT", 1); result = 1; }
-			break;
-		case 46:
-			if(!CheckInventory("StrifeBeaconItem5")) { result = 1; }
-			else if(CheckInventory("StrifeBeaconCooldown") > 0)
-			{
-				if (weaponStay && dropped <= 0)
-				{
-					if(timer() - 2100 >= CheckInventory("StrifeBeaconLastPickupTime"))
-					{
-						SetInventory("StrifeBeaconLastPickupTime",timer());
-						result = 1;
-						ACS_NamedExecuteAlways("StrifeBeaconCooldownReduction",0);
-					}
-				}
-				else
-				{
-					result = 1;
-					ACS_NamedExecuteAlways("StrifeBeaconCooldownReduction",0);
-				}
-			}
 			break;
 	}
 	SetResultValue(result);
@@ -5087,6 +5058,28 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
         }
         break;
 
+      case CLASS_STRIFE:
+        switch (slot)
+        {
+          default:
+            result = -1;
+            break;
+
+          case SLOT_CHAINSAW:
+            if (!CheckInventory("StrifeBeaconItem5"))
+            {
+                GiveInventory("StrifeBeaconItem5", 1);
+                if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("StrifeBeaconLastPickupTime", Timer() + 2100); }
+                result = 1;
+            } else if (CheckInventory("StrifeBeaconCooldown") && (Timer() >= CheckInventory("StrifeBeaconLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay)) {
+                ACS_NamedExecuteAlways("StrifeBeaconCooldownReduction", 0);
+                if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("StrifeBeaconLastPickupTime", Timer() + 2100); }
+                result = 1;
+            }
+            break;
+        }
+        break;
+
       case CLASS_RMR:
         switch (slot)
         {
@@ -5798,6 +5791,24 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 SetInventory("Goldeneye_GoldenGunPickedUpX", invokerX + 65536);
                 SetInventory("Goldeneye_GoldenGunPickedUpY", invokerY + 65536);
                 SetInventory("Goldeneye_GoldenGunPickedUpZ", invokerZ + 65536);
+            }
+            break;
+        }
+        break;
+
+      case CLASS_PAINKILLER:
+        switch (slot)
+        {
+          default:
+            result = -1;
+            break;
+
+          case SLOT_BFG9000:
+            if (Timer() >= CheckInventory("Painkiller_TarotLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay)
+            {
+                GiveInventory("Painkiller_Tarot_GoldGiver", 1);
+                if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("Painkiller_TarotLastPickupTime", Timer() + 2100); }
+                result = 1;
             }
             break;
         }
