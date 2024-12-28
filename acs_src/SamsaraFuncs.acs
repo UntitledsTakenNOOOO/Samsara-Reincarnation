@@ -80,7 +80,7 @@ function int _giveclassweapon(int class, int slot, int ammoMode, int dropped, in
 	return !!success;
 }
 
-function bool HasClassWeapon(int class, int slot)
+function bool HasClassWeapon(int class, int slot, int ignorechecks)
 {
     if (class == -1) { return false; }
 
@@ -104,6 +104,8 @@ function bool HasClassWeapon(int class, int slot)
     hasWep  = CheckInventory(weapon);
     hasItem = StrLen(checkitem) && CheckInventory(checkitem);
     hasFail = StrLen(failitem) && CheckInventory(failitem);
+
+    if (ignorechecks) { return hasWep; }
 
     return hasWep || hasItem || hasFail;
 }
@@ -198,7 +200,6 @@ function void ApplyLMS(void)
 
 	// Doomguy
 	if (CheckInventory("DoomguyClass")) {
-		GiveInventory("DGStrHasAutoShotgun", 1);
 		GiveInventory("DGHasChaingun", 1);
 		GiveInventory("DGStrHasFlamethrower", 1);
 		GiveInventory("DGHasRocketLauncher", 1);
@@ -213,10 +214,6 @@ function void ApplyLMS(void)
 		}
 
 		if (GetCVar("samsara_lmsult")) {
-			GiveInventory("DGHasBFG9000", 1);
-			GiveInventory("Doom64_IHaveUnmaker", 1);
-			GiveInventory("DGStrHasPyroCannon", 1);
-
 			if (GetCVAR("samsara_lmsskulltag")) {
 				GiveInventory("DGHasBFG10K",1);
 			}
@@ -787,7 +784,7 @@ function int ConvertClassWeapons(int classnum)
 
 		for (j = 0; j < SLOTCOUNT; j++)
 		{
-			if (HasClassWeapon(i, j))
+			if (HasClassWeapon(i, j, 1))
 			{
 				TakeInventory(ClassWeapons[i][j][S_WEP], INTMAX);
 				if (classnum != -1) { GiveClassWeapon(classnum, j, 1, 0); }
