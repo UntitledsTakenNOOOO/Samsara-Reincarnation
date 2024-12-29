@@ -76,26 +76,21 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 		result = GetCVar("skulltag");
 		break;
 
-	case 7:
-		if (arg2 != 1)
-		{
-			GiveQuad(arg1);
-		}
-		else
-		{
-			if (isLMS())
-			{
-				if (GetCvar("samsara_permaquad") == 1)
-				{ GiveInventory("QuadDamageItem", 1); }
-				break;
-			}
+    case 7:
+        if (arg2 != 1) { GiveQuad(arg1); }
+        else
+        {
+            if (isLMS() || GetCVar("samsara_lmsrules"))
+            {
+                if (GetCVar("samsara_permaquad")) { GiveInventory("QuadDamageItem", 1); }
+                break;
+            }
 
-			GiveQuad(arg1);
+            GiveQuad(arg1);
 
-			if (GetCvar("samsara_permaquad") == 1)//if (isCoop() || isSinglePlayer())
-			{ GiveInventory("QuadDamageItem", 1); }
-		}
-		break;
+            if (GetCVar("samsara_permaquad")) { GiveInventory("QuadDamageItem", 1); }
+        }
+        break;
 
 	case 8:
 		if (GetCVar("samsara_runninginzdoom")) { result = GetCVar("samsara_zd_expparticles"); }
@@ -421,6 +416,10 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 
     case 63:
         result = GetCVar("samsara_banjetpack");
+        break;
+
+    case 64:
+        result = GetCVar("samsara_permaquad");
         break;
 	}
 
@@ -3340,8 +3339,8 @@ script "Samsara_FillInventory" (void)
 		case 7:
 			SetInventory("QuakeQuadTimer", 0);
 			SetInventory("SamsaraQuadDamageCooldownDisplay", 0);
-			GiveInventory("QuadDamageItem", 1);
-			if(!isLMS()) { GiveQuad(1050); }
+			GiveQuad(1050);
+			if (GetCVar("samsara_permaquad")) { GiveInventory("QuadDamageItem", 1); }
 			break;
 		case 8:
 			GiveInventory("AllyCellphone",1);
@@ -3731,104 +3730,6 @@ Script "Samsara_MapInventory" (int item, int dropped)
 					GiveInventory("Samsara_ModeWeaponChange",1);
 					result = 1;
 				}
-			}
-			break;
-		case 21:
-			if(!CheckInventory("SWUzi"))
-			{
-				GiveInventory("SWUziPickedUpX",invokerX+65536);
-				GiveInventory("SWUziPickedUpY",invokerY+65536);
-				GiveInventory("SWUziPickedUpZ",invokerZ+65536);
-				result = 1;
-			}
-			else if(!CheckInventory("UziAmountCheck"))
-			{
-				inventoryX = CheckInventory("SWUziPickedUpX")-65536;
-				inventoryY = CheckInventory("SWUziPickedUpY")-65536;
-				inventoryZ = CheckInventory("SWUziPickedUpZ")-65536;
-				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1)
-				{
-					TakeInventory("SWUziPickedUpX",131072);
-					TakeInventory("SWUziPickedUpY",131072);
-					TakeInventory("SWUziPickedUpZ",131072);
-					GiveInventory("SWUziPickedUpX",invokerX+65536);
-					GiveInventory("SWUziPickedUpY",invokerY+65536);
-					GiveInventory("SWUziPickedUpZ",invokerZ+65536);
-					GiveInventory("UziAmountCheck",1);
-					result = 1;
-				}
-			}
-			break;
-		case 23:
-			weaponStay = GetCVar("samsara_permault");
-
-			if(!CheckInventory("Thunderbolt"))
-			{
-				result = 1;
-			}
-
-			if (GetCvar("samsara_permaquad") == 1)
-			{
-				if (isLMS())
-				{
-					GiveInventory("QuadDamageItem", 1);
-				}
-				else
-				{
-					if (!CheckInventory("QuadDamageItem"))
-					{
-						GiveQuad(1050);
-						GiveInventory("QuadDamageItem", 1);
-					}
-				}
-
-			}
-			else if (!isLMS())
-			{
-				if (weaponStay && dropped <= 0)
-				{
-					if (CheckQuad() <= 0)
-					{
-						GiveQuad(1050);
-					}
-				}
-				else
-				{
-					GiveQuad(1050);
-					result = 1;
-				}
-			}
-			break;
-		case 25:
-			if(!CheckInventory("GotNuke"))
-			{
-				GiveInventory("GotNuke", 1);
-				result = 1;
-			}
-			break;
-		case 42:
-			weaponStay = GetCVar("samsara_permault");
-
-            if (!CheckInventory("Q2BFG10K"))
-            {
-                if (isSinglePlayer() || isCoop())
-				{
-					GiveInventory("Q2QuadDamage", 1);
-				}
-				result = 1;
-            }
-
-            if (!CheckInventory("Q2QuadDamage") && !weaponStay && (isSinglePlayer() || isCoop()))
-            {
-                GiveInventory("Q2QuadDamage", 1);
-				result = 1;
-            }
-
-			if(weaponStay && (timer() - 2100 >= CheckInventory("SamsaraQuake2QuadDamageLastPickupTime")) && (isSinglePlayer() || isCoop()))
-			{
-				SetInventory("SamsaraQuake2QuadDamageLastPickupTime", timer());
-				GiveInventory("Q2QuadDamage", 1);
-				result = 1;
 			}
 			break;
 	}
@@ -5170,6 +5071,38 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
         }
         break;
 
+      case CLASS_QUAKE:
+        switch (slot)
+        {
+          default:
+            result = -1;
+            break;
+
+          case SLOT_BFG9000:
+            if (!CheckInventory("QuakeQuadTimer") || (!CheckInventory("QuadDamageItem") && GetCVar("samsara_permaquad")) || dropped >= 1 || startmode != 0 || !weaponstay)
+            {
+                if (startmode != 0) { GiveInventory("QuadDamageItem", 1); }
+                else
+                {
+                    GiveQuad(1050);
+                    if (GetCVar("samsara_permaquad")) { GiveInventory("QuadDamageItem", 1); }
+                }
+
+                result = 1;
+            }
+
+            if (!CheckInventory("Thunderbolt"))
+            {
+                GiveInventory("Thunderbolt", 1);
+                result = 1;
+            } else if (CheckInventory("Cell") < GetAmmoCapacity("Cell") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                GiveInventory("Thunderbolt", 1);
+                result = 1;
+            }
+            break;
+        }
+        break;
+
       case CLASS_ROTT:
         switch (slot)
         {
@@ -5571,6 +5504,97 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             }
 
             if (result == 1 && startmode == 0 && !hasweapon) { ACS_NamedExecuteAlways("HL2685", 0, 20); }
+            break;
+        }
+        break;
+
+      case CLASS_SW:
+        switch (slot)
+        {
+          default:
+            result = -1;
+            break;
+
+          case SLOT_CHAINGUN:
+            if (!CheckInventory("SWUzi"))
+            {
+                GiveInventory("SWUzi", 1);
+
+                if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                if (startmode <= -1) { GiveInventory("UziAmountCheck", 1); }
+                result = 1;
+            } else if (!CheckInventory("UziAmountCheck")) {
+                inventoryX = CheckInventory("SWUziPickedUpX") - 65536;
+                inventoryY = CheckInventory("SWUziPickedUpY") - 65536;
+                inventoryZ = CheckInventory("SWUziPickedUpZ") - 65536;
+
+                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                {
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                    GiveInventory("SWUzi", 1);
+                    GiveInventory("UziAmountCheck", 1);
+                    result = 1;
+                }
+            } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                GiveInventory("SWUzi", 1);
+                result = 1;
+            }
+
+            if (setcoords)
+            {
+                SetInventory("SWUziPickedUpX", invokerX + 65536);
+                SetInventory("SWUziPickedUpY", invokerY + 65536);
+                SetInventory("SWUziPickedUpZ", invokerZ + 65536);
+            }
+            break;
+
+          case SLOT_BFG9000:
+            if (!CheckInventory("SWGuardianHead"))
+            {
+                GiveInventory("SWGuardianHead", 1);
+                result = 1;
+            } else if (CheckInventory("Cell") < GetAmmoCapacity("Cell") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                GiveInventory("SWGuardianHead", 1);
+                result = 1;
+            }
+
+            if (!CheckInventory("GotNuke"))
+            {
+                GiveInventory("GotNuke", 1);
+                result = 1;
+            }
+            break;
+        }
+        break;
+
+      case CLASS_BITTERMAN:
+        switch (slot)
+        {
+          default:
+            result = -1;
+            break;
+
+          case SLOT_BFG9000:
+            if (!CheckInventory("Q2BFG10K"))
+            {
+                GiveInventory("Q2BFG10K", 1);
+                result = 1;
+            } else if (CheckInventory("Cell") < GetAmmoCapacity("Cell") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                GiveInventory("Q2BFG10K", 1);
+                result = 1;
+            }
+
+            if (isSinglePlayer() || isCoop())
+            {
+                if (!CheckInventory("Q2QuadDamage") && (Timer() >= CheckInventory("SamsaraQuake2QuadDamageLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay))
+                {
+                    GiveInventory("Q2QuadDamage", 1);
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("SamsaraQuake2QuadDamageLastPickupTime", Timer() + 2100); }
+                    result = 1;
+                }
+            }
             break;
         }
         break;
