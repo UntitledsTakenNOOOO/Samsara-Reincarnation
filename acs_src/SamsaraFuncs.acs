@@ -856,41 +856,40 @@ function int HandleUniqueSpawn (int respawning)
     return 1;
 }
 
-function int HandleChainsawSpawn (int respawning) // gonna merge all the slots into one someday
+function int HandleSlotSpawn (int slot, int respawning)
 {
-    int cs = GetCVar("samsara_chainsawstart");
+    int cs = 0;
     int classnum = samsaraClassNum();
     int ammomode = 3;
+
+    str giventoken = "Placeholder";
+
+    switch (slot)
+    {
+      default:
+        break;
+
+      case SLOT_CHAINSAW:
+        cs = GetCVar("samsara_chainsawstart");
+        giventoken = "SamsaraSlotIGiven";
+        break;
+
+      case SLOT_SHOTGUN:
+        cs = GetCVar("samsara_shotgunstart");
+        giventoken = "SamsaraSlotIIGiven";
+        break;
+    }
 
     if (cs > 2) { cs = 2; }
     else if (cs < 0) { cs = 0; }
 
-    if (cs == 0 || (respawning && (isSinglePlayer() || isCoop())) || isLMS() || GetCVar("samsara_lmsrules") || CheckInventory("SamsaraSlotIGiven")) { return 0; }
+    if (cs == 0 || (respawning && (isSinglePlayer() || isCoop())) || isLMS() || GetCVar("samsara_lmsrules") || CheckInventory(giventoken)) { return 0; }
 
     if (cs == 2) { ammomode = 1; }
 
-    GiveClassWeapon(classnum, SLOT_CHAINSAW, ammomode, cs);
+    GiveClassWeapon(classnum, slot, ammomode, cs);
 
-    GiveInventory("SamsaraSlotIGiven", 1);
-    return 1;
-}
-
-function int HandleShotgunSpawn (int respawning)
-{
-    int cs = GetCVar("samsara_shotgunstart");
-    int classnum = samsaraClassNum();
-    int ammomode = 3;
-
-    if (cs > 2) { cs = 2; }
-    else if (cs < 0) { cs = 0; }
-
-    if (cs == 0 || (respawning && (isSinglePlayer() || isCoop())) || isLMS() || GetCVar("samsara_lmsrules") || CheckInventory("SamsaraSlotIIGiven")) { return 0; }
-
-    if (cs == 2) { ammomode = 1; }
-
-    GiveClassWeapon(classnum, SLOT_SHOTGUN, ammomode, cs);
-
-    GiveInventory("SamsaraSlotIIGiven", 1);
+    GiveInventory(giventoken, 1);
     return 1;
 }
 
