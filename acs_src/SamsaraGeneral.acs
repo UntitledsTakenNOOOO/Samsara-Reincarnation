@@ -421,6 +421,10 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
     case 64:
         result = GetCVar("samsara_permaquad");
         break;
+
+    case 65:
+        result = GetCVar("samsara_dualpickup");
+        break;
 	}
 
 	SetResultValue(result);
@@ -3819,6 +3823,13 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     // Extra ammo on first pickup in Doom deathmatch (amount * 5 / 2)
     bool dmextraammo = !isSinglePlayer() && !isCoop() && (currentiwad == GAME_DOOM || currentiwad == GAME_CHEX) && !GetCVar("sv_noextraammo");
 
+    // Dual wield pickup mode setting
+    int dualpickupmode = GetCVar("samsara_dualpickup");
+
+    // Default durations to wait until next pickup (weaponstay only)
+    int pickuptimer = 35 * 60;
+    int dualpickuptimer = 35 * 30;
+
     // Start everything
     switch (classnum)
     {
@@ -5238,11 +5249,11 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             if (!CheckInventory("StrifeBeaconItem5"))
             {
                 GiveInventory("StrifeBeaconItem5", 1);
-                if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("StrifeBeaconLastPickupTime", Timer() + 2100); }
+                if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("StrifeBeaconLastPickupTime", Timer() + pickuptimer); }
                 result = 1;
             } else if (CheckInventory("StrifeBeaconCooldown") && (Timer() >= CheckInventory("StrifeBeaconLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay)) {
                 ACS_NamedExecuteAlways("StrifeBeaconCooldownReduction", 0);
-                if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("StrifeBeaconLastPickupTime", Timer() + 2100); }
+                if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("StrifeBeaconLastPickupTime", Timer() + pickuptimer); }
                 result = 1;
             }
             break;
@@ -5642,7 +5653,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 if (!CheckInventory("Q2QuadDamage") && (Timer() >= CheckInventory("SamsaraQuake2QuadDamageLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay))
                 {
                     GiveInventory("Q2QuadDamage", 1);
-                    if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("SamsaraQuake2QuadDamageLastPickupTime", Timer() + 2100); }
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("SamsaraQuake2QuadDamageLastPickupTime", Timer() + pickuptimer); }
                     result = 1;
                 }
             }
@@ -6114,7 +6125,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             if (Timer() >= CheckInventory("Painkiller_TarotLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay)
             {
                 GiveInventory("Painkiller_Tarot_GoldGiver", 1);
-                if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("Painkiller_TarotLastPickupTime", Timer() + 2100); }
+                if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("Painkiller_TarotLastPickupTime", Timer() + pickuptimer); }
                 result = 1;
             }
             break;
@@ -6294,6 +6305,9 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
 
     // Extra ammo on first pickup in Doom deathmatch (amount * 5 / 2)
     bool dmextraammo = !isSinglePlayer() && !isCoop() && (currentiwad == GAME_DOOM || currentiwad == GAME_CHEX) && !GetCVar("sv_noextraammo");
+
+    // Dual wield pickup mode setting
+    int dualpickupmode = GetCVar("samsara_dualpickup");
 
     // Start everything
     switch (classnum)
@@ -6626,6 +6640,9 @@ script "Samsara_GiveBackpack" (int startmode)
 
     // Extra ammo on first pickup in Doom deathmatch (amount * 5 / 2)
     bool dmextraammo = !isSinglePlayer() && !isCoop() && (currentiwad == GAME_DOOM || currentiwad == GAME_CHEX) && !GetCVar("sv_noextraammo");
+
+    // Dual wield pickup mode setting
+    int dualpickupmode = GetCVar("samsara_dualpickup");
 
     // Start everything
     GiveInventory("SamsaraBackpacksInInventory", 1);
@@ -8464,7 +8481,7 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Weapon Options
 		SetCVar("samsara_permault", false);
-		SetCVar("samsara_dualpickup", 0);
+		SetCVar("samsara_dualpickup", 1);
 		SetCVar("samsara_extraweapons", false);
 		SetCVar("samsara_uniquestart", 0);
 		SetCVar("samsara_chainsawstart", 0);
@@ -8799,7 +8816,7 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Weapon Options
 		SetCVar("samsara_permault", false);
-		SetCVar("samsara_dualpickup", 0); // 2 for coop, 3 for invasion/PVP
+		SetCVar("samsara_dualpickup", 4);
 		SetCVar("samsara_extraweapons", false);
 		SetCVar("samsara_uniquestart", 0);
 		SetCVar("samsara_chainsawstart", 0);
@@ -9134,7 +9151,7 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Weapon Options
 		SetCVar("samsara_permault", false);
-		SetCVar("samsara_dualpickup", 0);
+		SetCVar("samsara_dualpickup", 1);
 		SetCVar("samsara_extraweapons", true);
 		SetCVar("samsara_uniquestart", 0);
 		SetCVar("samsara_chainsawstart", 0);
@@ -9470,7 +9487,7 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Weapon Options
 		SetCVar("samsara_permault", false);
-		SetCVar("samsara_dualpickup", 0);
+		SetCVar("samsara_dualpickup", 1);
 		SetCVar("samsara_extraweapons", true);
 		SetCVar("samsara_uniquestart", 0);
 		SetCVar("samsara_chainsawstart", 0);
@@ -9807,7 +9824,7 @@ script "SamsaraServerSidePresetSelection" (void)
 
 			// Weapon Options
 			SetCVar("samsara_permault", false);
-			SetCVar("samsara_dualpickup", 0);
+			SetCVar("samsara_dualpickup", 1);
 			SetCVar("samsara_extraweapons", true);
 			SetCVar("samsara_uniquestart", 0);
 			SetCVar("samsara_chainsawstart", 0);
