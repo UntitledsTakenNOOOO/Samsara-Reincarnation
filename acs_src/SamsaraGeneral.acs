@@ -2164,26 +2164,40 @@ Script "Samsara_ResetInventory" (void)
 			break;
 		case 3:
 			TakeInventory("BJSuperKnife", INTMAX);
-			TakeInventory("Totenkopf_PistolDual", INTMAX);
 			TakeInventory("Totenkopf_Mauser", INTMAX);
+			SetInventory("Totenkopf_IHaveMauser", 0);
 			TakeInventory("Totenkopf_MauserDual", INTMAX);
+			SetInventory("Totenkopf_IHaveDualMausers", 0);
+			TakeInventory("Totenkopf_PistolDual", INTMAX);
+			SetInventory("Totenkopf_IHaveDualPistols", 0);
 			TakeInventory("Machine Gun", INTMAX);
+			SetInventory("Wolfen_IHaveSlot2", 0);
 			TakeInventory("Totenkopf_STG44", INTMAX);
 			TakeInventory("Totenkopf_STGFiredOnce", INTMAX);
+			SetInventory("Totenkopf_IHaveSTG44", 0);
 			TakeInventory("  Chaingun  ", INTMAX);
 			TakeInventory("Totenkopf_MP40Dual", INTMAX);
+			SetInventory("Totenkopf_IHaveDualMP40s", 0);
 			TakeInventory(" Rocket Launcher ", INTMAX);
 			TakeInventory(" Flamethrower ", INTMAX);
 			TakeInventory("Spear of Destiny", INTMAX);
 			TakeInventory("Mauser Rifle", INTMAX);
 			TakeInventory("WolfExtraLife", INTMAX);
+			SetInventory("Wolfen_IHaveExtraLife", 0);
 			TakeInventory("Totenkopf_Flamethrower", INTMAX);
+			SetInventory("Totenkopf_IHaveFlamethrower", 0);
+			SetInventory("Totenkopf_FlameThrowerFuel", 0);
 			TakeInventory("Totenkopf_MG42", INTMAX);
+			SetInventory("Totenkopf_IHaveMG42", 0);
 			TakeInventory("Totenkopf_Sniper", INTMAX);
-			TakeInventory("TotenkopfHealingOrbHealer", INTMAX);
-			TakeInventory("TotenkopfHasHealingOrb", INTMAX);
+			SetInventory("Totenkopf_IHaveScope", 0);
+			SetInventory("TotenkopfSecretCounter", 0);
 			TakeInventory("TotenkopfPowerArmorPickup", INTMAX);
 			TakeInventory("TotenkopfHasPowerArmor", INTMAX);
+			SetInventory("Totenkopf_IHavePowerArmor", 0);
+			TakeInventory("TotenkopfHealingOrbHealer", INTMAX);
+			TakeInventory("TotenkopfHasHealingOrb", INTMAX);
+			SetInventory("Totenkopf_IAmWolverine", 0);
 
 			GiveInventory("Luger", 1);
 			GiveInventory("Knife", 1);
@@ -3292,7 +3306,7 @@ script "Samsara_FillInventory" (void)
 			GiveInventory("Totenkopf_IHaveMauser",1);
 			GiveInventory("Totenkopf_IHaveDualMausers",1);
 			GiveInventory("Totenkopf_IHaveSTG44",1);
-			GiveInventory("Totenkopf_IHaveFlameThrower",1);
+			GiveInventory("Totenkopf_IHaveFlamethrower",1);
 			GiveInventory("Totenkopf_IHaveMG42",1);
 			GiveInventory("Totenkopf_IHaveScope",1);
 			break;
@@ -3541,212 +3555,6 @@ script "Samsara_FillInventory" (void)
 //======================================================================================================================
 //							Map Inventory - For weapons to advanced for generic pickup code
 //======================================================================================================================
-
-Script "Samsara_MapInventory" (int item, int dropped)
-{
-	int weaponStay = GetCVar("sv_weaponstay");
-	int maxDistance = 80;
-	int invokerX = GetActorX(0)>>16;
-	int invokerY = GetActorY(0)>>16;
-	int invokerZ = GetActorZ(0)>>16;
-	int inventoryX, inventoryY, inventoryZ, result;
-
-	switch(item)
-	{
-		default: break;
-		case 1:
-			if(!CheckInventory("Totenkopf_IHaveMauser"))
-			{
-				GiveInventory("Totenkopf_MauserPickedUpX",invokerX+65536);
-				GiveInventory("Totenkopf_MauserPickedUpY",invokerY+65536);
-				GiveInventory("Totenkopf_MauserPickedUpZ",invokerZ+65536);
-				GiveInventory("Samsara_ModeWeaponChange",1);
-				GiveInventory("Totenkopf_IHaveMauser",1);
-				GiveInventory("Clip",5);
-				result = 1;
-			}
-			else if(!CheckInventory("Totenkopf_IHaveDualMausers"))
-			{
-				inventoryX = CheckInventory("Totenkopf_MauserPickedUpX")-65536;
-				inventoryY = CheckInventory("Totenkopf_MauserPickedUpY")-65536;
-				inventoryZ = CheckInventory("Totenkopf_MauserPickedUpZ")-65536;
-				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1)
-				{
-					TakeInventory("Totenkopf_MauserPickedUpX",131072);
-					TakeInventory("Totenkopf_MauserPickedUpY",131072);
-					TakeInventory("Totenkopf_MauserPickedUpZ",131072);
-					GiveInventory("Totenkopf_MauserPickedUpX",invokerX+65536);
-					GiveInventory("Totenkopf_MauserPickedUpY",invokerY+65536);
-					GiveInventory("Totenkopf_MauserPickedUpZ",invokerZ+65536);
-					GiveInventory("Totenkopf_IHaveDualMausers",1);
-					GiveInventory("Samsara_ModeWeaponChange",1);
-					GiveInventory("Clip",5);
-					result = 1;
-				}
-			}
-			else if(CheckInventory("Clip") < GetAmmoCapacity("Clip")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Clip",5); result = 1; }}
-			break;
-		case 2:
-			if(!CheckInventory("Machine Gun"))
-			{
-				if(CheckInventory("WolfenClassMode") == 2)
-				{
-					if(dropped >= 2)
-					{
-						GiveInventory("Shell",2);
-						result = 1;
-					}
-					else
-					{
-						GiveInventory("Shell",5);
-						result = 1;
-					}
-				}
-				else
-				{
-					if(dropped >= 2)
-					{
-						GiveInventory("Clip",10);
-						result = 1;
-					}
-					else
-					{
-						GiveInventory("Clip",20);
-						result = 1;
-					}
-				}
-			}
-			else
-			{
-				if(CheckInventory("WolfenClassMode") == 2)
-				{
-					if(dropped >= 2)
-					{
-						if(CheckInventory("Shell") < GetAmmoCapacity("Shell")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Shell",2); result = 1; }}
-					}
-					else
-					{
-						if(CheckInventory("Shell") < GetAmmoCapacity("Shell")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Shell",5); result = 1; }}
-					}
-				}
-				else
-				{
-					if(dropped >= 2)
-					{
-						if(CheckInventory("Clip") < GetAmmoCapacity("Clip")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Clip",10); result = 1; }}
-					}
-					else
-					{
-						if(CheckInventory("Clip") < GetAmmoCapacity("Clip")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Clip",20); result = 1; }}
-					}
-				}
-			}
-			break;
-		case 3:
-			// Check for the machine gun for regular Blazkowicz since he lacks the Slot III
-			if(CheckInventory("WolfenClassMode") <= 1)
-			{
-				if(!CheckInventory("Machine Gun"))
-				{
-					if(dropped >= 2)
-					{
-						GiveInventory("Clip",10);
-						result = 1;
-					}
-					else
-					{
-						GiveInventory("Clip",20);
-						result = 1;
-					}
-				}
-				else
-				{
-					if(dropped >= 2)
-					{
-						if(CheckInventory("Clip") < GetAmmoCapacity("Clip")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Clip",10); result = 1; }}
-					}
-					else
-					{
-						if(CheckInventory("Clip") < GetAmmoCapacity("Clip")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Clip",20); result = 1; }}
-					}
-				}
-			}
-
-			// Check for the STG44 for Totenkopf Blazkowicz
-			else if(CheckInventory("WolfenClassMode") == 2)
-			{
-				if(!CheckInventory("Totenkopf_IHaveSTG44"))
-				{
-					GiveInventory("Totenkopf_IHaveSTG44", 1);
-					GiveInventory("Samsara_ModeWeaponChange",1);
-
-					if(dropped >= 2)
-					{
-						GiveInventory("Shell",15);
-						result = 1;
-					}
-					else
-					{
-						GiveInventory("Shell",30);
-						result = 1;
-					}
-				}
-				else
-				{
-					if(dropped >= 2)
-					{
-						if(CheckInventory("Shell") < GetAmmoCapacity("Shell")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Shell",15); result = 1; }}
-					}
-					else
-					{
-						if(CheckInventory("Shell") < GetAmmoCapacity("Shell")) { if((!weaponStay || dropped >= 1)) { GiveInventory("Shell",30); result = 1; }}
-					}
-				}
-			}
-			break;
-		case 4:
-			if(!CheckInventory("  Chaingun  "))
-			{
-				GiveInventory("Totenkopf_MP40PickedUpX",invokerX+65536);
-				GiveInventory("Totenkopf_MP40PickedUpY",invokerY+65536);
-				GiveInventory("Totenkopf_MP40PickedUpZ",invokerZ+65536);
-				GiveInventory("Samsara_ModeWeaponChange",1);
-				result = 1;
-			}
-			else if(!CheckInventory("Totenkopf_IHaveDualMP40s") && (CheckInventory("WolfenClassMode") == 2))
-			{
-				inventoryX = CheckInventory("Totenkopf_MP40PickedUpX")-65536;
-				inventoryY = CheckInventory("Totenkopf_MP40PickedUpY")-65536;
-				inventoryZ = CheckInventory("Totenkopf_MP40PickedUpZ")-65536;
-				if((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1)
-				{
-					TakeInventory("Totenkopf_MP40PickedUpX",131072);
-					TakeInventory("Totenkopf_MP40PickedUpY",131072);
-					TakeInventory("Totenkopf_MP40PickedUpZ",131072);
-					GiveInventory("Totenkopf_MP40PickedUpX",invokerX+65536);
-					GiveInventory("Totenkopf_MP40PickedUpY",invokerY+65536);
-					GiveInventory("Totenkopf_MP40PickedUpZ",invokerZ+65536);
-					GiveInventory("Totenkopf_IHaveDualMP40s",1);
-					GiveInventory("Samsara_ModeWeaponChange",1);
-					result = 1;
-				}
-			}
-			break;
-	}
-	SetResultValue(result);
-	//PrintBold(s:"Distance X: ",d:abs(invokerX - inventoryX),s:", Distance Y: ",d:abs(invokerY - inventoryY),s:", Distance Z: ",d:abs(invokerZ - inventoryZ));
-}
-
-Script "Samsara_MapInventoryLogger" (int message) clientside
-{
-	str logmsg;
-	switch(message)
-	{
-		default: break;
-		case 2: logmsg = "STG44 Assault Rifle"; break;
-	}
-	Log(s:msgColors[GetCVar("msg0color")], s:logmsg);
-}
 
 script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
 {
@@ -4755,6 +4563,269 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
         }
         break;
 
+      case CLASS_WOLFEN:
+        switch (altclasschoice)
+        {
+          default:
+            result = -1;
+            break;
+
+          case 0: // Original
+          case 1: // Lost Missions
+            switch (slot)
+            {
+              default:
+                result = -1;
+                break;
+
+              case SLOT_CHAINSAW:
+                if (!CheckInventory("BJSuperKnife"))
+                {
+                    GiveInventory("BJSuperKnife", 1);
+
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                    if (startmode <= -1) { GiveInventory("Totenkopf_IHaveDualMausers", 1); }
+                    result = 1;
+                }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    GiveInventory("Totenkopf_IHaveMauser", 1);
+                    GiveInventory("Samsara_ModeWeaponChange", 1);
+                }
+
+                if (setcoords)
+                {
+                    SetInventory("Totenkopf_MauserPickedUpX", invokerX + 65536);
+                    SetInventory("Totenkopf_MauserPickedUpY", invokerY + 65536);
+                    SetInventory("Totenkopf_MauserPickedUpZ", invokerZ + 65536);
+                }
+                break;
+
+              case SLOT_SHOTGUN:
+              case SLOT_SUPERSHOTGUN:
+                if (!CheckInventory("Machine Gun"))
+                {
+                    GiveInventory("Machine Gun", 1);
+                    GiveInventory("Clip", dmextraammo ? 20 / tossedammo * 5 / 2 : 20 / tossedammo);
+                    result = 1;
+                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Clip", 20 / tossedammo);
+                    result = 1;
+                }
+
+                if (startmode >= 2) { GiveInventory("Clip", GetAmmoCapacity("Clip")); }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    switch (slot)
+                    {
+                      case SLOT_SHOTGUN:
+                        GiveInventory("Wolfen_IHaveSlot2", 1);
+                        break;
+
+                      case SLOT_SUPERSHOTGUN:
+                        GiveInventory("Totenkopf_IHaveSTG44", 1);
+                        break;
+                    }
+
+                    GiveInventory("Samsara_ModeWeaponChange", 1);
+                }
+                break;
+
+              case SLOT_CHAINGUN:
+                if (!CheckInventory("  Chaingun  "))
+                {
+                    GiveInventory("  Chaingun  ", 1);
+
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                    if (startmode <= -1) { GiveInventory("Totenkopf_IHaveDualMP40s", 1); }
+                    result = 1;
+                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("  Chaingun  ", 1);
+
+                    if (!CheckInventory("Totenkopf_IHaveDualMP40s"))
+                    {
+                        if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                        GiveInventory("Totenkopf_IHaveDualMP40s", 1);
+                    }
+
+                    result = 1;
+                }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1) { GiveInventory("Samsara_ModeWeaponChange", 1); }
+
+                if (setcoords)
+                {
+                    SetInventory("Totenkopf_MP40PickedUpX", invokerX + 65536);
+                    SetInventory("Totenkopf_MP40PickedUpY", invokerY + 65536);
+                    SetInventory("Totenkopf_MP40PickedUpZ", invokerZ + 65536);
+                }
+                break;
+            }
+            break;
+
+          case 2: // Castle Totenkopf SDL
+            switch (slot)
+            {
+              default:
+                result = -1;
+                break;
+
+              case SLOT_CHAINSAW:
+                if (!CheckInventory("Totenkopf_Mauser"))
+                {
+                    GiveInventory("Totenkopf_Mauser", 1);
+
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                    if (startmode <= -1)
+                    {
+                        GiveInventory("Totenkopf_MauserDual", 1);
+                        GiveInventory("Totenkopf_IHaveDualMausers", 1);
+                    }
+
+                    GiveInventory("Clip", dmextraammo ? 5 / tossedammo * 5 / 2 : 5 / tossedammo);
+                    result = 1;
+                } else if (!CheckInventory("Totenkopf_IHaveDualMausers")) {
+                    inventoryX = CheckInventory("Totenkopf_MauserPickedUpX") - 65536;
+                    inventoryY = CheckInventory("Totenkopf_MauserPickedUpY") - 65536;
+                    inventoryZ = CheckInventory("Totenkopf_MauserPickedUpZ") - 65536;
+
+                    if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
+                    {
+                        if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                        GiveInventory("Totenkopf_MauserDual", 1);
+                        GiveInventory("Totenkopf_IHaveDualMausers", 1);
+                        GiveInventory("Clip", 5 / tossedammo);
+                        result = 1;
+                    }
+                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Clip", 5 / tossedammo);
+                    result = 1;
+                }
+
+                if (startmode >= 2) { GiveInventory("Clip", GetAmmoCapacity("Clip")); }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    GiveInventory("Totenkopf_IHaveMauser", 1);
+                    GiveInventory("Samsara_ModeWeaponChange", 1);
+                }
+
+                if (setcoords)
+                {
+                    SetInventory("Totenkopf_MauserPickedUpX", invokerX + 65536);
+                    SetInventory("Totenkopf_MauserPickedUpY", invokerY + 65536);
+                    SetInventory("Totenkopf_MauserPickedUpZ", invokerZ + 65536);
+                }
+                break;
+
+              case SLOT_SHOTGUN:
+                if (!CheckInventory("Machine Gun"))
+                {
+                    GiveInventory("Machine Gun", 1);
+                    GiveInventory("Shell", dmextraammo ? 5 / tossedammo * 5 / 2 : 5 / tossedammo);
+                    result = 1;
+                } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Shell", 5 / tossedammo);
+                    result = 1;
+                }
+
+                if (startmode >= 2) { GiveInventory("Shell", GetAmmoCapacity("Shell")); }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    GiveInventory("Wolfen_IHaveSlot2", 1);
+                    GiveInventory("Samsara_ModeWeaponChange", 1);
+                }
+                break;
+
+              case SLOT_SUPERSHOTGUN:
+                if (!CheckInventory("Totenkopf_STG44"))
+                {
+                    GiveInventory("Totenkopf_STG44", 1);
+                    GiveInventory("Shell", dmextraammo ? 30 / tossedammo * 5 / 2 : 30 / tossedammo);
+                    result = 1;
+                } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Shell", 30 / tossedammo);
+                    result = 1;
+                }
+
+                if (startmode >= 2) { GiveInventory("Shell", GetAmmoCapacity("Shell")); }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    GiveInventory("Totenkopf_IHaveSTG44", 1);
+                    GiveInventory("Samsara_ModeWeaponChange", 1);
+                }
+                break;
+
+              case SLOT_CHAINGUN:
+                if (!CheckInventory("  Chaingun  "))
+                {
+                    GiveInventory("  Chaingun  ", 1);
+
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                    if (startmode <= -1)
+                    {
+                        GiveInventory("Totenkopf_MP40Dual", 1);
+                        GiveInventory("Totenkopf_IHaveDualMP40s", 1);
+                    }
+
+                    result = 1;
+                } else if (!CheckInventory("Totenkopf_IHaveDualMP40s")) {
+                    inventoryX = CheckInventory("Totenkopf_MP40PickedUpX") - 65536;
+                    inventoryY = CheckInventory("Totenkopf_MP40PickedUpY") - 65536;
+                    inventoryZ = CheckInventory("Totenkopf_MP40PickedUpZ") - 65536;
+
+                    if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
+                    {
+                        if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
+
+                        GiveInventory("  Chaingun  ", 1);
+                        GiveInventory("Totenkopf_MP40Dual", 1);
+                        GiveInventory("Totenkopf_IHaveDualMP40s", 1);
+                        result = 1;
+                    }
+                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("  Chaingun  ", 1);
+                    result = 1;
+                }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1) { GiveInventory("Samsara_ModeWeaponChange", 1); }
+
+                if (setcoords)
+                {
+                    SetInventory("Totenkopf_MP40PickedUpX", invokerX + 65536);
+                    SetInventory("Totenkopf_MP40PickedUpY", invokerY + 65536);
+                    SetInventory("Totenkopf_MP40PickedUpZ", invokerZ + 65536);
+                }
+                break;
+            }
+            break;
+        }
+        break;
+
       case CLASS_HEXEN:
         switch (altclasschoice)
         {
@@ -4772,27 +4843,6 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 break;
 
               case SLOT_BFG9000:
-                if (!CheckInventory("Wraithverge"))
-                {
-                    GiveInventory("Wraithverge", 1);
-                    GiveInventory("Clip", dmextraammo ? 25 * 5 / 2 : 25);
-                    GiveInventory("Cell", dmextraammo ? 25 * 5 / 2 : 25);
-                    result = 1;
-                } else if ((CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv || CheckInventory("Cell") < GetAmmoCapacity("Cell") / tosseddiv) && (dropped >= 1 || startmode != 0 || !weaponstay)) {
-                    GiveInventory("Clip", 25);
-                    GiveInventory("Cell", 25);
-                    result = 1;
-                }
-
-                if (startmode != 0) { result = 1; }
-
-                if (result == 1)
-                {
-                    GiveInventory("SamsaraHexenHasSlot7", 1);
-                    GiveInventory("Samsara_ModeWeaponChange", 1);
-                }
-                break;
-
               case SLOT_BFG10K:
                 if (!CheckInventory("Wraithverge"))
                 {
@@ -4810,8 +4860,18 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
 
                 if (result == 1)
                 {
-                    GiveInventory("SamsaraClassicPariasHasBloodscourge", 1);
-                    GiveInventory("GotWeapon7", 1);
+                    switch (slot)
+                    {
+                      case SLOT_BFG9000:
+                        GiveInventory("SamsaraHexenHasSlot7", 1);
+                        break;
+
+                      case SLOT_BFG10K:
+                        GiveInventory("SamsaraClassicPariasHasBloodscourge", 1);
+                        GiveInventory("GotWeapon7", 1);
+                        break;
+                    }
+
                     GiveInventory("Samsara_ModeWeaponChange", 1);
                 }
                 break;
@@ -4938,25 +4998,6 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 break;
 
               case SLOT_CHAINGUN:
-                if (!CheckInventory("Chaingun Cannon"))
-                {
-                    GiveInventory("Chaingun Cannon", 1);
-                    GiveInventory("Clip", dmextraammo ? 50 * 5 / 2 : 50);
-                    result = 1;
-                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
-                    GiveInventory("Clip", 50);
-                    result = 1;
-                }
-
-                if (startmode != 0) { result = 1; }
-
-                if (result == 1)
-                {
-                    GiveInventory("SamsaraDukeHasSlot4", 1);
-                    GiveInventory("Samsara_ModeWeaponChange", 1);
-                }
-                break;
-
               case SLOT_MINIGUN:
                 if (!CheckInventory("Chaingun Cannon"))
                 {
@@ -4972,8 +5013,18 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
 
                 if (result == 1)
                 {
-                    GiveInventory("SamsaraDukeHasGoldenDesertEagle", 1);
-                    GiveInventory("GotWeapon4", 1);
+                    switch (slot)
+                    {
+                      case SLOT_CHAINGUN:
+                        GiveInventory("SamsaraDukeHasSlot4", 1);
+                        break;
+
+                      case SLOT_MINIGUN:
+                        GiveInventory("SamsaraDukeHasGoldenDesertEagle", 1);
+                        GiveInventory("GotWeapon4", 1);
+                        break;
+                    }
+
                     GiveInventory("Samsara_ModeWeaponChange", 1);
                 }
                 break;
@@ -5020,7 +5071,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("MarathonShotgunPickedUpY") - 65536;
                 inventoryZ = CheckInventory("MarathonShotgunPickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5529,7 +5580,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("SWUziPickedUpY") - 65536;
                 inventoryZ = CheckInventory("SWUziPickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5620,7 +5671,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("Goldeneye_KnifePickedUpY") - 65536;
                 inventoryZ = CheckInventory("Goldeneye_KnifePickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5677,7 +5728,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("Goldeneye_KF7SovietPickedUpY") - 65536;
                 inventoryZ = CheckInventory("Goldeneye_KF7SovietPickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5718,7 +5769,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     inventoryY = CheckInventory("Goldeneye_AutoShotgunPickedUpY") - 65536;
                     inventoryZ = CheckInventory("Goldeneye_AutoShotgunPickedUpZ") - 65536;
 
-                    if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                    if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                     {
                         if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5748,7 +5799,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     inventoryY = CheckInventory("Goldeneye_AutoShotgunPickedUpY") - 65536;
                     inventoryZ = CheckInventory("Goldeneye_AutoShotgunPickedUpZ") - 65536;
 
-                    if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                    if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                     {
                         if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5784,7 +5835,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("Goldeneye_AR33PickedUpY") - 65536;
                 inventoryZ = CheckInventory("Goldeneye_AR33PickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5819,7 +5870,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("Goldeneye_RocketLauncherPickedUpY") - 65536;
                 inventoryZ = CheckInventory("Goldeneye_RocketLauncherPickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5854,7 +5905,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("Goldeneye_RCP90PickedUpY") - 65536;
                 inventoryZ = CheckInventory("Goldeneye_RCP90PickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5889,7 +5940,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("Goldeneye_LaserPickedUpY") - 65536;
                 inventoryZ = CheckInventory("Goldeneye_LaserPickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5924,7 +5975,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("Goldeneye_PhantomPickedUpY") - 65536;
                 inventoryZ = CheckInventory("Goldeneye_PhantomPickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5959,7 +6010,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("Goldeneye_GrenadeLauncherPickedUpY") - 65536;
                 inventoryZ = CheckInventory("Goldeneye_GrenadeLauncherPickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -5994,7 +6045,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("Goldeneye_CougarPickedUpY") - 65536;
                 inventoryZ = CheckInventory("Goldeneye_CougarPickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -6029,7 +6080,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 inventoryY = CheckInventory("Goldeneye_GoldenGunPickedUpY") - 65536;
                 inventoryZ = CheckInventory("Goldeneye_GoldenGunPickedUpZ") - 65536;
 
-                if ((abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance) || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
 
@@ -6072,6 +6123,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     }
 
     SetResultValue(result);
+    //PrintBold(s:"Distance X: ", d:abs(invokerX - inventoryX), s:", Distance Y: ", d:abs(invokerY - inventoryY), s:", Distance Z: ", d:abs(invokerZ - inventoryZ));
 }
 
 script "Samsara_GiveCustomUnique" (int unum, int startmode)
@@ -6607,6 +6659,7 @@ script "Samsara_GiveBackpack" (int startmode)
 
           case 2: // Castle Totenkopf SDL
             GiveInventory("Backpack", 1);
+            GiveInventory("Totenkopf_PistolDual", 1);
             GiveInventory("Totenkopf_IHaveDualPistols", 1);
             GiveInventory("Samsara_ModeWeaponChange", 1);
             break;
@@ -6614,9 +6667,21 @@ script "Samsara_GiveBackpack" (int startmode)
         break;
 
       case CLASS_HEXEN:
-        GiveInventory("PortKraterOfMight", 1);
-        GiveInventory("SamsaraClassicPariasHasSpikedGauntlet", 1);
-        GiveInventory("Samsara_ModeWeaponChange", 1);
+        switch (altclasschoice)
+        {
+          default: // Parias (Reincarnation)/Daedolon/Baratus
+            GiveInventory("PortKraterOfMight", 1);
+            GiveInventory("SamsaraClassicPariasHasSpikedGauntlet", 1);
+            GiveInventory("Samsara_ModeWeaponChange", 1);
+            break;
+
+          case 1: // Parias (Classic)
+            GiveInventory("PortKraterOfMight", 1);
+            GiveInventory("Spiked Gauntlet", 1);
+            GiveInventory("SamsaraClassicPariasHasSpikedGauntlet", 1);
+            GiveInventory("Samsara_ModeWeaponChange", 1);
+            break;
+        }
         break;
 
       case CLASS_DUKE:
