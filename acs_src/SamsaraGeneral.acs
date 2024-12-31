@@ -3802,13 +3802,16 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     // Weapon stay setting
     bool weaponstay = slot == SLOT_BFG9000 || slot == SLOT_BFG10K ? GetCVar("samsara_permault") : GetCVar("sv_weaponstay");
 
-    // Last pickup map coordinates
+    // Last pickup map coordinates initialization
     bool setcoords = false;
     int maxDistance = 80;
     int invokerX = GetActorX(0) >> 16;
     int invokerY = GetActorY(0) >> 16;
     int invokerZ = GetActorZ(0) >> 16;
     int inventoryX, inventoryY, inventoryZ;
+
+    // Last pickup timer initialization
+    bool settimer = false;
 
     // Inventory check
     bool hasweapon = false;
@@ -3828,6 +3831,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     bool duallimiting = startmode == 0 && (dualpickupmode <= 0 || (dualpickupmode >= 4 && (isSinglePlayer() || isCoop()) && !isInvasion() && dropped <= 0 && weaponstay));
     bool duallimited = false;
     bool dualgiveboth = startmode <= -1 || dualpickupmode == 3 || (dualpickupmode >= 4 && (!(isSinglePlayer() || isCoop()) || isInvasion()));
+    bool dualreqcheck = true;
 
     // Default durations to wait until next pickup (weaponstay only)
     int pickuptimer = 35 * 60;
@@ -5072,25 +5076,51 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             break;
 
           case SLOT_SHOTGUN:
+            duallimited = duallimiting && CheckInventory("MarathonShotgunLevelLimiter");
+
             if (!CheckInventory("WSTE-M5 Combat Shotgun"))
             {
                 GiveInventory("WSTE-M5 Combat Shotgun", 1);
 
-                if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
-
-                if (startmode <= -1) { GiveInventory("CanDualShotties", 1); }
-                result = 1;
-            } else if (!CheckInventory("CanDualShotties")) {
-                inventoryX = CheckInventory("MarathonShotgunPickedUpX") - 65536;
-                inventoryY = CheckInventory("MarathonShotgunPickedUpY") - 65536;
-                inventoryZ = CheckInventory("MarathonShotgunPickedUpZ") - 65536;
-
-                if (abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (!CheckInventory("CanDualShotties") && dualgiveboth)
                 {
-                    if (dropped <= 0 && startmode == 0 && weaponstay) { setcoords = true; }
-
                     GiveInventory("WSTE-M5 Combat Shotgun", 1);
                     GiveInventory("CanDualShotties", 1);
+                }
+
+                if (duallimiting) { GiveInventory("MarathonShotgunLevelLimiter", 1); }
+
+                if (dropped <= 0 && startmode == 0 && weaponstay)
+                {
+                    setcoords = true;
+                    settimer = true;
+                }
+
+                result = 1;
+            } else if (!CheckInventory("CanDualShotties") && !duallimited && (dualpickupmode != 4 || (dualpickupmode >= 4 && dropped <= 1))) {
+                if (dualpickupmode == 1)
+                {
+                    inventoryX = CheckInventory("MarathonShotgunPickedUpX") - 65536;
+                    inventoryY = CheckInventory("MarathonShotgunPickedUpY") - 65536;
+                    inventoryZ = CheckInventory("MarathonShotgunPickedUpZ") - 65536;
+
+                    dualreqcheck = abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance;
+                }
+                else if (dualpickupmode == 2) { dualreqcheck = Timer() >= CheckInventory("MarathonShotgunLastPickupTime"); }
+
+                if (dualreqcheck || dropped >= 1 || startmode != 0 || !weaponstay)
+                {
+                    GiveInventory("WSTE-M5 Combat Shotgun", 1);
+                    GiveInventory("CanDualShotties", 1);
+
+                    if (duallimiting) { GiveInventory("MarathonShotgunLevelLimiter", 1); }
+
+                    if (dropped <= 0 && startmode == 0 && weaponstay)
+                    {
+                        setcoords = true;
+                        settimer = true;
+                    }
+
                     result = 1;
                 }
             } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
@@ -5104,6 +5134,8 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 SetInventory("MarathonShotgunPickedUpY", invokerY + 65536);
                 SetInventory("MarathonShotgunPickedUpZ", invokerZ + 65536);
             }
+
+            if (settimer) { SetInventory("MarathonShotgunLastPickupTime", Timer() + dualpickuptimer); }
             break;
 
           case SLOT_CHAINGUN:
