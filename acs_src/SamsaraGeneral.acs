@@ -3823,8 +3823,11 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     // Extra ammo on first pickup in Doom deathmatch (amount * 5 / 2)
     bool dmextraammo = !isSinglePlayer() && !isCoop() && (currentiwad == GAME_DOOM || currentiwad == GAME_CHEX) && !GetCVar("sv_noextraammo");
 
-    // Dual wield pickup mode setting
+    // Dual wield pickup mode checks
     int dualpickupmode = GetCVar("samsara_dualpickup");
+    bool duallimiting = startmode == 0 && (dualpickupmode <= 0 || (dualpickupmode >= 4 && (isSinglePlayer() || isCoop()) && !isInvasion() && dropped <= 0 && weaponstay));
+    bool duallimited = false;
+    bool dualgiveboth = startmode <= -1 || dualpickupmode == 3 || (dualpickupmode >= 4 && (!(isSinglePlayer() || isCoop()) || isInvasion()));
 
     // Default durations to wait until next pickup (weaponstay only)
     int pickuptimer = 35 * 60;
@@ -6306,8 +6309,11 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
     // Extra ammo on first pickup in Doom deathmatch (amount * 5 / 2)
     bool dmextraammo = !isSinglePlayer() && !isCoop() && (currentiwad == GAME_DOOM || currentiwad == GAME_CHEX) && !GetCVar("sv_noextraammo");
 
-    // Dual wield pickup mode setting
+    // Dual wield pickup mode checks
     int dualpickupmode = GetCVar("samsara_dualpickup");
+    bool duallimiting = startmode == 0 && dualpickupmode <= 0;
+    bool duallimited = false;
+    bool dualgiveboth = startmode <= -1 || dualpickupmode == 3 || (dualpickupmode >= 4 && (!(isSinglePlayer() || isCoop()) || isInvasion()));
 
     // Start everything
     switch (classnum)
@@ -6456,16 +6462,27 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
             break;
 
           case SLOT_UNIQUE1:
+            duallimited = duallimiting && CheckInventory("Goldeneye_SniperLevelLimiter");
+
             if (!CheckInventory("Goldeneye_SniperRifle"))
             {
                 GiveInventory("Goldeneye_SniperRifle", 1);
-                if (startmode <= -1) { GiveInventory("Goldeneye_SniperDualToken", 1); }
                 GiveInventory("Shell", 5); // bonus ammo
+
+                if (!CheckInventory("Goldeneye_SniperDualToken") && dualgiveboth)
+                {
+                    GiveInventory("Goldeneye_SniperDualToken", 1);
+                    GiveInventory("Shell", 5);
+                    GiveInventory("Shell", 5); // bonus ammo
+                }
+
+                if (duallimiting) { GiveInventory("Goldeneye_SniperLevelLimiter", 1); }
                 result = 1;
-            } else if (!CheckInventory("Goldeneye_SniperDualToken")) {
+            } else if (!CheckInventory("Goldeneye_SniperDualToken") && !duallimited) {
                 GiveInventory("Goldeneye_SniperDualToken", 1);
                 GiveInventory("Shell", 5);
                 GiveInventory("Shell", 5); // bonus ammo
+                if (duallimiting) { GiveInventory("Goldeneye_SniperLevelLimiter", 1); }
                 result = 1;
             } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell")) {
                 GiveInventory("Shell", 5);
@@ -6477,20 +6494,30 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
           case SLOT_UNIQUE2:
             hasweapon = CheckInventory("Goldeneye_SilencedD5K") || CheckInventory("Goldeneye_ZMG");
             hasdualtoken = CheckInventory("Goldeneye_D5KDualToken");
+            duallimited = duallimiting && CheckInventory("Goldeneye_D5KLevelLimiter");
 
             if (loadoutchoice <= 0 || completeloadout) // D5K Deutsche (Silenced)
             {
                 if (!hasweapon)
                 {
                     GiveInventory("Goldeneye_SilencedD5K", 1);
-                    if (startmode <= -1) { GiveInventory("Goldeneye_D5KDualToken", 1); }
                     GiveInventory("Clip", dmextraammo ? 30 * 5 / 2 : 30);
                     GiveInventory("Clip", 10); // bonus ammo
+
+                    if (!hasdualtoken && dualgiveboth)
+                    {
+                        GiveInventory("Goldeneye_D5KDualToken", 1);
+                        GiveInventory("Clip", 10);
+                        GiveInventory("Clip", 10); // bonus ammo
+                    }
+
+                    if (duallimiting) { GiveInventory("Goldeneye_D5KLevelLimiter", 1); }
                     result = 1;
-                } else if (!hasdualtoken) {
+                } else if (!hasdualtoken && !duallimited) {
                     GiveInventory("Goldeneye_D5KDualToken", 1);
                     GiveInventory("Clip", 10);
                     GiveInventory("Clip", 10); // bonus ammo
+                    if (duallimiting) { GiveInventory("Goldeneye_D5KLevelLimiter", 1); }
                     result = 1;
                 } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip")) {
                     GiveInventory("Clip", 10);
@@ -6504,14 +6531,23 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
                 if (!hasweapon)
                 {
                     GiveInventory("Goldeneye_ZMG", 1);
-                    if (startmode <= -1) { GiveInventory("Goldeneye_D5KDualToken", 1); }
                     GiveInventory("Clip", dmextraammo ? 32 * 5 / 2 : 32);
                     GiveInventory("Clip", 10); // bonus ammo
+
+                    if (!hasdualtoken && dualgiveboth)
+                    {
+                        GiveInventory("Goldeneye_D5KDualToken", 1);
+                        GiveInventory("Clip", 10);
+                        GiveInventory("Clip", 10); // bonus ammo
+                    }
+
+                    if (duallimiting) { GiveInventory("Goldeneye_D5KLevelLimiter", 1); }
                     result = 1;
-                } else if (!hasdualtoken) {
+                } else if (!hasdualtoken && !duallimited) {
                     GiveInventory("Goldeneye_D5KDualToken", 1);
                     GiveInventory("Clip", 10);
                     GiveInventory("Clip", 10); // bonus ammo
+                    if (duallimiting) { GiveInventory("Goldeneye_D5KLevelLimiter", 1); }
                     result = 1;
                 } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip")) {
                     GiveInventory("Clip", 10);
@@ -6641,8 +6677,11 @@ script "Samsara_GiveBackpack" (int startmode)
     // Extra ammo on first pickup in Doom deathmatch (amount * 5 / 2)
     bool dmextraammo = !isSinglePlayer() && !isCoop() && (currentiwad == GAME_DOOM || currentiwad == GAME_CHEX) && !GetCVar("sv_noextraammo");
 
-    // Dual wield pickup mode setting
+    // Dual wield pickup mode checks
     int dualpickupmode = GetCVar("samsara_dualpickup");
+    bool duallimiting = startmode == 0 && dualpickupmode <= 0;
+    bool duallimited = false;
+    bool dualgiveboth = startmode <= -1 || dualpickupmode == 3 || (dualpickupmode >= 4 && (!(isSinglePlayer() || isCoop()) || isInvasion()));
 
     // Start everything
     GiveInventory("SamsaraBackpacksInInventory", 1);
