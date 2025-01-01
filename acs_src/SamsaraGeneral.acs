@@ -2851,6 +2851,7 @@ Script "Samsara_ResetInventory" (void)
 			SetInventory("SamsaraGoldenEyeSniperRifleConsumeAmmo", 0);
 			TakeInventory("Goldeneye_SilencedD5K", INTMAX);
 			TakeInventory("Goldeneye_ZMG", INTMAX);
+			TakeInventory("Goldeneye_D5KDeutsche", INTMAX);
 			TakeInventory("Goldeneye_D5KDualToken", INTMAX);
 			TakeInventory("Goldeneye_WatchMagnet", INTMAX);
 			TakeInventory("Goldeneye_WatchLaser", INTMAX);
@@ -2901,6 +2902,8 @@ Script "Samsara_ResetInventory" (void)
 			GiveInventory("Goldeneye_D5KSilencedDualMagazine", 30);
 			GiveInventory("Goldeneye_ZMGMagazine", 32);
 			GiveInventory("Goldeneye_ZMGDualMagazine", 32);
+			GiveInventory("Goldeneye_D5KMagazine", 30);
+			GiveInventory("Goldeneye_D5KDualMagazine", 30);
 			GiveInventory("Goldeneye_GoldPP7Magazine", 7);
 			GiveInventory("Goldeneye_GoldPP7DualMagazine", 7);
 			GiveInventory("Goldeneye_TankMagazine", 1);
@@ -6985,7 +6988,7 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
             break;
 
           case SLOT_UNIQUE2:
-            hasweapon = CheckInventory("Goldeneye_SilencedD5K") || CheckInventory("Goldeneye_ZMG");
+            hasweapon = CheckInventory("Goldeneye_SilencedD5K") || CheckInventory("Goldeneye_ZMG") || CheckInventory("Goldeneye_D5KDeutsche");
             hasdualtoken = CheckInventory("Goldeneye_D5KDualToken");
             duallimited = duallimiting && CheckInventory("Goldeneye_D5KLevelLimiter");
 
@@ -7019,12 +7022,42 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
                 }
             }
 
-            if (loadoutchoice >= 1 || completeloadout) // ZMG
+            if (loadoutchoice == 1 || completeloadout) // ZMG
             {
                 if (!hasweapon)
                 {
                     GiveInventory("Goldeneye_ZMG", 1);
                     GiveInventory("Clip", dmextraammo ? 32 * 5 / 2 : 32);
+                    GiveInventory("Clip", 10); // bonus ammo
+
+                    if (!hasdualtoken && dualgiveboth)
+                    {
+                        GiveInventory("Goldeneye_D5KDualToken", 1);
+                        GiveInventory("Clip", 10);
+                        GiveInventory("Clip", 10); // bonus ammo
+                    }
+
+                    if (duallimiting) { GiveInventory("Goldeneye_D5KLevelLimiter", 1); }
+                    result = 1;
+                } else if (!hasdualtoken && !duallimited) {
+                    GiveInventory("Goldeneye_D5KDualToken", 1);
+                    GiveInventory("Clip", 10);
+                    GiveInventory("Clip", 10); // bonus ammo
+                    if (duallimiting) { GiveInventory("Goldeneye_D5KLevelLimiter", 1); }
+                    result = 1;
+                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip")) {
+                    GiveInventory("Clip", 10);
+                    GiveInventory("Clip", 10); // bonus ammo
+                    result = 1;
+                }
+            }
+
+            if (loadoutchoice >= 2 || completeloadout) // D5K Deutsche
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory("Goldeneye_D5KDeutsche", 1);
+                    GiveInventory("Clip", dmextraammo ? 30 * 5 / 2 : 30);
                     GiveInventory("Clip", 10); // bonus ammo
 
                     if (!hasdualtoken && dualgiveboth)
@@ -8271,7 +8304,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique3", true);
 		SetCVar("samsara_cl_bond_fallbackranged", 0);
 		SetCVar("samsara_cl_bond_slot3", false);
-		SetCVar("samsara_cl_bond_unique2", false);
+		SetCVar("samsara_cl_bond_unique2", 0);
 		break;
 
 		case 1: // Samsara
@@ -8407,7 +8440,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique3", true);
 		SetCVar("samsara_cl_bond_fallbackranged", 0);
 		SetCVar("samsara_cl_bond_slot3", false);
-		SetCVar("samsara_cl_bond_unique2", false);
+		SetCVar("samsara_cl_bond_unique2", 0);
 		break;
 
 		case 2: // Samsara Reincarnation
@@ -8543,7 +8576,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique3", true);
 		SetCVar("samsara_cl_bond_fallbackranged", 0);
 		SetCVar("samsara_cl_bond_slot3", false);
-		SetCVar("samsara_cl_bond_unique2", false);
+		SetCVar("samsara_cl_bond_unique2", 0);
 		break;
 
 		// Secret presets
@@ -8682,7 +8715,7 @@ script "SamsaraClientSidePresetSelection" (void)
 			SetCVar("samsara_cl_shephard_unique3", true);
 			SetCVar("samsara_cl_bond_fallbackranged", 0);
 			SetCVar("samsara_cl_bond_slot3", false);
-			SetCVar("samsara_cl_bond_unique2", false);
+			SetCVar("samsara_cl_bond_unique2", 0);
 		} else {
 			// General Player Preferences
 			SetCVar("samsara_cl_wolfmove", false);
@@ -8815,7 +8848,7 @@ script "SamsaraClientSidePresetSelection" (void)
 			SetCVar("samsara_cl_shephard_unique3", true);
 			SetCVar("samsara_cl_bond_fallbackranged", 0);
 			SetCVar("samsara_cl_bond_slot3", false);
-			SetCVar("samsara_cl_bond_unique2", false);
+			SetCVar("samsara_cl_bond_unique2", 0);
 		}
 		break;
 
@@ -8952,7 +8985,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique3", false);
 		SetCVar("samsara_cl_bond_fallbackranged", 1);
 		SetCVar("samsara_cl_bond_slot3", true);
-		SetCVar("samsara_cl_bond_unique2", false);
+		SetCVar("samsara_cl_bond_unique2", 0);
 		break;
 	}
 }
