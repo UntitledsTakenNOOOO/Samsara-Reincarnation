@@ -2234,6 +2234,13 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
                 SetInventory("SamsaraGoldenEyeLoadoutSlot3", loadoutmode);
 
+                loadoutmode = GetCVar("samsara_bond_slot6s") > 0 && !CheckInventory("SamsaraHasAllLoadoutEquipment") ? GetCVar("samsara_bond_slot6s") - 1 : GetUserCVar(pln, "samsara_cl_bond_slot6s");
+
+                if (loadoutmode > 1) { loadoutmode = 1; }
+                else if (loadoutmode < 0) { loadoutmode = 0; }
+
+                SetInventory("SamsaraGoldenEyeLoadoutSlot6S", loadoutmode);
+
                 loadoutmode = GetCVar("samsara_bond_unique2") > 0 && !CheckInventory("SamsaraHasAllLoadoutEquipment") ? GetCVar("samsara_bond_unique2") - 1 : GetUserCVar(pln, "samsara_cl_bond_unique2");
 
                 if (loadoutmode > 2) { loadoutmode = 2; }
@@ -2251,6 +2258,12 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                 {
                     ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_SUPERSHOTGUN, CheckInventory("SamsaraGoldenEyeLoadoutSlot3"), pln);
                     loadoutPrevValue[pln][SLOT_SUPERSHOTGUN] = CheckInventory("SamsaraGoldenEyeLoadoutSlot3");
+                }
+
+                if (loadoutPrevValue[pln][SLOT_RAILGUN] != CheckInventory("SamsaraGoldenEyeLoadoutSlot6S"))
+                {
+                    ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_RAILGUN, CheckInventory("SamsaraGoldenEyeLoadoutSlot6S"), pln);
+                    loadoutPrevValue[pln][SLOT_RAILGUN] = CheckInventory("SamsaraGoldenEyeLoadoutSlot6S");
                 }
 
                 if (loadoutPrevValue[pln][SLOTCOUNT - 1 - SLOT_UNIQUE2] != CheckInventory("SamsaraGoldenEyeLoadoutUnique2"))
@@ -2330,6 +2343,30 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                     }
                 }
 
+                if (CheckInventory("Goldeneye_Cougar") || CheckInventory("Goldeneye_SilverPP7"))
+                {
+                    if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
+                    {
+                        SetInventory("Goldeneye_Cougar", 1);
+                        SetInventory("Goldeneye_SilverPP7", 1);
+                    } else {
+                        if (!CheckInventory("SamsaraGoldenEyeLoadoutSlot6S"))
+                        {
+                            SetInventory("Goldeneye_Cougar", 1);
+
+                            if (CheckWeapon("Goldeneye_SilverPP7")) { SetWeapon("Goldeneye_Cougar"); }
+
+                            SetInventory("Goldeneye_SilverPP7", 0);
+                        } else if (CheckInventory("SamsaraGoldenEyeLoadoutSlot6S")) {
+                            SetInventory("Goldeneye_SilverPP7", 1);
+
+                            if (CheckWeapon("Goldeneye_Cougar")) { SetWeapon("Goldeneye_SilverPP7"); }
+
+                            SetInventory("Goldeneye_Cougar", 0);
+                        }
+                    }
+                }
+
                 if (CheckInventory("Goldeneye_SilencedD5K") || CheckInventory("Goldeneye_ZMG") || CheckInventory("Goldeneye_D5KDeutsche"))
                 {
                     if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
@@ -2372,7 +2409,8 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                     CheckInventory("Goldeneye_ThrowingKnives") && CheckInventory("Goldeneye_KF7Soviet") &&
                     (CheckInventory("Goldeneye_AutoShotgun") || CheckInventory("Goldeneye_Shotgun")) &&
                     CheckInventory("Goldeneye_AR33") && CheckInventory("Goldeneye_Phantom") && CheckInventory("Goldeneye_RocketLauncher") &&
-                    CheckInventory("Goldeneye_GrenadeLauncher") && CheckInventory("Goldeneye_RCP90") && CheckInventory("Goldeneye_Cougar") &&
+                    CheckInventory("Goldeneye_GrenadeLauncher") && CheckInventory("Goldeneye_RCP90") &&
+                    (CheckInventory("Goldeneye_Cougar") || CheckInventory("Goldeneye_SilverPP7")) &&
                     CheckInventory("Goldeneye_Moonraker") && CheckInventory("Goldeneye_GoldenGun") && CheckInventory("Goldeneye_SniperRifle") &&
                     (CheckInventory("Goldeneye_SilencedD5K") || CheckInventory("Goldeneye_ZMG") || CheckInventory("Goldeneye_D5KDeutsche")) &&
                     (CheckInventory("Goldeneye_WatchMagnet") || CheckInventory("Goldeneye_WatchLaser") || CheckInventory("Goldeneye_WatchDetonator") ||
