@@ -135,6 +135,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	int doommode, dukemode, hexmode, wolfmode, rottmode, blakemode, eradmode, ipogmode, halflifemode, cvalue;
     int previousvalue = -1;
     int loadoutmode;
+    int dualpickupcheck;
 	int targettid;
 	int bot = PlayerIsBot(pln);
 	int strifeCeilingHeight = GetActorCeilingZ(0); //strife related
@@ -2493,7 +2494,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                     !CheckInventory("Goldeneye_GoldPP7"))
                 {
                     GiveInventory("Goldeneye_GoldPP7", 1);
-                    if (!CheckInventory("SamsaraMiscPickupDisplayBlocker")) { ACS_NamedExecuteAlways("SamsaraClientMiscPickup", 0, 28, -1, 0); }
+                    dualpickupcheck++;
                 }
 
                 if (CheckInventory("Goldeneye_PP7DualToken") && CheckInventory("Goldeneye_ThrowingKnivesDualToken") && CheckInventory("Goldeneye_KF7DualToken") &&
@@ -2505,7 +2506,13 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                 {
                     GiveInventory("Goldeneye_GoldPP7", 1); // ammo
                     GiveInventory("Goldeneye_GoldPP7DualToken", 1);
-                    if (!CheckInventory("SamsaraMiscPickupDisplayBlocker")) { ACS_NamedExecuteAlways("SamsaraClientMiscPickup", 0, 28, -1, 0); }
+                    dualpickupcheck += 2;
+                }
+
+                if (dualpickupcheck > 0)
+                {
+                    ACS_NamedExecuteWithResult("SamsaraSpecialPickupDisplayNetplayHack", dualpickupcheck - 1);
+                    dualpickupcheck = 0;
                 }
 				break;
 
@@ -2655,22 +2662,23 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					}
 				}
 
-                if (CheckInventory("RTCW_HasAlliedCrate") && CheckInventory("RTCW_StG44") && !CheckInventory("RTCW_BAR"))
+                if (CheckInventory("RTCW_HasAlliedCrate"))
                 {
-                    GiveInventory("RTCW_BAR", 1);
-                    if (!CheckInventory("SamsaraMiscPickupDisplayBlocker")) { ACS_NamedExecuteAlways("SamsaraClientMiscPickup", 0, 30, -1, 0); }
-                }
+                    // flipped because order is handled the opposite in hexen (this also affects netplay OUTSIDE of hexen ???)
+                    if ((IsNetworkGame() && GetCVar("samsara_currentgame") != GAME_HEXEN) || GetCVar("samsara_currentgame") == GAME_HEXEN)
+                    {
+                        if (CheckInventory("RTCW_StG44") && !CheckInventory("RTCW_BAR")) { ACS_NamedExecuteWithResult("SamsaraSpecialPickupDisplayNetplayHack", 3); }
+                        if (CheckInventory("RTCW_K43") && !CheckInventory("RTCW_M1Garand")) { ACS_NamedExecuteWithResult("SamsaraSpecialPickupDisplayNetplayHack", 4); }
+                        if (CheckInventory("RTCW_MG42") && !CheckInventory("RTCW_Browning")) { ACS_NamedExecuteWithResult("SamsaraSpecialPickupDisplayNetplayHack", 5); }
+                    } else {
+                        if (CheckInventory("RTCW_MG42") && !CheckInventory("RTCW_Browning")) { ACS_NamedExecuteWithResult("SamsaraSpecialPickupDisplayNetplayHack", 5); }
+                        if (CheckInventory("RTCW_K43") && !CheckInventory("RTCW_M1Garand")) { ACS_NamedExecuteWithResult("SamsaraSpecialPickupDisplayNetplayHack", 4); }
+                        if (CheckInventory("RTCW_StG44") && !CheckInventory("RTCW_BAR")) { ACS_NamedExecuteWithResult("SamsaraSpecialPickupDisplayNetplayHack", 3); }
+                    }
 
-                if (CheckInventory("RTCW_HasAlliedCrate") && CheckInventory("RTCW_K43") && !CheckInventory("RTCW_M1Garand"))
-                {
-                    GiveInventory("RTCW_M1Garand", 1);
-                    if (!CheckInventory("SamsaraMiscPickupDisplayBlocker")) { ACS_NamedExecuteAlways("SamsaraClientMiscPickup", 0, 31, -1, 0); }
-                }
-
-                if (CheckInventory("RTCW_HasAlliedCrate") && CheckInventory("RTCW_MG42") && !CheckInventory("RTCW_Browning"))
-                {
-                    GiveInventory("RTCW_Browning", 1);
-                    if (!CheckInventory("SamsaraMiscPickupDisplayBlocker")) { ACS_NamedExecuteAlways("SamsaraClientMiscPickup", 0, 32, -1, 0); }
+                    if (CheckInventory("RTCW_StG44") && !CheckInventory("RTCW_BAR")) { GiveInventory("RTCW_BAR", 1); }
+                    if (CheckInventory("RTCW_K43") && !CheckInventory("RTCW_M1Garand")) { GiveInventory("RTCW_M1Garand", 1); }
+                    if (CheckInventory("RTCW_MG42") && !CheckInventory("RTCW_Browning")) { GiveInventory("RTCW_Browning", 1); }
                 }
 				break;
 
