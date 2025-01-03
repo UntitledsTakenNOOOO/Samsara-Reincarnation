@@ -2435,6 +2435,11 @@ Script "Samsara_ResetInventory" (void)
 		case 11:
 			TakeInventory(" Sigil ", INTMAX);
 			TakeInventory("StrifeSigilPiece", INTMAX);
+			TakeInventory("StrifeSigilPieceCheck3", INTMAX);
+			TakeInventory("StrifeSigilPieceCheck4", INTMAX);
+			TakeInventory("StrifeSigilPieceCheck5", INTMAX);
+			TakeInventory("StrifeSigilPieceCheck6", INTMAX);
+			TakeInventory("StrifeSigilPieceCheck7", INTMAX);
 			TakeInventory("StrifeBeaconItem5", INTMAX);
 			TakeInventory("  Crossbow  ", INTMAX);
 			TakeInventory("  Crossbow Poison  ", INTMAX);
@@ -3391,13 +3396,30 @@ script "Samsara_FillInventory" (void)
 			break;
 		case 11:
 			TakeInventory("StrifeGrenadeLauncher2",1);
-			GiveInventory("StrifeSigilPiece",5);
-			GiveInventory("StrifeSigilPiecePreferred",5);
 			GiveInventory("StrifePortMedikit",15);
 			GiveInventory("StrifeStimpack2",15);
 			GiveInventory("StrifeSurgeryKit2",5);
 			GiveInventory("PortShadowArmor",2);
 			//GiveInventory("PortEnviSuit",5);
+
+            if (GetCVar("samsara_currentgame") == GAME_STRIFE)
+            {
+                int sigilcounter;
+
+                if ((isSinglePlayer() || isCoop()) && !isInvasion()) { sigilCounter = SamsaraGlobal[2] + SamsaraGlobal[3] + SamsaraGlobal[4] + SamsaraGlobal[5] + SamsaraGlobal[6]; }
+                else { sigilCounter = CheckInventory("SigilSplinter1Temp") + CheckInventory("SigilSplinter2Temp") + CheckInventory("SigilSplinter3Temp") + CheckInventory("SigilSplinter4Temp") + CheckInventory("SigilSplinter5Temp"); }
+
+                if (sigilCounter <= 0) { SetInventory(" Sigil ", 0); }
+            } else {
+                GiveInventory("StrifeSigilPiece", 5);
+                GiveInventory("StrifeSigilPieceCheck3", 1);
+                GiveInventory("StrifeSigilPieceCheck4", 1);
+                GiveInventory("StrifeSigilPieceCheck5", 1);
+                GiveInventory("StrifeSigilPieceCheck6", 1);
+                GiveInventory("StrifeSigilPieceCheck7", 1);
+                GiveInventory("StrifeSigilPiecePreferred", 5);
+                GiveInventory(" Sigil ", 1);
+            }
 			break;
 		case 12:
 			GiveInventory("AllyCellphone",1);
@@ -5483,6 +5505,156 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 ACS_NamedExecuteAlways("StrifeBeaconCooldownReduction", 0);
                 if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("StrifeBeaconLastPickupTime", Timer() + pickuptimer); }
                 result = 1;
+            }
+            break;
+
+          case SLOT_SUPERSHOTGUN:
+            if (!CheckInventory("Mini Missile Launcher"))
+            {
+                GiveInventory("Mini Missile Launcher", 1);
+                result = 1;
+            } else if (CheckInventory("RocketAmmo") < GetAmmoCapacity("RocketAmmo") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                GiveInventory("Mini Missile Launcher", 1);
+                result = 1;
+            }
+
+            if (!CheckInventory("StrifeSigilPieceCheck3") && currentiwad != GAME_STRIFE)
+            {
+                GiveInventory("StrifeSigilPieceCheck3", 1);
+                GiveInventory("StrifeSigilPiece", 1);
+                GiveInventory(" Sigil ", 1);
+                SetInventory("StrifeSigilPiecePreferred", ACS_NamedExecuteWithResult("StrifeSigilPreferred"));
+                result = 1;
+            }
+
+            if (result == 1)
+            {
+                if (startmode == 0 && currentiwad != GAME_STRIFE)
+                {
+                    SetInventory("SamsaraMiscPickupDisplayExtraChoice1", 21);
+                    SetInventory("SamsaraMiscPickupDisplayExtraLoadout1", 0);
+                    SetInventory("SamsaraMiscPickupDisplayExtraDropped1", dropped);
+                }
+            }
+            break;
+
+          case SLOT_CHAINGUN:
+            if (!CheckInventory("Assault Gun"))
+            {
+                GiveInventory("Assault Gun", 1);
+                result = 1;
+            } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                GiveInventory("Assault Gun", 1);
+                result = 1;
+            }
+
+            if (!CheckInventory("StrifeSigilPieceCheck4") && currentiwad != GAME_STRIFE)
+            {
+                GiveInventory("StrifeSigilPieceCheck4", 1);
+                GiveInventory("StrifeSigilPiece", 1);
+                GiveInventory(" Sigil ", 1);
+                SetInventory("StrifeSigilPiecePreferred", ACS_NamedExecuteWithResult("StrifeSigilPreferred"));
+                result = 1;
+            }
+
+            if (result == 1)
+            {
+                if (startmode == 0 && currentiwad != GAME_STRIFE)
+                {
+                    SetInventory("SamsaraMiscPickupDisplayExtraChoice1", 21);
+                    SetInventory("SamsaraMiscPickupDisplayExtraLoadout1", 0);
+                    SetInventory("SamsaraMiscPickupDisplayExtraDropped1", dropped);
+                }
+            }
+            break;
+
+          case SLOT_ROCKETLAUNCHER:
+            if (!CheckInventory(" Grenade Launcher "))
+            {
+                GiveInventory(" Grenade Launcher ", 1);
+                result = 1;
+            } else if (CheckInventory("RocketAmmo") < GetAmmoCapacity("RocketAmmo") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                GiveInventory(" Grenade Launcher ", 1);
+                result = 1;
+            }
+
+            if (!CheckInventory("StrifeSigilPieceCheck5") && currentiwad != GAME_STRIFE)
+            {
+                GiveInventory("StrifeSigilPieceCheck5", 1);
+                GiveInventory("StrifeSigilPiece", 1);
+                GiveInventory(" Sigil ", 1);
+                SetInventory("StrifeSigilPiecePreferred", ACS_NamedExecuteWithResult("StrifeSigilPreferred"));
+                result = 1;
+            }
+
+            if (result == 1)
+            {
+                if (startmode == 0 && currentiwad != GAME_STRIFE)
+                {
+                    SetInventory("SamsaraMiscPickupDisplayExtraChoice1", 21);
+                    SetInventory("SamsaraMiscPickupDisplayExtraLoadout1", 0);
+                    SetInventory("SamsaraMiscPickupDisplayExtraDropped1", dropped);
+                }
+            }
+            break;
+
+          case SLOT_PLASMARIFLE:
+            if (!CheckInventory("Flame Thrower"))
+            {
+                GiveInventory("Flame Thrower", 1);
+                result = 1;
+            } else if (CheckInventory("Cell") < GetAmmoCapacity("Cell") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                GiveInventory("Flame Thrower", 1);
+                result = 1;
+            }
+
+            if (!CheckInventory("StrifeSigilPieceCheck6") && currentiwad != GAME_STRIFE)
+            {
+                GiveInventory("StrifeSigilPieceCheck6", 1);
+                GiveInventory("StrifeSigilPiece", 1);
+                GiveInventory(" Sigil ", 1);
+                SetInventory("StrifeSigilPiecePreferred", ACS_NamedExecuteWithResult("StrifeSigilPreferred"));
+                result = 1;
+            }
+
+            if (result == 1)
+            {
+                if (startmode == 0 && currentiwad != GAME_STRIFE)
+                {
+                    SetInventory("SamsaraMiscPickupDisplayExtraChoice1", 21);
+                    SetInventory("SamsaraMiscPickupDisplayExtraLoadout1", 0);
+                    SetInventory("SamsaraMiscPickupDisplayExtraDropped1", dropped);
+                }
+            }
+            break;
+
+          case SLOT_BFG9000:
+            if (!CheckInventory(" Mauler "))
+            {
+                GiveInventory(" Mauler ", 1);
+                result = 1;
+            } else if (CheckInventory("Cell") < GetAmmoCapacity("Cell") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                GiveInventory(" Mauler ", 1);
+                result = 1;
+            }
+
+            if (!CheckInventory("StrifeSigilPieceCheck7") && currentiwad != GAME_STRIFE)
+            {
+                GiveInventory("StrifeSigilPieceCheck7", 1);
+                GiveInventory("StrifeSigilPiece", 1);
+                GiveInventory(" Sigil ", 1);
+                SetInventory("StrifeSigilPiecePreferred", ACS_NamedExecuteWithResult("StrifeSigilPreferred"));
+                result = 1;
+            }
+
+            if (result == 1)
+            {
+                if (startmode == 0 && currentiwad != GAME_STRIFE)
+                {
+                    SetInventory("SamsaraMiscPickupDisplayExtraChoice1", 21);
+                    SetInventory("SamsaraMiscPickupDisplayExtraLoadout1", 0);
+                    SetInventory("SamsaraMiscPickupDisplayExtraDropped1", dropped);
+                }
             }
             break;
         }
