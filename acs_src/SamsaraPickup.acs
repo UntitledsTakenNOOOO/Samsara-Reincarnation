@@ -328,7 +328,7 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
 				}
             }
 
-            ACS_NamedExecuteAlways("SamsaraClientWeaponPickup", 0, slot, dropped);		
+            ACS_NamedExecuteAlways("SamsaraClientWeaponPickup", 0, slot, dropped);
 
             if (dropped <= 1) { ACS_NamedExecuteWithResult("SamsaraWeaponTaunt"); } // so it gives the taunt cooldown properly
 
@@ -398,11 +398,11 @@ script "SamsaraClientWeaponPickup" (int slot, int dropped) CLIENTSIDE //616 -- S
     int pln = PlayerNumber(), cpln = ConsolePlayerNumber();
     int pclass = samsaraClassNum();
     int i, j, quoteCount = 0;
-    int logMsg;
-    str pickupsound = ClassPickupSounds[pclass][SamsaraAlternativeClass][slot][SamsaraEquipmentLoadout[slot]];
-    
-    if (dropped >= 2) { pickupsound = ClassDropSounds[pclass][SamsaraAlternativeClass][slot][SamsaraEquipmentLoadout[slot]]; }
-    
+    str logMsg;
+    str pickupsound = ClassPickupSounds[0][pclass][SamsaraAlternativeClass][slot][SamsaraEquipmentLoadout[slot]];
+
+    if (dropped >= 2) { pickupsound = ClassPickupSounds[1][pclass][SamsaraAlternativeClass][slot][SamsaraEquipmentLoadout[slot]]; }
+
     if (cpln == pln && GetCVar("msg") == 0)
     {
         if (GetCVar("samsara_cl_moremessages"))
@@ -414,15 +414,13 @@ script "SamsaraClientWeaponPickup" (int slot, int dropped) CLIENTSIDE //616 -- S
                 if (!StrLen(j)) { continue; }
                 QuoteStorage[quoteCount++] = j;
             }
-            
+
             if (!quoteCount) { logMsg = "Oh bugger there's no messages for this weapon."; }
-            else { logMsg = QuoteStorage[random(0, quoteCount-1)]; }
-        }
-        else
-        {
+            else { logMsg = QuoteStorage[random(0, quoteCount - 1)]; }
+        } else {
             logMsg = ClassPickupMessages[pclass][SamsaraAlternativeClass][slot][SamsaraEquipmentLoadout[slot]][0];
-            
-            if (!StrLen(logMsg)) { logMsg = "Oh bugger there's no message for this weapon."; } 
+
+            if (!StrLen(logMsg)) { logMsg = "Oh bugger there's no message for this weapon."; }
         }
 
         if (GetCVar("samsara_cl_printpickup")) { Print(s:logMsg); }
@@ -443,9 +441,9 @@ script "SamsaraClientUniquePickup" (int alt) CLIENTSIDE //633 -- SAMSARA_CLIENT_
     int pln = PlayerNumber(), cpln = ConsolePlayerNumber();
     int pclass = samsaraClassNum();
     int i, j, quoteCount = 0;
-    int logMsg;
+    str logMsg;
     str pickupsound = ClassUniqueSounds[pclass][SamsaraAlternativeClass][alt][SamsaraEquipmentLoadout[SLOTCOUNT + alt]];
-    
+
     if (cpln == pln && GetCVar("msg") == 0)
     {
         if (GetCVar("samsara_cl_moremessages"))
@@ -457,15 +455,57 @@ script "SamsaraClientUniquePickup" (int alt) CLIENTSIDE //633 -- SAMSARA_CLIENT_
                 if (!StrLen(j)) { continue; }
                 QuoteStorage[quoteCount++] = j;
             }
-            
+
             if (!quoteCount) { logMsg = "Oh bugger there's no messages for this unique."; }
-            else { logMsg = QuoteStorage[random(0, quoteCount-1)]; }
-        }
-        else
-        {
+            else { logMsg = QuoteStorage[random(0, quoteCount - 1)]; }
+        } else {
             logMsg = ClassUniqueMessages[pclass][SamsaraAlternativeClass][alt][SamsaraEquipmentLoadout[SLOTCOUNT + alt]][0];
-            
-            if (!StrLen(logMsg)) { logMsg = "Oh bugger there's no message for this unique."; } 
+
+            if (!StrLen(logMsg)) { logMsg = "Oh bugger there's no message for this unique."; }
+        }
+
+        if (GetCVar("samsara_cl_printpickup")) { Print(s:logMsg); }
+        else { Log(s:msgColors[GetCVar("msg0color")], s:logMsg); }
+    }
+
+    PlaySound(0, pickupsound, CHAN_ITEM|CHAN_MAYBE_LOCAL);
+
+    if (!CheckInventory("PickupFlashesAreDisabled"))
+	{
+		FadeRange(ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], ClassFades[pclass][3],
+		ClassFades[pclass][0], ClassFades[pclass][1], ClassFades[pclass][2], 0.0, itof(ClassFades[pclass][4]) / 35);
+	}
+}
+
+script "SamsaraClientMiscPickup" (int choice, int slot, int dropped) CLIENTSIDE
+{
+    int pln = PlayerNumber(), cpln = ConsolePlayerNumber();
+    int pclass = samsaraClassNum();
+    int loadout = slot >= 0 ? SamsaraEquipmentLoadout[slot] : 0;
+    int i, j, quoteCount = 0;
+    str logMsg;
+    str pickupsound = MiscPickupSounds[0][choice][loadout];
+
+    if (dropped >= 2) { pickupsound = MiscPickupSounds[1][choice][loadout]; } // doing dropped >= 2 ? 1 : 0 causes an out of bounds memory access in ACS VM
+
+    if (cpln == pln && GetCVar("msg") == 0)
+    {
+        if (GetCVar("samsara_cl_moremessages"))
+        {
+            for (i = 0; i < MSGCOUNT; i++)
+            {
+                j = MiscPickupMessages[choice][loadout][i];
+
+                if (!StrLen(j)) { continue; }
+                QuoteStorage[quoteCount++] = j;
+            }
+
+            if (!quoteCount) { logMsg = "Oh bugger there's no messages for this weapon."; }
+            else { logMsg = QuoteStorage[random(0, quoteCount - 1)]; }
+        } else {
+            logMsg = MiscPickupMessages[choice][loadout][0];
+
+            if (!StrLen(logMsg)) { logMsg = "Oh bugger there's no message for this weapon."; }
         }
 
         if (GetCVar("samsara_cl_printpickup")) { Print(s:logMsg); }
