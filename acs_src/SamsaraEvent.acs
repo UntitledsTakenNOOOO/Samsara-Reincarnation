@@ -549,7 +549,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						TakeInventory("Automatic Shotgun", 1);
 					}
 
-					if(CheckInventory("SamsaraExtraWeaponsAreEnabled") && CheckInventory(" Chaingun "))
+					if(CheckInventory("SamsaraExtraWeaponsAreEnabled") && (CheckInventory(" Chaingun ") || CheckInventory(" Machine Gun "))) // loadout still checked because we haven't hit that point yet
 					{
 						GiveInventory(" Flamer ", 1);
 					}
@@ -588,7 +588,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 						TakeInventory("Stunner Rifle", 1);
 					}
 
-					if(CheckInventory("SamsaraExtraWeaponsAreEnabled") && (CheckInventory("B.F.G. 9000") || CheckInventory("B.F.G. 2704"))) // other bfg variants still checked because we haven't hit that point yet
+					if(CheckInventory("SamsaraExtraWeaponsAreEnabled") && (CheckInventory("B.F.G. 9000") || CheckInventory("B.F.G. 2704"))) // loadout still checked because we haven't hit that point yet
 					{
 						GiveInventory("Pyro Cannon", 1);
 					}
@@ -700,7 +700,10 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							if(CheckInventory("Doom64_IHaveUnmaker"))
 							{
 								if(CheckWeapon(" Unmaker "))
-									GiveInventory("SamsaraAltClassWeaponSwitchHack", 1); //SetWeapon("B.F.G. 9000");
+								{
+									if (CheckInventory("SamsaraHasAllLoadoutEquipment")) { SetWeapon("B.F.G. 9000"); }
+									else { GiveInventory("SamsaraAltClassWeaponSwitchHackSlot7", 1); }
+								}
 							}
 							if(CheckInventory("DGStrHasAutoShotgun"))
 							{
@@ -710,7 +713,10 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							if(CheckInventory("DGStrHasFlamethrower"))
 							{
 								if(CheckWeapon(" Flamer "))
-									SetWeapon(" Chaingun ");
+								{
+									if (CheckInventory("SamsaraHasAllLoadoutEquipment")) { SetWeapon(" Chaingun "); }
+									else { GiveInventory("SamsaraAltClassWeaponSwitchHackSlot4", 1); }
+								}
 							}
 							if(CheckInventory("DGStrHasLandMines"))
 							{
@@ -725,7 +731,10 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 							if(CheckInventory("DGStrHasPyroCannon"))
 							{
 								if(CheckWeapon("Pyro Cannon"))
-									GiveInventory("SamsaraAltClassWeaponSwitchHack", 1); //SetWeapon("B.F.G. 9000");
+								{
+									if (CheckInventory("SamsaraHasAllLoadoutEquipment")) { SetWeapon("B.F.G. 9000"); }
+									else { GiveInventory("SamsaraAltClassWeaponSwitchHackSlot7", 1); }
+								}
 							}
 							if(CheckInventory("DGStrHasHomingRocketLauncher"))
 							{
@@ -763,6 +772,13 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
                 SetInventory("SamsaraDoomOriginalLoadoutFallbackRanged", loadoutmode);
 
+                loadoutmode = GetCVar("samsara_doomguy_slot4") > 0 && !CheckInventory("SamsaraHasAllLoadoutEquipment") ? GetCVar("samsara_doomguy_slot4") - 1 : GetUserCVar(pln, "samsara_cl_doomguy_slot4");
+
+                if (loadoutmode > 1) { loadoutmode = 1; }
+                else if (loadoutmode < 0) { loadoutmode = 0; }
+
+                SetInventory("SamsaraDoomOriginalLoadoutSlot4", loadoutmode);
+
                 loadoutmode = GetCVar("samsara_doomguy_slot7") > 0 && !CheckInventory("SamsaraHasAllLoadoutEquipment") ? GetCVar("samsara_doomguy_slot7") - 1 : GetUserCVar(pln, "samsara_cl_doomguy_slot7");
 
                 if (loadoutmode > 1) { loadoutmode = 1; }
@@ -776,6 +792,12 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                     {
                         ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_PISTOL, 0, pln);
                         loadoutPrevValue[pln][SLOT_PISTOL] = 0;
+                    }
+
+                    if (loadoutPrevValue[pln][SLOT_CHAINGUN] != 0)
+                    {
+                        ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_CHAINGUN, 0, pln);
+                        loadoutPrevValue[pln][SLOT_CHAINGUN] = 0;
                     }
 
                     if (loadoutPrevValue[pln][SLOT_BFG9000] != 0)
@@ -793,14 +815,27 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                         SetInventory(" Rifle ", 0);
                     }
 
+                    if (CheckInventory(" Machine Gun "))
+                    {
+                        SetInventory(" Chaingun ", 1);
+
+                        if (CheckWeapon(" Machine Gun ") || CheckInventory("SamsaraAltClassWeaponSwitchHackSlot4"))
+                        {
+                            SetWeapon(" Chaingun ");
+                            SetInventory("SamsaraAltClassWeaponSwitchHackSlot4", 0);
+                        }
+
+                        SetInventory(" Machine Gun ", 0);
+                    }
+
                     if (CheckInventory("B.F.G. 2704"))
                     {
                         SetInventory("B.F.G. 9000", 1);
 
-                        if (CheckWeapon("B.F.G. 2704") || CheckInventory("SamsaraAltClassWeaponSwitchHack"))
+                        if (CheckWeapon("B.F.G. 2704") || CheckInventory("SamsaraAltClassWeaponSwitchHackSlot7"))
                         {
                             SetWeapon("B.F.G. 9000");
-                            SetInventory("SamsaraAltClassWeaponSwitchHack", 0);
+                            SetInventory("SamsaraAltClassWeaponSwitchHackSlot7", 0);
                         }
 
                         SetInventory("B.F.G. 2704", 0);
@@ -810,6 +845,12 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                     {
                         ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_PISTOL, CheckInventory("SamsaraDoomOriginalLoadoutFallbackRanged"), pln);
                         loadoutPrevValue[pln][SLOT_PISTOL] = CheckInventory("SamsaraDoomOriginalLoadoutFallbackRanged");
+                    }
+
+                    if (loadoutPrevValue[pln][SLOT_CHAINGUN] != CheckInventory("SamsaraDoomOriginalLoadoutSlot4"))
+                    {
+                        ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_CHAINGUN, CheckInventory("SamsaraDoomOriginalLoadoutSlot4"), pln);
+                        loadoutPrevValue[pln][SLOT_CHAINGUN] = CheckInventory("SamsaraDoomOriginalLoadoutSlot4");
                     }
 
                     if (loadoutPrevValue[pln][SLOT_BFG9000] != CheckInventory("SamsaraDoomOriginalLoadoutSlot7"))
@@ -842,6 +883,38 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                         }
                     }
 
+                    if (CheckInventory(" Chaingun ") || CheckInventory(" Machine Gun "))
+                    {
+                        if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
+                        {
+                            SetInventory(" Chaingun ", 1);
+                            SetInventory(" Machine Gun ", 1);
+                        } else {
+                            if (!CheckInventory("SamsaraDoomOriginalLoadoutSlot4"))
+                            {
+                                SetInventory(" Chaingun ", 1);
+
+                                if (CheckWeapon(" Machine Gun ") || CheckInventory("SamsaraAltClassWeaponSwitchHackSlot4"))
+                                {
+                                    SetWeapon(" Chaingun ");
+                                    SetInventory("SamsaraAltClassWeaponSwitchHackSlot4", 0);
+                                }
+
+                                SetInventory(" Machine Gun ", 0);
+                            } else if (CheckInventory("SamsaraDoomOriginalLoadoutSlot4")) {
+                                SetInventory(" Machine Gun ", 1);
+
+                                if (CheckWeapon(" Chaingun ") || CheckInventory("SamsaraAltClassWeaponSwitchHackSlot4"))
+                                {
+                                    SetWeapon(" Machine Gun ");
+                                    SetInventory("SamsaraAltClassWeaponSwitchHackSlot4", 0);
+                                }
+
+                                SetInventory(" Chaingun ", 0);
+                            }
+                        }
+                    }
+
                     if (CheckInventory("B.F.G. 9000") || CheckInventory("B.F.G. 2704"))
                     {
                         if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
@@ -853,20 +926,20 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
                             {
                                 SetInventory("B.F.G. 9000", 1);
 
-                                if (CheckWeapon("B.F.G. 2704") || CheckInventory("SamsaraAltClassWeaponSwitchHack"))
+                                if (CheckWeapon("B.F.G. 2704") || CheckInventory("SamsaraAltClassWeaponSwitchHackSlot7"))
                                 {
                                     SetWeapon("B.F.G. 9000");
-                                    SetInventory("SamsaraAltClassWeaponSwitchHack", 0);
+                                    SetInventory("SamsaraAltClassWeaponSwitchHackSlot7", 0);
                                 }
 
                                 SetInventory("B.F.G. 2704", 0);
                             } else if (CheckInventory("SamsaraDoomOriginalLoadoutSlot7")) {
                                 SetInventory("B.F.G. 2704", 1);
 
-                                if (CheckWeapon("B.F.G. 9000") || CheckInventory("SamsaraAltClassWeaponSwitchHack"))
+                                if (CheckWeapon("B.F.G. 9000") || CheckInventory("SamsaraAltClassWeaponSwitchHackSlot7"))
                                 {
                                     SetWeapon("B.F.G. 2704");
-                                    SetInventory("SamsaraAltClassWeaponSwitchHack", 0);
+                                    SetInventory("SamsaraAltClassWeaponSwitchHackSlot7", 0);
                                 }
 
                                 SetInventory("B.F.G. 9000", 0);

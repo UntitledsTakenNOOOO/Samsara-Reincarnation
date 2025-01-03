@@ -2065,6 +2065,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Automatic Shotgun", INTMAX);
 			TakeInventory(" Chaingun ", INTMAX);
             SetInventory("SamsaraDoom64ChaingunSoundChannelCount", 0);
+			TakeInventory(" Machine Gun ", INTMAX);
 			TakeInventory(" Flamer ", INTMAX);
 			TakeInventory(" Minigun ", INTMAX);
 			TakeInventory("Rocket Launcher", INTMAX);
@@ -3687,6 +3688,11 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 else { loadoutchoice = CheckInventory("SamsaraDoomOriginalLoadoutFallbackRanged"); }
                 break;
 
+              case SLOT_CHAINGUN:
+                if (startmode != 0) { loadoutchoice = GetCVar("samsara_doomguy_slot4") > 0 ? GetCVar("samsara_doomguy_slot4") - 1 : GetUserCVar(pln, "samsara_cl_doomguy_slot4"); }
+                else { loadoutchoice = CheckInventory("SamsaraDoomOriginalLoadoutSlot4"); }
+                break;
+
               case SLOT_BFG9000:
                 if (startmode != 0) { loadoutchoice = GetCVar("samsara_doomguy_slot7") > 0 ? GetCVar("samsara_doomguy_slot7") - 1 : GetUserCVar(pln, "samsara_cl_doomguy_slot7"); }
                 else { loadoutchoice = CheckInventory("SamsaraDoomOriginalLoadoutSlot7"); }
@@ -3924,14 +3930,32 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 break;
 
               case SLOT_CHAINGUN:
-                if (!CheckInventory(" Chaingun "))
+                hasweapon = CheckInventory(" Chaingun ") || CheckInventory(" Machine Gun ");
+
+                if (loadoutchoice <= 0 || completeloadout) // Chaingun
                 {
-                    GiveInventory(" Chaingun ", 1);
-                    GiveInventory("Clip", dmextraammo ? 20 * 5 / 2 : 20);
-                    result = 1;
-                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
-                    GiveInventory("Clip", 20);
-                    result = 1;
+                    if (!hasweapon)
+                    {
+                        GiveInventory(" Chaingun ", 1);
+                        GiveInventory("Clip", dmextraammo ? 20 / tossedammo * 5 / 2 : 20 / tossedammo);
+                        result = 1;
+                    } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                        GiveInventory("Clip", 20 / tossedammo);
+                        result = 1;
+                    }
+                }
+
+                if (loadoutchoice >= 1 || completeloadout) // Machine Gun
+                {
+                    if (!hasweapon)
+                    {
+                        GiveInventory(" Machine Gun ", 1);
+                        GiveInventory("Clip", dmextraammo ? 20 / tossedammo * 5 / 2 : 20 / tossedammo);
+                        result = 1;
+                    } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                        GiveInventory("Clip", 20 / tossedammo);
+                        result = 1;
+                    }
                 }
 
                 if (startmode != 0) { result = 1; }
@@ -4139,10 +4163,10 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 if (!CheckInventory(" Chaingun "))
                 {
                     GiveInventory(" Chaingun ", 1);
-                    GiveInventory("Clip", dmextraammo ? 20 * 5 / 2 : 20);
+                    GiveInventory("Clip", dmextraammo ? 20 / tossedammo * 5 / 2 : 20 / tossedammo);
                     result = 1;
-                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
-                    GiveInventory("Clip", 20);
+                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Clip", 20 / tossedammo);
                     result = 1;
                 }
 
@@ -4360,10 +4384,10 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 if (!CheckInventory(" Chaingun "))
                 {
                     GiveInventory(" Chaingun ", 1);
-                    GiveInventory("Clip", dmextraammo ? 20 * 5 / 2 : 20);
+                    GiveInventory("Clip", dmextraammo ? 20 / tossedammo * 5 / 2 : 20 / tossedammo);
                     result = 1;
-                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
-                    GiveInventory("Clip", 20);
+                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Clip", 20 / tossedammo);
                     result = 1;
                 }
 
@@ -8400,6 +8424,7 @@ script "SamsaraClientSidePresetSelection" (void)
 
 		// Character Equipment Loadout Options
 		SetCVar("samsara_cl_doomguy_fallbackranged", false);
+		SetCVar("samsara_cl_doomguy_slot4", false);
 		SetCVar("samsara_cl_doomguy_slot7", false);
 		SetCVar("samsara_cl_chex_fallbackranged", false);
 		SetCVar("samsara_cl_freeman_fallbackmelee", false);
@@ -8537,6 +8562,7 @@ script "SamsaraClientSidePresetSelection" (void)
 
 		// Character Equipment Loadout Options
 		SetCVar("samsara_cl_doomguy_fallbackranged", false);
+		SetCVar("samsara_cl_doomguy_slot4", false);
 		SetCVar("samsara_cl_doomguy_slot7", false);
 		SetCVar("samsara_cl_chex_fallbackranged", false);
 		SetCVar("samsara_cl_freeman_fallbackmelee", false);
@@ -8674,6 +8700,7 @@ script "SamsaraClientSidePresetSelection" (void)
 
 		// Character Equipment Loadout Options
 		SetCVar("samsara_cl_doomguy_fallbackranged", false);
+		SetCVar("samsara_cl_doomguy_slot4", false);
 		SetCVar("samsara_cl_doomguy_slot7", false);
 		SetCVar("samsara_cl_chex_fallbackranged", false);
 		SetCVar("samsara_cl_freeman_fallbackmelee", false);
@@ -8814,6 +8841,7 @@ script "SamsaraClientSidePresetSelection" (void)
 
 			// Character Equipment Loadout Options
 			SetCVar("samsara_cl_doomguy_fallbackranged", false);
+			SetCVar("samsara_cl_doomguy_slot4", false);
 			SetCVar("samsara_cl_doomguy_slot7", false);
 			SetCVar("samsara_cl_chex_fallbackranged", false);
 			SetCVar("samsara_cl_freeman_fallbackmelee", false);
@@ -8948,6 +8976,7 @@ script "SamsaraClientSidePresetSelection" (void)
 
 			// Character Equipment Loadout Options
 			SetCVar("samsara_cl_doomguy_fallbackranged", false);
+			SetCVar("samsara_cl_doomguy_slot4", false);
 			SetCVar("samsara_cl_doomguy_slot7", false);
 			SetCVar("samsara_cl_chex_fallbackranged", false);
 			SetCVar("samsara_cl_freeman_fallbackmelee", false);
@@ -9086,6 +9115,7 @@ script "SamsaraClientSidePresetSelection" (void)
 
 		// Character Equipment Loadout Options
 		SetCVar("samsara_cl_doomguy_fallbackranged", true);
+		SetCVar("samsara_cl_doomguy_slot4", true);
 		SetCVar("samsara_cl_doomguy_slot7", false);
 		SetCVar("samsara_cl_chex_fallbackranged", false);
 		SetCVar("samsara_cl_freeman_fallbackmelee", false);
@@ -9428,6 +9458,7 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Character Equipment Loadout Options
 		SetCVar("samsara_doomguy_fallbackranged", 0);
+		SetCVar("samsara_doomguy_slot4", 0);
 		SetCVar("samsara_doomguy_slot7", 0);
 		SetCVar("samsara_chex_fallbackranged", 0);
 		SetCVar("samsara_freeman_fallbackmelee", 0);
@@ -9764,6 +9795,7 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Character Equipment Loadout Options
 		SetCVar("samsara_doomguy_fallbackranged", 0);
+		SetCVar("samsara_doomguy_slot4", 0);
 		SetCVar("samsara_doomguy_slot7", 0);
 		SetCVar("samsara_chex_fallbackranged", 0);
 		SetCVar("samsara_freeman_fallbackmelee", 0);
@@ -10100,6 +10132,7 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Character Equipment Loadout Options
 		SetCVar("samsara_doomguy_fallbackranged", 0);
+		SetCVar("samsara_doomguy_slot4", 0);
 		SetCVar("samsara_doomguy_slot7", 0);
 		SetCVar("samsara_chex_fallbackranged", 0);
 		SetCVar("samsara_freeman_fallbackmelee", 0);
@@ -10437,6 +10470,7 @@ script "SamsaraServerSidePresetSelection" (void)
 
 		// Character Equipment Loadout Options
 		SetCVar("samsara_doomguy_fallbackranged", 0);
+		SetCVar("samsara_doomguy_slot4", 0);
 		SetCVar("samsara_doomguy_slot7", 0);
 		SetCVar("samsara_chex_fallbackranged", 0);
 		SetCVar("samsara_freeman_fallbackmelee", 0);
@@ -10775,6 +10809,7 @@ script "SamsaraServerSidePresetSelection" (void)
 
 			// Character Equipment Loadout Options
 			SetCVar("samsara_doomguy_fallbackranged", 0);
+			SetCVar("samsara_doomguy_slot4", 0);
 			SetCVar("samsara_doomguy_slot7", 0);
 			SetCVar("samsara_chex_fallbackranged", 0);
 			SetCVar("samsara_freeman_fallbackmelee", 0);
@@ -11108,6 +11143,7 @@ script "SamsaraServerSidePresetSelection" (void)
 
 			// Character Equipment Loadout Options
 			SetCVar("samsara_doomguy_fallbackranged", 0);
+			SetCVar("samsara_doomguy_slot4", 0);
 			SetCVar("samsara_doomguy_slot7", 0);
 			SetCVar("samsara_chex_fallbackranged", 0);
 			SetCVar("samsara_freeman_fallbackmelee", 0);
