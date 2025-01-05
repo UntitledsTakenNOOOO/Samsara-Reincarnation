@@ -1,3 +1,5 @@
+actor EradDartGunCounter : TemporaryCounter { Inventory.MaxAmount 2 }
+
 actor "  Dart Cannon  " : SamsaraEradicatorWeapon
 {
     Inventory.PickupMessage "Death Dart"
@@ -41,21 +43,20 @@ actor "  Dart Cannon  " : SamsaraEradicatorWeapon
 
       Fire:
         TNT1 A 0 A_GunFlash
-        TNT1 A 0 A_GiveInventory("SamsaraEradicatorDeathDartPrimaryAttackHandler")
-        ELDC A 3 Bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-        ELDC C 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-        ELDC D 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        ELDC A 3 Bright ACS_NamedExecuteWithResult("EradicatorDartGun")
+        ELDC A 2 Offset(-5,36)
+        ELDC A 1 Offset(5,37)
         TNT1 A 0 A_ReFire
-        ELDC E 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        ELDC A 1 Offset(4,34)
         goto Ready
 
       AltFire:
         TNT1 A 0 A_GunFlash
-        TNT1 A 0 A_GiveInventory("SamsaraEradicatorDeathDartSecondaryAttackHandler")
-        ELDC A 3 Bright A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-        ELDC CD 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        ELDC A 3 Bright ACS_NamedExecuteWithResult("EradicatorDartGun",1)
+        ELDC A 1 Offset(-5,36)
+		ELDC A 1 Offset(5,37)
         TNT1 A 0 A_ReFire
-        ELDC E 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        ELDC A 1 Offset(4,34)
         goto Ready
 
       Flash:
@@ -74,6 +75,7 @@ actor SamsaraEradicatorDeathDartPrimaryAttackHandler : Trigger
     {
       // Ammo checking/taking stuff
       Pickup:
+		TNT1 A 0 A_JumpIfInventory("EradDartGunCounter",1,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("Clip",1,1)
         stop
@@ -82,19 +84,38 @@ actor SamsaraEradicatorDeathDartPrimaryAttackHandler : Trigger
 
       // Attack stuff
       PickupAttack:
-        TNT1 A 0 A_PlaySound("eleena/dartfire",CHAN_WEAPON)
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
       PickupAttackDM:
-        TNT1 A 0 A_FireCustomMissile("ImpalingDart",frandom(3.00,7.00),false,6)
-        TNT1 A 0 A_FireCustomMissile("ImpalingDart",frandom(-7.00,-3.00),false,-6)
-        TNT1 A 0 A_FireCustomMissile("ImpalingDart",frandom(-2.00,2.00),false)
+		TNT1 A 0 A_JumpIfInventory("EradDartGunCounter",2,"AttackDM3")
+		TNT1 A 0 A_JumpIfInventory("EradDartGunCounter",1,"AttackDM2")
+		TNT1 A 0 A_PlaySound("eleena/dartfire",CHAN_WEAPON)
+		TNT1 A 0 A_FireCustomMissile("ImpalingDart",frandom(0,1.0),false,-6,0,0,frandom(-1.0,1.0))
+		TNT1 A 0 A_GiveInventory("EradDartGunCounter")
+	    stop
+	  AttackDM2:
+		TNT1 A 0 A_FireCustomMissile("ImpalingDart",frandom(-0.5,0.5),false,0,0,0,frandom(-1.0,1.0))
+		TNT1 A 0 A_GiveInventory("EradDartGunCounter")
+		stop
+	  AttackDM3:
+        TNT1 A 0 A_FireCustomMissile("ImpalingDart",frandom(-1.0,0),false,6,0,0,frandom(-1.0,1.0))
+		TNT1 A 0 A_TakeInventory("EradDartGunCounter")
         stop
 
       PickupAttackCoop:
-        TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",frandom(3.00,7.00),false,6)
-        TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",frandom(-7.00,-3.00),false,-6)
-        TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",frandom(-2.00,2.00),false)
+	    TNT1 A 0 A_JumpIfInventory("EradDartGunCounter",2,"AttackCoop3")
+		TNT1 A 0 A_JumpIfInventory("EradDartGunCounter",1,"AttackCoop2")
+		TNT1 A 0 A_PlaySound("eleena/dartfire",CHAN_WEAPON)
+		TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",frandom(0,1.0),false,-6,0,0,frandom(-1.0,1.0))
+		TNT1 A 0 A_GiveInventory("EradDartGunCounter")
+		stop
+	  AttackCoop2:
+		TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",frandom(-0.5,0.5),false,0,0,0,frandom(-1.0,1.0))
+		TNT1 A 0 A_GiveInventory("EradDartGunCounter")
+		stop
+	  AttackCoop3:
+        TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",frandom(-1.0,0),false,6,0,0,frandom(-1.0,1.0))
+		TNT1 A 0 A_TakeInventory("EradDartGunCounter")
         stop
     }
 }
@@ -105,6 +126,7 @@ actor SamsaraEradicatorDeathDartSecondaryAttackHandler : Trigger
     {
       // Ammo checking/taking stuff
       Pickup:
+	    TNT1 A 0 A_JumpIfInventory("EradDartGunCounter",1,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("Clip",2,1)
         stop
@@ -113,19 +135,38 @@ actor SamsaraEradicatorDeathDartSecondaryAttackHandler : Trigger
 
       // Attack stuff
       PickupAttack:
-        TNT1 A 0 A_PlaySound("eleena/dartfire2",CHAN_WEAPON)
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
       PickupAttackDM:
-        TNT1 A 0 A_FireCustomMissile("ImpalingDart",0,false,8)
-        TNT1 A 0 A_FireCustomMissile("ImpalingDart",0,false,-8)
-        TNT1 A 0 A_FireCustomMissile("ImpalingDart",0,false)
+	    TNT1 A 0 A_JumpIfInventory("EradDartGunCounter",2,"AttackDM3")
+		TNT1 A 0 A_JumpIfInventory("EradDartGunCounter",1,"AttackDM2")
+	    TNT1 A 0 A_PlaySound("eleena/dartfire2",CHAN_WEAPON)
+	    TNT1 A 0 A_FireCustomMissile("ImpalingDart",frandom(-1.0,0),false,-6,0,0,frandom(-0.5,0.5))
+		TNT1 A 0 A_GiveInventory("EradDartGunCounter")
+		stop
+	  AttackDM2:
+        TNT1 A 0 A_FireCustomMissile("ImpalingDart",0,false,0,0,0,frandom(-0.5,0.5))
+		TNT1 A 0 A_GiveInventory("EradDartGunCounter")
+		stop
+	  AttackDM3:
+		TNT1 A 0 A_FireCustomMissile("ImpalingDart",frandom(0,1.00),false,6,0,0,frandom(-0.5,0.5))
+		TNT1 A 0 A_TakeInventory("EradDartGunCounter")
         stop
 
       PickupAttackCoop:
-        TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",0,false,8)
-        TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",0,false,-8)
-        TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",0,false)
+	    TNT1 A 0 A_JumpIfInventory("EradDartGunCounter",2,"AttackCoop3")
+		TNT1 A 0 A_JumpIfInventory("EradDartGunCounter",1,"AttackCoop2")
+	    TNT1 A 0 A_PlaySound("eleena/dartfire2",CHAN_WEAPON)
+	    TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",frandom(-1.0,0),false,-6,0,0,frandom(-0.5,0.5))
+		TNT1 A 0 A_GiveInventory("EradDartGunCounter")
+		stop
+	  AttackCoop2:
+        TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",0,false,0,0,0,frandom(-0.5,0.5))
+		TNT1 A 0 A_GiveInventory("EradDartGunCounter")
+		stop
+	  AttackCoop3:
+		TNT1 A 0 A_FireCustomMissile("CoopImpalingDart",frandom(0,1.00),false,6,0,0,frandom(-0.5,0.5))
+		TNT1 A 0 A_TakeInventory("EradDartGunCounter")
         stop
     }
 }
@@ -139,6 +180,7 @@ actor ImpalingDart
     Damage (7)
     DamageType "EradPiercingDart"
     Obituary "%o was pierced by %k's death darts."
+	Scale 0.5
     +BLOODSPLATTER
     +PIERCEARMOR
     +THRUGHOST
