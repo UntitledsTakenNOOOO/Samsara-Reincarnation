@@ -1,0 +1,322 @@
+Actor D64LostSoul_Samsara : SamsaraMonsterSkeleton replaces LostSoul2
+{
+	Health 50
+	Radius 16
+	Height 56
+	Mass 50
+	Speed 8
+	Damage 3
+	PainChance 256
+	Monster
+	+FLOAT
+	+NOGRAVITY
+	+MISSILEMORE
+	+DONTFALL
+	+NOICEDEATH
+	+NOBLOOD
+	+RETARGETAFTERSLAM
+	AttackSound "skull/melee"
+	PainSound "skull/pain"
+	DeathSound "skull/death"
+	ActiveSound "skull/active"
+	Obituary "$OB_SKULL"
+	Tag "Lost Soul"
+	Species "SamsaraLostSoul"
+	RenderStyle "SoulTrans"
+	DamageFactor "LostSoul64Explosion", 0
+	+NOBLOOD
+	States
+	{
+	Spawn:
+		SKUL ABC 5 bright A_Look
+		Loop
+	See:
+		SKUL ABC 5 bright A_Chase
+		Loop
+	Missile:
+		SKUL D 6 bright A_FaceTarget
+		SKUL E 4 bright A_SkullAttack(40)
+		SKUL DE 4 bright
+		Goto Missile+2
+	Pain:
+		SKUL F 5 bright
+		SKUL F 3 bright A_Pain
+		Goto See
+	Pain.DoomDamageTypeStunner:
+		SKUL F 2 bright A_ChangeFlag("NOPAIN",true)
+		SKUL F 300 bright A_Pain
+		TNT1 A 0 A_ChangeFlag("NOPAIN",false)
+		Goto See
+	Pain.MightyBoot:
+		TNT1 A 0 A_PlaySound("duke/kickhit",CHAN_BODY)
+		SKUL F 2 bright A_FaceTarget
+		TNT1 A 0 A_Recoil(14)
+		SKUL F 16 bright A_Pain
+		Goto See
+	Death:
+		SKUL G 5 bright ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+		SKUL H 5 bright A_Scream
+		SKUL I 5 bright A_NoBlocking
+		SKUL J 5 bright
+		SKUL K 4 bright A_SetRenderStyle(0.188235, STYLE_Translucent)
+		SKUL L 3 bright
+		SKUL MN 2 bright
+		SKUL OP 1 bright
+		Stop
+	}
+}
+
+Actor D64PainElemental_Samsara : SamsaraMonsterReincPainElemental replaces PainElemental2
+{
+	Health 400
+	Radius 48
+	Height 112
+	Mass 400
+	Speed 8
+	PainChance 128
+	Monster
+	+FLOAT
+	+NOGRAVITY
+	+NOICEDEATH
+	SeeSound "pain/sight"
+	PainSound "pain/pain"
+	DeathSound "pain/death"
+	ActiveSound "pain/active"
+	Tag "Pain Elemental"
+	Species "SamsaraPainElemental"
+	States
+	{
+	Spawn:
+		PAIN AM 5 A_Look
+		Loop
+	See:
+		PAIN AM 3 A_Chase
+		Loop
+	Missile:
+		TNT1 A 0 A_ChangeFlag("NOPAIN",0)
+		PAIN BBC 5 BRIGHT A_FaceTarget
+		PAIN C 0 BRIGHT A_PainAttack("D64LostSoul_Samsara", 29.970703, 0, -1)
+		PAIN C 0 BRIGHT A_PainAttack("D64LostSoul_Samsara", -29.970703, 0, -1)
+		Goto See
+	Pain:
+		PAIN D 6
+		PAIN D 6 A_Pain
+		Goto See
+	Pain.DoomDamageTypeStunner:
+		PAIN D 2 A_ChangeFlag("NOPAIN",true)
+		PAIN D 300 A_Pain
+		TNT1 A 0 A_ChangeFlag("NOPAIN",false)
+		Goto See
+	Pain.MightyBoot:
+		TNT1 A 0 A_ChangeFlag("NOPAIN",1)
+		TNT1 A 0 A_PlaySound("duke/kickhit",CHAN_BODY)
+		PAIN D 2 A_FaceTarget
+		TNT1 A 0 A_Recoil(14)
+		PAIN D 16 A_Pain
+		Goto See
+	Death:
+		PAIN E 8 bright
+		PAIN F 8 bright A_Scream
+		PAIN G 8 bright A_PainDie("D64LostSoul_Samsara")
+		PAIN H 8 bright A_FadeOut(0.247059)
+		PAIN I 5 bright A_FadeOut(0.247059)
+		PAIN J 5 bright A_FadeOut(0.247059)
+		PAIN KL 5 bright
+		Stop
+	Raise:
+		PAIN LKJI 5
+		PAIN HGFE 8
+		Goto See
+	Pain.ShrinkerDMG:
+		PAIN D 0
+		"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+		"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+		"####" "#" 0 A_ChangeFlag("NOPAIN", 1)
+		"####" "#" 0 A_ChangeFlag("NODAMAGE", 1)
+		"####" "#" 0 A_NoBlocking
+		"####" "#" 0 A_PlaySound("duke/shrink")
+		"####" "#" 1 A_SetScale(0.95*(user_scalex/65536.0),0.95*(user_scaley/65536.0))
+		"####" "#" 1 A_SetScale(0.9*(user_scalex/65536.0),0.9*(user_scaley/65536.0))
+		"####" "#" 0 A_SpawnItemEx("D64PainElemental_Samsara_ShrinkEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		"####" "#" 1 A_SetScale(0.85*(user_scalex/65536.0),0.85*(user_scaley/65536.0))
+		"####" "#" 1 A_SetScale(0.8*(user_scalex/65536.0),0.8*(user_scaley/65536.0))
+		"####" "#" 0 A_SpawnItemEx("D64PainElemental_Samsara_ShrinkEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		"####" "#" 1 A_SetScale(0.75*(user_scalex/65536.0),0.75*(user_scaley/65536.0))
+		"####" "#" 1 A_SetScale(0.7*(user_scalex/65536.0),0.7*(user_scaley/65536.0))
+		"####" "#" 0 A_SpawnItemEx("D64PainElemental_Samsara_ShrinkEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		"####" "#" 1 A_SetScale(0.65*(user_scalex/65536.0),0.65*(user_scaley/65536.0))
+		"####" "#" 1 A_SetScale(0.6*(user_scalex/65536.0),0.6*(user_scaley/65536.0))
+		"####" "#" 0 A_SpawnItemEx("D64PainElemental_Samsara_ShrinkEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		"####" "#" 1 A_SetScale(0.55*(user_scalex/65536.0),0.55*(user_scaley/65536.0))
+		"####" "#" 1 A_SetScale(0.5*(user_scalex/65536.0),0.5*(user_scaley/65536.0))
+		"####" "#" 0 A_SpawnItemEx("D64PainElemental_Samsara_ShrinkEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		"####" "#" 1 A_SetScale(0.45*(user_scalex/65536.0),0.45*(user_scaley/65536.0))
+		"####" "#" 1 A_SetScale(0.4*(user_scalex/65536.0),0.4*(user_scaley/65536.0))
+		"####" "#" 0 A_SpawnItemEx("D64PainElemental_Samsara_ShrinkEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		"####" "#" 1 A_SetScale(0.35*(user_scalex/65536.0),0.35*(user_scaley/65536.0))
+		"####" "#" 1 A_SetScale(0.3*(user_scalex/65536.0),0.3*(user_scaley/65536.0))
+		"####" "#" 0 A_SpawnItemEx("D64PainElemental_Samsara_ShrinkEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+		"####" "#" 1 A_SetScale(0.25*(user_scalex/65536.0),0.25*(user_scaley/65536.0))
+		"####" "#" 4 A_SetScale(0.2*(user_scalex/65536.0),0.2*(user_scaley/65536.0))
+		"####" "#" 0 A_SpawnItemEx("D64PainElemental_Samsara_Shrink", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_TRANSFERPOINTERS|SXF_TRANSFERSPECIAL|SXF_TRANSFERAMBUSHFLAG|SXF_SETMASTER,0,tid)
+		TNT1 A 2
+		TNT1 A 0 Thing_Remove(0)
+		Stop
+	SpawnTheLostSoul:
+		TNT1 A 0 A_PainDie("D64LostSoul_Samsara")
+		TNT1 A 0 A_NoBlocking
+		TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraBossDeathToggler")
+		Stop
+	}
+}
+
+actor D64PainElemental_Samsara_Shrink : D64PainElemental_Samsara
+{
+	+FRIGHTENED
+	+NOTRIGGER
+	-SHOOTABLE
+	+THRUACTORS
+	+NORADIUSDMG
+	+VULNERABLE
+	+QUICKTORETALIATE
+	+COUNTKILL
+	-NOGRAVITY
+	+NODAMAGE
+	+NOPAIN
+	MaxStepHeight 0
+	MaxDropOffHeight 0
+	MeleeRange 16
+	Height 8
+	Health 1
+	Speed 1
+	PainChance "ShrinkDMG", 0
+	DamageFactor "ShrinkDMG", 0.0
+	PainChance "ExpanderDMG", 0
+	DamageFactor "ExpanderDMG", 0.0
+	States
+	{
+		Spawn:
+			TNT1 A 0
+			TNT1 A 0 A_JumpIfInventory("ShrunkToken",1,"SpawnLoop")
+			TNT1 A 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			TNT1 A 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			TNT1 A 0 A_SetScale(scalex*0.2,scaley*0.2) // setting the scale in ACS does work, but the actor shows up at normal size for a split second
+			TNT1 A 0 ACS_NamedExecuteAlways("Samsara_Shrinker", 0, 1)
+			PAIN D 10
+			Goto See
+		SpawnLoop:
+			PAIN AM 5 A_Look
+			Loop
+		See:
+			"####" "#" 0 A_JumpIfInTargetInventory("ChexClass", 1, 5) // this is supposed to be child friendly
+			"####" "#" 0 A_JumpIfInTargetInventory("DukeClass", 1, 3)
+			"####" "#" 0 A_JumpIfTargetInSideMeleeRange("Squish")
+			"####" "#" 0 A_Jump(256, 2)
+			"####" "#" 0 A_JumpIfTargetInSideMeleeRange("DukeStomp")
+			PAIN A 3 A_Chase("","")
+			"####" "#" 0 A_JumpIfInTargetInventory("ChexClass", 1, 5) // this is supposed to be child friendly
+			"####" "#" 0 A_JumpIfInTargetInventory("DukeClass", 1, 3)
+			"####" "#" 0 A_JumpIfTargetInSideMeleeRange("Squish")
+			"####" "#" 0 A_Jump(256, 2)
+			"####" "#" 0 A_JumpIfTargetInSideMeleeRange("DukeStomp")
+			PAIN A 3 A_Chase("","")
+			"####" "#" 0 A_JumpIfInTargetInventory("ChexClass", 1, 5) // this is supposed to be child friendly
+			"####" "#" 0 A_JumpIfInTargetInventory("DukeClass", 1, 3)
+			"####" "#" 0 A_JumpIfTargetInSideMeleeRange("Squish")
+			"####" "#" 0 A_Jump(256, 2)
+			"####" "#" 0 A_JumpIfTargetInSideMeleeRange("DukeStomp")
+			PAIN M 3 A_Chase("","")
+			"####" "#" 0 A_JumpIfInTargetInventory("ChexClass", 1, 5) // this is supposed to be child friendly
+			"####" "#" 0 A_JumpIfInTargetInventory("DukeClass", 1, 3)
+			"####" "#" 0 A_JumpIfTargetInSideMeleeRange("Squish")
+			"####" "#" 0 A_Jump(256, 2)
+			"####" "#" 0 A_JumpIfTargetInSideMeleeRange("DukeStomp")
+			PAIN M 3 A_Chase("","")
+			"####" "#" 0 A_JumpIf(CallACS("Samsara_Shrinker", 3) == 0, "Forget")
+			Loop
+		Forget:
+			"####" "#" 0 A_ClearTarget
+			Goto See
+		Grow:
+			"####" "#" 4 A_SetScale(0.25*(user_scalex/65536.0),0.25*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.3*(user_scalex/65536.0),0.3*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.35*(user_scalex/65536.0),0.35*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.4*(user_scalex/65536.0),0.4*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.45*(user_scalex/65536.0),0.45*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.5*(user_scalex/65536.0),0.5*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.55*(user_scalex/65536.0),0.55*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.6*(user_scalex/65536.0),0.6*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.65*(user_scalex/65536.0),0.65*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.7*(user_scalex/65536.0),0.7*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.75*(user_scalex/65536.0),0.75*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.8*(user_scalex/65536.0),0.8*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.85*(user_scalex/65536.0),0.85*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.9*(user_scalex/65536.0),0.9*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.95*(user_scalex/65536.0),0.95*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(1.0*(user_scalex/65536.0),1.0*(user_scaley/65536.0))
+			"####" "#" 0 A_SpawnItemEx("D64PainElemental_Samsara", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_TRANSFERSPECIAL|SXF_TRANSFERPOINTERS|SXF_TRANSFERAMBUSHFLAG|SXF_SETMASTER,0,tid)
+			TNT1 A 0 A_GiveToChildren("ShrunkPropertyTransfer",1)
+			TNT1 A 0 A_GiveToChildren("ShrunkPropertyTransfer",1)
+			TNT1 A 2 Thing_Remove(0)
+			Stop
+		Squish:
+			"####" "#" 0 A_GiveInventory("SquishToken", 1)
+			"####" "#" 0 A_JumpIfInTargetInventory("DukeStomp", 1, 2)
+			"####" "#" 0 A_Jump(256,3)
+			"####" "#" 2
+			"####" "#" 0 A_Jump(256,3)
+			"####" "#" 0
+			"####" "#" 2 A_Die("Squish")
+			"####" "#" 0
+			Loop
+		Death:
+		XDeath:
+		Death.Squish:
+		XDeath.Squish:
+			TNT1 A 0 A_Jump(64,2)
+			TNT1 A 0 A_GiveToTarget("DukeBootTaunt",1)
+			TNT1 A 0 ACS_NamedExecuteAlways("Samsara_KillCount", 0, 0)
+			TNT1 A 0 A_PlaySound("duke/enemygib", CHAN_BODY)
+			TNT1 A 1 A_SpawnItemEx("DukeBloodPool",0,0,0,0,0,0,0,SXF_USEBLOODCOLOR|SXF_NOCHECKPOSITION)
+			Stop
+		DukeStomp:
+			"####" "#" 0 A_GiveToTarget("DukeStomp", 1)
+			Goto Squish
+	}
+}
+
+actor D64PainElemental_Samsara_ShrinkEffect : D64PainElemental_Samsara
+{
+	-ISMONSTER
+	-COUNTKILL
+	-SHOOTABLE
+	-SOLID
+	+NOINTERACTION
+	-NOGRAVITY
+	Renderstyle Translucent
+	Alpha 0.4
+	States
+	{
+		Spawn:
+			PAIN D 0
+			PAIN D 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			PAIN D 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			"####" "#" 1 A_SetScale(0.95*(user_scalex/65536.0),0.95*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.9*(user_scalex/65536.0),0.9*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.85*(user_scalex/65536.0),0.85*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.8*(user_scalex/65536.0),0.8*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.75*(user_scalex/65536.0),0.75*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.7*(user_scalex/65536.0),0.7*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.65*(user_scalex/65536.0),0.65*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.6*(user_scalex/65536.0),0.6*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.55*(user_scalex/65536.0),0.55*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.5*(user_scalex/65536.0),0.5*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.45*(user_scalex/65536.0),0.45*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.4*(user_scalex/65536.0),0.4*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.35*(user_scalex/65536.0),0.35*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.3*(user_scalex/65536.0),0.3*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.25*(user_scalex/65536.0),0.25*(user_scaley/65536.0))
+			"####" "#" 1 A_SetScale(0.2*(user_scalex/65536.0),0.2*(user_scaley/65536.0))
+			Stop
+	}
+}
