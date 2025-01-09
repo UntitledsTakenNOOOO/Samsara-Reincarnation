@@ -1,54 +1,119 @@
-Actor IPOGRandomItemGenerator : CustomInventory
+actor IPOGRandomItemGenerator : Trigger
 {
-    inventory.amount 0
-    inventory.maxamount 0
-    +INVENTORY.UNDROPPABLE
-    +INVENTORY.AUTOACTIVATE
-    +INVENTORY.ALWAYSPICKUP
-    +INVBAR
-    Inventory.PickupSound "greed/pickup"
-    //Inventory.PickupMessage "You picked up a Random Item!"
-    Inventory.RestrictedTo "POGreedPlayer"             
     States
     {
-        Spawn:
-            UNIQ B -1 bright
-            Stop            
-        Use:
-            TNT1 A 0
-            TNT1 A 0 A_Jump(256, "ShieldCharge", "ProxMine", "TimeBomb", "Clone", "MedTube")
-            Stop
-        ShieldCharge:
-            TNT1 A 0 A_Print("It's a Random Item Generator! You received 1 Shield Charge!")
-            TNT1 A 0 A_GiveInventory("ShieldCharge", 1)
-            Stop
-        /*IPOGGrenade:
-            TNT1 A 0 A_Print("It's a Random Item Generator! You received 5 Grenades!")
-            TNT1 A 0 A_GiveInventory("IPOGGrenadeItem", 5)
-            Stop*/
-        ProxMine:
-            TNT1 A 0 A_Print("It's a Random Item Generator! You received 5 Proximity Mines!")
-            TNT1 A 0 A_GiveInventory("IPOGProximityMineItem", 5)
-            Stop
-        TimeBomb:
-            TNT1 A 0 A_Print("It's a Random Item Generator! You received 5 Time Bombs!")
-            TNT1 A 0 A_GiveInventory("IPOGTimeBombItem", 5)
-            Stop
-        Clone:
-            TNT1 A 0 A_Print("It's a Random Item Generator! You received 1 Clone!")
-            TNT1 A 0 A_GiveInventory("IPOGCloneItem", 1)
-            Stop
-        /*ReversoPill:
-            TNT1 A 0 A_Print("It's a Random Item Generator! You received 1 Reverso Pill!")
-            TNT1 A 0 A_GiveInventory("IPOGReversoPill", 1)
-            Stop*/
-        MedTube:
-            TNT1 A 0 A_Print("It's a Random Item Generator! You received 10 Medtubes!")
-            TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), 2)
-            TNT1 A 0 A_GiveInventory("Medtube", 10)
-            Stop
-            TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 10 * 25)
-            stop
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("ShieldCharge",0,1)
+        goto PickupGiveItem
+        TNT1 A 0 A_JumpIfInventory("IPOGProximityMineItem",0,1)
+        goto PickupGiveItem
+        TNT1 A 0 A_JumpIfInventory("IPOGTimeBombItem",0,1)
+        goto PickupGiveItem
+        TNT1 A 0 A_JumpIfInventory("IPOGCloneItem",0,1)
+        goto PickupGiveItem
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 22), "PickupGiveItem")
+        TNT1 A 0 A_JumpIfInventory("Medtube",0,"PickupStop")
+        goto PickupGiveItem
+
+      PickupGiveItem:
+        TNT1 A 0 A_Jump(256,"PickupGiveShieldCharge","PickupGiveProxMine","PickupGiveTimeBomb","PickupGiveClone","PickupGiveMedTube")
+        goto PickupGiveShieldCharge
+
+      PickupGiveShieldCharge:
+        TNT1 A 0 A_JumpIfInventory("ShieldCharge",0,"PickupGiveItem")
+        goto PickupGiveShieldChargeMessageInit
+
+      PickupGiveShieldChargeMessageInit:
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraChoice1")
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraLoadout1")
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraDropped1")
+        TNT1 A 0 A_GiveInventory("SamsaraMiscPickupDisplayExtraChoice1",24)
+      PickupGiveShieldChargeStart:
+        TNT1 A 0 A_GiveInventory("ShieldCharge")
+        stop
+
+      PickupGiveProxMine:
+        TNT1 A 0 A_JumpIfInventory("IPOGProximityMineItem",0,"PickupGiveItem")
+        goto PickupGiveProxMineMessageInit
+
+      PickupGiveProxMineMessageInit:
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraChoice1")
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraLoadout1")
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraDropped1")
+        TNT1 A 0 A_GiveInventory("SamsaraMiscPickupDisplayExtraChoice1",25)
+      PickupGiveProxMineStart:
+        TNT1 A 0 A_GiveInventory("IPOGProximityMineItem",5)
+        stop
+
+      PickupGiveTimeBomb:
+        TNT1 A 0 A_JumpIfInventory("IPOGTimeBombItem",0,"PickupGiveItem")
+        goto PickupGiveTimeBombMessageInit
+
+      PickupGiveTimeBombMessageInit:
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraChoice1")
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraLoadout1")
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraDropped1")
+        TNT1 A 0 A_GiveInventory("SamsaraMiscPickupDisplayExtraChoice1",26)
+      PickupGiveTimeBombStart:
+        TNT1 A 0 A_GiveInventory("IPOGTimeBombItem",5)
+        stop
+
+      PickupGiveClone:
+        TNT1 A 0 A_JumpIfInventory("IPOGCloneItem",0,"PickupGiveItem")
+        goto PickupGiveCloneMessageInit
+
+      PickupGiveCloneMessageInit:
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraChoice1")
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraLoadout1")
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraDropped1")
+        TNT1 A 0 A_GiveInventory("SamsaraMiscPickupDisplayExtraChoice1",27)
+      PickupGiveCloneStart:
+        TNT1 A 0 A_GiveInventory("IPOGCloneItem")
+        stop
+
+      PickupGiveMedtube:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 22), "PickupGiveMedtubeMessageInit")
+        TNT1 A 0 A_JumpIfInventory("Medtube",0,"PickupGiveItem")
+        goto PickupGiveMedtubeMessageInit
+
+      PickupGiveMedtubeMessageInit:
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraChoice1")
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraLoadout1")
+        TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraDropped1")
+        TNT1 A 0 A_GiveInventory("SamsaraMiscPickupDisplayExtraChoice1",28)
+      PickupGiveMedtubeStart:
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), 2)
+        TNT1 A 0 A_GiveInventory("Medtube",10)
+        stop
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 10 * 25)
+        stop
+    }
+}
+
+actor IPOGRandomItemGeneratorStart : IPOGRandomItemGenerator // given through uniquestart, doesn't do any message stuff
+{
+    States
+    {
+      PickupGiveShieldCharge:
+        TNT1 A 0 A_JumpIfInventory("ShieldCharge",0,"PickupGiveItem")
+        goto PickupGiveShieldChargeStart
+
+      PickupGiveProxMine:
+        TNT1 A 0 A_JumpIfInventory("IPOGProximityMineItem",0,"PickupGiveItem")
+        goto PickupGiveProxMineStart
+
+      PickupGiveTimeBomb:
+        TNT1 A 0 A_JumpIfInventory("IPOGTimeBombItem",0,"PickupGiveItem")
+        goto PickupGiveTimeBombStart
+
+      PickupGiveClone:
+        TNT1 A 0 A_JumpIfInventory("IPOGCloneItem",0,"PickupGiveItem")
+        goto PickupGiveCloneStart
+
+      PickupGiveMedtube:
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 22), "PickupGiveMedtubeStart")
+        TNT1 A 0 A_JumpIfInventory("Medtube",0,"PickupGiveItem")
+        goto PickupGiveMedtubeStart
     }
 }
 
