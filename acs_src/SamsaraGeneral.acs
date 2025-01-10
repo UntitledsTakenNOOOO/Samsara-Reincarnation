@@ -5516,10 +5516,11 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             if (!CheckInventory("StrifeBeaconItem5"))
             {
                 GiveInventory("StrifeBeaconItem5", 1);
+                if (CheckInventory("StrifeBeaconCooldown")) { ACS_NamedExecuteWithResult("SamsaraStrifeBeaconCooldownDecrement"); }
                 if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("StrifeBeaconLastPickupTime", Timer() + pickuptimer); }
                 result = 1;
             } else if (CheckInventory("StrifeBeaconCooldown") && (Timer() >= CheckInventory("StrifeBeaconLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay)) {
-                ACS_NamedExecuteAlways("StrifeBeaconCooldownReduction", 0);
+                ACS_NamedExecuteWithResult("SamsaraStrifeBeaconCooldownDecrement");
                 if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("StrifeBeaconLastPickupTime", Timer() + pickuptimer); }
                 result = 1;
             }
@@ -7776,6 +7777,35 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
                     GiveInventory("Samsara_ModeWeaponChange", 1);
                 }
                 break;
+            }
+            break;
+        }
+        break;
+
+      case CLASS_CALEB:
+        switch (unum)
+        {
+          default:
+            result = -1;
+            break;
+
+          case SLOT_UNIQUE2:
+            if (GetCVar("samsara_bloodakimbomode") <= 0 || GetCVar("samsara_bloodakimbomode") >= 3) // Powerup / Toggle (gives quad damage)
+            {
+                GiveInventory("SamsaraBloodGunsAkimboPickup", 1);
+                result = 1;
+            } else if (GetCVar("samsara_bloodakimbomode") == 1) { // Inventory (Single Use)
+                if (!CheckInventory("SamsaraBloodGunsAkimboInventory"))
+                {
+                    GiveInventory("SamsaraBloodGunsAkimboPickup", 1);
+                    result = 1;
+                }
+            } else if (GetCVar("samsara_bloodakimbomode") == 2) { // Inventory (Cooldown)
+                if (!CheckInventory("SamsaraBloodGunsAkimboInventory") || CheckInventory("SamsaraBloodGunsAkimboCooldown"))
+                {
+                    GiveInventory("SamsaraBloodGunsAkimboPickup", 1);
+                    result = 1;
+                }
             }
             break;
         }
