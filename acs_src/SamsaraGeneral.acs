@@ -7265,6 +7265,28 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
     bool duallimited = false;
     bool dualgiveboth = startmode <= -1 || dualpickupmode == 3 || (dualpickupmode >= 4 && (!(isSinglePlayer() || isCoop()) || isInvasion()));
 
+    // Ban morph ovum handling
+    if (classnum == CLASS_HERETIC && unum == SLOT_UNIQUE2 && !isZDoom() && GetCVar("samsara_banmorphovum"))
+    {
+        if (startmode == 1 || startmode == 3) { unum = SLOT_UNIQUE1; }
+        else
+        {
+            SetResultValue(result);
+            terminate;
+        }
+    }
+
+    // Ban jetpack handling
+    if (classnum == CLASS_HALFLIFE && unum == SLOT_UNIQUE3 && GetCVar("samsara_banjetpack"))
+    {
+        if (startmode == 1 || startmode == 3) { unum = SLOT_UNIQUE2; }
+        else
+        {
+            SetResultValue(result);
+            terminate;
+        }
+    }
+
     // Start everything
     switch (classnum)
     {
@@ -7490,6 +7512,26 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
                     }
                 }
                 break;
+            }
+            break;
+        }
+        break;
+
+      case CLASS_HERETIC:
+        switch (unum)
+        {
+          default:
+            result = -1;
+            break;
+
+          case SLOT_UNIQUE1: // needed for ban morph ovum handling at start of script
+            if (!CheckInventory("Grim Ballista"))
+            {
+                GiveInventory("Grim Ballista", 1);
+                result = 1;
+            } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell")) {
+                GiveInventory("Grim Ballista", 1);
+                result = 1;
             }
             break;
         }
