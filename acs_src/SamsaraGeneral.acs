@@ -5457,7 +5457,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             break;
 
           case SLOT_BFG9000:
-            if (!CheckInventory("StopFromPickingTurrets_"))
+            if (!CheckInventory("StopFromPickingTurrets_")) // if life leech sentry is active, prevent pickup regardless of drop status
             {
                 if (!CheckInventory("LifeLeech"))
                 {
@@ -8598,7 +8598,7 @@ Script "Samsara_SpawnSlot" (int slot, int toss)
 
 script "Samsara_SpawnSlotSkulltag" (int slot, int toss)
 {
-    if (CheckInventory("SamsaraItemReplaced")) { terminate; }
+    if (CheckInventory("SamsaraSlotSkulltagSpawnChecked") || CheckInventory("SamsaraItemReplaced")) { terminate; }
 
 	int newTid = UniqueTid();
 	int skulltagSpawned = 0;
@@ -8620,6 +8620,8 @@ script "Samsara_SpawnSlotSkulltag" (int slot, int toss)
 
 	SetActorProperty(newTid,APROP_Dropped,GetActorProperty(0,APROP_Dropped));
 
+    GiveInventory("SamsaraSlotSkulltagSpawnChecked", 1);
+
 	if (skulltagSpawned)
 	{
 		if (GetCvar("samsara_skulltagreplace"))
@@ -8628,7 +8630,6 @@ script "Samsara_SpawnSlotSkulltag" (int slot, int toss)
 		}
 		else
 		{
-			SetActorFlag(newTid, "NEVERRESPAWN", true);
 			if(toss) SetActorVelocity(newTid,random(-4.0,4.0),random(-4.0,4.0),0,0,0);
 		}
 
@@ -9172,7 +9173,9 @@ str itemReplacements[44][4] =
 
 script "Samsara_SwitchableObject" (int type)
 {
-    if (CheckInventory("SamsaraItemReplaced")) { terminate; }
+    if (CheckInventory("SamsaraItemReplacerProcessed") || CheckInventory("SamsaraItemReplaced")) { terminate; }
+
+    GiveInventory("SamsaraItemReplacerProcessed", 1);
 
     int replacer = GetCVar(itemReplacements[type - 1][1]);
 
