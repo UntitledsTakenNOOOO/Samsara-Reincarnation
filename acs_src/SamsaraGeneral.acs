@@ -2614,6 +2614,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("WTWeaponActive", INTMAX);
 			TakeInventory("WTShieldDisable", INTMAX);
 			TakeInventory("WTShieldCounter", INTMAX);
+			TakeInventory("WTShieldWaiting", INTMAX);
 			TakeInventory("WTSpellCounter", INTMAX);
 			TakeInventory("WTCastingSpell", INTMAX);
 			TakeInventory("WTHalberdHold", INTMAX);
@@ -5830,6 +5831,33 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     SetInventory("SamsaraMiscPickupDisplayExtraChoice1", 31);
                     SetInventory("SamsaraMiscPickupDisplayExtraLoadout1", 0);
                     SetInventory("SamsaraMiscPickupDisplayExtraDropped1", dropped);
+                }
+            }
+            break;
+        }
+        break;
+
+      case CLASS_WITCHAVEN:
+        switch (slot)
+        {
+          default:
+            result = -1;
+            break;
+
+          case SLOT_CHAINSAW:
+            if (Timer() >= CheckInventory("WitchavenShieldLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay)
+            {
+                if (!CheckInventory("WTShieldTrigger"))
+                {
+                    SetInventory("WTShieldTrigger", 1);
+                    GiveInventory("WTShieldWaiting", 1);
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("WitchavenShieldLastPickupTime", Timer() + pickuptimer); }
+                    result = 1;
+                } else if (!CheckInventory("WTShieldWaiting") && CheckInventory("WTShieldCounter") < 50) {
+                    SetInventory("WTShieldTrigger", 2);
+                    GiveInventory("WTShieldWaiting", 1);
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("WitchavenShieldLastPickupTime", Timer() + pickuptimer); }
+                    result = 1;
                 }
             }
             break;
