@@ -27,29 +27,35 @@ Actor WTWeapon : Weapon
     ShieldEntry:
 		TNT1 A 1
 		//Is the shield completely destroyed?
-		TNT1 A 0 A_JumpIfInventory("WTShieldUsed",1,2)
-		TNT1 A 0 A_Jump(256,2)
-		TNT1 A 0 A_JumpIfInventory("WTShieldCounter",1,1)
+    ShieldDestroyedCheck:
+		TNT1 A 0 A_JumpIfInventory("WTShieldUsed",1,1)
+		goto ShieldRepairCheck
+		TNT1 A 0 A_JumpIfInventory("WTShieldTrigger",2,"ShieldRepairCheck")
+		TNT1 A 0 A_JumpIfInventory("WTShieldCounter",1,"ShieldRepairCheck")
 		goto ShieldClear
 		//Picked up a shield, even though you got one?
+    ShieldRepairCheck:
 		TNT1 A 0 A_JumpIfInventory("WTShieldTrigger",2,"ShieldRefresh")
 		//Receiving a completely new shield?
-		TNT1 A 0 A_JumpIfInventory("WTShieldTrigger",1,2)
-		TNT1 A 0 A_Jump(256,2)
-		TNT1 A 0 A_JumpIfInventory("WTShieldUsed",1,1)
+    ShieldNewCheck:
+		TNT1 A 0 A_JumpIfInventory("WTShieldTrigger",1,1)
+		goto ShieldStopCheck
+		TNT1 A 0 A_JumpIfInventory("WTShieldUsed",1,"ShieldStopCheck")
 		goto ShieldInit
 		//Stop showing the shield?
-		TNT1 A 0 A_JumpIfInventory("WTWeaponActive",1,1)
+    ShieldStopCheck:
+		TNT1 A 0 A_JumpIfInventory("WTWeaponActive",1,"ShieldShowCheck")
 		goto ShieldStop
 		//Finally start showing the shield and protect player?
+    ShieldShowCheck:
 		TNT1 A 0 A_JumpIfInventory("WTWeaponActive",1,1)
-		loop
+		goto ShieldEntry
 		TNT1 A 0 A_JumpIfInventory("WTShieldUsed",1,1)
-		loop
+		goto ShieldEntry
 		TNT1 A 0 A_JumpIfInventory("WTShieldCounter",1,1)
-		loop
+		goto ShieldEntry
 		TNT1 A 0 A_JumpIfInventory("WTShieldTrigger",1,1)
-		loop
+		goto ShieldEntry
 		TNT1 A 0
 		goto ShieldLoop
 		
@@ -60,6 +66,7 @@ Actor WTWeapon : Weapon
 		TNT1 A 0 A_TakeInventory("WTShieldUsed",999)
 		TNT1 A 0 A_TakeInventory("WTShieldCounter",999) //Make sure the counters are REALLY gone
 		TNT1 A 0 A_TakeInventory("WTShieldWaiting",999)
+		TNT1 A 0 A_TakeInventory("WTShieldActive",999)
 		goto ShieldEntry
 		
 	ShieldRefresh:
@@ -72,7 +79,7 @@ Actor WTWeapon : Weapon
 		goto ShieldLoop
 		
 	ShieldStop:
-		TNT1 A 1
+		TNT1 A 1 A_TakeInventory("WTShieldActive",999)
 		stop
 		
 	ShieldInit:
@@ -89,6 +96,7 @@ Actor WTWeapon : Weapon
 		TNT1 A 0 A_JumpIfInventory("WTShieldCounter",1,1)
 		goto ShieldEntry
 		TNT1 A 0 A_JumpIfInventory("WTShieldTrigger",2,"ShieldRefresh")
+		TNT1 A 0 A_GiveInventory("WTShieldActive",1)
 		TNT1 A 0 A_JumpIfInventory("WTShieldDisable",1,"ShieldLoop_InActive")
 		
 		WW99 D 0 A_JumpIfInventory("WTShieldCounter",10,"ShieldLoop2")
@@ -188,6 +196,7 @@ Actor WTWeapon : Weapon
 		TNT1 A 0 A_JumpIfInventory("WTShieldCounter",1,1)
 		goto ShieldEntry
 		TNT1 A 0 A_JumpIfInventory("WTShieldTrigger",2,"ShieldRefresh")
+		TNT1 A 0 A_GiveInventory("WTShieldActive",1)
 		TNT1 A 0 A_JumpIfInventory("WTShieldDisable",1,"ShieldLoop_InActive_Coop")
 	
 		WW99 D 0 A_JumpIfInventory("WTShieldCounter",10,"ShieldLoop_Coop2")
@@ -255,6 +264,7 @@ Actor WTShieldUsed 	  : WTBoolean {}
 Actor WTWeaponActive  : WTBoolean {}
 Actor WTShieldDisable : WTBoolean {}
 Actor WTShieldCounter : WTCounter { inventory.maxamount 50 }
+Actor WTShieldActive  : WTBoolean {}
 
 Actor WTShieldProjectile
 {
