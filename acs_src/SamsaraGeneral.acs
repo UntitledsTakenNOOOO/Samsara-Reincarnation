@@ -7113,6 +7113,34 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             break;
         }
         break;
+
+      case CLASS_DESCENT:
+        switch (slot)
+        {
+          default:
+            result = -1;
+            break;
+
+          case SLOT_CHAINSAW:
+            if (!CheckInventory("DescentSuperLaser"))
+            {
+                GiveInventory("DescentSuperLaser", 1);
+                if (!CheckInventory("DescentPrimaryCounter")) { GiveInventory("DescentPrimaryCounter", 1); }
+                result = 1;
+            } else if (CheckInventory("Shell") < GetAmmoCapacity("Shell") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                GiveInventory("DescentSuperLaser", 1);
+                if (!CheckInventory("DescentPrimaryCounter")) { GiveInventory("DescentPrimaryCounter", 1); }
+                result = 1;
+            }
+
+            if (CheckInventory("DescentLaserLevel") < 5)
+            {
+                GiveInventory("DescentLaserLevel", 5);
+                result = 1;
+            }
+            break;
+        }
+        break;
     }
 
     SetResultValue(result);
@@ -8796,6 +8824,7 @@ script "Samsara_GiveBackpack" (int startmode)
       case CLASS_DESCENT:
         GiveInventory("Backpack", 1);
         GiveInventory("DescentLaserLevel", 1);
+        if (CheckInventory("DescentLaserLevel") >= 4 && !CheckInventory("DescentPrimaryCounter")) { GiveInventory("DescentPrimaryCounter", 1); }
         break;
 
       case CLASS_DEUSEX:
