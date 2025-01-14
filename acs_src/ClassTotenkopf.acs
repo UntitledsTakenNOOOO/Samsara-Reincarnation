@@ -157,7 +157,7 @@ Script "Totenkopf_BurningVoice" (void)
 	Thing_ChangeTid(newtid,activator);
 }
 
-script "Totenkopf_Loop" Enter
+script "Totenkopf_Loop" ENTER
 {
     while (true)
     {
@@ -170,8 +170,15 @@ script "Totenkopf_Loop" Enter
                 if (!GetArmorType("TotenkopfPowerArmor", pln) && !GetArmorType("TotenkopfPowerArmorKeeper", pln) && !GetArmorType("TotenkopfPowerArmorPickup", pln))
                 {
                     int armoramount = CheckInventory("BasicArmor");
-                    TakeInventory("BasicArmor", 300);
-                    GiveInventory("TotenkopfPowerArmorKeeper", armoramount);
+
+                    if (armoramount > 0)
+                    {
+                        SetInventory("BasicArmor", 0);
+                        GiveInventory("TotenkopfPowerArmorKeeper", armoramount);
+                        SetInventory("BasicArmor", 1);
+                        if (armoramount > 1) { GiveInventory("InfiniteArmorBonus", armoramount - 1); }
+                        AdjustArmorDisplays();
+                    }
                 }
 
                 if (CheckInventory("BasicArmor") < 100) { GiveInventory("TotenkopfPowerArmorKeeper", 1); }
@@ -179,28 +186,30 @@ script "Totenkopf_Loop" Enter
 
             if (CheckInventory("TotenkopfHasHealingOrb") && GetActorProperty(0, APROP_Health) < 100) { SetActorProperty(0, APROP_Health, GetActorProperty(0, APROP_Health) + 1); }
 
-            int gotsecretitems;
+            int gotsecretbonus;
 
             if (CheckInventory("TotenkopfSecretCounter") >= 20 && !CheckInventory("Totenkopf_IHavePowerArmor"))
             {
                 GiveInventory("TotenkopfPowerArmor", 1);
+                GiveInventory("TotenkopfHasPowerArmor", 1);
                 GiveInventory("Totenkopf_IHavePowerArmor", 1);
                 GiveInventory("Samsara_ModeWeaponChange", 1);
-                gotsecretitems++;
+                gotsecretbonus++;
             }
 
             if (CheckInventory("TotenkopfSecretCounter") >= 30 && !CheckInventory("Totenkopf_IAmWolverine"))
             {
                 GiveInventory("TotenkopfHealingOrb", 1);
+                GiveInventory("TotenkopfHasHealingOrb", 1);
                 GiveInventory("Totenkopf_IAmWolverine", 1);
                 GiveInventory("Samsara_ModeWeaponChange", 1);
-                gotsecretitems += 2;
+                gotsecretbonus += 2;
             }
 
-            if (gotsecretitems > 0)
+            if (gotsecretbonus > 0)
             {
-                ACS_NamedExecuteWithResult("SamsaraSpecialPickupDisplayNetplayHack", gotsecretitems - 1);
-                gotsecretitems = 0;
+                ACS_NamedExecuteWithResult("SamsaraSpecialPickupDisplayNetplayHack", gotsecretbonus - 1);
+                gotsecretbonus = 0;
             }
         }
 
