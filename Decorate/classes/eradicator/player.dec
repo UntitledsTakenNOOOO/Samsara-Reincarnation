@@ -329,6 +329,62 @@ actor Eleena : SamsaraPlayerPawnNormalRedBlood
 			TNT1 A 1 A_SetTranslucent(1,0)
 			TNT1 A -1 A_UnsetSolid
 			Stop
+		Death.ExpanderDMG:
+		XDeath.ExpanderDMG:
+			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			"####" "#" 0 A_PlaySound("duke/expand")
+			Goto ExpanderLoop
+		ExpanderLoop:
+			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPop")
+			loop
+		ExpanderPop:
+			"####" "#" 10
+			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Basic",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,1)
+			"####" A 0 A_Jump(96,2)
+			"####" A 0 A_GiveInventory("EradicatorDukeTauntTrigger")
+			"####" A 0 A_SetScale (1.0, 1.0)
+			"####" A 0 A_UnsetSolid
+			"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_GiveInventory("EradicatorDukeTauntTrigger")
+			TNT1 A -1 A_UnsetSolid
+			Stop
+		Death.ExpanderDMGCoop:
+		XDeath.ExpanderDMGCoop:
+			"####" "#" 0 A_SetUserVar("user_scalex", scalex*65536.0)
+			"####" "#" 0 A_SetUserVar("user_scaley", scaley*65536.0)
+			"####" "#" 0 A_PlaySound("duke/expand")
+			Goto ExpanderLoopCoop
+		ExpanderLoopCoop:
+			"####" "#" 1 A_SetScale(1.1*(user_scalex/65536.0)+((0.01*(user_scalex/65536.0))*CallACS("Samsara_Expander",1))+((0.01*(user_scalex/65536.0))*(CallACS("Samsara_Expander",1)-CallACS("Samsara_Expander",2)))*(CallACS("Samsara_Expander",3)*2),1.1*(user_scaley/65536.0)+((0.01*(user_scaley/65536.0))*CallACS("Samsara_Expander",2)))
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthX", 1)
+			"####" "#" 0 A_JumpIf(ceilingz - (z + height + CallACS("Samsara_Expander",1) + 32) <= 0, 2)
+			"####" "#" 0 A_GiveInventory("ExpanderGrowthY", 1)
+			"####" "#" 0 A_GiveInventory("ExpanderDoubleX", 1)
+			"####" "#" 0 A_JumpIfInventory("ExpanderGrowthX", 40, "ExpanderPopCoop")
+			loop
+		ExpanderPopCoop:
+			"####" "#" 10
+			"####" A 0 A_SpawnItemEx("ExpanderExplosion_Coop",0,0,height*2,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+			"####" A 0 A_PlaySound("duke/explosion", 6, 1.0)
+			"####" A 1 ACS_NamedExecuteWithResult("SamsaraDecorate",36,1)
+			"####" A 0 A_Jump(96,2)
+			"####" A 0 A_GiveInventory("EradicatorDukeTauntTrigger")
+			"####" A 0 A_SetScale (1.0, 1.0)
+			"####" A 0 A_UnsetSolid
+			"####" A 0 A_SpawnItemEx("UniversalBloodyHellGoreXDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_SpawnItemEx("DukeGibPopSpawner", 0, 0, height*2, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
+			"####" A 0 A_GiveInventory("EradicatorDukeTauntTrigger")
+			TNT1 A -1 A_UnsetSolid
+			Stop
 		Death.DukePlasma:
 			"####" "#" 0 A_Stop
 			"####" "#" 1 A_NoBlocking
@@ -842,16 +898,12 @@ actor EradicatorDukeTauntTrigger : Trigger
     States
     {
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("EradMode",3,"PickupMarine")
-        TNT1 A 0 A_JumpIfInventory("EradMode",2,"PickupDan")
-        TNT1 A 0 A_JumpIfInventory("EradMode",1,"PickupKamchak")
-      PickupEleena:
+        TNT1 A 0 A_JumpIfInventory("EradMode",1,"PickupMale")
+      PickupFemale:
         TNT1 A 0 A_GiveInventory("DukeWomenTaunt",1,AAPTR_TARGET)
         goto PickupFinish
 
-      PickupKamchak:
-      PickupDan:
-      PickupMarine:
+      PickupMale:
         TNT1 A 0 A_GiveInventory("DukeDMTaunt1",1,AAPTR_TARGET)
         goto PickupFinish
 

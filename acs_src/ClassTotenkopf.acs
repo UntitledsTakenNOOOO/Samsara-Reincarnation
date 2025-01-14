@@ -157,37 +157,55 @@ Script "Totenkopf_BurningVoice" (void)
 	Thing_ChangeTid(newtid,activator);
 }
 
-Script "Totenkopf_Loop" Enter
+script "Totenkopf_Loop" Enter
 {
-	while(true)
-	{
-		if(CheckInventory("WolfenClassMode")==2)
-		{
-			if(CheckInventory("TotenkopfHasPowerArmor"))
-			{
-				if(!GetArmorType("TotenkopfPowerArmor",PlayerNumber())&&!GetArmorType("TotenkopfPowerArmorKeeper",PlayerNumber())&&!GetArmorType("TotenkopfPowerArmorPickup",PlayerNumber()))
-				{
-					int armoramount = CheckInventory("BasicArmor");
-					TakeInventory("BasicArmor",300);
-					GiveInventory("TotenkopfPowerArmorKeeper",armoramount);
-				}
-				If(CheckInventory("BasicArmor") < 100)
-					GiveInventory("TotenkopfPowerArmorKeeper",1);
-			}
-			if(CheckInventory("TotenkopfHasHealingOrb"))
-			{
-				If(GetActorProperty(0,APROP_Health) < 100)
-					SetActorProperty(0, APROP_Health, GetActorProperty(0, APROP_Health) + 1);
-			}
-		}
-		
-		if(CheckInventory("TotenkopfSecretCounter") >= 20 && !CheckInventory("Totenkopf_IHavePowerArmor"))
-				{ GiveInventory("Totenkopf_IHavePowerArmor", 1); GiveInventory("TotenkopfPowerArmor",1); GiveInventory("Samsara_ModeWeaponChange",1); } 
-			if(CheckInventory("TotenkopfSecretCounter") >= 30 && !CheckInventory("Totenkopf_IAmWolverine"))
-				{ GiveInventory("Totenkopf_IAmWolverine", 1); GiveInventory("TotenkopfHealingOrb",1);	 GiveInventory("Samsara_ModeWeaponChange",1); }
-		
-		Delay(9); //yeah sure, why not?
-	}
+    while (true)
+    {
+        if (CheckInventory("WolfenClassMode") == 2)
+        {
+            if (CheckInventory("TotenkopfHasPowerArmor"))
+            {
+                int pln = PlayerNumber();
+
+                if (!GetArmorType("TotenkopfPowerArmor", pln) && !GetArmorType("TotenkopfPowerArmorKeeper", pln) && !GetArmorType("TotenkopfPowerArmorPickup", pln))
+                {
+                    int armoramount = CheckInventory("BasicArmor");
+                    TakeInventory("BasicArmor", 300);
+                    GiveInventory("TotenkopfPowerArmorKeeper", armoramount);
+                }
+
+                if (CheckInventory("BasicArmor") < 100) { GiveInventory("TotenkopfPowerArmorKeeper", 1); }
+            }
+
+            if (CheckInventory("TotenkopfHasHealingOrb") && GetActorProperty(0, APROP_Health) < 100) { SetActorProperty(0, APROP_Health, GetActorProperty(0, APROP_Health) + 1); }
+
+            int gotsecretitems;
+
+            if (CheckInventory("TotenkopfSecretCounter") >= 20 && !CheckInventory("Totenkopf_IHavePowerArmor"))
+            {
+                GiveInventory("TotenkopfPowerArmor", 1);
+                GiveInventory("Totenkopf_IHavePowerArmor", 1);
+                GiveInventory("Samsara_ModeWeaponChange", 1);
+                gotsecretitems++;
+            }
+
+            if (CheckInventory("TotenkopfSecretCounter") >= 30 && !CheckInventory("Totenkopf_IAmWolverine"))
+            {
+                GiveInventory("TotenkopfHealingOrb", 1);
+                GiveInventory("Totenkopf_IAmWolverine", 1);
+                GiveInventory("Samsara_ModeWeaponChange", 1);
+                gotsecretitems += 2;
+            }
+
+            if (gotsecretitems > 0)
+            {
+                ACS_NamedExecuteWithResult("SamsaraSpecialPickupDisplayNetplayHack", gotsecretitems - 1);
+                gotsecretitems = 0;
+            }
+        }
+
+        Delay(9); //yeah sure, why not?
+    }
 }
 
 Script "Totenkopf_ActiveSound" (int toggle)

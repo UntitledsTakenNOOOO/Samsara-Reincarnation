@@ -69,61 +69,64 @@ script "ZDoomOptionMirror" ENTER
 // Fancy per-class secret notifications
 script "SecretNotifier" ENTER
 {
-    int stotal;
-    int sfound;
-    int sfound2;
+    // mid-game join initialization
 
-    stotal = GetLevelInfo(LEVELINFO_TOTAL_SECRETS); // Dunno if secret number can increase, though.
-    sfound2 = sfound;
-    sfound = GetLevelInfo(LEVELINFO_FOUND_SECRETS);
+    int stotal = GetLevelInfo(LEVELINFO_TOTAL_SECRETS);
+    int sfound = GetLevelInfo(LEVELINFO_FOUND_SECRETS);
+    int sfound2 = GetLevelInfo(LEVELINFO_FOUND_SECRETS);
 
-    bool showmsgs = true;
-
-    if (isZDoom() && !GetCVar("cl_showsecretmessage") && !GetCVar("samsara_cl_showsecretmessage")) { showmsgs = false; }
-
-    // Found a secret.
-    if (sfound > sfound2)
+    while (true)
     {
-        if (showmsgs) { ACS_NamedExecuteWithResult("SecretNotifierDisplay", sfound, stotal); }
+        stotal = GetLevelInfo(LEVELINFO_TOTAL_SECRETS); // Dunno if secret number can increase, though. // [tv50] it can with +COUNTSECRET, at least
+        sfound2 = sfound;
+        sfound = GetLevelInfo(LEVELINFO_FOUND_SECRETS);
 
-        if (CheckInventory("WolfenClass"))
+        bool showmsgs = true;
+
+        if (isZDoom() && !GetCVar("cl_showsecretmessage") && !GetCVar("samsara_cl_showsecretmessage")) { showmsgs = false; }
+
+        // Found a secret.
+        if (sfound > sfound2)
         {
-            if (CheckInventory("WolfenClassMode") == 2) { GiveInventory("TotenkopfSecretCounter", 1); } // Castle Totenkopf SDL
-        } else if (CheckInventory("DukeClass")) {
-            if (showmsgs) { ACS_NamedExecuteWithResult("SecretNotifierDukeTaunt"); } // don't let the delay get in the way of this script
-        } else if (CheckInventory("CalebClass")) {
-            if (!CheckInventory("SamsaraBallgag") && !CheckInventory("CalebTauntCooldown") && showmsgs)
+            if (showmsgs) { ACS_NamedExecuteWithResult("SecretNotifierDisplay", sfound, stotal); }
+
+            if (CheckInventory("WolfenClass")) { GiveInventory("TotenkopfSecretCounter", sfound - sfound2); }
+            else if (CheckInventory("DukeClass"))
             {
-                LocalAmbientSound("Blood/Secret", 127);
-                GiveInventory("CalebTauntCooldown", 5);
-                ACS_NamedExecuteAlways("CalebTauntCooldown", 0);
-            }
-        } else if (CheckInventory("EradClass")) {
-            if (!CheckInventory("SamsaraBallgag") && !CheckInventory("EleenaTauntCooldown") && showmsgs)
-            {
-                LocalAmbientSound("Eleena/Secret", 127);
-                GiveInventory("EleenaTauntCooldown", 5);
-                ACS_NamedExecuteAlways("EleenaTauntCooldown", 0);
-            }
-        } else if (CheckInventory("SWClass")) {
-            if (!CheckInventory("SamsaraBallgag") && !CheckInventory("LoWangTauntCooldown") && showmsgs)
-            {
-                LocalAmbientSound("SW/Secret", 127);
-                GiveInventory("LoWangTauntCooldown", 5);
-                ACS_NamedExecuteAlways("LoWangTauntCooldown", 0);
-            }
-        } else if (CheckInventory("RRClass")) {
-            if (!CheckInventory("SamsaraBallgag") && !CheckInventory("LeonardTauntCooldown") && showmsgs)
-            {
-                LocalAmbientSound("RR/Secret", 127);
-                GiveInventory("LeonardTauntCooldown", 5);
-                ACS_NamedExecuteAlways("LeonardTauntCooldown", 0);
+                if (showmsgs) { ACS_NamedExecuteWithResult("SecretNotifierDukeTaunt"); } // don't let the delay get in the way of this script
+            } else if (CheckInventory("CalebClass")) {
+                if (!CheckInventory("SamsaraBallgag") && !CheckInventory("CalebTauntCooldown") && showmsgs)
+                {
+                    LocalAmbientSound("Blood/Secret", 127);
+                    GiveInventory("CalebTauntCooldown", 5);
+                    ACS_NamedExecuteAlways("CalebTauntCooldown", 0);
+                }
+            } else if (CheckInventory("EradClass")) {
+                if (!CheckInventory("SamsaraBallgag") && !CheckInventory("EleenaTauntCooldown") && showmsgs)
+                {
+                    LocalAmbientSound("Eleena/Secret", 127);
+                    GiveInventory("EleenaTauntCooldown", 5);
+                    ACS_NamedExecuteAlways("EleenaTauntCooldown", 0);
+                }
+            } else if (CheckInventory("SWClass")) {
+                if (!CheckInventory("SamsaraBallgag") && !CheckInventory("LoWangTauntCooldown") && showmsgs)
+                {
+                    LocalAmbientSound("SW/Secret", 127);
+                    GiveInventory("LoWangTauntCooldown", 5);
+                    ACS_NamedExecuteAlways("LoWangTauntCooldown", 0);
+                }
+            } else if (CheckInventory("RRClass")) {
+                if (!CheckInventory("SamsaraBallgag") && !CheckInventory("LeonardTauntCooldown") && showmsgs)
+                {
+                    LocalAmbientSound("RR/Secret", 127);
+                    GiveInventory("LeonardTauntCooldown", 5);
+                    ACS_NamedExecuteAlways("LeonardTauntCooldown", 0);
+                }
             }
         }
-    }
 
-    Delay(1);
-    restart;
+        Delay(1);
+    }
 }
 
 script "SecretNotifierDukeTaunt" (void)
