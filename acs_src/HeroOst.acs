@@ -142,26 +142,39 @@ str ChristmasMusic[16] = {"CHRIST01","CHRIST02","CHRIST03","CHRIST04","CHRIST05"
 	"UnrealClass", "RTCWClass", "Q3Class", "DescentClass", "DeusExClass"
 };*/
 
-Script "SamsaraOST_Enter" Enter
-{	
-	if(GameType() == GAME_TITLE_MAP)
-		terminate;
+script "SamsaraOST_Enter" ENTER
+{
+    if (GameType() == GAME_TITLE_MAP) { terminate; }
 
     int i;
     int choices;
 
-	int altskin, settrack, lastmode, lastgame, lastblud, lasthex, lastdescent, pln = PlayerNumber();
-	int herosoundtrack = GetUserCVAR(pln,"samsara_cl_heromusic");
-	int gameoverride;
-	int	bloodcd  = GetUserCVAR(pln,"samsara_cl_bloodcd");
-	int hexen2cd = GetUserCVAR(pln,"samsara_cl_hex2cd");
-	int	descentcd  = GetUserCVAR(pln,"samsara_cl_descentcd");
-	int musicTid = UniqueTid();
+    int pln = PlayerNumber();
+    int altskin, settrack, lastmode, lastgame, lastblud, lasthex, lastdescent;
+    int herosoundtrack = GetUserCVar(pln, "samsara_cl_heromusic");
+    int gameoverride;
+    int bloodcd  = GetUserCVar(pln, "samsara_cl_bloodcd");
+    int hexen2cd = GetUserCVar(pln, "samsara_cl_hex2cd");
+    int descentcd  = GetUserCVar(pln, "samsara_cl_descentcd");
+    int musictid = UniqueTID();
 
-	If(herosoundtrack > 0 && (GetUserCVAR(pln,"samsara_cl_xmasmusic") == false || GetCVAR("samsara_merrychristmas") == false))
-	{
-		if(herosoundtrack != lastmode || CheckInventory("SamsaraModeCounter") != altskin || descentcd != lastdescent || bloodcd != lastblud || hexen2cd != lasthex || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel") || CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
-		{
+    if (herosoundtrack > 3) { herosoundtrack = 3; }
+    else if (herosoundtrack < 0) { herosoundtrack = 0; }
+
+    // precautionary
+    if (bloodcd > 1) { bloodcd = 1; }
+    else if (bloodcd < 0) { bloodcd = 0; }
+
+    if (hexen2cd > 1) { hexen2cd = 1; }
+    else if (hexen2cd < 0) { hexen2cd = 0; }
+
+    if (descentcd > 1) { descentcd = 1; }
+    else if (descentcd < 0) { descentcd = 0; }
+
+    if (herosoundtrack > 0 && (!GetUserCVar(pln, "samsara_cl_xmasmusic") || !GetCVar("samsara_merrychristmas")))
+    {
+        if (herosoundtrack != lastmode || CheckInventory("SamsaraModeCounter") != altskin || descentcd != lastdescent || bloodcd != lastblud || hexen2cd != lasthex || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel") || CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
+        {
             LocalSetMusic("");
 
             choices = -1;
@@ -182,141 +195,164 @@ Script "SamsaraOST_Enter" Enter
             }
 
             if (herosoundtrack == 1 || (herosoundtrack == 2 && choices == -1))
-			{
-				if (GetCVar("samsara_moddedgame"))
-				{
-					gameoverride = 0;
-				}
-				else
-				{
-					gameoverride = PlayerClass(pln);
-				}
-			}
+            {
+                if (GetCVar("samsara_moddedgame")) { gameoverride = 0; }
+                else { gameoverride = PlayerClass(pln); }
+            }
 
             SetInventory("SamsaraHeroMusicGame", gameoverride + 1);
 
-			int switchType = 0;
-			int switchClass = 0;
-			int gameDecider = 0;
-			StopSound(musictid,CHAN_BODY);
-			Thing_Remove(musictid);
-			if(CheckFont("QCDE-OST"))
-			{
-				SetTrack = Random(0, 30);
-				if(SetTrack <= 9) { LocalSetMusic(strparam(s:"a000000", d:SetTrack)); }
-				else { LocalSetMusic(strparam(s:"a00000", d:SetTrack)); }
-			}
-			else
-			{
-				switch(gameoverride)
-				{
-					default:				
-						SetTrack = Random(1, maxGameTracks[gameoverride][0][0]);
-						LocalSetMusic(strparam(s:gameMusicTypes[gameoverride][0][0],s:SetTrack < 10 ? "0" : "",d:SetTrack));
-						break;
-					case 0:
-					case 34:
-						switchClass = (GetUserCVar(pln,"samsara_cl_doommode")==1) || gameoverride == 34;
-						SetTrack = Random(1, maxGameTracks[0][switchClass][0]);
-						LocalSetMusic(strparam(s:gameMusicTypes[0][switchClass][0],s:SetTrack < 10 ? "0" : "",d:SetTrack));
-						break;
-					case 3:
-					case 35:
-						switchClass = (GetUserCVar(pln,"samsara_cl_wolfmode") == 2) || gameoverride == 35;
-						SetTrack = Random(1, maxGameTracks[3][switchClass][0]);
-						LocalSetMusic(strparam(s:gameMusicTypes[3][switchClass][0],s:SetTrack < 10 ? "0" : "",d:SetTrack));
-						break;
-					case 5:
-					case 36:
-						switchClass = (GetUserCVar(pln,"samsara_cl_dukemode") == 1) || gameoverride == 36;
-						SetTrack = Random(1, maxGameTracks[5][switchClass][0]);
-						LocalSetMusic(strparam(s:gameMusicTypes[5][switchClass][0],s:SetTrack < 10 ? "0" : "",d:SetTrack));
-						break;
-					case 10:
-						switchType = GetUserCVar(pln, "samsara_cl_bloodcd");
-						SetTrack = Random(1, maxGameTracks[10][0][switchType]);
-						LocalSetMusic(strparam(s:gameMusicTypes[10][0][switchType],s:SetTrack < 10 ? "0" : "",d:SetTrack));
-						break;
-					case 19:
-					case 37:
-						SpawnForced("HLMusicToken",GetActorX(0),GetActorY(0),GetActorZ(0),musictid);
-						if (!CheckInventory("SamsaraHeroMusicHalfLifeActive")) { ACS_NamedExecuteWithResult("SamsaraOST_HalfLifeScriptedMusicLoop",musictid); }
-						break;
-					case 25:
-						switchType = GetUserCVar(pln, "samsara_cl_hex2cd");
-						SetTrack = Random(1, maxGameTracks[25][0][switchType]);
-						LocalSetMusic(strparam(s:gameMusicTypes[25][0][switchType],s:SetTrack < 10 ? "0" : "",d:SetTrack));
-						break;
-					case 26:
-						SetTrack = Random(1, maxGameTracks[26][0][0]);
-						TakeInventory("BondMusicToken", 26);
-						GiveInventory("BondMusicToken", SetTrack + 1);
-						LocalSetMusic(strparam(s:gameMusicTypes[26][0][0],s:SetTrack < 10 ? "0" : "",d:SetTrack));
-						break;
-					case 27:
-						LocalSetMusic("C3DTRACK");
-						break;
-					case 28:
-						if (!CheckInventory("SamsaraHeroMusicPainkillerActive")) { ACS_NamedExecuteWithResult("SamsaraOST_PainkillerScriptedMusic"); }
-						break;
-					case 32:
-						switchType = GetUserCVar(pln, "samsara_cl_descentcd");
-						SetTrack = Random(1, maxGameTracks[32][0][switchType]);
-						LocalSetMusic(strparam(s:gameMusicTypes[32][0][switchType],s:SetTrack < 10 ? "0" : "",d:SetTrack));
-						break;
-					case 33:
-						if (!CheckInventory("SamsaraHeroMusicDeusExActive")) { ACS_NamedExecuteWithResult("SamsaraOST_DeusExScriptedMusic"); }
-						break;
-				}
-			}
-			
-            GiveInventory("HeroSoundTrack", herosoundtrack);
-            TakeInventory("HeroSoundTrackXmas", 1);
-            TakeInventory("HeroSoundTrackLevel", 2048);
-            GiveInventory("HeroSoundTrackLevel", GetLevelInfo(LEVELINFO_LEVELNUM));
+            int switchType = 0;
+            int switchClass = 0;
+            StopSound(musictid, CHAN_BODY);
+            Thing_Remove(musictid);
+
+            if (herosoundtrack == 3)
+            {
+                settrack = Random(0, 30);
+
+                if (settrack <= 9) { LocalSetMusic(StrParam(s:"a000000", d:settrack)); }
+                else { LocalSetMusic(StrParam(s:"a00000", d:settrack)); }
+            } else {
+                switch (gameoverride)
+                {
+                  default:
+                    settrack = Random(1, maxGameTracks[gameoverride][0][0]);
+
+                    LocalSetMusic(StrParam(s:gameMusicTypes[gameoverride][0][0], s:settrack < 10 ? "0" : "", d:settrack));
+                    break;
+
+                  case 0:
+                  case 34:
+                    switchClass = GetUserCVar(pln, "samsara_cl_doommode") == 1 || gameoverride == 34;
+                    settrack = Random(1, maxGameTracks[0][switchClass][0]);
+
+                    LocalSetMusic(StrParam(s:gameMusicTypes[0][switchClass][0], s:settrack < 10 ? "0" : "", d:settrack));
+                    break;
+
+                  case 3:
+                  case 35:
+                    switchClass = GetUserCVar(pln, "samsara_cl_wolfmode") == 2 || gameoverride == 35;
+                    settrack = Random(1, maxGameTracks[3][switchClass][0]);
+
+                    LocalSetMusic(StrParam(s:gameMusicTypes[3][switchClass][0], s:settrack < 10 ? "0" : "", d:settrack));
+                    break;
+
+                  case 5:
+                  case 36:
+                    switchClass = GetUserCVar(pln, "samsara_cl_dukemode") == 1 || gameoverride == 36;
+                    settrack = Random(1, maxGameTracks[5][switchClass][0]);
+
+                    LocalSetMusic(StrParam(s:gameMusicTypes[5][switchClass][0], s:settrack < 10 ? "0" : "", d:settrack));
+                    break;
+
+                  case 10:
+                    switchType = GetUserCVar(pln, "samsara_cl_bloodcd");
+                    settrack = Random(1, maxGameTracks[10][0][switchType]);
+
+                    LocalSetMusic(StrParam(s:gameMusicTypes[10][0][switchType], s:settrack < 10 ? "0" : "", d:settrack));
+                    break;
+
+                  case 19:
+                  case 37:
+                    SpawnForced("HLMusicToken",GetActorX(0),GetActorY(0),GetActorZ(0),musictid);
+                    if (!CheckInventory("SamsaraHeroMusicHalfLifeActive")) { ACS_NamedExecuteWithResult("SamsaraOST_HalfLifeScriptedMusicLoop",musictid); }
+                    break;
+
+                  case 25:
+                    switchType = GetUserCVar(pln, "samsara_cl_hex2cd");
+                    settrack = Random(1, maxGameTracks[25][0][switchType]);
+
+                    LocalSetMusic(StrParam(s:gameMusicTypes[25][0][switchType], s:settrack < 10 ? "0" : "", d:settrack));
+                    break;
+
+                  case 26:
+                    settrack = Random(1, maxGameTracks[26][0][0]);
+                    SetInventory("BondMusicToken", settrack + 1);
+
+                    LocalSetMusic(StrParam(s:gameMusicTypes[26][0][0], s:settrack < 10 ? "0" : "", d:settrack));
+                    break;
+
+                  case 27:
+                    LocalSetMusic("C3DTRACK");
+                    break;
+
+                  case 28:
+                    if (!CheckInventory("SamsaraHeroMusicPainkillerActive")) { ACS_NamedExecuteWithResult("SamsaraOST_PainkillerScriptedMusic"); }
+                    break;
+
+                  case 32:
+                    switchType = GetUserCVar(pln, "samsara_cl_descentcd");
+                    settrack = Random(1, maxGameTracks[32][0][switchType]);
+
+                    LocalSetMusic(StrParam(s:gameMusicTypes[32][0][switchType], s:settrack < 10 ? "0" : "", d:settrack));
+                    break;
+
+                  case 33:
+                    if (!CheckInventory("SamsaraHeroMusicDeusExActive")) { ACS_NamedExecuteWithResult("SamsaraOST_DeusExScriptedMusic"); }
+                    break;
+                }
+            }
+
+            SetInventory("HeroSoundTrack", herosoundtrack);
+            SetInventory("HeroSoundTrackXmas", 0);
+            SetInventory("HeroSoundTrackLevel", GetLevelInfo(LEVELINFO_LEVELNUM));
 
             SetInventory("SamsaraHeroMusicSelectingNextTrack", 0);
-		}
-	}
-	Else if(GetUserCvar(pln,"samsara_cl_xmasmusic") && GetCvar("samsara_merrychristmas") && herosoundtrack > 0)
-	{
-		if(CheckInventory("HeroSoundTrackXmas") < 1 || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel") || CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
-		{
+        }
+    } else if (GetUserCVar(pln, "samsara_cl_xmasmusic") && GetCVar("samsara_merrychristmas") && herosoundtrack > 0) {
+        if (!CheckInventory("HeroSoundTrackXmas") || GetLevelInfo(LEVELINFO_LEVELNUM) != CheckInventory("HeroSoundTrackLevel") || CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
+        {
             LocalSetMusic("");
 
-			SetTrack = random(0,15);
-			LocalSetMusic(ChristmasMusic[SetTrack],0);
-			GiveInventory("HeroSoundTrackXmas", 1);
-			TakeInventory("HeroSoundTrack", 1);
-			TakeInventory("HeroSoundTrackLevel", 2048);
-			GiveInventory("HeroSoundTrackLevel", GetLevelInfo(LEVELINFO_LEVELNUM));
+            settrack = Random(0, 15);
+
+            LocalSetMusic(ChristmasMusic[settrack]);
+
+            SetInventory("HeroSoundTrack", 0);
+            SetInventory("HeroSoundTrackXmas", 1);
+            SetInventory("HeroSoundTrackLevel", GetLevelInfo(LEVELINFO_LEVELNUM));
             SetInventory("SamsaraHeroMusicGame", 0);
 
             SetInventory("SamsaraHeroMusicSelectingNextTrack", 0);
-		}
-	}
-	else
-	{
-		if(CheckInventory("HeroSoundTrack") > 0 || CheckInventory("HeroSoundTrackXMas") == 1)
-		{
+        }
+    } else {
+        if (CheckInventory("HeroSoundTrack") || CheckInventory("HeroSoundTrackXmas"))
+        {
             LocalSetMusic("");
 
-			LocalSetMusic("*",0);
-			TakeInventory("HeroSoundTrack", 2);
-			TakeInventory("HeroSoundTrackXmas", 1);
-			TakeInventory("HeroSoundTrackLevel", 2048);
+            LocalSetMusic("*");
+
+            SetInventory("HeroSoundTrack", 0);
+            SetInventory("HeroSoundTrackXmas", 0);
+            SetInventory("HeroSoundTrackLevel", 0);
             SetInventory("SamsaraHeroMusicGame", 0);
 
             SetInventory("SamsaraHeroMusicSelectingNextTrack", 0);
-		}
-	}
+        }
+    }
+
     altskin = CheckInventory("SamsaraModeCounter");
-	lastmode = GetUserCvar(pln,"samsara_cl_heromusic");
-	lastblud = GetUserCvar(pln,"samsara_cl_bloodcd");
-	lasthex  = GetUserCvar(pln,"samsara_cl_hex2cd");
-	lastdescent = GetUserCvar(pln,"samsara_cl_descentcd");
-	Delay(1);
-	restart;
+    lastmode = GetUserCVar(pln,"samsara_cl_heromusic");
+    lastblud = GetUserCVar(pln,"samsara_cl_bloodcd");
+    lasthex = GetUserCVar(pln,"samsara_cl_hex2cd");
+    lastdescent = GetUserCVar(pln,"samsara_cl_descentcd");
+
+    if (lastmode > 3) { lastmode = 3; }
+    else if (lastmode < 0) { lastmode = 0; }
+
+    // precautionary
+    if (lastblud > 1) { lastblud = 1; }
+    else if (lastblud < 0) { lastblud = 0; }
+
+    if (lasthex > 1) { lasthex = 1; }
+    else if (lasthex < 0) { lasthex = 0; }
+
+    if (lastdescent > 1) { lastdescent = 1; }
+    else if (lastdescent < 0) { lastdescent = 0; }
+
+    Delay(1);
+    restart;
 }
 
 script "SamsaraOST_HalfLifeScriptedMusicLoop" (int musictid)
