@@ -124,6 +124,7 @@ actor SamsaraQuake2GrenadeLauncherLoadSoundPlayer : Trigger
     }
 }
 
+actor SamsaraQuake2GrenadeTimer : Counter { Inventory.MaxAmount 87 }
 actor SamsaraQuake2GrenadeOnGround : Boolean {}
 
 actor Q2Grenade
@@ -135,6 +136,7 @@ actor Q2Grenade
     Speed 25
     Damage (125)
     DamageType "BittermanDamage"
+    ReactionTime 1
     Gravity 0.66
     BounceType "Doom"
     BounceSound "Q2Weapons/GrenadeBounce"
@@ -155,19 +157,37 @@ actor Q2Grenade
         SGRN AAA 0 A_SpawnItemEx("Q2GrenadeSmoke",random2(5),0,random2(5),0,0,frandom(0.1,0.5),random(0,359),0,128)
         SGRN A 0 A_SetAngle(angle+user_angle)
         SGRN A 1 A_SetPitch(pitch-15)
+        SGRN A 0 A_GiveInventory("SamsaraQuake2GrenadeTimer")
+        SGRN A 0 A_JumpIfInventory("SamsaraQuake2GrenadeTimer",0,1)
+        loop
+        SGRN A 0 A_Countdown
         loop
 
       Death:
+        SGRN A 0 A_JumpIfInventory("SamsaraQuake2GrenadeTimer",0,"DeathSoundCheck")
         SGRN A 0 A_GiveInventory("SamsaraQuake2GrenadeOnGround")
         SGRN A 0 A_PlaySound("Q2Weapons/GrenadeBounce",CHAN_VOICE)
-        SGRN AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Q2GrenadeSmoke",random2(5),0,random2(5),0,0,frandom(0.1,1),random(0,359),0,128)
+      DeathLoop:
+        SGRN A 1 A_SpawnItemEx("Q2GrenadeSmoke",random2(5),0,random2(5),0,0,frandom(0.1,1),random(0,359),0,128)
+        SGRN A 0 A_GiveInventory("SamsaraQuake2GrenadeTimer")
+        SGRN A 0 A_JumpIfInventory("SamsaraQuake2GrenadeTimer",0,"DeathSoundCheck")
+        loop
+
       DeathSoundCheck:
-        TNT1 A 0 A_JumpIf(waterlevel > 0, 4)
-        TNT1 A 0 A_CheckFloor(2)
+      XDeath:
+        TNT1 A 0 A_JumpIf(waterlevel > 0, "DeathSoundUnderwater")
+        TNT1 A 0 A_JumpIfInventory("SamsaraQuake2GrenadeOnGround",1,"DeathSoundGround")
+      DeathSoundNormal:
         TNT1 A 0 A_PlaySound("Q2Weapons/GrenadeExplosion",CHAN_VOICE)
         goto DeathFinish
+
+      DeathSoundGround:
+        TNT1 A 0 A_CheckFloor(1)
+        goto DeathSoundNormal
         TNT1 A 0 A_PlaySound("Q2Weapons/GrenadeExplosionGround",CHAN_VOICE)
         goto DeathFinish
+
+      DeathSoundUnderwater:
         TNT1 A 0 A_PlaySound("Q2Weapons/GrenadeExplosionUnderwater",CHAN_VOICE)
         goto DeathFinish
 
@@ -175,15 +195,6 @@ actor Q2Grenade
         TNT1 A 0 A_SpawnItemEx("Q2Explosion")
         TNT1 A 1 A_Explode(200,165)
         stop
-
-      XDeath:
-        TNT1 A 0 A_JumpIfInventory("SamsaraQuake2GrenadeOnGround",1,"DeathSoundCheck")
-      XDeathSoundCheck:
-        TNT1 A 0 A_JumpIf(waterlevel > 0, 2)
-        TNT1 A 0 A_PlaySound("Q2Weapons/GrenadeExplosion",CHAN_VOICE)
-        goto DeathFinish
-        TNT1 A 0 A_PlaySound("Q2Weapons/GrenadeExplosionUnderwater",CHAN_VOICE)
-        goto DeathFinish
     }
 }
 
