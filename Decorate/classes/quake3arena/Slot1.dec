@@ -92,6 +92,8 @@ actor SamsaraQuake3GrenadeLauncherAttackHandler : Trigger
 	}
 }
 
+actor SamsaraQuake3GrenadeTimer : Counter { Inventory.MaxAmount 87 }
+
 Actor Q3Grenade
 {
 	Height 12
@@ -101,7 +103,7 @@ Actor Q3Grenade
 	Projectile
 	BounceType "Doom"
 	BounceSound "Quake3/GrenadeLauncher/Bounce"
-	Decal "Q3ExplosiveImpact"
+	//Decal "Q3ExplosiveImpact"
 	DamageType "Q3Explosive"
 	-NOGRAVITY
 	+FORCERADIUSDMG
@@ -112,13 +114,35 @@ Actor Q3Grenade
 			Q300 A 0 A_SetAngle(random(-30,30))
 			Q300 A 0 A_SetPitch(random(0,359))
 			Q300 A 0 ThrustThingZ(0,16,0,1)
-		SpawnLoop:
+		SpawnLoop1:
 			Q300 A 0 A_SpawnItemEx("Q3GrenadeSmoke")
 			Q300 A 0 A_SetPitch(pitch+frandom(5.0,10.0))
-			Q300 A 2 A_SetAngle(angle+frandom(5.0,10.0))
-			loop
+			Q300 A 1 A_SetAngle(angle+frandom(5.0,10.0))
+            Q300 A 0 A_GiveInventory("SamsaraQuake3GrenadeTimer")
+            Q300 A 0 A_JumpIfInventory("SamsaraQuake3GrenadeTimer",0,1)
+            goto SpawnLoop2
+            Q300 A 0 A_Countdown
+            goto SpawnLoop2
 
-		Death:
+		SpawnLoop2:
+			Q300 A 1
+            Q300 A 0 A_GiveInventory("SamsaraQuake3GrenadeTimer")
+            Q300 A 0 A_JumpIfInventory("SamsaraQuake3GrenadeTimer",0,1)
+            goto SpawnLoop1
+            Q300 A 0 A_Countdown
+            goto SpawnLoop1
+
+        Death:
+            Q300 A 0 A_JumpIfInventory("SamsaraQuake3GrenadeTimer",0,"DeathExplode")
+            Q300 A 0 A_PlaySound("Quake3/GrenadeLauncher/Bounce",CHAN_VOICE)
+        DeathLoop:
+            Q300 A 1
+            Q300 A 0 A_GiveInventory("SamsaraQuake3GrenadeTimer")
+            Q300 A 0 A_JumpIfInventory("SamsaraQuake3GrenadeTimer",0,"DeathExplode")
+            loop
+
+		DeathExplode:
+		XDeath:
 			TNT1 A 0 A_PlaySound("Quake3/GrenadeLauncher/Explode",CHAN_VOICE)
 			TNT1 A 0 A_Explode(100,100)
 			TNT1 A 0 A_SpawnItemEx("Q3GrenadeBoom")
