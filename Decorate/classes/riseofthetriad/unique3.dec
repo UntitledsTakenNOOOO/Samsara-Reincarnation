@@ -31,7 +31,7 @@ actor "Dark Staff" : SamsaraROTTWeapon
         loop
 
       Fire:
-        TNT1 A 0 A_PlaySound("ksphere/charge",CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffPreFireSoundPlayer")
         KES_ A 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         KES_ BCDE 9 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffAttackHandler")
@@ -57,15 +57,50 @@ actor SamsaraROTTDarkStaffAttackHandler : Trigger
 
       // Attack stuff
       PickupAttack:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupAttackAlternate")
+      // Rise of the Triad (Original) sounds
+      PickupAttackOriginal:
         TNT1 A 0 A_PlaySound("ksphere/fire",CHAN_WEAPON)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
-      PickupAttackDM:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackOriginalCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackOriginalCoop")
+      PickupAttackOriginalDM:
         TNT1 A 0 A_FireCustomMissile("Ksphere_Rott",0,false,0,-5)
         stop
 
-      PickupAttackCoop:
+      PickupAttackOriginalCoop:
         TNT1 A 0 A_FireCustomMissile("Ksphere_Rott_2",0,false,0,-5)
+        stop
+
+      // Rise of the Triad (Alternate) sounds
+      PickupAttackAlternate:
+        TNT1 A 0 A_PlaySound("ksphere/fire/alt",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackAlternateCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackAlternateCoop")
+      PickupAttackAlternateDM:
+        TNT1 A 0 A_FireCustomMissile("Ksphere_RottSoundAlternate",0,false,0,-5)
+        stop
+
+      PickupAttackAlternateCoop:
+        TNT1 A 0 A_FireCustomMissile("Ksphere_Rott_2SoundAlternate",0,false,0,-5)
+        stop
+    }
+}
+
+actor SamsaraROTTDarkStaffPreFireSoundPlayer : Trigger
+{
+    States
+    {
+      // Sound playing stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupAlternate")
+      // Rise of the Triad (Original) sounds
+      PickupOriginal:
+        TNT1 A 0 A_PlaySound("ksphere/charge",CHAN_WEAPON)
+        stop
+
+      // Rise of the Triad (Alternate) sounds
+      PickupAlternate:
+        TNT1 A 0 A_PlaySound("ksphere/charge/alt",CHAN_WEAPON)
         stop
     }
 }
@@ -168,6 +203,14 @@ actor Ksphere_Rott_Explosion
 }
 
 actor Ksphere_Rott_2 : Ksphere_Rott
+{
+    Species "Player"
+    +THRUSPECIES
+}
+
+actor Ksphere_RottSoundAlternate : Ksphere_Rott { SeeSound "ksphere/projectile/alt" }
+
+actor Ksphere_Rott_2SoundAlternate : Ksphere_RottSoundAlternate
 {
     Species "Player"
     +THRUSPECIES
