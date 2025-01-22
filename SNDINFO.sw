@@ -189,10 +189,10 @@ SWPAIN7 SPOUCH5
 $random  SWPAINSTICKY { SWPAIN8 SWPAIN100 SWPAIN6 SWPAIN50 SWPAIN7 }
 
 $playeralias	LoWang	 male	*death			SWPAIN25
-$playersound	LoWang	 male	*xdeath			sw/gib_start
+$playersounddup	LoWang	 male	*xdeath			*death
 $playersounddup	LoWang	 male	*crazydeath		*death
 $playersounddup LoWang	 male   *wimpydeath 	*death
-$playersounddup	LoWang	 male	*gibbed			*xdeath
+$playeralias	LoWang	 male	*gibbed			sw/gib_start
 $playersound	LoWang	 male	*falling		SPKILL0
 $playersound	LoWang	 male	*burndeath		SPKILL0
 $playeralias	LoWang	 male	*pain100		SWPAIN100
