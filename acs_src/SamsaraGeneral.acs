@@ -8663,6 +8663,9 @@ script "Samsara_GiveBackpack" (int startmode)
 
     bool completeloadout = startmode != 0 ? GetCVar("samsara_allloadoutequipment") : CheckInventory("SamsaraHasAllLoadoutEquipment");
 
+    // Extra weapons setting
+    bool usingextraweapons = startmode != 0 ? GetCVar("samsara_extraweapons") : CheckInventory("SamsaraExtraWeaponsAreEnabled");
+
     // Extra ammo on first pickup in Doom deathmatch (amount * 5 / 2)
     bool dmextraammo = !isSinglePlayer() && !isCoop() && (currentiwad == GAME_DOOM || currentiwad == GAME_CHEX) && !GetCVar("sv_noextraammo");
 
@@ -8680,6 +8683,30 @@ script "Samsara_GiveBackpack" (int startmode)
     {
       default:
         GiveInventory("Backpack", 1);
+        break;
+
+      case CLASS_DOOM:
+        int curmines = CheckInventory("DoomguyStrMines");
+        int curgas = CheckInventory("DoomguyStrGas");
+
+        switch (altclasschoice)
+        {
+          default: // Original/Doom 64
+            GiveInventory("Backpack", 1);
+            SetInventory("DoomguyStrMines", curmines); // leave our mines untouched because we cannot use them
+            SetInventory("DoomguyStrGas", curgas); // ditto with gas
+            break;
+
+          case 2: // Stronghold
+            GiveInventory("Backpack", 1);
+
+            if (!usingextraweapons) // don't give these ammos if extra weapons is disabled
+            {
+                SetInventory("DoomguyStrMines", curmines);
+                SetInventory("DoomguyStrGas", curgas);
+            }
+            break;
+        }
         break;
 
       case CLASS_CHEX:
