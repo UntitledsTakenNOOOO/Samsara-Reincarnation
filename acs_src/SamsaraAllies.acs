@@ -68,9 +68,10 @@ function void createCellCheckers(str cellCheckClass)
 	}
 }
 
-function void createSpawnCheckers(str spawnCheckClass, int cvarValue)
+function void createSpawnCheckers(str spawnCheckClass, int cvarValueMonsters, int cvarValueItems)
 {
-	int chanceToSpawn = (cvarValue * cvarValue)/10;
+	int chanceToSpawnMonsters = (cvarValueMonsters * cvarValueMonsters)/10;
+	int chanceToSpawnItems = (cvarValueItems * cvarValueItems)/10;
 
 	int x = GetActorX(0);
 	int y = GetActorY(0);
@@ -82,12 +83,21 @@ function void createSpawnCheckers(str spawnCheckClass, int cvarValue)
 
 		for (int b = -512; b < 512; b += 64)
 		{
-			if (random(1,1500) <= chanceToSpawn)
+			int yPos = y + (b * 1.0);
+			int randomValue = random(1,1500);
+			if (randomValue <= chanceToSpawnMonsters && randomValue <= chanceToSpawnItems)
 			{
-				int yPos = y + (b * 1.0);
-
-				SpawnForced("DetermineValidSpawnTestObject", xPos, yPos, 0, newtid);
-				Spawn(spawnCheckClass, xPos, yPos, GetActorFloorZ(newtid), 0);
+				Spawn(spawnCheckClass, xPos, yPos, 0, newtid);	
+				GiveActorInventory(newtid,"ValidSpawnCheckAll",1);
+			}
+			else if (randomValue <= chanceToSpawnMonsters)
+			{
+				Spawn(spawnCheckClass, xPos, yPos, 0, newtid);
+			}
+			else if (randomValue <= chanceToSpawnItems)
+			{
+				Spawn(spawnCheckClass, xPos, yPos, 0, newtid);
+				GiveActorInventory(newtid,"ValidSpawnCheckItems",1);
 			}
 		}
 	}
@@ -110,8 +120,9 @@ script "CellDoneScanning" (void)
 {
 	str spawnCheckClass = GetCVar("samsara_zscriptready") >= 1 ? "DetermineValidSpawnZS" : "DetermineValidSpawn";
 	int randomCharactersCVar = GetCVar("samsara_randomcharacters");
+	int randomItemsCVar = GetCVar("samsara_randomitems");
 
-	createSpawnCheckers(spawnCheckClass, randomCharactersCVar);
+	createSpawnCheckers(spawnCheckClass, randomCharactersCVar, randomItemsCVar);
 }
 
 script "IsThisSpawnSpotorCell" (int type)
@@ -736,51 +747,6 @@ Script "Samsara_AllyHealthRegen" (void)
 		HealThing(1);
 		Delay(35);
 	}
-}
-
-Script "DetermineValidSpawnItems" (void)
-{
-	// Don't bother with checking spawn conditions when random items won't spawn anyway
-	if (GetCVar("samsara_randomitems") <= 0)
-	{
-		terminate;
-	}
-
-	str cellCheckClass = GetCVar("samsara_zscriptready") >= 1 ? "DetermineValidCellItemsZS" : "DetermineValidCellItems";
-
-	createCellCheckers(cellCheckClass);
-}
-
-script "CellDoneScanningItems" (void)
-{
-	str spawnCheckClass = GetCVar("samsara_zscriptready") >= 1 ? "DetermineValidSpawnItemsZS" : "DetermineValidSpawnItems";
-	int randomItemsCVar = GetCVar("samsara_randomitems");
-
-	createSpawnCheckers(spawnCheckClass, randomItemsCVar);
-}
-
-script "ItemsOnMap" Open
-{
-	// Unlike the misc. characters, we only need to check for the titlemap
-	if(GameType () == GAME_TITLE_MAP) { terminate; }
-
-	int clients = PlayerCount();
-	int playervalue;
-
-	for(int p = 0; p < clients; p++)
-	{
-		if(PlayerInGame(p) == true)
-		{
-			pickrandomitems = 1;
-		}
-		else
-		{
-			clients += 1;
-		}
-	}
-
-	if(pickrandomitems == true)
-		ACS_NamedExecuteWithResult("DetermineValidSpawnItems",0,0,0,0);
 }
 
 Script "Samsara2689_Items" (void)
