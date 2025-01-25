@@ -48,13 +48,14 @@ Class DetermineValidSpawnZS : Actor
         +CANNOTPUSH
         +NOTELEPORT
         +NOTELESTOMP
+		+FLOORHUGGER
 	}
 	States
 	{
 		Spawn:
 			TNT1 A 0 NoDelay A_GiveInventory("isSpawnCheckerToken",1);
-			TNT1 A 0 A_RadiusGive("DetermineValidSpawnBroadcastZS",1024,RGF_PLAYERS|RGF_MONSTERS|RGF_OBJECTS|RGF_ITEMS|RGF_CUBE);
 			TNT1 A 0 A_UnsetSolid;
+			TNT1 A 0 A_RadiusGive("DetermineValidSpawnBroadcastZS",1024,RGF_PLAYERS|RGF_MONSTERS|RGF_OBJECTS|RGF_ITEMS|RGF_CUBE);
 			TNT1 A 35;
 			TNT1 A 0 Thing_Remove(0);
 			Stop;
@@ -80,96 +81,15 @@ Class IsValidSpawnBroadcastZS : CustomInventory
 			fail;
 			TNT1 A 0 A_JumpIfInventory("ValidSpawnToken",1,"Failure");
 			TNT1 A 0 A_GiveInventory("ValidSpawnToken",1);
+			TNT1 A 0 A_JumpIfInventory("ValidSpawnCheckAll",1,"SpawnAll");
+			TNT1 A 0 A_JumpIfInventory("ValidSpawnCheckItems",1,"SpawnItems");
 			TNT1 A 0 ACS_NamedExecuteWithResult("Samsara2689");
 			Stop;
-		Failure:
-			TNT1 A 0;
-			fail;
-	}
-}
-
-Class DetermineValidCellItemsZS : Actor
-{
-	Default
-	{
-		+CORPSE
-	}
-	States
-	{
-		Spawn:
-			TNT1 A 0 NoDelay A_GiveInventory("isCellCheckerToken",1);
-			TNT1 A 0 A_RadiusGive("DetermineValidCellBroadcastItemsZS",1024,RGF_PLAYERS|RGF_OBJECTS|RGF_MONSTERS|RGF_NOSIGHT|RGF_ITEMS|RGF_CUBE);
-			TNT1 A 4;
+		SpawnAll:
+			TNT1 A 0 ACS_NamedExecuteWithResult("Samsara2689");
+			TNT1 A 0 ACS_NamedExecuteWithResult("Samsara2689_Items");
 			Stop;
-	}
-}
-
-Class DetermineValidCellBroadcastItemsZS : CustomInventory
-{
-	States
-	{
-		Pickup:	
-			TNT1 A 0 A_RadiusGive("IsValidCellBroadcastItemsZS",1024,RGF_CORPSES|RGF_NOSIGHT|RGF_CUBE);
-			Stop;
-	}
-}
-
-Class IsValidCellBroadcastItemsZS : CustomInventory
-{
-	States
-	{
-		Pickup:
-			TNT1 A 0 A_JumpIfInventory("isCellCheckerToken",1,1);
-			fail;
-			TNT1 A 0 ACS_NamedExecuteWithResult("CellDoneScanningItems");
-			TNT1 A 0 Thing_Remove(0);
-			Stop;
-	}
-}
-
-Class DetermineValidSpawnItemsZS : Actor
-{
-	Default
-	{
-		Height 52;
-		Radius 32;
-		+CORPSE
-		+SOLID
-        +CANNOTPUSH
-        +NOTELEPORT
-        +NOTELESTOMP
-	}
-	States
-	{
-		Spawn:
-			TNT1 A 0 NoDelay A_GiveInventory("isSpawnCheckerToken",1);
-			TNT1 A 0 A_RadiusGive("DetermineValidSpawnBroadcastItemsZS",1024,RGF_PLAYERS|RGF_MONSTERS|RGF_OBJECTS|RGF_ITEMS|RGF_CUBE);
-			TNT1 A 0 A_UnsetSolid;
-			TNT1 A 35;
-			TNT1 A 0 Thing_Remove(0);
-			Stop;
-	}
-}
-
-Class DetermineValidSpawnBroadcastItemsZS : CustomInventory
-{
-	States
-	{
-		Pickup:	
-			TNT1 A 0 A_RadiusGive("IsValidSpawnBroadcastItemsZS",1024,RGF_CORPSES|RGF_CUBE);
-			Stop;
-	}
-}
-
-Class IsValidSpawnBroadcastItemsZS : CustomInventory
-{
-	States
-	{
-		Pickup:
-			TNT1 A 0 A_JumpIfInventory("isSpawnCheckerToken",1,1);
-			fail;
-			TNT1 A 0 A_JumpIfInventory("ValidSpawnToken",1,"Failure");
-			TNT1 A 0 A_GiveInventory("ValidSpawnToken",1);
+		SpawnItems:
 			TNT1 A 0 ACS_NamedExecuteWithResult("Samsara2689_Items");
 			Stop;
 		Failure:
