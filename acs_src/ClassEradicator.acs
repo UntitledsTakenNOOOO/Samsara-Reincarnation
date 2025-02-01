@@ -32,3 +32,99 @@ Script "EradicatorDartGun" (int alt)
 		Delay(2);
 	}
 }
+
+Script "EradicatorPipCameraHud" (void)
+{
+	int inputX = 0;
+	int pipObject = 0;
+	While(CheckInventory("EradClass"))
+	{
+		if(CheckInventory("EradicatorPipTid"))
+		{
+			pipObject = CheckInventory("EradicatorPipTid");
+			if(CheckInventory("EradicatorPipControllable") && CheckInventory("EradicatorPipAllowControl"))
+			{
+				ACS_NamedExecuteWithResult("EleenaPipCamera");
+				//SetActorFlag(pipObject,"SEEKERMISSILE",0);
+				inputX = -GetPlayerInput(-1, INPUT_SIDEMOVE);
+				SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+				SetActorAngle(pipObject,GetActorAngle(pipObject)+(inputX/8));
+				SetActorVelocity(pipObject,8*cos(GetActorAngle(pipObject)),8*sin(GetActorAngle(pipObject)),0,0,0);
+			}
+			else
+			{
+				//SetActorFlag(pipObject,"SEEKERMISSILE",1);
+				SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+				HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,7198,CR_UNTRANSLATED,0,0,15.0);
+				HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,7199,CR_UNTRANSLATED,0,0,15.0);
+			}
+		}
+		else
+		{
+			SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+			HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,7198,CR_UNTRANSLATED,0,0,15.0);
+			HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,7199,CR_UNTRANSLATED,0,0,15.0);
+		}
+		Delay(1);
+	}
+}
+
+Script "EleenaPipCamera" (void) clientside
+{
+	if(CheckInventory("EradicatorPipTid"))
+	{
+		SetHudSize(320,200,1);
+		SetFont("ERADPIPS");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,7198,CR_UNTRANSLATED,0.1,0.1,0.0);
+		SetFont("ERADPIPA");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,7199,CR_UNTRANSLATED,0.1,0.1,0.0);
+	}
+	else
+	{
+		HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,7198,CR_UNTRANSLATED,0,0,15.0);
+		HudMessage(s:"";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,7199,CR_UNTRANSLATED,0,0,15.0);
+	}
+}
+
+Script "EradicatorPipObject" (int controllable)
+{
+	int pipTid = UniqueTid(1);
+	Thing_ChangeTid(0,pipTid);
+	int cameraTid = UniqueTid();
+	SpawnForced("AimingCamera",GetActorX(0),GetActorY(0),GetActorZ(0),cameraTid);
+	SetInventory("EradicatorPipTid",pipTid);
+	SetActivatorToTarget(0);
+	SetInventory("EradicatorPipControllable",controllable);
+	SetInventory("EradicatorPipTid",pipTid);
+	ACS_NamedExecuteWithResult("EradicatorPipClient",cameraTid,PlayerNumber());
+	SetActivator(pipTid,AAPTR_Default);
+	SetPointer(AAPTR_Master,cameraTid);
+	
+	while(ClassifyActor(0) & ACTOR_MISSILE)
+	{
+		int horizontalVector = magnitudeTwo_f(GetActorVelX(0), GetActorVelY(0))<<8;
+		int velZ = GetActorVelZ(0);
+		int pitch = VectorAngle(horizontalVector, velZ);
+		Warp(AAPTR_Master,-80.0,0,32.0,0,WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION|WARPF_USEPTR|WARPF_MOVEPTR);
+		Delay(1);
+	}
+}
+
+Script "EradicatorPipClient" (int cameraTid, int player) clientside
+{
+	if(player != ConsolePlayerNumber())
+		terminate;
+		
+	SetCameraToTexture(cameraTid,"ERADPIPA",90);
+}
+
+Script "EradicatorPipObjectClear" (void)
+{
+	int myTid = ActivatorTid();
+	SetActivatorToTarget(0);
+	if(CheckInventory("EradicatorPipTid") == myTid)
+	{
+		SetInventory("EradicatorPipControllable",0);
+		SetInventory("EradicatorPipTid",0);
+	}
+}
