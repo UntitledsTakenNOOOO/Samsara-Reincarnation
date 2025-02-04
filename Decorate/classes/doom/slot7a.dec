@@ -2124,15 +2124,58 @@ actor SamsaraDoomguyCalamityBladeProjectile
     DeathSound "doomguy/calamityblade/explode"
     Obituary "$SAMSARA_DOOMGUY_OB_SLOT7_1"
     -BLOODSPLATTER
-    +RIPPER // TODO: make this rip through hell knights and above
+    //+RIPPER
+    +THRUACTORS
     States
     {
       Spawn:
-        DHTB ABC 3 Bright
+        DHTB A 0 Bright
+        DHTB AAABBBCCC 1 Bright A_GiveInventory("SamsaraDoomguyCalamityBladeProjectile_Predictor")
         loop
 
       Death:
         DHTB DEFGHI 3 Bright
+        stop
+    }
+}
+
+actor SamsaraDoomguyCalamityBladeProjectile_Predictor : Trigger
+{
+    States
+    {
+      Pickup:
+        TNT1 A 0 A_SetArg(0,sqrt(velx*velx+vely*vely)*1000/sqrt(velx*velx+vely*vely+velz*velz))
+        TNT1 A 0 A_SetArg(1,velz*1000/sqrt(velx*velx+vely*vely+velz*velz))
+        TNT1 A 0 A_SetArg(2,sqrt(velx*velx+vely*vely+velz*velz)/2)
+        TNT1 A 0 A_SetMass(-args[2])
+      PickupLoop:
+        TNT1 A 0 A_JumpIf(mass >= args[2], "PickupStop")
+        TNT1 A 0 A_SpawnItemEx("SamsaraDoomguyCalamityBladeProjectile_Explosion",args[0]/1000.0*mass,0,args[1]/1000.0*mass,0,0,0,0,SXF_TRANSFERPOINTERS)
+        TNT1 A 0 A_SetMass(mass+radius)
+        loop
+    }
+}
+
+actor SamsaraDoomguyCalamityBladeProjectile_Explosion
+{
+    Projectile
+    Radius 16
+    Height 8
+    DamageType "DoomDamageTypeFire"
+    Obituary "$SAMSARA_DOOMGUY_OB_SLOT7_1"
+    -BLOODSPLATTER // blood effect doesn't work anyway due to not being a true ripper
+    +DONTBLAST
+    +DONTREFLECT
+    +DONTSPLASH
+    +FORCERADIUSDMG
+    +NODAMAGETHRUST
+    +NOINTERACTION
+    +NOTIMEFREEZE
+    States
+    {
+      Spawn:
+        TNT1 A 0
+        TNT1 A 1 A_Explode(random(1,8)*10,16,0,false,16)
         stop
     }
 }
