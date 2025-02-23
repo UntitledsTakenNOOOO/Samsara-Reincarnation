@@ -128,9 +128,12 @@ script "EradicatorPipObject" (int controllable)
     Thing_ChangeTid(0, pipTid);
 
     int cameraTid = UniqueTID();
+    bool camblocked = false;
     SpawnForced("AimingCamera", GetActorX(0), GetActorY(0), GetActorZ(0), cameraTid);
     SetInventory("EradicatorPipTid", pipTid);
     SetActivator(0, AAPTR_TARGET);
+
+    int pln = PlayerNumber();
 
     int origpipTid = CheckInventory("EradicatorPipTid");
 
@@ -145,27 +148,58 @@ script "EradicatorPipObject" (int controllable)
 
     GiveInventory("SamsaraEradicatorSlot1Spawned", 1);
 
-    SetActivator(pipTid, AAPTR_TARGET);
-
     while (ClassifyActor(pipTid) & ACTOR_MISSILE)
     {
+        SetActivator(pipTid, AAPTR_TARGET);
+
+        if (!CheckInventory("EradClass"))
+        {
+            TakeActorInventory(pipTid, "SamsaraEradicatorSlot1Controlled", INTMAX);
+
+            if (!camblocked)
+            {
+                SetPlayerActivator(pln);
+
+                if (CheckInventory("EradicatorPipTid") == pipTid)
+                {
+                    SetInventory("EradicatorPipControllable", 0);
+                    SetInventory("EradicatorPipTid", 0);
+                }
+
+                Thing_Remove(cameraTid);
+
+                camblocked = true;
+            }
+        }
+
         int horizontalVector = magnitudeTwo_f(GetActorVelX(pipTid), GetActorVelY(pipTid)) << 8;
         int velZ = GetActorVelZ(pipTid);
         int pitch = VectorAngle(horizontalVector, velZ);
 
-        SetActivator(pipTid, AAPTR_DEFAULT);
-        Warp(AAPTR_MASTER, -80.0, 0, 32.0, 0, WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION|WARPF_USEPTR|WARPF_MOVEPTR);
-        SetActivator(pipTid, AAPTR_TARGET);
+        if (!camblocked)
+        {
+            SetActivator(pipTid, AAPTR_DEFAULT);
+            Warp(AAPTR_MASTER, -80.0, 0, 32.0, 0, WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION|WARPF_USEPTR|WARPF_MOVEPTR);
+        }
+
+        SetActivator(pipTid, AAPTR_NULL);
 
         Delay(1);
     }
 
     while (CheckActorInventory(pipTid, "SamsaraEradicatorSlot1Spawned")) { Delay(1); }
 
-    if (CheckInventory("EradicatorPipTid") == pipTid)
+    if (!camblocked)
     {
-        SetInventory("EradicatorPipControllable", 0);
-        SetInventory("EradicatorPipTid", 0);
+        SetPlayerActivator(pln);
+
+        if (CheckInventory("EradicatorPipTid") == pipTid)
+        {
+            SetInventory("EradicatorPipControllable", 0);
+            SetInventory("EradicatorPipTid", 0);
+        }
+
+        Thing_Remove(cameraTid);
     }
 }
 
