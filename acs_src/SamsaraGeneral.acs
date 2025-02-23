@@ -244,13 +244,18 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
 		break;
 
 	case 34:
-			if (!CheckInventory("SamsaraBallgag") && !CheckInventory("EleenaTauntCooldown"))
-			{
-				LocalAmbientSound("Eleena/Suicide",127);
-				GiveInventory("EleenaTauntCooldown",5);
-				ACS_NamedExecuteAlways("EleenaTauntCooldown",0,0);
-			}
-		break;
+        if (!CheckInventory("SamsaraBallgag") && !CheckInventory("EleenaTauntCooldown"))
+        {
+            switch (CheckInventory("EradMode"))
+            {
+                default: break;
+                case 0: LocalAmbientSound("Eleena/Suicide", 127); break;
+            }
+
+            GiveInventory("EleenaTauntCooldown",5);
+            ACS_NamedExecuteAlways("EleenaTauntCooldown",0,0);
+        }
+        break;
 
 	case 35:
 		SetResultValue(pln);
@@ -1396,21 +1401,24 @@ Script "Samsara_UniqueKeys" (int key) net
 	int pln = PlayerNumber();
 	switch(PlayerClass(pln))
 	{
-		case 10:
+		case CLASS_CALEB:
             if (!isDead(0))
             {
                 if (CheckInventory("SamsaraBloodGunsAkimboToggleMemory")) { TakeInventory("SamsaraBloodGunsAkimboToggleMemory", 1); }
                 else { GiveInventory("SamsaraBloodGunsAkimboToggleMemory", 1); }
             }
 			break;
-		case 12:
-			if (CheckInventory("EradicatorPipAllowControl")) { TakeInventory("EradicatorPipAllowControl", 1); }
-            else { GiveInventory("EradicatorPipAllowControl", 1); }
+		case CLASS_ERAD:
+            if (!isDead(0))
+            {
+                if (CheckInventory("EradicatorPipAllowControl")) { TakeInventory("EradicatorPipAllowControl", 1); }
+                else { GiveInventory("EradicatorPipAllowControl", 1); }
+            }
 			break;
-		case 13:
+		case CLASS_C7:
 			ACS_NamedExecuteWithResult("Corridor7ActivateVisor");
 			break;
-		case 19:
+		case CLASS_HALFLIFE:
 			ACS_NamedExecuteWithResult("HL2677",0,0,0);
 			break;
 		case CLASS_RR:
@@ -1437,22 +1445,22 @@ Script "Samsara_UniqueKeys" (int key) net
 				}
 			}
 			break;
-		case 26:
+		case CLASS_BOND:
 			ACS_NamedExecuteWithResult("BondActivateWatch",0,0,0);
 			break;
-		case 28:
+		case CLASS_PAINKILLER:
 			if(key == 1)
 				ACS_NamedExecuteWithResult("Painkiller_BlackTarot_Initiate",0,0,0,0);
 			else
 				ACS_NamedExecuteWithResult("Painkiller_GoldTarot_Activate",0,0,0,0);
 			break;
-		case 29:
+		case CLASS_UNREAL:
 			ACS_NamedExecuteWithResult("Unreal_RevertUpgrade",0,0,0);
 			break;
-		case 30:
+		case CLASS_RTCW:
 			ACS_NamedExecuteWithResult("RTCW_Kick",0,0,0);
 			break;
-		case 32:
+		case CLASS_DESCENT:
 			if (isZDoom() && (GetCVar("samsara_zscriptready") == 2) && GetCVar("samsara_descentflight") >= 2 && !CheckInventory("DescentGuidedController") && !CheckInventory("CompendiumOpened") && !isDead(0)) { GiveInventory("DescentRollToken", 1); }
 			break;
 		case CLASS_DEUSEX:
@@ -2500,7 +2508,8 @@ Script "Samsara_ResetInventory" (void)
 			break;
 
 		case CLASS_ERAD:
-			TakeInventory("SamsaraEradicatorLaserAltAttackSwitch", INTMAX);
+			TakeInventory("SamsaraEradicatorLaserEnhancedAttackSwitch", INTMAX);
+			TakeInventory("SamsaraEradicatorKamchakPhotonPulseAttackSwitch", INTMAX);
 			TakeInventory(" Arachnicator ", INTMAX);
 			TakeInventory("EradRovingMine", INTMAX);
 			TakeInventory("EradMiniTankDetonator", INTMAX);
@@ -2508,7 +2517,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Death Bomb", INTMAX);
 			TakeInventory("Cluster Bomb", INTMAX);
 			TakeInventory("Pellet Bomb", INTMAX);
-            SetInventory("EradAmmoShit", 0);
+            SetInventory("SamsaraEradicatorPelletBombEnhancedFiredCount", 0);
 			TakeInventory("  Dart Cannon  ", INTMAX);
 			TakeInventory("EradEnergywhip", INTMAX);
 			TakeInventory("EradNitrofogger", INTMAX);
