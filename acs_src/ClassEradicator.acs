@@ -56,15 +56,17 @@ script "EradicatorPipCameraHud" (void)
 {
     bool pipcontrolling = false;
     int inputX = 0;
-    int pipObject = 0;
+    int pipObject1, pipObject2, pipObject3;
 
     while (CheckInventory("EradClass"))
     {
-        if (CheckInventory("EradicatorPipTid"))
-        {
-            pipObject = CheckInventory("EradicatorPipTid");
+        pipObject1 = CheckInventory("EradicatorPipTid1");
+        pipObject2 = CheckInventory("EradicatorPipTid2");
+        pipObject3 = CheckInventory("EradicatorPipTid3");
 
-            if (CheckInventory("EradicatorPipControllable") && CheckInventory("EradicatorPipAllowControl") && !isDead(0))
+        if (pipObject1 > 0 || pipObject2 > 0 || pipObject3 > 0)
+        {
+            if (pipObject1 > 0 && CheckInventory("EradicatorPipControllable") && CheckInventory("EradicatorPipAllowControl") && !isDead(0))
             {
                 ACS_NamedExecuteWithResult("EleenaPipCamera");
 
@@ -73,12 +75,40 @@ script "EradicatorPipCameraHud" (void)
                 SetPlayerProperty(0, true, PROP_TOTALLYFROZEN); // constantly set this even if other things are happening
                 if (!pipcontrolling) { pipcontrolling = true; }
 
-                GiveActorInventory(pipObject, "SamsaraEradicatorSlot1Controlled", 1);
-
-                if (CheckFlag(pipObject, "MISSILE"))
+                if (pipObject1 > 0)
                 {
-                    SetActorAngle(pipObject, GetActorAngle(pipObject) + (inputX / 8));
-                    SetActorVelocity(pipObject, 8 * cos(GetActorAngle(pipObject)), 8 * sin(GetActorAngle(pipObject)), 0, false, false);
+                    GiveActorInventory(pipObject1, "SamsaraEradicatorSlot1Controlled", 1);
+                    GiveActorInventory(pipObject1, "SamsaraNoTimeFreezeEnabler", 1);
+
+                    if (CheckFlag(pipObject1, "MISSILE"))
+                    {
+                        SetActorAngle(pipObject1, GetActorAngle(pipObject1) + (inputX / 8));
+                        SetActorVelocity(pipObject1, 8 * cos(GetActorAngle(pipObject1)), 8 * sin(GetActorAngle(pipObject1)), 0, false, false);
+                    }
+                }
+
+                if (pipObject2 > 0)
+                {
+                    GiveActorInventory(pipObject2, "SamsaraEradicatorSlot1Controlled", 1);
+                    GiveActorInventory(pipObject2, "SamsaraNoTimeFreezeEnabler", 1);
+
+                    if (CheckFlag(pipObject2, "MISSILE"))
+                    {
+                        SetActorAngle(pipObject2, GetActorAngle(pipObject2) + (inputX / 8));
+                        SetActorVelocity(pipObject2, 8 * cos(GetActorAngle(pipObject2)), 8 * sin(GetActorAngle(pipObject2)), 0, false, false);
+                    }
+                }
+
+                if (pipObject3 > 0)
+                {
+                    GiveActorInventory(pipObject3, "SamsaraEradicatorSlot1Controlled", 1);
+                    GiveActorInventory(pipObject3, "SamsaraNoTimeFreezeEnabler", 1);
+
+                    if (CheckFlag(pipObject3, "MISSILE"))
+                    {
+                        SetActorAngle(pipObject3, GetActorAngle(pipObject3) + (inputX / 8));
+                        SetActorVelocity(pipObject3, 8 * cos(GetActorAngle(pipObject3)), 8 * sin(GetActorAngle(pipObject3)), 0, false, false);
+                    }
                 }
             } else {
                 if (pipcontrolling)
@@ -87,7 +117,23 @@ script "EradicatorPipCameraHud" (void)
                     pipcontrolling = false;
                 }
 
-                TakeActorInventory(pipObject, "SamsaraEradicatorSlot1Controlled", INTMAX);
+                if (pipObject1 > 0)
+                {
+                    TakeActorInventory(pipObject1, "SamsaraEradicatorSlot1Controlled", INTMAX);
+                    GiveActorInventory(pipObject1, "SamsaraNoTimeFreezeDisabler", 1);
+                }
+
+                if (pipObject2 > 0)
+                {
+                    TakeActorInventory(pipObject2, "SamsaraEradicatorSlot1Controlled", INTMAX);
+                    GiveActorInventory(pipObject2, "SamsaraNoTimeFreezeDisabler", 1);
+                }
+
+                if (pipObject3 > 0)
+                {
+                    TakeActorInventory(pipObject3, "SamsaraEradicatorSlot1Controlled", INTMAX);
+                    GiveActorInventory(pipObject3, "SamsaraNoTimeFreezeDisabler", 1);
+                }
 
                 HudMessage(s:""; HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN, 7198, CR_UNTRANSLATED, 0, 0, 15.0);
                 HudMessage(s:""; HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN, 7199, CR_UNTRANSLATED, 0, 0, 15.0);
@@ -109,9 +155,9 @@ script "EradicatorPipCameraHud" (void)
 
 script "EleenaPipCamera" (void) CLIENTSIDE
 {
-    if (CheckInventory("EradicatorPipTid"))
+    if (CheckInventory("EradicatorPipTid1"))
     {
-        SetHudSize(320,200,1);
+        SetHudSize(320, 200, 1);
         SetFont("ERADPIPS");
         HudMessage(s:"A"; HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN, 7198, CR_UNTRANSLATED, 0.1, 0.1, 0.0);
         SetFont("ERADPIPA");
@@ -125,26 +171,66 @@ script "EleenaPipCamera" (void) CLIENTSIDE
 script "EradicatorPipObject" (int controllable)
 {
     int pipTid = UniqueTID(1);
+    int spreadproj = 0;
+
     Thing_ChangeTid(0, pipTid);
 
     int cameraTid = UniqueTID();
     bool camblocked = false;
+
     SpawnForced("AimingCamera", GetActorX(0), GetActorY(0), GetActorZ(0), cameraTid);
-    SetInventory("EradicatorPipTid", pipTid);
+
     SetActivator(0, AAPTR_TARGET);
 
     int pln = PlayerNumber();
 
-    int origpipTid = CheckInventory("EradicatorPipTid");
+    if (CheckInventory("SamsaraEradicatorSlot1ProjActive"))
+    {
+        Thing_Remove(cameraTid);
 
-    if (origpipTid > 0) { TakeActorInventory(origpipTid, "SamsaraEradicatorSlot1Controlled", INTMAX); }
+        spreadproj = CheckInventory("SamsaraEradicatorSlot1ProjActive");
+    }
 
-    SetInventory("EradicatorPipControllable", controllable);
-    SetInventory("EradicatorPipTid", pipTid);
-    ACS_NamedExecuteWithResult("EradicatorPipClient", cameraTid, PlayerNumber());
+    if (spreadproj >= 2) { SetInventory("EradicatorPipTid3", pipTid); }
+    else if (spreadproj == 1) { SetInventory("EradicatorPipTid2", pipTid); }
+    else
+    {
+        int origpipTid1 = CheckInventory("EradicatorPipTid1");
+
+        if (origpipTid1 > 0)
+        {
+            TakeActorInventory(origpipTid1, "SamsaraEradicatorSlot1Controlled", INTMAX);
+            GiveActorInventory(origpipTid1, "SamsaraNoTimeFreezeDisabler", 1);
+        }
+
+        int origpipTid2 = CheckInventory("EradicatorPipTid2");
+
+        if (origpipTid2 > 0)
+        {
+            TakeActorInventory(origpipTid2, "SamsaraEradicatorSlot1Controlled", INTMAX);
+            GiveActorInventory(origpipTid2, "SamsaraNoTimeFreezeDisabler", 1);
+        }
+
+        int origpipTid3 = CheckInventory("EradicatorPipTid3");
+
+        if (origpipTid3 > 0)
+        {
+            TakeActorInventory(origpipTid3, "SamsaraEradicatorSlot1Controlled", INTMAX);
+            GiveActorInventory(origpipTid3, "SamsaraNoTimeFreezeDisabler", 1);
+        }
+
+        SetInventory("EradicatorPipControllable", controllable);
+        SetInventory("EradicatorPipTid1", pipTid);
+        SetInventory("EradicatorPipTid2", 0);
+        SetInventory("EradicatorPipTid3", 0);
+        ACS_NamedExecuteWithResult("EradicatorPipClient", cameraTid, pln);
+    }
+
+    GiveInventory("SamsaraEradicatorSlot1ProjActive", 1);
+
     SetActivator(pipTid, AAPTR_DEFAULT);
 
-    SetPointer(AAPTR_MASTER, cameraTid);
+    if (spreadproj <= 0) { SetPointer(AAPTR_MASTER, cameraTid); }
 
     GiveInventory("SamsaraEradicatorSlot1Spawned", 1);
 
@@ -155,18 +241,26 @@ script "EradicatorPipObject" (int controllable)
         if (!CheckInventory("EradClass"))
         {
             TakeActorInventory(pipTid, "SamsaraEradicatorSlot1Controlled", INTMAX);
+            GiveActorInventory(pipTid, "SamsaraNoTimeFreezeDisabler", 1);
 
             if (!camblocked)
             {
                 SetPlayerActivator(pln);
 
-                if (CheckInventory("EradicatorPipTid") == pipTid)
+                if (spreadproj >= 2)
                 {
-                    SetInventory("EradicatorPipControllable", 0);
-                    SetInventory("EradicatorPipTid", 0);
-                }
+                    if (CheckInventory("EradicatorPipTid3") == pipTid) { SetInventory("EradicatorPipTid3", 0); }
+                } else if (spreadproj == 1) {
+                    if (CheckInventory("EradicatorPipTid2") == pipTid) { SetInventory("EradicatorPipTid2", 0); }
+                } else {
+                    if (CheckInventory("EradicatorPipTid1") == pipTid)
+                    {
+                        SetInventory("EradicatorPipControllable", 0);
+                        SetInventory("EradicatorPipTid1", 0);
+                    }
 
-                Thing_Remove(cameraTid);
+                    Thing_Remove(cameraTid);
+                }
 
                 camblocked = true;
             }
@@ -176,7 +270,7 @@ script "EradicatorPipObject" (int controllable)
         int velZ = GetActorVelZ(pipTid);
         int pitch = VectorAngle(horizontalVector, velZ);
 
-        if (!camblocked)
+        if (!camblocked && spreadproj <= 0)
         {
             SetActivator(pipTid, AAPTR_DEFAULT);
             Warp(AAPTR_MASTER, -80.0, 0, 32.0, 0, WARPF_NOCHECKPOSITION|WARPF_COPYINTERPOLATION|WARPF_USEPTR|WARPF_MOVEPTR);
@@ -193,13 +287,20 @@ script "EradicatorPipObject" (int controllable)
     {
         SetPlayerActivator(pln);
 
-        if (CheckInventory("EradicatorPipTid") == pipTid)
+        if (spreadproj >= 2)
         {
-            SetInventory("EradicatorPipControllable", 0);
-            SetInventory("EradicatorPipTid", 0);
-        }
+            if (CheckInventory("EradicatorPipTid3") == pipTid) { SetInventory("EradicatorPipTid3", 0); }
+        } else if (spreadproj == 1) {
+            if (CheckInventory("EradicatorPipTid2") == pipTid) { SetInventory("EradicatorPipTid2", 0); }
+        } else {
+            if (CheckInventory("EradicatorPipTid1") == pipTid)
+            {
+                SetInventory("EradicatorPipControllable", 0);
+                SetInventory("EradicatorPipTid1", 0);
+            }
 
-        Thing_Remove(cameraTid);
+            Thing_Remove(cameraTid);
+        }
     }
 }
 
