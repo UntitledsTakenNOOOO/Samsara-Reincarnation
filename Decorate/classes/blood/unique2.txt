@@ -16,7 +16,8 @@ actor SamsaraBloodGunsAkimboPickup : Trigger
         TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 59) >= 3, "PickupToggle")
         TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 59) >= 1, "PickupInventory")
       PickupPowerup:
-        TNT1 A 0 A_GiveInventory("SamsaraPowerBloodGunsAkimboGiver")
+        TNT1 A 0 A_TakeInventory("PowerSamsaraBloodGunsAkimbo")
+        TNT1 A 0 A_GiveInventory("SamsaraPowerBloodGunsAkimboHubGiver")
         stop
 
       PickupInventory:
@@ -38,6 +39,10 @@ actor SamsaraPowerBloodGunsAkimboGiver : SamsaraPowerupGiver { Powerup.Type "Sam
 
 actor PowerSamsaraBloodGunsAkimbo : Powerup { Powerup.Duration -35 }
 
+actor SamsaraPowerBloodGunsAkimboHubGiver : SamsaraPowerBloodGunsAkimboGiver { Powerup.Type "SamsaraBloodGunsAkimboHub" }
+
+actor PowerSamsaraBloodGunsAkimboHub : PowerSamsaraBloodGunsAkimbo { +HUBPOWER }
+
 actor SamsaraPowerBloodGunsAkimboQuadDamageGiver : SamsaraPowerupGiver
 {
     Powerup.Type "SamsaraBloodGunsAkimboQuadDamage"
@@ -48,6 +53,7 @@ actor PowerSamsaraBloodGunsAkimboQuadDamage : PowerDamage
 {
     Powerup.Duration -35
     DamageFactor "Normal", 4
+    +HUBPOWER
 }
 
 actor SamsaraBloodGunsAkimboInventory : CustomInventory
@@ -74,9 +80,11 @@ actor SamsaraBloodGunsAkimboInventory : CustomInventory
 
       UseContinue:
         TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 15, 0), "UseFail")
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraPowerupTimerActiveChecker", 15, 1), "UseFail")
         TNT1 A 0 A_PlaySound("Caleb/Powerup",CHAN_ITEM)
         TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 59) == 2, "UseFinishCooldown")
       UseFinish:
+        TNT1 A 0 A_TakeInventory("PowerSamsaraBloodGunsAkimboHub")
         TNT1 A 0 A_GiveInventory("SamsaraPowerBloodGunsAkimboGiver")
         stop
 
@@ -84,6 +92,7 @@ actor SamsaraBloodGunsAkimboInventory : CustomInventory
         TNT1 A 0 A_JumpIfInventory("SamsaraHasDisabledInventoryCooldown",1,3)
         TNT1 A 0 A_GiveInventory("SamsaraBloodGunsAkimboCooldown",120)
         TNT1 A 0 ACS_NamedExecuteAlways("SamsaraBloodGunsAkimboCooldown")
+        TNT1 A 0 A_TakeInventory("PowerSamsaraBloodGunsAkimboHub")
         TNT1 A 0 A_GiveInventory("SamsaraPowerBloodGunsAkimboGiver")
         fail
 
