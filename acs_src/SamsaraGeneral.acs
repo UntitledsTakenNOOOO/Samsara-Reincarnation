@@ -5493,15 +5493,17 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             break;
 
           case SLOT_BFG9000:
-            if (!CheckInventory("StopFromPickingTurrets_")) // if life leech sentry is active, prevent pickup regardless of drop status
+            if (!CheckInventory("StopFromPickingTurrets_") && (Timer() >= CheckInventory("SamsaraBloodLifeLeechLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay)) // if life leech sentry is active, prevent pickup regardless of drop status
             {
                 if (!CheckInventory("LifeLeech"))
                 {
                     GiveInventory("LifeLeech", 1);
                     GiveInventory("Cell", dmextraammo ? 40 * 5 / 2 : 40);
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("SamsaraBloodLifeLeechLastPickupTime", Timer() + pickuptimer); }
                     result = 1;
                 } else if (CheckInventory("Cell") < GetAmmoCapacity("Cell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
                     GiveInventory("Cell", 40);
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { SetInventory("SamsaraBloodLifeLeechLastPickupTime", Timer() + pickuptimer); }
                     result = 1;
                 }
             }
