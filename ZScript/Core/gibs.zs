@@ -203,3 +203,42 @@ Class DBT_WallBlood_ZScript : Actor
 			stop;
 	}
 }
+
+Class NashGoreGibSpawner_ZScript : Actor
+{
+	Default
+	{
+		Monster;
+		-ACTIVATEMCROSS;
+		-CANPASS;
+		-COUNTKILL;
+		-SOLID;
+		+CLIENTSIDEONLY;
+		+EXTREMEDEATH;
+		+ISMONSTER;
+		+NOTELEPORT;
+		+NOBLOCKMAP;
+		+THRUACTORS;
+	}
+
+	States
+	{
+		Spawn:
+			TNT1 A 0;
+			TNT1 A 0
+			{
+				if(master)
+				{
+					CopyBloodColor(master);
+				}
+			}
+			TNT1 A 0 A_Die("Extreme");
+			Stop;
+		Death:
+			BLUD A 1;
+			Stop;
+		XDeath:
+			BLUD B 1;
+			Stop;
+	}
+}
