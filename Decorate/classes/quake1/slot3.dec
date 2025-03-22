@@ -69,6 +69,7 @@ actor SamsaraQuakeGrenadeLauncherNormalAttackHandler : Trigger
 
       // Sound stuff
       PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupPlaySoundDMC")
         TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupPlaySoundRerelease")
       // Quake I (Original) sounds
       PickupPlaySoundOriginal:
@@ -80,11 +81,17 @@ actor SamsaraQuakeGrenadeLauncherNormalAttackHandler : Trigger
         TNT1 A 0 A_PlaySound("quakeweps/rerelease/glfire",CHAN_WEAPON)
         goto PickupAttack
 
+      // Deathmatch Classic sounds
+      PickupPlaySoundDMC:
+        TNT1 A 0 A_PlaySound("quakeweps/dmc/glfire",CHAN_WEAPON)
+        goto PickupAttack
+
       // Attack stuff
       PickupAttack:
         TNT1 A 0 A_JumpIfInventory("QuadDamagePower",1,"PickupAttackQuad")
       // Normal
       PickupAttackNormal:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackNormalDMC")
         TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupAttackNormalRerelease")
       // Quake I (Original) sounds
       PickupAttackNormalOriginal:
@@ -110,8 +117,21 @@ actor SamsaraQuakeGrenadeLauncherNormalAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("QuakeGrenadeCoopSoundRerelease",0,false,0,0,0,5)
         goto PickupFinish
 
+      // Deathmatch Classic sounds
+      PickupAttackNormalDMC:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackNormalDMCCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackNormalDMCCoop")
+      PickupAttackNormalDMCDM:
+        TNT1 A 0 A_FireCustomMissile("QuakeGrenadeSoundDMC",0,false,0,0,0,5)
+        goto PickupFinish
+
+      PickupAttackNormalDMCCoop:
+        TNT1 A 0 A_FireCustomMissile("QuakeGrenadeCoopSoundDMC",0,false,0,0,0,5)
+        goto PickupFinish
+
       // Quad
       PickupAttackQuad:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackQuadDMC")
         TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupAttackQuadRerelease")
       // Quake I (Original) sounds
       PickupAttackQuadOriginal:
@@ -135,6 +155,18 @@ actor SamsaraQuakeGrenadeLauncherNormalAttackHandler : Trigger
 
       PickupAttackQuadRereleaseCoop:
         TNT1 A 0 A_FireCustomMissile("QuakeGrenadeCoopQuadSoundRerelease",0,false,0,0,0,5)
+        goto PickupFinish
+
+      // Deathmatch Classic sounds
+      PickupAttackQuadDMC:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackQuadDMCCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackQuadDMCCoop")
+      PickupAttackQuadDMCDM:
+        TNT1 A 0 A_FireCustomMissile("QuakeGrenadeQuadSoundDMC",0,false,0,0,0,5)
+        goto PickupFinish
+
+      PickupAttackQuadDMCCoop:
+        TNT1 A 0 A_FireCustomMissile("QuakeGrenadeCoopQuadSoundDMC",0,false,0,0,0,5)
         goto PickupFinish
 
       // Finishing stuff
@@ -365,6 +397,63 @@ actor QuakeGrenadeCoopQuadSoundRerelease : QuakeGrenadeQuadSoundRerelease
 	Damage (120)
 }
 
+actor QuakeGrenadeSoundDMC : QuakeGrenade
+{
+    States
+    {
+      Bounce.Actor.Creature:
+	  Death:
+        TNT1 A 0 A_ChangeFlag("ALLOWBOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONCEILINGS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONFLOORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONWALLS",false)
+        TNT1 A 0 A_ChangeFlag("USEBOUNCESTATE",false)
+      DeathContinue:
+        MISL B 0 A_Explode(64,128,0)
+        TNT1 A 0 A_ChangeFlag("FORCERADIUSDMG",1)
+        TNT1 A 0 A_Explode(64,128)
+		TNT1 A 1 A_SpawnItemEx("QuakeExplosionSoundDMC")
+        stop
+    }
+}
+
+actor QuakeGrenadeCoopSoundDMC : QuakeGrenadeSoundDMC
+{
+    +THRUSPECIES
+    Species "Player"
+	Damage (30)
+}
+
+actor QuakeGrenadeQuadSoundDMC : QuakeGrenadeSoundDMC
+{
+    DamageType "NotQuadded"
+    States
+    {
+      Bounce.Actor.Creature:
+	  Death:
+        TNT1 A 0 A_ChangeFlag("ALLOWBOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONCEILINGS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONFLOORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONWALLS",false)
+        TNT1 A 0 A_ChangeFlag("USEBOUNCESTATE",false)
+      DeathContinue:
+        TNT1 A 0 A_Explode(256,128,0)
+        TNT1 A 0 A_ChangeFlag("FORCERADIUSDMG",1)
+        TNT1 A 0 A_Explode(256,128)
+        TNT1 A 1 A_SpawnItemEx("QuakeExplosionSoundDMC")
+        stop
+    }
+}
+
+actor QuakeGrenadeCoopQuadSoundDMC : QuakeGrenadeQuadSoundDMC
+{
+    +THRUSPECIES
+    Species "Player"
+	Damage (120)
+}
+
 // Multi grenades
 
 actor "Grenade Launcher DOE" : "Grenade Launcher"
@@ -416,6 +505,7 @@ actor SamsaraQuakeGrenadeLauncherMultiAttackHandler : Trigger
 
       // Sound stuff
       PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupPlaySoundDMC")
         TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupPlaySoundRerelease")
       // Quake I (Original) sounds
       PickupPlaySoundOriginal:
@@ -427,11 +517,17 @@ actor SamsaraQuakeGrenadeLauncherMultiAttackHandler : Trigger
         TNT1 A 0 A_PlaySound("quakeweps/rerelease/glfire",CHAN_WEAPON)
         goto PickupAttack
 
+      // Deathmatch Classic sounds
+      PickupPlaySoundDMC:
+        TNT1 A 0 A_PlaySound("quakeweps/dmc/glfire",CHAN_WEAPON)
+        goto PickupAttack
+
       // Attack stuff
       PickupAttack:
         TNT1 A 0 A_JumpIfInventory("QuadDamagePower",1,"PickupAttackQuad")
       // Normal
       PickupAttackNormal:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackNormalDMC")
         TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupAttackNormalRerelease")
       // Quake I (Original) sounds
       PickupAttackNormalOriginal:
@@ -457,8 +553,21 @@ actor SamsaraQuakeGrenadeLauncherMultiAttackHandler : Trigger
         TNT1 A 0 A_FireCustomMissile("QuakeClusterGrnCoopSoundRerelease",0,false,0,0,0,5)
         goto PickupFinish
 
+      // Deathmatch Classic sounds
+      PickupAttackNormalDMC:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackNormalDMCCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackNormalDMCCoop")
+      PickupAttackNormalDMCDM:
+        TNT1 A 0 A_FireCustomMissile("QuakeClusterGrenadeSoundDMC",0,false,0,0,0,5)
+        goto PickupFinish
+
+      PickupAttackNormalDMCCoop:
+        TNT1 A 0 A_FireCustomMissile("QuakeClusterGrnCoopSoundDMC",0,false,0,0,0,5)
+        goto PickupFinish
+
       // Quad
       PickupAttackQuad:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackQuadDMC")
         TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupAttackQuadRerelease")
       // Quake I (Original) sounds
       PickupAttackQuadOriginal:
@@ -482,6 +591,18 @@ actor SamsaraQuakeGrenadeLauncherMultiAttackHandler : Trigger
 
       PickupAttackQuadRereleaseCoop:
         TNT1 A 0 A_FireCustomMissile("QuadClusterGrnCoopSoundRerelease",0,false,0,0,0,5)
+        goto PickupFinish
+
+      // Deathmatch Classic sounds
+      PickupAttackQuadDMC:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackQuadDMCCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackQuadDMCCoop")
+      PickupAttackQuadDMCDM:
+        TNT1 A 0 A_FireCustomMissile("QuadClusterGrenadeSoundDMC",0,false,0,0,0,5)
+        goto PickupFinish
+
+      PickupAttackQuadDMCCoop:
+        TNT1 A 0 A_FireCustomMissile("QuadClusterGrnCoopSoundDMC",0,false,0,0,0,5)
         goto PickupFinish
 
       // Finishing stuff
@@ -872,6 +993,162 @@ actor QuadTinyGrenadeSoundRerelease : QuakeTinyGrenadeSoundRerelease
 }
 
 actor QuadTinyGrnCoopSoundRerelease : QuadTinyGrenadeSoundRerelease
+{
+    +THRUSPECIES
+    Species "Player"
+    Damage (16)
+}
+
+actor QuakeClusterGrenadeSoundDMC : QuakeClusterGrenade
+{
+    States
+    {
+      Bounce.Actor.Creature:
+	  Death:
+        TNT1 A 0 A_ChangeFlag("ALLOWBOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONCEILINGS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONFLOORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONWALLS",false)
+        TNT1 A 0 A_ChangeFlag("USEBOUNCESTATE",false)
+      DeathContinue:
+        MISL B 0 A_CustomMissile("QuakeTinyGrenadeSoundDMC", 0,0,   0, 6, 70)
+        MISL B 0 A_CustomMissile("QuakeTinyGrenadeSoundDMC", 0,0,  72, 6, 70)
+        MISL B 0 A_CustomMissile("QuakeTinyGrenadeSoundDMC", 0,0, 144, 6, 70)
+        MISL B 0 A_CustomMissile("QuakeTinyGrenadeSoundDMC", 0,0, 216, 6, 70)
+        MISL B 0 A_CustomMissile("QuakeTinyGrenadeSoundDMC", 0,0, 288, 6, 70)
+        TNT1 A 1 A_SpawnItemEx("QuakeTinyExplosionSoundDMC")
+        stop
+    }
+}
+
+actor QuakeClusterGrnCoopSoundDMC : QuakeClusterGrenadeSoundDMC
+{
+    +THRUSPECIES
+    Species "Player"
+    Damage (20)
+    States
+    {
+      Bounce.Actor.Creature:
+	  Death:
+        TNT1 A 0 A_ChangeFlag("ALLOWBOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONCEILINGS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONFLOORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONWALLS",false)
+        TNT1 A 0 A_ChangeFlag("USEBOUNCESTATE",false)
+      DeathContinue:
+        MISL B 0 A_CustomMissile("QuakeTinyGrnCoopSoundDMC", 0,0,   0, 6, 70)
+        MISL B 0 A_CustomMissile("QuakeTinyGrnCoopSoundDMC", 0,0,  72, 6, 70)
+        MISL B 0 A_CustomMissile("QuakeTinyGrnCoopSoundDMC", 0,0, 144, 6, 70)
+        MISL B 0 A_CustomMissile("QuakeTinyGrnCoopSoundDMC", 0,0, 216, 6, 70)
+        MISL B 0 A_CustomMissile("QuakeTinyGrnCoopSoundDMC", 0,0, 288, 6, 70)
+        TNT1 A 1 A_SpawnItemEx("QuakeTinyExplosionSoundDMC")
+        stop
+    }
+}
+
+actor QuadClusterGrenadeSoundDMC : QuakeClusterGrenadeSoundDMC
+{
+    DamageType "NotQuadded"
+    States
+    {
+      Bounce.Actor.Creature:
+	  Death:
+        TNT1 A 0 A_ChangeFlag("ALLOWBOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONCEILINGS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONFLOORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONWALLS",false)
+        TNT1 A 0 A_ChangeFlag("USEBOUNCESTATE",false)
+      DeathContinue:
+        MISL B 0 A_CustomMissile("QuadTinyGrenadeSoundDMC", 0,0,   0, 6, random(60,80))
+        MISL B 0 A_CustomMissile("QuadTinyGrenadeSoundDMC", 0,0,  72, 6, random(60,80))
+        MISL B 0 A_CustomMissile("QuadTinyGrenadeSoundDMC", 0,0, 144, 6, random(60,80))
+        MISL B 0 A_CustomMissile("QuadTinyGrenadeSoundDMC", 0,0, 216, 6, random(60,80))
+        MISL B 0 A_CustomMissile("QuadTinyGrenadeSoundDMC", 0,0, 288, 6, random(60,80))
+        TNT1 A 1 A_SpawnItemEx("QuakeTinyExplosionSoundDMC")
+        stop
+    }
+}
+
+actor QuadClusterGrnCoopSoundDMC : QuadClusterGrenadeSoundDMC
+{
+    +THRUSPECIES
+    Species "Player"
+    Damage (80)
+    States
+    {
+      Bounce.Actor.Creature:
+	  Death:
+        TNT1 A 0 A_ChangeFlag("ALLOWBOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONCEILINGS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONFLOORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONWALLS",false)
+        TNT1 A 0 A_ChangeFlag("USEBOUNCESTATE",false)
+      DeathContinue:
+        MISL B 0 A_CustomMissile("QuadTinyGrnCoopSoundDMC", 0,0,   0, 6, random(60,80))
+        MISL B 0 A_CustomMissile("QuadTinyGrnCoopSoundDMC", 0,0,  72, 6, random(60,80))
+        MISL B 0 A_CustomMissile("QuadTinyGrnCoopSoundDMC", 0,0, 144, 6, random(60,80))
+        MISL B 0 A_CustomMissile("QuadTinyGrnCoopSoundDMC", 0,0, 216, 6, random(60,80))
+        MISL B 0 A_CustomMissile("QuadTinyGrnCoopSoundDMC", 0,0, 288, 6, random(60,80))
+        TNT1 A 1 A_SpawnItemEx("QuakeTinyExplosionSoundDMC")
+        stop
+    }
+}
+
+actor QuakeTinyGrenadeSoundDMC : QuakeTinyGrenade
+{
+    States
+    {
+      Bounce.Actor.Creature:
+	  Death:
+        TNT1 A 0 A_ChangeFlag("ALLOWBOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONCEILINGS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONFLOORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONWALLS",false)
+        TNT1 A 0 A_ChangeFlag("USEBOUNCESTATE",false)
+      DeathContinue:
+        MISL B 0 A_Explode(30, 91, 0)
+        TNT1 A 0 A_ChangeFlag("FORCERADIUSDMG",1)
+        MISL B 0 A_Explode(20, 91)
+		TNT1 A 1 A_SpawnItemEx("QuakeTinyExplosionSoundDMC")
+        stop
+    }
+}
+
+actor QuakeTinyGrnCoopSoundDMC : QuakeTinyGrenadeSoundDMC
+{
+    +THRUSPECIES
+    Species "Player"
+    Damage (4)
+}
+
+actor QuadTinyGrenadeSoundDMC : QuakeTinyGrenadeSoundDMC
+{
+    DamageType "NotQuadded"
+    States
+    {
+      Bounce.Actor.Creature:
+	  Death:
+        TNT1 A 0 A_ChangeFlag("ALLOWBOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONACTORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONCEILINGS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONFLOORS",false)
+        TNT1 A 0 A_ChangeFlag("BOUNCEONWALLS",false)
+        TNT1 A 0 A_ChangeFlag("USEBOUNCESTATE",false)
+      DeathContinue:
+        MISL B 0 A_Explode(120, 91, 0)
+        TNT1 A 0 A_ChangeFlag("FORCERADIUSDMG",1)
+        MISL B 0 A_Explode(80, 91)
+        TNT1 A 1 A_SpawnItemEx("QuakeTinyExplosionSoundDMC")
+        stop
+    }
+}
+
+actor QuadTinyGrnCoopSoundDMC : QuadTinyGrenadeSoundDMC
 {
     +THRUSPECIES
     Species "Player"
