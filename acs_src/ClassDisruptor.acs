@@ -29,30 +29,36 @@ script "DisruptorTerablastFlash" (void)
     FadeRange(255, 255, 255, 1.0, 0, 0, 0, 0.0, 0.5);
 }
 
-str DisruptorPsionic[4][2] = 
+str DisruptorPsionic[4][2] =
 { 
-	{ "DisruptorDrain", "Drain" },
-	{ "DisruptorHealPSI", "Heal" },
-	{ "DisruptorEnergyBall", "Blast" },
-	{ "DisruptorTeraBall", "TeraBlast" }
+    {"DisruptorDrain",      "Drain"},
+    {"DisruptorHealPSI",    "Heal"},
+    {"DisruptorEnergyBall", "Blast"},
+    {"DisruptorTeraBall",   "TeraBlast"}
 };
 
 script "DisruptorPsionics" (int key)
 {
-	if(key)
-	{
-		int attemptCounter = 0;
-		if(CheckInventory("DisruptorPsionicSelected") == 3) SetInventory("DisruptorPsionicSelected",0);
-		else GiveInventory("DisruptorPsionicSelected",1);
-		until(CheckInventory(DisruptorPsionic[CheckInventory("DisruptorPsionicSelected")][0]))
-		{			
-			if(attemptCounter > 3) break;
-			if(CheckInventory("DisruptorPsionicSelected") == 3) SetInventory("DisruptorPsionicSelected",0);
-			else GiveInventory("DisruptorPsionicSelected",1);
-		}
-		SetFont("CMPBDISRUP");
-		SetHudSize(640,480,1);
-		HudMessage(s:DisruptorPsionic[CheckInventory("DisruptorPsionicSelected")][1]; HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN, 55, CR_UNTRANSLATED, 320.0, 384.0, 1.0);
-	}
-	else UseInventory(DisruptorPsionic[CheckInventory("DisruptorPsionicSelected")][0]);
+    int maxpsionics = 3;
+
+    if (key)
+    {
+        int attemptCounter = 0;
+
+        if (CheckInventory("DisruptorPsionicSelected") >= maxpsionics) { SetInventory("DisruptorPsionicSelected", 0); }
+        else { GiveInventory("DisruptorPsionicSelected", 1); }
+
+        until (CheckInventory(DisruptorPsionic[CheckInventory("DisruptorPsionicSelected")][0]))
+        {            
+            if (attemptCounter > maxpsionics) { break; }
+
+            if (CheckInventory("DisruptorPsionicSelected") >= maxpsionics) { SetInventory("DisruptorPsionicSelected", 0); }
+            else { GiveInventory("DisruptorPsionicSelected", 1); }
+        }
+
+        SetFont("CMPBDISRUP");
+        SetHudSize(640, 480, 1);
+        HudMessage(s:DisruptorPsionic[CheckInventory("DisruptorPsionicSelected")][1]; HUDMSG_LAYER_OVERHUD|HUDMSG_PLAIN, 55, CR_UNTRANSLATED, 320.0, 384.0, 1.0);
+    }
+    else { UseInventory(DisruptorPsionic[CheckInventory("DisruptorPsionicSelected")][0]); }
 }
