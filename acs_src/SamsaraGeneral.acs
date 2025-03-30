@@ -2249,6 +2249,7 @@ Script "Samsara_ResetInventory" (void)
 			SetInventory("Totenkopf_IHaveFlamethrower", 0);
 			SetInventory("Totenkopf_FlameThrowerFuel", 0);
 			TakeInventory("WolfenAmmoCrate", INTMAX);
+			TakeInventory("WolfenAmmoCrateLost", INTMAX);
 			SetInventory("Wolfen_IHaveAmmoCrate", 0);
 			TakeInventory("Totenkopf_MG42", INTMAX);
 			SetInventory("Totenkopf_IHaveMG42", 0);
@@ -3456,6 +3457,7 @@ script "Samsara_FillInventory" (void)
 			GiveInventory("Wolfen_IHaveDualChainguns",1);
 			GiveInventory("Wolfen_IHaveExtraLife",9);
 			GiveInventory("Totenkopf_IHaveFlamethrower",1);
+			if (CheckInventory("WolfenClassMode") == 1) { GiveInventory("WolfenAmmoCrateLost", 9); }
 			GiveInventory("Wolfen_IHaveAmmoCrate",9);
 			GiveInventory("Totenkopf_IHaveMG42",1);
 			GiveInventory("Totenkopf_IHaveScope",1);
@@ -7976,7 +7978,6 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
             break;
 
           case 0: // Original
-          case 1: // Lost Missions
             switch (unum)
             {
               default:
@@ -8006,6 +8007,64 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
                     if (CheckInventory("WolfenAmmoCrate") < 9)
                     {
                         GiveInventory("WolfenAmmoCrate", 1);
+                        result = 1;
+                    }
+                }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    if (unum == SLOT_UNIQUE2 || startmode == 0 || startmode == 1 || startmode == 3)
+                    {
+                        if (CheckInventory("Wolfen_IHaveAmmoCrate") < 9) { GiveInventory("Wolfen_IHaveAmmoCrate", 1); }
+                    }
+
+                    switch (unum)
+                    {
+                      case SLOT_UNIQUE2:
+                        GiveInventory("Totenkopf_IHaveMG42", 1);
+                        break;
+
+                      case SLOT_UNIQUE3:
+                        GiveInventory("Totenkopf_IHaveScope", 1);
+                        break;
+                    }
+                }
+                break;
+            }
+            break;
+
+          case 1: // Lost Missions
+            switch (unum)
+            {
+              default:
+                result = -1;
+                break;
+
+              case SLOT_UNIQUE1:
+                if (CheckInventory("WolfExtraLife") < 9)
+                {
+                    GiveInventory("WolfExtraLife", 1);
+                    result = 1;
+                }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    if (CheckInventory("Wolfen_IHaveExtraLife") < 9) { GiveInventory("Wolfen_IHaveExtraLife", 1); }
+                    GiveInventory("Totenkopf_IHaveFlamethrower", 1);
+                }
+                break;
+
+              case SLOT_UNIQUE2:
+              case SLOT_UNIQUE3:
+                if (unum == SLOT_UNIQUE2 || startmode == 0 || startmode == 1 || startmode == 3) // do not give again if giving all uniques on spawn
+                {
+                    if (CheckInventory("WolfenAmmoCrateLost") < 9)
+                    {
+                        GiveInventory("WolfenAmmoCrateLost", 1);
                         result = 1;
                     }
                 }
