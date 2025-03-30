@@ -2234,6 +2234,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Totenkopf_STGFiredOnce", INTMAX);
 			SetInventory("Totenkopf_IHaveSTG44", 0);
 			TakeInventory("  Chaingun  ", INTMAX);
+			SetInventory("Wolfen_IHaveSlot4", 0);
 			TakeInventory("Totenkopf_MP40Dual", INTMAX);
 			SetInventory("Totenkopf_IHaveDualMP40s", 0);
 			TakeInventory("  Dual Chainguns  ", INTMAX);
@@ -3451,6 +3452,7 @@ script "Samsara_FillInventory" (void)
 			GiveInventory("Totenkopf_IHaveMauser",1);
 			GiveInventory("Totenkopf_IHaveDualMausers",1);
 			GiveInventory("Totenkopf_IHaveSTG44",1);
+			GiveInventory("Wolfen_IHaveSlot4",1);
 			GiveInventory("Wolfen_IHaveDualChainguns",1);
 			GiveInventory("Wolfen_IHaveExtraLife",9);
 			GiveInventory("Totenkopf_IHaveFlamethrower",1);
@@ -4893,22 +4895,49 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 if (!CheckInventory("  Chaingun  "))
                 {
                     GiveInventory("  Chaingun  ", 1);
+                    GiveInventory("Clip", dmextraammo ? 20 * 5 / 2 : 20);
 
-                    if (!CheckInventory("Totenkopf_IHaveDualMP40s") && dualgiveboth) { GiveInventory("Totenkopf_IHaveDualMP40s", 1); }
-
-                    if (duallimiting) { GiveInventory("Totenkopf_MP40LevelLimiter", 1); }
-
-                    if (dropped <= 0 && startmode == 0 && weaponstay)
+                    if (!CheckInventory("  Dual Chainguns  ")) // we don't have totenkopf's single MP40 stored
                     {
-                        setcoords = true;
-                        settimer = true;
+                        if (!CheckInventory("Totenkopf_IHaveDualMP40s") && dualgiveboth) { GiveInventory("Totenkopf_IHaveDualMP40s", 1); }
+
+                        if (duallimiting) { GiveInventory("Totenkopf_MP40LevelLimiter", 1); }
+
+                        if (dropped <= 0 && startmode == 0 && weaponstay)
+                        {
+                            setcoords = true;
+                            settimer = true;
+                        }
+                    } else if (!CheckInventory("Totenkopf_IHaveDualMP40s") && !duallimited && (dualpickupmode <= 3 || (dualpickupmode >= 4 && dropped <= 1))) { // we have totenkopf's single MP40 stored; exploit preventing measure
+                        if (dualpickupmode == 1)
+                        {
+                            inventoryX = CheckInventory("Totenkopf_MP40PickedUpX") - 65536;
+                            inventoryY = CheckInventory("Totenkopf_MP40PickedUpY") - 65536;
+                            inventoryZ = CheckInventory("Totenkopf_MP40PickedUpZ") - 65536;
+
+                            dualreqcheck = abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance;
+                        }
+                        else if (dualpickupmode == 2) { dualreqcheck = Timer() >= CheckInventory("Totenkopf_MP40LastPickupTime"); }
+
+                        if (dualreqcheck || dropped >= 1 || startmode != 0 || !weaponstay)
+                        {
+                            GiveInventory("Totenkopf_IHaveDualMP40s", 1);
+
+                            if (duallimiting) { GiveInventory("Totenkopf_MP40LevelLimiter", 1); }
+
+                            if (dropped <= 0 && startmode == 0 && weaponstay)
+                            {
+                                setcoords = true;
+                                settimer = true;
+                            }
+                        }
                     }
 
                     result = 1;
                 } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
-                    GiveInventory("  Chaingun  ", 1);
+                    GiveInventory("Clip", 20);
 
-                    if (!CheckInventory("Totenkopf_IHaveDualMP40s") && !duallimited)
+                    if (!CheckInventory("Totenkopf_IHaveDualMP40s") && !duallimited && (dualpickupmode <= 3 || (dualpickupmode >= 4 && dropped <= 1)))
                     {
                         GiveInventory("Totenkopf_IHaveDualMP40s", 1);
 
@@ -4924,6 +4953,10 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     result = 1;
                 }
 
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1) { GiveInventory("Wolfen_IHaveSlot4", 1); }
+
                 if (setcoords)
                 {
                     SetInventory("Totenkopf_MP40PickedUpX", invokerX + 65536);
@@ -4935,19 +4968,81 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 break;
 
               case SLOT_MINIGUN:
+                duallimited = duallimiting && CheckInventory("Totenkopf_MP40LevelLimiter");
+
                 if (!CheckInventory("  Dual Chainguns  "))
                 {
                     GiveInventory("  Dual Chainguns  ", 1);
-                    GiveInventory("Clip", dmextraammo ? 20 * 5 / 2 : 20);
+                    GiveInventory("Clip", dmextraammo ? 40 * 5 / 2 : 40);
+
+                    if (!CheckInventory("  Chaingun  ")) // we don't have totenkopf's single MP40 stored
+                    {
+                        if (!CheckInventory("Totenkopf_IHaveDualMP40s") && dualgiveboth) { GiveInventory("Totenkopf_IHaveDualMP40s", 1); }
+
+                        if (duallimiting) { GiveInventory("Totenkopf_MP40LevelLimiter", 1); }
+
+                        if (dropped <= 0 && startmode == 0 && weaponstay)
+                        {
+                            setcoords = true;
+                            settimer = true;
+                        }
+                    } else if (!CheckInventory("Totenkopf_IHaveDualMP40s") && !duallimited && (dualpickupmode <= 3 || (dualpickupmode >= 4 && dropped <= 1))) { // we have totenkopf's single MP40 stored; exploit preventing measure
+                        if (dualpickupmode == 1)
+                        {
+                            inventoryX = CheckInventory("Totenkopf_MP40PickedUpX") - 65536;
+                            inventoryY = CheckInventory("Totenkopf_MP40PickedUpY") - 65536;
+                            inventoryZ = CheckInventory("Totenkopf_MP40PickedUpZ") - 65536;
+
+                            dualreqcheck = abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance;
+                        }
+                        else if (dualpickupmode == 2) { dualreqcheck = Timer() >= CheckInventory("Totenkopf_MP40LastPickupTime"); }
+
+                        if (dualreqcheck || dropped >= 1 || startmode != 0 || !weaponstay)
+                        {
+                            GiveInventory("Totenkopf_IHaveDualMP40s", 1);
+
+                            if (duallimiting) { GiveInventory("Totenkopf_MP40LevelLimiter", 1); }
+
+                            if (dropped <= 0 && startmode == 0 && weaponstay)
+                            {
+                                setcoords = true;
+                                settimer = true;
+                            }
+                        }
+                    }
+
                     result = 1;
                 } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
-                    GiveInventory("Clip", 20);
+                    GiveInventory("Clip", 40);
+
+                    if (!CheckInventory("Totenkopf_IHaveDualMP40s") && !duallimited && (dualpickupmode <= 3 || (dualpickupmode >= 4 && dropped <= 1)))
+                    {
+                        GiveInventory("Totenkopf_IHaveDualMP40s", 1);
+
+                        if (duallimiting) { GiveInventory("Totenkopf_MP40LevelLimiter", 1); }
+
+                        if (dropped <= 0 && startmode == 0 && weaponstay)
+                        {
+                            setcoords = true;
+                            settimer = true;
+                        }
+                    }
+
                     result = 1;
                 }
 
                 if (startmode != 0) { result = 1; }
 
                 if (result == 1) { GiveInventory("Wolfen_IHaveDualChainguns", 1); }
+
+                if (setcoords)
+                {
+                    SetInventory("Totenkopf_MP40PickedUpX", invokerX + 65536);
+                    SetInventory("Totenkopf_MP40PickedUpY", invokerY + 65536);
+                    SetInventory("Totenkopf_MP40PickedUpZ", invokerZ + 65536);
+                }
+
+                if (settimer) { SetInventory("Totenkopf_MP40LastPickupTime", Timer() + dualpickuptimer); }
                 break;
             }
             break;
@@ -5074,12 +5169,13 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 if (!CheckInventory("  Chaingun  "))
                 {
                     GiveInventory("  Chaingun  ", 1);
+                    GiveInventory("Clip", dmextraammo ? 20 * 5 / 2 : 20);
 
                     if (!CheckInventory("Totenkopf_IHaveDualMP40s") && dualgiveboth)
                     {
-                        GiveInventory("  Chaingun  ", 1);
                         GiveInventory("Totenkopf_MP40Dual", 1);
                         GiveInventory("Totenkopf_IHaveDualMP40s", 1);
+                        GiveInventory("Clip", 20);
                     }
 
                     if (duallimiting) { GiveInventory("Totenkopf_MP40LevelLimiter", 1); }
@@ -5104,9 +5200,9 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
 
                     if (dualreqcheck || dropped >= 1 || startmode != 0 || !weaponstay)
                     {
-                        GiveInventory("  Chaingun  ", 1);
                         GiveInventory("Totenkopf_MP40Dual", 1);
                         GiveInventory("Totenkopf_IHaveDualMP40s", 1);
+                        GiveInventory("Clip", 20);
 
                         if (duallimiting) { GiveInventory("Totenkopf_MP40LevelLimiter", 1); }
 
@@ -5119,8 +5215,25 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                         result = 1;
                     }
                 } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
-                    GiveInventory("  Chaingun  ", 1);
+                    GiveInventory("Clip", 20);
                     result = 1;
+                }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1)
+                {
+                    switch (slot)
+                    {
+                      case SLOT_CHAINGUN:
+                        GiveInventory("Wolfen_IHaveSlot4", 1);
+                        break;
+
+                      case SLOT_MINIGUN:
+                        GiveInventory("Wolfen_IHaveDualChainguns", 1);
+                        GiveInventory("GotWeapon4", 1);
+                        break;
+                    }
                 }
 
                 if (setcoords)
@@ -5129,17 +5242,6 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     SetInventory("Totenkopf_MP40PickedUpY", invokerY + 65536);
                     SetInventory("Totenkopf_MP40PickedUpZ", invokerZ + 65536);
                 }
-
-                if (result == 1)
-                {
-                    switch (slot)
-                    {
-                      case SLOT_MINIGUN:
-                        GiveInventory("Wolfen_IHaveDualChainguns", 1);
-                        break;
-                    }
-                }
-                break;
 
                 if (settimer) { SetInventory("Totenkopf_MP40LastPickupTime", Timer() + dualpickuptimer); }
                 break;

@@ -1,3 +1,6 @@
+actor Wolfen_IHaveSlot4 : Boolean {}
+actor Totenkopf_IHaveDualMP40s : Boolean {}
+
 actor "  Chaingun  ": InstantSwitchWeapon
 {
     Weapon.SelectionOrder 1700
@@ -5,7 +8,7 @@ actor "  Chaingun  ": InstantSwitchWeapon
 	Weapon.SlotPriority 0
     Inventory.PickUpSound "wolfen/weaponget"
     Weapon.AmmoUse 1
-    Weapon.AmmoGive 20
+    //Weapon.AmmoGive 20
     Weapon.AmmoType "Clip"
     +DONTBOB
     +INVENTORY.UNDROPPABLE
@@ -26,7 +29,10 @@ actor "  Chaingun  ": InstantSwitchWeapon
         TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"ReadyCTK")
         TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"ReadyLost")
       ReadyOriginal:
+        TNT1 A 0 A_JumpIfInventory("  Dual Chainguns  ",1,2)
         WCHN A 1 A_WeaponReady(WRF_NOSECONDARY)
+        goto Ready
+        WCHN A 1 A_WeaponReady
         goto Ready
 
       Fire:
@@ -78,10 +84,18 @@ actor "  Chaingun  ": InstantSwitchWeapon
         WCHN E 2 A_ReFire
         goto Ready
 
+      AltFire:
+        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"AltFireCTK")
+        WCHN A 8 A_JumpIfInventory("WolfenClassMode",1,"AltFireLost")
+        TNT1 A 0 A_SelectWeapon("  Dual Chainguns  ")
+        goto Deselect
 
       // Lost Missions
       ReadyLost:
+        TNT1 A 0 A_JumpIfInventory("  Dual Chainguns  ",1,2)
         WCHN F 1 A_WeaponReady(WRF_NOSECONDARY)
+        goto Ready
+        WCHN F 1 A_WeaponReady
         goto Ready
 
       FireLost:
@@ -122,6 +136,11 @@ actor "  Chaingun  ": InstantSwitchWeapon
         WCHN J 2 A_ReFire
         goto Ready
 
+      AltFireLost:
+        WCHN F 8
+        TNT1 A 0 A_SelectWeapon("  Dual Chainguns  ")
+        goto Deselect
+
       // Castle Totenkopf SDL (MP40 Submachine Gun (Single))
       ReadyCTK:
         TNT1 A 0 A_JumpIfInventory("Totenkopf_MP40Dual",1,2)
@@ -138,7 +157,7 @@ actor "  Chaingun  ": InstantSwitchWeapon
         TK04 E 2 A_ReFire
         goto Ready
 
-      AltFire:
+      AltFireCTK:
         TK04 A 8
         TNT1 A 0 A_SelectWeapon("Totenkopf_MP40Dual")
         goto Deselect
