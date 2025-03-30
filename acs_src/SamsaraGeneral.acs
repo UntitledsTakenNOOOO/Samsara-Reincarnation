@@ -2236,6 +2236,8 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("  Chaingun  ", INTMAX);
 			TakeInventory("Totenkopf_MP40Dual", INTMAX);
 			SetInventory("Totenkopf_IHaveDualMP40s", 0);
+			TakeInventory("  Dual Chainguns  ", INTMAX);
+			SetInventory("Wolfen_IHaveDualChainguns", 0);
 			TakeInventory(" Rocket Launcher ", INTMAX);
 			TakeInventory(" Flamethrower ", INTMAX);
 			TakeInventory("Spear of Destiny", INTMAX);
@@ -3449,6 +3451,7 @@ script "Samsara_FillInventory" (void)
 			GiveInventory("Totenkopf_IHaveMauser",1);
 			GiveInventory("Totenkopf_IHaveDualMausers",1);
 			GiveInventory("Totenkopf_IHaveSTG44",1);
+			GiveInventory("Wolfen_IHaveDualChainguns",1);
 			GiveInventory("Wolfen_IHaveExtraLife",9);
 			GiveInventory("Totenkopf_IHaveFlamethrower",1);
 			GiveInventory("Wolfen_IHaveAmmoCrate",9);
@@ -4930,6 +4933,22 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
 
                 if (settimer) { SetInventory("Totenkopf_MP40LastPickupTime", Timer() + dualpickuptimer); }
                 break;
+
+              case SLOT_MINIGUN:
+                if (!CheckInventory("  Dual Chainguns  "))
+                {
+                    GiveInventory("  Dual Chainguns  ", 1);
+                    GiveInventory("Clip", dmextraammo ? 20 * 5 / 2 : 20);
+                    result = 1;
+                } else if (CheckInventory("Clip") < GetAmmoCapacity("Clip") / tosseddiv && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Clip", 20);
+                    result = 1;
+                }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1) { GiveInventory("Wolfen_IHaveDualChainguns", 1); }
+                break;
             }
             break;
 
@@ -5049,6 +5068,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 break;
 
               case SLOT_CHAINGUN:
+              case SLOT_MINIGUN:
                 duallimited = duallimiting && CheckInventory("Totenkopf_MP40LevelLimiter");
 
                 if (!CheckInventory("  Chaingun  "))
@@ -5109,6 +5129,17 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     SetInventory("Totenkopf_MP40PickedUpY", invokerY + 65536);
                     SetInventory("Totenkopf_MP40PickedUpZ", invokerZ + 65536);
                 }
+
+                if (result == 1)
+                {
+                    switch (slot)
+                    {
+                      case SLOT_MINIGUN:
+                        GiveInventory("Wolfen_IHaveDualChainguns", 1);
+                        break;
+                    }
+                }
+                break;
 
                 if (settimer) { SetInventory("Totenkopf_MP40LastPickupTime", Timer() + dualpickuptimer); }
                 break;
