@@ -2233,7 +2233,6 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Mauser Rifle", INTMAX);
 			TakeInventory("Totenkopf_STG44", INTMAX);
 			TakeInventory("Totenkopf_STGFiredOnce", INTMAX);
-			SetInventory("Totenkopf_IHaveSTG44", 0);
 			TakeInventory("  Chaingun  ", INTMAX);
 			SetInventory("Wolfen_IHaveSlot4", 0);
 			TakeInventory("Totenkopf_MP40Dual", INTMAX);
@@ -3452,7 +3451,6 @@ script "Samsara_FillInventory" (void)
 			GiveInventory("Totenkopf_IHaveDualMP40s",1);
 			GiveInventory("Totenkopf_IHaveMauser",1);
 			GiveInventory("Totenkopf_IHaveDualMausers",1);
-			GiveInventory("Totenkopf_IHaveSTG44",1);
 			GiveInventory("Wolfen_IHaveSlot4",1);
 			GiveInventory("Wolfen_IHaveDualChainguns",1);
 			GiveInventory("Wolfen_IHaveExtraLife",9);
@@ -4890,10 +4888,6 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 }
 
                 if (startmode >= 2) { GiveInventory("Clip", GetAmmoCapacity("Clip")); }
-
-                if (startmode != 0) { result = 1; }
-
-                if (result == 1) { GiveInventory("Totenkopf_IHaveSTG44", 1); }
                 break;
 
               case SLOT_CHAINGUN:
@@ -5163,10 +5157,6 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 }
 
                 if (startmode >= 2) { GiveInventory("Shell", GetAmmoCapacity("Shell")); }
-
-                if (startmode != 0) { result = 1; }
-
-                if (result == 1) { GiveInventory("Totenkopf_IHaveSTG44", 1); }
                 break;
 
               case SLOT_CHAINGUN:
@@ -7550,6 +7540,9 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
     // Alternate class
     int altclasschoice = 0;
 
+    // Shared alternate class item (this saves up on duplicating cases)
+    str shareditem = "Placeholder";
+
     switch (classnum)
     {
       default:
@@ -7983,64 +7976,12 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
             break;
 
           case 0: // Original
-            switch (unum)
-            {
-              default:
-                result = -1;
-                break;
-
-              case SLOT_UNIQUE1:
-                if (CheckInventory("WolfExtraLife") < 9)
-                {
-                    GiveInventory("WolfExtraLife", 1);
-                    result = 1;
-                }
-
-                if (startmode != 0) { result = 1; }
-
-                if (result == 1)
-                {
-                    if (CheckInventory("Wolfen_IHaveExtraLife") < 9) { GiveInventory("Wolfen_IHaveExtraLife", 1); }
-                    GiveInventory("Totenkopf_IHaveFlamethrower", 1);
-                }
-                break;
-
-              case SLOT_UNIQUE2:
-              case SLOT_UNIQUE3:
-                if (unum == SLOT_UNIQUE2 || startmode == 0 || startmode == 1 || startmode == 3) // do not give again if giving all uniques on spawn
-                {
-                    if (CheckInventory("WolfenAmmoCrate") < 9)
-                    {
-                        GiveInventory("WolfenAmmoCrate", 1);
-                        result = 1;
-                    }
-                }
-
-                if (startmode != 0) { result = 1; }
-
-                if (result == 1)
-                {
-                    if (unum == SLOT_UNIQUE2 || startmode == 0 || startmode == 1 || startmode == 3)
-                    {
-                        if (CheckInventory("Wolfen_IHaveAmmoCrate") < 9) { GiveInventory("Wolfen_IHaveAmmoCrate", 1); }
-                    }
-
-                    switch (unum)
-                    {
-                      case SLOT_UNIQUE2:
-                        GiveInventory("Totenkopf_IHaveMG42", 1);
-                        break;
-
-                      case SLOT_UNIQUE3:
-                        GiveInventory("Totenkopf_IHaveScope", 1);
-                        break;
-                    }
-                }
-                break;
-            }
-            break;
+            if ((unum == SLOT_UNIQUE2 || unum == SLOT_UNIQUE3) && !StrCmp(shareditem, "Placeholder")) { shareditem = "WolfenAmmoCrate"; }
+            // Fallthrough (case (haha) in point)
 
           case 1: // Lost Missions
+            if ((unum == SLOT_UNIQUE2 || unum == SLOT_UNIQUE3) && !StrCmp(shareditem, "Placeholder")) { shareditem = "WolfenAmmoCrateLost"; }
+
             switch (unum)
             {
               default:
@@ -8067,9 +8008,9 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
               case SLOT_UNIQUE3:
                 if (unum == SLOT_UNIQUE2 || startmode == 0 || startmode == 1 || startmode == 3) // do not give again if giving all uniques on spawn
                 {
-                    if (CheckInventory("WolfenAmmoCrateLost") < 9)
+                    if (CheckInventory(shareditem) < 9)
                     {
-                        GiveInventory("WolfenAmmoCrateLost", 1);
+                        GiveInventory(shareditem, 1);
                         result = 1;
                     }
                 }
@@ -8201,8 +8142,6 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
         break;
 
       case CLASS_DUKE:
-        str steroidsitem = "Placeholder"; // this variable saves up on duplicating cases
-
         switch (altclasschoice)
         {
           default:
@@ -8210,11 +8149,11 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
             break;
 
           case 0: // Original
-            if (unum == SLOT_UNIQUE1 && !StrCmp(steroidsitem, "Placeholder")) { steroidsitem = "DukePortSteroids"; }
-            // Fallthrough (case (haha) in point)
+            if (unum == SLOT_UNIQUE1 && !StrCmp(shareditem, "Placeholder")) { shareditem = "DukePortSteroids"; }
+            // Fallthrough
 
           case 1: // Life's a Beach
-            if (unum == SLOT_UNIQUE1 && !StrCmp(steroidsitem, "Placeholder")) { steroidsitem = "DukePortSteroidsLAB"; }
+            if (unum == SLOT_UNIQUE1 && !StrCmp(shareditem, "Placeholder")) { shareditem = "DukePortSteroidsLAB"; }
 
             switch (unum)
             {
@@ -8225,7 +8164,7 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
               case SLOT_UNIQUE1:
                 if (!CheckInventory("DukePortJetpack") || CheckInventory("DukeJetpackFuel") < 100)
                 {
-                    if (!GetCVar("samsara_banjetpack") || !CheckInventory(steroidsitem) || CheckInventory("DukeSteroidsFuel") < 100) // if banjetpack is on, and we have full steroids/hot sauce, fail the pickup
+                    if (!GetCVar("samsara_banjetpack") || !CheckInventory(shareditem) || CheckInventory("DukeSteroidsFuel") < 100) // if banjetpack is on, and we have full steroids/hot sauce, fail the pickup
                     {
                         GiveInventory("DukeJetpackFuel", 100);
                         GiveInventory("DukePortJetpack", 1);
@@ -8279,7 +8218,7 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
             break;
 
           case 2: // Duke Nukem 64
-            if (!StrCmp(steroidsitem, "Placeholder")) { steroidsitem = "DukePortSteroids64"; }
+            if (!StrCmp(shareditem, "Placeholder")) { shareditem = "DukePortSteroids64"; }
 
             switch (unum)
             {
@@ -8294,7 +8233,7 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
                 {
                     if (!CheckInventory("DukePortJetpack64") || CheckInventory("DukeJetpackFuel") < 100)
                     {
-                        if (!GetCVar("samsara_banjetpack") || !CheckInventory(steroidsitem) || CheckInventory("DukeSteroidsFuel") < 100) // if banjetpack is on, and we have full vitamin x, fail the pickup
+                        if (!GetCVar("samsara_banjetpack") || !CheckInventory(shareditem) || CheckInventory("DukeSteroidsFuel") < 100) // if banjetpack is on, and we have full vitamin x, fail the pickup
                         {
                             GiveInventory("DukeJetpackFuel", 100);
                             GiveInventory("DukePortJetpack64", 1);
