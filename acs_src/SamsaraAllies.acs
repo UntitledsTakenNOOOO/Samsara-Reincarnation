@@ -68,14 +68,13 @@ function void createCellCheckers(str cellCheckClass)
 	}
 }
 
-function void createSpawnCheckers(str spawnCheckClass, int cvarValueChars, int cvarValueItems)
+function void createSpawnCheckers(str spawnCheckClass, int cvarValue)
 {
-	int chanceToSpawnChars = (cvarValueChars * cvarValueChars)/10;
-	int chanceToSpawnItems = (cvarValueItems * cvarValueItems)/10;
+	int chanceToSpawn = (cvarValue * cvarValue)/10;
 
 	int x = GetActorX(0);
 	int y = GetActorY(0);
-	int newTid = UniqueTID();	
+	int newTid = UniqueTID();
 
 	for (int a = -512; a < 512; a += 64)
 	{
@@ -83,21 +82,12 @@ function void createSpawnCheckers(str spawnCheckClass, int cvarValueChars, int c
 
 		for (int b = -512; b < 512; b += 64)
 		{
-			int yPos = y + (b * 1.0);
-			int randomValue = random(1,1500);
-			if (randomValue <= chanceToSpawnChars && randomValue <= chanceToSpawnItems && pickRandos)
+			if (random(1,1500) <= chanceToSpawn)
 			{
-				SpawnForced(spawnCheckClass, xPos, yPos, 0, newtid);	
-				GiveActorInventory(newtid,"ValidSpawnCheckAll",1);
-			}
-			else if (randomValue <= chanceToSpawnChars && pickRandos)
-			{
-				SpawnForced(spawnCheckClass, xPos, yPos, 0, newtid);
-			}
-			else if (randomValue <= chanceToSpawnItems)
-			{
-				SpawnForced(spawnCheckClass, xPos, yPos, 0, newtid);
-				GiveActorInventory(newtid,"ValidSpawnCheckItems",1);
+				int yPos = y + (b * 1.0);
+
+				SpawnForced("DetermineValidSpawnTestObject", xPos, yPos, 0, newtid);
+				Spawn(spawnCheckClass, xPos, yPos, GetActorFloorZ(newtid), 0);
 			}
 		}
 	}
@@ -106,22 +96,22 @@ function void createSpawnCheckers(str spawnCheckClass, int cvarValueChars, int c
 Script "DetermineValidSpawn" (void)
 {
 	// Don't bother with checking spawn conditions when random characters won't spawn anyway
-	if ((GetCVar("samsara_randomcharacters") + GetCVar("samsara_randomitems")) <= 0)
+	if (GetCVar("samsara_randomcharacters") <= 0)
 	{
 		terminate;
 	}
-	str cellCheckClass = GetCVar("samsara_zscriptready") >= 1 ? "DetermineValidCellZS" : "DetermineValidCell";
+
+	str cellCheckClass = GetCVar("samsara_zscriptready") == 1 ? "DetermineValidCellZS" : "DetermineValidCell";
 
 	createCellCheckers(cellCheckClass);
 }
 
 script "CellDoneScanning" (void)
 {
-	str spawnCheckClass = GetCVar("samsara_zscriptready") >= 1 ? "DetermineValidSpawnZS" : "DetermineValidSpawn";
+	str spawnCheckClass = GetCVar("samsara_zscriptready") == 1 ? "DetermineValidSpawnZS" : "DetermineValidSpawn";
 	int randomCharactersCVar = GetCVar("samsara_randomcharacters");
-	int randomItemsCVar = GetCVar("samsara_randomitems");
 
-	createSpawnCheckers(spawnCheckClass, randomCharactersCVar, randomItemsCVar);
+	createSpawnCheckers(spawnCheckClass, randomCharactersCVar);
 }
 
 script "IsThisSpawnSpotorCell" (int type)
@@ -186,7 +176,8 @@ script "HeroOnMap" Open
 		}
 	}
 
-	ACS_NamedExecuteWithResult("DetermineValidSpawn",0,0,0,0);
+	if(pickrandos == true)
+		ACS_NamedExecuteWithResult("DetermineValidSpawn",0,0,0,0);
 }
 
 Script "Samsara2689" (void)  //2689
@@ -406,6 +397,7 @@ Script "Samsara2689" (void)  //2689
 					SpawnSpotFacing("Hexen2_Sheep", 0, 0);
 					break;
 			}
+			Thing_Remove(0);
 			terminate;
 		}
 		else
@@ -746,6 +738,51 @@ Script "Samsara_AllyHealthRegen" (void)
 	}
 }
 
+Script "DetermineValidSpawnItems" (void)
+{
+	// Don't bother with checking spawn conditions when random items won't spawn anyway
+	if (GetCVar("samsara_randomitems") <= 0)
+	{
+		terminate;
+	}
+
+	str cellCheckClass = GetCVar("samsara_zscriptready") == 1 ? "DetermineValidCellItemsZS" : "DetermineValidCellItems";
+
+	createCellCheckers(cellCheckClass);
+}
+
+script "CellDoneScanningItems" (void)
+{
+	str spawnCheckClass = GetCVar("samsara_zscriptready") == 1 ? "DetermineValidSpawnItemsZS" : "DetermineValidSpawnItems";
+	int randomItemsCVar = GetCVar("samsara_randomitems");
+
+	createSpawnCheckers(spawnCheckClass, randomItemsCVar);
+}
+
+script "ItemsOnMap" Open
+{
+	// Unlike the misc. characters, we only need to check for the titlemap
+	if(GameType () == GAME_TITLE_MAP) { terminate; }
+
+	int clients = PlayerCount();
+	int playervalue;
+
+	for(int p = 0; p < clients; p++)
+	{
+		if(PlayerInGame(p) == true)
+		{
+			pickrandomitems = 1;
+		}
+		else
+		{
+			clients += 1;
+		}
+	}
+
+	if(pickrandomitems == true)
+		ACS_NamedExecuteWithResult("DetermineValidSpawnItems",0,0,0,0);
+}
+
 Script "Samsara2689_Items" (void)
 {
 	int myPosX = GetActorX(0);
@@ -814,6 +851,7 @@ Script "Samsara2689_Items" (void)
 					break;
 			}
 		}
+		Thing_Remove(0);
 		terminate;
 
 		maxAttempts++;
