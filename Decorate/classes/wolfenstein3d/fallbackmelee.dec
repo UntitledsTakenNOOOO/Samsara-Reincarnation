@@ -1,6 +1,8 @@
 // Fallback Melee
 
-actor Knife: InstantSwitchWeapon
+// Original/Lost Missions
+
+actor Knife : InstantSwitchWeapon
 {
     Weapon.Kickback 0
     Weapon.SelectionOrder 2200
@@ -24,7 +26,6 @@ actor Knife: InstantSwitchWeapon
 
       // Original
       Ready:
-        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"ReadyCTK")
         TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"ReadyLost")
       ReadyOriginal:
         //TNT1 A 0 A_JumpIfInventory("BJUberKnife",1,"ReadyUberOriginal")
@@ -39,7 +40,6 @@ actor Knife: InstantSwitchWeapon
         goto Ready
 
       Fire:
-        TNT1 A 0 A_JumpIfInventory("WolfenClassMode",2,"FireCTK")
         TNT1 A 0 A_JumpIfInventory("WolfenClassMode",1,"FireLost")
       FireOriginal:
         //TNT1 A 0 A_JumpIfInventory("BJUberKnife",1,"FireUberOriginal")
@@ -127,30 +127,8 @@ actor Knife: InstantSwitchWeapon
         WKNF M 2
 		WKNF N 1
         goto Ready
-
-      // Castle Totenkopf SDL (its own version)
-      ReadyCTK:
-        TK01 A 1 A_WeaponReady
-        goto Ready
-
-      FireCTK:
-		TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"FireCTKSmooth")
-        TK01 BC 3
-        TK01 D 3 A_GiveInventory("SamsaraTotenkopfKnifeAttackHandler")
-        TK01 E 3
-        goto Ready
-
-      FireCTKSmooth:
-        TK01 B 3
-		TK01 C 3
-        TK01 F 3 A_GiveInventory("SamsaraTotenkopfKnifeAttackHandler")
-		TK01 D 2
-        TK01 E 1
-        goto Ready
     }
 }
-
-// Original/Lost Missions
 
 actor SamsaraWolfenKnifeAttackHandler : Trigger
 {
@@ -359,6 +337,48 @@ actor KnifePopcorn: BulletPuff
 actor KnifePopcornCoop : KnifePopcorn { +MTHRUSPECIES }
 
 // Castle Totenkopf SDL
+
+actor Totenkopf_Knife : InstantSwitchWeapon
+{
+    Weapon.Kickback 0
+    Weapon.SelectionOrder 2200
+    Weapon.SlotNumber 0
+    Inventory.PickUpSound "Totenkopf/getweapon"
+    Inventory.PickupMessage "You got a Knife! Wait, shouldn't you start with this?"
+    Obituary "$SAMSARA_WOLFENTKF_OB_FALLBACKMELEE"
+    +WEAPON.MELEEWEAPON
+    +DONTBOB
+    +NOALERT
+    +INVENTORY.UNDROPPABLE
+    +WIMPY_WEAPON
+    Weapon.YAdjust 14
+	Inventory.RestrictedTo "WolfenPlayer"
+    Tag "Knife"
+    States
+    {
+      Spawn:
+        WKNP A -1
+        stop
+
+      Ready:
+        TK01 A 1 A_WeaponReady
+        loop
+
+      Fire:
+		TNT1 A 0 A_JumpIfInventory("SamsaraUsingSmoothAnims",1,"FireSmooth")
+        TK01 BC 3
+        TK01 D 3 A_GiveInventory("SamsaraTotenkopfKnifeAttackHandler")
+        TK01 E 3
+        goto Ready
+
+      FireSmooth:
+        TK01 BC 3
+        TK01 F 3 A_GiveInventory("SamsaraTotenkopfKnifeAttackHandler")
+		TK01 D 2
+        TK01 E 1
+        goto Ready
+    }
+}
 
 actor SamsaraTotenkopfKnifeAttackHandler : Trigger
 {
