@@ -1,3 +1,5 @@
+actor SamsaraIPOGUniqueMedtubeLoopCount : Counter { Inventory.MaxAmount 10 }
+
 actor IPOGRandomItemGenerator : Trigger
 {
     States
@@ -12,11 +14,15 @@ actor IPOGRandomItemGenerator : Trigger
         TNT1 A 0 A_JumpIfInventory("IPOGCloneItem",0,1)
         goto PickupGiveItem
         TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 22), "PickupGiveItem")
-        TNT1 A 0 A_JumpIfInventory("Medtube",0,"PickupStop")
+        TNT1 A 0 A_JumpIfInventory("Medtube",0,1)
         goto PickupGiveItem
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 69, 0) >= 2, 1)
+        stop
+        TNT1 A 0 A_JumpIfHealthLower(CallACS("SamsaraPlayerHealer", -1), "PickupGiveItem")
+        stop
 
       PickupGiveItem:
-        TNT1 A 0 A_Jump(256,"PickupGiveShieldCharge","PickupGiveProxMine","PickupGiveTimeBomb","PickupGiveClone","PickupGiveMedTube")
+        TNT1 A 0 A_Jump(256,"PickupGiveShieldCharge","PickupGiveProxMine","PickupGiveTimeBomb","PickupGiveClone","PickupGiveMedtube")
         goto PickupGiveShieldCharge
 
       PickupGiveShieldCharge:
@@ -73,8 +79,12 @@ actor IPOGRandomItemGenerator : Trigger
 
       PickupGiveMedtube:
         TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 22), "PickupGiveMedtubeMessageInit")
-        TNT1 A 0 A_JumpIfInventory("Medtube",0,"PickupGiveItem")
+        TNT1 A 0 A_JumpIfInventory("Medtube",0,1)
         goto PickupGiveMedtubeMessageInit
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 69, 0) >= 2, 1)
+        goto PickupGiveItem
+        TNT1 A 0 A_JumpIfHealthLower(CallACS("SamsaraPlayerHealer", -1), "PickupGiveMedtubeMessageInit")
+        goto PickupGiveItem
 
       PickupGiveMedtubeMessageInit:
         TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraChoice1")
@@ -82,11 +92,28 @@ actor IPOGRandomItemGenerator : Trigger
         TNT1 A 0 A_TakeInventory("SamsaraMiscPickupDisplayExtraDropped1")
         TNT1 A 0 A_GiveInventory("SamsaraMiscPickupDisplayExtraChoice1",32)
       PickupGiveMedtubeStart:
-        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), 2)
-        TNT1 A 0 A_GiveInventory("Medtube",10)
+        TNT1 A 0 A_TakeInventory("SamsaraIPOGUniqueMedtubeLoopCount") // reset
+      PickupGiveMedtubeLoop:
+        TNT1 A 0 A_GiveInventory("SamsaraIPOGUniqueMedtubeLoopCount")
+        TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraDecorate", 22), "PickupGiveMedtubeLoopInstant")
+        TNT1 A 0 A_JumpIfInventory("Medtube",0,1)
+        goto PickupGiveMedtubeLoopInventory
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 69, 0) >= 2, 1)
         stop
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 10 * 25)
+        TNT1 A 0 A_JumpIfHealthLower(CallACS("SamsaraPlayerHealer", -1), "PickupGiveMedtubeLoopInstant")
         stop
+
+      PickupGiveMedtubeLoopInstant:
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 25)
+        goto PickupGiveMedtubeFinishCheck
+
+      PickupGiveMedtubeLoopInventory:
+        TNT1 A 0 A_GiveInventory("Medtube")
+        goto PickupGiveMedtubeFinishCheck
+
+      PickupGiveMedtubeFinishCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraIPOGUniqueMedtubeLoopCount",0,"PickupStop")
+        goto PickupGiveMedtubeLoop
     }
 }
 
@@ -112,8 +139,12 @@ actor IPOGRandomItemGeneratorStart : IPOGRandomItemGenerator // given through un
 
       PickupGiveMedtube:
         TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 22), "PickupGiveMedtubeStart")
-        TNT1 A 0 A_JumpIfInventory("Medtube",0,"PickupGiveItem")
+        TNT1 A 0 A_JumpIfInventory("Medtube",0,1)
         goto PickupGiveMedtubeStart
+        TNT1 A 0 A_JumpIf(CallACS("SamsaraDecorate", 69, 0) >= 2, 1)
+        goto PickupGiveItem
+        TNT1 A 0 A_JumpIfHealthLower(CallACS("SamsaraPlayerHealer", -1), "PickupGiveMedtubeStart")
+        goto PickupGiveItem
     }
 }
 

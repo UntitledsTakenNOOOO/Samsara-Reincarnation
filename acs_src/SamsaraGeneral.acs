@@ -433,6 +433,19 @@ script "SamsaraDecorate" (int choice, int arg1, int arg2) //215 - SAMSARA_DECORA
     case 68:
         result = GetCVar("samsara_bombwalls");
         break;
+
+    case 69:
+        switch (arg1)
+        {
+          case 0:
+            result = GetCVar("samsara_cl_maxedinventoryhealthpickup");
+            break;
+
+          default: // >= 1
+            result = GetCVar("samsara_cl_maxedinventoryarmorpickup");
+            break;
+        }
+        break;
 	}
 
 	SetResultValue(result);
@@ -8894,6 +8907,12 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
             break;
 
           case SLOT_UNIQUE1:
+            int medtubemax = 20;
+
+            bool canmedtube = CheckInventory("Medtube") < medtubemax ||
+                              (GetCVar("samsara_cl_maxedinventoryhealthpickup") >= 2 && GetActorProperty(0, APROP_Health) < ACS_NamedExecuteWithResult("SamsaraPlayerHealer", -1)) ||
+                              GetCVar("samsara_nohealthcap");
+
             if (startmode <= -1)
             {
                 GiveInventory("ShieldCharge", 3);
@@ -8901,12 +8920,26 @@ script "Samsara_GiveCustomUnique" (int unum, int startmode)
                 GiveInventory("IPOGTimeBombItem", 10);
                 GiveInventory("IPOGCloneItem", 5);
 
-                if (GetCVar("samsara_nohealthcap")) { ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 4 * 25); }
-                else { GiveInventory("Medtube", 4); }
+                if (canmedtube)
+                {
+                    for (int medtubeloops = 3; medtubeloops >= 0; medtubeloops--)
+                    {
+                        if (CheckInventory("Medtube") >= medtubemax &&
+                            (GetCVar("samsara_cl_maxedinventoryhealthpickup") <= 1 || GetActorProperty(0, APROP_Health) >= ACS_NamedExecuteWithResult("SamsaraPlayerHealer", -1)) &&
+                            !GetCVar("samsara_nohealthcap"))
+                        { break; }
+
+                        if ((CheckInventory("Medtube") >= medtubemax && GetCVar("samsara_cl_maxedinventoryhealthpickup") >= 2 && GetActorProperty(0, APROP_Health) < ACS_NamedExecuteWithResult("SamsaraPlayerHealer", -1)) ||
+                            GetCVar("samsara_nohealthcap"))
+                        { ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 25); }
+                        else { GiveInventory("Medtube", 1); }
+                    }
+                }
+
                 result = 1;
             } else {
                 if (CheckInventory("ShieldCharge") < 3 || CheckInventory("IPOGProximityMineItem") < 10 || CheckInventory("IPOGTimeBombItem") < 10 ||
-                    CheckInventory("IPOGCloneItem") < 5 || CheckInventory("Medtube") < 20 || GetCVar("samsara_nohealthcap"))
+                    CheckInventory("IPOGCloneItem") < 5 || canmedtube)
                 {
                     GiveInventory(startmode != 0 ? "IPOGRandomItemGeneratorStart" : "IPOGRandomItemGenerator", 1);
                     result = 1;
@@ -9718,8 +9751,27 @@ script "Samsara_GiveBackpack" (int startmode)
 
         if (startmode >= 0) // do not give in LMS
         {
-            if (GetCVar("samsara_nohealthcap")) { ACS_NamedExecuteWithResult("SamsaraPlayerHealer", Random(1, 2) * 25); }
-            else { GiveInventory("Catacomb_SmallHealthPotion", Random(1, 2)); }
+            int bluepotionmax = 99;
+
+            bool canbluepotion = CheckInventory("Catacomb_SmallHealthPotion") < bluepotionmax ||
+                                 (GetCVar("samsara_cl_maxedinventoryhealthpickup") >= 2 && GetActorProperty(0, APROP_Health) < ACS_NamedExecuteWithResult("SamsaraPlayerHealer", -1)) ||
+                                 GetCVar("samsara_nohealthcap");
+
+            if (canbluepotion)
+            {
+                for (int bluepotionloops = Random(0, 1); bluepotionloops >= 0; bluepotionloops--)
+                {
+                    if (CheckInventory("Catacomb_SmallHealthPotion") >= bluepotionmax &&
+                        (GetCVar("samsara_cl_maxedinventoryhealthpickup") <= 1 || GetActorProperty(0, APROP_Health) >= ACS_NamedExecuteWithResult("SamsaraPlayerHealer", -1)) &&
+                        !GetCVar("samsara_nohealthcap"))
+                    { break; }
+
+                    if ((CheckInventory("Catacomb_SmallHealthPotion") >= bluepotionmax && GetCVar("samsara_cl_maxedinventoryhealthpickup") >= 2 && GetActorProperty(0, APROP_Health) < ACS_NamedExecuteWithResult("SamsaraPlayerHealer", -1)) ||
+                        GetCVar("samsara_nohealthcap"))
+                    { ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 25); }
+                    else { GiveInventory("Catacomb_SmallHealthPotion", 1); }
+                }
+            }
         }
         break;
 
@@ -10602,7 +10654,9 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_oldcompendiumgraphics", false);
 		SetCVar("samsara_cl_classtips", false);
 		SetCVar("samsara_cl_autoinventoryhealth", 0);
+		SetCVar("samsara_cl_maxedinventoryhealthpickup", 1);
 		SetCVar("samsara_cl_autoinventoryarmor", false);
+		SetCVar("samsara_cl_maxedinventoryarmorpickup", false);
 		SetCVar("samsara_cl_footstepsounds", true);
 
 		// Class-Based Player Preferences
@@ -10751,7 +10805,9 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_oldcompendiumgraphics", false);
 		SetCVar("samsara_cl_classtips", false);
 		SetCVar("samsara_cl_autoinventoryhealth", 0);
+		SetCVar("samsara_cl_maxedinventoryhealthpickup", 1);
 		SetCVar("samsara_cl_autoinventoryarmor", false);
+		SetCVar("samsara_cl_maxedinventoryarmorpickup", false);
 		SetCVar("samsara_cl_footstepsounds", true);
 
 		// Class-Based Player Preferences
@@ -10900,7 +10956,9 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_oldcompendiumgraphics", false);
 		SetCVar("samsara_cl_classtips", true);
 		SetCVar("samsara_cl_autoinventoryhealth", 50);
+		SetCVar("samsara_cl_maxedinventoryhealthpickup", 1);
 		SetCVar("samsara_cl_autoinventoryarmor", true);
+		SetCVar("samsara_cl_maxedinventoryarmorpickup", false);
 		SetCVar("samsara_cl_footstepsounds", true);
 
 		// Class-Based Player Preferences
@@ -11050,7 +11108,9 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_oldcompendiumgraphics", true);
 		SetCVar("samsara_cl_classtips", false);
 		SetCVar("samsara_cl_autoinventoryhealth", isZDoom() ? 0 : 50);
+		SetCVar("samsara_cl_maxedinventoryhealthpickup", 1);
 		SetCVar("samsara_cl_autoinventoryarmor", isZDoom() ? false : true);
+		SetCVar("samsara_cl_maxedinventoryarmorpickup", false);
 		SetCVar("samsara_cl_footstepsounds", true);
 
 		// Class-Based Player Preferences
@@ -11199,7 +11259,9 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_oldcompendiumgraphics", true);
 		SetCVar("samsara_cl_classtips", false);
 		SetCVar("samsara_cl_autoinventoryhealth", 50);
+		SetCVar("samsara_cl_maxedinventoryhealthpickup", 2);
 		SetCVar("samsara_cl_autoinventoryarmor", true);
+		SetCVar("samsara_cl_maxedinventoryarmorpickup", true);
 		SetCVar("samsara_cl_footstepsounds", true);
 
 		// Class-Based Player Preferences
