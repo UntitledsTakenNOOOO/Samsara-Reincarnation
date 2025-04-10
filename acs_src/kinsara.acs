@@ -330,7 +330,9 @@ str pistolwit[36] =
 
 script "PistolStart" ENTER
 {
-	if(GetCvar("samsara_pistolstart") >= 1 && (GameType () != GAME_TITLE_MAP))
+    int pistolstart = GetCVar("samsara_pistolstart");
+
+	if (pistolstart >= 1 && (GameType () != GAME_TITLE_MAP))
 	{
 		// We can't do pistol starts in Hexen or Strife
 		if(GetCvar("samsara_currentgame") == 8 || GetCvar("samsara_currentgame") == 16)
@@ -343,13 +345,18 @@ script "PistolStart" ENTER
 		GiveInventory("PistolStartEnabled", 1);
         GiveInventory("SamsaraPistolStartMapChangeHack", 1);
 
-		// Demoness requires special treatment for starting with the correct amount of health.
+		// Grondoval and Demoness require special treatment for starting with the correct amount of health.
 		int pln = PlayerNumber();
 		switch(PlayerClass(pln))
 		{
+			case 18:
+				SetActorProperty (0, APROP_Health, pistolstart >= 2 ? 100 : 100 + CheckInventory("SamsaraWitchavenHealthIncrease"));
+				SetActorProperty (0, APROP_SpawnHealth, pistolstart >= 2 ? 100 : 100 + CheckInventory("SamsaraWitchavenHealthIncrease"));
+				break;
+
 			case 25:
-				SetActorProperty (0, APROP_Health, 70);
-				SetActorProperty (0, APROP_SpawnHealth, 70);
+				SetActorProperty (0, APROP_Health, pistolstart >= 2 ? 70 : 70 + CheckInventory("Hexen2HealthAdd"));
+				SetActorProperty (0, APROP_SpawnHealth, pistolstart >= 2 ? 70 : 70 + CheckInventory("Hexen2HealthAdd"));
 				break;
 
 			default:
@@ -366,9 +373,9 @@ script "PistolStart" ENTER
 		TakeInventory("GotWeapon6", 999);
 		TakeInventory("GotWeapon7", 999);
 		ACS_NamedExecuteWithResult("Samsara_ResetInventory",0,0,0,0);
-		if (!(CheckInventory("QuakeClass") || CheckInventory("RottClass") || CheckInventory("CatacombClass") || CheckInventory("PainkillerClass")))
+		if (!(CheckInventory("QuakeClass") || CheckInventory("RottClass") || CheckInventory("HalfLifeClass") || CheckInventory("CatacombClass") || CheckInventory("PainkillerClass")))
 		{
-			GiveInventory("Clip", 50);
+			SetInventory("Clip", 50);
 		}
 		
 		LocalAmbientSound("misc/pistolstart", 127);
