@@ -1765,14 +1765,7 @@ Script "Samsara_KillCount" (int override)
 		if(chance > 0.2)
 			chance = 0.2;
 
-		if(CheckInventory("PistolStartEnabled"))
-		{
-			GiveInventory("Hexen2Experience", FixedMul((health*2.5)>>16,(1.0+(0.05*CheckInventory("Hexen2Wisdom"))))*(1+(PlayerCount()/4))*(experience*4)/2);
-		}
-		else
-		{
-			GiveInventory("Hexen2Experience", FixedMul((health*2.5)>>16,(1.0+(0.05*CheckInventory("Hexen2Wisdom"))))*(1+(PlayerCount()/4))*(experience)/2);
-		}
+		GiveInventory("Hexen2Experience", FixedMul((health*2.5)>>16,(1.0+(0.05*CheckInventory("Hexen2Wisdom"))))*(1+(PlayerCount()/4))*(experience)/2);
 
 		if(random(0.0,1.0) <= chance && !noblood)
 			SpawnForced("Hexen2SoulSphere",x,y,z,0,0);
@@ -1780,25 +1773,11 @@ Script "Samsara_KillCount" (int override)
 
 	if(CheckInventory("ShadowCasterClass"))
 	{
-		if(CheckInventory("PistolStartEnabled"))
-		{
-			GiveInventory(strparam(s:"ShadowCaster_",s:ShadowCasterMorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Experience"), health*(1+(PlayerCount()/4))*(experience*4)/2);
-		}
-		else
-		{
-			GiveInventory(strparam(s:"ShadowCaster_",s:ShadowCasterMorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Experience"), health*(1+(PlayerCount()/4))*(experience)/2);
-		}
+		GiveInventory(strparam(s:"ShadowCaster_",s:ShadowCasterMorphNames[CheckInventory("ShadowCaster_CurrentForm")],s:"Experience"), health*(1+(PlayerCount()/4))*(experience)/2);
 	}
 
 	if(CheckInventory("WitchavenClass"))
-		if(CheckInventory("PistolStartEnabled"))
-		{
-			GiveInventory("WTExperience", health*(1+(PlayerCount()/4))*(experience*4)/2);
-		}
-		else
-		{
-			GiveInventory("WTExperience", health*(1+(PlayerCount()/4))*(experience)/2);
-		}
+		GiveInventory("WTExperience", health*(1+(PlayerCount()/4))*(experience)/2);
 
 	if(CheckInventory("StrifeClass") && !CheckInventory("BlackBirdTauntCooldown"))
 	{
@@ -2754,9 +2733,13 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("WTHealthPhial", INTMAX);
 			TakeInventory("WTInvisibilityPhial", INTMAX);
 			TakeInventory("WTFireProofPhial", INTMAX);
-			SetInventory("WTExperience", 0);
-			SetInventory("WTLevel", 1);
-			SetInventory("SamsaraWitchavenHealthIncrease", 0);
+			
+			if (GetCvar("samsara_pistolstart") >= 2 && CheckInventory("PistolStartEnabled"))
+			{
+				SetInventory("WTExperience", 0);
+				SetInventory("WTLevel", 1);
+				SetInventory("SamsaraWitchavenHealthIncrease", 0);
+			}
 
 			GiveInventory("Bow and Arrows", 1);
 			GiveInventory("Witchaven_Dagger", 1);
@@ -2950,11 +2933,14 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Hexen2TomeOfPower", INTMAX);
 			TakeInventory("Hexen2ForceCube", INTMAX);
 
-			GiveInventory("Hexen2Level", 1);
-			SetInventory("Hexen2Intelligence", Random(9, 13));
-			SetInventory("Hexen2Wisdom", Random(11, 14));
-			SetInventory("Hexen2Dexterity", Random(9, 13));
-			SetInventory("Hexen2Strength", Random(11, 14));
+			if (GetCvar("samsara_pistolstart") >= 2 && CheckInventory("PistolStartEnabled"))
+			{
+				GiveInventory("Hexen2Level", 1);
+				SetInventory("Hexen2Intelligence", Random(9, 13));
+				SetInventory("Hexen2Wisdom", Random(11, 14));
+				SetInventory("Hexen2Dexterity", Random(9, 13));
+				SetInventory("Hexen2Strength", Random(11, 14));
+			}
 			GiveInventory("Hexen2BloodFire", 1);
 			GiveInventory("Hexen2Sickle", 1);
 			GiveInventory("Hexen2Class", 1);
@@ -3312,47 +3298,58 @@ Script "Samsara_ResetInventory" (void)
 			SetInventory("SamsaraDeusExGEPGunAmmoType", 0);
 			SetInventory("SamsaraDeusExPlasmaRifleAmmoType", 0);
 
-			TakeInventory("DeusEx_LowTechSkill", 4);
-			TakeInventory("DeusEx_PistolSkill", 4);
-			TakeInventory("DeusEx_RifleSkill", 4);
-			TakeInventory("DeusEx_HeavyWeaponSkill", 4);
-			TakeInventory("DeusEx_MedicineSkill", 4);
-			TakeInventory("DeusEx_EnviroSkill", 4);
-			TakeInventory("DeusEx_PistolPoints", 99999);
-			TakeInventory("DeusEx_RiflePoints", 99999);
-			TakeInventory("DeusEx_HeavyWeaponPoints", 99999);
-			TakeInventory("DeusEx_LowTechPoints", 99999);
-			TakeInventory("DeusEx_MedicinePoints", 99999);
-			TakeInventory("DeusEx_EnviroPoints", 99999);
-			SetInventory("SamsaraDeusExStartingSkillsGiven", 0);
+			if (GetCvar("samsara_pistolstart") >= 2 && CheckInventory("PistolStartEnabled"))
+			{
+				TakeInventory("DeusEx_LowTechSkill", 4);
+				TakeInventory("DeusEx_PistolSkill", 4);
+				TakeInventory("DeusEx_RifleSkill", 4);
+				TakeInventory("DeusEx_HeavyWeaponSkill", 4);
+				TakeInventory("DeusEx_MedicineSkill", 4);
+				TakeInventory("DeusEx_EnviroSkill", 4);
+				TakeInventory("DeusEx_PistolPoints", 99999);
+				TakeInventory("DeusEx_RiflePoints", 99999);
+				TakeInventory("DeusEx_HeavyWeaponPoints", 99999);
+				TakeInventory("DeusEx_LowTechPoints", 99999);
+				TakeInventory("DeusEx_MedicinePoints", 99999);
+				TakeInventory("DeusEx_EnviroPoints", 99999);
+				SetInventory("SamsaraDeusExStartingSkillsGiven", 0);
+			}
 
-			SetAmmoCapacity("DeusEx_GlockMagazine", 4);
-			SetAmmoCapacity("DeusEx_MiniXBowMagazine", 6);
-			SetAmmoCapacity("DeusEx_ShotgunMagazine", 4);
-			SetAmmoCapacity("DeusEx_AssShotgunMagazine", 12);
-			SetAmmoCapacity("DeusEx_AssaultGunMagazine", 30);
-			SetAmmoCapacity("DeusEx_FlameThrowerMagazine", 100);
-			SetAmmoCapacity("DeusEx_PlasmaRifleMagazine", 16);
-			SetAmmoCapacity("DeusEx_SniperMagazine", 6);
-			SetAmmoCapacity("DeusEx_StealthMagazine", 7);
-			GiveInventory("DeusEx_GlockMagazine", 4);
-			GiveInventory("DeusEx_MiniXBowMagazine", 6);
-			GiveInventory("DeusEx_ShotgunMagazine", 4);
-			GiveInventory("DeusEx_AssShotgunMagazine", 12);
-			GiveInventory("DeusEx_AssaultGunMagazine", 30);
-			GiveInventory("DeusEx_GEPGunMagazine", 1);
-			GiveInventory("DeusEx_FlameThrowerMagazine", 100);
-			GiveInventory("DeusEx_PlasmaRifleMagazine", 16);
-			GiveInventory("DeusEx_SniperMagazine", 6);
-			GiveInventory("DeusEx_StealthMagazine", 7);
+			if (GetCvar("samsara_pistolstart") >= 2 && CheckInventory("PistolStartEnabled"))
+			{
+				SetAmmoCapacity("DeusEx_GlockMagazine", 4);
+				SetAmmoCapacity("DeusEx_MiniXBowMagazine", 6);
+				SetAmmoCapacity("DeusEx_ShotgunMagazine", 4);
+				SetAmmoCapacity("DeusEx_AssShotgunMagazine", 12);
+				SetAmmoCapacity("DeusEx_AssaultGunMagazine", 30);
+				SetAmmoCapacity("DeusEx_FlameThrowerMagazine", 100);
+				SetAmmoCapacity("DeusEx_PlasmaRifleMagazine", 16);
+				SetAmmoCapacity("DeusEx_SniperMagazine", 6);
+				SetAmmoCapacity("DeusEx_StealthMagazine", 7);
+			}
 
-			SetAmmoCapacity("DeusEx_GlockSpread", 120);
-			SetAmmoCapacity("DeusEx_XBowSpread", 40);
-			SetAmmoCapacity("DeusEx_SawedOffSpread", 90);
-			SetAmmoCapacity("DeusEx_ShotgunSpread", 140);
-			SetAmmoCapacity("DeusEx_AssaultGunSpread", 64);
-			SetAmmoCapacity("DeusEx_PlasmaRifleSpread", 90);
-			SetAmmoCapacity("DeusEx_StealthSpread", 115);
+			GiveInventory("DeusEx_GlockMagazine", GetAmmoCapacity("DeusEx_GlockMagazine"));
+			GiveInventory("DeusEx_MiniXBowMagazine", GetAmmoCapacity("DeusEx_MiniXBowMagazine"));
+			GiveInventory("DeusEx_ShotgunMagazine", GetAmmoCapacity("DeusEx_ShotgunMagazine"));
+			GiveInventory("DeusEx_AssShotgunMagazine", GetAmmoCapacity("DeusEx_AssShotgunMagazine"));
+			GiveInventory("DeusEx_AssaultGunMagazine", GetAmmoCapacity("DeusEx_AssaultGunMagazine"));
+			GiveInventory("DeusEx_GEPGunMagazine", GetAmmoCapacity("DeusEx_GEPGunMagazine"));
+			GiveInventory("DeusEx_FlameThrowerMagazine", GetAmmoCapacity("DeusEx_FlameThrowerMagazine"));
+			GiveInventory("DeusEx_PlasmaRifleMagazine", GetAmmoCapacity("DeusEx_PlasmaRifleMagazine"));
+			GiveInventory("DeusEx_SniperMagazine", GetAmmoCapacity("DeusEx_SniperMagazine"));
+			GiveInventory("DeusEx_StealthMagazine", GetAmmoCapacity("DeusEx_StealthMagazine"));
+
+			if (GetCvar("samsara_pistolstart") >= 2 && CheckInventory("PistolStartEnabled"))
+			{
+				SetAmmoCapacity("DeusEx_GlockSpread", 120);
+				SetAmmoCapacity("DeusEx_XBowSpread", 40);
+				SetAmmoCapacity("DeusEx_SawedOffSpread", 90);
+				SetAmmoCapacity("DeusEx_ShotgunSpread", 140);
+				SetAmmoCapacity("DeusEx_AssaultGunSpread", 64);
+				SetAmmoCapacity("DeusEx_PlasmaRifleSpread", 90);
+				SetAmmoCapacity("DeusEx_StealthSpread", 115);
+			}
+
 			TakeInventory("DeusEx_GlockSpread", 120);
 			TakeInventory("DeusEx_XBowSpread", 40);
 			TakeInventory("DeusEx_SawedOffSpread", 90);
@@ -11453,7 +11450,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_weaponoverheating", 2);
 		SetCVar("samsara_noinventorycooldown", false);
 		SetCVar("samsara_pistolammo", false);
-		SetCVar("samsara_pistolstart", false);
+		SetCVar("samsara_pistolstart", 0);
 		SetCVar("samsara_slotmode", 0);
 		SetCVar("samsara_instagibspread", false);
 
@@ -11794,7 +11791,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_weaponoverheating", 2);
 		SetCVar("samsara_noinventorycooldown", false);
 		SetCVar("samsara_pistolammo", false);
-		SetCVar("samsara_pistolstart", false);
+		SetCVar("samsara_pistolstart", 0);
 		SetCVar("samsara_slotmode", 11);
 		SetCVar("samsara_instagibspread", false);
 
@@ -12135,7 +12132,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_weaponoverheating", 2);
 		SetCVar("samsara_noinventorycooldown", false);
 		SetCVar("samsara_pistolammo", false);
-		SetCVar("samsara_pistolstart", false);
+		SetCVar("samsara_pistolstart", 0);
 		SetCVar("samsara_slotmode", 11);
 		SetCVar("samsara_instagibspread", false);
 
@@ -12477,7 +12474,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_weaponoverheating", 1);
 		SetCVar("samsara_noinventorycooldown", false);
 		SetCVar("samsara_pistolammo", false);
-		SetCVar("samsara_pistolstart", false);
+		SetCVar("samsara_pistolstart", 0);
 		SetCVar("samsara_slotmode", 0);
 		SetCVar("samsara_instagibspread", false);
 
@@ -12824,7 +12821,7 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_weaponoverheating", isZDoom() ? 2 : 0);
 		SetCVar("samsara_noinventorycooldown", false);
 		SetCVar("samsara_pistolammo", isZDoom() ? true : false);
-		SetCVar("samsara_pistolstart", false);
+		SetCVar("samsara_pistolstart", 0);
 		SetCVar("samsara_slotmode", 11);
 		SetCVar("samsara_instagibspread", false);
 
