@@ -150,10 +150,30 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	int XMASActive;
     str origclass = GetActorClass(0);
     int morphset;
+    int respawnhealth = 100;
 
 	ACS_NamedExecuteWithResult("SamsaraFirstTimeUserTutorialSystem", PlayerNumber(), 0, 0);
 
 	if (!CheckInventory("IsSamsaraClass")) { ACS_NamedExecuteWithResult("SamsaraGameplayModCrap", respawning); terminate; }
+
+    if (respawning)
+    {
+        if (isSinglePlayer() || isCoop())
+        {
+            SetInventory("SamsaraBaseSpawnHealth", 0);
+            SetInventory("SamsaraExtraBaseSpawnHealth", 0);
+            SetInventory("SamsaraExtraSpawnHealth", 0);
+
+            if (!GetCVar("samsara_keepmaxhealth"))
+            {
+                SetInventory("SamsaraExtraBaseSpawnHealthDeterminant", 0);
+                SetInventory("SamsaraExtraSpawnHealthDeterminant", 0);
+                SetInventory("SamsaraHasMaxHealth", 0);
+            }
+        }
+	}
+
+    CalcPlayerSpawnHealth(); // added this here for stamina check later on
 
     GiveInventory("SamsaraMiscPickupDisplayBlocker", 1);
 
@@ -170,7 +190,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 	ACS_NamedExecuteAlways("SamsaraEnterClient", 0, startTime,0,0);
 	ACS_NamedExecuteWithResult("SamsaraWolfMove", startTime,0,0);
-	ACS_NamedExecuteWithResult("SamsaraQPowers",  startTime,0,0);
+	ACS_NamedExecuteWithResult("SamsaraQPowers",  startTime,respawning,0);
 
 	if (isLMS() || GetCVar("samsara_lmsrules")) { ApplyLMS(); }
 
@@ -193,23 +213,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		}
 
 		ACS_NamedExecuteAlways("SamsaraScheduled", 0, respawning,1,0);
-	} else {
-        if (isSinglePlayer() || isCoop())
-        {
-            SetInventory("SamsaraBaseSpawnHealth", 0);
-            SetInventory("SamsaraExtraBaseSpawnHealth", 0);
-            SetInventory("SamsaraExtraSpawnHealth", 0);
-
-            if (!GetCVar("samsara_keepmaxhealth"))
-            {
-                SetInventory("SamsaraExtraBaseSpawnHealthDeterminant", 0);
-                SetInventory("SamsaraExtraSpawnHealthDeterminant", 0);
-                SetInventory("SamsaraHasMaxHealth", 0);
-            }
-        }
 	}
-
-    CalcPlayerSpawnHealth(); // added this here for stamina check later on
 
     HandleBackpackSpawn(respawning);
 	HandleSlotSpawn(SLOT_CHAINSAW, respawning);
@@ -274,40 +278,6 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		break;
 
 	case CLASS_STRIFE:
-		if (CheckInventory("StrifeguyStartingUpgradesHasBeenGiven"))
-		{
-            if (respawning)
-            {
-                if (CheckInventory("StaminaUpgradeHealth")) { ACS_NamedExecuteWithResult("SamsaraPlayerHealer"); }
-                if (CheckInventory("AccuracyUpgrade2")) { SetActorProperty(0, APROP_Accuracy, CheckInventory("AccuracyUpgrade2")); }
-            }
-		}
-		else
-		{
-			if (!(isLMS() || GetCVar("samsara_lmsrules")) || ((isLMS() || GetCVar("samsara_lmsrules")) && !GetCVar("samsara_lmsuniques")))
-			{
-				int sup = GetCVar("samsara_strifeupgrades");
-				int supdone = 0;
-
-				if (sup > 10) { sup = 10; }
-				else if (sup < 0) { sup = 0; }
-
-				while (supdone < sup)
-				{
-					GiveInventory("StaminaUpgradeDamage", 10);
-					GiveInventory("AccuracyUpgrade1", 10);
-					GiveInventory("AccuracyUpgrade2", 10);
-
-                    ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 7, 100);
-                    ACS_NamedExecuteWithResult("SamsaraPlayerHealer");
-
-					supdone++;
-				}
-			}
-
-			GiveInventory("StrifeguyStartingUpgradesHasBeenGiven", 1);
-		}
-
 		if (!respawning)
 		{
             if (GetCVar("samsara_currentgame") == GAME_STRIFE)
@@ -351,7 +321,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         break;
 
     case CLASS_WITCHAVEN:
-        if (respawning) { SetActorProperty(0, APROP_Health, 100 + CheckInventory("SamsaraWitchavenHealthIncrease")); }
+        respawnhealth += CheckInventory("SamsaraWitchavenHealthIncrease");
         break;
 
 	case CLASS_SW:
@@ -378,7 +348,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         break;
 
     case CLASS_DEMONESS:
-        if (respawning) { SetActorProperty(0, APROP_Health, 70 + CheckInventory("Hexen2HealthAdd")); }
+        respawnhealth = 70 + CheckInventory("Hexen2HealthAdd");
         break;
 
     case CLASS_BOND:
@@ -393,6 +363,61 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		}
 		break;
 	}
+
+    respawnhealth += CheckInventory("SamsaraExtraBaseSpawnHealth") + CheckInventory("SamsaraExtraBaseSpawnHealthDeterminant") + CheckInventory("SamsaraExtraBaseSpawnHealthPermanent");
+
+    if (respawning && !isLMS() && !GetCVar("samsara_lmsrules")) { SetActorProperty(0, APROP_Health, respawnhealth); }
+
+    switch (samsaraClassNum())
+    {
+      case CLASS_STRIFE:
+        if (CheckInventory("StrifeguyStartingUpgradesHasBeenGiven"))
+        {
+            if (respawning)
+            {
+                if (CheckInventory("StaminaUpgradeHealth")) { ACS_NamedExecuteWithResult("SamsaraPlayerHealer"); }
+                if (CheckInventory("AccuracyUpgrade2")) { SetActorProperty(0, APROP_Accuracy, CheckInventory("AccuracyUpgrade2")); }
+            }
+        } else {
+            if (!(isLMS() || GetCVar("samsara_lmsrules")) || ((isLMS() || GetCVar("samsara_lmsrules")) && !GetCVar("samsara_lmsuniques")))
+            {
+                int sup = GetCVar("samsara_strifeupgrades");
+                int supdone = 0;
+
+                if (sup > 10) { sup = 10; }
+                else if (sup < 0) { sup = 0; }
+
+                while (supdone < sup)
+                {
+                    GiveInventory("StaminaUpgradeDamage", 10);
+                    GiveInventory("AccuracyUpgrade1", 10);
+                    GiveInventory("AccuracyUpgrade2", 10);
+
+                    ACS_NamedExecuteWithResult("SamsaraPlayerSpawnHealthAdjust", 10, 1, 7, 100);
+                    ACS_NamedExecuteWithResult("SamsaraPlayerHealer");
+
+                    supdone++;
+                }
+            }
+
+            GiveInventory("StrifeguyStartingUpgradesHasBeenGiven", 1);
+        }
+    }
+
+    if (respawning && (isSinglePlayer() || isCoop()))
+    {
+        if (GetCVar("samsara_keepmaxhealth"))
+        {
+            if (CheckInventory("SamsaraHasBonusStamina"))
+            {
+                SetActorProperty(0, APROP_Stamina, CheckInventory("SamsaraHasBonusStamina"));
+                AdjustHealthOverMaxDisplay();
+
+                ACS_NamedExecuteWithResult("SamsaraPlayerHealer"); // UpgradeStamina gives a health refill
+            }
+        }
+        else { SetInventory("SamsaraHasBonusStamina", 0); }
+    }
 
 	if (isSinglePlayer())
 	{
@@ -410,21 +435,6 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	}
 
 	if (isTeamGame()) { SetInventory("SamsaraCurrentTeam", GetPlayerInfo(pln, PLAYERINFO_TEAM) + 1); }
-
-    if (respawning && (isSinglePlayer() || isCoop()))
-    {
-        if (GetCVar("samsara_keepmaxhealth"))
-        {
-            if (CheckInventory("SamsaraHasBonusStamina"))
-            {
-                SetActorProperty(0, APROP_Stamina, CheckInventory("SamsaraHasBonusStamina"));
-                AdjustHealthOverMaxDisplay();
-
-                ACS_NamedExecuteWithResult("SamsaraPlayerHealer"); // UpgradeStamina gives a health refill
-            }
-        }
-        else { SetInventory("SamsaraHasBonusStamina", 0); }
-    }
 
 	pcount = PlayerCount();
 
