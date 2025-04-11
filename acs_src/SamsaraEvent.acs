@@ -192,6 +192,21 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 	ACS_NamedExecuteWithResult("SamsaraWolfMove", startTime,0,0);
 	ACS_NamedExecuteWithResult("SamsaraQPowers",  startTime,respawning,0);
 
+    switch (samsaraClassNum())
+    {
+      case CLASS_WITCHAVEN:
+          respawnhealth += CheckInventory("SamsaraWitchavenHealthIncrease");
+          break;
+
+      case CLASS_DEMONESS:
+          respawnhealth = 70 + CheckInventory("Hexen2HealthAdd");
+          break;
+    }
+
+    respawnhealth += CheckInventory("SamsaraExtraBaseSpawnHealth") + CheckInventory("SamsaraExtraBaseSpawnHealthDeterminant") + CheckInventory("SamsaraExtraBaseSpawnHealthPermanent");
+
+    if (respawning && GetActorProperty(0, APROP_Health) < respawnhealth && !isDead(0) && !isLMS() && !GetCVar("samsara_lmsrules")) { SetActorProperty(0, APROP_Health, respawnhealth); }
+
 	if (isLMS() || GetCVar("samsara_lmsrules")) { ApplyLMS(); }
 
 	if (isSinglePlayer()) { SamsaraWepType = samsaraClassNum() + 1; }
@@ -277,100 +292,7 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 		if (!respawning) { GiveInventory("CalebReady", 1); }
 		break;
 
-	case CLASS_STRIFE:
-		if (!respawning)
-		{
-            if (GetCVar("samsara_currentgame") == GAME_STRIFE)
-            {
-                SetInventory("StrifeGuyInStrife", 1);
-                SetInventory("BlackBirdInStrife", (isSinglePlayer() || isCoop()) && !isInvasion());
-            }
-
-			if (!GetUserCVar(pln, "samsara_cl_ballgag")) { GiveInventory("BlackBirdReady", 1); }
-		}
-		break;
-
-	case CLASS_ERAD:
-		if (!respawning) { GiveInventory("EleenaReady", 1); }
-
-        // for map change/respawn
-        if (CheckInventory("EradicatorPipTid1") && CheckInventory("EradicatorPipControllable") && CheckInventory("EradicatorPipAllowControl"))
-        {
-            SetPlayerProperty(0, false, PROP_TOTALLYFROZEN);
-
-            HudMessage(s:""; HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN, 7198, CR_UNTRANSLATED, 0, 0, 15.0);
-            HudMessage(s:""; HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN, 7199, CR_UNTRANSLATED, 0, 0, 15.0);
-        }
-
-        if (CheckInventory("EradicatorPipControllable")) { SetInventory("EradicatorPipControllable", 0); }
-        if (CheckInventory("EradicatorPipTid1")) { SetInventory("EradicatorPipTid1", 0); }
-        if (CheckInventory("EradicatorPipTid2")) { SetInventory("EradicatorPipTid2", 0); }
-        if (CheckInventory("EradicatorPipTid3")) { SetInventory("EradicatorPipTid3", 0); }
-		break;
-
-    case CLASS_C7:
-        if (!respawning)
-        {
-            GiveInventory("Allmap", 1);
-            ACS_NamedExecuteWithResult("SamsaraMapRevealerPickup");
-        }
-        break;
-
-    case CLASS_KATARN:
-        ACS_NamedExecuteWithResult("DarkForces_GiveShield");
-        break;
-
-    case CLASS_WITCHAVEN:
-        respawnhealth += CheckInventory("SamsaraWitchavenHealthIncrease");
-        break;
-
-	case CLASS_SW:
-		if (!respawning) { GiveInventory("LoWangReady", 1); }
-		break;
-
-	case CLASS_RR:
-		if (!respawning)
-		{
-			GiveInventory("LeonardReady", 1);
-			if(CheckInventory("BubbaGivesYouMotorcycle"))
-			{
-				TakeInventory("BubbaGivesYouMotorcycle",1);
-				SpawnSpotFacingForced("LeonardMotorcycle",0,0);
-			}
-		}
-		break;
-
-    case CLASS_BITTERMAN:
-        if (respawning)
-        {
-            if (CheckInventory("Q2Chainfist") && !CheckWeapon("Q2Chainfist")) { StopSound(0, CHAN_WEAPON); } // hack
-        }
-        break;
-
-    case CLASS_DEMONESS:
-        respawnhealth = 70 + CheckInventory("Hexen2HealthAdd");
-        break;
-
-    case CLASS_BOND:
-        if (CheckInventory("Goldeneye_TankWeapon") && !CheckInventory("SamsaraGoldenEyePermanentTankCannon")) { TakeInventory("Goldeneye_TankWeapon", 1); }
-        break;
-
-	case CLASS_DEUSEX:
-		if (!CheckInventory("SamsaraDeusExStartingSkillsGiven"))
-		{
-			if (GetCVar("samsara_deusexstartingskills") > 0) { SetInventory("DeusEx_StartingSkills", GetCVar("samsara_deusexstartingskills")); }
-			SetInventory("SamsaraDeusExStartingSkillsGiven", 1);
-		}
-		break;
-	}
-
-    respawnhealth += CheckInventory("SamsaraExtraBaseSpawnHealth") + CheckInventory("SamsaraExtraBaseSpawnHealthDeterminant") + CheckInventory("SamsaraExtraBaseSpawnHealthPermanent");
-
-    if (respawning && GetActorProperty(0, APROP_Health) < respawnhealth && !isLMS() && !GetCVar("samsara_lmsrules")) { SetActorProperty(0, APROP_Health, respawnhealth); }
-
-    switch (samsaraClassNum())
-    {
-      case CLASS_STRIFE:
+    case CLASS_STRIFE:
         if (CheckInventory("StrifeguyStartingUpgradesHasBeenGiven"))
         {
             if (respawning)
@@ -402,7 +324,84 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
             GiveInventory("StrifeguyStartingUpgradesHasBeenGiven", 1);
         }
-    }
+
+        if (!respawning)
+        {
+            if (GetCVar("samsara_currentgame") == GAME_STRIFE)
+            {
+                SetInventory("StrifeGuyInStrife", 1);
+                SetInventory("BlackBirdInStrife", (isSinglePlayer() || isCoop()) && !isInvasion());
+            }
+
+            if (!GetUserCVar(pln, "samsara_cl_ballgag")) { GiveInventory("BlackBirdReady", 1); }
+        }
+        break;
+
+	case CLASS_ERAD:
+		if (!respawning) { GiveInventory("EleenaReady", 1); }
+
+        // for map change/respawn
+        if (CheckInventory("EradicatorPipTid1") && CheckInventory("EradicatorPipControllable") && CheckInventory("EradicatorPipAllowControl"))
+        {
+            SetPlayerProperty(0, false, PROP_TOTALLYFROZEN);
+
+            HudMessage(s:""; HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN, 7198, CR_UNTRANSLATED, 0, 0, 15.0);
+            HudMessage(s:""; HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN, 7199, CR_UNTRANSLATED, 0, 0, 15.0);
+        }
+
+        if (CheckInventory("EradicatorPipControllable")) { SetInventory("EradicatorPipControllable", 0); }
+        if (CheckInventory("EradicatorPipTid1")) { SetInventory("EradicatorPipTid1", 0); }
+        if (CheckInventory("EradicatorPipTid2")) { SetInventory("EradicatorPipTid2", 0); }
+        if (CheckInventory("EradicatorPipTid3")) { SetInventory("EradicatorPipTid3", 0); }
+		break;
+
+    case CLASS_C7:
+        if (!respawning)
+        {
+            GiveInventory("Allmap", 1);
+            ACS_NamedExecuteWithResult("SamsaraMapRevealerPickup");
+        }
+        break;
+
+    case CLASS_KATARN:
+        ACS_NamedExecuteWithResult("DarkForces_GiveShield");
+        break;
+
+	case CLASS_SW:
+		if (!respawning) { GiveInventory("LoWangReady", 1); }
+		break;
+
+	case CLASS_RR:
+		if (!respawning)
+		{
+			GiveInventory("LeonardReady", 1);
+			if(CheckInventory("BubbaGivesYouMotorcycle"))
+			{
+				TakeInventory("BubbaGivesYouMotorcycle",1);
+				SpawnSpotFacingForced("LeonardMotorcycle",0,0);
+			}
+		}
+		break;
+
+    case CLASS_BITTERMAN:
+        if (respawning)
+        {
+            if (CheckInventory("Q2Chainfist") && !CheckWeapon("Q2Chainfist")) { StopSound(0, CHAN_WEAPON); } // hack
+        }
+        break;
+
+    case CLASS_BOND:
+        if (CheckInventory("Goldeneye_TankWeapon") && !CheckInventory("SamsaraGoldenEyePermanentTankCannon")) { TakeInventory("Goldeneye_TankWeapon", 1); }
+        break;
+
+	case CLASS_DEUSEX:
+		if (!CheckInventory("SamsaraDeusExStartingSkillsGiven"))
+		{
+			if (GetCVar("samsara_deusexstartingskills") > 0) { SetInventory("DeusEx_StartingSkills", GetCVar("samsara_deusexstartingskills")); }
+			SetInventory("SamsaraDeusExStartingSkillsGiven", 1);
+		}
+		break;
+	}
 
     if (respawning && (isSinglePlayer() || isCoop()))
     {
