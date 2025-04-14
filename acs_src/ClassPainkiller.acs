@@ -1174,17 +1174,15 @@ Script "Painkiller_EnemyFryer" (void)
 {
 	SetActivator(0,AAPTR_TRACER);
 
-	if (CheckInventory("Painkiller_Frying"))
+	if (CheckInventory("Painkiller_Frying") || isDead(0))
 		terminate;
 
 	PlaySound(0,"Painkiller/Electrodriver/ElectroFryLoop",CHAN_ITEM,0.33,true);
 	GiveInventory("Painkiller_Frying",1);
 
-	bool actorIsDead;
-
 	int actorClass = ClassifyActor(0);
 
-	for (int loopcounter = 0; loopcounter < 17 && !(actorClass <= ACTOR_WORLD) && !(actorIsDead && (actorClass & ACTOR_ALIVE)); loopcounter++)
+	for (int loopcounter = 0; loopcounter < 17 && !(actorClass <= ACTOR_WORLD) && !isDead(0); loopcounter++)
 	{
 		Delay(10);
 
@@ -1197,10 +1195,7 @@ Script "Painkiller_EnemyFryer" (void)
 		SpawnForced("Painkiller_ElectroDriverFrySpawner",x,y,z,0,0);
 		SpawnForced("Painkiller_ElectroDriverFryEffect",x,y,z,0,0);
 
-		if (actorClass & ACTOR_ALIVE)
-			if (!CheckFlag(0, "NOPAIN")) { SetActorState(0, "Pain", true); }
-		else
-			actorIsDead = true;
+		if (!isDead(0) && !CheckFlag(0, "NOPAIN")) { SetActorState(0, "Pain", true); }
 
 		SetActorVelocity(0,random(-0.5,0.5),random(-0.5,0.5),0,0,0);
 		//ThrustThing(random(0,256),1,0,0);
