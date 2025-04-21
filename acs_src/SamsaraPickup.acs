@@ -298,59 +298,60 @@ script "SamsaraGiveWeapon" (int slot, int dropped, int silent) //229 -- SAMSARA_
     {
         int success = _giveclassweapon(pclass, slot, 3, dropped, 0, 0);
 
-        if (!silent && success)
+        if (success)
         {
-            // this is for mugshot grins and weapon switching
-            if (!hasWep)
+            if (silent)
             {
-                Spawn("WeaponGetYaaaay", GetActorX(0), GetActorY(0), GetActorZ(0));
-                Spawn("WeaponGetYaaaay2", GetActorX(0), GetActorY(0), GetActorZ(0));
-				
-				if(isSinglePlayer())
-				{
-					ACS_NamedExecuteWithResult("SamsaraForceGrinMugShot");
-				}
-				
-				If (GetCVar("samsara_runninginzdoom") == 1)
-				{
-					If (GetCVar("neverswitchonpickup") == 0)
-					{
-						SetWeapon(weapon);
-					}
-				}
-            }
-
-            // flipped because order is handled the opposite in hexen
-            if (GetCVar("samsara_currentgame") == GAME_HEXEN)
-            {
-                ACS_NamedExecuteAlways("SamsaraClientWeaponPickup", 0, slot, dropped);
-
                 if (CheckInventory("SamsaraMiscPickupDisplayExtraChoice1"))
                 {
-                    ACS_NamedExecuteAlways("SamsaraClientMiscPickup", 0, CheckInventory("SamsaraMiscPickupDisplayExtraChoice1") - 1, CheckInventory("SamsaraMiscPickupDisplayExtraLoadout1") - 1, CheckInventory("SamsaraMiscPickupDisplayExtraDropped1"));
-
                     SetInventory("SamsaraMiscPickupDisplayExtraChoice1", 0);
                     SetInventory("SamsaraMiscPickupDisplayExtraLoadout1", 0);
                     SetInventory("SamsaraMiscPickupDisplayExtraDropped1", 0);
                 }
             } else {
-                if (CheckInventory("SamsaraMiscPickupDisplayExtraChoice1"))
+                // this is for mugshot grins and weapon switching
+                if (!hasWep)
                 {
-                    ACS_NamedExecuteAlways("SamsaraClientMiscPickup", 0, CheckInventory("SamsaraMiscPickupDisplayExtraChoice1") - 1, CheckInventory("SamsaraMiscPickupDisplayExtraLoadout1") - 1, CheckInventory("SamsaraMiscPickupDisplayExtraDropped1"));
+                    Spawn("WeaponGetYaaaay", GetActorX(0), GetActorY(0), GetActorZ(0));
+                    Spawn("WeaponGetYaaaay2", GetActorX(0), GetActorY(0), GetActorZ(0));
 
-                    SetInventory("SamsaraMiscPickupDisplayExtraChoice1", 0);
-                    SetInventory("SamsaraMiscPickupDisplayExtraLoadout1", 0);
-                    SetInventory("SamsaraMiscPickupDisplayExtraDropped1", 0);
+                    if (isSinglePlayer()) { ACS_NamedExecuteWithResult("SamsaraForceGrinMugShot"); }
+
+                    if (GetCVar("samsara_runninginzdoom") && !GetCVar("neverswitchonpickup")) { SetWeapon(weapon); }
                 }
 
-                ACS_NamedExecuteAlways("SamsaraClientWeaponPickup", 0, slot, dropped);
+                // flipped because order is handled the opposite in hexen
+                if (GetCVar("samsara_currentgame") == GAME_HEXEN)
+                {
+                    ACS_NamedExecuteAlways("SamsaraClientWeaponPickup", 0, slot, dropped);
+
+                    if (CheckInventory("SamsaraMiscPickupDisplayExtraChoice1"))
+                    {
+                        ACS_NamedExecuteAlways("SamsaraClientMiscPickup", 0, CheckInventory("SamsaraMiscPickupDisplayExtraChoice1") - 1, CheckInventory("SamsaraMiscPickupDisplayExtraLoadout1") - 1, CheckInventory("SamsaraMiscPickupDisplayExtraDropped1"));
+
+                        SetInventory("SamsaraMiscPickupDisplayExtraChoice1", 0);
+                        SetInventory("SamsaraMiscPickupDisplayExtraLoadout1", 0);
+                        SetInventory("SamsaraMiscPickupDisplayExtraDropped1", 0);
+                    }
+                } else {
+                    if (CheckInventory("SamsaraMiscPickupDisplayExtraChoice1"))
+                    {
+                        ACS_NamedExecuteAlways("SamsaraClientMiscPickup", 0, CheckInventory("SamsaraMiscPickupDisplayExtraChoice1") - 1, CheckInventory("SamsaraMiscPickupDisplayExtraLoadout1") - 1, CheckInventory("SamsaraMiscPickupDisplayExtraDropped1"));
+
+                        SetInventory("SamsaraMiscPickupDisplayExtraChoice1", 0);
+                        SetInventory("SamsaraMiscPickupDisplayExtraLoadout1", 0);
+                        SetInventory("SamsaraMiscPickupDisplayExtraDropped1", 0);
+                    }
+
+                    ACS_NamedExecuteAlways("SamsaraClientWeaponPickup", 0, slot, dropped);
+                }
+
+                if (dropped <= 1) { ACS_NamedExecuteWithResult("SamsaraWeaponTaunt"); } // so it gives the taunt cooldown properly
+
+                if (CheckInventory("SamsaraHeroMusicHalfLifeActive") && !CheckInventory("HalfLifeMusicPlayingToken")) { GiveInventory("HLMusicWeapon", 1); }
             }
-
-            if (dropped <= 1) { ACS_NamedExecuteWithResult("SamsaraWeaponTaunt"); } // so it gives the taunt cooldown properly
-
-            if (CheckInventory("SamsaraHeroMusicHalfLifeActive") && !CheckInventory("HalfLifeMusicPlayingToken")) { GiveInventory("HLMusicWeapon", 1); }
-		}
-	}
+        }
+    }
 
     if (dropped >= 2)
     {
