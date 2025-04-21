@@ -510,17 +510,51 @@ actor SamsaraMarathonShotgunLeftAttackHandler : Trigger
     }
 }
 
-actor SamsaraMarathonShotgunRightAttackHandler : SamsaraMarathonShotgunLeftAttackHandler
+actor SamsaraMarathonShotgunRightAttackHandler : Trigger
 {
     States
     {
+      // Loop clearing/initializing stuff
+      Pickup:
+        TNT1 A 0 A_TakeInventory("SamsaraMarathonShotgunAttackAmount") // reset
+      PickupInit:
+        TNT1 A 0 A_GiveInventory("SamsaraMarathonShotgunAttackAmount")
+        goto PickupAmmoCheck
+
       // Ammo checking/taking stuff
+      PickupAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"PickupAmmoCheckReloadable")
+      PickupAmmoCheckNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Shell",1,1)
+        goto PickupFinish
+        TNT1 A 0 A_TakeInventory("Shell",1)
+        goto PickupAttack
+
       PickupAmmoCheckReloadable:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("WastemShellRight",1,1)
         goto PickupFinish
         TNT1 A 0 A_TakeInventory("WastemShellRight",1)
         goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("marathon/shotgun/fire",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 AAAAA 0 A_FireCustomMissile("MarathonShotgunBullet",random(-4,4),false,0,0,0,random(-4,4))
+        goto PickupFinish
+
+      PickupAttackCoop:
+        TNT1 AAAAA 0 A_FireCustomMissile("MarathonShotgunBulletCoop",random(-4,4),false,0,0,0,random(-4,4))
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_JumpIfInventory("SamsaraMarathonShotgunAttackAmount",0,"PickupStop")
+        goto PickupInit
     }
 }
 

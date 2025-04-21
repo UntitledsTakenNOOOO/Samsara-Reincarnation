@@ -102,24 +102,7 @@ actor "KKV-7 SMG Flechette" : SamsaraMarathonWeapon
 
       FireStart:
         TNT1 A 0 A_AlertMonsters
-        TNT1 A 0 A_GiveInventory("MarathonCasingSound")
-        TNT1 A 0 A_FireCustomMissile("FlechetteCasingSpawner",0,false) // no ammo check on first bullet/casing
         TNT1 A 0 A_GunFlash
-      FireCasingCheck:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireCasingCheckReloadable")
-      FireCasingCheckNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireAttack")
-        TNT1 A 0 A_JumpIfInventory("Clip",2,"FireAttack")
-        goto FireContinue
-
-      FireCasingCheckReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireAttack")
-        TNT1 A 0 A_JumpIfInventory("SmgBullet",2,"FireAttack")
-        goto FireContinue
-
-      FireAttack:
-        TNT1 A 0 A_FireCustomMissile("FlechetteCasingSpawner",0,false)
-      FireContinue:
         TNT1 A 0 A_GiveInventory("SamsaraMarathonSMGAttackHandler")
         HSMG B 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         TNT1 A 0 A_Light2
@@ -158,6 +141,7 @@ actor SamsaraMarathonSMGAttackHandler : Trigger
     {
       // Loop clearing/initializing stuff
       Pickup:
+        TNT1 A 0 A_GiveInventory("SamsaraMarathonSMGCasingSpawnHandler") // netplay hack because like millions would spawn on the first shot, then spawn only one afterwards
         TNT1 A 0 A_TakeInventory("SamsaraMarathonSMGAttackAmount") // reset
       PickupInit:
         TNT1 A 0 A_GiveInventory("SamsaraMarathonSMGAttackAmount")
@@ -183,6 +167,9 @@ actor SamsaraMarathonSMGAttackHandler : Trigger
       // Attack stuff
       PickupAttack:
         TNT1 A 0 A_PlaySound("marathon/smg/fire",CHAN_WEAPON)
+        //TNT1 A 0 A_FireCustomMissile("FlechetteCasingSpawner",0,false) // yeah okay
+        TNT1 A 0 A_JumpIfInventory("SamsaraMarathonSMGAttackAmount",2,2)
+        TNT1 A 0 A_GiveInventory("MarathonCasingSound")
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
       PickupAttackDM:
@@ -202,6 +189,49 @@ actor SamsaraMarathonSMGAttackHandler : Trigger
       PickupFinish:
         TNT1 A 0 A_JumpIfInventory("SamsaraMarathonSMGAttackAmount",0,"PickupStop")
         goto PickupInit
+    }
+}
+
+actor SamsaraMarathonSMGCasingSpawnHandler : Trigger
+{
+    States
+    {
+      Pickup:
+      // Ammo checking stuff (first)
+      Pickup1:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"Pickup1Reloadable")
+      Pickup1NonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Pickup1Casing")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,"Pickup1Casing")
+        goto Pickup2
+
+      Pickup1Reloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Pickup1Casing")
+        TNT1 A 0 A_JumpIfInventory("SmgBullet",1,"Pickup1Casing")
+        goto Pickup2
+
+      // Casing spawning stuff (first)
+      Pickup1Casing:
+        TNT1 A 0 A_FireCustomMissile("FlechetteCasingSpawner",0,false)
+        goto Pickup2
+
+      // Ammo checking stuff (second)
+      Pickup2:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"Pickup2Reloadable")
+      Pickup2NonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"Pickup2Casing")
+        TNT1 A 0 A_JumpIfInventory("Clip",2,"Pickup2Casing")
+        stop
+
+      Pickup2Reloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"Pickup2Casing")
+        TNT1 A 0 A_JumpIfInventory("SmgBullet",2,"Pickup2Casing")
+        stop
+
+      // Casing spawning stuff (second)
+      Pickup2Casing:
+        TNT1 A 0 A_FireCustomMissile("FlechetteCasingSpawner",0,false)
+        stop
     }
 }
 
