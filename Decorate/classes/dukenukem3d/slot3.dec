@@ -1,3 +1,5 @@
+actor SamsaraDukeExplosiveShotgunAmmoCheckFailed : Boolean {}
+
 actor "Explosive Shotgun" : DukeWeapon
 {
 	Weapon.SlotNumber 3
@@ -103,14 +105,16 @@ actor "Explosive Shotgun" : DukeWeapon
 		TNT1 A 0 A_JumpIfInventory("Shell",3,1)
 		goto OutOfAmmo
 		DKXS GHI 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		DKXS JK 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		DKXS K 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		DKXS E 0 A_PlaySound("duke/xshotgunpump",CHAN_5)
+		DKXS J 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		DKXS K 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_PlaySound("duke/xshotgunpump",CHAN_5)
 		DKXS LMN 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        TNT1 A 0 A_JumpIfInventory("SamsaraDukeExplosiveShotgunAmmoCheckFailed",1,2)
 		TNT1 A 0 A_FireCustomMissile("ShellCasingSpawner2",0,0,5)
-		DKXS NMLK 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		DKXS KKJJIIHHGGFFF 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		DKXS A 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		DKXS NML 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		DKXS K 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		DKXS JIHG 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		DKXS FA 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_TakeInventory("DBSHOT",99)
 		DKXS A 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		stop
@@ -128,16 +132,17 @@ actor "Explosive Shotgun" : DukeWeapon
 		CKXS F 5 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
 		TNT1 A 0 A_JumpIfInventory("Shell",3,1)
-		goto OutOfAmmo
+		goto OutOfAmmoLAB
 		CKXS GHI 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		CKXS JK 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		CKXS K 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		CKXS E 0 A_PlaySound("duke/xshotgunpump",CHAN_5)
+		CKXS J 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		CKXS K 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		TNT1 A 0 A_PlaySound("duke/xshotgunpump",CHAN_5)
 		CKXS LMN 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		//TNT1 A 0 A_FireCustomMissile("ShellCasingSpawner2",0,0,5)
-		CKXS NMLK 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		CKXS KKJJIIHHGGFFF 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		CKXS A 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        // no casing, but we still maintain DoubleFiringSpeed parity
+		CKXS NML 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		CKXS K 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		CKXS JIHG 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+		CKXS FA 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_TakeInventory("DBSHOT",99)
 		CKXS A 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		stop
@@ -217,10 +222,15 @@ actor "Explosive Shotgun" : DukeWeapon
 		DKXS A 2 A_TakeInventory("DBSHOT",99)
 		TNT1 A 0 A_SelectWeapon("Glock 17")
 		Goto Deselect
+
+	OutOfAmmoLAB:
+		CKXS A 2 A_TakeInventory("DBSHOT",99)
+		TNT1 A 0 A_SelectWeapon("Glock 17")
+		Goto Deselect
 	}
 }
 
-// Original/Life's A Beach
+// Original
 
 actor SamsaraDukeExplosiveShotgunAttackHandler : Trigger
 {
@@ -228,11 +238,17 @@ actor SamsaraDukeExplosiveShotgunAttackHandler : Trigger
     {
       // Ammo checking/taking stuff
       Pickup:
+        TNT1 A 0 A_TakeInventory("SamsaraDukeExplosiveShotgunAmmoCheckFailed")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("Shell",3,1)
-        stop
+        goto PickupAmmoCheckFailed
         TNT1 A 0 A_TakeInventory("Shell",3)
         goto PickupAttack
+
+      // Ammo checking failure stuff
+      PickupAmmoCheckFailed:
+        TNT1 A 0 A_GiveInventory("SamsaraDukeExplosiveShotgunAmmoCheckFailed")
+        stop
 
       // Attack stuff
       PickupAttack:

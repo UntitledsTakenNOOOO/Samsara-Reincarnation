@@ -19,6 +19,7 @@ actor DB16 : DB1 {}
 actor DB17 : DB1 {}
 actor DB18 : DB1 {}
 actor DB19 : DB1 {}
+actor SamsaraDukeShotgunAmmoCheckFailed : Boolean {}
 actor Duke64UsingExplosiveShells : Boolean {}
 
 actor "  Shotgun  " : DukeWeapon
@@ -118,8 +119,9 @@ actor "  Shotgun  " : DukeWeapon
 		TNT1 A 0 A_JumpIfInventory("Shell",1,1)
 		goto OutOfAmmo
 		DKSG BC 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		DKSG D 0 A_PlaySound("duke/mosspump",CHAN_5)
+		TNT1 A 0 A_PlaySound("duke/mosspump",CHAN_5)
 		DKSG DE 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        TNT1 A 0 A_JumpIfInventory("SamsaraDukeShotgunAmmoCheckFailed",1,2)
 		TNT1 A 0 A_FireCustomMissile("ShellCasingSpawner2",0,0,2)
 		DKSG E 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		DKSG D 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
@@ -145,8 +147,9 @@ actor "  Shotgun  " : DukeWeapon
 		TNT1 A 0 A_JumpIfInventory("Shell",1,1)
 		goto OutOfAmmoLAB
 		DKSG GH 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		DKSG I 0 A_PlaySound("duke/mosspump",CHAN_5)
+		TNT1 A 0 A_PlaySound("duke/mosspump",CHAN_5)
 		DKSG IJ 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
+        // no casing, but we still maintain DoubleFiringSpeed parity
 		DKSG J 1 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		DKSG I 3 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		DKSG H 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
@@ -167,7 +170,9 @@ actor "  Shotgun  " : DukeWeapon
 		D6SG CD 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		D6SG E 2 A_PlaySound("duke64/spas12pump",5)
 		D6SG F 5 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		D6SG E 3 A_FireCustomMissile("ShellCasingSpawner2",0,0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraDukeShotgunAmmoCheckFailed",1,2)
+        TNT1 A 0 A_FireCustomMissile("ShellCasingSpawner2",0,0,2)
+		D6SG E 3
 		D6SG DA 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_TakeInventory("DBSHOT",99)
 		D6SG A 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
@@ -185,7 +190,9 @@ actor "  Shotgun  " : DukeWeapon
 		D6SG CD 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		D6SG E 2 A_PlaySound("duke64/spas12pump",5)
 		D6SG F 5 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
-		D6SG E 3 A_FireCustomMissile("ShellCasingSpawner2",0,0,2)
+        TNT1 A 0 A_JumpIfInventory("SamsaraDukeShotgunAmmoCheckFailed",1,2)
+        TNT1 A 0 A_FireCustomMissile("ShellCasingSpawner2",0,0,2)
+		D6SG E 3
 		D6SG DA 4 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
 		TNT1 A 0 A_TakeInventory("DBSHOT",99)
 		D6SG A 2 A_WeaponReady(WRF_NOFIRE|WRF_NOSWITCH)
@@ -296,11 +303,17 @@ actor SamsaraDukeShotgunAttackHandler : Trigger
     {
       // Ammo checking/taking stuff
       Pickup:
+        TNT1 A 0 A_TakeInventory("SamsaraDukeShotgunAmmoCheckFailed")
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-        stop
+        goto PickupAmmoCheckFailed
         TNT1 A 0 A_TakeInventory("Shell",1)
         goto PickupAttack
+
+      // Ammo checking failure stuff
+      PickupAmmoCheckFailed:
+        TNT1 A 0 A_GiveInventory("SamsaraDukeShotgunAmmoCheckFailed")
+        stop
 
       // Attack stuff
       PickupAttack:
@@ -399,6 +412,7 @@ actor SamsaraDuke64ShotgunAttackHandler : Trigger
     {
       // Ammo mode checking stuff
       Pickup:
+        TNT1 A 0 A_TakeInventory("SamsaraDukeShotgunAmmoCheckFailed")
         TNT1 A 0 A_JumpIfInventory("Duke64UsingExplosiveShells",1,"PickupExplosiveShell")
       // Shotgun shells
       PickupShell:
@@ -406,9 +420,14 @@ actor SamsaraDuke64ShotgunAttackHandler : Trigger
       PickupAmmoCheckShell:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttackShell")
         TNT1 A 0 A_JumpIfInventory("Shell",1,1)
-        stop
+        goto PickupAmmoCheckFailedShell
         TNT1 A 0 A_TakeInventory("Shell",1)
         goto PickupAttackShell
+
+      // Ammo checking failure stuff
+      PickupAmmoCheckFailedShell:
+        TNT1 A 0 A_GiveInventory("SamsaraDukeShotgunAmmoCheckFailed")
+        stop
 
       // Attack stuff
       PickupAttackShell:
@@ -429,9 +448,13 @@ actor SamsaraDuke64ShotgunAttackHandler : Trigger
       PickupAmmoCheckExplosiveShell:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttackExplosiveShell")
         TNT1 A 0 A_JumpIfInventory("Duke64ExplosiveShells",1,1)
-        stop
+        goto PickupAmmoCheckFailedExplosiveShell
         TNT1 A 0 A_TakeInventory("Duke64ExplosiveShells",1)
         goto PickupAttackExplosiveShell
+
+      // Ammo checking failure stuff
+      PickupAmmoCheckFailedExplosiveShell:
+        goto PickupAmmoCheckFailedShell
 
       // Attack stuff
       PickupAttackExplosiveShell:
