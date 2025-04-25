@@ -1,18 +1,33 @@
 actor "Rocket Powered Impaler" : SamsaraQuakeWeapon
 {
     Inventory.PickupMessage "You got the Rocket Powered Impaler."
-    Weapon.SlotNumber 0
-    Weapon.SelectionOrder 100
-    Weapon.Kickback 100
-    Obituary "$SAMSARA_RANGER_OB_INSTAGIB_1"
-    Tag "Rocket-Powered Impaler"
-    +NOAUTOAIM
+    Weapon.SlotPriority 1
+    Weapon.SelectionOrder 2
+    Weapon.AmmoType "RocketAmmo"
+    Weapon.AmmoGive 5
+    Weapon.AmmoUse 1
+    Tag "Rocket Powered Impaler"
+    +EXPLOSIVE
+    +NOAUTOFIRE
     States
     {
+      Spawn:
+        QDBS Z -1
+        stop
+
       Ready:
         QIMP A 1 A_WeaponReady
         loop
 
+      Select:
+        TNT1 A 0 A_TakeInventory("Ranger_AxeSelected")
+        TNT1 A 0 A_GiveInventory("Ranger_GunSelected")
+        TNT1 A 0 A_TakeInventory("Ranger_ExplosiveSelected")
+        TNT1 A 0 A_TakeInventory("Ranger_NailSelected")
+        TNT1 A 0 A_TakeInventory("Ranger_PlasmaSelected")
+        goto Super::Select
+
+      // 42 tics
       Fire:
         QIMP B 0 A_GiveInventory("SamsaraQuakeWeaponAlert")
         QIMP B 0 A_PlaySound("quake/impalefire",CHAN_WEAPON)
@@ -25,11 +40,6 @@ actor "Rocket Powered Impaler" : SamsaraQuakeWeapon
         QIMP JKLMA 3 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         QIMP A 0 A_ReFire
         goto Ready
-
-      Flash:
-        TNT1 A 5 Bright A_Light1
-        TNT1 A 5 Bright A_Light2
-        goto LightDone
     }
 }
 
@@ -37,19 +47,27 @@ actor SamsaraQuakeRocketPoweredImpalerAttackHandler : Trigger
 {
     States
     {
-      // Attack stuff
+      // Ammo checking/taking stuff
       Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupPlaySound")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("RocketAmmo",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
         TNT1 A 0 A_JumpIfInventory("QuadDamagePower",1,"PickupQuad")
       // Normal
       PickupNormal:
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupNormalCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupNormalCoop")
       PickupNormalDM:
-        TNT1 A 0 A_FireBullets(0,0,1,10000,"QuakeImpalerPuff",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_FireBullets(0,0,1,160,"QuakeImpalerPuff",FBF_NORANDOM|FBF_NOFLASH)
         goto PickupFinish
 
       PickupNormalCoop:
-        TNT1 A 0 A_FireBullets(0,0,1,10000,"QuakeImpalerPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_FireBullets(0,0,1,160,"QuakeImpalerPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
         goto PickupFinish
 
       // Quad
@@ -57,11 +75,11 @@ actor SamsaraQuakeRocketPoweredImpalerAttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupQuadCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupQuadCoop")
       PickupQuadDM:
-        TNT1 A 0 A_FireBullets(0,0,1,10000,"QuakeImpalerPuffQuadded",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_FireBullets(0,0,1,160,"QuakeImpalerPuffQuadded",FBF_NORANDOM|FBF_NOFLASH)
         goto PickupFinish
 
       PickupQuadCoop:
-        TNT1 A 0 A_FireBullets(0,0,1,10000,"QuakeImpalerPuffQuaddedCoop",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_FireBullets(0,0,1,160,"QuakeImpalerPuffQuaddedCoop",FBF_NORANDOM|FBF_NOFLASH)
         goto PickupFinish
 
       // Finishing stuff
@@ -76,7 +94,7 @@ actor QuakeImpalerPuff : BulletPuff
 {
     Scale 0.5
     VSpeed 0
-    Decal "DoomImpScorch"
+    DamageType "QuakeExplosive"
     -SOLID
     +PUFFONACTORS
     +ALWAYSPUFF
@@ -138,15 +156,15 @@ actor QuakeImpalerExplode
     Radius 1
     Height 1
     Speed 0
-    DamageType "EnemyInfightDamage"
+    DamageType "QuakeExplosive"
     +NOCLIP
     -SOLID
-    Obituary "%k shouldn't have killed %o with this."
+    Obituary "%k impaled %o."
     States
     {
       Spawn:
         TNT1 A 0
-        TNT1 A 1 A_Explode(128,128)
+        TNT1 A 1 A_Explode(160,128)
         Stop
     }
 }
@@ -157,7 +175,7 @@ actor QuakeImpalerExplodeQuad : QuakeImpalerExplode
     {
       Spawn:
         TNT1 A 0
-        TNT1 A 1 A_Explode(512,128)
+        TNT1 A 1 A_Explode(640,128)
         Stop
     }
 }
