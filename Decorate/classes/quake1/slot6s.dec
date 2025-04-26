@@ -50,6 +50,25 @@ actor "Rocket Powered Impaler" : SamsaraQuakeWeapon
     }
 }
 
+actor SamsaraQuakeRocketPoweredImpalerFireSoundPlayer : Trigger
+{
+    States
+    {
+      // Sound playing stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupDMC")
+      // Original sounds
+      PickupOriginal:
+        TNT1 A 0 A_PlaySound("quake/impalefire",CHAN_WEAPON)
+        stop
+
+      // Deathmatch Classic sounds
+      PickupDMC:
+        TNT1 A 0 A_PlaySound("quakeweps/dmc/impalefire",CHAN_WEAPON)
+        stop
+    }
+}
+
 actor SamsaraQuakeRocketPoweredImpalerAttackHandler : Trigger
 {
     States
@@ -85,11 +104,11 @@ actor SamsaraQuakeRocketPoweredImpalerAttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackNormalDMCCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackNormalDMCCoop")
       PickupAttackNormalDMCDM:
-        TNT1 A 0 A_FireBullets(0,0,1,128,"QuakeImpalerPuff",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_FireBullets(0,0,1,128,"QuakeImpalerPuffSoundDMC",FBF_NORANDOM|FBF_NOFLASH)
         goto PickupFinish
 
       PickupAttackNormalDMCCoop:
-        TNT1 A 0 A_FireBullets(0,0,1,128,"QuakeImpalerPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_FireBullets(0,0,1,128,"QuakeImpalerPuffCoopSoundDMC",FBF_NORANDOM|FBF_NOFLASH)
         goto PickupFinish
 
       // Quad
@@ -112,16 +131,16 @@ actor SamsaraQuakeRocketPoweredImpalerAttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackQuadDMCCoop")
         TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackQuadDMCCoop")
       PickupAttackQuadDMCDM:
-        TNT1 A 0 A_FireBullets(0,0,1,512,"QuakeImpalerPuffQuadded",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_FireBullets(0,0,1,512,"QuakeImpalerPuffQuaddedSoundDMC",FBF_NORANDOM|FBF_NOFLASH)
         goto PickupFinish
 
       PickupAttackQuadDMCCoop:
-        TNT1 A 0 A_FireBullets(0,0,1,512,"QuakeImpalerPuffQuaddedCoop",FBF_NORANDOM|FBF_NOFLASH)
+        TNT1 A 0 A_FireBullets(0,0,1,512,"QuakeImpalerPuffQuaddedCoopSoundDMC",FBF_NORANDOM|FBF_NOFLASH)
         goto PickupFinish
 
       // Finishing stuff
       PickupFinish:
-        TNT1 A 0 A_ChangeVelocity(cos(pitch)*-10,0,sin(pitch)*10,CVF_RELATIVE)
+        TNT1 A 0 A_Recoil(10)
         TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 10, 8, 20)
         stop
     }
@@ -160,7 +179,7 @@ actor SamsaraQuakeRocketPoweredImpalerLoadSoundPlayer : Trigger
 
       // Deathmatch Classic sounds
       PickupDMC:
-        TNT1 A 0 A_PlaySound("quake/impaload")
+        TNT1 A 0 A_PlaySound("quakeweps/dmc/impaload")
         stop
     }
 }
@@ -203,6 +222,37 @@ actor QuakeImpalerPuff : BulletPuff
 
 actor QuakeImpalerPuffCoop : QuakeImpalerPuff { +MTHRUSPECIES }
 
+actor QuakeImpalerPuffSoundDMC : QuakeImpalerPuff
+{
+	States
+	{
+    Crash:
+        TNT1 A 0
+        TNT1 A 1 A_PlaySound("quakeweps/dmc/impalwall")
+        TNT1 AAAAA 0 A_SpawnItemEx("QuakeBulletPuff2",random(-7,7),random(-7,7),random(-3,1),0,0,random(-10,1)/10)
+        TNT1 AAAAAAAAAA 0 A_SpawnItemEx("QuakeBulletPuff3",random(-7,7),random(-7,7),random(-3,1),0,0,random(-10,1)/10)
+        TNT1 AAAAA 0 A_SpawnItemEx("QuakeBulletPuff4",random(-7,7),random(-7,7),random(-3,1),0,0,random(-10,1)/10)
+        TNT1 A 0 A_Explode(48,128,0)
+        TNT1 A 0 A_ChangeFlag("FORCERADIUSDMG",true)
+        TNT1 A 0 A_Explode(48,128)
+        TNT1 A 0 A_SpawnItemEx("QuakeImpalerExplosionSoundDMC",0,0,0,0,0,0,0,32)
+        TNT1 A 1
+        Stop
+    Spawn:
+    Melee:
+        TNT1 A 0
+        TNT1 A 1 A_PlaySound("quakeweps/dmc/impalehit")
+        TNT1 A 0 A_Explode(48,128,0)
+        TNT1 A 0 A_ChangeFlag("FORCERADIUSDMG",true)
+        TNT1 A 0 A_Explode(48,128)
+        TNT1 A 0 A_SpawnItemEx("QuakeImpalerExplosionSoundDMC",0,0,0,0,0,0,0,32)
+        TNT1 A 1
+        Stop
+	}
+}
+
+actor QuakeImpalerPuffCoopSoundDMC : QuakeImpalerPuffSoundDMC { +MTHRUSPECIES }
+
 actor QuakeImpalerPuffQuadded : QuakeImpalerPuff
 {
     DamageType "NotQuadded"
@@ -235,6 +285,37 @@ actor QuakeImpalerPuffQuadded : QuakeImpalerPuff
 
 actor QuakeImpalerPuffQuaddedCoop : QuakeImpalerPuffQuadded { +MTHRUSPECIES }
 
+actor QuakeImpalerPuffQuaddedSoundDMC : QuakeImpalerPuffQuadded
+{
+    States
+    {
+    Crash:
+        TNT1 A 0
+        TNT1 A 1 A_PlaySound("quakeweps/dmc/impalwall")
+        TNT1 AAAAA 0 A_SpawnItemEx("QuakeBulletPuff2",random(-7,7),random(-7,7),random(-3,1),0,0,random(-10,1)/10)
+        TNT1 AAAAAAAAAA 0 A_SpawnItemEx("QuakeBulletPuff3",random(-7,7),random(-7,7),random(-3,1),0,0,random(-10,1)/10)
+        TNT1 AAAAA 0 A_SpawnItemEx("QuakeBulletPuff4",random(-7,7),random(-7,7),random(-3,1),0,0,random(-10,1)/10)
+        TNT1 A 0 A_Explode(192,128,0)
+        TNT1 A 0 A_ChangeFlag("FORCERADIUSDMG",true)
+        TNT1 A 0 A_Explode(192,128)
+        TNT1 A 0 A_SpawnItemEx("QuakeImpalerExplosionSoundDMC",0,0,0,0,0,0,0,32)
+        TNT1 A 1
+        Stop
+    Spawn:
+    Melee:
+        TNT1 A 0
+        TNT1 A 1 A_PlaySound("quakeweps/dmc/impalehit")
+        TNT1 A 0 A_Explode(192,128,0)
+        TNT1 A 0 A_ChangeFlag("FORCERADIUSDMG",true)
+        TNT1 A 0 A_Explode(192,128)
+        TNT1 A 0 A_SpawnItemEx("QuakeImpalerExplosionSoundDMC",0,0,0,0,0,0,0,32)
+        TNT1 A 1
+        Stop
+   }
+}
+
+actor QuakeImpalerPuffQuaddedCoopSoundDMC : QuakeImpalerPuffQuaddedSoundDMC { +MTHRUSPECIES }
+
 actor QuakeImpalerExplosion : QuakeExplosion
 {
     States
@@ -255,6 +336,31 @@ actor QuakeImpalerExplosion : QuakeExplosion
 
       Death:
         QEXP A 4 bright A_PlaySound("quake/impalsplod")
+        QEXP B 4 bright
+        QEXP CD 3 bright
+        QEXP EF 2 bright
+        stop
+    }
+}
+
+actor QuakeImpalerExplosionSoundDMC : QuakeImpalerExplosion
+{
+    States
+    {
+      Spawn:
+        QEXP A 0 bright
+        QEXP A 0 ACS_NamedExecuteWithResult("SamsaraDecorate", 8)
+        goto SpawnLoop
+      SpawnLoop:
+        QEXP A 0 A_JumpIfInventory("QuakeExplosionCounter", 1, 1)
+        goto Death
+        QEXP A 0 A_CustomMissile("QuakeExplosionParticle",  0, 0, random(-180, 180), 2, random(-180, 180))
+        QEXP A 0 A_CustomMissile("QuakeExplosionParticle2", 0, 0, random(-180, 180), 2, random(-180, 180))
+        QEXP A 0 A_CustomMissile("QuakeExplosionParticle3", 0, 0, random(-180, 180), 2, random(-180, 180))
+        QEXP A 0 ACS_NamedExecuteWithResult("SamsaraDecorate", 10, 1)
+        loop
+      Death:
+        QEXP A 4 bright A_PlaySound("quakeweps/dmc/impalsplod")
         QEXP B 4 bright
         QEXP CD 3 bright
         QEXP EF 2 bright
