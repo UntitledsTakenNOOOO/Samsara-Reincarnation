@@ -3820,20 +3820,20 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
         SetInventory("SamsaraMiscPickupDisplayExtraLoadout1", 0);
         SetInventory("SamsaraMiscPickupDisplayExtraDropped1", 0);
 
-		if (!isZDoom() && GetCVar("samsara_banmorphovum") && CheckInventory("SamsaraCorvusArtiEgg"))
-		{
-			for (i = 0; i < CheckInventory("SamsaraCorvusArtiEgg"); i++)
-			{
-				if (!CheckInventory("Grim Ballista") || (CheckInventory("Grim Ballista") && CheckInventory("Shell") < GetAmmoCapacity("Shell")))
-				{
-					Print(l:"CORVUSMORPHOVUMDISABLED2");
-					GiveInventory("Grim Ballista", 1);
-				}
-				else { Print(l:"CORVUSMORPHOVUMDISABLED1"); }
-			}
+        if (!isZDoom() && GetCVar("samsara_banmorphovum") && CheckInventory("SamsaraCorvusArtiEgg"))
+        {
+            for (i = 0; i < CheckInventory("SamsaraCorvusArtiEgg"); i++)
+            {
+                if (!CheckInventory("Grim Ballista") || (CheckInventory("Grim Ballista") && CheckInventory("Shell") < GetAmmoCapacity("Shell")))
+                {
+                    Print(l:"CORVUSMORPHOVUMDISABLED2");
+                    GiveInventory("Grim Ballista", 1);
+                }
+                else { Print(l:"CORVUSMORPHOVUMDISABLED1"); }
+            }
 
-			SetInventory("SamsaraCorvusArtiEgg", 0);
-		}
+            SetInventory("SamsaraCorvusArtiEgg", 0);
+        }
 
         if (GetCVar("samsara_banjetpack") && (CheckInventory("DukePortJetpack") || CheckInventory("DukePortJetpack64")))
         {
@@ -3872,11 +3872,40 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
             SetInventory("DukePortJetpack64", 0);
         }
 
-		if (GetCVar("samsara_banjetpack") && CheckInventory("RMRJetPack"))
-		{
-			Print(l:"RMRJETPACKDISABLED");
-			SetInventory("RMRJetPack", 0);
-		}
+        if (GetCVar("samsara_banjetpack") && (CheckInventory("RMRJetPack") || CheckInventory("PowerRMRFlyAbility") || CheckInventory("PowerRMRFlyAbilityHack")))
+        {
+            int oxyrecmax = 3;
+
+            for (i = 0; i < CheckInventory("RMRJetPack"); i++)
+            {
+                if (CheckInventory("RMROxygenRecycler") < oxyrecmax ||
+                    (GetCVar("samsara_cl_maxedinventoryhealthpickup") >= 2 && (GetActorProperty(0, APROP_Health) < ACS_NamedExecuteWithResult("SamsaraPlayerHealer", -1) || ACS_NamedExecuteWithResult("SamsaraPlayerOxygenAdjuster", 0, -1))) ||
+                    GetCVar("samsara_nohealthcap"))
+                {
+                    if ((CheckInventory("RMROxygenRecycler") >= oxyrecmax && GetCVar("samsara_cl_maxedinventoryhealthpickup") >= 2 && (GetActorProperty(0, APROP_Health) < ACS_NamedExecuteWithResult("SamsaraPlayerHealer", -1) || ACS_NamedExecuteWithResult("SamsaraPlayerOxygenAdjuster", 0, -1))) ||
+                        GetCVar("samsara_nohealthcap"))
+                    {
+                        Print(l:"RMRJETPACKDISABLED3");
+                        ACS_NamedExecuteWithResult("SamsaraPlayerHealer", 100);
+                        ACS_NamedExecuteWithResult("SamsaraPlayerOxygenAdjuster", 1, -1);
+                    } else {
+                        Print(l:"RMRJETPACKDISABLED2");
+                        GiveInventory("RMROxygenRecycler", 1);
+                    }
+                }
+                else { Print(l:"RMRJETPACKDISABLED1"); }
+            }
+
+            SetInventory("RMRJetPack", 0);
+            SetInventory("PowerRMRFlyAbility", 0);
+            SetInventory("PowerRMRFlyAbilityHack", 0);
+        }
+
+        if (GetCVar("samsara_banjetpack") && (CheckInventory("PowerWTSpellFly") || CheckInventory("PowerWTSpellFlyHack")))
+        {
+            SetInventory("PowerWTSpellFly", 0);
+            SetInventory("PowerWTSpellFlyHack", 0);
+        }
 
 		for (i = 0; i < ACCURACYCOUNT; i++)
 		{
