@@ -163,14 +163,14 @@ function void ApplyLMS(void)
 
     for (i = SLOT_FIST; i <= SLOT_BFG10K; i++)
     {
-        int curslot = i;
+        int curslot = i; // needed for skulltag stuff
         bool slotstart = false;
 
         switch (i)
         {
           default: slotstart = true; break;
           case SLOT_CHAINSAW: slotstart = GetCVar("samsara_lmschainsaw"); break;
-          case SLOT_PISTOL: slotstart = GetCVar("samsara_lmspistol"); break;
+          case SLOT_PISTOL: slotstart = !StrCmp(ClassWeapons[classnum][i][S_WEP], ClassWeapons[classnum][SLOT_FIST][S_WEP]) ? true : GetCVar("samsara_lmspistol"); break; // some classes have only one weapon to start with, so always give this for them (this currently includes descent's weapon)
           case SLOT_SHOTGUN: slotstart = GetCVar("samsara_lmsshotgun"); break;
           case SLOT_SUPERSHOTGUN: slotstart = GetCVar("samsara_lmsssg"); break;
           case SLOT_CHAINGUN: slotstart = GetCVar("samsara_lmschaingun"); break;
@@ -180,134 +180,61 @@ function void ApplyLMS(void)
 
           case SLOT_MINIGUN:
             slotstart = GetCVar("samsara_lmsminigun");
-
-            switch (classnum)
-            {
-              // classes not listed get a 4 instead
-              default:
-                curslot = SLOT_CHAINGUN;
-                break;
-
-              case CLASS_DOOM:
-              case CLASS_CHEX:
-              case CLASS_WOLFEN:
-              case CLASS_DUKE:
-              case CLASS_ROTT:
-              case CLASS_CALEB:
-              case CLASS_ERAD:
-              case CLASS_KATARN:
-              case CLASS_BITTERMAN:
-              case CLASS_BOND:
-              case CLASS_RTCW:
-              case CLASS_QUAKE3:
-                break;
-            }
+            if (!StrCmp(ClassWeapons[classnum][i][S_WEP], "")) { curslot = SLOT_CHAINGUN; } // classes without a 4S get a 4 instead
             break;
 
           case SLOT_GRENADELAUNCHER:
             slotstart = GetCVar("samsara_lmsgrenadelauncher");
-
-            switch (classnum)
-            {
-              // classes not listed get a 5 instead
-              default:
-                curslot = SLOT_ROCKETLAUNCHER;
-                break;
-
-              case CLASS_DOOM:
-              case CLASS_CHEX:
-              case CLASS_ROTT:
-              case CLASS_CALEB:
-              case CLASS_KATARN:
-              case CLASS_WITCHAVEN:
-              case CLASS_BITTERMAN:
-              case CLASS_BOND:
-              case CLASS_RTCW:
-                break;
-            }
+            if (!StrCmp(ClassWeapons[classnum][i][S_WEP], "")) { curslot = SLOT_ROCKETLAUNCHER; } // classes without a 5S get a 5 instead
             break;
 
           case SLOT_RAILGUN:
             slotstart = GetCVar("samsara_lmsrailgun");
-
-            switch (classnum)
-            {
-              // classes not listed get a 6 instead
-              default:
-                curslot = SLOT_PLASMARIFLE;
-                break;
-
-              case CLASS_DOOM:
-              case CLASS_CHEX:
-              case CLASS_MARATHON:
-              case CLASS_QUAKE:
-              case CLASS_CALEB:
-              case CLASS_KATARN:
-              case CLASS_DISRUPTOR:
-              case CLASS_BITTERMAN:
-              case CLASS_BOND:
-              case CLASS_RTCW:
-                break;
-            }
+            if (!StrCmp(ClassWeapons[classnum][i][S_WEP], "")) { curslot = SLOT_PLASMARIFLE; } // classes without a 6S get a 6 instead
             break;
 
           case SLOT_BFG10K:
             slotstart = GetCVar("samsara_lmsbfg10k");
-
-            switch (classnum)
-            {
-              // classes not listed get a 7 instead
-              default:
-                curslot = SLOT_BFG9000;
-                break;
-
-              case CLASS_DOOM:
-              case CLASS_CHEX:
-              case CLASS_HEXEN:
-              case CLASS_CALEB:
-              case CLASS_KATARN:
-              case CLASS_BITTERMAN:
-              case CLASS_BOND:
-              case CLASS_UNREAL:
-              case CLASS_RTCW:
-                break;
-            }
+            if (!StrCmp(ClassWeapons[classnum][i][S_WEP], "")) { curslot = SLOT_BFG9000; } // classes without a 7S get a 7 instead
             break;
         }
 
-        if (i == SLOT_PISTOL)
+        if (i == SLOT_PISTOL) // special handling
         {
-            if (isSinglePlayer() || isCoop())
+            if (slotstart) { GiveClassWeapon(classNum, i, 1, -1); }
+            else if (!slotstart && !(isSinglePlayer() || isCoop()))
             {
-                if (slotstart) { GiveClassWeapon(classNum, curslot, 1, -1); }
-            } else {
-                if (!slotstart)
+                SetInventory(ClassWeapons[classnum][i][S_WEP], 0);
+
+                // altclass/loadout weapons are not in the array, so manually take them
+
+                switch (classNum)
                 {
-                    if (StrCmp(ClassWeapons[classnum][curslot][S_WEP], ClassWeapons[classnum][SLOT_FIST][S_WEP])) { SetInventory(ClassWeapons[classnum][curslot][S_WEP], 0); } // currently keeps descent's weapon
+                  default:
+                    break;
 
-                    // Doom Characters
-                    if (classNum == CLASS_DOOM) { SetInventory(" Rifle ", 0); }
+                  case CLASS_DOOM:
+                    SetInventory(" Rifle ", 0);
+                    break;
 
-                    // Fred Chexter
-                    if (classNum == CLASS_CHEX) { SetInventory("Micro-Zorcher", 0); }
+                  case CLASS_CHEX:
+                    SetInventory("Micro-Zorcher", 0);
+                    break;
 
-                    // Wolfenstein 3D Characters
-                    if (classNum == CLASS_WOLFEN) { SetInventory("Totenkopf_Pistol", 0); }
+                  case CLASS_WOLFEN:
+                    SetInventory("Totenkopf_Pistol", 0);
+                    break;
 
-                    // Hexen I Characters
-                    if (classNum == CLASS_HEXEN)
-                    {
-                        SetInventory("SamsaraHexenHasLMSPistolDisabled", 1); //SetInventory("Sapphire Wand", 0); // big hack
-                        SetInventory("Impaler Crossbow", 0);
-                    }
+                  case CLASS_HEXEN:
+                    SetInventory("SamsaraHexenHasLMSPistolDisabled", 1); //SetInventory("Sapphire Wand", 0); // big hack
+                    SetInventory("Impaler Crossbow", 0);
+                    break;
 
-                    // James Bond
-                    if (classNum == CLASS_BOND)
-                    {
-                        SetInventory("Goldeneye_Klobb", 0);
-                        SetInventory("Goldeneye_PP7SpecialIssue", 0);
-                        SetInventory("Goldeneye_DD44", 0);
-                    }
+                  case CLASS_BOND:
+                    SetInventory("Goldeneye_Klobb", 0);
+                    SetInventory("Goldeneye_PP7SpecialIssue", 0);
+                    SetInventory("Goldeneye_DD44", 0);
+                    break;
                 }
             }
         } else {
@@ -976,101 +903,25 @@ function int HandleSlotSpawn (int slot, int respawning)
       case SLOT_MINIGUN:
         cs = GetCVar("samsara_minigunstart");
         giventoken = "SamsaraSlotIVSGiven";
-
-        switch (classnum)
-        {
-          // classes not listed get a 4 instead
-          default:
-            slot = SLOT_CHAINGUN;
-            break;
-
-          case CLASS_DOOM:
-          case CLASS_CHEX:
-          case CLASS_WOLFEN:
-          case CLASS_DUKE:
-          case CLASS_ROTT:
-          case CLASS_CALEB:
-          case CLASS_ERAD:
-          case CLASS_KATARN:
-          case CLASS_BITTERMAN:
-          case CLASS_BOND:
-          case CLASS_RTCW:
-          case CLASS_QUAKE3:
-            break;
-        }
+        if (!StrCmp(ClassWeapons[classnum][slot][S_WEP], "")) { slot = SLOT_CHAINGUN; } // classes without a 4S get a 4 instead
         break;
 
       case SLOT_GRENADELAUNCHER:
         cs = GetCVar("samsara_grenadelauncherstart");
         giventoken = "SamsaraSlotVSGiven";
-
-        switch (classnum)
-        {
-          // classes not listed get a 5 instead
-          default:
-            slot = SLOT_ROCKETLAUNCHER;
-            break;
-
-          case CLASS_DOOM:
-          case CLASS_CHEX:
-          case CLASS_ROTT:
-          case CLASS_CALEB:
-          case CLASS_KATARN:
-          case CLASS_WITCHAVEN:
-          case CLASS_BITTERMAN:
-          case CLASS_BOND:
-          case CLASS_RTCW:
-            break;
-        }
+        if (!StrCmp(ClassWeapons[classnum][slot][S_WEP], "")) { slot = SLOT_ROCKETLAUNCHER; } // classes without a 5S get a 5 instead
         break;
 
       case SLOT_RAILGUN:
         cs = GetCVar("samsara_railgunstart");
         giventoken = "SamsaraSlotVISGiven";
-
-        switch (classnum)
-        {
-          // classes not listed get a 6 instead
-          default:
-            slot = SLOT_PLASMARIFLE;
-            break;
-
-          case CLASS_DOOM:
-          case CLASS_CHEX:
-          case CLASS_MARATHON:
-          case CLASS_QUAKE:
-          case CLASS_CALEB:
-          case CLASS_KATARN:
-          case CLASS_DISRUPTOR:
-          case CLASS_BITTERMAN:
-          case CLASS_BOND:
-          case CLASS_RTCW:
-            break;
-        }
+        if (!StrCmp(ClassWeapons[classnum][slot][S_WEP], "")) { slot = SLOT_PLASMARIFLE; } // classes without a 6S get a 6 instead
         break;
 
       case SLOT_BFG10K:
         cs = GetCVar("samsara_bfg10kstart");
         giventoken = "SamsaraSlotVIISGiven";
-
-        switch (classnum)
-        {
-          // classes not listed get a 7 instead
-          default:
-            slot = SLOT_BFG9000;
-            break;
-
-          case CLASS_DOOM:
-          case CLASS_CHEX:
-          case CLASS_HEXEN:
-          case CLASS_CALEB:
-          case CLASS_KATARN:
-          case CLASS_BITTERMAN:
-          case CLASS_BOND:
-          case CLASS_UNREAL:
-          case CLASS_RTCW:
-            break;
-        }
+        if (!StrCmp(ClassWeapons[classnum][slot][S_WEP], "")) { slot = SLOT_BFG9000; } // classes without a 7S get a 7 instead
         break;
     }
 
