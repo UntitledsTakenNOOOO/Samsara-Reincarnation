@@ -159,24 +159,161 @@ function void ApplyLMS(void)
 	if (GetActorProperty(0, APROP_Health) < healthinit && !isDead(0)) { SetActorProperty(0, APROP_Health, healthinit); }
 
 	// Handle backpacks for different classes
-    ACS_NamedExecuteWithResult("Samsara_GiveBackpack", -1);
+    if (GetCVar("samsara_lmsbackpack")) { ACS_NamedExecuteWithResult("Samsara_GiveBackpack", -1); }
 
-	for (i = SLOT_FIST; i < SLOT_BFG9000; i++) { GiveClassWeapon(classNum, i, 1, -1); }
+    for (i = SLOT_FIST; i <= SLOT_BFG10K; i++)
+    {
+        int curslot = i;
+        bool slotstart = false;
 
-	if (GetCVar("samsara_lmsskulltag"))
-	{
-		for (i = SLOT_MINIGUN; i < SLOT_BFG10K; i++) { GiveClassWeapon(classNum, i, 1, -1); }
-	}
+        switch (i)
+        {
+          default: slotstart = true; break;
+          case SLOT_CHAINSAW: slotstart = GetCVar("samsara_lmschainsaw"); break;
+          case SLOT_PISTOL: slotstart = GetCVar("samsara_lmspistol"); break;
+          case SLOT_SHOTGUN: slotstart = GetCVar("samsara_lmsshotgun"); break;
+          case SLOT_SUPERSHOTGUN: slotstart = GetCVar("samsara_lmsssg"); break;
+          case SLOT_CHAINGUN: slotstart = GetCVar("samsara_lmschaingun"); break;
+          case SLOT_ROCKETLAUNCHER: slotstart = GetCVar("samsara_lmsrocketlauncher"); break;
+          case SLOT_PLASMARIFLE: slotstart = GetCVar("samsara_lmsplasma"); break;
+          case SLOT_BFG9000: slotstart = GetCVar("samsara_lmsbfg9000"); break;
 
-	if (GetCVar("samsara_lmsult"))
-	{
-		GiveClassWeapon(classNum, SLOT_BFG9000, 1, -1);
+          case SLOT_MINIGUN:
+            slotstart = GetCVar("samsara_lmsminigun");
 
-		if (GetCVar("samsara_lmsskulltag"))
-		{
-			GiveClassWeapon(classNum, SLOT_BFG10K, 1, -1);
-		}
-	}
+            switch (classnum)
+            {
+              // classes not listed get a 4 instead
+              default:
+                curslot = SLOT_CHAINGUN;
+                break;
+
+              case CLASS_DOOM:
+              case CLASS_CHEX:
+              case CLASS_WOLFEN:
+              case CLASS_DUKE:
+              case CLASS_ROTT:
+              case CLASS_CALEB:
+              case CLASS_ERAD:
+              case CLASS_KATARN:
+              case CLASS_BITTERMAN:
+              case CLASS_BOND:
+              case CLASS_RTCW:
+              case CLASS_QUAKE3:
+                break;
+            }
+            break;
+
+          case SLOT_GRENADELAUNCHER:
+            slotstart = GetCVar("samsara_lmsgrenadelauncher");
+
+            switch (classnum)
+            {
+              // classes not listed get a 5 instead
+              default:
+                curslot = SLOT_ROCKETLAUNCHER;
+                break;
+
+              case CLASS_DOOM:
+              case CLASS_CHEX:
+              case CLASS_ROTT:
+              case CLASS_CALEB:
+              case CLASS_KATARN:
+              case CLASS_WITCHAVEN:
+              case CLASS_BITTERMAN:
+              case CLASS_BOND:
+              case CLASS_RTCW:
+                break;
+            }
+            break;
+
+          case SLOT_RAILGUN:
+            slotstart = GetCVar("samsara_lmsrailgun");
+
+            switch (classnum)
+            {
+              // classes not listed get a 6 instead
+              default:
+                curslot = SLOT_PLASMARIFLE;
+                break;
+
+              case CLASS_DOOM:
+              case CLASS_CHEX:
+              case CLASS_MARATHON:
+              case CLASS_QUAKE:
+              case CLASS_CALEB:
+              case CLASS_KATARN:
+              case CLASS_DISRUPTOR:
+              case CLASS_BITTERMAN:
+              case CLASS_BOND:
+              case CLASS_RTCW:
+                break;
+            }
+            break;
+
+          case SLOT_BFG10K:
+            slotstart = GetCVar("samsara_lmsbfg10k");
+
+            switch (classnum)
+            {
+              // classes not listed get a 7 instead
+              default:
+                curslot = SLOT_BFG9000;
+                break;
+
+              case CLASS_DOOM:
+              case CLASS_CHEX:
+              case CLASS_HEXEN:
+              case CLASS_CALEB:
+              case CLASS_KATARN:
+              case CLASS_BITTERMAN:
+              case CLASS_BOND:
+              case CLASS_UNREAL:
+              case CLASS_RTCW:
+                break;
+            }
+            break;
+        }
+
+        if (i == SLOT_PISTOL)
+        {
+            if (isSinglePlayer() || isCoop())
+            {
+                if (slotstart) { GiveClassWeapon(classNum, curslot, 1, -1); }
+            } else {
+                if (!slotstart)
+                {
+                    if (StrCmp(ClassWeapons[classnum][curslot][S_WEP], ClassWeapons[classnum][SLOT_FIST][S_WEP])) { SetInventory(ClassWeapons[classnum][curslot][S_WEP], 0); } // currently keeps descent's weapon
+
+                    // Doom Characters
+                    if (classNum == CLASS_DOOM) { SetInventory(" Rifle ", 0); }
+
+                    // Fred Chexter
+                    if (classNum == CLASS_CHEX) { SetInventory("Micro-Zorcher", 0); }
+
+                    // Wolfenstein 3D Characters
+                    if (classNum == CLASS_WOLFEN) { SetInventory("Totenkopf_Pistol", 0); }
+
+                    // Hexen I Characters
+                    if (classNum == CLASS_HEXEN)
+                    {
+                        SetInventory("SamsaraHexenHasLMSPistolDisabled", 1); //SetInventory("Sapphire Wand", 0); // big hack
+                        SetInventory("Impaler Crossbow", 0);
+                    }
+
+                    // James Bond
+                    if (classNum == CLASS_BOND)
+                    {
+                        SetInventory("Goldeneye_Klobb", 0);
+                        SetInventory("Goldeneye_PP7SpecialIssue", 0);
+                        SetInventory("Goldeneye_DD44", 0);
+                    }
+                }
+            }
+        } else {
+            if (slotstart) { GiveClassWeapon(classNum, curslot, 1, -1); }
+        }
+    }
 
 	if (GetCVar("samsara_lmsuniques"))
 	{
@@ -227,7 +364,7 @@ function void ApplyLMS(void)
 
 	// Security Officer
 	if (classNum == CLASS_MARATHON) {
-		GiveInventory("KnifeAmmo", GetAmmoCapacity("KnifeAmmo") - CheckInventory("KnifeAmmo"));
+		if (GetCVar("samsara_lmsbackpack")) { GiveInventory("KnifeAmmo", GetAmmoCapacity("KnifeAmmo") - CheckInventory("KnifeAmmo")); }
 	}
 
 	// Ranger
@@ -235,14 +372,14 @@ function void ApplyLMS(void)
 		GiveInventory("LavaNails", GetAmmoCapacity("LavaNails") - CheckInventory("LavaNails"));
 		GiveInventory("MultiRocketAmmo", GetAmmoCapacity("MultiRocketAmmo") - CheckInventory("MultiRocketAmmo"));
 
-		if (GetCVar("samsara_lmsult")) {
+		if (GetCVar("samsara_lmsbfg9000") || GetCVar("samsara_lmsbfg10k")) {
 			GiveInventory("PlasmaCell", GetAmmoCapacity("PlasmaCell") - CheckInventory("PlasmaCell"));
 		}
 	}
 
 	// Ian Paul Freeley
 	if (classNum == CLASS_ROTT) {
-		if (GetCVar("samsara_lmsskulltag")) {
+		if (GetCVar("samsara_lmsgrenadelauncher")) {
 			GiveInventory("DMMissiles", GetAmmoCapacity("DMMissiles") - CheckInventory("DMMissiles"));
 		}
 		
@@ -287,7 +424,7 @@ function void ApplyLMS(void)
     // Grondoval
     if (classNum == CLASS_WITCHAVEN)
     {
-        if (GetCVar("samsara_lmsult"))
+        if (GetCVar("samsara_lmsbfg9000") || GetCVar("samsara_lmsbfg10k"))
         {
             if (CheckInventory("WTExperience") < 60000) { SetInventory("WTExperience", 60000); }
             if (CheckInventory("WTLevel") < 7) { SetInventory("WTLevel", 7); }
@@ -317,7 +454,7 @@ function void ApplyLMS(void)
 
 	// Bitterman
 	if (classNum == CLASS_BITTERMAN) {
-		if (GetCVar("samsara_lmsskulltag")) {
+		if (GetCVar("samsara_lmsminigun")) {
 			GiveInventory("Q2Flechettes", GetAmmoCapacity("Q2Flechettes") - CheckInventory("Q2Flechettes"));
 		}
 	}
@@ -342,7 +479,7 @@ function void ApplyLMS(void)
 		GiveInventory("Painkiller_ElectroAmmo", GetAmmoCapacity("Painkiller_ElectroAmmo") - CheckInventory("Painkiller_ElectroAmmo"));
 		GiveInventory("Painkiller_GoldAmount", 999999);
 
-		if (GetCVar("samsara_lmsult")) {
+		if (GetCVar("samsara_lmsbfg9000") || GetCVar("samsara_lmsbfg10k")) {
 			GiveInventory("Painkiller_Speed", 1);
 			GiveInventory("Painkiller_Dexterity", 1);
 			GiveInventory("Painkiller_Fury", 1);
@@ -383,7 +520,7 @@ function void ApplyLMS(void)
     // Prisoner 849
     if (classNum == CLASS_UNREAL)
     {
-        if (CheckInventory("UDPistolUpgrade") < 4)
+        if (CheckInventory("UDPistolUpgrade") < 4 && GetCVar("samsara_lmsbackpack"))
         {
             SetInventory("UDPistolUpgrade", 4);
             SetInventory("UDPistolUpgradePreferred", 4);
@@ -416,8 +553,11 @@ function void ApplyLMS(void)
 
 	// Pyro-GX
 	if (classNum == CLASS_DESCENT) {
-		GiveInventory("DescentLaserLevel", 5);
-        if (CheckInventory("DescentLaserLevel") >= 4 && !CheckInventory("DescentPrimaryCounter")) { GiveInventory("DescentPrimaryCounter", 1); }
+        if (GetCVar("samsara_lmsbackpack"))
+        {
+            GiveInventory("DescentLaserLevel", 5);
+            if (CheckInventory("DescentLaserLevel") >= 4 && !CheckInventory("DescentPrimaryCounter")) { GiveInventory("DescentPrimaryCounter", 1); }
+        }
 	}
 
 	// JC Denton
@@ -453,40 +593,44 @@ function void ApplyLMS(void)
 		SetAmmoCapacity("DeusEx_AssaultGunSpread", 0);
 		SetAmmoCapacity("DeusEx_PlasmaRifleSpread", 42);
 		SetAmmoCapacity("DeusEx_StealthSpread", 25);
-		GiveInventory("DeusEx_Augmentation_CombatStrength", 4);
-		GiveInventory("DeusEx_Augmentation_MicrofibralMuscle", 4);
-		GiveInventory("DeusEx_Augmentation_SpeedEnhancement", 4);
-		GiveInventory("DeusEx_Augmentation_RunSilent", 4);
-		GiveInventory("DeusEx_Augmentation_BallisticProtection", 4);
-		GiveInventory("DeusEx_Augmentation_EMPShield", 4);
-		GiveInventory("DeusEx_Augmentation_Cloak", 4);
-		GiveInventory("DeusEx_Augmentation_Repulsor", 4);
-		GiveInventory("DeusEx_Augmentation_EnergyShield", 4);
-		GiveInventory("DeusEx_Augmentation_EnvironmentalResistance", 4);
-		GiveInventory("DeusEx_Augmentation_Regeneration", 4);
-		GiveInventory("DeusEx_Augmentation_Maintenance", 4);
-		GiveInventory("DeusEx_Augmentation_PowerRecirculator", 4);
-		GiveInventory("DeusEx_Augmentation_RechargeableBattery", 4);
-		GiveInventory("DeusEx_Augmentation_SpyDrone", 4);
-		GiveInventory("DeusEx_Augmentation_AggressiveDefenseSystem", 4);
-		GiveInventory("DeusEx_Augmentation_VisionEnhancement", 4);
-		GiveInventory("DeusEx_Augmentation_Targeting", 4);
-		GiveInventory("DeusEx_Augmentation_InfoLink", 1);
-		GiveInventory("DeusEx_Augmentation_IFF", 1);
-		GiveInventory("DeusEx_Augmentation_Light", 1);
-		GiveInventory("DeusEx_AugmentationUpgradeCannister",99);
-		GiveInventory("DeusEx_AugmentationBioEnergyCell",99);
-		if(!CheckInventory("DeusEx_Augmentation_ArmsSlot")) GiveInventory("DeusEx_Augmentation_ArmsSlot",1);
-		if(!CheckInventory("DeusEx_Augmentation_LegsSlot")) GiveInventory("DeusEx_Augmentation_LegsSlot",1);
-		if(!CheckInventory("DeusEx_Augmentation_Subdermal1Slot")) GiveInventory("DeusEx_Augmentation_Subdermal1Slot",1);
-		if(!CheckInventory("DeusEx_Augmentation_Subdermal2Slot")) GiveInventory("DeusEx_Augmentation_Subdermal2Slot",1);
-		if(!CheckInventory("DeusEx_Augmentation_Torso1Slot")) GiveInventory("DeusEx_Augmentation_Torso1Slot",1);
-		if(!CheckInventory("DeusEx_Augmentation_Torso2Slot")) GiveInventory("DeusEx_Augmentation_Torso2Slot",1);
-		if(!CheckInventory("DeusEx_Augmentation_Torso3Slot")) GiveInventory("DeusEx_Augmentation_Torso3Slot",1);
-		if(!CheckInventory("DeusEx_Augmentation_CranialSlot")) GiveInventory("DeusEx_Augmentation_CranialSlot",1);
-		if(!CheckInventory("DeusEx_Augmentation_EyeSlot")) GiveInventory("DeusEx_Augmentation_EyeSlot",1);
-		GiveInventory("DeusEx_StealthPistol", 1);
-		GiveInventory("DeusEx_LAM", 1);
+
+        if (GetCVar("samsara_lmsbackpack"))
+        {
+            GiveInventory("DeusEx_Augmentation_CombatStrength", 4);
+            GiveInventory("DeusEx_Augmentation_MicrofibralMuscle", 4);
+            GiveInventory("DeusEx_Augmentation_SpeedEnhancement", 4);
+            GiveInventory("DeusEx_Augmentation_RunSilent", 4);
+            GiveInventory("DeusEx_Augmentation_BallisticProtection", 4);
+            GiveInventory("DeusEx_Augmentation_EMPShield", 4);
+            GiveInventory("DeusEx_Augmentation_Cloak", 4);
+            GiveInventory("DeusEx_Augmentation_Repulsor", 4);
+            GiveInventory("DeusEx_Augmentation_EnergyShield", 4);
+            GiveInventory("DeusEx_Augmentation_EnvironmentalResistance", 4);
+            GiveInventory("DeusEx_Augmentation_Regeneration", 4);
+            GiveInventory("DeusEx_Augmentation_Maintenance", 4);
+            GiveInventory("DeusEx_Augmentation_PowerRecirculator", 4);
+            GiveInventory("DeusEx_Augmentation_RechargeableBattery", 4);
+            GiveInventory("DeusEx_Augmentation_SpyDrone", 4);
+            GiveInventory("DeusEx_Augmentation_AggressiveDefenseSystem", 4);
+            GiveInventory("DeusEx_Augmentation_VisionEnhancement", 4);
+            GiveInventory("DeusEx_Augmentation_Targeting", 4);
+            GiveInventory("DeusEx_Augmentation_InfoLink", 1);
+            GiveInventory("DeusEx_Augmentation_IFF", 1);
+            GiveInventory("DeusEx_Augmentation_Light", 1);
+            GiveInventory("DeusEx_AugmentationUpgradeCannister",99);
+            GiveInventory("DeusEx_AugmentationBioEnergyCell",99);
+            if(!CheckInventory("DeusEx_Augmentation_ArmsSlot")) GiveInventory("DeusEx_Augmentation_ArmsSlot",1);
+            if(!CheckInventory("DeusEx_Augmentation_LegsSlot")) GiveInventory("DeusEx_Augmentation_LegsSlot",1);
+            if(!CheckInventory("DeusEx_Augmentation_Subdermal1Slot")) GiveInventory("DeusEx_Augmentation_Subdermal1Slot",1);
+            if(!CheckInventory("DeusEx_Augmentation_Subdermal2Slot")) GiveInventory("DeusEx_Augmentation_Subdermal2Slot",1);
+            if(!CheckInventory("DeusEx_Augmentation_Torso1Slot")) GiveInventory("DeusEx_Augmentation_Torso1Slot",1);
+            if(!CheckInventory("DeusEx_Augmentation_Torso2Slot")) GiveInventory("DeusEx_Augmentation_Torso2Slot",1);
+            if(!CheckInventory("DeusEx_Augmentation_Torso3Slot")) GiveInventory("DeusEx_Augmentation_Torso3Slot",1);
+            if(!CheckInventory("DeusEx_Augmentation_CranialSlot")) GiveInventory("DeusEx_Augmentation_CranialSlot",1);
+            if(!CheckInventory("DeusEx_Augmentation_EyeSlot")) GiveInventory("DeusEx_Augmentation_EyeSlot",1);
+            GiveInventory("DeusEx_StealthPistol", 1);
+            GiveInventory("DeusEx_LAM", 1);
+        }
 
 		if (GetCVar("samsara_lmsuniques")) {
 			GiveInventory("DeusEx_LAWAmmo", GetAmmoCapacity("DeusEx_LAWAmmo") - CheckInventory("DeusEx_LAWAmmo"));

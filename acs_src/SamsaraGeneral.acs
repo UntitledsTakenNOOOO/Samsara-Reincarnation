@@ -1531,8 +1531,8 @@ script "SamsaraGetSettings" (void) NET //676 -- SAMSARA_GETSETTINGS
     int noHealthCap, noArmorCap;
 	int lmsHP = GetCVar("samsara_lmshealth"), lmsArmor = GetCVar("samsara_lmsarmor");
     int lmsArmorTier = 1 + GetCVar("samsara_lmsarmortier");
-	int lmsUlt, lmsUnique;
-	int lmsSkulltag = GetCVar("samsara_lmsskulltag");
+	int lmsUlt = GetCVar("samsara_lmsbfg9000"), lmsUltSkulltag = GetCVar("samsara_lmsbfg10k");
+	int lmsUnique;
 	int ultStay, highLow;
     int pdwtakDamage = GetCVar("samsara_pdwtak_damage"), pdwtakDistance = GetCVar("samsara_pdwtak_distance"), pdwtakFullDamageDistance = GetCVar("samsara_pdwtak_fulldamagedistance");
 
@@ -1552,11 +1552,11 @@ script "SamsaraGetSettings" (void) NET //676 -- SAMSARA_GETSETTINGS
 	if (GetCVar("samsara_lmsuniques")) { lmsUnique = "\cdwith"; }
 	else { lmsUnique = "\cgwithout"; }
 
-	if (GetCVar("samsara_lmsult")) { lmsUlt = "\cdwith"; }
+	if (GetCVar("samsara_lmsbfg9000")) { lmsUlt = "\cdwith"; }
 	else { lmsUlt = "\cgwithout"; }
 
-	if (GetCVar("samsara_lmsskulltag")) { lmsSkulltag = "\cdwith"; }
-	else { lmsSkulltag = "\cgwithout"; }
+	if (GetCVar("samsara_lmsbfg10k")) { lmsUltSkulltag = "\cdwith"; }
+	else { lmsUltSkulltag = "\cgwithout"; }
 
 	if (GetCVar("samsara_permault")) { ultStay = "\cdstay"; }
 	else { ultStay = "\cado not stay"; }
@@ -1578,12 +1578,12 @@ script "SamsaraGetSettings" (void) NET //676 -- SAMSARA_GETSETTINGS
 		HudMessage(s:"You spawn with \ca", d:lmsHP, s:" extra health\c- and \cd", d:lmsArmor, s:" armor (tier ", d:lmsArmorTier, s:")", s:"\c-.";
 			HUDMSG_FADEOUT, 6761, CR_WHITE, 50.1, 80.0, 3.0, 1.0);
 
-		HudMessage(s:"You spawn ", s:lmsUnique, s:"\c- your uniques, ", s:lmsUlt, s:"\c- your Slot VII, and ", s:lmsSkulltag, s:"\c- your Skulltag weapons.";
+		HudMessage(s:"You spawn ", s:lmsUnique, s:"\c- your uniques, ", s:lmsUlt, s:"\c- your Slot VII, and ", s:lmsUltSkulltag, s:"\c- your Slot VIIS.";
 			HUDMSG_FADEOUT, 6762, CR_WHITE, 50.1, 96.0, 3.0, 1.0);
 	}
 	else
 	{
-		HudMessage(s:"Slot VII pickups ", s:ultStay, s:"\c- on pickup", s:"\c-.";
+		HudMessage(s:"Slot VII/VIIS pickups ", s:ultStay, s:"\c- on pickup", s:"\c-.";
 			HUDMSG_FADEOUT, 6761, CR_WHITE, 50.1, 80.0, 3.0, 1.0);
 
 		HudMessage(s:"Armor mode is \cf", s:ArmorModeNames[ArmorMode], s:"\c-.";
@@ -2294,6 +2294,7 @@ Script "Samsara_ResetInventory" (void)
 
 		case CLASS_HEXEN:
 			TakeInventory("SamsaraHexenSpikedGauntletsHitCounter", INTMAX);
+            SetInventory("SamsaraHexenHasLMSPistolDisabled", 0);
 			TakeInventory("PortFlechette", INTMAX);
 			TakeInventory("PortFlechette2", INTMAX);
 			TakeInventory("PortFlechette3", INTMAX);
@@ -3529,6 +3530,7 @@ script "Samsara_FillInventory" (void)
 
 		case CLASS_HEXEN:
 			GiveInventory("AllyCellphone",1);
+            SetInventory("SamsaraHexenHasLMSPistolDisabled", 0);
 			GiveInventory("SamsaraHexenHasSlot7", 1);
 			GiveInventory("SamsaraClassicPariasHasBloodscourge", 1);
 			GiveInventory("SamsaraClassicPariasHasSpikedGauntlet", 1);
@@ -5500,6 +5502,10 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     GiveInventory("Jade Wand", 1);
                     result = 1;
                 }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1) { SetInventory("SamsaraHexenHasLMSPistolDisabled", 0); }
                 break;
 
               case SLOT_SHOTGUN:
@@ -5625,6 +5631,10 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     GiveInventory("Sapphire Wand", 1);
                     result = 1;
                 }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1) { SetInventory("SamsaraHexenHasLMSPistolDisabled", 0); }
                 break;
 
               case SLOT_SHOTGUN:
@@ -5732,13 +5742,24 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 result = -1;
                 break;
 
-              case SLOT_FIST: // no fallback melee, give a fallback ranged instead
+              case SLOT_FIST: // no fallback melee, give a fallback ranged instead (also no fallthrough due to LMS start token handling)
+                if (!CheckInventory("Sapphire Wand"))
+                {
+                    GiveInventory("Sapphire Wand", 1);
+                    result = 1;
+                }
+                break;
+
               case SLOT_PISTOL:
                 if (!CheckInventory("Sapphire Wand"))
                 {
                     GiveInventory("Sapphire Wand", 1);
                     result = 1;
                 }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1) { SetInventory("SamsaraHexenHasLMSPistolDisabled", 0); }
                 break;
 
               case SLOT_CHAINSAW:
@@ -5872,6 +5893,10 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     GiveInventory("Impaler Crossbow", 1);
                     result = 1;
                 }
+
+                if (startmode != 0) { result = 1; }
+
+                if (result == 1) { SetInventory("SamsaraHexenHasLMSPistolDisabled", 0); }
                 break;
 
               case SLOT_SHOTGUN:
@@ -11556,9 +11581,20 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_lmshealth", 0);
 		SetCVar("samsara_lmsarmor", 0);
 		SetCVar("samsara_lmsarmortier", 0);
-		SetCVar("samsara_lmsult", false);
 		SetCVar("samsara_lmsuniques", false);
-		SetCVar("samsara_lmsskulltag", false);
+		SetCVar("samsara_lmspistol", true);
+		SetCVar("samsara_lmschainsaw", true);
+		SetCVar("samsara_lmsshotgun", true);
+		SetCVar("samsara_lmsssg", true);
+		SetCVar("samsara_lmschaingun", true);
+		SetCVar("samsara_lmsminigun", false);
+		SetCVar("samsara_lmsrocketlauncher", true);
+		SetCVar("samsara_lmsgrenadelauncher", false);
+		SetCVar("samsara_lmsplasma", true);
+		SetCVar("samsara_lmsrailgun", false);
+		SetCVar("samsara_lmsbfg9000", false);
+		SetCVar("samsara_lmsbfg10k", false);
+		SetCVar("samsara_lmsbackpack", true);
 
 		// Turkey Puncher Options
 		SetCVar("samsara_superturboturkeypuncher3000", 0);
@@ -11906,9 +11942,20 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_lmshealth", 0);
 		SetCVar("samsara_lmsarmor", 0);
 		SetCVar("samsara_lmsarmortier", 0);
-		SetCVar("samsara_lmsult", false);
 		SetCVar("samsara_lmsuniques", false);
-		SetCVar("samsara_lmsskulltag", false);
+		SetCVar("samsara_lmspistol", true);
+		SetCVar("samsara_lmschainsaw", true);
+		SetCVar("samsara_lmsshotgun", true);
+		SetCVar("samsara_lmsssg", true);
+		SetCVar("samsara_lmschaingun", true);
+		SetCVar("samsara_lmsminigun", false);
+		SetCVar("samsara_lmsrocketlauncher", true);
+		SetCVar("samsara_lmsgrenadelauncher", false);
+		SetCVar("samsara_lmsplasma", true);
+		SetCVar("samsara_lmsrailgun", false);
+		SetCVar("samsara_lmsbfg9000", false);
+		SetCVar("samsara_lmsbfg10k", false);
+		SetCVar("samsara_lmsbackpack", true);
 
 		// Turkey Puncher Options
 		SetCVar("samsara_superturboturkeypuncher3000", 0);
@@ -12256,9 +12303,20 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_lmshealth", 0);
 		SetCVar("samsara_lmsarmor", 0);
 		SetCVar("samsara_lmsarmortier", 0);
-		SetCVar("samsara_lmsult", false);
 		SetCVar("samsara_lmsuniques", false);
-		SetCVar("samsara_lmsskulltag", false);
+		SetCVar("samsara_lmspistol", true);
+		SetCVar("samsara_lmschainsaw", true);
+		SetCVar("samsara_lmsshotgun", true);
+		SetCVar("samsara_lmsssg", true);
+		SetCVar("samsara_lmschaingun", true);
+		SetCVar("samsara_lmsminigun", false);
+		SetCVar("samsara_lmsrocketlauncher", true);
+		SetCVar("samsara_lmsgrenadelauncher", false);
+		SetCVar("samsara_lmsplasma", true);
+		SetCVar("samsara_lmsrailgun", false);
+		SetCVar("samsara_lmsbfg9000", false);
+		SetCVar("samsara_lmsbfg10k", false);
+		SetCVar("samsara_lmsbackpack", true);
 
 		// Turkey Puncher Options
 		SetCVar("samsara_superturboturkeypuncher3000", 0);
@@ -12607,9 +12665,20 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_lmshealth", 100);
 		SetCVar("samsara_lmsarmor", 200);
 		SetCVar("samsara_lmsarmortier", 2);
-		SetCVar("samsara_lmsult", true);
 		SetCVar("samsara_lmsuniques", true);
-		SetCVar("samsara_lmsskulltag", true);
+		SetCVar("samsara_lmspistol", true);
+		SetCVar("samsara_lmschainsaw", true);
+		SetCVar("samsara_lmsshotgun", true);
+		SetCVar("samsara_lmsssg", true);
+		SetCVar("samsara_lmschaingun", true);
+		SetCVar("samsara_lmsminigun", true);
+		SetCVar("samsara_lmsrocketlauncher", true);
+		SetCVar("samsara_lmsgrenadelauncher", true);
+		SetCVar("samsara_lmsplasma", true);
+		SetCVar("samsara_lmsrailgun", true);
+		SetCVar("samsara_lmsbfg9000", true);
+		SetCVar("samsara_lmsbfg10k", true);
+		SetCVar("samsara_lmsbackpack", true);
 
 		// Turkey Puncher Options
 		SetCVar("samsara_superturboturkeypuncher3000", 0);
@@ -12963,9 +13032,20 @@ script "SamsaraServerSidePresetSelection" (void)
 		SetCVar("samsara_lmshealth", 0);
 		SetCVar("samsara_lmsarmor", 0);
 		SetCVar("samsara_lmsarmortier", 0);
-		SetCVar("samsara_lmsult", false);
 		SetCVar("samsara_lmsuniques", false);
-		SetCVar("samsara_lmsskulltag", false);
+		SetCVar("samsara_lmspistol", true);
+		SetCVar("samsara_lmschainsaw", true);
+		SetCVar("samsara_lmsshotgun", true);
+		SetCVar("samsara_lmsssg", true);
+		SetCVar("samsara_lmschaingun", true);
+		SetCVar("samsara_lmsminigun", false);
+		SetCVar("samsara_lmsrocketlauncher", true);
+		SetCVar("samsara_lmsgrenadelauncher", false);
+		SetCVar("samsara_lmsplasma", true);
+		SetCVar("samsara_lmsrailgun", false);
+		SetCVar("samsara_lmsbfg9000", false);
+		SetCVar("samsara_lmsbfg10k", false);
+		SetCVar("samsara_lmsbackpack", true);
 
 		// Turkey Puncher Options
 		SetCVar("samsara_superturboturkeypuncher3000", 0);
