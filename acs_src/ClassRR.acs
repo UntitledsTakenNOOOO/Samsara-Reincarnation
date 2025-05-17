@@ -130,9 +130,9 @@ Script "LeonardMotorCycle" (int pve)
 	int angle;
 	int soundbox;
 	int speedcounter;
-	int health = GetActorProperty(0, APROP_Health); //Health when mounting the bike
 	int oldpresscounter;
 	int aiming;
+	int oldHealth = 0;
 	int adjustX = 0, adjustY;
 	
 	until(GetActorProperty(0, APROP_Health) < 1 || !PlayerInGame(0) || ClassifyActor(0) == ACTOR_DEAD)
@@ -145,7 +145,7 @@ Script "LeonardMotorCycle" (int pve)
 		int sidemove = GetPlayerInput(-1, INPUT_SIDEMOVE);
 		SetInventory("LeonardMotorcycleFiring",GetPlayerInput(-1,INPUT_BUTTONS) & BT_ATTACK);
 		//OH boy
-		aiming = GetUserCvar(PlayerNumber(),"samsara_cl_rr_bikeaim") ? GetPlayerInput(-1,INPUT_BUTTONS) & BT_ALTATTACK : 1;
+		aiming = (GetUserCvar(PlayerNumber(),"samsara_cl_rr_bikeaim") ? GetPlayerInput(-1,INPUT_BUTTONS) & BT_ALTATTACK : 1) && !CheckInventory("RRDrunkToken");
 		if(aiming)
 		{
 			aiming = true;
@@ -311,10 +311,11 @@ Script "LeonardMotorCycle" (int pve)
 				soundbox = ACS_NamedExecuteWithResult("RRMotorcycleSoundbox", 5, 0, 0, 0);
 				oldpresscounter = 0;
 				speedcounter = 0;
+				oldhealth = GetActorProperty(0, APROP_Health); 
 				UnMorphActor(0, true);
 				SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
-				SetActorProperty(0, APROP_Health, health);
-				SetActorProperty(0, APROP_Speed, 1.0);
+				SetActorProperty(0, APROP_Health, oldhealth);
+				//SetActorProperty(0, APROP_Speed, 1.0);
 				TakeInventory("RedneckMotorcycle", 1);
 				TakeInventory("RRHasBike", 1);
 				SetInventory("LeonardMotorcycleBikeAimX",320);
