@@ -5,8 +5,6 @@ actor StrifeSigilPieceCheck6 : Boolean {}
 actor StrifeSigilPieceCheck7 : Boolean {}
 actor StrifeSigilPiece : Counter { Inventory.MaxAmount 5 }
 actor StrifeSigilPiecePreferred : Counter { Inventory.MaxAmount 5 }
-actor SamsaraStrifeSigilMode3OriginalAngle : Counter {}
-actor SamsaraStrifeSigilMode3AngleIncrement : Counter { Inventory.MaxAmount 20 }
 
 actor " Sigil " : SamsaraStrifeguyWeapon
 {
@@ -69,9 +67,39 @@ actor " Sigil " : SamsaraStrifeguyWeapon
       FireStart:
         "####" "#" 0 A_AlertMonsters
         "####" "#" 0 A_PlaySound("strife/sigilcharge",CHAN_WEAPON)
-        "####" "#" 18 Bright A_Light2
+        "####" "#" 0 A_Light2
+        "####" "#" 0 A_JumpIfInventory("StrifeSigilPiecePreferred",0,"FireMode5")
+        "####" "#" 0 A_JumpIfInventory("StrifeSigilPiecePreferred",4,"FireMode4")
+        "####" "#" 0 A_JumpIfInventory("StrifeSigilPiecePreferred",3,"FireMode3")
+        "####" "#" 0 A_JumpIfInventory("StrifeSigilPiecePreferred",2,"FireMode2")
+      FireMode1:
+        "####" "#" 18 Bright
         "####" "#" 3 Bright A_GunFlash
-        "####" "#" 15 A_GiveInventory("SamsaraStrifeSigilAttackHandler")
+        "####" "#" 15 A_GiveInventory("SamsaraStrifeSigilMode1AttackHandler")
+        goto Ready
+
+      FireMode2:
+        "####" "#" 18 Bright
+        "####" "#" 3 Bright A_GunFlash
+        "####" "#" 15 A_GiveInventory("SamsaraStrifeSigilMode2AttackHandler")
+        goto Ready
+
+      FireMode3:
+        "####" "#" 18 Bright
+        "####" "#" 3 Bright A_GunFlash
+        "####" "#" 15 A_GiveInventory("SamsaraStrifeSigilMode3AttackHandler")
+        goto Ready
+
+      FireMode4:
+        "####" "#" 18 Bright
+        "####" "#" 3 Bright A_GunFlash
+        "####" "#" 15 A_GiveInventory("SamsaraStrifeSigilMode4AttackHandler")
+        goto Ready
+
+      FireMode5:
+        "####" "#" 18 Bright
+        "####" "#" 3 Bright A_GunFlash
+        "####" "#" 15 A_GiveInventory("SamsaraStrifeSigilMode5AttackHandler")
         goto Ready
 
       Flash:
@@ -131,108 +159,27 @@ actor " Sigil " : SamsaraStrifeguyWeapon
     }
 }
 
-actor SamsaraStrifeSigilAttackHandler : Trigger
+// Lightning Strike
+
+actor SamsaraStrifeSigilMode1AttackHandler : Trigger
 {
     States
     {
       // Attack stuff
       Pickup:
         TNT1 A 0 A_PlaySound("strife/sigilcharge",CHAN_WEAPON)
-        TNT1 A 0 A_JumpIfInventory("StrifeSigilPiecePreferred",0,"PickupMode5")
-        TNT1 A 0 A_JumpIfInventory("StrifeSigilPiecePreferred",4,"PickupMode4")
-        TNT1 A 0 A_JumpIfInventory("StrifeSigilPiecePreferred",3,"PickupMode3")
-        TNT1 A 0 A_JumpIfInventory("StrifeSigilPiecePreferred",2,"PickupMode2")
-      // Lightning Strike
-      PickupMode1:
         TNT1 A 0 Thing_Damage(0,2,0)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupMode1Coop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupMode1Coop")
-      PickupMode1DM:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
         TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningSpot",0,false)
         stop
 
-      PickupMode1Coop:
+      PickupCoop:
         TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningSpot_C",0,false)
-        stop
-
-      // Lightning Bolt
-      PickupMode2:
-        TNT1 A 0 Thing_Damage(0,4,0)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupMode2Coop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupMode2Coop")
-      PickupMode2DM:
-        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningH1",0,false)
-        stop
-
-      PickupMode2Coop:
-        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningH1_C",0,false)
-        stop
-
-      // Lightning Wall
-      PickupMode3:
-        TNT1 A 0 Thing_Damage(0,6,0)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraStrifeSigilAngleGet") // netplay hack
-        TNT1 A 0 A_TakeInventory("SamsaraStrifeSigilMode3AngleIncrement") // reset
-        TNT1 A 0 A_SetAngle(angle-90)
-      PickupMode3Loop:
-        TNT1 A 0 A_GiveInventory("SamsaraStrifeSigilMode3AngleIncrement")
-        TNT1 A 0 A_SetAngle(angle+9)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupMode3LoopCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupMode3LoopCoop")
-      PickupMode3LoopDM:
-        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningBall1",0,false)
-        goto PickupFinishMode3
-
-      PickupMode3LoopCoop:
-        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningBall1_C",0,false)
-        goto PickupFinishMode3
-
-      // Homing Lightning
-      PickupMode4:
-        TNT1 A 0 Thing_Damage(0,8,0)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupMode4Coop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupMode4Coop")
-      PickupMode4DM:
-        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1",-15,false)
-        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1",-7.5,false)
-        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1",0,false)
-        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1",7.5,false)
-        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1",15,false)
-        stop
-
-      PickupMode4Coop:
-        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1_C",-15,false)
-        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1_C",-7.5,false)
-        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1_C",0,false)
-        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1_C",7.5,false)
-        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1_C",15,false)
-        stop
-
-      // Lightning Storm
-      PickupMode5:
-        TNT1 A 0 Thing_Damage(0,10,0)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupMode5Coop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupMode5Coop")
-      PickupMode5DM:
-        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningBigBall",0,false)
-        stop
-
-      PickupMode5Coop:
-        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningBigBall_C",0,false)
-        stop
-
-      // Finishing stuff
-      // Lightning Wall
-      PickupFinishMode3:
-        TNT1 A 0 A_JumpIfInventory("SamsaraStrifeSigilMode3AngleIncrement",0,1)
-        goto PickupMode3Loop
-        TNT1 A 0 A_SetAngle(angle-90)
-        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraStrifeSigilAngleSet") // netplay hack
         stop
     }
 }
-
-// Mode 1
 
 actor StrifeSigilLightningSpot : SpectralLightningSpot
 {
@@ -315,7 +262,27 @@ actor StrifeSpectralLightningV2_C : StrifeSpectralLightningV2
     +THRUSPECIES
 }
 
-// Mode 2
+// Lightning Bolt
+
+actor SamsaraStrifeSigilMode2AttackHandler : Trigger
+{
+    States
+    {
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_PlaySound("strife/sigilcharge",CHAN_WEAPON)
+        TNT1 A 0 Thing_Damage(0,4,0)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
+        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningH1",0,false)
+        stop
+
+      PickupCoop:
+        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningH1_C",0,false)
+        stop
+    }
+}
 
 actor StrifeSpectralLightningH1 : SpectralLightningH1
 {
@@ -347,7 +314,44 @@ actor StrifeSpectralLightningHTail : SpectralLightningHTail
     +FORCEXYBILLBOARD
 }
 
-// Mode 3
+// Lightning Wall
+
+actor SamsaraStrifeSigilMode3OriginalAngle : Counter {}
+actor SamsaraStrifeSigilMode3AngleIncrement : Counter { Inventory.MaxAmount 20 }
+
+actor SamsaraStrifeSigilMode3AttackHandler : Trigger
+{
+    States
+    {
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_PlaySound("strife/sigilcharge",CHAN_WEAPON)
+        TNT1 A 0 Thing_Damage(0,6,0)
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraStrifeSigilAngleGet") // netplay hack
+        TNT1 A 0 A_TakeInventory("SamsaraStrifeSigilMode3AngleIncrement") // reset
+        TNT1 A 0 A_SetAngle(angle-90)
+      PickupLoop:
+        TNT1 A 0 A_GiveInventory("SamsaraStrifeSigilMode3AngleIncrement")
+        TNT1 A 0 A_SetAngle(angle+9)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupLoopCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupLoopCoop")
+      PickupLoopDM:
+        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningBall1",0,false)
+        goto PickupFinish
+
+      PickupLoopCoop:
+        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningBall1_C",0,false)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 A_JumpIfInventory("SamsaraStrifeSigilMode3AngleIncrement",0,1)
+        goto PickupLoop
+        TNT1 A 0 A_SetAngle(angle-90)
+        TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraStrifeSigilAngleSet") // netplay hack
+        stop
+    }
+}
 
 actor StrifeSpectralLightningBall1 : SpectralLightningBall1
 {
@@ -365,7 +369,35 @@ actor StrifeSpectralLightningBall1_C : StrifeSpectralLightningBall1
     +THRUSPECIES
 }
 
-// Mode 4
+// Homing Lightning
+
+actor SamsaraStrifeSigilMode4AttackHandler : Trigger
+{
+    States
+    {
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_PlaySound("strife/sigilcharge",CHAN_WEAPON)
+        TNT1 A 0 Thing_Damage(0,8,0)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
+        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1",-15,false)
+        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1",-7.5,false)
+        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1",0,false)
+        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1",7.5,false)
+        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1",15,false)
+        stop
+
+      PickupCoop:
+        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1_C",-15,false)
+        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1_C",-7.5,false)
+        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1_C",0,false)
+        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1_C",7.5,false)
+        TNT1 A 0 A_FireCustomMissile("StrifeSigilLightningBigV1_C",15,false)
+        stop
+    }
+}
 
 actor StrifeSigilLightningBigV1 : SpectralLightningBigV1
 {
@@ -394,7 +426,27 @@ actor StrifeSigilLightningBigV1_C : StrifeSigilLightningBigV1
     +THRUSPECIES
 }
 
-// Mode 5
+// Lightning Storm
+
+actor SamsaraStrifeSigilMode5AttackHandler : Trigger
+{
+    States
+    {
+      // Attack stuff
+      Pickup:
+        TNT1 A 0 A_PlaySound("strife/sigilcharge",CHAN_WEAPON)
+        TNT1 A 0 Thing_Damage(0,10,0)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupCoop")
+      PickupDM:
+        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningBigBall",0,false)
+        stop
+
+      PickupCoop:
+        TNT1 A 0 A_FireCustomMissile("StrifeSpectralLightningBigBall_C",0,false)
+        stop
+    }
+}
 
 actor StrifeSpectralLightningBigBall : SpectralLightningBigBall1
 {
