@@ -14134,6 +14134,9 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     // initialize armor mode
     SetArmorMode();
 
+    // initialize armor pickup behavior variable
+    int armorpickupbehavior = GetCVar("samsara_armorpickupbehavior");
+
     // initialize armor bonus variable
     bool treatasbonus = armorgivetype <= -3 || armorgivetype >= 2;
 
@@ -14576,10 +14579,19 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
         armoramounttocap = 200;
         armorsavepercent = 33; // actually 33.215, which is pretty close to green armor's 33.335
         break;
+
+      // Special cases
+      case -60:
+        armortypetogive = "TotenkopfPowerArmorPickup";
+        armoramounttogive = 200;
+        armoramounttocap = 200;
+        armorsavepercent = 50;
+        armorpickupbehavior = 2; // always use Zandronum+ logic regardless of setting
+        break;
     }
 
     // if armor type wasn't defined (like armor mode being set to None), stop the script
-    if (StrCmp(armortypetogive, "NoArmor") == 0) { terminate; }
+    if (!StrCmp(armortypetogive, "NoArmor")) { terminate; }
 
     // if armoradd is greater than 0, the amount of armor to give is added onto the default SaveAmount. if negative, the amount overrides the default
     if (armoradd > 0) { armoramounttogive += armoradd; }
@@ -14614,7 +14626,7 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     // check if our current armor is hitting the cap
     if (currentarmor > 0)
     {
-        if (GetCVar("samsara_armorpickupbehavior") >= 1 && !treatasbonus)
+        if (armorpickupbehavior >= 1 && !treatasbonus)
         {
             if (currentarmor > armoramounttocap || (currentarmor == armoramounttocap && currentarmorsavepercent >= armorsavepercent)) { terminate; }
         } else {
@@ -14626,7 +14638,7 @@ script "SamsaraArmorAdjust" (int armortype, int armoradd, int armorcap, int armo
     // if samsara_armorpickupbehavior is 2 (Zandronum+), only reset armor if our absorption is less than what the pickup provides
     if (!treatasbonus || !currentarmor)
     {
-        if (GetCVar("samsara_armorpickupbehavior") < 2 || (GetCVar("samsara_armorpickupbehavior") >= 2 && currentarmorsavepercent < armorsavepercent) || !currentarmor)
+        if (armorpickupbehavior < 2 || (armorpickupbehavior >= 2 && currentarmorsavepercent < armorsavepercent) || !currentarmor)
         {
             SetInventory("BasicArmor", 0);
 
@@ -14675,6 +14687,9 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int maxbonuscap, int
 
     // initialize armor mode
     SetArmorMode();
+
+    // initialize armor pickup behavior variable
+    int armorpickupbehavior = GetCVar("samsara_armorpickupbehavior");
 
     // initialize armor bonus variable
     bool treatasbonus = armorgivetype <= -3 || armorgivetype >= 2;
@@ -15065,10 +15080,18 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int maxbonuscap, int
         armorsavepercent = 33; // actually 33.215, which is pretty close to green armor's 33.335
         armormaxbonusmax = 50;
         break;
+
+      // Special cases
+      case -60:
+        armortypetogive = "TotenkopfPowerArmorPickup";
+        armoramounttocap = 200;
+        armorsavepercent = 50;
+        armorpickupbehavior = 2; // always use Zandronum+ logic regardless of setting
+        break;
     }
 
     // if armor type wasn't defined (like armor mode being set to None), stop the script
-    if (StrCmp(armortypetogive, "NoArmor") == 0) { terminate; }
+    if (!StrCmp(armortypetogive, "NoArmor")) { terminate; }
 
     // if maxbonuscap is greater than 0, the amount of max armor boost to cap at is added onto the default MaxBonusMax. if negative, the amount overrides the default
     if (maxbonuscap > 0) { armormaxbonusmax += maxbonuscap; }
@@ -15105,7 +15128,7 @@ script "SamsaraArmorCapCheck" (int armortype, int armorcap, int maxbonuscap, int
     // check if our current armor is hitting the cap, and if we've hit the limit on max armor boost
     if (currentarmor > 0)
     {
-        if (GetCVar("samsara_armorpickupbehavior") >= 1 && !treatasbonus)
+        if (armorpickupbehavior >= 1 && !treatasbonus)
         {
             if ((currentarmor > armoramounttocap || (currentarmor == armoramounttocap && currentarmorsavepercent >= armorsavepercent)) && currentmaxarmor >= armormaxbonusmax) { result = 1; }
         } else {
