@@ -1,0 +1,224 @@
+actor Catacomb3D_ChargeTime : Counter { Inventory.MaxAmount 20 }
+
+actor Catacomb3D_QuickSpell : InstantSwitchWeapon
+{
+    Inventory.RestrictedTo "PettonEverhail"
+    Weapon.YAdjust 16
+    +ALT_USES_BOTH
+    +DONTBOB
+    +NOALERT
+    +UNDROPPABLE
+    States
+    {
+      Ready:
+        TNT1 A 0 A_TakeInventory("Catacomb3D_QuickSpell")
+        TNT1 A 1 A_WeaponReady
+        loop
+
+      ReadyRaise: // our "Select" state
+        TNT1 A 0 A_TakeInventory("Catacomb3D_ChargeTime")
+        CT00 J 0 A_JumpIfInventory("PowerCatacomb_BounceShot",1,"ReadyRaiseStart")
+        CT00 H 0 A_JumpIfInventory("PowerCatacomb_RapidFire",1,"ReadyRaiseStart")
+        CT00 F 0 A_JumpIfInventory("PowerCatacomb_SpreadShot",1,"ReadyRaiseStart")
+        CT00 D 0 A_JumpIfInventory("PowerCatacomb_FireRing",1,"ReadyRaiseStart")
+        CT00 B 0
+        goto ReadyRaiseStart
+
+      ReadyRaiseStart:
+        "####" "#" 3 Bright
+        "####" "#" 1 Bright A_JumpIfInventory("CatacombClass",1,"ReadyActual")
+        wait
+
+      ReadyActual:
+        TNT1 A 0 A_CheckReload // auto switch out if we don't have ammo
+        TNT1 A 0 A_TakeInventory("Catacomb3D_ChargeTime")
+        CT00 I 0 A_JumpIfInventory("PowerCatacomb_BounceShot",1,"ReadyActualStart")
+        CT00 G 0 A_JumpIfInventory("PowerCatacomb_RapidFire",1,"ReadyActualStart")
+        CT00 E 0 A_JumpIfInventory("PowerCatacomb_SpreadShot",1,"ReadyActualStart")
+        CT00 C 0 A_JumpIfInventory("PowerCatacomb_FireRing",1,"ReadyActualStart")
+        CT00 A 0
+        goto ReadyActualStart
+
+      ReadyActualStart:
+        "####" "#" 1 A_WeaponReady
+        goto ReadyActual
+
+      Deselect:
+        TNT1 A 0 A_TakeInventory("Catacomb3D_ChargeTime")
+        goto Super::Deselect
+
+      Select:
+        TNT1 A 0 A_TakeInventory("Catacomb3D_ChargeTime")
+        goto Super::Select
+
+      Fire:
+        TNT1 A 1
+        goto Ready
+
+      FireMagicMissile:
+        TNT1 A 0 A_TakeInventory("Catacomb3D_ChargeTime")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_BounceShot",1,"FireMagicMissileBounce")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_RapidFire",1,"FireMagicMissileFast")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_SpreadShot",1,"FireMagicMissileSpread")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_FireRing",1,"FireMagicMissileFireball")
+      FireMagicMissileNormal:
+        CT00 A 1 A_GiveInventory("SamsaraCatacombMagicMissileAttackHandler")
+        CT00 B 1 Bright
+        CT00 A 5 A_ReFire("HoldMagicMissile")
+        CT00 A 1 A_JumpIfInventory("CatacombClass",1,"ReadyActual")
+        wait
+
+      FireMagicMissileFireball:
+        CT00 C 1 A_GiveInventory("SamsaraCatacombMagicMissileFireballAttackHandler")
+        CT00 D 1 Bright
+        CT00 C 5 A_ReFire("HoldMagicMissile")
+        CT00 C 1 A_JumpIfInventory("CatacombClass",1,"ReadyActual")
+        wait
+
+      FireMagicMissileSpread:
+        CT00 E 1 A_GiveInventory("SamsaraCatacombMagicMissileSpreadAttackHandler")
+        CT00 F 1 Bright
+        CT00 E 5 A_ReFire("HoldMagicMissile")
+        CT00 E 1 A_JumpIfInventory("CatacombClass",1,"ReadyActual")
+        wait
+
+      FireMagicMissileFast:
+        CT00 G 1 A_GiveInventory("SamsaraCatacombMagicMissileFastAttackHandler")
+        CT00 H 1 Bright
+        CT00 G 5 A_ReFire("HoldMagicMissile")
+        CT00 G 1 A_JumpIfInventory("CatacombClass",1,"ReadyActual")
+        wait
+
+      FireMagicMissileBounce:
+        CT00 I 1 A_GiveInventory("SamsaraCatacombMagicMissileBounceAttackHandler")
+        CT00 J 1 Bright
+        CT00 I 5 A_ReFire("HoldMagicMissile")
+        CT00 I 1 A_JumpIfInventory("CatacombClass",1,"ReadyActual")
+        wait
+
+      HoldMagicMissile:
+        TNT1 A 0 A_TakeInventory("Catacomb3D_ChargeTime")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_BounceShot",1,"HoldMagicMissileBounce")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_RapidFire",1,"HoldMagicMissileFast")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_SpreadShot",1,"HoldMagicMissileSpread")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_FireRing",1,"HoldMagicMissileFireball")
+      HoldMagicMissileNormal:
+        CT00 A 4
+        CT00 B 4 Bright A_GiveInventory("SamsaraCatacombMagicMissileAttackHandler")
+        CT00 A 5 A_ReFire("HoldMagicMissile")
+        CT00 A 1 A_JumpIfInventory("CatacombClass",1,"ReadyActual")
+        wait
+
+      HoldMagicMissileFireball:
+        CT00 C 4
+        CT00 D 4 Bright A_GiveInventory("SamsaraCatacombMagicMissileFireballAttackHandler")
+        CT00 C 5 A_ReFire("HoldMagicMissile")
+        CT00 C 1 A_JumpIfInventory("CatacombClass",1,"ReadyActual")
+        wait
+
+      HoldMagicMissileSpread:
+        CT00 E 4
+        CT00 F 4 Bright A_GiveInventory("SamsaraCatacombMagicMissileSpreadAttackHandler")
+        CT00 E 5 A_ReFire("HoldMagicMissile")
+        CT00 E 1 A_JumpIfInventory("CatacombClass",1,"ReadyActual")
+        wait
+
+      HoldMagicMissileFast:
+        CT00 G 4
+        CT00 H 4 Bright A_GiveInventory("SamsaraCatacombMagicMissileFastAttackHandler")
+        CT00 G 5 A_ReFire("HoldMagicMissile")
+        CT00 G 1 A_JumpIfInventory("CatacombClass",1,"ReadyActual")
+        wait
+
+      HoldMagicMissileBounce:
+        CT00 I 4
+        CT00 J 4 Bright A_GiveInventory("SamsaraCatacombMagicMissileBounceAttackHandler")
+        CT00 I 5 A_ReFire("HoldMagicMissile")
+        CT00 I 1 A_JumpIfInventory("CatacombClass",1,"ReadyActual")
+        wait
+
+      AltFireCharge:
+        TNT1 A 0 A_PlaySound("Catacomb/Charge",CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("Catacomb3D_ChargeTime")
+      AltFireChargeStart:
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_BounceShot",1,"AltFireChargeStartBounce")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_RapidFire",1,"AltFireChargeStartFast")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_SpreadShot",1,"AltFireChargeStartSpread")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_FireRing",1,"AltFireChargeStartFireball")
+      AltFireChargeStartNormal:
+        CT00 A 2
+        CT00 B 2 Bright
+        CT00 A 2 A_ReFire("AltFireCharge")
+        CT00 A 1 A_JumpIfInventory("CatacombClass",1,"AltFireRelease")
+        wait
+
+      AltFireChargeStartFireball:
+        CT00 C 2
+        CT00 D 2 Bright
+        CT00 C 2 A_ReFire("AltFireCharge")
+        CT00 C 1 A_JumpIfInventory("CatacombClass",1,"AltFireRelease")
+        wait
+
+      AltFireChargeStartSpread:
+        CT00 E 2
+        CT00 F 2 Bright
+        CT00 E 2 A_ReFire("AltFireCharge")
+        CT00 E 1 A_JumpIfInventory("CatacombClass",1,"AltFireRelease")
+        wait
+
+      AltFireChargeStartFast:
+        CT00 G 2
+        CT00 H 2 Bright
+        CT00 G 2 A_ReFire("AltFireCharge")
+        CT00 G 1 A_JumpIfInventory("CatacombClass",1,"AltFireRelease")
+        wait
+
+      AltFireChargeStartBounce:
+        CT00 I 2
+        CT00 J 2 Bright
+        CT00 I 2 A_ReFire("AltFireCharge")
+        CT00 I 1 A_JumpIfInventory("CatacombClass",1,"AltFireRelease")
+        wait
+
+      AltFireRelease:
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_BounceShot",1,"AltFireReleaseBounce")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_RapidFire",1,"AltFireReleaseFast")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_SpreadShot",1,"AltFireReleaseSpread")
+        TNT1 A 0 A_JumpIfInventory("PowerCatacomb_FireRing",1,"AltFireReleaseFireball")
+      AltFireReleaseNormal:
+        CT00 A 4
+        CT00 B 4 Bright
+        goto ReadyActual
+
+      AltFireReleaseFireball:
+        CT00 C 4
+        CT00 D 4 Bright
+        goto ReadyActual
+
+      AltFireReleaseSpread:
+        CT00 E 4
+        CT00 F 4 Bright
+        goto ReadyActual
+
+      AltFireReleaseFast:
+        CT00 G 4
+        CT00 H 4 Bright
+        goto ReadyActual
+
+      AltFireReleaseBounce:
+        CT00 I 4
+        CT00 J 4 Bright
+        goto ReadyActual
+    }
+}
+
+actor SamsaraCatacombBaseAttackHandler : Trigger
+{
+    States
+    {
+      // Charge resetting stuff
+      PickupResetCharge:
+        TNT1 A 0 A_TakeInventory("Catacomb3D_ChargeTime")
+        stop
+    }
+}
