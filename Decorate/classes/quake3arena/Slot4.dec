@@ -81,65 +81,75 @@ actor SamsaraQuake3LightningGunAttackHandler : Trigger
 {
 	States
 	{
-	// Ammo checking/taking stuff
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupSound")
-		TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-		stop
-		TNT1 A 0 A_JumpIfInventory("Q3LightningGunConsumeAmmo",0,2)
-		TNT1 A 0 A_GiveInventory("Q3LightningGunConsumeAmmo")
-		goto PickupSound
-		TNT1 A 0 A_TakeInventory("Clip",1)
-		TNT1 A 0 A_TakeInventory("Q3LightningGunConsumeAmmo")
-		goto PickupSound
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupPlaySound")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+        stop
+        TNT1 A 0 A_JumpIfInventory("Q3LightningGunConsumeAmmo",0,2)
+        TNT1 A 0 A_GiveInventory("Q3LightningGunConsumeAmmo")
+        goto PickupPlaySound
+        TNT1 A 0 A_TakeInventory("Clip",1)
+        TNT1 A 0 A_TakeInventory("Q3LightningGunConsumeAmmo")
+        goto PickupPlaySound
 
-	// Sound stuff
-	PickupSound:
-		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,2)
-		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupSoundTeamArena")
-		TNT1 A 0 A_PlaySound("Quake3/LightningGun/Loop",CHAN_6,1.0,true)
-		goto PickupAttack
-	PickupSoundTeamArena:
-		TNT1 A 0 A_PlaySound("Quake3TeamArena/LightningGun/Loop",CHAN_6,1.0,true)
-		goto PickupAttack
+      // Sound stuff
+      PickupPlaySound:
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupPlaySoundOriginal")
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupPlaySoundTeamArena")
+      // Original/Revolution sounds
+      PickupPlaySoundOriginal:
+        TNT1 A 0 A_PlaySound("Quake3/LightningGun/Loop",CHAN_6,1.0,true)
+        TNT1 A 0 A_GiveInventory("SamsaraQuake3LightningGunLoopSoundCheck")
+        goto PickupAttack
 
-	// Attack stuff
-	PickupAttack:
-		TNT1 A 0 A_GiveInventory("SamsaraQuake3LightningGunLoopSoundCheck")
-		TNT1 A 0 A_GiveInventory("Q3QuadDamageSound")
-		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,2)
-		TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupAttackSoundTeamArena")
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
-	PickupAttackDM:
-		TNT1 A 0 A_FireCustomMissile("Q3LightningBeamDM",0,false,4)
-		stop
-	PickupAttackCoop:
-		TNT1 A 0 A_FireCustomMissile("Q3LightningBeamCoop",0,false,4)
-		stop
+      // Team Arena sounds
+      PickupPlaySoundTeamArena:
+        TNT1 A 0 A_PlaySound("Quake3TeamArena/LightningGun/Loop",CHAN_6,1.0,true)
+        TNT1 A 0 A_GiveInventory("SamsaraQuake3LightningGunLoopSoundCheck")
+        goto PickupAttack
 
-	PickupAttackSoundTeamArena:
-		TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoopSoundTeamArena")
-		TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoopSoundTeamArena")
-	PickupAttackDMSoundTeamArena:
-		TNT1 A 0 A_FireCustomMissile("Q3LightningBeamDMSoundTeamArena",0,false,4)
-		stop
-	PickupAttackCoopSoundTeamArena:
-		TNT1 A 0 A_FireCustomMissile("Q3LightningBeamCoopSoundTeamArena",0,false,4)
-		stop
-	}
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_GiveInventory("Q3QuadDamageSound")
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupAttackOriginal")
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupAttackTeamArena")
+      // Original/Revolution sounds
+      PickupAttackOriginal:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackOriginalCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackOriginalCoop")
+      PickupAttackOriginalDM:
+        TNT1 A 0 A_FireCustomMissile("Q3LightningBeamDM",0,false,4)
+        stop
+
+      PickupAttackOriginalCoop:
+        TNT1 A 0 A_FireCustomMissile("Q3LightningBeamCoop",0,false,4)
+        stop
+
+      // Team Arena sounds
+      PickupAttackTeamArena:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackTeamArenaCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackTeamArenaCoop")
+      PickupAttackTeamArenaDM:
+        TNT1 A 0 A_FireCustomMissile("Q3LightningBeamDMSoundTeamArena",0,false,4)
+        stop
+
+      PickupAttackTeamArenaCoop:
+        TNT1 A 0 A_FireCustomMissile("Q3LightningBeamCoopSoundTeamArena",0,false,4)
+        stop
+    }
 }
 
 actor SamsaraQuake3LightningGunIdleSoundStarter : Trigger
 {
-	States
-	{
-	// Sound starting stuff
-	Pickup:
-		TNT1 A 0 A_PlaySound("Quake3/Gauntlet/Idle",CHAN_6,0.75,true)
-		TNT1 A 0 A_GiveInventory("SamsaraQuake3LightningGunLoopSoundCheck")
-		stop
-	}
+    States
+    {
+      // Sound starting stuff
+      Pickup:
+        TNT1 A 0 A_PlaySound("Quake3/Gauntlet/Idle",CHAN_6,0.75,true)
+        TNT1 A 0 A_GiveInventory("SamsaraQuake3LightningGunLoopSoundCheck")
+        stop
+    }
 }
 
 actor SamsaraQuake3LightningGunFireSoundPlayer : Trigger
@@ -148,12 +158,14 @@ actor SamsaraQuake3LightningGunFireSoundPlayer : Trigger
     {
       // Sound playing stuff
       Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupQ3")
+        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",2,"PickupOriginal")
         TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupTeamArena")
-      PickupQ3:
+      // Original/Revolution sounds
+      PickupOriginal:
         TNT1 A 0 A_PlaySound("Quake3/LightningGun/Fire",CHAN_WEAPON)
         stop
 
+      // Team Arena sounds
       PickupTeamArena:
         TNT1 A 0 A_PlaySound("Quake3TeamArena/LightningGun/Fire",CHAN_WEAPON)
         stop
@@ -162,17 +174,17 @@ actor SamsaraQuake3LightningGunFireSoundPlayer : Trigger
 
 actor SamsaraQuake3LightningGunLoopSoundStopper : Trigger
 {
-	States
-	{
-	// Sound stopping stuff
-	Pickup:
-		TNT1 A 0 A_JumpIfInventory("SamsaraQuake3LightningGunLoopSoundCheck",1,1)
-		stop
-		TNT1 A 0 A_PlaySound("silence",CHAN_6)
-		TNT1 A 0 A_StopSound(CHAN_6)
-		TNT1 A 0 A_TakeInventory("SamsaraQuake3LightningGunLoopSoundCheck")
-		stop
-	}
+    States
+    {
+      // Sound stopping stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraQuake3LightningGunLoopSoundCheck",1,1)
+        stop
+        TNT1 A 0 A_PlaySound("silence",CHAN_6)
+        TNT1 A 0 A_StopSound(CHAN_6)
+        TNT1 A 0 A_TakeInventory("SamsaraQuake3LightningGunLoopSoundCheck")
+        stop
+    }
 }
 
 Actor Q3LightningBeam : FastProjectile
