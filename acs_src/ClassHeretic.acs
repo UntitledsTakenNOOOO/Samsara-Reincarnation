@@ -11,33 +11,33 @@ script "TomeOfPowerCooldownReduction" (void)
 
 script "LesserTomeCooldown" (void) //202
 {
-    while (CheckInventory("LesserTomeCooldown") > 0)
-    {
-        Delay(35);
+	while (CheckInventory("LesserTomeCooldown") > 0)
+	{
+		Delay(35);
 
-        if (CheckInventory("LesserTomeCooldown") > 85)
-        {
-            TakeInventory("LesserTomeCooldown",1);
-        }
-        else
-        {
-            TakeInventory("LesserTomeCooldown",1);
-            //TakeInventory("RainTracker",1);
-        }
-    }
+		if (CheckInventory("LesserTomeCooldown") > 85)
+		{
+			TakeInventory("LesserTomeCooldown",1);
+		}
+		else
+		{
+			TakeInventory("LesserTomeCooldown",1);
+			//TakeInventory("RainTracker",1);
+		}
+	}
 }
 
 script "HereticTomeChargeRate" (void)
 {
 	int weaponCount = CheckInventory("GotWeapon0") + CheckInventory("GotWeapon2") + CheckInventory("GotWeapon3") + CheckInventory("GotWeapon4") + CheckInventory("GotWeapon5") + CheckInventory("GotWeapon6") + CheckInventory("GotWeapon7");
 	int result = 1800;
-	
+
 	until(weaponCount == 0)
 	{
 		weaponCount--;
 		result = (result * 2)/3;
 	}
-		
+
 	SetResultValue(result);
 }
 
@@ -49,49 +49,56 @@ script "CorvusFaceTarget" (void)
 
 script "HereticCloneSpawner" (int powered, int clonetype)
 {
-    int corvTid = UniqueTID();
+	int corvTid = UniqueTID();
+	int x = GetActorX(0), y = GetActorY(0), z = GetActorZ(0);
+	str cloneClassname;
 
-    if (powered)
-    {
-        if (clonetype > 0) { SpawnForced("HereticCorvusCloneCoop", GetActorX(0), GetActorY(0), GetActorZ(0), corvTid); }
-        else { SpawnForced("HereticCorvusClone", GetActorX(0), GetActorY(0), GetActorZ(0), corvTid); }
-    } else {
-        if (clonetype > 0) { SpawnForced("FWizardCoop", GetActorX(0), GetActorY(0), GetActorZ(0), corvTid); }
-        else { SpawnForced("FWizard", GetActorX(0), GetActorY(0), GetActorZ(0), corvTid); }
-    }
+	if (powered)
+	{
+		cloneClassname = clonetype > 0 ? "HereticCorvusCloneCoop" : "HereticCorvusClone";
+		z -= 28.0;
+	}
+	else
+	{
+		cloneClassname = clonetype > 0 ? "FWizardCoop" : "FWizard";
+		z -= 34.0;
+	}
 
-    SetActorAngle(corvTid, GetActorAngle(0));
-    SetActivator(0, AAPTR_TARGET);
-    SetPointerExt(AAPTR_MASTER, 0, corvTid);
-    Thing_SetTranslation(corvTid, -1);
-    GiveActorInventory(corvTid, "SamsaraHereticCloneCopyFriendliness", 1);
-    Thing_ChangeTID(corvTid, 0);
+	SpawnForced(cloneClassname, x, y, z, corvTid);
+	SetActorAngle(corvTid, GetActorAngle(0));
+	SetActivator(0, AAPTR_TARGET);
+	SetPointerExt(AAPTR_MASTER, 0, corvTid);
+	Thing_SetTranslation(corvTid, -1);
+	GiveActorInventory(corvTid, "SamsaraHereticCloneCopyFriendliness", 1);
+	Thing_ChangeTID(corvTid, 0);
 }
 
 script "HereticTurnTowardTarget" (int invertPitch)
 {
-    int corvX = GetActorX(0);
-    int corvY = GetActorY(0);
-    int corvZ = GetActorZ(0);
-    int tempTid = UniqueTid();
-    int corvTid = ActivatorTid();
-    Thing_ChangeTID(0, tempTid);
+	int corvX = GetActorX(0);
+	int corvY = GetActorY(0);
+	int corvZ = GetActorZ(0);
+	int tempTid = UniqueTid();
+	int corvTid = ActivatorTid();
+	Thing_ChangeTID(0, tempTid);
 
-    SetActivator(0, AAPTR_MASTER);
+	SetActivator(0, AAPTR_MASTER);
 
-    int playX = GetActorX(0) + FixedMul(512 * cos(GetActorAngle(0)), cos(GetActorPitch(0)));
-    int playY = GetActorY(0) + FixedMul(512 * sin(GetActorAngle(0)), cos(GetActorPitch(0)));
-    int playZ = GetActorZ(0) + 768 * sin(GetActorPitch(0));
+	int playAngle = GetActorAngle(0);
+	int playPitch = GetActorPitch(0);
+	int playX = GetActorX(0) + FixedMul(512 * cos(playAngle), cos(playPitch));
+	int playY = GetActorY(0) + FixedMul(512 * sin(playAngle), cos(playPitch));
+	int playZ = GetActorZ(0) + 768 * sin(playPitch);
 
-    int vX = corvX - playX;
-    int vY = corvY - playY;
-    int vZ = corvZ - playZ;
+	int vX = corvX - playX;
+	int vY = corvY - playY;
+	int vZ = corvZ - playZ;
 
-    int vAngle = VectorAngle(vX, vY) - 0.5;
-    int vPitch = VectorAngle(VectorLength(vX, vY), vZ);
+	int vAngle = VectorAngle(vX, vY) - 0.5;
+	int vPitch = VectorAngle(VectorLength(vX, vY), vZ);
 
-    SetActorAngle(tempTid, vAngle);
-    SetActorPitch(tempTid, invertPitch ? -vPitch : vPitch);
+	SetActorAngle(tempTid, vAngle);
+	SetActorPitch(tempTid, invertPitch ? -vPitch : vPitch);
 
-    Thing_ChangeTID(tempTid, corvTid);
+	Thing_ChangeTID(tempTid, corvTid);
 }

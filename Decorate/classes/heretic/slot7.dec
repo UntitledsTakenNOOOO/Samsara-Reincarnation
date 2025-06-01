@@ -474,7 +474,7 @@ actor FWizard : SamsaraMonsterReincWizardFriend
 
       Pain.MightyBoot:
         TNT1 A 0 A_ChangeFlag("NOPAIN",1)
-        TNT1 A 0 A_PlaySoundEx("duke/kickhit","body",0,0)
+        TNT1 A 0 A_PlaySound("duke/kickhit",CHAN_BODY)
         ZZRD E 2 A_FaceTarget
         TNT1 A 0 A_Recoil(14)
         ZZRD E 16 A_Pain
@@ -600,7 +600,7 @@ actor SamsaraHereticCorvusCloneAttackAmount : Counter {} // no real max since ot
 actor HereticCorvusClone : SamsaraMiscCharHumanoidStatic
 {
     Monster
-    Health 500
+    Health 375
     Radius 16
     Height 56
     Speed 12
@@ -621,7 +621,6 @@ actor HereticCorvusClone : SamsaraMiscCharHumanoidStatic
     +DONTRIP
     +FLOORCLIP
     +FRIENDLY
-    +MISSILEMORE
 	+NEVERRESPAWN
 	-COUNTKILL
     -SOLID
@@ -633,19 +632,19 @@ actor HereticCorvusClone : SamsaraMiscCharHumanoidStatic
 
       See:
         CORV A 4 A_FastChase
-        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"PlayerTriggeredMissile",AAPTR_MASTER)
         CORV B 4 A_FastChase
-        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"PlayerTriggeredMissile",AAPTR_MASTER)
         CORV C 4 A_FastChase
-        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"PlayerTriggeredMissile",AAPTR_MASTER)
         CORV D 4 A_FastChase
-        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"Missile",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusShootCloneTrigger",1,"PlayerTriggeredMissile",AAPTR_MASTER)
         loop
 
       Missile:
-        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget")
         TNT1 A 0 A_AlertMonsters(1024,AMF_TARGETEMITTER)
         TNT1 A 0 A_TakeInventory("SamsaraHereticCorvusCloneAttackAmount") // reset
+        TNT1 A 0 A_FaceTarget(360,180)
         TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",0,"MissileUseGrimBallista",AAPTR_MASTER)
         TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",6,"MissileUseDSparilStaff",AAPTR_MASTER)
         TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",5,"MissileUseHellstaff",AAPTR_MASTER)
@@ -654,7 +653,21 @@ actor HereticCorvusClone : SamsaraMiscCharHumanoidStatic
         TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",2,"MissileUseCrossbow",AAPTR_MASTER)
         TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",1,"MissileUseFiremace",AAPTR_MASTER)
         goto MissileUseWand
+      PlayerTriggeredMissile:
+        TNT1 A 0 A_AlertMonsters(1024,AMF_TARGETEMITTER)
+        TNT1 A 0 A_TakeInventory("SamsaraHereticCorvusCloneAttackAmount") // reset
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",0,"MissileUseGrimBallistaAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",6,"MissileUseDSparilStaffAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",5,"MissileUseHellstaffAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",4,"MissileUsePhoenixRodAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",3,"MissileUseDragonClawAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",2,"MissileUseCrossbowAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",1,"MissileUseFiremaceAim",AAPTR_MASTER)
+        goto MissileUseWandAim
 
+      MissileUseWandAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",1)
+        goto MissileUseWand
       MissileUseWand:
         TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
         TNT1 A 0 A_PlaySound("heretic/wand",CHAN_WEAPON)
@@ -663,12 +676,15 @@ actor HereticCorvusClone : SamsaraMiscCharHumanoidStatic
         TNT1 A 0 A_JumpIfInventory("SamsaraHereticCorvusCloneAttackAmount",3,"MissileFinish")
         loop
 
+      MissileUseFiremaceAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUseFiremace
       MissileUseFiremace:
         TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
         TNT1 A 0 A_Jump(28,2)
-        CORV F 3 Bright A_CustomMissile("MaceFX12",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV F 3 Bright A_CustomMissile("MaceFX12",32,0,angle+frandom(-4.21875,4.21875),CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
         goto MissileUseFiremaceCheck
-        CORV F 3 Bright A_CustomMissile("MaceFX22",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV F 3 Bright A_CustomMissile("MaceFX22",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch+2)
         goto MissileUseFiremaceCheck
 
       MissileUseFiremaceCheck:
@@ -677,6 +693,9 @@ actor HereticCorvusClone : SamsaraMiscCharHumanoidStatic
         CORV E 9
         goto MissileFinish
 
+      MissileUseCrossbowAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUseCrossbow
       MissileUseCrossbow:
         TNT1 A 0 A_CustomMissile("CrossbowFX1B",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
         TNT1 A 0 A_CustomMissile("CrossbowFX3B",32,0,angle-4.5,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
@@ -684,9 +703,10 @@ actor HereticCorvusClone : SamsaraMiscCharHumanoidStatic
         CORV E 12
         goto MissileFinish
 
-      MissileUseDragonClaw:
+      MissileUseDragonClawAim:
         TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",1)
-      MissileUseDragonClawLoop:
+        goto MissileUseDragonClaw
+      MissileUseDragonClaw:
         TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
         TNT1 A 0 A_PlaySound("heretic/dragonclaw",CHAN_WEAPON)
         CORV F 6 Bright A_CustomBulletAttack(3.6,0,1,random(17,30),"BlasterPuff2",0,CBAF_NORANDOM|CBAF_AIMFACING)
@@ -695,11 +715,17 @@ actor HereticCorvusClone : SamsaraMiscCharHumanoidStatic
         CORV E 6
         goto MissileFinish
 
+      MissileUsePhoenixRodAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUsePhoenixRod
       MissileUsePhoenixRod:
         CORV F 5 Bright A_CustomMissile("PhoenixShot",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
         CORV E 10
         goto MissileFinish
 
+      MissileUseHellstaffAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUseHellstaff
       MissileUseHellstaff:
         TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
         CORV F 4 Bright A_CustomMissile("HellstaffShot",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
@@ -708,12 +734,18 @@ actor HereticCorvusClone : SamsaraMiscCharHumanoidStatic
         CORV E 4
         goto MissileFinish
 
+      MissileUseDSparilStaffAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUseDSparilStaff
       MissileUseDSparilStaff:
         CORV E 8 A_PlaySound("dsparil/attack",CHAN_WEAPON)
         CORV F 4 Bright A_CustomMissile("Sorcerer2FX4",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
         CORV E 12
         goto MissileFinish
 
+      MissileUseGrimBallistaAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUseGrimBallista
       MissileUseGrimBallista:
         TNT1 A 0 A_PlaySound("heretic/grimbshot",CHAN_WEAPON)
         TNT1 AAAA 0 A_CustomMissile("GrimSpittle",32,0,angle+frandom(-10.0,10.0),CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch+frandom(-7.0,7.0))
@@ -733,15 +765,14 @@ actor HereticCorvusClone : SamsaraMiscCharHumanoidStatic
 
       Pain.MightyBoot:
         TNT1 A 0 A_ChangeFlag("NOPAIN",1)
-        TNT1 A 0 A_PlaySoundEx("duke/kickhit","body",0,0)
+        TNT1 A 0 A_PlaySound("duke/kickhit",CHAN_BODY)
         CORV G 2 A_FaceTarget
         TNT1 A 0 A_Recoil(14)
         CORV G 16 A_Pain
         goto See
 
       Death:
-        TNT1 A 0 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
-        CORV H 6
+        CORV H 6 A_SpawnItemEx("UniversalBloodyHellGoreDeathEffect",0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_USEBLOODCOLOR)
         CORV I 6 A_Scream
         CORV JK 6
         CORV L 6 A_NoBlocking
@@ -1101,9 +1132,9 @@ actor HereticCorvusCloneCoop : HereticCorvusClone
     States
     {
       Missile:
-        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget")
         TNT1 A 0 A_AlertMonsters(1024,AMF_TARGETEMITTER)
         TNT1 A 0 A_TakeInventory("SamsaraHereticCorvusCloneAttackAmount") // reset
+        TNT1 A 0 A_FaceTarget(360,180)
         TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",0,"MissileUseGrimBallista",AAPTR_MASTER)
         TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",6,"MissileUseDSparilStaff",AAPTR_MASTER)
         TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",5,"MissileUseHellstaff",AAPTR_MASTER)
@@ -1112,7 +1143,21 @@ actor HereticCorvusCloneCoop : HereticCorvusClone
         TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",2,"MissileUseCrossbow",AAPTR_MASTER)
         TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",1,"MissileUseFiremace",AAPTR_MASTER)
         goto MissileUseWand
+      PlayerTriggeredMissile:
+        TNT1 A 0 A_AlertMonsters(1024,AMF_TARGETEMITTER)
+        TNT1 A 0 A_TakeInventory("SamsaraHereticCorvusCloneAttackAmount") // reset
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",0,"MissileUseGrimBallistaAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",6,"MissileUseDSparilStaffAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",5,"MissileUseHellstaffAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",4,"MissileUsePhoenixRodAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",3,"MissileUseDragonClawAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",2,"MissileUseCrossbowAim",AAPTR_MASTER)
+        TNT1 A 0 A_JumpIfInventory("CorvusHoldingSlot",1,"MissileUseFiremaceAim",AAPTR_MASTER)
+        goto MissileUseWandAim
 
+      MissileUseWandAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",1)
+        goto MissileUseWand
       MissileUseWand:
         TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
         TNT1 A 0 A_PlaySound("heretic/wand",CHAN_WEAPON)
@@ -1121,12 +1166,15 @@ actor HereticCorvusCloneCoop : HereticCorvusClone
         TNT1 A 0 A_JumpIfInventory("SamsaraHereticCorvusCloneAttackAmount",3,"MissileFinish")
         loop
 
+      MissileUseFiremaceAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUseFiremace
       MissileUseFiremace:
         TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
         TNT1 A 0 A_Jump(28,2)
-        CORV F 3 Bright A_CustomMissile("MaceFX1Coop",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV F 3 Bright A_CustomMissile("MaceFX1Coop",32,0,angle+frandom(-4.21875,4.21875),CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
         goto MissileUseFiremaceCheck
-        CORV F 3 Bright A_CustomMissile("MaceFX2Coop",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
+        CORV F 3 Bright A_CustomMissile("MaceFX2Coop",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch+2)
         goto MissileUseFiremaceCheck
 
       MissileUseFiremaceCheck:
@@ -1135,6 +1183,9 @@ actor HereticCorvusCloneCoop : HereticCorvusClone
         CORV E 9
         goto MissileFinish
 
+      MissileUseCrossbowAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUseCrossbow
       MissileUseCrossbow:
         TNT1 A 0 A_CustomMissile("CrossbowFX12",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
         TNT1 A 0 A_CustomMissile("CrossbowFX32",32,0,angle-4.5,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
@@ -1142,9 +1193,10 @@ actor HereticCorvusCloneCoop : HereticCorvusClone
         CORV E 12
         goto MissileFinish
 
-      MissileUseDragonClaw:
+      MissileUseDragonClawAim:
         TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",1)
-      MissileUseDragonClawLoop:
+        goto MissileUseDragonClaw
+      MissileUseDragonClaw:
         TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
         TNT1 A 0 A_PlaySound("heretic/dragonclaw",CHAN_WEAPON)
         CORV F 6 Bright A_CustomBulletAttack(5.6,0,1,random(4,11),"BlasterPuff2Coop",0,CBAF_AIMFACING)
@@ -1153,11 +1205,17 @@ actor HereticCorvusCloneCoop : HereticCorvusClone
         CORV E 6
         goto MissileFinish
 
+      MissileUsePhoenixRodAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUsePhoenixRod
       MissileUsePhoenixRod:
         CORV F 5 Bright A_CustomMissile("PhoenixShot2",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
         CORV E 10
         goto MissileFinish
 
+      MissileUseHellstaffAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUseHellstaff
       MissileUseHellstaff:
         TNT1 A 0 A_GiveInventory("SamsaraHereticCorvusCloneAttackAmount")
         CORV F 4 Bright A_CustomMissile("HellstaffShot2",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
@@ -1166,12 +1224,18 @@ actor HereticCorvusCloneCoop : HereticCorvusClone
         CORV E 4
         goto MissileFinish
 
+      MissileUseDSparilStaffAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUseDSparilStaff
       MissileUseDSparilStaff:
         CORV E 8 A_PlaySound("dsparil/attack",CHAN_WEAPON)
         CORV F 4 Bright A_CustomMissile("Sorcerer2FX4_Coop",32,0,angle,CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch)
         CORV E 12
         goto MissileFinish
 
+      MissileUseGrimBallistaAim:
+        TNT1 A 0 ACS_NamedExecuteWithResult("HereticTurnTowardTarget",0)
+        goto MissileUseGrimBallista
       MissileUseGrimBallista:
         TNT1 A 0 A_PlaySound("heretic/grimbshot",CHAN_WEAPON)
         TNT1 AAAA 0 A_CustomMissile("GrimSpittleCoop",32,0,angle+frandom(-10.0,10.0),CMF_AIMDIRECTION|CMF_ABSOLUTEANGLE,pitch+frandom(-7.0,7.0))
