@@ -50,7 +50,7 @@ script "CorvusFaceTarget" (void)
 script "HereticCloneSpawner" (int powered, int clonetype)
 {
 	int corvTid = UniqueTID();
-	int x = GetActorX(0), y = GetActorY(0), z = GetActorZ(0);
+	int z = GetActorZ(0);
 	str cloneClassname;
 
 	if (powered)
@@ -64,7 +64,7 @@ script "HereticCloneSpawner" (int powered, int clonetype)
 		z -= 34.0;
 	}
 
-	SpawnForced(cloneClassname, x, y, z, corvTid);
+	SpawnForced(cloneClassname, GetActorX(0), GetActorY(0), z, corvTid);
 	SetActorAngle(corvTid, GetActorAngle(0));
 	SetActivator(0, AAPTR_TARGET);
 	SetPointerExt(AAPTR_MASTER, 0, corvTid);
@@ -75,30 +75,28 @@ script "HereticCloneSpawner" (int powered, int clonetype)
 
 script "HereticTurnTowardTarget" (int invertPitch)
 {
-	int corvX = GetActorX(0);
-	int corvY = GetActorY(0);
-	int corvZ = GetActorZ(0);
-	int tempTid = UniqueTid();
-	int corvTid = ActivatorTid();
-	Thing_ChangeTID(0, tempTid);
+	int corvTid = UniqueTID();
 
+	Thing_ChangeTID(0, corvTid);
 	SetActivator(0, AAPTR_MASTER);
 
 	int playAngle = GetActorAngle(0);
 	int playPitch = GetActorPitch(0);
-	int playX = GetActorX(0) + FixedMul(512 * cos(playAngle), cos(playPitch));
-	int playY = GetActorY(0) + FixedMul(512 * sin(playAngle), cos(playPitch));
+	int adjHypRatio = cos(playPitch);
+	int playX = GetActorX(0) + FixedMul(512 * cos(playAngle), adjHypRatio);
+	int playY = GetActorY(0) + FixedMul(512 * sin(playAngle), adjHypRatio);
 	int playZ = GetActorZ(0) + 768 * sin(playPitch);
 
-	int vX = corvX - playX;
-	int vY = corvY - playY;
-	int vZ = corvZ - playZ;
+	SetActivator(corvTid);
+	Thing_ChangeTID(corvTid, 0);
+
+	int vX = GetActorX(0) - playX;
+	int vY = GetActorY(0) - playY;
+	int vZ = GetActorZ(0) - playZ;
 
 	int vAngle = VectorAngle(vX, vY) - 0.5;
 	int vPitch = VectorAngle(VectorLength(vX, vY), vZ);
 
-	SetActorAngle(tempTid, vAngle);
-	SetActorPitch(tempTid, invertPitch ? -vPitch : vPitch);
-
-	Thing_ChangeTID(tempTid, corvTid);
+	SetActorAngle(0, vAngle);
+	SetActorPitch(0, invertPitch ? -vPitch : vPitch);
 }
