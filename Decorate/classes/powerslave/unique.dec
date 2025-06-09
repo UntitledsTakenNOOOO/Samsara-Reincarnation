@@ -1,0 +1,149 @@
+actor "Ring of Ra" : SamsaraPowerSlaveWeapon
+{
+    Inventory.PickupMessage "The Ring of Ra"
+    Inventory.PickupSound "PS/Ipickup2"
+    Weapon.SlotNumber 8
+    Weapon.SelectionOrder 200
+    Weapon.AmmoType "Cell"
+    Weapon.AmmoGive 48
+    Weapon.AmmoUse 1
+    Obituary "%k's balls were too hot for %o."
+    Tag "Ring of Ra"
+    +FLOATBOB
+    States
+    {
+      Spawn:
+        WROR A -1 Bright
+        stop
+
+      Ready:
+        C_D9 AAAABBBB 1 A_WeaponReady
+        loop
+
+      Deselect:
+        C_D9 A 1 A_Lower
+        loop
+
+      Select:
+        C_D9 A 1 A_Raise
+        loop
+
+      Fire:
+        C_D9 C 2 Bright
+      Hold:
+        C_D9 B 1 Bright
+        C_D9 D 1 Bright Offset(-4,39)
+        C_D9 D 1 Bright Offset(-2,38) A_GiveInventory("SamsaraPowerSlaveRingOfRaAttackHandler1")
+        C_D9 B 1 Bright Offset(0,37)
+        C_D9 D 1 Bright Offset(4,39)
+        C_D9 D 1 Bright Offset(2,38) A_GiveInventory("SamsaraPowerSlaveRingOfRaAttackHandler2")
+        C_D9 B 1 Bright Offset(0,37) A_ReFire
+        goto Ready
+    }
+}
+
+actor SamsaraPowerSlaveRingOfRaAttackHandler1 : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Cell",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 ACS_NamedExecuteWithResult("PSRingofRaRecoil")
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("RingofRaFireball",random(-10,10),false,-10,-10,0,15)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("RingofRaFireball_2",random(-10,10),false,-10,-10,0,15)
+        stop
+    }
+}
+
+actor SamsaraPowerSlaveRingOfRaAttackHandler2 : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Cell",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Cell",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 ACS_NamedExecuteWithResult("PSRingofRaRecoil")
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
+        TNT1 A 0 A_FireCustomMissile("RingofRaFireball",random(-10,10),false,10,-10,0,15)
+        stop
+
+      PickupAttackCoop:
+        TNT1 A 0 A_FireCustomMissile("RingofRaFireball_2",random(-10,10),false,10,-10,0,15)
+        stop
+    }
+}
+
+actor RingofRaFireball
+{
+    Projectile
+    Radius 4
+    Height 4
+    Speed 15
+    Damage (18)
+    DamageType "PSRAPower"
+    ReactionTime 86
+    BounceType "Doom"
+    BounceFactor 0.9
+    Scale 0.3
+    SeeSound "Jon/RAFire"
+    DeathSound "Jon/CobraDeath"
+    States
+    {
+      Spawn:
+        C_D9 E 0 Bright
+        C_D9 E 1 Bright ThrustThingZ(0,24,0,1)
+        C_D9 E 1 Bright A_Gravity
+      SpawnLoop:
+        C_D9 E 2 Bright A_Countdown
+        loop
+
+      Death:
+        TNT1 A 1 A_SpawnItemEx("Ringfireballexplosion",0,0,0,0,0,0,0,SXF_CLIENTSIDE)
+        stop
+    }
+}
+
+actor RingofRaFireball_2 : RingofRaFireball
+{
+    Species "Player"
+    +THRUSPECIES
+}
+
+actor Ringfireballexplosion
+{
+    RenderStyle "Add"
+    Alpha 0.9
+    Scale 0.5
+    +CLIENTSIDEONLY
+    +NOINTERACTION
+    States
+    {
+      Spawn:
+        C_D9 FGHIJKLM 2 Bright
+        C_D9 NN 1 Bright A_FadeOut(2) // ???
+        stop
+    }
+}
