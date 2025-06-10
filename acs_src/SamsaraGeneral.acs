@@ -3009,6 +3009,7 @@ Script "Samsara_ResetInventory" (void)
 			TakeInventory("Goldeneye_RCP90DualToken", INTMAX);
 			TakeInventory("Goldeneye_Cougar", INTMAX);
 			TakeInventory("Goldeneye_SilverPP7", INTMAX);
+			TakeInventory("Goldeneye_ArabahViper", INTMAX);
 			TakeInventory("Goldeneye_CougarDualToken", INTMAX);
 			TakeInventory("Goldeneye_Moonraker", INTMAX);
 			TakeInventory("Goldeneye_LaserDualToken", INTMAX);
@@ -3064,6 +3065,8 @@ Script "Samsara_ResetInventory" (void)
 			GiveInventory("Goldeneye_CougarDualMagazine", 6);
 			GiveInventory("Goldeneye_SilverPP7Magazine", 7);
 			GiveInventory("Goldeneye_SilverPP7DualMagazine", 7);
+			GiveInventory("Goldeneye_ArabahViperMagazine", 7);
+			GiveInventory("Goldeneye_ArabahViperDualMagazine", 7);
 			GiveInventory("Goldeneye_GoldenGunMagazine", 1);
 			GiveInventory("Goldeneye_GoldenGunDualMagazine", 1);
 			GiveInventory("Goldeneye_SniperMagazine", 8);
@@ -8148,7 +8151,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             break;
 
           case SLOT_RAILGUN:
-            hasweapon = CheckInventory("Goldeneye_Cougar") || CheckInventory("Goldeneye_SilverPP7");
+            hasweapon = CheckInventory("Goldeneye_Cougar") || CheckInventory("Goldeneye_SilverPP7") || CheckInventory("Goldeneye_ArabahViper");
             hasdualtoken = CheckInventory("Goldeneye_CougarDualToken");
             duallimited = duallimiting && CheckInventory("Goldeneye_CougarLevelLimiter");
 
@@ -8208,11 +8211,67 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 if (startmode <= -1 || startmode >= 2) { GiveInventory("Cell", GetAmmoCapacity("Cell")); }
             }
 
-            if (loadoutchoice >= 1 || completeloadout) // Silver PP7
+            if (loadoutchoice == 1 || completeloadout) // Silver PP7
             {
                 if (!hasweapon)
                 {
                     GiveInventory("Goldeneye_SilverPP7", 1);
+                    GiveInventory("Cell", dmextraammo ? 28 / tossedammo * 5 / 2 : 28 / tossedammo);
+
+                    if (!hasdualtoken && dualgiveboth)
+                    {
+                        GiveInventory("Goldeneye_CougarDualToken", 1);
+                        GiveInventory("Cell", 28 / tossedammo);
+                    }
+
+                    if (duallimiting) { GiveInventory("Goldeneye_CougarLevelLimiter", 1); }
+
+                    if (dropped <= 0 && startmode == 0 && weaponstay)
+                    {
+                        setcoords = true;
+                        settimer = true;
+                    }
+
+                    result = 1;
+                } else if (!hasdualtoken && !duallimited && (dualpickupmode <= 3 || (dualpickupmode >= 4 && dropped <= 1))) {
+                    if (dualpickupmode == 1)
+                    {
+                        inventoryX = CheckInventory("Goldeneye_CougarPickedUpX") - 65536;
+                        inventoryY = CheckInventory("Goldeneye_CougarPickedUpY") - 65536;
+                        inventoryZ = CheckInventory("Goldeneye_CougarPickedUpZ") - 65536;
+
+                        dualreqcheck = abs(invokerX - inventoryX) > maxDistance || abs(invokerY - inventoryY) > maxDistance || abs(invokerZ - inventoryZ) > maxDistance;
+                    }
+                    else if (dualpickupmode == 2) { dualreqcheck = Timer() >= CheckInventory("Goldeneye_CougarLastPickupTime"); }
+
+                    if (dualreqcheck || dropped >= 1 || startmode != 0 || !weaponstay)
+                    {
+                        GiveInventory("Goldeneye_CougarDualToken", 1);
+                        GiveInventory("Cell", 28 / tossedammo);
+
+                        if (duallimiting) { GiveInventory("Goldeneye_CougarLevelLimiter", 1); }
+
+                        if (dropped <= 0 && startmode == 0 && weaponstay)
+                        {
+                            setcoords = true;
+                            settimer = true;
+                        }
+
+                        result = 1;
+                    }
+                } else if (CheckInventory("Cell") < GetAmmoCapacity("Cell") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                    GiveInventory("Cell", 28 / tossedammo);
+                    result = 1;
+                }
+
+                if (startmode <= -1 || startmode >= 2) { GiveInventory("Cell", GetAmmoCapacity("Cell")); }
+            }
+
+            if (loadoutchoice >= 2 || completeloadout) // Arabah Viper
+            {
+                if (!hasweapon)
+                {
+                    GiveInventory("Goldeneye_ArabahViper", 1);
                     GiveInventory("Cell", dmextraammo ? 28 / tossedammo * 5 / 2 : 28 / tossedammo);
 
                     if (!hasdualtoken && dualgiveboth)
@@ -11366,7 +11425,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique3", true);
 		SetCVar("samsara_cl_bond_fallbackranged", 0);
 		SetCVar("samsara_cl_bond_slot3", false);
-		SetCVar("samsara_cl_bond_slot6s", false);
+		SetCVar("samsara_cl_bond_slot6s", 0);
 		SetCVar("samsara_cl_bond_unique2", 0);
 		break;
 
@@ -11517,7 +11576,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique3", true);
 		SetCVar("samsara_cl_bond_fallbackranged", 0);
 		SetCVar("samsara_cl_bond_slot3", false);
-		SetCVar("samsara_cl_bond_slot6s", false);
+		SetCVar("samsara_cl_bond_slot6s", 0);
 		SetCVar("samsara_cl_bond_unique2", 0);
 		break;
 
@@ -11668,7 +11727,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique3", true);
 		SetCVar("samsara_cl_bond_fallbackranged", 0);
 		SetCVar("samsara_cl_bond_slot3", false);
-		SetCVar("samsara_cl_bond_slot6s", false);
+		SetCVar("samsara_cl_bond_slot6s", 0);
 		SetCVar("samsara_cl_bond_unique2", 0);
 		break;
 
@@ -11820,7 +11879,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique3", true);
 		SetCVar("samsara_cl_bond_fallbackranged", 0);
 		SetCVar("samsara_cl_bond_slot3", false);
-		SetCVar("samsara_cl_bond_slot6s", false);
+		SetCVar("samsara_cl_bond_slot6s", 0);
 		SetCVar("samsara_cl_bond_unique2", 0);
 		break;
 
@@ -11971,7 +12030,7 @@ script "SamsaraClientSidePresetSelection" (void)
 		SetCVar("samsara_cl_shephard_unique3", false);
 		SetCVar("samsara_cl_bond_fallbackranged", 1);
 		SetCVar("samsara_cl_bond_slot3", true);
-		SetCVar("samsara_cl_bond_slot6s", true);
+		SetCVar("samsara_cl_bond_slot6s", 1);
 		SetCVar("samsara_cl_bond_unique2", 1);
 		break;
 	}
