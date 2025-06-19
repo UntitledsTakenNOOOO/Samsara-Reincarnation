@@ -1,0 +1,1 @@
+Goldfinger/ColtShot "Sounds/Goldfinger/goldfinger_coltshot.wav"
