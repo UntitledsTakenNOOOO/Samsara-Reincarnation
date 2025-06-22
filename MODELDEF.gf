@@ -513,7 +513,7 @@ Model "GoldFinger_ColtM1911"
 
 model GoldFinger_ColtTracer
 {
-	Path "models/goldeneye/effects"
+	Path "models/goldfinger/effects"
 	model 0 "bullettracer.md3"
 	skin 0 "bullettracer.png"
 	scale 2.0 0.5 0.5
@@ -526,7 +526,7 @@ model GoldFinger_ColtTracer
 
 model GoldFinger_ColtTracerCoop
 {
-	Path "models/goldeneye/effects"
+	Path "models/goldfinger/effects"
 	model 0 "bullettracer.md3"
 	skin 0 "bullettracer.png"
 	scale 2.0 0.5 0.5
@@ -836,6 +836,682 @@ Model "GoldFinger_WaltherP38"
     Model 1 "leftarm.md3"
     Scale -1.0 1.0 1.0
     //NOINTERPOLATION
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
+}
+
+Model "GoldFinger_AK47"
+{
+   Path "models/goldfinger/ak47"
+   Model 0 "ak47.md3"
+   Scale -1.0 1.0 1.0
+   //Fire Center
+   FrameIndex GE00 A 0 0
+   FrameIndex GE01 B 0 1
+   FrameIndex GE01 C 0 2
+   FrameIndex GE01 D 0 3
+   FrameIndex GE01 E 0 4
+
+   Offset 0 0 -4
+   FrameIndex GE02 A 0 0
+   Offset 0 0 -8
+   FrameIndex GE02 B 0 0
+   Offset 0 0 -12
+   FrameIndex GE02 C 0 0
+   Offset 0 0 -16
+   FrameIndex GE02 D 0 0
+   Offset 0 0 -20
+   FrameIndex GE02 E 0 0
+   Offset 0 0 -24
+   FrameIndex GE02 F 0 0
+   Offset 0 0 -28
+   FrameIndex GE02 G 0 0
+   Offset 0 0 -32
+   FrameIndex GE02 H 0 0
+   Offset 0 0 -36
+   FrameIndex GE02 I 0 0
+   Offset 0 0 0
+   
+   Model 1 "ak47_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE01 A 0 0
+   FrameIndex GE01 A 1 0
+}
+
+//y moves 4
+Model "GoldFinger_AK47"
+{
+   Path "models/goldfinger/ak47"
+   Model 0 "ak47.md3"
+   Scale -1.0 1.0 1.0
+   Offset -22 0 0
+
+   //Fire Center
+   FrameIndex GE10 A 0 0
+   FrameIndex GE11 B 0 1
+   FrameIndex GE11 C 0 2
+   FrameIndex GE11 D 0 3
+   FrameIndex GE11 E 0 4
+
+   // My hand is forced
+   Offset -22 0 -4
+   FrameIndex GE12 A 0 0
+   Offset -22 0 -8
+   FrameIndex GE12 B 0 0
+   Offset -22 0 -12
+   FrameIndex GE12 C 0 0
+   Offset -22 0 -16
+   FrameIndex GE12 D 0 0
+   Offset -22 0 -20
+   FrameIndex GE12 E 0 0
+   Offset -22 0 -24
+   FrameIndex GE12 F 0 0
+   Offset -22 0 -28
+   FrameIndex GE12 G 0 0
+   Offset -22 0 -32
+   FrameIndex GE12 H 0 0
+   Offset -22 0 -36
+   FrameIndex GE12 I 0 0
+   Offset -22 0 0
+
+   Model 1 "ak47_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE11 A 0 0
+   FrameIndex GE11 A 1 0
+}
+
+Model "GoldFinger_AK47"
+{
+	Path "models/goldfinger/ak47"
+	Model 0 "ak47.md3"
+	Path "models/goldfinger/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
+}
+
+model GoldFinger_AK47Tracer
+{
+	Path "models/goldeneye/effects"
+	model 0 "bullettracer.md3"
+	skin 0 "bullettracer.png"
+	scale 2.0 0.5 0.5
+	//Offset -48 0 0
+	Offset 0 0 8
+	PITCHFROMMOMENTUM
+
+	FrameIndex GE00 A 0 0
+}
+
+model GoldFinger_AK47TracerCoop
+{
+	Path "models/goldeneye/effects"
+	model 0 "bullettracer.md3"
+	skin 0 "bullettracer.png"
+	scale 2.0 0.5 0.5
+	//Offset -48 0 0
+	Offset 0 0 8
+	PITCHFROMMOMENTUM
+
+	FrameIndex GE00 A 0 0
+}
+
+Model "GoldFinger_UZI"
+{
+   Path "models/goldfinger/uzi"
+   Model 0 "uzi.md3"
+   Scale -1.0 1.0 1.0
+   //Fire Center
+   FrameIndex GE00 A 0 0
+   FrameIndex GE01 B 0 1
+   FrameIndex GE01 C 0 2
+   FrameIndex GE01 D 0 3
+   FrameIndex GE01 E 0 4
+
+   Offset 0 0 -4
+   FrameIndex GE02 A 0 0
+   Offset 0 0 -8
+   FrameIndex GE02 B 0 0
+   Offset 0 0 -12
+   FrameIndex GE02 C 0 0
+   Offset 0 0 -16
+   FrameIndex GE02 D 0 0
+   Offset 0 0 -20
+   FrameIndex GE02 E 0 0
+   Offset 0 0 -24
+   FrameIndex GE02 F 0 0
+   Offset 0 0 -28
+   FrameIndex GE02 G 0 0
+   Offset 0 0 -32
+   FrameIndex GE02 H 0 0
+   Offset 0 0 -36
+   FrameIndex GE02 I 0 0
+   Offset 0 0 0
+   
+   Model 1 "uzi_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE01 A 0 0
+   FrameIndex GE01 A 1 0
+}
+
+//y moves 4
+Model "GoldFinger_UZI"
+{
+   Path "models/goldfinger/uzi"
+   Model 0 "uzi.md3"
+   Scale -1.0 1.0 1.0
+   Offset -22 0 0
+
+   //Fire Center
+   FrameIndex GE10 A 0 0
+   FrameIndex GE11 B 0 1
+   FrameIndex GE11 C 0 2
+   FrameIndex GE11 D 0 3
+   FrameIndex GE11 E 0 4
+
+   // My hand is forced
+   Offset -22 0 -4
+   FrameIndex GE12 A 0 0
+   Offset -22 0 -8
+   FrameIndex GE12 B 0 0
+   Offset -22 0 -12
+   FrameIndex GE12 C 0 0
+   Offset -22 0 -16
+   FrameIndex GE12 D 0 0
+   Offset -22 0 -20
+   FrameIndex GE12 E 0 0
+   Offset -22 0 -24
+   FrameIndex GE12 F 0 0
+   Offset -22 0 -28
+   FrameIndex GE12 G 0 0
+   Offset -22 0 -32
+   FrameIndex GE12 H 0 0
+   Offset -22 0 -36
+   FrameIndex GE12 I 0 0
+   Offset -22 0 0
+
+   Model 1 "uzi_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE11 A 0 0
+   FrameIndex GE11 A 1 0
+}
+
+Model "GoldFinger_UZI"
+{
+	Path "models/goldfinger/uzi"
+	Model 0 "uzi.md3"
+	Path "models/goldfinger/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
+}
+
+Model "GoldFinger_MP40"
+{
+   Path "models/goldfinger/mp40"
+   Model 0 "mp40.md3"
+   Scale -1.0 1.0 1.0
+   //Fire Center
+   FrameIndex GE00 A 0 0
+   FrameIndex GE01 B 0 1
+   FrameIndex GE01 C 0 2
+   FrameIndex GE01 D 0 3
+   FrameIndex GE01 E 0 4
+
+   Offset 0 0 -4
+   FrameIndex GE02 A 0 0
+   Offset 0 0 -8
+   FrameIndex GE02 B 0 0
+   Offset 0 0 -12
+   FrameIndex GE02 C 0 0
+   Offset 0 0 -16
+   FrameIndex GE02 D 0 0
+   Offset 0 0 -20
+   FrameIndex GE02 E 0 0
+   Offset 0 0 -24
+   FrameIndex GE02 F 0 0
+   Offset 0 0 -28
+   FrameIndex GE02 G 0 0
+   Offset 0 0 -32
+   FrameIndex GE02 H 0 0
+   Offset 0 0 -36
+   FrameIndex GE02 I 0 0
+   Offset 0 0 0
+   
+   Model 1 "mp40_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE01 A 0 0
+   FrameIndex GE01 A 1 0
+}
+
+//y moves 4
+Model "GoldFinger_MP40"
+{
+   Path "models/goldfinger/mp40"
+   Model 0 "mp40.md3"
+   Scale -1.0 1.0 1.0
+   Offset -22 0 0
+
+   //Fire Center
+   FrameIndex GE10 A 0 0
+   FrameIndex GE11 B 0 1
+   FrameIndex GE11 C 0 2
+   FrameIndex GE11 D 0 3
+   FrameIndex GE11 E 0 4
+
+   // My hand is forced
+   Offset -22 0 -4
+   FrameIndex GE12 A 0 0
+   Offset -22 0 -8
+   FrameIndex GE12 B 0 0
+   Offset -22 0 -12
+   FrameIndex GE12 C 0 0
+   Offset -22 0 -16
+   FrameIndex GE12 D 0 0
+   Offset -22 0 -20
+   FrameIndex GE12 E 0 0
+   Offset -22 0 -24
+   FrameIndex GE12 F 0 0
+   Offset -22 0 -28
+   FrameIndex GE12 G 0 0
+   Offset -22 0 -32
+   FrameIndex GE12 H 0 0
+   Offset -22 0 -36
+   FrameIndex GE12 I 0 0
+   Offset -22 0 0
+
+   Model 1 "mp40_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE11 A 0 0
+   FrameIndex GE11 A 1 0
+}
+
+Model "GoldFinger_MP40"
+{
+	Path "models/goldfinger/mp40"
+	Model 0 "mp40.md3"
+	Path "models/goldfinger/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
+}
+
+Model "GoldFinger_Thompson"
+{
+   Path "models/goldfinger/thompson"
+   Model 0 "m1928a.md3"
+   Scale -1.0 1.0 1.0
+   //Fire Center
+   FrameIndex GE00 A 0 0
+   FrameIndex GE01 B 0 1
+   FrameIndex GE01 C 0 2
+   FrameIndex GE01 D 0 3
+   FrameIndex GE01 E 0 4
+
+   Offset 0 0 -4
+   FrameIndex GE02 A 0 0
+   Offset 0 0 -8
+   FrameIndex GE02 B 0 0
+   Offset 0 0 -12
+   FrameIndex GE02 C 0 0
+   Offset 0 0 -16
+   FrameIndex GE02 D 0 0
+   Offset 0 0 -20
+   FrameIndex GE02 E 0 0
+   Offset 0 0 -24
+   FrameIndex GE02 F 0 0
+   Offset 0 0 -28
+   FrameIndex GE02 G 0 0
+   Offset 0 0 -32
+   FrameIndex GE02 H 0 0
+   Offset 0 0 -36
+   FrameIndex GE02 I 0 0
+   Offset 0 0 0
+   
+   Model 1 "thompson_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE01 A 0 0
+   FrameIndex GE01 A 1 0
+}
+
+//y moves 4
+Model "GoldFinger_Thompson"
+{
+   Path "models/goldfinger/thompson"
+   Model 0 "m1928a.md3"
+   Scale -1.0 1.0 1.0
+   Offset -25 0 0
+
+   //Fire Center
+   FrameIndex GE10 A 0 0
+   FrameIndex GE11 B 0 1
+   FrameIndex GE11 C 0 2
+   FrameIndex GE11 D 0 3
+   FrameIndex GE11 E 0 4
+
+   // My hand is forced
+   Offset -25 0 -4
+   FrameIndex GE12 A 0 0
+   Offset -25 0 -8
+   FrameIndex GE12 B 0 0
+   Offset -25 0 -12
+   FrameIndex GE12 C 0 0
+   Offset -25 0 -16
+   FrameIndex GE12 D 0 0
+   Offset -25 0 -20
+   FrameIndex GE12 E 0 0
+   Offset -25 0 -24
+   FrameIndex GE12 F 0 0
+   Offset -25 0 -28
+   FrameIndex GE12 G 0 0
+   Offset -25 0 -32
+   FrameIndex GE12 H 0 0
+   Offset -25 0 -36
+   FrameIndex GE12 I 0 0
+   Offset -25 0 0
+
+   Model 1 "thompson_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE11 A 0 0
+   FrameIndex GE11 A 1 0
+}
+
+Model "GoldFinger_Thompson"
+{
+	Path "models/goldfinger/thompson"
+	Model 0 "m1928a.md3"
+	Path "models/goldfinger/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
+}
+
+Model "GoldFinger_ThompsonDrum"
+{
+   Path "models/goldfinger/thompson"
+   Model 0 "thompson.md3"
+   Scale -1.0 1.0 1.0
+   //Fire Center
+   FrameIndex GE00 A 0 0
+   FrameIndex GE01 B 0 1
+   FrameIndex GE01 C 0 2
+   FrameIndex GE01 D 0 3
+   FrameIndex GE01 E 0 4
+
+   Offset 0 0 -4
+   FrameIndex GE02 A 0 0
+   Offset 0 0 -8
+   FrameIndex GE02 B 0 0
+   Offset 0 0 -12
+   FrameIndex GE02 C 0 0
+   Offset 0 0 -16
+   FrameIndex GE02 D 0 0
+   Offset 0 0 -20
+   FrameIndex GE02 E 0 0
+   Offset 0 0 -24
+   FrameIndex GE02 F 0 0
+   Offset 0 0 -28
+   FrameIndex GE02 G 0 0
+   Offset 0 0 -32
+   FrameIndex GE02 H 0 0
+   Offset 0 0 -36
+   FrameIndex GE02 I 0 0
+   Offset 0 0 0
+   
+   Model 1 "thompson_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE01 A 0 0
+   FrameIndex GE01 A 1 0
+}
+
+//y moves 4
+Model "GoldFinger_ThompsonDrum"
+{
+   Path "models/goldfinger/thompson"
+   Model 0 "thompson.md3"
+   Scale -1.0 1.0 1.0
+   Offset -25 0 0
+
+   //Fire Center
+   FrameIndex GE10 A 0 0
+   FrameIndex GE11 B 0 1
+   FrameIndex GE11 C 0 2
+   FrameIndex GE11 D 0 3
+   FrameIndex GE11 E 0 4
+
+   // My hand is forced
+   Offset -25 0 -4
+   FrameIndex GE12 A 0 0
+   Offset -25 0 -8
+   FrameIndex GE12 B 0 0
+   Offset -25 0 -12
+   FrameIndex GE12 C 0 0
+   Offset -25 0 -16
+   FrameIndex GE12 D 0 0
+   Offset -25 0 -20
+   FrameIndex GE12 E 0 0
+   Offset -25 0 -24
+   FrameIndex GE12 F 0 0
+   Offset -25 0 -28
+   FrameIndex GE12 G 0 0
+   Offset -25 0 -32
+   FrameIndex GE12 H 0 0
+   Offset -25 0 -36
+   FrameIndex GE12 I 0 0
+   Offset -25 0 0
+
+   Model 1 "thompson_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE11 A 0 0
+   FrameIndex GE11 A 1 0
+}
+
+Model "GoldFinger_ThompsonDrum"
+{
+	Path "models/goldfinger/thompson"
+	Model 0 "thompson.md3"
+	Path "models/goldfinger/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
 
 	FrameIndex GE14 A 0 0
 	FrameIndex GE14 A 1 0

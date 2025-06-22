@@ -1,3 +1,6 @@
 Goldfinger/ColtShot "Sounds/Goldfinger/goldfinger_coltshot.wav"
 Goldfinger/P08Shot "Sounds/Goldfinger/goldfinger_p08shot.wav"
 Goldfinger/P38Shot "Sounds/Goldfinger/goldfinger_p38shot.wav"
+Goldfinger/AK47Shot "Sounds/Goldfinger/goldfinger_ak47shot.wav"
+Goldfinger/MP40Shot "Sounds/Goldfinger/goldfinger_mp40shot.wav"
+Goldfinger/ThompsonShot "Sounds/Goldfinger/goldfinger_thompsonshot.wav"
