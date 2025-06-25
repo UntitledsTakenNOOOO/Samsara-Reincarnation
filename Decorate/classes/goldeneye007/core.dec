@@ -70,6 +70,10 @@ Actor BondWeapons : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 12 }
 Actor BondDualiesToken : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 10 }
 Actor BondHoldLastShot1 : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
 Actor BondHoldLastShot2 : Inventory { -INVENTORY.INVBAR Inventory.MaxAmount 1 Inventory.InterHubAmount 0 }
+Actor GoldeneyeTicRate1 : TemporaryBoolean {}
+Actor GoldeneyeTicRate2 : TemporaryBoolean {}
+Actor BondAccuracyX : TemporaryCounter {}
+Actor BondAccuracyY : TemporaryCounter {}
 
 actor Goldeneye_BulletTracer : FastProjectile
 {
@@ -191,6 +195,44 @@ Actor Goldeneye_BulletImpact_Smokeless : Goldeneye_BulletImpact
 			GE03 ABCDE 2 Bright
 			stop
 	}
+}
+
+actor Goldeneye_BulletPuff
+{
+    var int user_damage;
+    Radius 2
+    Height 4
+    Speed 0
+    Damage (0)
+    DamageType "GEBullet"
+    RenderStyle "Add"
+    Alpha 0.5
+    Decal "Goldeneye_BulletChip"
+    +DONTBLAST
+    +FORCERADIUSDMG
+    +HITTRACER
+    +NODAMAGETHRUST
+    +NOEXTREMEDEATH
+    +NOTIMEFREEZE
+	+ALWAYSPUFF
+	+THRUACTORS
+	-SOLID
+    States
+    {
+      Spawn:
+		TNT1 A 1
+	  Crash:
+      Death:
+        TNT1 A 1
+        stop
+
+      XDeath:
+		TNT1 A 0 A_Explode(CallACS("BondHitBox", user_damage),8,0,false,8)
+		TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraBloodGeneratorOffsets")
+        TNT1 A 0 A_GiveInventory("GE_BloodGenerator",1,AAPTR_TRACER)
+        TNT1 A 1 A_RearrangePointers(AAPTR_TRACER,AAPTR_NULL,AAPTR_NULL)
+        stop
+    }
 }
 
 Actor Goldeneye_Blood : Goldeneye_BulletImpact
@@ -428,5 +470,4 @@ Actor Goldeneye_WatchBlockRemover : Trigger
 	}
 }
 
-Actor GoldeneyeTicRate1 : TemporaryBoolean {}
-Actor GoldeneyeTicRate2 : TemporaryBoolean {}
+
