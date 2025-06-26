@@ -1261,6 +1261,7 @@ Script "BondHitBox" (int damage)
 	int bulletX = GetActorX(0);
 	int bulletY = GetActorY(0);
 	int bulletZ = GetActorZ(0);
+	if(!isZDoom()) Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_USEPTR);
 	SetActivator(0,AAPTR_Tracer);
 	int monsterX = GetActorX(0);
 	int monsterY = GetActorY(0);
@@ -1270,11 +1271,10 @@ Script "BondHitBox" (int damage)
 	int monsterHealth = GetActorProperty(0,APROP_Health);
 	int monsterHeight = GetActorProperty(0,APROP_Height);
 	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
-	int result;
+	int result = damage;
 
 	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
 
-	SetResultValue(damage);
 	if(!CheckInventory("IsFatButBiped") && monsterWidth > monsterHeight)
 	{
 		int monsterAngle = GetActorAngle(0);
@@ -1284,33 +1284,29 @@ Script "BondHitBox" (int damage)
 		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
 		{
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeHead");
-			SetResultValue(damage*3);
+			result = damage*3;
 		}
 		else
-			SetResultValue(damage);
+			result = damage;
 	}
 	else
 	{
 		if(!CheckInventory("NoHeadShots") && (bulletZ >= monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.75)))/* && (z <= tz+GetActorProperty(0,APROP_Height))*/
 		{
 			if(GetCvar("samsara_mixerloaded"))
-				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
+				result = damage*ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
 			else
-				result = 3;
+				result = damage*3;
 
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeHead");
-			SetResultValue(damage*result);
 		}
 		else if(!CheckInventory("NoHeadShots") && (bulletZ >= monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.5)) && (bulletZ < monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.75)))
 		{
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeTorso");
-			SetResultValue(damage*2);
-		}
-		else
-		{
-			SetResultValue(damage);
+			result = damage * 2;
 		}
 	}
+	SetResultValue(result);
 	Thing_ChangeTID(newtid,oldTID);
 }
 
