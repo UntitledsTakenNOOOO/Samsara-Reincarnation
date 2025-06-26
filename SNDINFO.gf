@@ -1,3 +1,6 @@
+Goldfinger/Reload "Sounds/Goldfinger/goldfinger_reload.wav"
+Goldfinger/DryFire "Sounds/Goldfinger/goldfinger_dryfire.wav"
+
 Goldfinger/ColtShot "Sounds/Goldfinger/goldfinger_coltshot.wav"
 Goldfinger/P08Shot "Sounds/Goldfinger/goldfinger_p08shot.wav"
 Goldfinger/P38Shot "Sounds/Goldfinger/goldfinger_p38shot.wav"
@@ -7,3 +10,6 @@ Goldfinger/ThompsonShot "Sounds/Goldfinger/goldfinger_thompsonshot.wav"
 Goldfinger/M14Shot "Sounds/Goldfinger/goldfinger_m14shot.wav"
 Goldfinger/ShotgunShot "Sounds/Goldfinger/goldfinger_shotgunshot.wav"
 Goldfinger/PurdeyShot "Sounds/Goldfinger/goldfinger_purdeyshot.wav"
+Goldfinger/GarandShot "Sounds/Goldfinger/goldfinger_garandshot.wav"
+Goldfinger/CarbineShot "Sounds/Goldfinger/goldfinger_carbineshot.wav"
+Goldfinger/AR7Shot "Sounds/Goldfinger/goldfinger_ar7shot.wav"
