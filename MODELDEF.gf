@@ -1187,10 +1187,10 @@ Model "GoldFinger_UZI"
 	FrameIndex GE14 J 1 0
 	FrameIndex GE14 J 2 9
 	FrameIndex GE14 K 0 0
-	FrameIndex GE14 K 1 1
+	FrameIndex GE14 K 1 0
 	FrameIndex GE14 K 2 10
 	FrameIndex GE14 L 0 0
-	FrameIndex GE14 L 1 1
+	FrameIndex GE14 L 1 0
 	FrameIndex GE14 L 2 11
 	FrameIndex GE14 M 0 0
 	FrameIndex GE14 M 1 0
@@ -1760,10 +1760,10 @@ Model "GoldFinger_M14"
 	FrameIndex GE14 J 1 0
 	FrameIndex GE14 J 2 9
 	FrameIndex GE14 K 0 0
-	FrameIndex GE14 K 1 1
+	FrameIndex GE14 K 1 0
 	FrameIndex GE14 K 2 10
 	FrameIndex GE14 L 0 0
-	FrameIndex GE14 L 1 1
+	FrameIndex GE14 L 1 0
 	FrameIndex GE14 L 2 11
 	FrameIndex GE14 M 0 0
 	FrameIndex GE14 M 1 0
@@ -2485,10 +2485,10 @@ Model "GoldFinger_M1Carbine"
 	FrameIndex GE14 J 1 0
 	FrameIndex GE14 J 2 9
 	FrameIndex GE14 K 0 0
-	FrameIndex GE14 K 1 1
+	FrameIndex GE14 K 1 0
 	FrameIndex GE14 K 2 10
 	FrameIndex GE14 L 0 0
-	FrameIndex GE14 L 1 1
+	FrameIndex GE14 L 1 0
 	FrameIndex GE14 L 2 11
 	FrameIndex GE14 M 0 0
 	FrameIndex GE14 M 1 0
@@ -2778,44 +2778,64 @@ Model "Goldfinger_SmithWesson22"
 
 	FrameIndex GE14 A 0 0
 	FrameIndex GE14 A 1 0
+	FrameIndex GE14 A 2 0
 	FrameIndex GE14 B 0 0
-	FrameIndex GE14 B 1 1
+	FrameIndex GE14 B 1 0
+	FrameIndex GE14 B 2 1
 	FrameIndex GE14 C 0 0
-	FrameIndex GE14 C 1 2
+	FrameIndex GE14 C 1 0
+	FrameIndex GE14 C 2 2
 	FrameIndex GE14 D 0 0
-	FrameIndex GE14 D 1 3
+	FrameIndex GE14 D 1 0
+	FrameIndex GE14 D 2 3
 	FrameIndex GE14 E 0 0
-	FrameIndex GE14 E 1 4
+	FrameIndex GE14 E 1 0
+	FrameIndex GE14 E 2 4
 	FrameIndex GE14 F 0 0
-	FrameIndex GE14 F 1 5
+	FrameIndex GE14 F 1 0
+	FrameIndex GE14 F 2 5
 	FrameIndex GE14 G 0 0
-	FrameIndex GE14 G 1 6
+	FrameIndex GE14 G 1 0
+	FrameIndex GE14 G 2 6
 	FrameIndex GE14 H 0 0
-	FrameIndex GE14 H 1 7
+	FrameIndex GE14 H 1 0
+	FrameIndex GE14 H 2 7
 	FrameIndex GE14 I 0 0
-	FrameIndex GE14 I 1 8
+	FrameIndex GE14 I 1 0
+	FrameIndex GE14 I 2 8
 	FrameIndex GE14 J 0 0
-	FrameIndex GE14 J 1 9
+	FrameIndex GE14 J 1 0
+	FrameIndex GE14 J 2 9
 	FrameIndex GE14 K 0 0
-	FrameIndex GE14 K 1 10
+	FrameIndex GE14 K 1 0
+	FrameIndex GE14 K 2 10
 	FrameIndex GE14 L 0 0
-	FrameIndex GE14 L 1 11
+	FrameIndex GE14 L 1 0
+	FrameIndex GE14 L 2 11
 	FrameIndex GE14 M 0 0
-	FrameIndex GE14 M 1 12
+	FrameIndex GE14 M 1 0
+	FrameIndex GE14 M 2 12
 	FrameIndex GE14 N 0 0
-	FrameIndex GE14 N 1 13
+	FrameIndex GE14 N 1 0
+	FrameIndex GE14 N 2 13
 	FrameIndex GE14 O 0 0
-	FrameIndex GE14 O 1 14
+	FrameIndex GE14 O 1 0
+	FrameIndex GE14 O 2 14
 	FrameIndex GE14 P 0 0
-	FrameIndex GE14 P 1 15
+	FrameIndex GE14 P 1 0
+	FrameIndex GE14 P 2 15
 	FrameIndex GE14 Q 0 0
-	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 Q 1 0
+	FrameIndex GE14 Q 2 16
 	FrameIndex GE14 R 0 0
-	FrameIndex GE14 R 1 17
+	FrameIndex GE14 R 1 0
+	FrameIndex GE14 R 2 17
 	FrameIndex GE14 S 0 0
-	FrameIndex GE14 S 1 18
+	FrameIndex GE14 S 1 0
+	FrameIndex GE14 S 2 18
 	FrameIndex GE14 T 0 0
-	FrameIndex GE14 T 1 19
+	FrameIndex GE14 T 1 0
+	FrameIndex GE14 T 2 19
 }
 
 model GoldFinger_SmithWesson22Tracer
@@ -2969,61 +2989,61 @@ Model "Goldfinger_SmithWesson36"
 	FrameIndex GE14 A 1 0
 	FrameIndex GE14 A 2 0
 	FrameIndex GE14 B 0 0
-	FrameIndex GE14 B 1 1
+	FrameIndex GE14 B 1 0
 	FrameIndex GE14 B 2 1
 	FrameIndex GE14 C 0 0
-	FrameIndex GE14 C 1 2
+	FrameIndex GE14 C 1 0
 	FrameIndex GE14 C 2 2
 	FrameIndex GE14 D 0 0
-	FrameIndex GE14 D 1 3
+	FrameIndex GE14 D 1 0
 	FrameIndex GE14 D 2 3
 	FrameIndex GE14 E 0 0
-	FrameIndex GE14 E 1 4
+	FrameIndex GE14 E 1 0
 	FrameIndex GE14 E 2 4
 	FrameIndex GE14 F 0 0
-	FrameIndex GE14 F 1 5
+	FrameIndex GE14 F 1 0
 	FrameIndex GE14 F 2 5
 	FrameIndex GE14 G 0 0
-	FrameIndex GE14 G 1 6
+	FrameIndex GE14 G 1 0
 	FrameIndex GE14 G 2 6
 	FrameIndex GE14 H 0 0
-	FrameIndex GE14 H 1 7
+	FrameIndex GE14 H 1 0
 	FrameIndex GE14 H 2 7
 	FrameIndex GE14 I 0 0
-	FrameIndex GE14 I 1 8
+	FrameIndex GE14 I 1 0
 	FrameIndex GE14 I 2 8
 	FrameIndex GE14 J 0 0
-	FrameIndex GE14 J 1 9
+	FrameIndex GE14 J 1 0
 	FrameIndex GE14 J 2 9
 	FrameIndex GE14 K 0 0
-	FrameIndex GE14 K 1 10
+	FrameIndex GE14 K 1 0
 	FrameIndex GE14 K 2 10
 	FrameIndex GE14 L 0 0
-	FrameIndex GE14 L 1 11
+	FrameIndex GE14 L 1 0
 	FrameIndex GE14 L 2 11
 	FrameIndex GE14 M 0 0
-	FrameIndex GE14 M 1 12
+	FrameIndex GE14 M 1 0
 	FrameIndex GE14 M 2 12
 	FrameIndex GE14 N 0 0
-	FrameIndex GE14 N 1 13
-	FrameIndex GE14 N 2 12
+	FrameIndex GE14 N 1 0
+	FrameIndex GE14 N 2 13
 	FrameIndex GE14 O 0 0
-	FrameIndex GE14 O 1 14
+	FrameIndex GE14 O 1 0
 	FrameIndex GE14 O 2 14
 	FrameIndex GE14 P 0 0
-	FrameIndex GE14 P 1 15
+	FrameIndex GE14 P 1 0
 	FrameIndex GE14 P 2 15
 	FrameIndex GE14 Q 0 0
-	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 Q 1 0
 	FrameIndex GE14 Q 2 16
 	FrameIndex GE14 R 0 0
-	FrameIndex GE14 R 1 17
+	FrameIndex GE14 R 1 0
 	FrameIndex GE14 R 2 17
 	FrameIndex GE14 S 0 0
-	FrameIndex GE14 S 1 18
+	FrameIndex GE14 S 1 0
 	FrameIndex GE14 S 2 18
 	FrameIndex GE14 T 0 0
-	FrameIndex GE14 T 1 19
+	FrameIndex GE14 T 1 0
 	FrameIndex GE14 T 2 19
 }
 
@@ -3261,61 +3281,61 @@ Model "Goldfinger_Laser"
 	FrameIndex GE14 A 1 0
 	FrameIndex GE14 A 2 0
 	FrameIndex GE14 B 0 0
-	FrameIndex GE14 B 1 1
+	FrameIndex GE14 B 1 0
 	FrameIndex GE14 B 2 1
 	FrameIndex GE14 C 0 0
-	FrameIndex GE14 C 1 2
+	FrameIndex GE14 C 1 0
 	FrameIndex GE14 C 2 2
 	FrameIndex GE14 D 0 0
-	FrameIndex GE14 D 1 3
+	FrameIndex GE14 D 1 0
 	FrameIndex GE14 D 2 3
 	FrameIndex GE14 E 0 0
-	FrameIndex GE14 E 1 4
+	FrameIndex GE14 E 1 0
 	FrameIndex GE14 E 2 4
 	FrameIndex GE14 F 0 0
-	FrameIndex GE14 F 1 5
+	FrameIndex GE14 F 1 0
 	FrameIndex GE14 F 2 5
 	FrameIndex GE14 G 0 0
-	FrameIndex GE14 G 1 6
+	FrameIndex GE14 G 1 0
 	FrameIndex GE14 G 2 6
 	FrameIndex GE14 H 0 0
-	FrameIndex GE14 H 1 7
+	FrameIndex GE14 H 1 0
 	FrameIndex GE14 H 2 7
 	FrameIndex GE14 I 0 0
-	FrameIndex GE14 I 1 8
+	FrameIndex GE14 I 1 0
 	FrameIndex GE14 I 2 8
 	FrameIndex GE14 J 0 0
-	FrameIndex GE14 J 1 9
+	FrameIndex GE14 J 1 0
 	FrameIndex GE14 J 2 9
 	FrameIndex GE14 K 0 0
-	FrameIndex GE14 K 1 10
+	FrameIndex GE14 K 1 0
 	FrameIndex GE14 K 2 10
 	FrameIndex GE14 L 0 0
-	FrameIndex GE14 L 1 11
+	FrameIndex GE14 L 1 0
 	FrameIndex GE14 L 2 11
 	FrameIndex GE14 M 0 0
-	FrameIndex GE14 M 1 12
+	FrameIndex GE14 M 1 0
 	FrameIndex GE14 M 2 12
 	FrameIndex GE14 N 0 0
-	FrameIndex GE14 N 1 13
-	FrameIndex GE14 N 2 12
+	FrameIndex GE14 N 1 0
+	FrameIndex GE14 N 2 13
 	FrameIndex GE14 O 0 0
-	FrameIndex GE14 O 1 14
+	FrameIndex GE14 O 1 0
 	FrameIndex GE14 O 2 14
 	FrameIndex GE14 P 0 0
-	FrameIndex GE14 P 1 15
+	FrameIndex GE14 P 1 0
 	FrameIndex GE14 P 2 15
 	FrameIndex GE14 Q 0 0
-	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 Q 1 0
 	FrameIndex GE14 Q 2 16
 	FrameIndex GE14 R 0 0
-	FrameIndex GE14 R 1 17
+	FrameIndex GE14 R 1 0
 	FrameIndex GE14 R 2 17
 	FrameIndex GE14 S 0 0
-	FrameIndex GE14 S 1 18
+	FrameIndex GE14 S 1 0
 	FrameIndex GE14 S 2 18
 	FrameIndex GE14 T 0 0
-	FrameIndex GE14 T 1 19
+	FrameIndex GE14 T 1 0
 	FrameIndex GE14 T 2 19
 }
 
@@ -3343,6 +3363,906 @@ model Goldfinger_LaserRayCoop
 	//Offset -48 0 0
 	Offset 0 0 8
 	PITCHFROMMOMENTUM
+
+	FrameIndex GE00 A 0 0
+}
+
+Model "GoldFinger_SuperBazooka"
+{
+   Path "models/goldfinger/bazooka"
+   Model 0 "bazooka.md3"
+   Scale -1.0 1.0 1.0
+   //Fire Center
+   FrameIndex GE00 A 0 0
+   FrameIndex GE01 B 0 1
+   FrameIndex GE01 C 0 2
+   FrameIndex GE01 D 0 3
+   FrameIndex GE01 E 0 4
+
+   Offset 0 0 -12
+   FrameIndex GE02 A 0 0
+   Offset 0 0 -24
+   FrameIndex GE02 B 0 0
+   Offset 0 0 -36
+   FrameIndex GE02 C 0 0
+   Offset 0 0 -48
+   FrameIndex GE02 D 0 0
+   Offset 0 0 -60
+   FrameIndex GE02 E 0 0
+   Offset 0 0 -72
+   FrameIndex GE02 F 0 0
+   Offset 0 0 -84
+   FrameIndex GE02 G 0 0
+   Offset 0 0 -96
+   FrameIndex GE02 H 0 0
+   Offset 0 0 -108
+   FrameIndex GE02 I 0 0
+   Offset 0 0 0
+}
+
+//y moves 4
+Model "GoldFinger_SuperBazooka"
+{
+   Path "models/goldfinger/bazooka"
+   Model 0 "bazooka2.md3"
+   Scale -1.0 1.0 1.0
+   Offset -41 0 0
+
+   //Fire Center
+   FrameIndex GE10 A 0 0
+   FrameIndex GE11 B 0 1
+   FrameIndex GE11 C 0 2
+   FrameIndex GE11 D 0 3
+   FrameIndex GE11 E 0 4
+
+   // My hand is forced
+   Offset -41 0 -12
+   FrameIndex GE12 A 0 0
+   Offset -41 0 -24
+   FrameIndex GE12 B 0 0
+   Offset -41 0 -36
+   FrameIndex GE12 C 0 0
+   Offset -41 0 -48
+   FrameIndex GE12 D 0 0
+   Offset -41 0 -60
+   FrameIndex GE12 E 0 0
+   Offset -41 0 -72
+   FrameIndex GE12 F 0 0
+   Offset -41 0 -84
+   FrameIndex GE12 G 0 0
+   Offset -41 0 -96
+   FrameIndex GE12 H 0 0
+   Offset -41 0 -108
+   FrameIndex GE12 I 0 0
+   Offset -41 0 0
+}
+
+Model "GoldFinger_SuperBazooka"
+{
+	Path "models/goldfinger/bazooka"
+	Model 0 "bazooka.md3"
+	Path "models/goldfinger/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
+}
+
+model Goldfinger_Rocket
+{
+	Path "models/goldfinger/bazooka"
+	model 0 "rocket.md3"
+	PITCHFROMMOMENTUM
+
+	FrameIndex GE00 A 0 0
+}
+
+model Goldfinger_RocketCoop
+{
+	Path "models/goldfinger/bazooka"
+	model 0 "rocket.md3"
+	PITCHFROMMOMENTUM
+
+	FrameIndex GE00 A 0 0
+}
+
+model Goldfinger_RocketSoundSource
+{
+	Path "models/goldfinger/bazooka"
+	model 0 "rocket.md3"
+	PITCHFROMMOMENTUM
+
+	FrameIndex GE00 A 0 0
+}
+
+model Goldfinger_RocketCoopSoundSource
+{
+	Path "models/goldfinger/bazooka"
+	model 0 "rocket.md3"
+	PITCHFROMMOMENTUM
+
+	FrameIndex GE00 A 0 0
+}
+
+Model "GoldFinger_M79"
+{
+   Path "models/goldfinger/m79"
+   Model 0 "m79.md3"
+   Scale -1.0 1.0 1.0
+   //Fire Center
+   FrameIndex GE00 A 0 0
+   FrameIndex GE01 B 0 1
+   FrameIndex GE01 C 0 2
+   FrameIndex GE01 D 0 3
+   FrameIndex GE01 E 0 4
+
+   Offset 0 0 -4
+   FrameIndex GE02 A 0 0
+   Offset 0 0 -8
+   FrameIndex GE02 B 0 0
+   Offset 0 0 -12
+   FrameIndex GE02 C 0 0
+   Offset 0 0 -16
+   FrameIndex GE02 D 0 0
+   Offset 0 0 -20
+   FrameIndex GE02 E 0 0
+   Offset 0 0 -24
+   FrameIndex GE02 F 0 0
+   Offset 0 0 -28
+   FrameIndex GE02 G 0 0
+   Offset 0 0 -32
+   FrameIndex GE02 H 0 0
+   Offset 0 0 -36
+   FrameIndex GE02 I 0 0
+   Offset 0 0 0
+   
+   Model 1 "m79_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE01 B 0 1
+   FrameIndex GE01 B 1 1
+}
+
+//y moves 4
+Model "GoldFinger_M79"
+{
+   Path "models/goldfinger/m79"
+   Model 0 "m79.md3"
+   Scale -1.0 1.0 1.0
+   Offset -23.5 0 0
+
+   //Fire Center
+   FrameIndex GE10 A 0 0
+   FrameIndex GE11 B 0 1
+   FrameIndex GE11 C 0 2
+   FrameIndex GE11 D 0 3
+   FrameIndex GE11 E 0 4
+
+   // My hand is forced
+   Offset -23.5 0 -4
+   FrameIndex GE12 A 0 0
+   Offset -23.5 0 -8
+   FrameIndex GE12 B 0 0
+   Offset -23.5 0 -12
+   FrameIndex GE12 C 0 0
+   Offset -23.5 0 -16
+   FrameIndex GE12 D 0 0
+   Offset -23.5 0 -20
+   FrameIndex GE12 E 0 0
+   Offset -23.5 0 -24
+   FrameIndex GE12 F 0 0
+   Offset -23.5 0 -28
+   FrameIndex GE12 G 0 0
+   Offset -23.5 0 -32
+   FrameIndex GE12 H 0 0
+   Offset -23.5 0 -36
+   FrameIndex GE12 I 0 0
+   Offset -23.5 0 0
+   
+   Model 1 "m79_flash.md3"
+   //Fire Center Flash
+   FrameIndex GE11 B 0 1
+   FrameIndex GE11 B 1 1
+}
+
+Model "GoldFinger_M79"
+{
+	Path "models/goldfinger/m79"
+	Model 0 "m79.md3"
+	Path "models/goldfinger/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
+}
+
+// move x -16, -2 y
+Model "Goldfinger_OddJobHat"
+{
+   Path "models/goldfinger/oddjobhat"
+   Model 0 "oddjobhat.md3"
+   Scale -1.0 1.0 1.0
+
+   FrameIndex GE00 A 0 0
+   FrameIndex GE01 C 0 2
+   FrameIndex GE01 D 0 3
+   FrameIndex GE01 E 0 4
+   
+   Offset 0 0 -4
+   FrameIndex GE02 A 0 0
+   Offset 0 0 -8
+   FrameIndex GE02 B 0 0
+   Offset 0 0 -12
+   FrameIndex GE02 C 0 0
+   Offset 0 0 -16
+   FrameIndex GE02 D 0 0
+   Offset 0 0 -20
+   FrameIndex GE02 E 0 0
+   Offset 0 0 -24
+   FrameIndex GE02 F 0 0
+   Offset 0 0 -28
+   FrameIndex GE02 G 0 0
+   Offset 0 0 -32
+   FrameIndex GE02 H 0 0
+   Offset 0 0 -36
+   FrameIndex GE02 I 0 0
+   Offset 0 0 0
+
+   //Fire Center Flash
+   FrameIndex GE01 B 0 1
+   
+   //I use this frame because whenever you use gunflash, having the original state use TNT1 in > 0 duration is a no-no.
+   Offset 0 0 128
+   FrameIndex GE05 Z 0 11
+}
+
+Model "Goldfinger_OddJobHat"
+{
+   Path "models/goldfinger/oddjobhat"
+   Model 0 "oddjobhat.md3"
+   Scale 1.0 1.0 1.0
+
+   FrameIndex GE10 A 0 0
+   FrameIndex GE11 C 0 2
+   FrameIndex GE11 D 0 3
+   FrameIndex GE11 E 0 4
+   
+   Offset 0 0 -4
+   FrameIndex GE12 A 0 0
+   Offset 0 0 -8
+   FrameIndex GE12 B 0 0
+   Offset 0 0 -12
+   FrameIndex GE12 C 0 0
+   Offset 0 0 -16
+   FrameIndex GE12 D 0 0
+   Offset 0 0 -20
+   FrameIndex GE12 E 0 0
+   Offset 0 0 -24
+   FrameIndex GE12 F 0 0
+   Offset 0 0 -28
+   FrameIndex GE12 G 0 0
+   Offset 0 0 -32
+   FrameIndex GE12 H 0 0
+   Offset 0 0 -36
+   FrameIndex GE12 I 0 0
+   Offset 0 0 0
+
+   //Fire Center Flash
+   FrameIndex GE11 B 0 1
+}
+
+Model "Goldfinger_OddJobHat"
+{
+	Path "models/goldfinger/oddjobhat"
+	Model 0 "oddjobhat.md3"
+	Path "models/goldeneye/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
+}
+
+model Goldfinger_HatProjectile
+{
+	Path "models/goldfinger/oddjobhat"
+	model 0 "oddjobhatproj.md3"
+	PITCHFROMMOMENTUM
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	INHERITACTORPITCH
+	//Stop
+	FrameIndex GE00 B 0 0
+}
+
+model Goldfinger_HatProjectileCoop
+{
+	Path "models/goldfinger/oddjobhat"
+	model 0 "oddjobhatproj.md3"
+	PITCHFROMMOMENTUM
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	INHERITACTORPITCH
+	//Stop
+	FrameIndex GE00 B 0 0
+}
+
+model Goldfinger_HatProjectileInfinite
+{
+	Path "models/goldfinger/oddjobhat"
+	model 0 "oddjobhatproj.md3"
+	PITCHFROMMOMENTUM
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	INHERITACTORPITCH
+	//Stop
+	FrameIndex GE00 B 0 0
+}
+
+model Goldfinger_HatProjectileInfiniteCoop
+{
+	Path "models/goldfinger/oddjobhat"
+	model 0 "oddjobhatproj.md3"
+	PITCHFROMMOMENTUM
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	INHERITACTORPITCH
+	//Stop
+	FrameIndex GE00 B 0 0
+}
+
+model Goldfinger_LimpetProjectile
+{
+	Path "models/goldfinger/explosives"
+	model 0 "limpet.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LimpetProjectileCoop
+{
+	Path "models/goldfinger/explosives"
+	model 0 "limpet.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LimpetProjectileSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "limpet.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LimpetProjectileCoopSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "limpet.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LimpetStatic
+{
+	Path "models/goldfinger/explosives"
+	model 0 "limpet.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LimpetStaticCoop
+{
+	Path "models/goldfinger/explosives"
+	model 0 "limpet.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LimpetStaticSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "limpet.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LimpetStaticCoopSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "limpet.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LandMineProjectile
+{
+	Path "models/goldfinger/explosives"
+	model 0 "landmine.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LandMineProjectileCoop
+{
+	Path "models/goldfinger/explosives"
+	model 0 "landmine.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LandMineProjectileSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "landmine.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LandMineProjectileCoopSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "landmine.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LandMineStatic
+{
+	Path "models/goldfinger/explosives"
+	model 0 "landmine.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LandMineStaticCoop
+{
+	Path "models/goldfinger/explosives"
+	model 0 "landmine.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LandMineStaticSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "landmine.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_LandMineStaticCoopSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "landmine.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_ClaymoreProjectile
+{
+	Path "models/goldfinger/explosives"
+	model 0 "claymore.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_ClaymoreProjectileCoop
+{
+	Path "models/goldfinger/explosives"
+	model 0 "claymore.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_ClaymoreProjectileSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "claymore.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_ClaymoreProjectileCoopSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "claymore.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_ClaymoreStatic
+{
+	Path "models/goldfinger/explosives"
+	model 0 "claymore.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_ClaymoreStaticCoop
+{
+	Path "models/goldfinger/explosives"
+	model 0 "claymore.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_ClaymoreStaticSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "claymore.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+model Goldfinger_ClaymoreStaticCoopSoundSource
+{
+	Path "models/goldfinger/explosives"
+	model 0 "claymore.md3"
+	INHERITACTORPITCH
+
+	//Flying
+	FrameIndex GE00 A 0 0
+
+	//Stop Floor
+	FrameIndex GE00 B 0 0
+
+	//Stop Ceiling
+	Offset 0 0 -18
+	FrameIndex GE00 C 0 0
+}
+
+Model Goldfinger_Tank
+{
+	Path "models/goldfinger/tank"
+	Model 0 "gftankbase.md3"
+
+	FrameIndex GE00 A 0 0
+}
+
+Model Goldfinger_Tank_Turret
+{
+	Path "models/goldfinger/tank"
+	Model 0 "gftankturret.md3"
+
+	FrameIndex GE00 A 0 0
+}
+
+Model Goldfinger_Tank_Barrel
+{
+	Path "models/goldfinger/tank"
+	Model 0 "gftankbarrel.md3"
+	INHERITACTORPITCH
 
 	FrameIndex GE00 A 0 0
 }
