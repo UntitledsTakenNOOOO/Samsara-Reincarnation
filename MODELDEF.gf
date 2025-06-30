@@ -881,6 +881,10 @@ Model "GoldFinger_WaltherP38"
 
 Model "GoldFinger_AK47"
 {
+   Path "models/goldfinger/pickups"
+   Model 0 "ak47.md3"
+   FrameIndex GE00 Z 0 0
+
    Path "models/goldfinger/ak47"
    Model 0 "ak47.md3"
    Scale -1.0 1.0 1.0
@@ -4490,6 +4494,22 @@ Model Goldfinger_Tank_Barrel
 	Path "models/goldfinger/tank"
 	Model 0 "gftankbarrel.md3"
 	INHERITACTORPITCH
+
+	FrameIndex GE00 A 0 0
+}
+
+Model Goldfinger_DB5
+{
+	Path "models/goldfinger/db5"
+	Model 0 "db5.md3"
+
+	FrameIndex GE00 A 0 0
+}
+
+Model Goldfinger_DB5_Glass
+{
+	Path "models/goldfinger/db5"
+	Model 0 "db5_glass.md3"
 
 	FrameIndex GE00 A 0 0
 }

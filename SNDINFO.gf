@@ -1,5 +1,6 @@
 Goldfinger/Reload "Sounds/Goldfinger/goldfinger_reload.wav"
 Goldfinger/DryFire "Sounds/Goldfinger/goldfinger_dryfire.wav"
+Goldfinger/DB5/Move "Sounds/Goldfinger/goldfinger_drive.wav"
 
 Goldfinger/ColtShot "Sounds/Goldfinger/goldfinger_coltshot.wav"
 Goldfinger/P08Shot "Sounds/Goldfinger/goldfinger_p08shot.wav"

@@ -1632,3 +1632,290 @@ Script "BondAccuracy" (int y)
 {
 	SetResultValue(y ? CheckInventory("BondAccuracyY") : CheckInventory("BondAccuracyX"));
 }
+
+//DB5 Stuff
+Script "Goldfinger_BuildDB5" (void)
+{
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int z = GetActorZ(0);
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0,myTid);
+	int partTid = UniqueTid();
+
+	SpawnForced("Goldeneye_DB5_Collision_Front",x,y,z,partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	Thing_ChangeTid(partTid,0);
+
+	SpawnForced("Goldeneye_DB5_Collision_Center",x,y,z,partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	Thing_ChangeTid(partTid,0);
+
+	SpawnForced("Goldeneye_DB5_Collision_BackL",x,y,z,partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	Thing_ChangeTid(partTid,0);
+
+	SpawnForced("Goldeneye_DB5_Collision_BackR",x,y,z,partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	Thing_ChangeTid(partTid,0);
+	
+	SpawnForced("Goldeneye_DB5_Collision_Roof",x,y,z,partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	Thing_ChangeTid(partTid,0);
+	
+	SpawnForced("Goldfinger_DB5_Glass",x,y,z,partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	
+	SpawnForced("Goldfinger_DB5_Activator",x,y,z,partTid);
+	SetPointerExt(AAPTR_Tracer,0,partTid);
+	
+	SetActivator(partTid);
+	Thing_ChangeTid(partTid,0);
+}
+
+Script "Goldfinger_DB5Activator" (void)
+{
+	int tankStart = timer();
+	int yawStorage = GetActorAngle(0);
+	int GZDoom = (GetCvar("samsara_zscriptready") > 0);
+	int interpolate = WARPF_INTERPOLATE * GZDoom;
+	ACS_NamedExecuteWithResult("Goldfinger_MoveDB5", interpolate);
+	SetActivator(0,AAPTR_Target);
+	GiveInventory("Goldeneye_TankForward",65536);
+	GiveInventory("Goldeneye_TankSide",65536);
+	while(CheckInventory("Goldeneye_UsingTank"))
+	{
+		//GiveInventory("SamsaraGoldenEyeTankProtection",1);
+		SetPlayerProperty(0,1,PROP_FROZEN);
+		if ((GetPlayerInput(-1,INPUT_BUTTONS) & BT_USE && timer() > (tankStart + 35) && !CheckInventory("BondWatchToken")) || isDead(0)) { TakeInventory("Goldeneye_UsingTank",1); }
+		int playerYaw = GetPlayerInput(-1,INPUT_YAW);	
+		int playerPitch = GetPlayerInput(-1,INPUT_PITCH);
+		yawStorage += playerYaw;
+		if(yawStorage > 1.0) yawStorage -= 1.0;
+		if(yawStorage < 0.0) yawStorage += 1.0;
+		SetInventory("Goldeneye_TankAngle",yawStorage);
+
+		SetActorVelocity(0,0,0,0,0,0);
+		Delay(1);
+	}
+	//TakeInventory("PowerSamsaraGoldenEyeTankProtection",1);
+	SetPlayerProperty(0,0,PROP_FROZEN);
+	TakeInventory("Goldeneye_TankForward",131072);
+	TakeInventory("Goldeneye_TankSide",131072);
+}
+
+//mode, view height, attack z offset
+Script "DB5ViewHeights" (int mode, int value, int who)
+{
+	if(who == 0) who = AAPTR_DEFAULT;
+	SetActivator(0,who);
+	if(mode == 0)
+		SetResultValue(GetActorProperty(0,APROP_ViewHeight));
+	else if(mode == 1)
+		SetResultValue(GetActorProperty(0,APROP_AttackZOffset));
+	else if(mode == 2)
+		SetActorProperty(0,APROP_ViewHeight,value);
+	else if(mode == 3)
+		SetActorProperty(0,APROP_AttackZOffset,value);
+	else if(mode == 4)
+		SetResultValue(GetActorProperty(0,APROP_SPECIES));
+	else if(mode == 5)
+		SetActorProperty(0,APROP_Species,value);
+}
+
+Script "DB5InUse" (void)
+{
+	SetActivator(0,AAPTR_TRACER);
+	if(CheckInventory("Goldeneye_UsingTank"))
+		SetResultValue(1);
+	else SetResultValue(0);
+}
+Script "DB5UpdateSpecies" (void)
+{
+	if(ACS_NamedExecuteWithResult("DB5InUse"))
+	{
+		ACS_NamedExecuteWithResult("DB5ViewHeights",5,ACS_NamedExecuteWithResult("DB5ViewHeights",4,0,AAPTR_TRACER));
+		//PrintBold(s:GetActorProperty(0,APROP_SPECIES));
+	}
+}
+
+Script "DB5PlayerAngle" (void)
+{
+	SetActivator(0,AAPTR_TARGET);
+	SetActorAngle(0,CheckInventory("Goldeneye_TankAngle"));
+}
+
+Script "Goldfinger_MoveDB5" (int interpolate)
+{
+	int startingviewHeight = ACS_NamedExecuteWithResult("DB5ViewHeights");
+	int startingattackOffset = ACS_NamedExecuteWithResult("DB5ViewHeights",1);
+	str startingspecies = ACS_NamedExecuteWithResult("DB5ViewHeights",4);
+	int db5Seed = PlayerNumber();
+	while(ACS_NamedExecuteWithResult("Goldeneye_IsUsingTank"))
+	{
+		ACS_NamedExecuteWithResult("Goldfinger_DB5MoveInput",interpolate);	
+		Warp(AAPTR_TARGET,-10.0,14.0,-20.0,0,WARPF_NOCHECKPOSITION|WARPF_MOVEPTR|WARPF_USEPTR|interpolate);
+		Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_USEPTR|WARPF_COPYVELOCITY|interpolate);
+		ACS_NamedExecuteWithResult("DB5PlayerAngle",AAPTR_TRACER);
+		ACS_NamedExecuteWithResult("DB5ViewHeights",2,53.0,AAPTR_TARGET);
+		ACS_NamedExecuteWithResult("DB5ViewHeights",3,startingattackOffset+8.0,AAPTR_TARGET);
+		ACS_NamedExecuteWithResult("DB5ViewHeights",5,strparam(s:"DB5",d:db5Seed),AAPTR_TARGET);
+		ACS_NamedExecuteWithResult("DB5ViewHeights",5,strparam(s:"DB5",d:db5Seed),AAPTR_TRACER);
+		Delay(1);
+	}
+	SetActivator(0,AAPTR_TARGET);
+	ACS_NamedExecuteWithResult("DB5ViewHeights",2,startingviewHeight);
+	ACS_NamedExecuteWithResult("DB5ViewHeights",3,startingattackOffset);
+	ACS_NamedExecuteWithResult("DB5ViewHeights",5,startingspecies);
+	TakeInventory("Goldeneye_UsingTank",1);
+	StopSound(0,CHAN_5);
+	StopSound(0,CHAN_6);
+}
+
+Script "Goldfinger_DB5MoveInput" (int interpolate)
+{
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0,myTid);
+	SetActivator(0,AAPTR_Target);
+
+	int playerForward = GetPlayerInput(-1,INPUT_FORWARDMOVE)/16;
+	int playerSideMove = GetPlayerInput(-1,INPUT_SIDEMOVE);
+
+	if(playerForward == 0)
+	{
+		playerForward = CheckInventory("Goldeneye_TankForward")-65536;
+		playerForward = FixedMul(playerForward,0.33);
+		SetInventory("Goldeneye_TankForward",playerForward+65536);
+	}
+	else
+	{
+		if(playerForward > 0)
+		{
+			if(CheckInventory("Goldeneye_TankForward")-65536 < 12800)
+				GiveInventory("Goldeneye_TankForward",playerForward);	
+		}
+		else
+		{
+			if(CheckInventory("Goldeneye_TankForward")-65536 > -12800)
+				TakeInventory("Goldeneye_TankForward",abs(playerForward));
+		}
+		playerForward = CheckInventory("Goldeneye_TankForward")-65536;
+		SetInventory("Goldeneye_TankForward",playerForward+65536);
+	}
+
+	if(playerSideMove == 0)
+	{
+		playerSideMove = CheckInventory("Goldeneye_TankSide")-65536;
+		playerSideMove = FixedMul(playerSideMove,0.667);
+		if(abs(playerSideMove) <= 3) playerSideMove = 0;
+		SetInventory("Goldeneye_TankSide",playerSideMove+65536);
+	}
+	else
+	{
+		SetInventory("Goldeneye_TankSide",playerSideMove+65536);
+	}
+
+	if(abs(playerForward) > 1024 || abs(playerSideMove) > 1024 != 0)
+	{
+		SetActivator(myTid,AAPTR_Tracer);
+		int angle = GetActorAngle(0);
+		SetActivator(myTid,AAPTR_Target);
+		SetInventory("Goldeneye_TankBaseAngle",angle);
+		GiveInventory("Goldeneye_TankDamageObjects",1);
+	}
+
+	SetActivator(myTid,AAPTR_Tracer);
+	ACS_NamedExecuteWithResult("Goldfinger_DB5Move",playerForward,-playerSideMove,interpolate);
+	Thing_ChangeTid(myTid,0);
+}
+
+Script "Goldfinger_DB5Move" (int playerForward, int playerSideMove, int interpolate)
+{
+	int angle = GetActorAngle(0);
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int z = GetActorZ(0);
+	int forwardOffset = 64;
+	int backwardOffset = 96;
+	int sideOffset = 16;
+	int dummyTid = UniqueTid();
+	if(playerForward > 0)
+	{
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (forwardOffset * cos(angle)),y + (forwardOffset * sin(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (forwardOffset * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (forwardOffset * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (forwardOffset * cos(angle)) - (sideOffset * 2 * sin(angle)),y + (forwardOffset * sin(angle)) + (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (forwardOffset * cos(angle)) + (sideOffset * 2 * sin(angle)),y + (forwardOffset * sin(angle)) - (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		SetActorAngle(dummyTid,angle);
+	}
+	if(playerForward < 0)
+	{
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (backwardOffset * cos(angle)),y - (backwardOffset * sin(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (backwardOffset * cos(angle)) - (sideOffset * sin(angle)),y - (backwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (backwardOffset * cos(angle)) + (sideOffset * sin(angle)),y - (backwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (backwardOffset * cos(angle)) - (sideOffset * 2 * sin(angle)),y - (backwardOffset * sin(angle)) + (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (backwardOffset * cos(angle)) + (sideOffset * 2 * sin(angle)),y - (backwardOffset * sin(angle)) - (sideOffset * 2 * cos(angle)),z + 12.0,dummyTid)) playerForward = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		SetActorAngle(dummyTid,angle+0.5);
+	}
+	forwardOffset = 30;
+	sideOffset = 36;
+	if(playerSideMove > 0)
+	{
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (sideOffset * sin(angle)),y + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (forwardOffset * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (forwardOffset * 2 * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * 2 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (forwardOffset * 3 * cos(angle)) - (sideOffset * sin(angle)),y + (forwardOffset * 3 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (forwardOffset * cos(angle)) - (sideOffset * sin(angle)),y - (forwardOffset * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (forwardOffset * 2 * cos(angle)) - (sideOffset * sin(angle)),y - (forwardOffset * 2 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (forwardOffset * 3 * cos(angle)) - (sideOffset * sin(angle)),y - (forwardOffset * 3 * sin(angle)) + (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		SetActorAngle(dummyTid,angle+0.25);
+	}
+	if(playerSideMove < 0)
+	{
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (sideOffset * sin(angle)),y - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (forwardOffset * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (forwardOffset * 2 * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * 2 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x + (forwardOffset * 3 * cos(angle)) + (sideOffset * sin(angle)),y + (forwardOffset * 3 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (forwardOffset * cos(angle)) + (sideOffset * sin(angle)),y - (forwardOffset * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (forwardOffset * 2 * cos(angle)) + (sideOffset * sin(angle)),y - (forwardOffset * 2 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		if(!Spawn("Goldfinger_DB5_CollisionBoundary",x - (forwardOffset * 3 * cos(angle)) + (sideOffset * sin(angle)),y - (forwardOffset * 3 * sin(angle)) - (sideOffset * cos(angle)),z + 12.0,dummyTid)) playerSideMove = 0;
+		SetPointerExt(AAPTR_MASTER,0,dummyTid);
+		SetActorAngle(dummyTid,angle-0.25);
+	}
+	
+	Delay(1);
+	SetActorAngle(0,angle+playerSideMove/16);
+	if(abs(playerForward) > 2048 || abs(playerSideMove) > 2048) PlaySound(0,"Goldfinger/DB5/Move",CHAN_6,0.5,1,0.5);
+	else { PlaySound(0,"Goldeneye/Tank/Idle",CHAN_5,0.5,1,0.5); StopSound(0,CHAN_6); }
+	Thing_Remove(dummyTid);
+	if(CheckInventory("Goldeneye_Tank_Blocked"))
+	{
+		playerForward = 0; 
+		playerSideMove = 0;
+		TakeInventory("Goldeneye_Tank_Blocked",1);
+	}
+	else SetActorVelocity(0,FixedMul(cos(GetActorAngle(0)),playerForward*60),FixedMul(sin(GetActorAngle(0)),playerForward*60),GetActorVelZ(0),0,0);//Warp(0,playerForward*60,0,0,0,WARPF_NOCHECKPOSITION|interpolate);
+}
