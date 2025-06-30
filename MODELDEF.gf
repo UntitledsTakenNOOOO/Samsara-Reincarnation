@@ -3970,6 +3970,54 @@ model Goldfinger_LimpetStaticCoopSoundSource
 	FrameIndex GE00 C 0 0
 }
 
+Model "Goldfinger_Limpet"
+{
+	Path "models/goldfinger/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
+}
+
 model Goldfinger_LandMineProjectile
 {
 	Path "models/goldfinger/explosives"
@@ -4104,6 +4152,54 @@ model Goldfinger_LandMineStaticCoopSoundSource
 	//Stop Ceiling
 	Offset 0 0 -18
 	FrameIndex GE00 C 0 0
+}
+
+Model "Goldfinger_LandMine"
+{
+	Path "models/goldfinger/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
 }
 
 model Goldfinger_ClaymoreProjectile
@@ -4241,6 +4337,137 @@ model Goldfinger_ClaymoreStaticCoopSoundSource
 	Offset 0 0 -18
 	FrameIndex GE00 C 0 0
 }
+
+Model "Goldfinger_Claymore"
+{
+	Path "models/goldfinger/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
+}
+
+Model "Goldfinger_WatchDetonator"
+{
+   Path "models/goldfinger/watchgadget"
+   Model 0 "watchgadget.md3"
+   Scale -1.0 1.0 1.0
+   
+   FrameIndex GE00 A 0 0
+   FrameIndex GE01 A 0 1
+   FrameIndex GE01 B 0 2
+   FrameIndex GE01 C 0 3
+   FrameIndex GE01 D 0 4
+
+   Offset 0 0 -4
+   FrameIndex GE02 A 0 0
+   Offset 0 0 -8
+   FrameIndex GE02 B 0 0
+   Offset 0 0 -12
+   FrameIndex GE02 C 0 0
+   Offset 0 0 -16
+   FrameIndex GE02 D 0 0
+   Offset 0 0 -20
+   FrameIndex GE02 E 0 0
+   Offset 0 0 -24
+   FrameIndex GE02 F 0 0
+   Offset 0 0 -28
+   FrameIndex GE02 G 0 0
+   Offset 0 0 -32
+   FrameIndex GE02 H 0 0
+   Offset 0 0 -36
+   FrameIndex GE02 I 0 0
+   Offset 0 0 0
+
+}
+
+Model "Goldfinger_WatchDetonator"
+{
+	Path "models/goldfinger/leftarm"
+    Model 1 "leftarm.md3"
+    Scale -1.0 1.0 1.0
+
+	FrameIndex GE14 A 0 0
+	FrameIndex GE14 A 1 0
+	FrameIndex GE14 B 0 0
+	FrameIndex GE14 B 1 1
+	FrameIndex GE14 C 0 0
+	FrameIndex GE14 C 1 2
+	FrameIndex GE14 D 0 0
+	FrameIndex GE14 D 1 3
+	FrameIndex GE14 E 0 0
+	FrameIndex GE14 E 1 4
+	FrameIndex GE14 F 0 0
+	FrameIndex GE14 F 1 5
+	FrameIndex GE14 G 0 0
+	FrameIndex GE14 G 1 6
+	FrameIndex GE14 H 0 0
+	FrameIndex GE14 H 1 7
+	FrameIndex GE14 I 0 0
+	FrameIndex GE14 I 1 8
+	FrameIndex GE14 J 0 0
+	FrameIndex GE14 J 1 9
+	FrameIndex GE14 K 0 0
+	FrameIndex GE14 K 1 10
+	FrameIndex GE14 L 0 0
+	FrameIndex GE14 L 1 11
+	FrameIndex GE14 M 0 0
+	FrameIndex GE14 M 1 12
+	FrameIndex GE14 N 0 0
+	FrameIndex GE14 N 1 13
+	FrameIndex GE14 O 0 0
+	FrameIndex GE14 O 1 14
+	FrameIndex GE14 P 0 0
+	FrameIndex GE14 P 1 15
+	FrameIndex GE14 Q 0 0
+	FrameIndex GE14 Q 1 16
+	FrameIndex GE14 R 0 0
+	FrameIndex GE14 R 1 17
+	FrameIndex GE14 S 0 0
+	FrameIndex GE14 S 1 18
+	FrameIndex GE14 T 0 0
+	FrameIndex GE14 T 1 19
+}
+
 
 Model Goldfinger_Tank
 {
