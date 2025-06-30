@@ -642,14 +642,31 @@ actor Goldfinger_M79 : SamsaraGoldenEyeWeapon
         TNT1 A 0 A_JumpIfInventory("BondWatchToken",1,"WatchReady")
         TNT1 A 0 A_JumpIfInventory("BondAltToggle",1,"DualWield")
       ReadyStart:
-        GE00 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"ReadyReloadable")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"ReadyReloadable")
       ReadyNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyNonReloadableAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"ReadyNonReloadableAmmo")
+        goto ReadyNonReloadableNoAmmo
+
+      ReadyNonReloadableNoAmmo:
+        GE00 A 1 A_WeaponReady
+        goto ReadyNoAmmoCheck
+
+      ReadyNonReloadableAmmo:
         GE00 A 1 A_WeaponReady
         goto ReadyAmmoCheck
 
       ReadyReloadable:
         GE00 A 1 A_WeaponReady(WRF_ALLOWRELOAD)
         goto ReadyAmmoCheck
+
+      ReadyNoAmmoCheck:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"ReadyAmmoCheck")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
+        goto Ready
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStart")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"ReloadStart")
+        goto Ready
 
       ReadyAmmoCheck:
         TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,1)
@@ -782,7 +799,8 @@ actor Goldfinger_M79 : SamsaraGoldenEyeWeapon
 
       FireFinish:
         TNT1 A 0 A_TakeInventory("BondFiringToken")
-        goto Ready
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"Ready")
+        goto ReadyNoAmmoCheck
 
       Reload:
         TNT1 A 0 A_JumpIfInventory("SamsaraSynthFireLeft",1,"ReloadCheck")
@@ -895,8 +913,31 @@ actor Goldfinger_M79 : SamsaraGoldenEyeWeapon
         goto ReadyStartDual
         TNT1 A 0 A_JumpIfInventory("SamsaraSynthFireLeft",1,"FireDual")
       ReadyStartDual:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"ReadyDualReloadable")
+      ReadyDualNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyDualNonReloadableAmmo")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"ReadyDualNonReloadableAmmo")
+        goto ReadyDualNonReloadableNoAmmo
+
+      ReadyDualNonReloadableNoAmmo:
+        GE10 A 1
+        goto ReadyNoAmmoCheckDual
+
+      ReadyDualNonReloadableAmmo:
         GE10 A 1
         goto ReadyAmmoCheckDual
+
+      ReadyDualReloadable:
+        GE10 A 1
+        goto ReadyAmmoCheckDual
+
+      ReadyNoAmmoCheckDual:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"ReadyAmmoCheckDual")
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",1,1)
+        goto ReadyDual
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadStartDual")
+        TNT1 A 0 A_JumpIfInventory("RocketAmmo",1,"ReloadStartDual")
+        goto ReadyDual
 
       ReadyAmmoCheckDual:
         TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,1)
@@ -978,7 +1019,8 @@ actor Goldfinger_M79 : SamsaraGoldenEyeWeapon
 
       FireFinishDual:
         TNT1 A 0 A_TakeInventory("BondFiringToken")
-        goto ReadyDual
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"ReadyDual")
+        goto ReadyNoAmmoCheckDual
 
       ReloadCheckDual:
         TNT1 A 0 A_TakeInventory("BondDualWieldSpamProtector")
