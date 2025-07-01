@@ -51,6 +51,11 @@ actor Goldfinger_DB5_Activator : SwitchableDecoration
 		BackToSpawn:
 			TNT1 A 0 A_ClearTarget
 			goto Spawn
+			
+		Remove:
+			TNT1 A 0 A_GiveInventory("Goldeneye_TankRemoval")
+			TNT1 A 3 A_FadeOut(0.02)
+			wait
 	}
 }
 
@@ -69,7 +74,8 @@ actor Goldfinger_DB5_Glass
 		Spawn:
 			TNT1 A 0 NoDelay A_JumpIfInventory("Goldeneye_TankRemoval",1,"Remove",AAPTR_TRACER)
 		SpawnLoop:
-			GE00 A 1 A_Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE|WARPF_COPYVELOCITY)
+			//Copy velocity
+			GE00 A 1 A_Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_INTERPOLATE|16384)
 			Loop
 			
 		Remove:
@@ -78,7 +84,7 @@ actor Goldfinger_DB5_Glass
 	}
 }
 
-actor Goldeneye_DB5_Collision_Front
+actor Goldfinger_DB5_Collision_Front
 {
     Radius 28
     Height 20
@@ -102,32 +108,54 @@ actor Goldeneye_DB5_Collision_Front
     }
 }
 
-actor Goldeneye_DB5_Collision_Roof : Goldeneye_DB5_Collision_Front
+actor Goldfinger_DB5_SpeciesToken : TemporaryBoolean {}
+
+actor Goldfinger_DB5_Collision_Roof : Goldfinger_DB5_Collision_Front
 {
 	Height 2
     States
     {
       Spawn:
         TNT1 A 0 NoDelay A_JumpIfInventory("Goldeneye_TankRemoval",1,"Remove",AAPTR_TRACER)
-		TNT1 A 0 ACS_NamedExecuteWithResult("DB5UpdateSpecies")
+		TNT1 A 0 A_JumpIfInventory("Goldeneye_UsingTank",1,"SetSpecies",AAPTR_TRACER)
+		Goto ClearSpecies
+	  Warp:
         TNT1 A 1 A_Warp(AAPTR_TRACER,0,0,36,0,WARPF_NOCHECKPOSITION)
-        loop
+        Goto Spawn
+	  SetSpecies:
+		TNT1 A 0 A_JumpIfInventory("Goldfinger_DB5_SpeciesToken",1,"Warp")
+		TNT1 A 0 A_GiveInventory("Goldfinger_DB5_SpeciesToken")
+		TNT1 A 0 ACS_NamedExecuteWithResult("DB5UpdateSpecies")
+		Goto Warp
+	  ClearSpecies:
+		TNT1 A 0 A_TakeInventory("Goldfinger_DB5_SpeciesToken")
+		Goto Warp
     }
 }
 
-actor Goldeneye_DB5_Collision_Center : Goldeneye_DB5_Collision_Front
+actor Goldfinger_DB5_Collision_Center : Goldfinger_DB5_Collision_Front
 {
     States
     {
       Spawn:
         TNT1 A 0 NoDelay A_JumpIfInventory("Goldeneye_TankRemoval",1,"Remove",AAPTR_TRACER)
-		TNT1 A 0 ACS_NamedExecuteWithResult("DB5UpdateSpecies")
+		TNT1 A 0 A_JumpIfInventory("Goldeneye_UsingTank",1,"SetSpecies",AAPTR_TRACER)
+		Goto ClearSpecies
+	  Warp:
         TNT1 A 1 A_Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION)
-        loop
+        Goto Spawn
+	  SetSpecies:
+		TNT1 A 0 A_JumpIfInventory("Goldfinger_DB5_SpeciesToken",1,"Warp")
+		TNT1 A 0 A_GiveInventory("Goldfinger_DB5_SpeciesToken")
+		TNT1 A 0 ACS_NamedExecuteWithResult("DB5UpdateSpecies")
+		Goto Warp
+	  ClearSpecies:
+		TNT1 A 0 A_TakeInventory("Goldfinger_DB5_SpeciesToken")
+		Goto Warp
     }
 }
 
-actor Goldeneye_DB5_Collision_BackL : Goldeneye_DB5_Collision_Front
+actor Goldfinger_DB5_Collision_BackL : Goldfinger_DB5_Collision_Front
 {
     States
     {
@@ -138,7 +166,7 @@ actor Goldeneye_DB5_Collision_BackL : Goldeneye_DB5_Collision_Front
     }
 }
 
-actor Goldeneye_DB5_Collision_BackR : Goldeneye_DB5_Collision_Front
+actor Goldfinger_DB5_Collision_BackR : Goldfinger_DB5_Collision_Front
 {
     States
     {
@@ -160,7 +188,7 @@ actor Goldfinger_DB5_CollisionBoundary
         TNT1 A 0
         TNT1 A 0 A_CheckLOF("Stay",CLOFF_JUMPOBJECT|CLOFF_JUMP_ON_MISS|CLOFF_MUSTBESOLID|CLOFF_ALLOWNULL,16,0,-90)
         TNT1 A 0 A_CheckLOF("Stay",CLOFF_JUMPOBJECT|CLOFF_JUMP_ON_MISS|CLOFF_MUSTBESOLID|CLOFF_ALLOWNULL,16,0,90)
-        TNT1 A 2 A_CheckLOF("Stay",CLOFF_JUMPOBJECT|CLOFF_JUMP_ON_MISS|CLOFF_MUSTBESOLID|CLOFF_ALLOWNULL,16)
+        POSS A 2 A_CheckLOF("Stay",CLOFF_JUMPOBJECT|CLOFF_JUMP_ON_MISS|CLOFF_MUSTBESOLID|CLOFF_ALLOWNULL,16)
         stop
 
       Stay:

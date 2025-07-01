@@ -1643,23 +1643,23 @@ Script "Goldfinger_BuildDB5" (void)
 	Thing_ChangeTid(0,myTid);
 	int partTid = UniqueTid();
 
-	SpawnForced("Goldeneye_DB5_Collision_Front",x,y,z,partTid);
+	SpawnForced("Goldfinger_DB5_Collision_Front",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	Thing_ChangeTid(partTid,0);
 
-	SpawnForced("Goldeneye_DB5_Collision_Center",x,y,z,partTid);
+	SpawnForced("Goldfinger_DB5_Collision_Center",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	Thing_ChangeTid(partTid,0);
 
-	SpawnForced("Goldeneye_DB5_Collision_BackL",x,y,z,partTid);
+	SpawnForced("Goldfinger_DB5_Collision_BackL",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	Thing_ChangeTid(partTid,0);
 
-	SpawnForced("Goldeneye_DB5_Collision_BackR",x,y,z,partTid);
+	SpawnForced("Goldfinger_DB5_Collision_BackR",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	Thing_ChangeTid(partTid,0);
 	
-	SpawnForced("Goldeneye_DB5_Collision_Roof",x,y,z,partTid);
+	SpawnForced("Goldfinger_DB5_Collision_Roof",x,y,z,partTid);
 	SetPointerExt(AAPTR_Tracer,0,partTid);
 	Thing_ChangeTid(partTid,0);
 	
@@ -1705,38 +1705,40 @@ Script "Goldfinger_DB5Activator" (void)
 }
 
 //mode, view height, attack z offset
-Script "DB5ViewHeights" (int mode, int value, int who)
+Script "DB5ACSCompanion" (int mode, int value, int who)
 {
-	if(who == 0) who = AAPTR_DEFAULT;
-	SetActivator(0,who);
-	if(mode == 0)
-		SetResultValue(GetActorProperty(0,APROP_ViewHeight));
-	else if(mode == 1)
-		SetResultValue(GetActorProperty(0,APROP_AttackZOffset));
-	else if(mode == 2)
-		SetActorProperty(0,APROP_ViewHeight,value);
-	else if(mode == 3)
-		SetActorProperty(0,APROP_AttackZOffset,value);
-	else if(mode == 4)
-		SetResultValue(GetActorProperty(0,APROP_SPECIES));
-	else if(mode == 5)
-		SetActorProperty(0,APROP_Species,value);
+	if(who != 0) SetActivator(0,who);
+	switch(mode)
+	{
+		case 0:
+			SetResultValue(GetActorProperty(0,APROP_ViewHeight));
+			break;
+		case 1:
+			SetResultValue(GetActorProperty(0,APROP_AttackZOffset));
+			break;
+		case 2:
+			SetActorProperty(0,APROP_ViewHeight,value);
+			break;
+		case 3:
+			SetActorProperty(0,APROP_AttackZOffset,value);
+			break;
+		case 4:
+			SetResultValue(GetActorProperty(0,APROP_SPECIES));
+			break;
+		case 5:
+			SetActorProperty(0,APROP_Species,value);
+			break;
+		case 6:
+			TakeInventory("Goldeneye_UsingTank",1);
+			StopSound(0,CHAN_5);
+			StopSound(0,CHAN_6);
+			break;
+	}
 }
 
-Script "DB5InUse" (void)
-{
-	SetActivator(0,AAPTR_TRACER);
-	if(CheckInventory("Goldeneye_UsingTank"))
-		SetResultValue(1);
-	else SetResultValue(0);
-}
 Script "DB5UpdateSpecies" (void)
 {
-	if(ACS_NamedExecuteWithResult("DB5InUse"))
-	{
-		ACS_NamedExecuteWithResult("DB5ViewHeights",5,ACS_NamedExecuteWithResult("DB5ViewHeights",4,0,AAPTR_TRACER));
-		//PrintBold(s:GetActorProperty(0,APROP_SPECIES));
-	}
+	ACS_NamedExecuteWithResult("DB5ACSCompanion",5,ACS_NamedExecuteWithResult("DB5ACSCompanion",4,0,AAPTR_TRACER));
 }
 
 Script "DB5PlayerAngle" (void)
@@ -1747,29 +1749,35 @@ Script "DB5PlayerAngle" (void)
 
 Script "Goldfinger_MoveDB5" (int interpolate)
 {
-	int startingviewHeight = ACS_NamedExecuteWithResult("DB5ViewHeights");
-	int startingattackOffset = ACS_NamedExecuteWithResult("DB5ViewHeights",1);
-	str startingspecies = ACS_NamedExecuteWithResult("DB5ViewHeights",4);
+	int startingviewHeight = ACS_NamedExecuteWithResult("DB5ACSCompanion",0,0,AAPTR_TARGET);
+	int startingattackOffset = ACS_NamedExecuteWithResult("DB5ACSCompanion",1,0,AAPTR_TARGET);
+	str startingspecies = ACS_NamedExecuteWithResult("DB5ACSCompanion",4,0,AAPTR_TARGET);
 	int db5Seed = PlayerNumber();
 	while(ACS_NamedExecuteWithResult("Goldeneye_IsUsingTank"))
 	{
 		ACS_NamedExecuteWithResult("Goldfinger_DB5MoveInput",interpolate);	
-		Warp(AAPTR_TARGET,-10.0,14.0,-20.0,0,WARPF_NOCHECKPOSITION|WARPF_MOVEPTR|WARPF_USEPTR|interpolate);
+		Warp(AAPTR_TARGET,-10.0,14.0,-20.0,0,WARPF_NOCHECKPOSITION|WARPF_MOVEPTR|WARPF_USEPTR|WARPF_COPYVELOCITY|interpolate);
 		Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_USEPTR|WARPF_COPYVELOCITY|interpolate);
 		ACS_NamedExecuteWithResult("DB5PlayerAngle",AAPTR_TRACER);
-		ACS_NamedExecuteWithResult("DB5ViewHeights",2,53.0,AAPTR_TARGET);
-		ACS_NamedExecuteWithResult("DB5ViewHeights",3,startingattackOffset+8.0,AAPTR_TARGET);
-		ACS_NamedExecuteWithResult("DB5ViewHeights",5,strparam(s:"DB5",d:db5Seed),AAPTR_TARGET);
-		ACS_NamedExecuteWithResult("DB5ViewHeights",5,strparam(s:"DB5",d:db5Seed),AAPTR_TRACER);
+		ACS_NamedExecuteWithResult("DB5ACSCompanion",2,53.0,AAPTR_TARGET);
+		ACS_NamedExecuteWithResult("DB5ACSCompanion",3,startingattackOffset+8.0,AAPTR_TARGET);
+		ACS_NamedExecuteWithResult("DB5ACSCompanion",5,strparam(s:"DB5",d:db5Seed),AAPTR_TARGET);
+		ACS_NamedExecuteWithResult("DB5ACSCompanion",5,strparam(s:"DB5",d:db5Seed),AAPTR_TRACER);
 		Delay(1);
 	}
-	SetActivator(0,AAPTR_TARGET);
-	ACS_NamedExecuteWithResult("DB5ViewHeights",2,startingviewHeight);
-	ACS_NamedExecuteWithResult("DB5ViewHeights",3,startingattackOffset);
-	ACS_NamedExecuteWithResult("DB5ViewHeights",5,startingspecies);
 	TakeInventory("Goldeneye_UsingTank",1);
-	StopSound(0,CHAN_5);
-	StopSound(0,CHAN_6);
+	ACS_NamedExecuteWithResult("DB5ACSCompanion",6,0,AAPTR_TRACER);
+	SetActivator(0,AAPTR_TARGET);
+	ACS_NamedExecuteWithResult("DB5ACSCompanion",2,startingviewHeight);
+	ACS_NamedExecuteWithResult("DB5ACSCompanion",3,startingattackOffset);
+	ACS_NamedExecuteWithResult("DB5ACSCompanion",5,startingspecies);
+	
+	//Fix player position when exiting
+	if(!Warp(0,0,32.0,0,0,WARPF_MOVEPTR))
+		if(!Warp(0,0,-80.0,0,0,WARPF_MOVEPTR))
+			if(!Warp(0,80.0,0,0,0,WARPF_MOVEPTR))
+				if(!Warp(0,-64.0,0,0,0,WARPF_MOVEPTR))
+					Warp(0,0,0,40.0,0,WARPF_MOVEPTR);	
 }
 
 Script "Goldfinger_DB5MoveInput" (int interpolate)
@@ -1784,7 +1792,7 @@ Script "Goldfinger_DB5MoveInput" (int interpolate)
 	if(playerForward == 0)
 	{
 		playerForward = CheckInventory("Goldeneye_TankForward")-65536;
-		playerForward = FixedMul(playerForward,0.33);
+		playerForward = FixedMul(playerForward,0.55);
 		SetInventory("Goldeneye_TankForward",playerForward+65536);
 	}
 	else
