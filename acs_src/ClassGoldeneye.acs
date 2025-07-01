@@ -1733,6 +1733,8 @@ Script "DB5ACSCompanion" (int mode, int value, int who)
 			StopSound(0,CHAN_5);
 			StopSound(0,CHAN_6);
 			break;
+		case 7:
+			break;
 	}
 }
 
@@ -1788,24 +1790,27 @@ Script "Goldfinger_DB5MoveInput" (int interpolate)
 
 	int playerForward = GetPlayerInput(-1,INPUT_FORWARDMOVE)/16;
 	int playerSideMove = GetPlayerInput(-1,INPUT_SIDEMOVE);
+	int cruiseControl = GetPlayerInput(-1,INPUT_BUTTONS) & BT_JUMP;
 
 	if(playerForward == 0)
 	{
 		playerForward = CheckInventory("Goldeneye_TankForward")-65536;
-		playerForward = FixedMul(playerForward,0.55);
+		playerForward = FixedMul(playerForward,0.98);
 		SetInventory("Goldeneye_TankForward",playerForward+65536);
 	}
 	else
 	{
 		if(playerForward > 0)
 		{
-			if(CheckInventory("Goldeneye_TankForward")-65536 < 12800)
-				GiveInventory("Goldeneye_TankForward",playerForward);	
+			int speedRatio = (1.0 - ((1.0*(CheckInventory("Goldeneye_TankForward")-65536) / 28000)));
+			if(speedRatio < 0) speedRatio = 0;
+			if(CheckInventory("Goldeneye_TankForward")-65536 < 28000 && !cruiseControl)
+				GiveInventory("Goldeneye_TankForward",(playerForward*speedRatio)>>16);	
 		}
 		else
 		{
-			if(CheckInventory("Goldeneye_TankForward")-65536 > -12800)
-				TakeInventory("Goldeneye_TankForward",abs(playerForward));
+			if(CheckInventory("Goldeneye_TankForward")-65536 > -12000)
+				TakeInventory("Goldeneye_TankForward",abs(playerForward/2));
 		}
 		playerForward = CheckInventory("Goldeneye_TankForward")-65536;
 		SetInventory("Goldeneye_TankForward",playerForward+65536);
@@ -1833,6 +1838,14 @@ Script "Goldfinger_DB5MoveInput" (int interpolate)
 	}
 
 	SetActivator(myTid,AAPTR_Tracer);
+	if(CheckInventory("Goldeneye_Tank_Blocked"))
+	{
+		TakeInventory("Goldeneye_Tank_Blocked",1);
+		SetActivator(myTid,AAPTR_TARGET);
+		SetInventory("Goldeneye_TankForward",65536);
+		playerForward = 0;
+		SetActivator(myTid,AAPTR_Tracer);
+	}
 	ACS_NamedExecuteWithResult("Goldfinger_DB5Move",playerForward,-playerSideMove,interpolate);
 	Thing_ChangeTid(myTid,0);
 }
@@ -1843,7 +1856,7 @@ Script "Goldfinger_DB5Move" (int playerForward, int playerSideMove, int interpol
 	int x = GetActorX(0);
 	int y = GetActorY(0);
 	int z = GetActorZ(0);
-	int forwardOffset = 64;
+	int forwardOffset = 64 + (playerForward/500);
 	int backwardOffset = 96;
 	int sideOffset = 16;
 	int dummyTid = UniqueTid();
@@ -1923,7 +1936,7 @@ Script "Goldfinger_DB5Move" (int playerForward, int playerSideMove, int interpol
 	{
 		playerForward = 0; 
 		playerSideMove = 0;
-		TakeInventory("Goldeneye_Tank_Blocked",1);
+		//TakeInventory("Goldeneye_Tank_Blocked",1);
 	}
 	else SetActorVelocity(0,FixedMul(cos(GetActorAngle(0)),playerForward*60),FixedMul(sin(GetActorAngle(0)),playerForward*60),GetActorVelZ(0),0,0);//Warp(0,playerForward*60,0,0,0,WARPF_NOCHECKPOSITION|interpolate);
 }
