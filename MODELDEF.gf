@@ -4498,10 +4498,12 @@ Model Goldfinger_Tank_Barrel
 	FrameIndex GE00 A 0 0
 }
 
-Model Goldfinger_DB5
+Model Goldfinger_DB5_Body
 {
 	Path "models/goldfinger/db5"
 	Model 0 "db5.md3"
+	INHERITACTORPITCH
+	USEACTORROLL
 
 	FrameIndex GE00 A 0 0
 }
@@ -4510,6 +4512,8 @@ Model Goldfinger_DB5_Glass
 {
 	Path "models/goldfinger/db5"
 	Model 0 "db5_glass.md3"
+	INHERITACTORPITCH
+	USEACTORROLL
 
 	FrameIndex GE00 A 0 0
 }
