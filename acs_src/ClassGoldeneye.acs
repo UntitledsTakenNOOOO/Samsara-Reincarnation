@@ -1749,19 +1749,15 @@ Script "DB5ACSCompanion" (int mode, int value, int who)
 			break;
 		case 8: 
 			SetInventory("Goldfinger_DB5_WheelFRZ",value+65536); 
-			//SetInventory("Goldfinger_DB5_WheelFRZFloor",65536+(GetActorFloorZ(0))>>16); 
 			break;
 		case 9: 
 			SetInventory("Goldfinger_DB5_WheelFLZ",value+65536);
-			//SetInventory("Goldfinger_DB5_WheelFLZFloor",65536+(GetActorFloorZ(0))>>16); 
 			break;
 		case 10: 
 			SetInventory("Goldfinger_DB5_WheelBRZ",value+65536); 
-			//SetInventory("Goldfinger_DB5_WheelBRZFloor",65536+(GetActorFloorZ(0))>>16); 
 			break;
 		case 11: 
 			SetInventory("Goldfinger_DB5_WheelBLZ",value+65536); 
-			//SetInventory("Goldfinger_DB5_WheelBLZFloor",65536+(GetActorFloorZ(0))>>16); 
 			break;
 		case 12: SetResultValue(GetActorZ(0)); break;
 		case 13:
@@ -1776,12 +1772,32 @@ Script "DB5ACSCompanion" (int mode, int value, int who)
 			int wheelFL = CheckInventory("Goldfinger_DB5_WheelFLZ")-65536;
 			int wheelBR = CheckInventory("Goldfinger_DB5_WheelBRZ")-65536;
 			int wheelBL = CheckInventory("Goldfinger_DB5_WheelBLZ")-65536;
-			int minWheelZ = min(wheelFR,min(wheelFL,min(wheelBR,wheelBL)));
-			//int averageOffset = ((wheelFR+wheelFL+wheelBR+wheelBL-(4*minWheelZ))/4)<<16;
-			SetResultValue((-GetActorFloorZ(0)+(minWheelZ<<16))/*+averageOffset*/); 
+			int minWheelZ = min(wheelFR,min(wheelFL,min(wheelBR,wheelBL)))<<16;
+			int averageOffset = ((wheelFR+wheelFL+wheelBR+wheelBL)/4)<<16;
+			//PrintBold(s:"Class 2: ",s:GetActorClass(0));
+			//PrintBold(d:CheckInventory("Goldfinger_DB5_WheelFRZFloor")+CheckInventory("Goldfinger_DB5_WheelFLZFloor")+CheckInventory("Goldfinger_DB5_WheelBRZFloor")+CheckInventory("Goldfinger_DB5_WheelBLZFloor"));
+			if(CheckInventory("Goldfinger_DB5_WheelFRZFloor")+CheckInventory("Goldfinger_DB5_WheelFLZFloor")+CheckInventory("Goldfinger_DB5_WheelBRZFloor")+CheckInventory("Goldfinger_DB5_WheelBLZFloor")==0)
+			{
+				minWheelZ = 0;	
+				averageOffset = 0;
+			}
+			/*PrintBold(s:"wheelFR: ",d:wheelFR);
+			PrintBold(s:"wheelFL: ",d:wheelFL);
+			PrintBold(s:"wheelBR: ",d:wheelBR);
+			PrintBold(s:"wheelBL: ",d:wheelBL);
+			PrintBold(s:"minWheelZ: ",d:minWheelZ);
+			PrintBold(s:"actorZ: ",f:GetActorZ(0));
+			PrintBold(s:"floorZ: ",f:GetActorFloorZ(0));
+			PrintBold(s:"averageOffset: ",f:averageOffset);*/
+			
+			SetResultValue(minWheelZ + abs(averageOffset)); 
 			break;
 		case 19: SetInventory("Goldfinger_DB5CarPitch",value+65536); break;
 		case 20: SetResultValue(CheckInventory("Goldfinger_DB5CarPitch")-65536);  break;
+		case 21: SetActivator(0,AAPTR_TRACER); SetInventory("Goldfinger_DB5_WheelFRZFloor",value); break;
+		case 22: SetActivator(0,AAPTR_TRACER); SetInventory("Goldfinger_DB5_WheelFLZFloor",value); break;
+		case 23: SetActivator(0,AAPTR_TRACER); SetInventory("Goldfinger_DB5_WheelBRZFloor",value); break;
+		case 24: SetActivator(0,AAPTR_TRACER); SetInventory("Goldfinger_DB5_WheelBLZFloor",value); break;
 	}
 }
 
@@ -1796,7 +1812,7 @@ Script "DB5UpdateCosmetics" (void)
 		ChangeActorPitch(0,-ACS_NamedExecuteWithResult("DB5ACSCompanion",16,0,AAPTR_TRACER),true);
 		if(gzdoom) ChangeActorRoll(0,ACS_NamedExecuteWithResult("DB5ACSCompanion",17,0,AAPTR_TRACER),true);
 		//zpos = ACS_NamedExecuteWithResult("DB5ACSCompanion",18,0,AAPTR_TRACER)<<16
-		Warp(AAPTR_TRACER,0,0,ACS_NamedExecuteWithResult("DB5ACSCompanion",18,0,AAPTR_TRACER)<<16,0,WARPF_USEPTR|WARPF_NOCHECKPOSITION|interpolate);
+		Warp(AAPTR_TRACER,0,0,ACS_NamedExecuteWithResult("DB5ACSCompanion",18,0,AAPTR_TRACER),0,WARPF_USEPTR|WARPF_NOCHECKPOSITION|interpolate);
 		Delay(1);
 	}
 }
@@ -1822,7 +1838,7 @@ Script "Goldfinger_MoveDB5" (int interpolate)
 	{
 		ACS_NamedExecuteWithResult("Goldfinger_DB5MoveInput",interpolate);	
 		Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_USEPTR|interpolate);
-		Warp(AAPTR_TARGET,-10.0,14.0,-20.0,0,WARPF_NOCHECKPOSITION|WARPF_MOVEPTR|WARPF_USEPTR|interpolate);
+		Warp(AAPTR_TARGET,-10.0,14.0,-20.0+ACS_NamedExecuteWithResult("DB5ACSCompanion",18,0,AAPTR_TRACER),0,WARPF_NOCHECKPOSITION|WARPF_MOVEPTR|WARPF_USEPTR|interpolate);
 		ACS_NamedExecuteWithResult("DB5ACSCompanion",19,ACS_NamedExecuteWithResult("DB5ACSCompanion",16,0,AAPTR_TRACER),AAPTR_TARGET);
 		ACS_NamedExecuteWithResult("DB5PlayerAngle",AAPTR_TRACER);
 		ACS_NamedExecuteWithResult("DB5ACSCompanion",2,53.0,AAPTR_TARGET);
@@ -1871,6 +1887,9 @@ Script "Goldfinger_DB5MoveInput" (int interpolate)
 	{
 		playerForward = CheckInventory("Goldeneye_TankForward")-65536;
 		playerForward = FixedMul(playerForward,0.98);
+		
+		if(abs(playerForward) <= 0.0125) playerForward = 0;
+		
 		SetInventory("Goldeneye_TankForward",playerForward+65536);
 	}
 	else
@@ -2013,7 +2032,7 @@ Script "Goldfinger_DB5Move" (int playerForward, int playerSideMove, int accelera
 		playerSideMove = 0;
 		//TakeInventory("Goldeneye_Tank_Blocked",1);
 	}
-	else Warp(0,playerForward*60,0,ACS_NamedExecuteWithResult("DB5ACSCompanion",18),0,WARPF_NOCHECKPOSITION|interpolate);
+	else Warp(0,playerForward*60,0,0,0,WARPF_NOCHECKPOSITION|interpolate);
 	
 	//PrintBold(f:ACS_NamedExecuteWithResult("DB5ACSCompanion",18));
 }
@@ -2060,20 +2079,14 @@ Script "Goldfinger_DB5_BuildSuspension" (void)
 		wheelBR = (CheckInventory("Goldfinger_DB5_WheelBRZ")-65536)<<16;
 		wheelBL = (CheckInventory("Goldfinger_DB5_WheelBLZ")-65536)<<16;
 		
-		int minBack = min(wheelBR,wheelBL);
-		int minFront = min(wheelFR,wheelFL);
-		int maxBack = max(wheelBR,wheelBL);
-		int maxFront = max(wheelFR,wheelFL);
-		int minLeft = min(wheelFL,wheelBL);
-		int minRight = min(wheelFR,wheelBR);
-		int maxLeft = max(wheelFL,wheelBL);
-		int maxRight = max(wheelFR,wheelBR);
-		int crossFront = wheelFR - wheelFL;
-		int crossBack = wheelBR - wheelBL;
-		int crossRight = wheelFR - wheelBR;
-		int crossLeft = wheelFL - wheelBL;
-		pitch = crossRight == 0 && crossLeft == 0 ? 0 : VectorAngle(90.0,maxFront >= maxBack ? maxFront - minBack : minFront - maxBack);
-		roll = crossFront == 0 && crossBack == 0 ? 0 : VectorAngle(56.0,maxRight >= maxLeft ? maxRight - minLeft : minRight - maxLeft);
+		vecF = (wheelFR + wheelFL)/2;
+		vecB = (wheelBR + wheelBL)/2;
+		vecR = (wheelFR + wheelBR)/2;
+		vecL = (wheelFL + wheelBL)/2;
+		pitch = VectorAngle(94.0,vecF - vecB);
+		roll = VectorAngle(56.0,vecR - vecL);
+		//PrintBold(s:"VecF: ",f:vecF);
+		//PrintBold(s:"VecB: ",f:vecB);
 		
 		ACS_NamedExecuteWithResult("DB5ACSCompanion",14,-pitch,AAPTR_TRACER);
 		ACS_NamedExecuteWithResult("DB5ACSCompanion",15,-roll,AAPTR_TRACER);
@@ -2092,34 +2105,39 @@ Script "Goldfinger_DB5_WheelThink" (int wheel)
 	int wheelX, wheelY, wheelZ, parentZ, diff;
 	while(ClassifyActor(0) > 1)
 	{
-		parentZ = ACS_NamedExecuteWithResult("DB5ACSCompanion",12,0,AAPTR_MASTER);
+		parentZ = round(ACS_NamedExecuteWithResult("DB5ACSCompanion",12,0,AAPTR_MASTER));
 		diff = GetActorFloorZ(0) - parentZ;
 		
-		if(abs(diff) <= 28.0)
+		if(abs(diff) <= 24.0)
 			wheelZ = diff;
-		
+		else wheelZ = 0;
+				
 		switch(wheel)
 		{
 			case 1:
-				wheelX = 52.0;
+				wheelX = 48.0;
 				wheelY = 28.0;
 				break;
 			case 2:
-				wheelX = 52.0;
+				wheelX = 48.0;
 				wheelY = -28.0;	
 				break;
 			case 3:
-				wheelX = -42.0;
+				wheelX = -46.0;
 				wheelY = 28.0;
 				break;
 			case 4:	
-				wheelX = -42.0;
+				wheelX = -46.0;
 				wheelY = -28.0;
 				break;
 		}
-			
+		
+		//PrintBold(s:"floorZ: ",f:GetActorFloorZ(0));
+		//PrintBold(s:"parentZ: ",f:parentZ);
+		//PrintBold(s:"Diff: ",d:diff>>16);
+		ACS_NamedExecuteWithResult("DB5ACSCompanion",20+wheel,GetActorZ(0) - GetActorFloorZ(0) <= 1.0,AAPTR_MASTER);
 		Warp(AAPTR_MASTER,wheelX,wheelY,wheelZ,0,WARPF_NOCHECKPOSITION|WARPF_USEPTR);
-		ACS_NamedExecuteWithResult("DB5ACSCompanion",7+wheel,GetActorZ(0)>>16,AAPTR_MASTER);
+		ACS_NamedExecuteWithResult("DB5ACSCompanion",7+wheel,wheelZ>>16,AAPTR_MASTER);
 		
 		Delay(1);
 	}
