@@ -22,3 +22,5 @@ $random Goldfinger/HatThrow { Goldfinger/HatThrow1 Goldfinger/HatThrow2 Goldfing
 Goldfinger/HatThrow1 "Sounds/Goldfinger/goldfinger_hatthrow1.wav"
 Goldfinger/HatThrow2 "Sounds/Goldfinger/goldfinger_hatthrow2.wav"
 Goldfinger/HatThrow3 "Sounds/Goldfinger/goldfinger_hatthrow3.wav"
+
+Goldfinger/MissionDeath "Sounds/Goldfinger/goldfinger_missiondeath.mp3"
