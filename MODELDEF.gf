@@ -1,4 +1,4 @@
-Model "GoldFinger_PPKSilenced"
+Model "Goldfinger_PPKSilenced"
 {
    Path "models/goldfinger/pp7silenced"
    Model 0 "pp7silenced.md3"
@@ -57,7 +57,7 @@ Model "GoldFinger_PPKSilenced"
    FrameIndex GE01 B 1 1
 }
 
-Model "GoldFinger_PPKSilenced"
+Model "Goldfinger_PPKSilenced"
 {
    Path "models/goldfinger/pp7silenced"
    Model 0 "pp7silenced.md3"
@@ -118,7 +118,7 @@ Model "GoldFinger_PPKSilenced"
    FrameIndex GE11 B 1 1
 }
 
-Model "GoldFinger_PPKSilenced"
+Model "Goldfinger_PPKSilenced"
 {
 	Path "models/goldfinger/pp7silenced"
 	Model 0 "pp7silenced.md3"
@@ -169,7 +169,7 @@ Model "GoldFinger_PPKSilenced"
 	FrameIndex GE14 T 1 19
 }
 
-Model "GoldFinger_PPK"
+Model "Goldfinger_PPK"
 {
    Path "models/goldfinger/pp7"
    Model 0 "pp7.md3"
@@ -228,7 +228,7 @@ Model "GoldFinger_PPK"
    FrameIndex GE01 B 1 1
 }
 
-Model "GoldFinger_PPK"
+Model "Goldfinger_PPK"
 {
    Path "models/goldfinger/pp7"
    Model 0 "pp7.md3"
@@ -289,7 +289,7 @@ Model "GoldFinger_PPK"
    FrameIndex GE11 B 1 1
 }
 // transform -7.5 on y in Blender
-Model "GoldFinger_PPK"
+Model "Goldfinger_PPK"
 {
 	Path "models/goldfinger/pp7"
 	Model 0 "pp7.md3"
@@ -340,7 +340,7 @@ Model "GoldFinger_PPK"
 	FrameIndex GE14 T 1 19
 }
 
-Model "GoldFinger_ColtM1911"
+Model "Goldfinger_ColtM1911"
 {
    Path "models/goldfinger/colt"
    Model 0 "colt.md3"
@@ -399,7 +399,7 @@ Model "GoldFinger_ColtM1911"
    FrameIndex GE01 B 1 1
 }
 
-Model "GoldFinger_ColtM1911"
+Model "Goldfinger_ColtM1911"
 {
    Path "models/goldfinger/colt"
    Model 0 "colt.md3"
@@ -460,7 +460,7 @@ Model "GoldFinger_ColtM1911"
    FrameIndex GE11 B 1 1
 }
 
-Model "GoldFinger_ColtM1911"
+Model "Goldfinger_ColtM1911"
 {
 	Path "models/goldfinger/colt"
 	Model 0 "colt.md3"
@@ -511,7 +511,7 @@ Model "GoldFinger_ColtM1911"
 	FrameIndex GE14 T 1 19
 }
 
-model GoldFinger_ColtTracer
+model Goldfinger_ColtTracer
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -524,7 +524,7 @@ model GoldFinger_ColtTracer
 	FrameIndex GE00 A 0 0
 }
 
-model GoldFinger_ColtTracerCoop
+model Goldfinger_ColtTracerCoop
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -537,7 +537,7 @@ model GoldFinger_ColtTracerCoop
 	FrameIndex GE00 A 0 0
 }
 
-Model "GoldFinger_LugerP08"
+Model "Goldfinger_LugerP08"
 {
    Path "models/goldfinger/luger"
    Model 0 "luger.md3"
@@ -596,7 +596,7 @@ Model "GoldFinger_LugerP08"
    FrameIndex GE01 B 1 1
 }
 
-Model "GoldFinger_LugerP08"
+Model "Goldfinger_LugerP08"
 {
    Path "models/goldfinger/luger"
    Model 0 "luger.md3"
@@ -657,7 +657,7 @@ Model "GoldFinger_LugerP08"
    FrameIndex GE11 B 1 1
 }
 
-Model "GoldFinger_LugerP08"
+Model "Goldfinger_LugerP08"
 {
 	Path "models/goldfinger/luger"
 	Model 0 "luger.md3"
@@ -708,7 +708,7 @@ Model "GoldFinger_LugerP08"
 	FrameIndex GE14 T 1 19
 }
 
-Model "GoldFinger_WaltherP38"
+Model "Goldfinger_WaltherP38"
 {
    Path "models/goldfinger/p38"
    Model 0 "p38.md3"
@@ -767,7 +767,7 @@ Model "GoldFinger_WaltherP38"
    FrameIndex GE01 B 1 1
 }
 
-Model "GoldFinger_WaltherP38"
+Model "Goldfinger_WaltherP38"
 {
    Path "models/goldfinger/p38"
    Model 0 "p38.md3"
@@ -828,7 +828,7 @@ Model "GoldFinger_WaltherP38"
    FrameIndex GE11 B 1 1
 }
 
-Model "GoldFinger_WaltherP38"
+Model "Goldfinger_WaltherP38"
 {
 	Path "models/goldfinger/p38"
 	Model 0 "p38.md3"
@@ -879,7 +879,7 @@ Model "GoldFinger_WaltherP38"
 	FrameIndex GE14 T 1 19
 }
 
-Model "GoldFinger_AK47"
+Model "Goldfinger_AK47"
 {
    Path "models/goldfinger/pickups"
    Model 0 "ak47.md3"
@@ -922,7 +922,7 @@ Model "GoldFinger_AK47"
 }
 
 //y moves 4
-Model "GoldFinger_AK47"
+Model "Goldfinger_AK47"
 {
    Path "models/goldfinger/ak47"
    Model 0 "ak47.md3"
@@ -963,7 +963,7 @@ Model "GoldFinger_AK47"
    FrameIndex GE11 A 1 0
 }
 
-Model "GoldFinger_AK47"
+Model "Goldfinger_AK47"
 {
 	Path "models/goldfinger/ak47"
 	Model 0 "ak47.md3"
@@ -1013,7 +1013,7 @@ Model "GoldFinger_AK47"
 	FrameIndex GE14 T 1 19
 }
 
-model GoldFinger_AK47Tracer
+model Goldfinger_AK47Tracer
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -1026,7 +1026,7 @@ model GoldFinger_AK47Tracer
 	FrameIndex GE00 A 0 0
 }
 
-model GoldFinger_AK47TracerCoop
+model Goldfinger_AK47TracerCoop
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -1039,7 +1039,7 @@ model GoldFinger_AK47TracerCoop
 	FrameIndex GE00 A 0 0
 }
 
-Model "GoldFinger_UZI"
+Model "Goldfinger_UZI"
 {
    Path "models/goldfinger/uzi"
    Model 0 "uzi.md3"
@@ -1094,7 +1094,7 @@ Model "GoldFinger_UZI"
 }
 
 //y moves 4
-Model "GoldFinger_UZI"
+Model "Goldfinger_UZI"
 {
    Path "models/goldfinger/uzi"
    Model 0 "uzi.md3"
@@ -1151,7 +1151,7 @@ Model "GoldFinger_UZI"
    FrameIndex GE11 A 2 0
 }
 
-Model "GoldFinger_UZI"
+Model "Goldfinger_UZI"
 {
 	Path "models/goldfinger/uzi"
 	Model 0 "uzi.md3"
@@ -1222,7 +1222,7 @@ Model "GoldFinger_UZI"
 	FrameIndex GE14 T 2 19
 }
 
-Model "GoldFinger_MP40"
+Model "Goldfinger_MP40"
 {
    Path "models/goldfinger/mp40"
    Model 0 "mp40.md3"
@@ -1261,7 +1261,7 @@ Model "GoldFinger_MP40"
 }
 
 //y moves 4
-Model "GoldFinger_MP40"
+Model "Goldfinger_MP40"
 {
    Path "models/goldfinger/mp40"
    Model 0 "mp40.md3"
@@ -1302,7 +1302,7 @@ Model "GoldFinger_MP40"
    FrameIndex GE11 A 1 0
 }
 
-Model "GoldFinger_MP40"
+Model "Goldfinger_MP40"
 {
 	Path "models/goldfinger/mp40"
 	Model 0 "mp40.md3"
@@ -1352,7 +1352,7 @@ Model "GoldFinger_MP40"
 	FrameIndex GE14 T 1 19
 }
 
-Model "GoldFinger_Thompson"
+Model "Goldfinger_Thompson"
 {
    Path "models/goldfinger/thompson"
    Model 0 "m1928a.md3"
@@ -1391,7 +1391,7 @@ Model "GoldFinger_Thompson"
 }
 
 //y moves 4
-Model "GoldFinger_Thompson"
+Model "Goldfinger_Thompson"
 {
    Path "models/goldfinger/thompson"
    Model 0 "m1928a.md3"
@@ -1432,7 +1432,7 @@ Model "GoldFinger_Thompson"
    FrameIndex GE11 A 1 0
 }
 
-Model "GoldFinger_Thompson"
+Model "Goldfinger_Thompson"
 {
 	Path "models/goldfinger/thompson"
 	Model 0 "m1928a.md3"
@@ -1482,7 +1482,7 @@ Model "GoldFinger_Thompson"
 	FrameIndex GE14 T 1 19
 }
 
-Model "GoldFinger_ThompsonDrum"
+Model "Goldfinger_ThompsonDrum"
 {
    Path "models/goldfinger/thompson"
    Model 0 "thompson.md3"
@@ -1521,7 +1521,7 @@ Model "GoldFinger_ThompsonDrum"
 }
 
 //y moves 4
-Model "GoldFinger_ThompsonDrum"
+Model "Goldfinger_ThompsonDrum"
 {
    Path "models/goldfinger/thompson"
    Model 0 "thompson.md3"
@@ -1562,7 +1562,7 @@ Model "GoldFinger_ThompsonDrum"
    FrameIndex GE11 A 1 0
 }
 
-Model "GoldFinger_ThompsonDrum"
+Model "Goldfinger_ThompsonDrum"
 {
 	Path "models/goldfinger/thompson"
 	Model 0 "thompson.md3"
@@ -1612,7 +1612,7 @@ Model "GoldFinger_ThompsonDrum"
 	FrameIndex GE14 T 1 19
 }
 
-Model "GoldFinger_M14"
+Model "Goldfinger_M14"
 {
    Path "models/goldfinger/m14"
    Model 0 "m14.md3"
@@ -1667,7 +1667,7 @@ Model "GoldFinger_M14"
 }
 
 //y moves 4
-Model "GoldFinger_M14"
+Model "Goldfinger_M14"
 {
    Path "models/goldfinger/m14"
    Model 0 "m14.md3"
@@ -1724,7 +1724,7 @@ Model "GoldFinger_M14"
    FrameIndex GE11 A 2 0
 }
 
-Model "GoldFinger_M14"
+Model "Goldfinger_M14"
 {
 	Path "models/goldfinger/m14"
 	Model 0 "m14.md3"
@@ -1795,7 +1795,7 @@ Model "GoldFinger_M14"
 	FrameIndex GE14 T 2 19
 }
 
-model GoldFinger_M14Tracer
+model Goldfinger_M14Tracer
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -1808,7 +1808,7 @@ model GoldFinger_M14Tracer
 	FrameIndex GE00 A 0 0
 }
 
-model GoldFinger_M14TracerCoop
+model Goldfinger_M14TracerCoop
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -1821,7 +1821,7 @@ model GoldFinger_M14TracerCoop
 	FrameIndex GE00 A 0 0
 }
 
-Model "GoldFinger_Shotgun"
+Model "Goldfinger_Shotgun"
 {
    Path "models/goldfinger/shotgun"
    Model 0 "shotgun.md3"
@@ -1860,7 +1860,7 @@ Model "GoldFinger_Shotgun"
 }
 
 //y moves 4
-Model "GoldFinger_Shotgun"
+Model "Goldfinger_Shotgun"
 {
    Path "models/goldfinger/shotgun"
    Model 0 "shotgun.md3"
@@ -1901,7 +1901,7 @@ Model "GoldFinger_Shotgun"
    FrameIndex GE11 B 1 1
 }
 
-Model "GoldFinger_Shotgun"
+Model "Goldfinger_Shotgun"
 {
 	Path "models/goldfinger/shotgun"
 	Model 0 "shotgun.md3"
@@ -1951,7 +1951,7 @@ Model "GoldFinger_Shotgun"
 	FrameIndex GE14 T 1 19
 }
 
-Model "GoldFinger_OverUnder"
+Model "Goldfinger_OverUnder"
 {
    Path "models/goldfinger/overunder"
    Model 0 "overunder.md3"
@@ -1990,7 +1990,7 @@ Model "GoldFinger_OverUnder"
 }
 
 //y moves 4
-Model "GoldFinger_OverUnder"
+Model "Goldfinger_OverUnder"
 {
    Path "models/goldfinger/overunder"
    Model 0 "overunder.md3"
@@ -2031,7 +2031,7 @@ Model "GoldFinger_OverUnder"
    FrameIndex GE11 B 1 1
 }
 
-Model "GoldFinger_OverUnder"
+Model "Goldfinger_OverUnder"
 {
 	Path "models/goldfinger/overunder"
 	Model 0 "overunder.md3"
@@ -2081,7 +2081,7 @@ Model "GoldFinger_OverUnder"
 	FrameIndex GE14 T 1 19
 }
 
-Model "GoldFinger_Kar98k"
+Model "Goldfinger_Kar98k"
 {
    Path "models/goldfinger/kar98k"
    Model 0 "kar98k.md3"
@@ -2120,7 +2120,7 @@ Model "GoldFinger_Kar98k"
 }
 
 //y moves 4
-Model "GoldFinger_Kar98k"
+Model "Goldfinger_Kar98k"
 {
    Path "models/goldfinger/kar98k"
    Model 0 "kar98k.md3"
@@ -2161,7 +2161,7 @@ Model "GoldFinger_Kar98k"
    FrameIndex GE11 B 1 1
 }
 
-Model "GoldFinger_Kar98k"
+Model "Goldfinger_Kar98k"
 {
 	Path "models/goldfinger/kar98k"
 	Model 0 "kar98k.md3"
@@ -2211,7 +2211,7 @@ Model "GoldFinger_Kar98k"
 	FrameIndex GE14 T 1 19
 }
 
-Model "GoldFinger_M1Garand"
+Model "Goldfinger_M1Garand"
 {
    Path "models/goldfinger/M1Garand"
    Model 0 "M1Garand.md3"
@@ -2250,7 +2250,7 @@ Model "GoldFinger_M1Garand"
 }
 
 //y moves 4
-Model "GoldFinger_M1Garand"
+Model "Goldfinger_M1Garand"
 {
    Path "models/goldfinger/M1Garand"
    Model 0 "M1Garand.md3"
@@ -2291,7 +2291,7 @@ Model "GoldFinger_M1Garand"
    FrameIndex GE11 B 1 1
 }
 
-Model "GoldFinger_M1Garand"
+Model "Goldfinger_M1Garand"
 {
 	Path "models/goldfinger/M1Garand"
 	Model 0 "M1Garand.md3"
@@ -2341,7 +2341,7 @@ Model "GoldFinger_M1Garand"
 	FrameIndex GE14 T 1 19
 }
 
-Model "GoldFinger_M1Carbine"
+Model "Goldfinger_M1Carbine"
 {
    Path "models/goldfinger/m1carbine"
    Model 0 "m1carbine.md3"
@@ -2394,7 +2394,7 @@ Model "GoldFinger_M1Carbine"
 }
 
 //y moves 4
-Model "GoldFinger_M1Carbine"
+Model "Goldfinger_M1Carbine"
 {
    Path "models/goldfinger/m1carbine"
    Model 0 "m1carbine.md3"
@@ -2449,7 +2449,7 @@ Model "GoldFinger_M1Carbine"
    FrameIndex GE11 B 2 1
 }
 
-Model "GoldFinger_M1Carbine"
+Model "Goldfinger_M1Carbine"
 {
 	Path "models/goldfinger/m1carbine"
 	Model 0 "m1carbine.md3"
@@ -2520,7 +2520,7 @@ Model "GoldFinger_M1Carbine"
 	FrameIndex GE14 T 2 19
 }
 
-model GoldFinger_M1CarbineTracer
+model Goldfinger_M1CarbineTracer
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -2533,7 +2533,7 @@ model GoldFinger_M1CarbineTracer
 	FrameIndex GE00 A 0 0
 }
 
-model GoldFinger_M1CarbineTracerCoop
+model Goldfinger_M1CarbineTracerCoop
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -2546,7 +2546,7 @@ model GoldFinger_M1CarbineTracerCoop
 	FrameIndex GE00 A 0 0
 }
 
-Model "GoldFinger_AR7"
+Model "Goldfinger_AR7"
 {
    Path "models/goldfinger/ar7"
    Model 0 "ar7.md3"
@@ -2580,7 +2580,7 @@ Model "GoldFinger_AR7"
 }
 
 //y moves 4
-Model "GoldFinger_AR7"
+Model "Goldfinger_AR7"
 {
    Path "models/goldfinger/ar7"
    Model 0 "ar7.md3"
@@ -2616,7 +2616,7 @@ Model "GoldFinger_AR7"
    Offset -23.5 0 0
 }
 
-Model "GoldFinger_AR7"
+Model "Goldfinger_AR7"
 {
 	Path "models/goldfinger/ar7"
 	Model 0 "ar7.md3"
@@ -2666,7 +2666,7 @@ Model "GoldFinger_AR7"
 	FrameIndex GE14 T 1 19
 }
 
-model GoldFinger_AR7Tracer
+model Goldfinger_AR7Tracer
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -2679,7 +2679,7 @@ model GoldFinger_AR7Tracer
 	FrameIndex GE00 A 0 0
 }
 
-model GoldFinger_AR7TracerCoop
+model Goldfinger_AR7TracerCoop
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -2842,7 +2842,7 @@ Model "Goldfinger_SmithWesson22"
 	FrameIndex GE14 T 2 19
 }
 
-model GoldFinger_SmithWesson22Tracer
+model Goldfinger_SmithWesson22Tracer
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -2855,7 +2855,7 @@ model GoldFinger_SmithWesson22Tracer
 	FrameIndex GE00 A 0 0
 }
 
-model GoldFinger_SmithWesson22TracerCoop
+model Goldfinger_SmithWesson22TracerCoop
 {
 	Path "models/goldeneye/effects"
 	model 0 "bullettracer.md3"
@@ -3371,7 +3371,7 @@ model Goldfinger_LaserRayCoop
 	FrameIndex GE00 A 0 0
 }
 
-Model "GoldFinger_SuperBazooka"
+Model "Goldfinger_SuperBazooka"
 {
    Path "models/goldfinger/bazooka"
    Model 0 "bazooka.md3"
@@ -3405,7 +3405,7 @@ Model "GoldFinger_SuperBazooka"
 }
 
 //y moves 4
-Model "GoldFinger_SuperBazooka"
+Model "Goldfinger_SuperBazooka"
 {
    Path "models/goldfinger/bazooka"
    Model 0 "bazooka2.md3"
@@ -3441,7 +3441,7 @@ Model "GoldFinger_SuperBazooka"
    Offset -41 0 0
 }
 
-Model "GoldFinger_SuperBazooka"
+Model "Goldfinger_SuperBazooka"
 {
 	Path "models/goldfinger/bazooka"
 	Model 0 "bazooka.md3"
@@ -3527,7 +3527,7 @@ model Goldfinger_RocketCoopSoundSource
 	FrameIndex GE00 A 0 0
 }
 
-Model "GoldFinger_M79"
+Model "Goldfinger_M79"
 {
    Path "models/goldfinger/m79"
    Model 0 "m79.md3"
@@ -3566,7 +3566,7 @@ Model "GoldFinger_M79"
 }
 
 //y moves 4
-Model "GoldFinger_M79"
+Model "Goldfinger_M79"
 {
    Path "models/goldfinger/m79"
    Model 0 "m79.md3"
@@ -3607,7 +3607,7 @@ Model "GoldFinger_M79"
    FrameIndex GE11 B 1 1
 }
 
-Model "GoldFinger_M79"
+Model "Goldfinger_M79"
 {
 	Path "models/goldfinger/m79"
 	Model 0 "m79.md3"
