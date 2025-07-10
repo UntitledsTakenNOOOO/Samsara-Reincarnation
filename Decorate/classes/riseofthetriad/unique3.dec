@@ -1,4 +1,5 @@
-actor DSEnergyCounter : Counter { Inventory.MaxAmount 15 }
+actor SamsaraROTTDarkStaffSecondaryFiringSoundCheck : Boolean {}
+actor SamsaraROTTDarkStaffSecondaryFiredCount : Counter { Inventory.MaxAmount 14 } // take 1 ammo every 15th projectile
 
 actor "Dark Staff" : SamsaraROTTWeapon
 {
@@ -19,17 +20,19 @@ actor "Dark Staff" : SamsaraROTTWeapon
         stop
 
       Ready:
+        TNT1 A 0 A_TakeInventory("SamsaraROTTDarkStaffSecondaryFiringSoundCheck")
         TNT1 A 0 A_TakeInventory("UsingFirearm")
         KES_ A 1 A_WeaponReady
         loop
 
       Deselect:
-		TNT1 A 0 A_StopSound(CHAN_WEAPON)
+        TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffSecondaryFiringSoundStopper")
         TNT1 A 0 A_JumpIfHealthLower(1,"DeselectInstant")
         KES_ A 1 A_Lower
         loop
 
       Select:
+        TNT1 A 0 A_TakeInventory("SamsaraROTTDarkStaffSecondaryFiringSoundCheck")
         KES_ A 1 A_Raise
         loop
 
@@ -37,38 +40,41 @@ actor "Dark Staff" : SamsaraROTTWeapon
         TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffPreFireSoundPlayer")
         KES_ A 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         KES_ BCDE 9 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffAttackHandler")
+        TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffPrimaryAttackHandler")
         KES_ FGHIJK 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         KES_ LMNOP 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         KES_ Q 11 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         KES_ R 7 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         goto Ready
-		
-	  AltFire:
-		KES_ E 0 A_JumpIfInventory("DSEnergy",1,1)
-		Goto Ready
-		TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffPreFireSoundPlayer")
-		KES_ A 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-		KES_ BCDE 9 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-		KES_ E 0 A_PlaySound("firewall/Burn",CHAN_WEAPON,1.0,true)
-	  AltFireLoop:
-		KES_ E 0 A_JumpIfInventory("DSEnergy",1,1)
-		Goto AltFireEnd
-		KES_ E 2 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-		TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffAltAttackHandler")
-		TNT1 A 0 A_Refire("AltFireLoop")
-	  AltFireEnd:
-		KES_ F 0 A_StopSound(CHAN_WEAPON)
-		KES_ F 0 A_GiveInventory("SamsaraROTTDarkStaffPreFireSoundPlayer")
-		KES_ FGHIJK 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+
+      AltFire:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("DSEnergy",1,1)
+        goto Ready
+        TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffPreFireSoundPlayer")
+        KES_ A 2 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        KES_ BCDE 9 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_PlaySound("firewall/Burn",CHAN_WEAPON,1,true)
+        TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffSecondaryFiringSoundCheck")
+      AltFireLoop:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        TNT1 A 0 A_JumpIfInventory("DSEnergy",1,1)
+        goto AltFireEnd
+        KES_ E 2 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffSecondaryAttackHandler")
+        TNT1 A 0 A_ReFire("AltFireLoop")
+      AltFireEnd:
+        TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffSecondaryFiringSoundStopper")
+        TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffPreFireSoundPlayer")
+        KES_ FGHIJK 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         KES_ LMNOP 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         KES_ Q 11 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         KES_ R 7 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-        goto Ready	 
+        goto Ready
     }
 }
 
-actor SamsaraROTTDarkStaffAttackHandler : Trigger
+actor SamsaraROTTDarkStaffPrimaryAttackHandler : Trigger
 {
     States
     {
@@ -111,43 +117,33 @@ actor SamsaraROTTDarkStaffAttackHandler : Trigger
     }
 }
 
-actor SamsaraROTTDarkStaffAltAttackHandler : Trigger
+actor SamsaraROTTDarkStaffSecondaryAttackHandler : Trigger
 {
     States
     {
       // Ammo checking/taking stuff
       Pickup:
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("DSEnergyCounter",1,"PickupAttack")
-		TNT1 A 0 A_GiveInventory("DSEnergyCounter",15)
-		TNT1 A 0 A_TakeInventory("DSEnergy",1,TIF_NOTAKEINFINITE)
+        TNT1 A 0 A_JumpIfInventory("DSEnergy",1,1)
+        stop
+        TNT1 A 0 A_JumpIfInventory("SamsaraROTTDarkStaffSecondaryFiredCount",0,2)
+        TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffSecondaryFiredCount")
+        goto PickupAttack
+        TNT1 A 0 A_TakeInventory("DSEnergy",1)
+        TNT1 A 0 A_TakeInventory("SamsaraROTTDarkStaffSecondaryFiredCount")
         goto PickupAttack
 
       // Attack stuff
       PickupAttack:
-		TNT1 A 0 A_TakeInventory("DSEnergyCounter",1)
-        TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupAttackAlternate")
-      // Original sounds
-      PickupAttackOriginal:
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackOriginalCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackOriginalCoop")
-      PickupAttackOriginalDM:
+        TNT1 A 0 A_PlaySound("firewall/Burn",CHAN_WEAPON,1,true)
+        TNT1 A 0 A_GiveInventory("SamsaraROTTDarkStaffSecondaryFiringSoundCheck")
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackCoop")
+      PickupAttackDM:
         TNT1 A 0 A_FireCustomMissile("RoTTDarkMatter",0,false,0,-5)
         stop
 
-      PickupAttackOriginalCoop:
-        TNT1 A 0 A_FireCustomMissile("RoTTDarkMatter",0,false,0,-5)
-        stop
-
-      // Alternate sounds
-      PickupAttackAlternate:
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackAlternateCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackAlternateCoop")
-      PickupAttackAlternateDM:
-        TNT1 A 0 A_FireCustomMissile("RoTTDarkMatter",0,false,0,-5)
-        stop
-
-      PickupAttackAlternateCoop:
+      PickupAttackCoop:
         TNT1 A 0 A_FireCustomMissile("RoTTDarkMatter",0,false,0,-5)
         stop
     }
@@ -168,6 +164,21 @@ actor SamsaraROTTDarkStaffPreFireSoundPlayer : Trigger
       // Alternate sounds
       PickupAlternate:
         TNT1 A 0 A_PlaySound("ksphere/charge/alt",CHAN_WEAPON)
+        stop
+    }
+}
+
+actor SamsaraROTTDarkStaffSecondaryFiringSoundStopper : Trigger
+{
+    States
+    {
+      // Sound stopping stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraROTTDarkStaffSecondaryFiringSoundCheck",1,1)
+        stop
+        TNT1 A 0 A_PlaySound("silence",CHAN_WEAPON)
+        TNT1 A 0 A_StopSound(CHAN_WEAPON)
+        TNT1 A 0 A_TakeInventory("SamsaraROTTDarkStaffSecondaryFiringSoundCheck")
         stop
     }
 }
@@ -311,32 +322,31 @@ actor Rott_ash1
     }
 }
 
-actor RoTTDarkMatter {
+actor RoTTDarkMatter
+{
+    Projectile
     Radius 11
     Height 12
     Speed 44
     Damage (0)
-    +RIPPER
-    +MISSILE
-    +FOILINVUL
-    +EXTREMEDEATH
-	+NODAMAGETHRUST
-	+FORCERADIUSDMG
-	+DONTREFLECT
-    DONTHURTSHOOTER
-    PROJECTILE
-    SCALE 0.35
-    SeeSound ""
+    Scale 0.35
     DeathSound "ksphere/death"
+    +DONTREFLECT
+    +EXTREMEDEATH
+    +FOILINVUL
+    +FORCERADIUSDMG
+    +NODAMAGETHRUST
+    +RIPPER
     States
-    {  
+    {
       Spawn:
-       RT43 A 1 BRIGHT A_Explode(random(5, 10), 32, 0)
-       Loop
+       RT43 A 1 Bright A_Explode(random(5,10),32,0)
+       loop
+
       Death:
-       EXPL A 0 A_Explode(25,32,0)
-	   EXPL ABCDEFGHIJKLMNOPQRST 2 Bright
-       Stop
+       TNT1 A 0 A_Explode(25,32,0)
+       EXPL ABCDEFGHIJKLMNOPQRST 2 Bright
+       stop
     }
 }
 
