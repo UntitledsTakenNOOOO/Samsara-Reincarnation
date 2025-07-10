@@ -238,7 +238,32 @@ script "SamsaraOST_Enter" ENTER
             if (herosoundtrack == 1 || (herosoundtrack == 2 && choices == -1))
             {
                 if (GetCVar("samsara_moddedgame")) { gameoverride = 0; }
-                else { gameoverride = PlayerClass(pln); }
+                else
+                {
+                    gameoverride = PlayerClass(pln);
+
+                    switch (gameoverride)
+                    {
+                      default:
+                        break;
+
+                      case 0:
+                        if (GetUserCVar(pln, "samsara_cl_doommode") == 1) { gameoverride = 34; }
+                        break;
+
+                      case 3:
+                        if (GetUserCVar(pln, "samsara_cl_wolfmode") >= 2) { gameoverride = 35; }
+                        break;
+
+                      case 5:
+                        if (GetUserCVar(pln, "samsara_cl_dukemode") == 1) { gameoverride = 36; }
+                        break;
+
+                      case 19:
+                        if (GetUserCVar(pln, "samsara_cl_shephardmode") >= 1) { gameoverride = 37; }
+                        break;
+                    }
+                }
             }
 
             SetInventory("SamsaraHeroMusicGame", gameoverride + 1);
@@ -265,7 +290,7 @@ script "SamsaraOST_Enter" ENTER
 
                   case 0:
                   case 34:
-                    switchClass = GetUserCVar(pln, "samsara_cl_doommode") == 1 || gameoverride == 34;
+                    switchClass = gameoverride == 34;
                     settrack = Random(1, maxGameTracks[0][switchClass][0]);
 
                     LocalSetMusic(StrParam(s:gameMusicTypes[0][switchClass][0], s:settrack < 10 ? "0" : "", d:settrack));
@@ -274,7 +299,7 @@ script "SamsaraOST_Enter" ENTER
                   case 3:
                   case 35:
 					switchType = GetUserCVar(pln, "samsara_cl_wolf3dimf");
-                    switchClass = GetUserCVar(pln, "samsara_cl_wolfmode") == 2 || gameoverride == 35;
+                    switchClass = gameoverride == 35;
                     settrack = Random(1, maxGameTracks[3][switchClass][switchClass ? 0 : switchType]);
 
                     LocalSetMusic(StrParam(s:gameMusicTypes[3][switchClass][switchClass ? 0 : switchType], s:settrack < 10 ? "0" : "", d:settrack));
@@ -288,7 +313,7 @@ script "SamsaraOST_Enter" ENTER
 
                   case 5:
                   case 36:
-                    switchClass = GetUserCVar(pln, "samsara_cl_dukemode") == 1 || gameoverride == 36;
+                    switchClass = gameoverride == 36;
                     settrack = Random(1, maxGameTracks[5][switchClass][0]);
 
                     LocalSetMusic(StrParam(s:gameMusicTypes[5][switchClass][0], s:settrack < 10 ? "0" : "", d:settrack));
@@ -539,7 +564,7 @@ Script "SamsaraOST_HalfLifeScriptedMusic" (int musictid, int cause, int pln) cli
 {
 	if(pln != ConsolePlayerNumber()) terminate;
 	int settrack;
-    int halflifeopposingforce = CheckInventory("SamsaraHeroMusicGame") == 38 ? 1 : GetUserCvar(pln,"samsara_cl_shephardmode") && GetUserCVAR(pln,"samsara_cl_heromusic") == 1;
+    bool halflifeopposingforce = CheckInventory("SamsaraHeroMusicGame") == 38;
 
 	switch(cause)
 	{
