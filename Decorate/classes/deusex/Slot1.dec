@@ -205,22 +205,7 @@ Actor DeusEx_MiniCrossbow : DeusExWeapon
 			DX01 A 0 A_GiveInventory("DeusEx_Reloading")
 			DX01 A 0 A_PlaySound("DeusEx/Crossbow/Reload1")
 			DX01 ABCD 2 A_WeaponReady(WRF_NOFIRE)
-			DX01 E 0 A_JumpIfInventory("SPModeOn",1,2)
-			DX01 E 0 A_JumpIfInventory("CoopModeOn",1,1)
-			goto ReloadContinueAdvanced
-			DX01 E 0 A_JumpIfInventory("DeusEx_PistolSkill",0,"ReloadContinueMaster")
-			DX01 E 0 A_JumpIfInventory("DeusEx_PistolSkill",3,"ReloadContinueAdvanced")
-			DX01 E 0 A_JumpIfInventory("DeusEx_PistolSkill",2,"ReloadContinueProficient")
-			DX01 E 0 A_JumpIfInventory("DeusEx_PistolSkill",1,"ReloadContinueTrained")
-		ReloadContinueUntrained: // never called, but here just in case
 			DX01 EFGHIJK 4 A_WeaponReady(WRF_NOFIRE)
-		ReloadContinueTrained:
-			DX01 EFGHIJK 4 A_WeaponReady(WRF_NOFIRE)
-		ReloadContinueProficient:
-			DX01 EFGHIJK 4 A_WeaponReady(WRF_NOFIRE)
-		ReloadContinueAdvanced:
-			DX01 EFGHIJK 4 A_WeaponReady(WRF_NOFIRE)
-		ReloadContinueMaster:
 			DX01 L 0 A_TakeInventory("DeusEx_Reloading")
 			DX01 L 0 A_PlaySound("DeusEx/Crossbow/Reload2")
 			DX01 LMNO 2 A_WeaponReady(WRF_NOFIRE)
@@ -364,7 +349,6 @@ Actor DeusEx_XBowSpread : Ammo
 Actor DeusEx_Dart : DeusExBullet
 {
 	Speed 75
-	Damage(CallACS("DeusEx_WeaponSkillDamage", 1, 20))
 	DamageType "DeusExPistol"
 	RenderStyle Normal
 	-DONTBLAST
@@ -376,7 +360,7 @@ Actor DeusEx_Dart : DeusExBullet
 			TNT1 A 0
 			TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_ProjectilePitch")
 			TNT1 A 0 A_GiveInventory("DeusEx_PointBlank",1)
-			TNT1 A 0 A_SetUserVar(user_damage, CallACS("DeusEx_WeaponSkillDamage", 1, 20))
+			TNT1 A 0 A_SetUserVar(user_damage, CallACS("DeusEx_WeaponSkillDamage", 1, 40))
 		SpawnLoop:
 			DX00 A 1
 			Loop
@@ -399,11 +383,11 @@ Actor DeusEx_Dart : DeusExBullet
 			stop
 		Crash:
 			TNT1 A 0 A_PlaySound("DeusEx/Bullet/HitRobot", CHAN_BODY)
-			TNT1 A 1 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 20)),8,!XF_HURTSOURCE,0,8) //was 15
+			TNT1 A 1 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 40)),8,!XF_HURTSOURCE,0,8) //was 15
 			stop
 		XDeath:
 			TNT1 A 0 A_PlaySound("DeusEx/Bullet/HitFlesh", CHAN_BODY)
-			TNT1 A 0 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 20)),8,!XF_HURTSOURCE,0,8)
+			TNT1 A 0 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 40)),8,!XF_HURTSOURCE,0,8)
 			TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_BloodGenerator_Offsets")
 			TNT1 A 1 A_GiveInventory("DeusEx_BloodGenerator",1,AAPTR_TRACER)
 			stop
@@ -433,7 +417,6 @@ Actor DeusEx_DartInfiniteCoop : DeusEx_DartInfinite { Species "Player" +THRUSPEC
 Actor DeusEx_TranqDart : DeusEx_Dart
 {
 	DamageType "DeusExKnockedOut"
-	Damage (CallACS("DeusEx_WeaponSkillDamage", 1, 8))
 	PoisonDamageType "DeusExPoisonEffect"
 	PoisonDamage 8, 16, 70 //can't scale up poison damage =(
 	+ADDITIVEPOISONDURATION
@@ -465,11 +448,11 @@ Actor DeusEx_TranqDart : DeusEx_Dart
 			stop
 		Crash:
 			TNT1 A 0 A_PlaySound("DeusEx/Bullet/HitRobot", CHAN_BODY)
-			TNT1 A 1 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 8)),8,!XF_HURTSOURCE,0,8) //was 5
+			TNT1 A 1 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 16)),8,!XF_HURTSOURCE,0,8) //was 5
 			stop
 		XDeath:
 			TNT1 A 0 A_PlaySound("DeusEx/Bullet/HitFlesh", CHAN_BODY)
-			TNT1 A 0 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 8)),8,!XF_HURTSOURCE,0,8) // was 5
+			TNT1 A 0 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 16)),8,!XF_HURTSOURCE,0,8) // was 5
 			TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_BloodGenerator_Offsets")
 			TNT1 A 1 A_GiveInventory("DeusEx_BloodGenerator",1,AAPTR_TRACER)
 			stop
@@ -502,7 +485,6 @@ actor DeusEx_FlareDartSubTimer : Counter { Inventory.MaxAmount 35 }
 Actor DeusEx_FlareDart : DeusEx_Dart
 {
 	DamageType "DeusExPistolFire"
-	Damage (CallACS("DeusEx_WeaponSkillDamage", 1, 5))
 	PoisonDamageType "DeusExPistolFire"
 	PoisonDamage 5, 5, 12 //can't scale up poison damage =(
 	ReactionTime 60
@@ -548,11 +530,11 @@ Actor DeusEx_FlareDart : DeusEx_Dart
 			stop
 		Crash:
 			TNT1 A 0 A_PlaySound("DeusEx/Bullet/HitRobot", CHAN_BODY)
-			TNT1 A 1 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 5)),8,!XF_HURTSOURCE,0,8) //was 5
+			TNT1 A 1 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 10)),8,!XF_HURTSOURCE,0,8) //was 5
 			stop
 		XDeath:
 			TNT1 A 0 A_PlaySound("DeusEx/Bullet/HitFlesh", CHAN_BODY)
-			TNT1 A 0 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 5)),8,!XF_HURTSOURCE,0,8) // was 5
+			TNT1 A 0 A_Explode(CallACS("DeusEx_DamageModifiers",CallACS("DeusEx_WeaponSkillDamage", 1, 10)),8,!XF_HURTSOURCE,0,8) // was 5
 			TNT1 A 0 ACS_NamedExecuteWithResult("DeusEx_BloodGenerator_Offsets")
 			TNT1 A 1 A_GiveInventory("DeusEx_BloodGenerator",1,AAPTR_TRACER)
 			stop
