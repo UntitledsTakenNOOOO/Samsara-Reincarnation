@@ -1,3 +1,21 @@
+$playeralias			JamesBondGoldfinger		male	*pain100	Goldeneye/BondPain
+$playeralias			JamesBondGoldfinger		male	*pain75		*pain100
+$playeralias			JamesBondGoldfinger		male	*pain50		*pain100
+$playeralias			JamesBondGoldfinger		male	*pain25		*pain100
+$playeralias 			JamesBondGoldfinger		male  *death		dsnone
+$playersounddup	JamesBondGoldfinger		male	*crazydeath *death
+$playersounddup	JamesBondGoldfinger		male	*xdeath *death
+$playersounddup	JamesBondGoldfinger		male	*wimpydeath *death
+$playersounddup	JamesBondGoldfinger		male	*gibbed *death
+$playersounddup	JamesBondGoldfinger		male	*burndeath *death
+$playeralias			JamesBondGoldfinger		male	*taunt		Goldeneye/BondTaunt
+$playeralias			JamesBondGoldfinger		male	*usefail		Goldeneye/BondGrunt
+$playersounddup	JamesBondGoldfinger		male	*puzzfail	*usefail
+$playersounddup	JamesBondGoldfinger		male	*land	*usefail
+$playersounddup	JamesBondGoldfinger		male	*grunt	*usefail
+$playersound    JamesBondGoldfinger       male    *poison silence
+$playersound    JamesBondGoldfinger       male    *falling "Sounds/Goldeneye/goldeneye_bondscream.wav"
+
 Goldfinger/Reload "Sounds/Goldfinger/goldfinger_reload.wav"
 Goldfinger/DryFire "Sounds/Goldfinger/goldfinger_dryfire.wav"
 Goldfinger/DB5/Move "Sounds/Goldfinger/goldfinger_drive.wav"
