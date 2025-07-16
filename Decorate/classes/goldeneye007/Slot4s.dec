@@ -3,6 +3,8 @@ actor Goldeneye_PhantomPickedUpY : MapCoordinate {}
 actor Goldeneye_PhantomPickedUpZ : MapCoordinate {}
 actor Goldeneye_PhantomLastPickupTime : Counter { Inventory.InterHubAmount 0 }
 actor Goldeneye_PhantomLevelLimiter : Boolean {}
+actor SamsaraGoldenEyePhantomSingleSkipFire : Boolean {}
+actor SamsaraGoldenEyePhantomDualSkipFire : Boolean {}
 
 actor Goldeneye_Phantom : SamsaraGoldenEyeWeapon
 {
@@ -113,13 +115,13 @@ actor Goldeneye_Phantom : SamsaraGoldenEyeWeapon
       FireAmmoCheck:
         GE00 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireAmmoCheckReloadable")
       FireAmmoCheckNonReloadable:
-        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
-        GE00 A 0 A_JumpIfInventory("Clip",1,"FireStart")
+        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireInit")
+        GE00 A 0 A_JumpIfInventory("Clip",1,"FireInit")
         goto FireDry
 
       FireAmmoCheckReloadable:
-        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStart")
-        GE00 A 0 A_JumpIfInventory("Goldeneye_PhantomMagazine",1,"FireStart")
+        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireInit")
+        GE00 A 0 A_JumpIfInventory("Goldeneye_PhantomMagazine",1,"FireInit")
         goto FireDry
 
       FireDry:
@@ -129,13 +131,20 @@ actor Goldeneye_Phantom : SamsaraGoldenEyeWeapon
         GE00 A 0 A_GiveInventory("BondDryFireSpamProtector1")
         goto FireSetDualOrder
 
+      FireInit:
+        GE00 A 0 A_JumpIfInventory("SamsaraGoldenEyePhantomSingleSkipFire",1,2)
+        GE00 A 0 A_GiveInventory("SamsaraGoldenEyePhantomSingleSkipFire")
+        goto FireStart
+        GE00 A 0 A_TakeInventory("SamsaraGoldenEyePhantomSingleSkipFire")
+        goto FireStart
+
       FireStart:
         GE00 A 0 A_GiveInventory("BondFiringToken")
         GE00 A 0 A_AlertMonsters
         GE01 A 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		GE01 B 0 A_GiveInventory("SamsaraGoldenEyePhantomSingleAttackHandler")
 		GE00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-		GE00 A 0 A_JumpIfInventory("GoldeneyeTicRate1",1,2)
+		GE00 A 0 A_JumpIfInventory("SamsaraGoldenEyePhantomSingleSkipFire",1,2)
         GE00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         GE00 A 0 A_TakeInventory("BondFiringToken")
       FireReFireCheck:
@@ -312,13 +321,13 @@ actor Goldeneye_Phantom : SamsaraGoldenEyeWeapon
       FireDual:
         GE10 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireDualReloadable")
       FireDualNonReloadable:
-        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStartDual")
-        GE10 A 0 A_JumpIfInventory("Clip",1,"FireStartDual")
+        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireInitDual")
+        GE10 A 0 A_JumpIfInventory("Clip",1,"FireInitDual")
         goto FireDryDual
 
       FireDualReloadable:
-        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStartDual")
-        GE10 A 0 A_JumpIfInventory("Goldeneye_PhantomDualMagazine",1,"FireStartDual")
+        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireInitDual")
+        GE10 A 0 A_JumpIfInventory("Goldeneye_PhantomDualMagazine",1,"FireInitDual")
         goto FireDryDual
 
       FireDryDual:
@@ -328,12 +337,19 @@ actor Goldeneye_Phantom : SamsaraGoldenEyeWeapon
         GE10 A 0 A_GiveInventory("BondDryFireSpamProtector2")
         goto FireSetDualOrderDual
 
+      FireInitDual:
+        GE10 A 0 A_JumpIfInventory("SamsaraGoldenEyePhantomDualSkipFire",1,2)
+        GE10 A 0 A_GiveInventory("SamsaraGoldenEyePhantomDualSkipFire")
+        goto FireStartDual
+        GE10 A 0 A_TakeInventory("SamsaraGoldenEyePhantomDualSkipFire")
+        goto FireStartDual
+
       FireStartDual:
         GE10 A 0 A_GiveInventory("BondFiringToken")
         GE11 A 1 Bright A_GiveInventory("SamsaraGoldenEyePhantomDualAttackHandler") //GE11 D 1 A_GiveInventory("SamsaraGoldenEyePhantomDualAttackHandler")
         GE11 B 0 A_AlertMonsters
 		GE10 A 1 A_TakeInventory("BondFiringToken")
-		GE10 A 0 A_JumpIfInventory("GoldeneyeTicRate2",1,2)
+		GE10 A 0 A_JumpIfInventory("SamsaraGoldenEyePhantomDualSkipFire",1,2)
         GE10 A 1 
 		GE10 A 0
       FireDualReFireCheck:
@@ -425,10 +441,6 @@ actor SamsaraGoldenEyePhantomSingleAttackHandler : Trigger
 
       // Attack stuff
       PickupAttack:
-		TNT1 A 0 A_JumpIfInventory("GoldeneyeTicRate1",1,2)
-		TNT1 A 0 A_GiveInventory("GoldeneyeTicRate1")
-		Goto PickupAttack+3
-		TNT1 A 0 A_TakeInventory("GoldeneyeTicRate1")
         TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupAttackSource")
       // Original sounds
       PickupAttackN64:
@@ -483,10 +495,6 @@ actor SamsaraGoldenEyePhantomDualAttackHandler : Trigger
 
       // Attack stuff
       PickupAttack:
-		TNT1 A 0 A_JumpIfInventory("GoldeneyeTicRate2",1,2)
-		TNT1 A 0 A_GiveInventory("GoldeneyeTicRate2")
-		Goto PickupAttack+3
-		TNT1 A 0 A_TakeInventory("GoldeneyeTicRate2")
         TNT1 A 0 A_JumpIfInventory("SamsaraAlternateSoundToken",1,"PickupAttackSource")
       // Original sounds
       PickupAttackN64:
@@ -575,6 +583,9 @@ actor Goldeneye_PhantomTracerCoopSoundSource : Goldeneye_PhantomTracerSoundSourc
 actor SamsaraGoldfingerLoadoutSlot4S : Boolean {}
 
 //Thompson (Drum Mag)
+
+actor SamsaraGoldfingerThompsonDrumSingleSkipFire : Boolean {}
+actor SamsaraGoldfingerThompsonDrumDualSkipFire : Boolean {}
 
 actor Goldfinger_ThompsonDrum : SamsaraGoldenEyeWeapon
 {
@@ -701,13 +712,13 @@ actor Goldfinger_ThompsonDrum : SamsaraGoldenEyeWeapon
       FireAmmoCheck:
         GE00 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireAmmoCheckReloadable")
       FireAmmoCheckNonReloadable:
-        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
-        GE00 A 0 A_JumpIfInventory("Clip",1,"FireStart")
+        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireInit")
+        GE00 A 0 A_JumpIfInventory("Clip",1,"FireInit")
         goto FireDry
 
       FireAmmoCheckReloadable:
-        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStart")
-        GE00 A 0 A_JumpIfInventory("Goldfinger_ThompsonDrumMagazine",1,"FireStart")
+        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireInit")
+        GE00 A 0 A_JumpIfInventory("Goldfinger_ThompsonDrumMagazine",1,"FireInit")
         goto FireDry
 
       FireDry:
@@ -717,13 +728,20 @@ actor Goldfinger_ThompsonDrum : SamsaraGoldenEyeWeapon
         GE00 A 0 A_GiveInventory("BondDryFireSpamProtector1")
         goto FireSetDualOrder
 
+      FireInit:
+        GE00 A 0 A_JumpIfInventory("SamsaraGoldfingerThompsonDrumSingleSkipFire",1,2)
+        GE00 A 0 A_GiveInventory("SamsaraGoldfingerThompsonDrumSingleSkipFire")
+        goto FireStart
+        GE00 A 0 A_TakeInventory("SamsaraGoldfingerThompsonDrumSingleSkipFire")
+        goto FireStart
+
       FireStart:
         GE00 A 0 A_GiveInventory("BondFiringToken")
         GE00 A 0 A_AlertMonsters
         GE01 A 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		GE01 B 0 A_GiveInventory("SamsaraGoldfingerThompsonDrumSingleAttackHandler")
 		GE00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-		GE00 A 0 A_JumpIfInventory("GoldeneyeTicRate1",1,2)
+		GE00 A 0 A_JumpIfInventory("SamsaraGoldfingerThompsonDrumSingleSkipFire",1,2)
 		GE00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         GE00 A 0 A_TakeInventory("BondFiringToken")
       FireReFireCheck:
@@ -903,13 +921,13 @@ actor Goldfinger_ThompsonDrum : SamsaraGoldenEyeWeapon
       FireDual:
         GE10 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireDualReloadable")
       FireDualNonReloadable:
-        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStartDual")
-        GE10 A 0 A_JumpIfInventory("Clip",1,"FireStartDual")
+        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireInitDual")
+        GE10 A 0 A_JumpIfInventory("Clip",1,"FireInitDual")
         goto FireDryDual
 
       FireDualReloadable:
-        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStartDual")
-        GE10 A 0 A_JumpIfInventory("Goldfinger_ThompsonDrumDualMagazine",1,"FireStartDual")
+        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireInitDual")
+        GE10 A 0 A_JumpIfInventory("Goldfinger_ThompsonDrumDualMagazine",1,"FireInitDual")
         goto FireDryDual
 
       FireDryDual:
@@ -919,13 +937,20 @@ actor Goldfinger_ThompsonDrum : SamsaraGoldenEyeWeapon
         GE10 A 0 A_GiveInventory("BondDryFireSpamProtector2")
         goto FireSetDualOrderDual
 
+      FireInitDual:
+        GE10 A 0 A_JumpIfInventory("SamsaraGoldfingerThompsonDrumDualSkipFire",1,2)
+        GE10 A 0 A_GiveInventory("SamsaraGoldfingerThompsonDrumDualSkipFire")
+        goto FireStartDual
+        GE10 A 0 A_TakeInventory("SamsaraGoldfingerThompsonDrumDualSkipFire")
+        goto FireStartDual
+
       FireStartDual:
         GE10 A 0 A_GiveInventory("BondFiringToken")
 		GE10 A 0 A_AlertMonsters
         GE11 A 1 Bright A_GiveInventory("SamsaraGoldfingerThompsonDrumDualAttackHandler")
 		GE11 B 0
 		GE10 A 1
-		GE10 A 0 A_JumpIfInventory("GoldeneyeTicRate2",1,2)
+		GE10 A 0 A_JumpIfInventory("SamsaraGoldfingerThompsonDrumDualSkipFire",1,2)
 		GE10 A 1 A_TakeInventory("BondFiringToken")
 		GE10 A 0
       FireDualReFireCheck:
@@ -1050,10 +1075,6 @@ actor SamsaraGoldfingerThompsonDrumSingleAttackHandler : Trigger
 
       // Attack stuff
       PickupAttack:
-		TNT1 A 0 A_JumpIfInventory("GoldeneyeTicRate1",1,2)
-		TNT1 A 0 A_GiveInventory("GoldeneyeTicRate1")
-		Goto PickupAttack+3
-		TNT1 A 0 A_TakeInventory("GoldeneyeTicRate1")
         TNT1 A 0 A_PlaySound("Goldfinger/ThompsonShot",CHAN_WEAPON)
         TNT1 A 0 A_SpawnItemEx("Goldeneye_Cartridge_Standard2",cos(pitch)*13,6,42-(sin(pitch)*13),(2*cos(pitch))+(2*sin(pitch)),frandom(2,3),abs(4*cos(pitch)),0,SXF_TRANSFERPITCH)
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
@@ -1091,10 +1112,6 @@ actor SamsaraGoldfingerThompsonDrumDualAttackHandler : Trigger
 
       // Attack stuff
       PickupAttack:
-		TNT1 A 0 A_JumpIfInventory("GoldeneyeTicRate2",1,2)
-		TNT1 A 0 A_GiveInventory("GoldeneyeTicRate2")
-		Goto PickupAttack+3
-		TNT1 A 0 A_TakeInventory("GoldeneyeTicRate2")
         TNT1 A 0 A_PlaySound("Goldfinger/ThompsonShot",CHAN_WEAPON)
         TNT1 A 0 A_SpawnItemEx("Goldeneye_Cartridge_Standard2",cos(pitch)*13,-2,42-(sin(pitch)*13),(2*cos(pitch))+(2*sin(pitch)),frandom(2,3),abs(4*cos(pitch)),0,SXF_TRANSFERPITCH)
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
@@ -1124,6 +1141,9 @@ actor Goldfinger_ThompsonDrumDualMagazine : Ammo
 }
 
 //Thompson
+
+actor SamsaraGoldfingerThompsonSingleSkipFire : Boolean {}
+actor SamsaraGoldfingerThompsonDualSkipFire : Boolean {}
 
 actor Goldfinger_Thompson : SamsaraGoldenEyeWeapon
 {
@@ -1250,13 +1270,13 @@ actor Goldfinger_Thompson : SamsaraGoldenEyeWeapon
       FireAmmoCheck:
         GE00 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireAmmoCheckReloadable")
       FireAmmoCheckNonReloadable:
-        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
-        GE00 A 0 A_JumpIfInventory("Clip",1,"FireStart")
+        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireInit")
+        GE00 A 0 A_JumpIfInventory("Clip",1,"FireInit")
         goto FireDry
 
       FireAmmoCheckReloadable:
-        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStart")
-        GE00 A 0 A_JumpIfInventory("Goldfinger_ThompsonMagazine",1,"FireStart")
+        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireInit")
+        GE00 A 0 A_JumpIfInventory("Goldfinger_ThompsonMagazine",1,"FireInit")
         goto FireDry
 
       FireDry:
@@ -1266,13 +1286,20 @@ actor Goldfinger_Thompson : SamsaraGoldenEyeWeapon
         GE00 A 0 A_GiveInventory("BondDryFireSpamProtector1")
         goto FireSetDualOrder
 
+      FireInit:
+        GE00 A 0 A_JumpIfInventory("SamsaraGoldfingerThompsonSingleSkipFire",1,2)
+        GE00 A 0 A_GiveInventory("SamsaraGoldfingerThompsonSingleSkipFire")
+        goto FireStart
+        GE00 A 0 A_TakeInventory("SamsaraGoldfingerThompsonSingleSkipFire")
+        goto FireStart
+
       FireStart:
         GE00 A 0 A_GiveInventory("BondFiringToken")
         GE00 A 0 A_AlertMonsters
         GE01 A 1 Bright A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
 		GE01 B 0 A_GiveInventory("SamsaraGoldfingerThompsonSingleAttackHandler")
 		GE00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
-		GE00 A 0 A_JumpIfInventory("GoldeneyeTicRate1",1,2)
+		GE00 A 0 A_JumpIfInventory("SamsaraGoldfingerThompsonSingleSkipFire",1,2)
 		GE00 A 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
         GE00 A 0 A_TakeInventory("BondFiringToken")
       FireReFireCheck:
@@ -1452,13 +1479,13 @@ actor Goldfinger_Thompson : SamsaraGoldenEyeWeapon
       FireDual:
         GE10 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"FireDualReloadable")
       FireDualNonReloadable:
-        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStartDual")
-        GE10 A 0 A_JumpIfInventory("Clip",1,"FireStartDual")
+        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireInitDual")
+        GE10 A 0 A_JumpIfInventory("Clip",1,"FireInitDual")
         goto FireDryDual
 
       FireDualReloadable:
-        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireStartDual")
-        GE10 A 0 A_JumpIfInventory("Goldfinger_ThompsonDualMagazine",1,"FireStartDual")
+        GE10 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"FireInitDual")
+        GE10 A 0 A_JumpIfInventory("Goldfinger_ThompsonDualMagazine",1,"FireInitDual")
         goto FireDryDual
 
       FireDryDual:
@@ -1468,12 +1495,19 @@ actor Goldfinger_Thompson : SamsaraGoldenEyeWeapon
         GE10 A 0 A_GiveInventory("BondDryFireSpamProtector2")
         goto FireSetDualOrderDual
 
+      FireInitDual:
+        GE10 A 0 A_JumpIfInventory("SamsaraGoldfingerThompsonDualSkipFire",1,2)
+        GE10 A 0 A_GiveInventory("SamsaraGoldfingerThompsonDualSkipFire")
+        goto FireStartDual
+        GE10 A 0 A_TakeInventory("SamsaraGoldfingerThompsonDualSkipFire")
+        goto FireStartDual
+
       FireStartDual:
         GE10 A 0 A_GiveInventory("BondFiringToken")
 		GE10 A 0 A_AlertMonsters
         GE11 A 1 Bright A_GiveInventory("SamsaraGoldfingerThompsonDualAttackHandler")
 		GE11 B 1
-		GE10 A 0 A_JumpIfInventory("GoldeneyeTicRate2",1,2)
+		GE10 A 0 A_JumpIfInventory("SamsaraGoldfingerThompsonDualSkipFire",1,2)
 		GE10 A 1 A_TakeInventory("BondFiringToken")
 		GE10 A 0
       FireDualReFireCheck:
@@ -1598,10 +1632,6 @@ actor SamsaraGoldfingerThompsonSingleAttackHandler : Trigger
 
       // Attack stuff
       PickupAttack:
-		TNT1 A 0 A_JumpIfInventory("GoldeneyeTicRate1",1,2)
-		TNT1 A 0 A_GiveInventory("GoldeneyeTicRate1")
-		Goto PickupAttack+3
-		TNT1 A 0 A_TakeInventory("GoldeneyeTicRate1")
         TNT1 A 0 A_PlaySound("Goldfinger/ThompsonShot",CHAN_WEAPON)
         TNT1 A 0 A_SpawnItemEx("Goldeneye_Cartridge_Standard2",cos(pitch)*13,6,42-(sin(pitch)*13),(2*cos(pitch))+(2*sin(pitch)),frandom(2,3),abs(4*cos(pitch)),0,SXF_TRANSFERPITCH)
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
@@ -1639,10 +1669,6 @@ actor SamsaraGoldfingerThompsonDualAttackHandler : Trigger
 
       // Attack stuff
       PickupAttack:
-		TNT1 A 0 A_JumpIfInventory("GoldeneyeTicRate2",1,2)
-		TNT1 A 0 A_GiveInventory("GoldeneyeTicRate2")
-		Goto PickupAttack+3
-		TNT1 A 0 A_TakeInventory("GoldeneyeTicRate2")
         TNT1 A 0 A_PlaySound("Goldfinger/ThompsonShot",CHAN_WEAPON)
         TNT1 A 0 A_SpawnItemEx("Goldeneye_Cartridge_Standard2",cos(pitch)*13,-2,42-(sin(pitch)*13),(2*cos(pitch))+(2*sin(pitch)),frandom(2,3),abs(4*cos(pitch)),0,SXF_TRANSFERPITCH)
         TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackCoop")
