@@ -5561,6 +5561,42 @@ Model SamsaraUniquePickup2
 	FrameIndex GE01 Y 1 0
 }
 
+Model SamsaraUniquePickup2
+{
+	Path "Models/GoldFinger/pickups"
+	Model 0 "sw22.md3"
+	Scale 1.0 1.0 1.0
+
+	FrameIndex GE02 Z 0 0
+
+	Model 0 "sw22_hybrid.md3"
+	Path "Models/Slots"
+	Model 1 "hybrid.md2"
+	Skin 1 "unique.png"
+	Scale 0.8 0.8 0.8
+
+	FrameIndex GE02 Y 0 0
+	FrameIndex GE02 Y 1 0
+}
+
+Model SamsaraUniquePickup2
+{
+	Path "Models/GoldFinger/pickups"
+	Model 0 "sw36.md3"
+	Scale 1.0 1.0 1.0
+
+	FrameIndex GE03 Z 0 0
+
+	Model 0 "sw36_hybrid.md3"
+	Path "Models/Slots"
+	Model 1 "hybrid.md2"
+	Skin 1 "unique.png"
+	Scale 0.8 0.8 0.8
+
+	FrameIndex GE03 Y 0 0
+	FrameIndex GE03 Y 1 0
+}
+
 Model SamsaraUniquePickup3
 {
 	Path "models/goldeneye/watchgadget/pickup"
