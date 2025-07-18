@@ -52,6 +52,7 @@ script "HereticCloneSpawner" (int powered, int clonetype)
 	int corvTid = UniqueTID();
 	int z = GetActorZ(0);
 	str cloneClassname;
+	int minionCounter;
 
 	if (powered)
 	{
@@ -63,14 +64,37 @@ script "HereticCloneSpawner" (int powered, int clonetype)
 		cloneClassname = clonetype > 0 ? "FWizardCoop" : "FWizard";
 		z -= 34.0;
 	}
-
+	
 	SpawnForced(cloneClassname, GetActorX(0), GetActorY(0), z, corvTid);
 	SetActorAngle(corvTid, GetActorAngle(0));
 	SetActivator(0, AAPTR_TARGET);
+	GiveInventory(powered ? "DSparilStaffCloneCount" : "DSparilStaffWizardCount",1);
+	minionCounter = CheckInventory(powered ? "DSparilStaffCloneCount" : "DSparilStaffWizardCount");
 	SetPointerExt(AAPTR_MASTER, 0, corvTid);
 	Thing_SetTranslation(corvTid, -1);
 	GiveActorInventory(corvTid, "SamsaraHereticCloneCopyFriendliness", 1);
+	SetActivator(corvTid);
+	ACS_NamedExecuteWithResult("HereticCloneThink",powered,minionCounter);
 	Thing_ChangeTID(corvTid, 0);
+}
+
+script "HereticCloneThink" (int type, int minionCounter)
+{
+	int queueRemoval = 0;
+	SetInventory(type ? "DSparilStaffCloneCount" : "DSparilStaffWizardCount",minionCounter);
+	While(ClassifyActor(0) > 1 && (ClassifyActor(0) & ACTOR_ALIVE))
+	{
+		GiveInventory(type ? "DSparilStaffCloneThinker" : "DSparilStaffWizardThinker",1);
+		Delay(1);
+	}
+	if(!(ClassifyActor(0) & ACTOR_ALIVE) && !CheckInventory("DSparilStaffMinionDeath"))
+		GiveInventory(type ? "DSparilStaffCloneACSDecrementer" : "DSparilStaffWizardACSDecrementer",1);
+	SetActivator(0, AAPTR_MASTER);
+}
+
+script "HereticCloneDecrementHelper" (int type)
+{
+	SetResultValue(CheckInventory(type ? "DSparilStaffCloneCount" : "DSparilStaffWizardCount"));
 }
 
 script "HereticTurnTowardTarget" (int invertPitch)
