@@ -4525,7 +4525,8 @@ model SamsaraSlotOnePickup
 
 	FrameIndex GE01 Z 0 0
 
-	Model 0 "oddjobhatproj.md3"
+	Path "Models/GoldFinger/pickups"
+	Model 0 "oddjobhat_hybrid.md3"
 	Path "Models/Slots"
 	Model 1 "hybrid.md2"
 	Skin 1 "slot1y.png"
@@ -4553,7 +4554,8 @@ model SamsaraSlotOneNoStay
 
 	FrameIndex GE01 Z 0 0
 
-	Model 0 "oddjobhatproj.md3"
+	Path "Models/GoldFinger/pickups"
+	Model 0 "oddjobhat_hybrid.md3"
 	Path "Models/Slots"
 	Model 1 "hybrid.md2"
 	Skin 1 "slot1y.png"
@@ -4581,7 +4583,8 @@ model SamsaraSlotOneDrop
 
 	FrameIndex GE01 Z 0 0
 
-	Model 0 "oddjobhatproj.md3"
+	Path "Models/GoldFinger/pickups"
+	Model 0 "oddjobhat_hybrid.md3"
 	Path "Models/Slots"
 	Model 1 "hybrid.md2"
 	Skin 1 "slot1y.png"
@@ -5599,15 +5602,15 @@ Model SamsaraUniquePickup2
 
 Model SamsaraUniquePickup3
 {
-	Path "models/goldeneye/watchgadget/pickup"
-	Model 0 "watchgadget_pickup.md3"
+	Path "Models/GoldFinger/pickups"
+	Model 0 "briefcase.md3"
 	Scale -0.4 0.4 0.4
 	RollOffset 90
 	AngleOffset 180
 
 	FrameIndex GE01 Z 0 0
 
-	Model 0 "watchgadget_pickup2.md3"
+	Model 0 "briefcase_hybrid.md3"
 	Path "Models/Slots"
 	Model 1 "hybrid.md2"
 	Skin 1 "unique.png"
