@@ -5528,6 +5528,90 @@ model SamsaraSlotSixSkulltagDrop
 	FrameIndex GF00 X 0 0
 }
 
+model SamsaraSlotSixSkulltagPickup
+{
+	Path "Models/GoldFinger/pickups"
+	Model 0 "kar98k.md3"
+	Scale -1.0 1.0 1.0
+
+	FrameIndex GF01 Z 0 0
+
+	Model 0 "kar98k_hybrid.md3"
+	Path "Models/Slots"
+	Model 1 "hybrid.md2"
+	Skin 1 "slot6y.png"
+	Scale 0.8 0.8 0.8
+
+	FrameIndex GF01 Y 0 0
+	FrameIndex GF01 Y 1 0
+}
+
+model SamsaraSlotSixSkulltagPickup
+{
+    Path "models"
+    Model 0 "slots/hybrid.md2"
+    Skin 0 "slots/slot6n.png"
+    Scale 0.8 0.8 0.8
+
+	FrameIndex GF01 X 0 0
+}
+
+model SamsaraSlotSixSkulltagNoStay
+{
+	Path "Models/GoldFinger/pickups"
+	Model 0 "kar98k.md3"
+	Scale -1.0 1.0 1.0
+
+	FrameIndex GF01 Z 0 0
+
+	Model 0 "kar98k_hybrid.md3"
+	Path "Models/Slots"
+	Model 1 "hybrid.md2"
+	Skin 1 "slot6y.png"
+	Scale 0.8 0.8 0.8
+
+	FrameIndex GF01 Y 0 0
+	FrameIndex GF01 Y 1 0
+}
+
+model SamsaraSlotSixSkulltagNoStay
+{
+    Path "models"
+    Model 0 "slots/hybrid.md2"
+    Skin 0 "slots/slot6n.png"
+    Scale 0.8 0.8 0.8
+
+	FrameIndex GF01 X 0 0
+}
+
+model SamsaraSlotSixSkulltagDrop
+{
+	Path "Models/GoldFinger/pickups"
+	Model 0 "kar98k.md3"
+	Scale -1.0 1.0 1.0
+
+	FrameIndex GF01 Z 0 0
+
+	Model 0 "kar98k_hybrid.md3"
+	Path "Models/Slots"
+	Model 1 "hybrid.md2"
+	Skin 1 "slot6y.png"
+	Scale 0.8 0.8 0.8
+
+	FrameIndex GF01 Y 0 0
+	FrameIndex GF01 Y 1 0
+}
+
+model SamsaraSlotSixSkulltagDrop
+{
+    Path "models"
+    Model 0 "slots/hybrid.md2"
+    Skin 0 "slots/slot6n.png"
+    Scale 0.8 0.8 0.8
+
+	FrameIndex GF01 X 0 0
+}
+
 model SamsaraSlotSevenPickup
 {
 	Path "Models/GoldFinger/pickups"
