@@ -8,7 +8,7 @@ $playersounddup	JamesBondGoldfinger		male	*xdeath *death
 $playersounddup	JamesBondGoldfinger		male	*wimpydeath *death
 $playersounddup	JamesBondGoldfinger		male	*gibbed *death
 $playersounddup	JamesBondGoldfinger		male	*burndeath *death
-$playeralias			JamesBondGoldfinger		male	*taunt		Goldeneye/BondTaunt
+$playeralias			JamesBondGoldfinger		male	*taunt		Goldfinger/BondTaunt
 $playeralias			JamesBondGoldfinger		male	*usefail		Goldeneye/BondGrunt
 $playersounddup	JamesBondGoldfinger		male	*puzzfail	*usefail
 $playersounddup	JamesBondGoldfinger		male	*land	*usefail
@@ -42,3 +42,17 @@ Goldfinger/HatThrow2 "Sounds/Goldfinger/goldfinger_hatthrow2.wav"
 Goldfinger/HatThrow3 "Sounds/Goldfinger/goldfinger_hatthrow3.wav"
 
 Goldfinger/MissionDeath "Sounds/Goldfinger/goldfinger_missiondeath.mp3"
+
+$random Goldfinger/BondTaunt { Goldfinger/BondTaunt1 Goldfinger/BondTaunt2 Goldfinger/BondTaunt3 Goldfinger/BondTaunt4 Goldfinger/BondTaunt5 Goldfinger/BondTaunt6 Goldfinger/BondTaunt7 Goldfinger/BondTaunt8 Goldfinger/BondTaunt9 Goldfinger/BondTaunt10 Goldfinger/BondTaunt11 Goldfinger/BondTaunt12 }
+Goldfinger/BondTaunt1 "Sounds/Goldfinger/goldfinger_bondtaunt1.ogg"
+Goldfinger/BondTaunt2 "Sounds/Goldfinger/goldfinger_bondtaunt2.ogg"
+Goldfinger/BondTaunt3 "Sounds/Goldfinger/goldfinger_bondtaunt3.ogg"
+Goldfinger/BondTaunt4 "Sounds/Goldfinger/goldfinger_bondtaunt4.ogg"
+Goldfinger/BondTaunt5 "Sounds/Goldfinger/goldfinger_bondtaunt5.ogg"
+Goldfinger/BondTaunt6 "Sounds/Goldfinger/goldfinger_bondtaunt6.ogg"
+Goldfinger/BondTaunt7 "Sounds/Goldfinger/goldfinger_bondtaunt7.ogg"
+Goldfinger/BondTaunt8 "Sounds/Goldfinger/goldfinger_bondtaunt8.ogg"
+Goldfinger/BondTaunt9 "Sounds/Goldfinger/goldfinger_bondtaunt9.ogg"
+Goldfinger/BondTaunt10 "Sounds/Goldfinger/goldfinger_bondtaunt10.ogg"
+Goldfinger/BondTaunt11 "Sounds/Goldfinger/goldfinger_bondtaunt11.ogg"
+Goldfinger/BondTaunt12 "Sounds/Goldfinger/goldfinger_bondtaunt12.ogg"
