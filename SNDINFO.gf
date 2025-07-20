@@ -56,3 +56,5 @@ Goldfinger/BondTaunt9 "Sounds/Goldfinger/goldfinger_bondtaunt9.ogg"
 Goldfinger/BondTaunt10 "Sounds/Goldfinger/goldfinger_bondtaunt10.ogg"
 Goldfinger/BondTaunt11 "Sounds/Goldfinger/goldfinger_bondtaunt11.ogg"
 Goldfinger/BondTaunt12 "Sounds/Goldfinger/goldfinger_bondtaunt12.ogg"
+
+$random DarkSideAI/BondGF/Taunt { Goldfinger/BondTaunt1 Goldfinger/BondTaunt2 Goldfinger/BondTaunt3 Goldfinger/BondTaunt4 Goldfinger/BondTaunt5 Goldfinger/BondTaunt6 Goldfinger/BondTaunt7 Goldfinger/BondTaunt8 Goldfinger/BondTaunt9 Goldfinger/BondTaunt10 Goldfinger/BondTaunt11 Goldfinger/BondTaunt12 }
