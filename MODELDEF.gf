@@ -8662,7 +8662,7 @@ model SamsaraSlotFourDropStanding
 model SamsaraSlotFourSkulltagPickup
 {
 	Path "Models/GoldFinger/pickups"
-	Model 0 "thompsondrum_hybrid.md3"
+	Model 0 "thompsondrum.md3"
 	Scale -1.0 1.0 1.0
 
 	FrameIndex GF00 Z 0 0
@@ -8690,7 +8690,7 @@ model SamsaraSlotFourSkulltagPickup
 model SamsaraSlotFourSkulltagNoStay
 {
 	Path "Models/GoldFinger/pickups"
-	Model 0 "thompsondrum_hybrid.md3"
+	Model 0 "thompsondrum.md3"
 	Scale -1.0 1.0 1.0
 
 	FrameIndex GF00 Z 0 0
@@ -8718,7 +8718,7 @@ model SamsaraSlotFourSkulltagNoStay
 model SamsaraSlotFourSkulltagDrop
 {
 	Path "Models/GoldFinger/pickups"
-	Model 0 "thompsondrum_hybrid.md3"
+	Model 0 "thompsondrum.md3"
 	Scale -1.0 1.0 1.0
 
 	FrameIndex GF00 Z 0 0
@@ -8746,7 +8746,7 @@ model SamsaraSlotFourSkulltagDrop
 model SamsaraSlotFourSkulltagPickup
 {
 	Path "Models/GoldFinger/pickups"
-	Model 0 "thompson_hybrid.md3"
+	Model 0 "thompson.md3"
 	Scale -1.0 1.0 1.0
 
 	FrameIndex GF01 Z 0 0
@@ -8774,7 +8774,7 @@ model SamsaraSlotFourSkulltagPickup
 model SamsaraSlotFourSkulltagNoStay
 {
 	Path "Models/GoldFinger/pickups"
-	Model 0 "thompson_hybrid.md3"
+	Model 0 "thompson.md3"
 	Scale -1.0 1.0 1.0
 
 	FrameIndex GF01 Z 0 0
@@ -8802,7 +8802,7 @@ model SamsaraSlotFourSkulltagNoStay
 model SamsaraSlotFourSkulltagDrop
 {
 	Path "Models/GoldFinger/pickups"
-	Model 0 "thompson_hybrid.md3"
+	Model 0 "thompson.md3"
 	Scale -1.0 1.0 1.0
 
 	FrameIndex GF01 Z 0 0
