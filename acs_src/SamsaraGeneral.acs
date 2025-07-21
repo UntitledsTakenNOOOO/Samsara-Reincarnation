@@ -4275,7 +4275,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     bool weaponstay = slot == SLOT_BFG9000 || slot == SLOT_BFG10K ? GetCVar("samsara_permault") : GetCVar("sv_weaponstay");
 
     // Last pickup map coordinates initialization
-    bool setcoords = false;
+    bool setcoords = false; // might rename this to setdualcoords
     int maxDistance = 80;
     int invokerX = GetActorX(0) >> 16;
     int invokerY = GetActorY(0) >> 16;
@@ -4283,7 +4283,8 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     int inventoryX, inventoryY, inventoryZ;
 
     // Last pickup timer initialization
-    bool settimer = false;
+    bool settimer = false; // might rename this to setdualtimer
+    bool setammotimer = false;
 
     // Inventory check
     bool hasweapon = false;
@@ -4308,6 +4309,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     // Default durations to wait until next pickup (weaponstay only)
     int pickuptimer = 35 * 60;
     int dualpickuptimer = 35 * 30;
+    int ammopickuptimer = 35 * 30;
 
     // Start everything
     switch (classnum)
@@ -7619,10 +7621,9 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
 
                 if (!CheckInventory("Goldeneye_ThrowingKnives"))
                 {
-					//FIXED - Give a hat when you pick up the weapon
                     GiveInventory("Goldeneye_ThrowingKnives", 1);
                     GiveInventory("Goldeneye_ThrowingKnivesAmmo", dmextraammo ? 1 / tossedammo * 5 / 2 : 1 / tossedammo);
-					GiveInventory("Goldfinger_OddjobHatAmmo", 1);
+                    GiveInventory("Goldfinger_OddjobHatAmmo", 1); // giving a hat on pickup. ignore dropped calculations
 
                     if (!CheckInventory("Goldeneye_ThrowingKnivesDualToken") && dualgiveboth)
                     {
@@ -7636,6 +7637,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     {
                         setcoords = true;
                         settimer = true;
+                        setammotimer = true;
                     }
 
                     result = 1;
@@ -7650,10 +7652,11 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     }
                     else if (dualpickupmode == 2) { dualreqcheck = Timer() >= CheckInventory("Goldeneye_KnifeLastPickupTime"); }
 
-                    if (dualreqcheck || dropped >= 1 || startmode != 0 || !weaponstay)
+                    if (dualreqcheck || (!CheckInventory("Goldeneye_ThrowingKnivesAmmo") && Timer() >= CheckInventory("Goldeneye_KnifeAmmoLastPickupTime")) || dropped >= 1 || startmode != 0 || !weaponstay)
                     {
                         GiveInventory("Goldeneye_ThrowingKnivesDualToken", 1);
                         GiveInventory("Goldeneye_ThrowingKnivesAmmo", 1 / tossedammo);
+                        GiveInventory("Goldfinger_OddjobHatAmmo", 1); // giving a hat on pickup. ignore dropped calculations
 
                         if (duallimiting) { GiveInventory("Goldeneye_KnifeLevelLimiter", 1); }
 
@@ -7661,19 +7664,30 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                         {
                             setcoords = true;
                             settimer = true;
+                            setammotimer = true;
                         }
 
                         result = 1;
                     }
-                } else if (CheckInventory("Goldeneye_ThrowingKnivesAmmo") < GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+                } else if ((CheckInventory("Goldeneye_ThrowingKnivesAmmo") < GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo") && (dropped >= 1 || startmode != 0 || !weaponstay)) ||
+                           (!CheckInventory("Goldeneye_ThrowingKnivesAmmo") && (Timer() >= CheckInventory("Goldeneye_KnifeAmmoLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay)))
+                {
                     int origknives = CheckInventory("Goldeneye_ThrowingKnivesAmmo");
 
                     GiveInventory("Goldeneye_ThrowingKnivesAmmo", 1 / tossedammo);
 
                     result = CheckInventory("Goldeneye_ThrowingKnivesAmmo") > origknives;
+
+                    if (result == 1) { GiveInventory("Goldfinger_OddjobHatAmmo", 1); } // giving a hat on pickup. ignore dropped calculations
+
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { setammotimer = true; }
                 }
 
-                if (startmode <= -1 || startmode >= 2) { GiveInventory("Goldeneye_ThrowingKnivesAmmo", GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo")); }
+                if (startmode <= -1 || startmode >= 2)
+                {
+                    GiveInventory("Goldeneye_ThrowingKnivesAmmo", GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo"));
+                    GiveInventory("Goldfinger_OddjobHatAmmo", GetAmmoCapacity("Goldfinger_OddjobHatAmmo")); // why not?
+                }
 
                 if (setcoords)
                 {
@@ -7683,6 +7697,8 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 }
 
                 if (settimer) { SetInventory("Goldeneye_KnifeLastPickupTime", Timer() + dualpickuptimer); }
+
+                if (setammotimer) { SetInventory("Goldeneye_KnifeAmmoLastPickupTime", Timer() + ammopickuptimer); }
                 break;
 
               case SLOT_PISTOL:
@@ -8565,12 +8581,15 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
 
                 if (!CheckInventory("Goldfinger_OddjobHat"))
                 {
-					//FIXED - Give a hat when you pick up the weapon
                     GiveInventory("Goldfinger_OddjobHat", 1);
-					GiveInventory("Goldeneye_ThrowingKnivesAmmo", dmextraammo ? 1 / tossedammo * 5 / 2 : 1 / tossedammo);
-                    GiveInventory("Goldfinger_OddjobHatAmmo", 1);
+                    GiveInventory("Goldeneye_ThrowingKnivesAmmo", dmextraammo ? 1 / tossedammo * 5 / 2 : 1 / tossedammo); // giving knives on pickup
+                    GiveInventory("Goldfinger_OddjobHatAmmo", 1); // ignore dropped calculations
 
-                    if (!CheckInventory("Goldeneye_ThrowingKnivesDualToken") && dualgiveboth) { GiveInventory("Goldeneye_ThrowingKnivesDualToken", 1); }
+                    if (!CheckInventory("Goldeneye_ThrowingKnivesDualToken") && dualgiveboth)
+                    {
+                        GiveInventory("Goldeneye_ThrowingKnivesDualToken", 1);
+                        GiveInventory("Goldeneye_ThrowingKnivesAmmo", 1 / tossedammo); // giving knives on pickup
+                    }
 
                     if (duallimiting) { GiveInventory("Goldeneye_KnifeLevelLimiter", 1); }
 
@@ -8578,34 +8597,43 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     {
                         setcoords = true;
                         settimer = true;
+                        setammotimer = true;
                     }
 
                     result = 1;
-                } else if (CheckInventory("Goldfinger_OddjobHatAmmo") < GetAmmoCapacity("Goldfinger_OddjobHatAmmo") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
-                    int orighats = CheckInventory("Goldfinger_OddjobHatAmmo");
+                } else if ((CheckInventory("Goldfinger_OddjobHatAmmo") < GetAmmoCapacity("Goldfinger_OddjobHatAmmo") && (dropped >= 1 || startmode != 0 || !weaponstay)) ||
+                           (!CheckInventory("Goldfinger_OddjobHatAmmo") && (Timer() >= CheckInventory("Goldeneye_KnifeAmmoLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay)))
+                {
+                    GiveInventory("Goldfinger_OddjobHatAmmo", 1); // ignore dropped calculations
 
-                    GiveInventory("Goldfinger_OddjobHatAmmo", 1 / tossedammo);
-
-                    result = CheckInventory("Goldfinger_OddjobHatAmmo") > orighats;
-
-                    if (result == 1)
+                    if (!CheckInventory("Goldeneye_ThrowingKnivesDualToken") && !duallimited && (dualpickupmode <= 3 || (dualpickupmode >= 4 && dropped <= 1)))
                     {
-                        if (!CheckInventory("Goldeneye_ThrowingKnivesDualToken") && !duallimited && (dualpickupmode <= 3 || (dualpickupmode >= 4 && dropped <= 1)))
+                        GiveInventory("Goldeneye_ThrowingKnivesDualToken", 1);
+                        GiveInventory("Goldeneye_ThrowingKnivesAmmo", 1 / tossedammo); // giving knives on pickup
+
+                        if (duallimiting) { GiveInventory("Goldeneye_KnifeLevelLimiter", 1); }
+
+                        if (dropped <= 0 && startmode == 0 && weaponstay)
                         {
-                            GiveInventory("Goldeneye_ThrowingKnivesDualToken", 1);
-
-                            if (duallimiting) { GiveInventory("Goldeneye_KnifeLevelLimiter", 1); }
-
-                            if (dropped <= 0 && startmode == 0 && weaponstay)
-                            {
-                                setcoords = true;
-                                settimer = true;
-                            }
+                            setcoords = true;
+                            settimer = true;
+                            setammotimer = true;
                         }
                     }
+                    else if ((CheckInventory("Goldeneye_ThrowingKnivesAmmo") < GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo") && (dropped >= 1 || startmode != 0 || !weaponstay)) ||
+                             (!CheckInventory("Goldeneye_ThrowingKnivesAmmo") && (Timer() >= CheckInventory("Goldeneye_KnifeAmmoLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay)))
+                    { GiveInventory("Goldeneye_ThrowingKnivesAmmo", 1 / tossedammo); } // giving knives on pickup
+
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { setammotimer = true; }
+
+                    result = 1;
                 }
 
-                if (startmode <= -1 || startmode >= 2) { GiveInventory("Goldfinger_OddjobHatAmmo", GetAmmoCapacity("Goldfinger_OddjobHatAmmo")); }
+                if (startmode <= -1 || startmode >= 2)
+                {
+                    GiveInventory("Goldeneye_ThrowingKnivesAmmo", GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo")); // why not?
+                    GiveInventory("Goldfinger_OddjobHatAmmo", GetAmmoCapacity("Goldfinger_OddjobHatAmmo"));
+                }
 
                 if (setcoords)
                 {
@@ -8615,6 +8643,8 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 }
 
                 if (settimer) { SetInventory("Goldeneye_KnifeLastPickupTime", Timer() + dualpickuptimer); }
+
+                if (setammotimer) { SetInventory("Goldeneye_KnifeAmmoLastPickupTime", Timer() + ammopickuptimer); }
                 break;
 
               case SLOT_PISTOL:
