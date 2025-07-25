@@ -100,12 +100,12 @@ actor Goldeneye_WatchDetonator : SamsaraGoldenEyeWeapon
 
       // Watch
       WatchLower:
-        GE13 T 0 A_TakeInventory("BondWatchActivate")
-        GE13 T 0 A_GiveInventory("BondWatchUIDeinit")
+        GE14 T 0 A_TakeInventory("BondWatchActivate")
+        GE14 T 0 A_GiveInventory("BondWatchUIDeinit")
       WatchLowerStart:
-        GE13 T 0 ACS_NamedExecuteAlways("BondWatchLookUpAndDown")
-        GE13 T 12 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_DISABLESWITCH)
-        GE13 SRQPONMLKJIHGFEDCBA 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_DISABLESWITCH)
+        GE14 T 0 ACS_NamedExecuteAlways("BondWatchLookUpAndDown")
+        GE14 T 12 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_DISABLESWITCH)
+        GE14 SRQPONMLKJIHGFEDCBA 2 A_WeaponReady(WRF_NOBOB|WRF_NOFIRE|WRF_DISABLESWITCH)
         GE02 IHGFEDCBA 1 A_WeaponReady(WRF_NOFIRE|WRF_DISABLESWITCH)
         goto WatchLowerFinish
 
@@ -149,4 +149,71 @@ actor SamsaraGoldenEyeWatchDetonatorAttackHandler : Trigger
 
 // Watch Detonator (Goldfinger)
 
-actor Goldfinger_WatchDetonator : Goldeneye_WatchDetonator { Inventory.Icon "GFWWTC18" }
+actor Goldfinger_WatchDetonator : Goldeneye_WatchDetonator
+{
+    Inventory.Icon "GFWWTC18"
+    States
+    {
+      Ready:
+        TNT1 A 0 A_TakeInventory("BondWatchDetonatorToken")
+        TNT1 A 0 A_JumpIfInventory("BondWatchQueue",1,"WatchRaise")
+        TNT1 A 0 A_JumpIfInventory("BondWatchToken",1,"WatchReady")
+      ReadyStart:
+        GE00 A 1 A_WeaponReady(WRF_NOSECONDARY)
+        goto Ready
+
+      Fire:
+        GE01 A 0 A_GiveInventory("BondFiringToken")
+        GE01 AB 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        GE01 C 0 A_GiveInventory("SamsaraGoldfingerWatchDetonatorAttackHandler")
+        GE01 C 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        GE01 D 9 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        GE01 D 0 A_TakeInventory("BondFiringToken")
+        GE01 D 0 A_ReFire(1)
+        goto FireContinue
+        GE01 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto FireLoop
+
+      FireContinue:
+        GE01 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        GE01 C 0 A_TakeInventory("BondWatchDetonatorToken")
+        GE01 CBA 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto FireFinish
+
+      FireLoop:
+        //GE01 D 0 A_GiveInventory("BondFiringToken") // taken on same tic
+        GE01 D 0 A_TakeInventory("BondFiringToken")
+        GE01 D 0 A_ReFire(1)
+        goto FireLoopContinue
+        GE01 D 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        loop
+
+      FireLoopContinue:
+        GE01 D 6 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        GE01 C 0 A_TakeInventory("BondWatchDetonatorToken")
+        GE01 CBA 1 A_WeaponReady(WRF_NOSWITCH|WRF_NOFIRE)
+        goto FireFinish
+
+      FireFinish:
+        TNT1 A 0 A_TakeInventory("BondFiringToken")
+        goto Ready
+    }
+}
+
+// Attack handler
+
+actor SamsaraGoldfingerWatchDetonatorAttackHandler : Trigger
+{
+    States
+    {
+      // Sound playing stuff
+      Pickup:
+        TNT1 A 0 A_PlaySound("Goldeneye/WatchDetonate",CHAN_WEAPON)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_GiveInventory("BondWatchDetonatorToken")
+        stop
+    }
+}

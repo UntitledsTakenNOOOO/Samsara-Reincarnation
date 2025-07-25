@@ -7144,24 +7144,6 @@ model Goldfinger_RocketCoop
 	FrameIndex GE00 A 0 0
 }
 
-model Goldfinger_RocketSoundSource
-{
-	Path "models/goldfinger/bazooka"
-	model 0 "rocket.md3"
-	PITCHFROMMOMENTUM
-
-	FrameIndex GE00 A 0 0
-}
-
-model Goldfinger_RocketCoopSoundSource
-{
-	Path "models/goldfinger/bazooka"
-	model 0 "rocket.md3"
-	PITCHFROMMOMENTUM
-
-	FrameIndex GE00 A 0 0
-}
-
 Model "Goldfinger_M79"
 {
    Path "models/goldfinger/m79"
@@ -7507,40 +7489,6 @@ model Goldfinger_LimpetProjectileCoop
 	FrameIndex GE00 C 0 0
 }
 
-model Goldfinger_LimpetProjectileSoundSource
-{
-	Path "models/goldfinger/explosives"
-	model 0 "limpet.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
-model Goldfinger_LimpetProjectileCoopSoundSource
-{
-	Path "models/goldfinger/explosives"
-	model 0 "limpet.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
 model Goldfinger_LimpetStatic
 {
 	Path "models/goldfinger/explosives"
@@ -7559,40 +7507,6 @@ model Goldfinger_LimpetStatic
 }
 
 model Goldfinger_LimpetStaticCoop
-{
-	Path "models/goldfinger/explosives"
-	model 0 "limpet.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
-model Goldfinger_LimpetStaticSoundSource
-{
-	Path "models/goldfinger/explosives"
-	model 0 "limpet.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
-model Goldfinger_LimpetStaticCoopSoundSource
 {
 	Path "models/goldfinger/explosives"
 	model 0 "limpet.md3"
@@ -7691,40 +7605,6 @@ model Goldfinger_LandMineProjectileCoop
 	FrameIndex GE00 C 0 0
 }
 
-model Goldfinger_LandMineProjectileSoundSource
-{
-	Path "models/goldfinger/explosives"
-	model 0 "landmine.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
-model Goldfinger_LandMineProjectileCoopSoundSource
-{
-	Path "models/goldfinger/explosives"
-	model 0 "landmine.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
 model Goldfinger_LandMineStatic
 {
 	Path "models/goldfinger/explosives"
@@ -7743,40 +7623,6 @@ model Goldfinger_LandMineStatic
 }
 
 model Goldfinger_LandMineStaticCoop
-{
-	Path "models/goldfinger/explosives"
-	model 0 "landmine.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
-model Goldfinger_LandMineStaticSoundSource
-{
-	Path "models/goldfinger/explosives"
-	model 0 "landmine.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
-model Goldfinger_LandMineStaticCoopSoundSource
 {
 	Path "models/goldfinger/explosives"
 	model 0 "landmine.md3"
@@ -7875,40 +7721,6 @@ model Goldfinger_ClaymoreProjectileCoop
 	FrameIndex GE00 C 0 0
 }
 
-model Goldfinger_ClaymoreProjectileSoundSource
-{
-	Path "models/goldfinger/explosives"
-	model 0 "claymore.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
-model Goldfinger_ClaymoreProjectileCoopSoundSource
-{
-	Path "models/goldfinger/explosives"
-	model 0 "claymore.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
 model Goldfinger_ClaymoreStatic
 {
 	Path "models/goldfinger/explosives"
@@ -7927,40 +7739,6 @@ model Goldfinger_ClaymoreStatic
 }
 
 model Goldfinger_ClaymoreStaticCoop
-{
-	Path "models/goldfinger/explosives"
-	model 0 "claymore.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
-model Goldfinger_ClaymoreStaticSoundSource
-{
-	Path "models/goldfinger/explosives"
-	model 0 "claymore.md3"
-	INHERITACTORPITCH
-
-	//Flying
-	FrameIndex GE00 A 0 0
-
-	//Stop Floor
-	FrameIndex GE00 B 0 0
-
-	//Stop Ceiling
-	Offset 0 0 -18
-	FrameIndex GE00 C 0 0
-}
-
-model Goldfinger_ClaymoreStaticCoopSoundSource
 {
 	Path "models/goldfinger/explosives"
 	model 0 "claymore.md3"
