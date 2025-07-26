@@ -4126,7 +4126,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     bool weaponstay = slot == SLOT_BFG9000 || slot == SLOT_BFG10K ? GetCVar("samsara_permault") : GetCVar("sv_weaponstay");
 
     // Last pickup map coordinates initialization
-    bool setcoords = false;
+    bool setcoords = false; // might rename this to setdualcoords
     int maxDistance = 80;
     int invokerX = GetActorX(0) >> 16;
     int invokerY = GetActorY(0) >> 16;
@@ -4134,7 +4134,8 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     int inventoryX, inventoryY, inventoryZ;
 
     // Last pickup timer initialization
-    bool settimer = false;
+    bool settimer = false; // might rename this to setdualtimer
+    bool setammotimer = false;
 
     // Inventory check
     bool hasweapon = false;
@@ -4159,6 +4160,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
     // Default durations to wait until next pickup (weaponstay only)
     int pickuptimer = 35 * 60;
     int dualpickuptimer = 35 * 30;
+    int ammopickuptimer = 35 * 30;
 
     // Start everything
     switch (classnum)
@@ -7494,6 +7496,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 {
                     setcoords = true;
                     settimer = true;
+                    setammotimer = true;
                 }
 
                 result = 1;
@@ -7508,7 +7511,7 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                 }
                 else if (dualpickupmode == 2) { dualreqcheck = Timer() >= CheckInventory("Goldeneye_KnifeLastPickupTime"); }
 
-                if (dualreqcheck || dropped >= 1 || startmode != 0 || !weaponstay)
+                if (dualreqcheck || (!CheckInventory("Goldeneye_ThrowingKnivesAmmo") && Timer() >= CheckInventory("Goldeneye_KnifeAmmoLastPickupTime")) || dropped >= 1 || startmode != 0 || !weaponstay)
                 {
                     GiveInventory("Goldeneye_ThrowingKnivesDualToken", 1);
                     GiveInventory("Goldeneye_ThrowingKnivesAmmo", 1 / tossedammo);
@@ -7519,16 +7522,24 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
                     {
                         setcoords = true;
                         settimer = true;
+                        setammotimer = true;
                     }
 
                     result = 1;
                 }
-            } else if (CheckInventory("Goldeneye_ThrowingKnivesAmmo") < GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo") && (dropped >= 1 || startmode != 0 || !weaponstay)) {
+            } else if ((CheckInventory("Goldeneye_ThrowingKnivesAmmo") < GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo") && (dropped >= 1 || startmode != 0 || !weaponstay)) ||
+                       (!CheckInventory("Goldeneye_ThrowingKnivesAmmo") && (Timer() >= CheckInventory("Goldeneye_KnifeAmmoLastPickupTime") || dropped >= 1 || startmode != 0 || !weaponstay)))
+            {
                 int origknives = CheckInventory("Goldeneye_ThrowingKnivesAmmo");
 
                 GiveInventory("Goldeneye_ThrowingKnivesAmmo", 1 / tossedammo);
 
                 result = CheckInventory("Goldeneye_ThrowingKnivesAmmo") > origknives;
+
+                if (result == 1)
+                {
+                    if (dropped <= 0 && startmode == 0 && weaponstay) { setammotimer = true; }
+                }
             }
 
             if (startmode <= -1 || startmode >= 2) { GiveInventory("Goldeneye_ThrowingKnivesAmmo", GetAmmoCapacity("Goldeneye_ThrowingKnivesAmmo")); }
@@ -7541,6 +7552,8 @@ script "Samsara_GiveCustomSlot" (int slot, int dropped, int startmode)
             }
 
             if (settimer) { SetInventory("Goldeneye_KnifeLastPickupTime", Timer() + dualpickuptimer); }
+
+            if (setammotimer) { SetInventory("Goldeneye_KnifeAmmoLastPickupTime", Timer() + ammopickuptimer); }
             break;
 
           case SLOT_PISTOL:
@@ -15631,22 +15644,20 @@ script "SamsaraMapRevealerPickup" (void) { MapRevealerPickedUp = true; }
 
 Script "SamsaraSemiAuto" (void)
 {
-	int counter = 0;
 	SetInventory("SamsaraFiringFullAuto",1);
-	until(!(GetPlayerInput (-1, INPUT_BUTTONS) & BT_ATTACK) || counter > 35) 
+	until(!(GetPlayerInput (-1, INPUT_BUTTONS) & BT_ATTACK)) 
 	{ 
-		Delay(1); counter++;
+		Delay(1);
 	}
 	SetInventory("SamsaraFiringFullAuto",0);
 }
 
 Script "SamsaraSemiAuto2" (void)
 {
-	int counter = 0;
 	SetInventory("SamsaraFiringFullAuto2",1);
-	until(!(GetPlayerInput (-1, INPUT_BUTTONS) & BT_ATTACK) || counter > 35) 
+	until(!(GetPlayerInput (-1, INPUT_BUTTONS) & BT_ATTACK)) 
 	{ 
-		Delay(1); counter++;
+		Delay(1);
 	}
 	SetInventory("SamsaraFiringFullAuto2",0);
 }
