@@ -66,16 +66,13 @@ bool missile[NUMBER_MISSILES] = {0};
 //Finds the first zero element in the missile[] array.
 //This would be much more useful if I could pass in a pointer to the array!
 //
-//Parameters:
-//elements - INT, the number of elements in the array.
-//
 //Returns: INT value for the first element with a 0; -1 if none were found.
-function int checkForFirstZero (int elements) {
+function int findFirstZeroSlot(void) {
 	int result = -1;
 	int i;
 
 	// Cycle through each value in the missile array
-	for (i = 0; i < elements; i++)
+	for (i = 0; i < NUMBER_MISSILES; i++)
 	{
 		if (missile[i] == 0)
 		{
@@ -173,8 +170,10 @@ function bool setVelocityToTarget(int missileTid, int targetX, int targetY, int 
 	int idisY = ftoi(disY);
 	int idisZ = ftoi(disZ);
 
+	int xySquared = (idisX * idisX) + (idisY * idisY);
+
 	//Actual distance the missile is from the target.
-	int distance = sqrt(idisX * idisX + idisY * idisY + idisZ * idisZ);
+	int distance = sqrt(xySquared + idisZ * idisZ);
 
 	//This is to check for a cutoff distance.
 	//This is used because without it, if you were to shoot the missile downward at a
@@ -216,10 +215,12 @@ function bool setVelocityToTarget(int missileTid, int targetX, int targetY, int 
 			nextPitch = targetPitch;
 		}
 
+		int adjHypPitchRatio = cos(nextPitch);
+
 		//Next X, Y, and Z velocities
 		//Trig here to make sure the combined X, Y, and Z velocities equal the speed that is passed in.
-		int nextVelX = FixedMul(cos(nextAngle), cos(nextPitch)) * speed;
-		int nextVelY = FixedMul(sin(nextAngle), cos(nextPitch)) * speed;
+		int nextVelX = FixedMul(cos(nextAngle), adjHypPitchRatio) * speed;
+		int nextVelY = FixedMul(sin(nextAngle), adjHypPitchRatio) * speed;
 		int nextVelZ = sin(nextPitch) * speed;
 
 		//Chage the velocity here using the calculated values above.
@@ -244,7 +245,7 @@ function bool setVelocityToTarget(int missileTid, int targetX, int targetY, int 
 				s:"\nDisX:     ", f: disX,
 				s:"\nDisY:     ", f: disY,
 				s:"\nDisZ:     ", f: disZ,
-				s:"\nDist:     ", f: itof(sqrt((idisX * idisX) + (idisY * idisY))),
+				s:"\nDist:     ", f: itof(sqrt(xySquared)),
 				s:"\nT-Angle:  ", f: targetAngle,
 				s:"\nC-Angle:  ", f: currentAngle,
 				s:"\nT-Pitch:  ", f: targetPitch,
@@ -262,9 +263,9 @@ function bool setVelocityToTarget(int missileTid, int targetX, int targetY, int 
 	return false;
 }
 
-script "GuidedMissileFollow" (void) {
+script "SamsaraGuidedMissileFollow" (void) {
 	//Grab the first slot available for a missile to occupy
-	int missileSlotIndex = checkForFirstZero(NUMBER_MISSILES);
+	int missileSlotIndex = findFirstZeroSlot();
 
 	//If the result is good...
 	if (missileSlotIndex != -1)
@@ -285,9 +286,10 @@ script "GuidedMissileFollow" (void) {
 
 		//Store the missile's TID - 20000 in the array. This will flag it as occupied.
 		missile[occupyTid] = 1;
-		bool follow = true;
+		bool follow;
+
 		//Then the missile follows the target until it's exploded or it gets too close to the target.
-		while (missile[occupyTid] == 1 && follow)
+		do
 		{
 			int targetX = playerLineTraceCoords[playerNum][SAMSARA_LINE_TRACE_X_IDX];
 			int targetY = playerLineTraceCoords[playerNum][SAMSARA_LINE_TRACE_Y_IDX];
@@ -295,11 +297,11 @@ script "GuidedMissileFollow" (void) {
 
 			follow = setVelocityToTarget(0, targetX, targetY, targetZ, MISSILE_SPEED, MISSILE_CUTOFF, MISSILE_TURNVALUE);
 			Delay(LATENCY);
-		}
+		} while (missile[occupyTid] == 1 && follow);
 	}
 }
 
-script "GuidedMissileCleanup" (void)
+script "SamsaraGuidedMissileCleanup" (void)
 {
 	int missileTid = ActivatorTID();
 
