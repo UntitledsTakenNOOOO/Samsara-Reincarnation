@@ -9194,7 +9194,7 @@ Model SamsaraUniquePickup1
 Model SamsaraUniquePickup2
 {
 	Path "Models/GoldFinger/pickups"
-	Model 0 "uzi_hybrid.md3"
+	Model 0 "uzi.md3"
 	Scale 1.0 1.0 1.0
 
 	FrameIndex GF00 Z 0 0
