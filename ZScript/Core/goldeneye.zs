@@ -126,7 +126,7 @@ Class BondWeaponAppearanceUpdate : CustomInventory
 							if(CheckInventory("BondDualWieldToken",1))
 							{
 								A_ChangeModel("",2,"Models/Goldfinger/player","thompsondrum_left.md3",2,"","",0,0);
-								if(firing && alternate) A_ChangeModel("",4,"Models/Goldfinger/player","thompson_flash_left.md3",4,"","",0,0);
+								if(firing) A_ChangeModel("",4,"Models/Goldfinger/player","thompson_flash_left.md3",4,"","",0,0);
 							}
 							break;
 						case 'Goldfinger_SuperBazooka':
