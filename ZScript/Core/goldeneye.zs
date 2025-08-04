@@ -13,8 +13,8 @@ Class BondWeaponAppearanceUpdate : CustomInventory
 					switch(weaponname)
 					{
 						default:
-							A_ChangeModel("",1,"Models/Goldeneye/player","goldengun_left.md3",1,"Models","Noskin.png");
-							A_ChangeModel("",2,"Models/Goldeneye/player","goldengun_left.md3",2,"Models","Noskin.png");
+							A_ChangeModel("",1,"Models/Goldeneye/player","goldengun_left.md3",1,"Models","", CMDL_HIDEMODEL);
+							A_ChangeModel("",2,"Models/Goldeneye/player","goldengun_left.md3",2,"Models","", CMDL_HIDEMODEL);
 							break;
 						case 'Goldfinger_PPKSilenced':
 							A_ChangeModel("",1,"Models/Goldfinger/player","ppks_right.md3",1,"","",0,0);
@@ -248,8 +248,8 @@ Class BondWeaponAppearanceUpdate : CustomInventory
 					switch(weaponname)
 					{
 						default:
-							A_ChangeModel("",1,"Models/Goldeneye/player","goldengun_left.md3",1,"Models","Noskin.png");
-							A_ChangeModel("",2,"Models/Goldeneye/player","goldengun_left.md3",2,"Models","Noskin.png");
+							A_ChangeModel("",1,"Models/Goldeneye/player","goldengun_left.md3",1,"Models","", CMDL_HIDEMODEL);
+							A_ChangeModel("",2,"Models/Goldeneye/player","goldengun_left.md3",2,"Models","", CMDL_HIDEMODEL);
 							break;
 						case 'Goldeneye_PP7Silenced':
 							A_ChangeModel("",1,"Models/Goldeneye/player","pp7s_right.md3",1,"","",0,0);
@@ -349,12 +349,12 @@ Class BondWeaponAppearanceUpdate : CustomInventory
 							break;
 						case 'Goldeneye_RocketLauncher':
 							A_ChangeModel("",1,"Models/Goldeneye/player","rocketlauncher_right.md3",1,"","",0,0);
-							if(firing && !alternate) A_ChangeModel("",3,"Models/Goldeneye/player","goldengun_left.md3",3,"Models","Noskin.png");
+							if(firing && !alternate) A_ChangeModel("",3,"Models/Goldeneye/player","goldengun_left.md3",3,"Models","", CMDL_HIDEMODEL);
 							
 							if(CheckInventory("BondDualWieldToken",1))
 							{
 								A_ChangeModel("",2,"Models/Goldeneye/player","rocketlauncher_left.md3",2,"","",0,0);
-								if(firing && alternate) A_ChangeModel("",4,"Models/Goldeneye/player","goldengun_left.md3",4,"Models","Noskin.png");
+								if(firing && alternate) A_ChangeModel("",4,"Models/Goldeneye/player","goldengun_left.md3",4,"Models","", CMDL_HIDEMODEL);
 							}
 							break;
 						case 'Goldeneye_GrenadeLauncher':
@@ -477,7 +477,7 @@ Class BondWeaponAppearanceUpdate : CustomInventory
 				}
 				
 				if(!CheckInventory("BondDualWieldToken",1))
-					A_ChangeModel("",2,"Models/Goldeneye/player","goldengun_left.md3",2,"Models","Noskin.png");
+					A_ChangeModel("",2,"Models/Goldeneye/player","goldengun_left.md3",2,"Models","", CMDL_HIDEMODEL);
 					
 				if(!firing)
 				{
@@ -489,8 +489,8 @@ Class BondWeaponAppearanceUpdate : CustomInventory
 					}
 					else
 					{
-						A_ChangeModel("",3,"Models/Goldeneye/player","goldengun_left.md3",3,"Models","Noskin.png");
-						A_ChangeModel("",4,"Models/Goldeneye/player","goldengun_left.md3",4,"Models","Noskin.png");
+						A_ChangeModel("",3,"Models/Goldeneye/player","goldengun_left.md3",3,"Models","", CMDL_HIDEMODEL);
+						A_ChangeModel("",4,"Models/Goldeneye/player","goldengun_left.md3",4,"Models","", CMDL_HIDEMODEL);
 					}
 				}
 			}	
