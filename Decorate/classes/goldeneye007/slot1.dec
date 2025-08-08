@@ -812,8 +812,6 @@ actor Goldfinger_OddjobHat : SamsaraGoldenEyeWeapon
         goto Ready
 
       Deselect:
-        GE00 A 0 A_GunFlash("DualForceRemoval",GFF_NOEXTCHANGE)
-      DeselectLoop:
         GE00 A 0 A_TakeInventory("BondFireDelay")
         GE00 A 0 A_TakeInventory("BondAlternateFire")
         GE00 A 0 A_TakeInventory("BondDualWieldToken")
@@ -824,19 +822,22 @@ actor Goldfinger_OddjobHat : SamsaraGoldenEyeWeapon
         GE00 A 0 A_TakeInventory("BondDryFireSpamProtector1")
         GE00 A 0 A_TakeInventory("BondDryFireSpamProtector2")
         GE00 A 0 A_TakeInventory("BondAltActivationToken")
-        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"DeselectLoopAmmo")
-        GE00 A 0 A_JumpIfInventory("Goldfinger_OddjobHatAmmo",1,"DeselectLoopAmmo")
-        goto DeselectLoopNoAmmo
+        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"DeselectAmmo")
+        GE00 A 0 A_JumpIfInventory("Goldfinger_OddjobHatAmmo",1,"DeselectAmmo")
+        goto DeselectNoAmmo
 
-      DeselectLoopNoAmmo:
+      DeselectNoAmmo:
         GE01 Z 1 A_Lower
-        loop
+        goto Deselect
 
-      DeselectLoopAmmo:
+      DeselectAmmo:
         GE00 A 1 A_Lower
-        loop
+        goto Deselect
 
       Select:
+        GE00 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+        GE00 A 0 A_JumpIfInventory("Goldfinger_OddjobHatAmmo",1,1)
+        goto SelectLoop
         GE00 A 0 A_PlaySound("Goldfinger/HatSwitch",CHAN_7)
       SelectLoop:
         GE00 A 0 A_TakeInventory("Goldeneye_UnarmedToken")
@@ -857,11 +858,11 @@ actor Goldfinger_OddjobHat : SamsaraGoldenEyeWeapon
 
       SelectLoopNoAmmo:
         GE01 Z 1 A_Raise
-        loop
+        goto SelectLoop
 
       SelectLoopAmmo:
         GE00 A 1 A_Raise
-        loop
+        goto SelectLoop
 
       Fire:
         GE01 B 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"FireStart")
