@@ -128,9 +128,9 @@ Actor Painkiller_Coin_Physical : SwitchableDecoration
 	var int user_turndirection;
 	Activation THINGSPEC_ThingTargets
 	-NOGRAVITY
-	//+THRUACTORS
 	+DONTTRANSLATE
 	+BUMPSPECIAL
+	//+THRUACTORS
 	+CANBOUNCEWATER
 	+DONTBLAST
 	+DONTREFLECT
@@ -168,14 +168,8 @@ Actor Painkiller_Coin : CustomInventory
 	{
 		Spawn:
 			PK00 A 0 NoDelay ACS_NamedExecuteWithResult("Painkiller_SoulCatcher",2)
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_CoinGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_CoinGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_CoinGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_CoinGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_CoinGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_CoinGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_CoinGlow")
-			PK00 A 0 A_SpawnItemEx("Painkiller_CoinGlow2",0,0,1)
+			PK00 AAAAAAA 35
+			PK00 A 0 A_GiveInventory("Painkiller_RemoveTreasureGlow")
 			PK00 A 1 A_Fadeout(0.05)
 			Wait
 		Pickup:
@@ -187,52 +181,35 @@ Actor Painkiller_Coin : CustomInventory
 
 Actor Painkiller_CoinTarget : Painkiller_SoulTarget
 {
-	States
-	{
-		Spawn:
-			TNT1 A 1
-			TNT1 A 0 A_LookEx(LOF_NOSOUNDCHECK,0,256,0,360)
-			Loop
-		See:
-			TNT1 A 0 A_JumpIfInTargetInventory("Painkiller_GoldMagnet_Power",1,1)
-			Goto Spawn
-			TNT1 A 1 A_FaceTarget
-			TNT1 A 0 A_JumpIfCloser(16,"GiveCoin")
-			TNT1 A 0 A_SkullAttack(16)
-			Loop
-		GiveCoin:
-			TNT1 A 1 A_GiveToTarget("Painkiller_Coin",1)
-			Stop
-	}
-}
-
-Actor Painkiller_CoinGlow
-{
 	+NOINTERACTION
 	+FORCEXYBILLBOARD
 	+BRIGHT
 	Renderstyle Translucent
-	Height 2
-	Radius 1
 	Scale 0.5
 	Alpha 0.5
 	States
 	{
 		Spawn:
-			PK01 F 2
+			PK01 F 1 A_JumpIfInTargetInventory("Painkiller_RemoveTreasureGlow",1,"Remove")
+			TNT1 A 0 A_LookEx(LOF_NOSOUNDCHECK,0,256,0,360)
+			Loop
+		See:
+			TNT1 A 0 A_JumpIfInTargetInventory("Painkiller_GoldMagnet_Power",1,1)
+			Goto Spawn
+			PK01 F 1 A_FaceTarget
+			TNT1 A 0 A_JumpIfCloser(16,"GiveCoin")
+			TNT1 A 0 A_SkullAttack(16)
+			Loop
+		GiveCoin:
+			PK01 F 1 A_GiveToTarget("Painkiller_Coin",1)
 			Stop
-	}
-}
-
-Actor Painkiller_CoinGlow2 : Painkiller_CoinGlow
-{
-	States
-	{
-		Spawn:
+		Remove:
 			PK01 F 2 A_Fadeout(0.1)
 			Wait
 	}
 }
+
+Actor Painkiller_RemoveTreasureGlow : TemporaryBoolean {}
 
 Actor Painkiller_TossRing : Trigger
 {
@@ -314,14 +291,8 @@ Actor Painkiller_Ring_Blue : CustomInventory
 	{
 		Spawn:
 			PK00 A 0 NoDelay ACS_NamedExecuteWithResult("Painkiller_SoulCatcher",3)
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_RingGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_RingGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_RingGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_RingGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_RingGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_RingGlow")
-			PK00 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1 A_SpawnItemEx("Painkiller_RingGlow")
-			PK00 A 0 A_SpawnItemEx("Painkiller_RingGlow2",0,0,1)
+			PK00 AAAAAAA 35
+			PK00 A 0 A_GiveInventory("Painkiller_RemoveTreasureGlow")
 			PK00 A 1 A_Fadeout(0.05)
 			Wait
 		Pickup:
@@ -336,48 +307,27 @@ Actor Painkiller_RingTarget : Painkiller_SoulTarget
 	States
 	{
 		Spawn:
-			TNT1 A 1
+			PK01 G 1 A_JumpIfInTargetInventory("Painkiller_RemoveTreasureGlow",1,"Remove")
 			TNT1 A 0 A_LookEx(LOF_NOSOUNDCHECK,0,256,0,360)
 			Loop
 		See:
 			TNT1 A 0 A_JumpIfInTargetInventory("Painkiller_GoldMagnet_Power",1,1)
 			Goto Spawn
-			TNT1 A 1 A_FaceTarget
+			PK01 G 1 A_FaceTarget
 			TNT1 A 0 A_JumpIfCloser(16,"GiveCoin")
 			TNT1 A 0 A_SkullAttack(16)
 			Loop
 		GiveCoin:
-			TNT1 A 1 A_GiveToTarget("Painkiller_Ring_Blue",1)
+			PK01 G 1 A_GiveToTarget("Painkiller_Ring_Blue",1)
 			Stop
+		Remove:
+			PK01 G 2 A_Fadeout(0.1)
+			Wait
 	}
 }
 
 Actor Painkiller_Ring_Red : Painkiller_Ring_Blue {}
 Actor Painkiller_Ring_Green : Painkiller_Ring_Blue {}
-
-Actor Painkiller_RingGlow : Painkiller_CoinGlow
-{
-	Scale 0.75
-	Alpha 0.5
-	States
-	{
-		Spawn:
-			PK01 G 2
-			Stop
-	}
-}
-
-Actor Painkiller_RingGlow2 : Painkiller_CoinGlow
-{
-	Scale 0.75
-	Alpha 0.5
-	States
-	{
-		Spawn:
-			PK01 G 2 A_Fadeout(0.1)
-			Wait
-	}
-}
 
 Actor Painkiller_CoinTosser
 {
