@@ -45,6 +45,118 @@ Graphic "GFPSL0DY", 60, 49
 	Patch "GFPSL0DY", 0, 0
 }
 
+Graphic "GFPSL1N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL1N", 0, 0
+}
+
+Graphic "GFPSL1Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL1Y", 0, 0
+}
+
+Graphic "GFPSL1DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL1DN", 0, 0
+}
+
+Graphic "GFPSL1DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL1DY", 0, 0
+}
+
+Graphic "GFPSL2N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL2N", 0, 0
+}
+
+Graphic "GFPSL2Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL2Y", 0, 0
+}
+
+Graphic "GFPSL2DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL2DN", 0, 0
+}
+
+Graphic "GFPSL2DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL2DY", 0, 0
+}
+
+Graphic "GFPSL3N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL3N", 0, 0
+}
+
+Graphic "GFPSL3Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL3Y", 0, 0
+}
+
+Graphic "GFPSL3DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL3DN", 0, 0
+}
+
+Graphic "GFPSL3DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL3DY", 0, 0
+}
+
+Graphic "GFPSL4N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL4N", 0, 0
+}
+
+Graphic "GFPSL4Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL4Y", 0, 0
+}
+
+Graphic "GFPSL4DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL4DN", 0, 0
+}
+
+Graphic "GFPSL4DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL4DY", 0, 0
+}
+
 Graphic "GFW1L0N", 60, 49
 {
 	XScale 3.200
