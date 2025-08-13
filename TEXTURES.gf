@@ -17,6 +17,559 @@ Graphic "007BART2", 1280, 79
 	Patch "007BART2", 0, 0
 }
 
+Graphic "GFPSL0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL0N", 0, 0
+}
+
+Graphic "GFPSL0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL0Y", 0, 0
+}
+
+Graphic "GFPSL0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL0DN", 0, 0
+}
+
+Graphic "GFPSL0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFPSL0DY", 0, 0
+}
+
+Graphic "GFW1L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW1L0N", 0, 0
+}
+
+Graphic "GFW1L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW1L0Y", 0, 0
+}
+
+Graphic "GFW2L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW2L0N", 0, 0
+}
+
+Graphic "GFW2L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW2L0Y", 0, 0
+}
+
+Graphic "GFW2L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW2L0DN", 0, 0
+}
+
+Graphic "GFW2L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW2L0DY", 0, 0
+}
+
+Graphic "GFW3L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW3L0N", 0, 0
+}
+
+Graphic "GFW3L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW3L0Y", 0, 0
+}
+
+Graphic "GFW3L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW3L0DN", 0, 0
+}
+
+Graphic "GFW3L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW3L0DY", 0, 0
+}
+
+Graphic "GFW3L1N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW3L1N", 0, 0
+}
+
+Graphic "GFW3L1Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW3L1Y", 0, 0
+}
+
+Graphic "GFW3L1DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW3L1DN", 0, 0
+}
+
+Graphic "GFW3L1DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW3L1DY", 0, 0
+}
+
+Graphic "GFW4L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW4L0N", 0, 0
+}
+
+Graphic "GFW4L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW4L0Y", 0, 0
+}
+
+Graphic "GFW4L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW4L0DN", 0, 0
+}
+
+Graphic "GFW4L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW4L0DY", 0, 0
+}
+
+Graphic "GFS4L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS4L0N", 0, 0
+}
+
+Graphic "GFS4L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS4L0Y", 0, 0
+}
+
+Graphic "GFS4L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS4L0DN", 0, 0
+}
+
+Graphic "GFS4L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS4L0DY", 0, 0
+}
+
+Graphic "GFS4L1N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS4L1N", 0, 0
+}
+
+Graphic "GFS4L1Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS4L1Y", 0, 0
+}
+
+Graphic "GFS4L1DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS4L1DN", 0, 0
+}
+
+Graphic "GFS4L1DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS4L1DY", 0, 0
+}
+
+Graphic "GFW5L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW5L0N", 0, 0
+}
+
+Graphic "GFW5L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW5L0Y", 0, 0
+}
+
+Graphic "GFW5L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW5L0DN", 0, 0
+}
+
+Graphic "GFW5L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW5L0DY", 0, 0
+}
+
+Graphic "GFS5L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS5L0N", 0, 0
+}
+
+Graphic "GFS5L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS5L0Y", 0, 0
+}
+
+Graphic "GFS5L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS5L0DN", 0, 0
+}
+
+Graphic "GFS5L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS5L0DY", 0, 0
+}
+
+Graphic "GFW6L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW6L0N", 0, 0
+}
+
+Graphic "GFW6L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW6L0Y", 0, 0
+}
+
+Graphic "GFW6L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW6L0DN", 0, 0
+}
+
+Graphic "GFW6L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW6L0DY", 0, 0
+}
+
+Graphic "GFS6L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS6L0N", 0, 0
+}
+
+Graphic "GFS6L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS6L0Y", 0, 0
+}
+
+Graphic "GFS6L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS6L0DN", 0, 0
+}
+
+Graphic "GFS6L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS6L0DY", 0, 0
+}
+
+Graphic "GFS6L1N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS6L1N", 0, 0
+}
+
+Graphic "GFS6L1Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS6L1Y", 0, 0
+}
+
+Graphic "GFS6L1DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS6L1DN", 0, 0
+}
+
+Graphic "GFS6L1DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS6L1DY", 0, 0
+}
+
+Graphic "GFW7L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW7L0N", 0, 0
+}
+
+Graphic "GFW7L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW7L0Y", 0, 0
+}
+
+Graphic "GFW7L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW7L0DN", 0, 0
+}
+
+Graphic "GFW7L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFW7L0DY", 0, 0
+}
+
+Graphic "GFS7L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS7L0N", 0, 0
+}
+
+Graphic "GFS7L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS7L0Y", 0, 0
+}
+
+Graphic "GFS7L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS7L0DN", 0, 0
+}
+
+Graphic "GFS7L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFS7L0DY", 0, 0
+}
+
+Graphic "GFU1L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU1L0N", 0, 0
+}
+
+Graphic "GFU1L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU1L0Y", 0, 0
+}
+
+Graphic "GFU1L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU1L0DN", 0, 0
+}
+
+Graphic "GFU1L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU1L0DY", 0, 0
+}
+
+Graphic "GFU2L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L0N", 0, 0
+}
+
+Graphic "GFU2L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L0Y", 0, 0
+}
+
+Graphic "GFU2L0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L0DN", 0, 0
+}
+
+Graphic "GFU2L0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L0DY", 0, 0
+}
+
+Graphic "GFU2L1N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L1N", 0, 0
+}
+
+Graphic "GFU2L1Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L1Y", 0, 0
+}
+
+Graphic "GFU2L1DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L1DN", 0, 0
+}
+
+Graphic "GFU2L1DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L1DY", 0, 0
+}
+
+Graphic "GFU2L2N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L2N", 0, 0
+}
+
+Graphic "GFU2L2Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L2Y", 0, 0
+}
+
+Graphic "GFU2L2DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L2DN", 0, 0
+}
+
+Graphic "GFU2L2DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU2L2DY", 0, 0
+}
+
+Graphic "GFU3L0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU3L0N", 0, 0
+}
+
+Graphic "GFU3L0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU3L0Y", 0, 0
+}
+
+Graphic "GFU3L0Y1", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU3L0Y1", 0, 0
+}
+
+Graphic "GFU3L0Y2", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU3L0Y2", 0, 0
+}
+
+Graphic "GFU3L0Y3", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFU3L0Y3", 0, 0
+}
+
 Graphic "GFWSEL1N", 47, 20
 {
 	XScale 2.900
