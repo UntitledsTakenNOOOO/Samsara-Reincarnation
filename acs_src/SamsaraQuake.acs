@@ -58,6 +58,7 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
     int regenTimer, oRegenTimer;
     int invisTimer, oInvisTimer;
     int pentTimer,  oPentTimer;
+	int bioTimer,  oBioTimer;
     int health, oHealth, regenPulse, oPulse;
     int regenX, regenY;
     int healthGiven, healthMax;
@@ -88,6 +89,7 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
     regenTimer  = CheckInventory("QuakeRegenTimer");
     invisTimer  = CheckInventory("QuakeInvisTimer");
     pentTimer   = CheckInventory("QuakePentTimer");
+	bioTimer   = CheckInventory("QuakeBioTimer");
 
     health = GetActorProperty(0, APROP_Health);
 
@@ -111,6 +113,7 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
             TakeInventory("QuakeRegenTimer", 0x7FFFFFFF);
             TakeInventory("QuakeInvisTimer", 0x7FFFFFFF);
             TakeInventory("QuakePentTimer", 0x7FFFFFFF);
+			TakeInventory("QuakeBioTimer", 0x7FFFFFFF);
 
             Delay(1);
             continue;
@@ -127,6 +130,9 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
 
         oPentTimer = pentTimer;
         pentTimer  = CheckInventory("QuakePentTimer");
+		
+        oBioTimer = bioTimer;
+        bioTimer  = CheckInventory("QuakeBioTimer");
 
         offset = 1;
         opowercount = powercount;
@@ -135,6 +141,11 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
         powercount += (regenTimer > 0);
         powercount += (invisTimer > 0);
         powercount += (pentTimer > 0);
+		powercount += (bioTimer > 0);
+
+        /*
+         * Quad shit
+         */
 
         if (quadTimer - 35 > oQuadTimer)
         {
@@ -197,10 +208,11 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
                 if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { LocalAmbientSound("quakeweps/dmc/quadready", 96); } // Deathmatch Classic
                 else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { LocalAmbientSound("quakeweps/rerelease/quadready", 96); } // Rerelease
                 else { LocalAmbientSound("quakeweps/quadready", 96); } // Original
+				FadeRange(0, 64, 255, 0.25, 0, 64, 255, 0, 0.33);
 
-                SetHudSize(240, 180, 1);
-                SetFont("QUADICO2");
-                HudMessage(s:"A"; HUDMSG_FADEOUT, 58103, CR_UNTRANSLATED, 215.4, 102.0, 0.0, 1.0);
+                //SetHudSize(320, 200, 1);
+                //SetFont("QUADICO2");
+                //HudMessage(s:"Quad Damage Recharged"; HUDMSG_FADEOUT, 58103, CR_UNTRANSLATED, 1.5, 0.5, 0.0, 1.0);
             }
 
             TakeInventory("CantQuad", 0x7FFFFFFF);
@@ -216,7 +228,9 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
 
         if (pentTimer - 35 > oPentTimer)
         {
-            AmbientSound("quakeweps/pentagramon", 127);
+            if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { AmbientSound("quakeweps/dmc/pentagramon", 127); } // Deathmatch Classic
+            else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { AmbientSound("quakeweps/rerelease/pentagramon", 127); } // Rerelease
+            else { AmbientSound("quakeweps/pentagramon", 127); } // Original
         }
 
         if (pentTimer > 0)
@@ -233,13 +247,17 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
 
             offset++;
 
-            if (pentTimer % 35 == 0 && pentTimer / 35 < 5)
+            if (pentTimer == 105)
             {
-                LocalAmbientSound("quakeweps/pentagramout", PowerOutVols[regenTimer / 35]);
+                if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { LocalAmbientSound("quakeweps/dmc/pentagramout", 127); } // Deathmatch Classic
+                else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { LocalAmbientSound("quakeweps/rerelease/pentagramout", 127); } // Rerelease
+                else { LocalAmbientSound("quakeweps/pentagramout", 127); } // Original
             }
             else if (Timer() % 140 == 0)
             {
-                ActivatorSound("quakeweps/pentagram", 96);
+                if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { ActivatorSound("quakeweps/dmc/pentagram", 96); } // Deathmatch Classic
+                else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { ActivatorSound("quakeweps/rerelease/pentagram", 96); } // Rerelease
+                else { ActivatorSound("quakeweps/pentagram", 96); } // Original
             }
 
             if (oPentTimer <= 0 || oHealth <= 0) { GiveInventory("QuakePentagram", 1); }
@@ -257,14 +275,16 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
 
         /*
          * Regen shit
-		 
-		 938: i do want to make the regen icon pulse in the sprite instead of just increasing in size, but I can't figure out how to do that.
          */
 
         if (regenTimer != 0)
         {
-            if (regenTimer - 35 > oRegenTimer) { AmbientSound("quakeweps/regenannounce", 127); }
-
+			if (regenTimer - 35 > oRegenTimer)
+			{
+				if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { ActivatorSound("quakeweps/dmc/regenup", 127); } // Deathmatch Classic
+				else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { ActivatorSound("quakeweps/rerelease/regenup", 127); } // Rerelease
+				else { ActivatorSound("quakeweps/regenup", 127); } // Original
+			}
             regenX = 320 - (regenPulse * 18);
             regenY = 200 - (regenPulse * 18);
 
@@ -305,7 +325,9 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
                 if (GetActorProperty(0, APROP_Health) > health)
                 {
                     FadeRange(255, 128, 128, 0.1, 255, 0, 0, 0.0, 0.3333);
-                    ActivatorSound("quakeweps/regen", 127);
+					if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { ActivatorSound("quakeweps/dmc/regen", 127); } // Deathmatch Classic
+					else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { ActivatorSound("quakeweps/rerelease/regen", 127); } // Rerelease
+					else { ActivatorSound("quakeweps/regen", 127); } // Original
                     regenPulse = 12;
                 }
 
@@ -313,9 +335,11 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
                 health = GetActorProperty(0, APROP_Health);
             }
 
-            if (regenTimer % 35 == 0 && regenTimer / 35 < 5)
+            if (regenTimer == 105)
             {
-                LocalAmbientSound("quakeweps/regenout", PowerOutVols[regenTimer / 35]);
+				if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { LocalAmbientSound("quakeweps/dmc/regenout", 127); } // Deathmatch Classic
+				else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { LocalAmbientSound("quakeweps/rerelease/regenout", 127); } // Rerelease
+				else { LocalAmbientSound("quakeweps/regenout", 127); } // Original
             }
         }
         else if (CheckInventory("SamsaraHasProsperity") || GetCVar("sv_degeneration"))
@@ -344,7 +368,9 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
 
         if (invisTimer - 35 > oInvisTimer)
         {
-            ActivatorSound("quakeweps/invison", 127);
+            if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { ActivatorSound("quakeweps/dmc/invison", 127); } // Deathmatch Classic
+            else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { ActivatorSound("quakeweps/rerelease/invison", 127); } // Rerelease
+            else { ActivatorSound("quakeweps/invison", 127); } // Original
         }
 
         if (invisTimer > 0)
@@ -363,12 +389,16 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
 
             if (invisTimer % 105 == 0)
             {
-                ActivatorSound("quakeweps/inviswhisper", 127);
+                if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { LocalAmbientSound("quakeweps/dmc/inviswhisper", 127); } // Deathmatch Classic
+                else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { LocalAmbientSound("quakeweps/rerelease/inviswhisper", 127); } // Rerelease
+                else { LocalAmbientSound("quakeweps/inviswhisper", 127); } // Original
             }
 
             if (invisTimer == 105)
             {
-                LocalAmbientSound("quakeweps/invisout", 127);
+                if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { LocalAmbientSound("quakeweps/dmc/invisout", 127); } // Deathmatch Classic
+                else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { LocalAmbientSound("quakeweps/rerelease/invisout", 127); } // Rerelease
+                else { LocalAmbientSound("quakeweps/invisout", 127); } // Original
             }
 
             if (oInvisTimer <= 0 || oHealth <= 0) { GiveInventory("QuakeInvisibility", 1); }
@@ -383,6 +413,39 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
             }
 
         }
+		
+        /*
+         * Biosuit shit
+         */
+
+        if (bioTimer - 35 > oBioTimer)
+        {
+            if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { ActivatorSound("quakeweps/dmc/biosuiton", 127); } // Deathmatch Classic
+            else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { ActivatorSound("quakeweps/rerelease/biosuiton", 127); } // Rerelease
+            else { ActivatorSound("quakeweps/biosuiton", 127); } // Original
+        }
+
+        if (bioTimer > 0)
+        {
+            if (bioTimer % 35 == 0 || oBioTimer < bioTimer || powercount != opowercount)
+            {
+                SetHudSize(320, 200, 1);
+                SetFont("Q1P4ICO1");
+                HudMessage(s:"A"; HUDMSG_FADEOUT, 58109, CR_UNTRANSLATED, 311.0, PY320 - (POFF320 * offset), 1.5, 1.0);
+                SetHudSize(320, 200, 1);
+                SetFont("QUAKCONP");
+                HudMessage(d:(bioTimer+34) / 35;  HUDMSG_FADEOUT, 58110, CR_UNTRANSLATED, 300.2, PY320 - (POFF320 * offset), 1.5, 1.0);
+            }
+
+            offset++;
+
+            if (bioTimer == 105)
+            { 
+                if (CheckInventory("SamsaraAlternateSoundToken") >= 2) { LocalAmbientSound("quakeweps/dmc/biosuitoff", 127); } // Deathmatch Classic
+                else if (CheckInventory("SamsaraAlternateSoundToken") == 1) { LocalAmbientSound("quakeweps/rerelease/biosuitoff", 127); } // Rerelease
+                else { LocalAmbientSound("quakeweps/biosuitoff", 127); } // Original
+            }
+        }
 
         TakeInventory("QuakeQuadTimer", 1);
         if (!CheckInventory("QuakeQuadTimer") || CheckQuad() > 0 || CheckInventory("SamsaraHasDisabledInventoryCooldown") || !GetCVar("samsara_permaquad")) { SetInventory("SamsaraQuadDamageCooldownDisplay", 0); }
@@ -391,6 +454,7 @@ script "SamsaraQPowers" (int startTime, int respawning) //636 -- SAMSARA_QPOWERS
         TakeInventory("QuakeRegenTimer", 1);
         TakeInventory("QuakeInvisTimer", 1);
         TakeInventory("QuakePentTimer", 1);
+        TakeInventory("QuakeBioTimer", 1);
 
         if (UnloadingNow)
         {
