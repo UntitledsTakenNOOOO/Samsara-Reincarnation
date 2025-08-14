@@ -42,6 +42,8 @@ Goldfinger/HatThrow2 "Sounds/Goldfinger/goldfinger_hatthrow2.wav"
 Goldfinger/HatThrow3 "Sounds/Goldfinger/goldfinger_hatthrow3.wav"
 
 Goldfinger/MissionDeath "Sounds/Goldfinger/goldfinger_missiondeath.mp3"
+$alias Goldfinger/MultiplayerDeath Goldfinger/MissionDeath // originally used goldeneye's multiplayer death music
+
 Goldfinger/AllyCellPhone "Sounds/Goldfinger/goldfinger_allycellphone.mp3"
 
 $random Goldfinger/BondTaunt { Goldfinger/BondTaunt1 Goldfinger/BondTaunt2 Goldfinger/BondTaunt3 Goldfinger/BondTaunt4 Goldfinger/BondTaunt5 Goldfinger/BondTaunt6 Goldfinger/BondTaunt7 Goldfinger/BondTaunt8 Goldfinger/BondTaunt9 Goldfinger/BondTaunt10 Goldfinger/BondTaunt11 Goldfinger/BondTaunt12 }
