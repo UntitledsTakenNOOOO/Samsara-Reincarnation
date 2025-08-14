@@ -1171,8 +1171,8 @@ actor BioSuit : SamsaraPowerupPickup
         goto PickupDisplay
 
       PickupDisplay:
-		TNT1 A 0 A_JumpIfInventory("QuakeClass",1,"PickupDisplayQuake1")
         TNT1 A 0 A_JumpIfInventory("MarathonClass",1,"PickupDisplayMarathon")
+        TNT1 A 0 A_JumpIfInventory("QuakeClass",1,"PickupDisplayQuake1")
         TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupDisplayROTT")
         //TNT1 A 0 A_JumpIfInventory("StrifeClass",1,"PickupDisplayStrife")
         //TNT1 A 0 A_JumpIfInventory("BittermanClass",1,"PickupDisplayQuake2")
@@ -1192,39 +1192,39 @@ actor BioSuit : SamsaraPowerupPickup
         TNT1 A 0 A_PlaySound("marathon/bigitemget",CHAN_ITEM|CHAN_MAYBE_LOCAL)
         goto PickupSuccess
 
-      PickupDisplayROTT:
+      PickupDisplayQuake1:
         TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 3, 1)
+        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
+        // pickup sound handled through ACS
+        goto PickupSuccess
+
+      PickupDisplayROTT:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 3, 2)
         TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
         TNT1 A 0 A_PlaySound("gen/asbestos",CHAN_ITEM|CHAN_MAYBE_LOCAL)
         goto PickupSuccess
 
       PickupDisplayStrife:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 3, 2)
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 3, 3)
         TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
         TNT1 A 0 A_PlaySound("strife/itempickup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
         goto PickupSuccess
 
-      PickupDisplayQuake1:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 3, 3)
-        TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        //TNT1 A 0 A_PlaySound("quakeweps/biosuiton",CHAN_ITEM|CHAN_MAYBE_LOCAL)
-        goto PickupSuccess
-
       PickupDisplayQuake2:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 3, 3)
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 3, 4)
         TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
         TNT1 A 0 A_PlaySound("Q2Misc/Pickup",CHAN_ITEM|CHAN_MAYBE_LOCAL)
         goto PickupSuccess
 
       PickupDisplayQuake3:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 3, 4)
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 3, 5)
         TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
         TNT1 A 0 ACS_NamedExecuteAlways("Q3_Announcer", 0, 2) //A_PlaySound("Quake3/Items/BioSuit",CHAN_6)
         goto PickupSuccess
 
       PickupSuccess:
         TNT1 A 0 A_JumpIfInventory("DoomguyClass",1,"PickupSuccessDoom")
-		TNT1 A 0 A_JumpIfInventory("QuakeClass",1,"PickupSuccessQuake1")
+        TNT1 A 0 A_JumpIfInventory("QuakeClass",1,"PickupSuccessQuake1")
         TNT1 A 0 A_JumpIfInventory("RottClass",1,"PickupSuccessROTT")
         //TNT1 A 0 A_JumpIfInventory("StrifeClass",1,"PickupSuccessStrife")
         TNT1 A 0 A_JumpIfInventory("KatarnClass",1,"PickupSuccessDarkForces")
@@ -1251,6 +1251,10 @@ actor BioSuit : SamsaraPowerupPickup
       PickupSuccessStronghold:
         goto PickupSuccessDefault
 
+      PickupSuccessQuake1:
+        TNT1 A 0 A_GiveInventory("QuakeBioTimer",1050)
+        stop
+
       PickupSuccessROTT:
         TNT1 A 0 A_JumpIfInventory("PowerIronFeetNoColor",1,"PickupSuccessROTTSubsequent")
         TNT1 A 0 A_TakeInventory("PowerBulletProofVest")
@@ -1276,11 +1280,6 @@ actor BioSuit : SamsaraPowerupPickup
       PickupSuccessWitchaven:
         TNT1 A 0 A_GiveInventory("SamsaraPowerIronFeetGiver")
         TNT1 A 0 A_GiveInventory("WTFireProofPhial")
-        stop
-
-      PickupSuccessQuake1:
-        TNT1 A 0 A_GiveInventory("QuakeBioTimer",1050)
-        TNT1 A 0 A_GiveInventory("Q1BiosuitGiver")
         stop
 
       PickupSuccessQuake2:
@@ -1325,12 +1324,7 @@ actor BioSuit : SamsaraPowerupPickup
 
 actor DoomBioSuit : BioSuit replaces RadSuit {}
 actor ChexBioSuit : BioSuit replaces SlimeProofSuit {}
-actor Q1BiosuitGiver : SamsaraPowerupGiver
-{
-	Powerup.Type "IronFeet"
-	Powerup.Duration -30
-}
-actor QuakeBioTimer: Counter {}
+
 actor SamsaraPowerIronFeetGiver : SamsaraPowerupGiver { Powerup.Type "IronFeet" }
 actor SamsaraPowerIronFeetGiverNoColor : SamsaraPowerupGiver { Powerup.Type "IronFeetNoColor" }
 actor SamsaraPowerMaskGiver : SamsaraPowerupGiver { Powerup.Type "Mask" }
@@ -1383,6 +1377,10 @@ actor SamsaraBioSuitInventory : CustomInventory
 }
 
 actor SamsaraPowerIronFeetGiverDoom64 : SamsaraPowerIronFeetGiver { Powerup.Color "Green", 0.15 }
+
+actor QuakeBioTimer: Counter { Inventory.InterHubAmount 0 }
+
+actor QuakeBiosuit : PowerIronFeet { Powerup.Duration 0x7FFFFFFF }
 
 actor SamsaraPowerIronFeetGiverROTT : SamsaraPowerIronFeetGiverNoColor { Powerup.Duration -45 }
 
@@ -3343,7 +3341,7 @@ actor SamsaraFullInvisibility : SamsaraPowerupPickup
       PickupDisplayQuake1:
         TNT1 A 0 ACS_NamedExecuteAlways("SamsaraPickupMessages", 0, 2, 0, 3)
         TNT1 A 0 A_GiveInventory("SamsaraPowerupPickupBlend")
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraDecorate", 0, 25) //A_PlaySound("quake/invisannouncer",CHAN_7,1.0,false,ATTN_NONE)
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraDecorate", 0, 25) // pickup sound handled through ACS
         TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraPickupAnnouncerSounds", 4)
         goto PickupSuccess
 
