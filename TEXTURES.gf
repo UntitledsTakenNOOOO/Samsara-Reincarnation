@@ -682,6 +682,34 @@ Graphic "GFU3L0Y3", 60, 49
 	Patch "GFU3L0Y3", 0, 0
 }
 
+Graphic "GFGML0N", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFGML0N", 0, 0
+}
+
+Graphic "GFGML0Y", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFGML0Y", 0, 0
+}
+
+Graphic "GFGML0DN", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFGML0DN", 0, 0
+}
+
+Graphic "GFGML0DY", 60, 49
+{
+	XScale 3.200
+	YScale 3.100
+	Patch "GFGML0DY", 0, 0
+}
+
 Graphic "GFWSEL1N", 47, 20
 {
 	XScale 2.900
