@@ -12508,24 +12508,33 @@ script "SamsaraForcePlayerAttackState" (int flash)
 
 Script "SamsaraBloodGeneratorOffsets" (void)
 {
-	int missilex = GetActorX(0);
-	int missiley = GetActorY(0);
-	int missilez = GetActorZ(0);
-	int missileAngle = GetActorAngle(0);
-	SetActivator(0,AAPTR_Tracer);
+	int missileX = GetActorX(0);
+	int missileY = GetActorY(0);
+	int missileZ = GetActorZ(0);
 
-	int enemyx = GetActorX(0);
-	int enemyy = GetActorY(0);
-	int enemyz = GetActorZ(0);
-	int currentangle = GetActorAngle(0);
-	int vang = VectorAngle(enemyx - missilex, enemyy - missiley);
+	SetActivator(0,AAPTR_TRACER);
+
+	int enemyX = GetActorX(0);
+	int enemyY = GetActorY(0);
+	int enemyZ = GetActorZ(0);
+	int vang = VectorAngle(enemyX - missileX, enemyY - missileY);
 	int angle = vang % 1.0;
-	TakeInventory("SamsaraBloodGeneratorBleedAngle",999999);
+
 	TakeInventory("SamsaraBloodGeneratorAngle",999999);
 	TakeInventory("SamsaraBloodGeneratorZ",999999);
 	GiveInventory("SamsaraBloodGeneratorAngle",angle+65536);
+	GiveInventory("SamsaraBloodGeneratorZ",(missileZ - enemyZ)>>16 + 65536);
+}
+
+Script "SamsaraBloodGeneratorOffsetsWithBleedAngle" (void)
+{
+	int missileAngle = GetActorAngle(0);
+
+	ACS_NamedExecuteWithResult("SamsaraBloodGeneratorOffsets");
+	SetActivator(0,AAPTR_TRACER);
+
+	TakeInventory("SamsaraBloodGeneratorBleedAngle",999999);
 	GiveInventory("SamsaraBloodGeneratorBleedAngle",missileAngle+65536);
-	GiveInventory("SamsaraBloodGeneratorZ",(missilez - enemyz)>>16 + 65536);
 }
 
 Script "SamsaraBloodGeneratorReturn" (int mode)
