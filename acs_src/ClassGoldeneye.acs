@@ -272,7 +272,7 @@ str GoldeneyeWeaponInfo[2][GOLDENEYEWEAPONS][9] =
         {"Goldfinger_Landmine",       "Landmine",             "Land Mine (Proximity)",      "RocketAmmo",                "-1",                               "GE09C0", "-1",                                   "-1",                                 "GFWLND"},
         {"Goldfinger_Claymore",       "M18 Claymore Mine",    "M18 Claymore Mine (Remote)", "RocketAmmo",                "-1",                               "GE09B0", "-1",                                   "-1",                                 "GFWCLY"},
         {"-1",                        "-1",                   "-1",                         "-1",                        "-1",                               "-1",     "-1",                                   "-1",                                 "-1"},
-        {"Goldfinger_DB5MachineGuns", "Forward Machine Guns", "Forward\nMachine Guns",      "Clip",                      "-1",                               "GE09K0", "Clip",                                 "-1",                                 "-1"},
+        {"Goldfinger_DB5MachineGuns", "Forward Machine Guns", "Forward\nMachine Guns",      "Clip",                      "-1",                               "GE09K0", "-1",                                   "-1",                                 "-1"},
         {"Goldeneye_TankWeapon",      "Tank",                 "Tank",                       "RocketAmmo",                "Goldeneye_TankMagazine",           "B46EF6", "-1",                                   "-1",                                 "-1"}
     }
 };
@@ -940,13 +940,27 @@ Script "BondWatchInterface" (void) Clientside
 	restart;
 }
 
-Script "BondWeaponSwitch" (void) clientside
+script "BondWeaponSwitch" (void) CLIENTSIDE
 {
-	int goldfinger = CheckInventory("Goldeneye_PlayerAltClassToken");
-	SetWeapon(GoldeneyeWeaponInfo[goldfinger][CheckInventory("BondWeaponSwitchToken")-1][0]);
-	//PrintBold(s:GoldeneyeWeapons[CheckInventory("BondWeaponSwitchToken")-1]);
-	TakeInventory("BondWeaponToken", GOLDENEYEWEAPONS);
-	TakeInventory("BondWeaponSwitchToken", GOLDENEYEWEAPONS);
+    int weptoswitch = CheckInventory("BondWeaponSwitchToken");
+
+    if (weptoswitch <= 0)
+    {
+        // take these tokens just in case
+        SetInventory("BondWeaponToken", 0);
+        SetInventory("BondWeaponSwitchToken", 0);
+        terminate;
+    }
+
+    int goldfinger = CheckInventory("Goldeneye_PlayerAltClassToken");
+
+    weptoswitch--;
+
+    SetWeapon(GoldeneyeWeaponInfo[goldfinger][weptoswitch][0]);
+    //PrintBold(s:GoldeneyeWeaponInfo[goldfinger][weptoswitch][0]);
+
+    SetInventory("BondWeaponToken", 0);
+    SetInventory("BondWeaponSwitchToken", 0);
 }
 
 Script "BondFireCoolDown" (void) clientside
