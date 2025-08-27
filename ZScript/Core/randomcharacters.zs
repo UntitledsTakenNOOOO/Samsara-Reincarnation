@@ -49,6 +49,7 @@ Class DetermineValidSpawnZS : Actor
         +NOTELEPORT
         +NOTELESTOMP
 		+FLOORHUGGER
+        +DONTSPLASH
 	}
 	States
 	{
