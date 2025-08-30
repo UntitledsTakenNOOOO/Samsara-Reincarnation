@@ -1,0 +1,865 @@
+str stateNames[9] = { "Pipe", "Pistol", "Crowbar", "Shotgun", "GrenadeLauncher", "Tommygun", "Bazooka", "Flamethrower", "HMG" };
+
+Script "GlobalRecoil" (int duration, int intensity, int halfdampen)
+{
+	int i = 0;
+	for(i = 0; i < duration; i++)
+	{
+		SetActorPitch(0,GetActorPitch(0)-intensity);
+		Delay(1);
+	}
+	for(i = duration; i > 0; i--)
+	{
+		SetActorPitch(0,GetActorPitch(0)+intensity/(halfdampen+1));
+		Delay(1);
+	}
+}
+
+//A decorate won't convert a decimal to a floating point as far as my knowledge goes, so it's up to the decorate to multiply the intended decimal by 65536
+Script "Kingpin_FX" (int type, int duration, int maxSize)
+{
+	int i = 0;
+	int startScaleX = GetActorProperty(0,APROP_ScaleX);
+	int startScaleY = GetActorProperty(0,APROP_ScaleY);
+	switch(type)
+	{
+		case 1:
+			for(i = 0; i <= duration; i++)
+			{
+				//SetActorProperty(0,APROP_Alpha,(1.0/duration)*i);
+				SetActorProperty(0,APROP_ScaleX,startScaleX+(maxSize/duration)*i);
+				SetActorProperty(0,APROP_ScaleY,startScaleY+(maxSize/duration)*i);
+				Delay(1);
+			}
+			for(i = duration; i >= 0; i--)
+			{
+				SetActorProperty(0,APROP_Alpha,(1.0/duration)*i);
+				Delay(1);
+			}
+			Thing_Remove(0);
+			break;
+		case 2:
+			for(i = 0; i <= duration; i++)
+			{
+				SetActorProperty(0,APROP_ScaleX,startScaleX+(maxSize/duration)*i);
+				SetActorProperty(0,APROP_ScaleY,startScaleY+(maxSize/duration)*i);
+				Delay(1);
+			}
+			Thing_Remove(0);
+			break;
+	}
+}
+
+Script "Kingpin_GrenadeFuse" (void)
+{
+	GiveInventory("Kingpin_GrenadeFuse",105);
+	while(CheckInventory("Kingpin_GrenadeFuse") > 0)
+	{
+		TakeInventory("Kingpin_GrenadeFuse",1);
+		Delay(1);
+	}
+}
+
+Script "Kingpin_BloodGenerator_Offsets" (void)
+{
+	int missilex = GetActorX(0);
+	int missiley = GetActorY(0);
+	int missilez = GetActorZ(0);
+	int missileAngle = GetActorAngle(0);
+	SetActivator(0,AAPTR_Tracer);
+
+	int enemyx = GetActorX(0);
+	int enemyy = GetActorY(0);
+	int enemyz = GetActorZ(0);
+	int currentangle = GetActorAngle(0);
+	int vang = VectorAngle(enemyx - missilex, enemyy - missiley);
+	int angle = vang % 1.0;
+	SetInventory("Kingpin_BloodGeneratorAngle",angle+65536);
+	SetInventory("Kingpin_BloodGeneratorBleedAngle",missileAngle+65536);
+	SetInventory("Kingpin_BloodGeneratorZ",(missilez - enemyz)>>16 + 65536);
+}
+
+Script "Kingpin_BloodGenerator_Return" (int mode)
+{
+	int result;
+	switch(mode)
+	{
+		case 1:
+			result = ((CheckInventory("Kingpin_BloodGeneratorAngle") - 65536)/182)+180;
+			break;
+		case 2:
+			result = CheckInventory("Kingpin_BloodGeneratorZ");
+			break;
+		case 3:
+			result = ((CheckInventory("Kingpin_BloodGeneratorBleedAngle") - 65536)/182);
+			break;
+	}
+	SetResultValue(result);
+}
+
+Script "Kingpin_BloodPool" (void)
+{
+	int ownerTid = uniqueTid();
+	SpawnForced("Kingpin_BloodPool",GetActorX(0),GetActorY(0),GetActorFloorZ(0),ownerTid);
+	Thing_SetTranslation(ownerTid,-1);
+	SetActivator(0,AAPTR_MASTER);
+	SetPointerExt(AAPTR_MASTER,0,ownerTid);
+	SetActorProperty(ownerTid,APROP_ScaleX,GetActorProperty(0,APROP_Radius)/20);
+	Thing_ChangeTid(ownerTid,0);
+}
+
+#DEFINE MAXTRAILS 64
+
+Script "Kingpin_TrailLimiter" (void)
+{
+	int actorCount = ThingCountName(GetActorClass(0),0);
+	if(actorCount > MAXTRAILS)
+		GiveInventory("Kingpin_TrailLimiter",actorCount > MAXTRAILS * 2 ? 2 : 1);
+
+}
+
+Script "Kingpin_GibTransfer" (void)
+{
+	int gibTid = uniqueTid();
+	int timerValue = CheckInventory("Kingpin_GibLifeSpan");
+	int frame = CheckInventory("Kingpin_GibFrame");
+	SpawnForced("Kingpin_GibStay",GetActorX(0),GetActorY(0),GetActorZ(0),gibTid);
+	SetActorProperty(gibTid,APROP_ScaleX,GetActorProperty(0,APROP_ScaleX));
+	SetActorProperty(gibTid,APROP_ScaleY,GetActorProperty(0,APROP_ScaleY));
+	GiveActorInventory(gibTid,"Kingpin_GibLifeSpan",timerValue);
+	GiveActorInventory(gibTid,"Kingpin_GibFrame",frame);
+	Thing_SetTranslation(gibTid,-1);
+	Thing_ChangeTid(gibTid,0);
+}
+
+Script "Kingpin_GibSpawner" (void)
+{
+	int gibTid = uniqueTid();
+	int thisTid = uniqueTid();
+	Thing_ChangeTid(0,thisTid);
+	SetActivator(0,AAPTR_Master);
+	int height = GetActorProperty(0,APROP_Height)*4;
+	int radius = GetActorProperty(0,APROP_Radius);
+	Thing_Remove(0);
+	SetActivator(thisTid);
+	Thing_ChangeTid(thisTid,0);
+	int gibScale = (((height>>16)*(radius>>16))<<16)/1120;
+	int throwAngle, throwPitch, horzVelocity;
+	for(int a = 0; a < radius/65536; a++)
+	{
+		throwAngle = random(0,1.0);
+		throwPitch = random(-0.25,0.25);
+		horzVelocity = 12*cos(throwPitch);
+		SpawnForced("Kingpin_Gib",GetActorX(0)+random(-radius/2,radius/2),GetActorY(0)+random(-radius/2,radius/2),GetActorZ(0)+random(height/10,height-(height/10)),gibTid);
+		SetActorVelocity(gibTid,FixedMul(horzVelocity,cos(throwAngle)),FixedMul(horzVelocity,sin(throwAngle)),12*sin(throwPitch),0,0);
+		SetActorProperty(gibTid,APROP_ScaleX,gibScale);
+		SetActorProperty(gibTid,APROP_ScaleY,gibScale);
+		Thing_SetTranslation(gibTid,-1);
+		Thing_ChangeTid(gibTid,0);
+	}
+}
+
+Script "Kingpin_Player" Enter
+{
+	int currentplayeraction = 0;
+	int playerStillMoving = 0;
+	while(true)
+	{
+		SetAmmoCapacity("Kingpin_TommyGunMagazine",50*(1+CheckInventory("Kingpin_TommyGun_MagazineCapacity")));
+		SetAmmoCapacity("Kingpin_GrenadeLauncherMagazine",3*(1+CheckInventory("Kingpin_GrenadeLauncher_MagazineCapacity")));
+		
+		if(CheckInventory("Kingpin_Bazooka_LaserSystem") && CheckWeapon("Kingpin_Bazooka"))
+			GiveInventory("Kingpin_Bazooka_LaserSight",1);
+		
+		HudMessage(d:CheckInventory("Kingpin_Cash");HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,5,CR_UNTRANSLATED,0.1,0.9,0.0);
+		
+		if(CheckInventory("Kingpin_ResetPlayerAction")) { currentplayeraction = -1; SetInventory("Kingpin_PlayerJumping",0); SetInventory("Kingpin_LastWeapon",0); SetInventory("Kingpin_ResetPlayerAction",0); continue; }	
+		else if(GetPlayerInput(-1,INPUT_BUTTONS) & BT_JUMP && !CheckInventory("Kingpin_PlayerJumping"))
+		{
+			if(CheckInventory("Kingpin_SelectedWeapon") != CheckInventory("Kingpin_LastWeapon") || currentplayeraction != 4)
+			{
+				currentplayeraction = 4;
+				SetActorState(0,strparam(s:"Jump",s:stateNames[CheckInventory("Kingpin_SelectedWeapon")]),true);
+				SetInventory("Kingpin_LastWeapon",CheckInventory("Kingpin_SelectedWeapon"));
+			}
+		}
+		else if((GetPlayerInput(-1,MODINPUT_SIDEMOVE) != 0 || GetPlayerInput(-1,MODINPUT_FORWARDMOVE) != 0 || playerStillMoving > 0) && !CheckInventory("Kingpin_PlayerJumping")) 
+		{
+			if(GetPlayerInput(-1,MODINPUT_SIDEMOVE) != 0 || GetPlayerInput(-1,MODINPUT_FORWARDMOVE) != 0)
+			{
+				if(playerStillMoving < 32) 
+					playerStillMoving+=2;
+			}
+			
+			if(GetPlayerInput(-1,MODINPUT_FORWARDMOVE) != 0)
+			{
+				if(CheckInventory("Kingpin_SelectedWeapon") != CheckInventory("Kingpin_LastWeapon") || currentplayeraction != 1)
+				{
+					currentplayeraction = 1;
+					SetActorState(0,strparam(s:"See",s:stateNames[CheckInventory("Kingpin_SelectedWeapon")]),true);
+					SetInventory("Kingpin_LastWeapon",CheckInventory("Kingpin_SelectedWeapon"));
+				}
+			}
+			//Execute player controller code
+			else if(GetPlayerInput(-1,MODINPUT_SIDEMOVE) < 0)
+			{
+				if(CheckInventory("Kingpin_SelectedWeapon") != CheckInventory("Kingpin_LastWeapon") || currentplayeraction != 3)
+				{
+					currentplayeraction = 3;
+					SetActorState(0,strparam(s:"StrafeLeft",s:stateNames[CheckInventory("Kingpin_SelectedWeapon")]),true);
+					SetInventory("Kingpin_LastWeapon",CheckInventory("Kingpin_SelectedWeapon"));
+				}
+			}
+			else if(GetPlayerInput(-1,MODINPUT_SIDEMOVE) > 0)
+			{
+				if(CheckInventory("Kingpin_SelectedWeapon") != CheckInventory("Kingpin_LastWeapon") || currentplayeraction != 2)
+				{
+					currentplayeraction = 2;
+					SetActorState(0,strparam(s:"StrafeRight",s:stateNames[CheckInventory("Kingpin_SelectedWeapon")]),true);
+					SetInventory("Kingpin_LastWeapon",CheckInventory("Kingpin_SelectedWeapon"));
+				}
+			}
+		}
+		else if((CheckInventory("Kingpin_SelectedWeapon") != CheckInventory("Kingpin_LastWeapon") || currentplayeraction != 0) && !CheckInventory("Kingpin_PlayerJumping"))
+		{
+			currentplayeraction = 0;
+			SetActorState(0,strparam(s:"Spawn",s:stateNames[CheckInventory("Kingpin_SelectedWeapon")]),true);
+			SetInventory("Kingpin_LastWeapon",CheckInventory("Kingpin_SelectedWeapon"));
+		}
+		
+		if(playerStillMoving > 0) playerStillMoving--;
+		
+		Delay(1);
+	}
+}
+
+Script "Kingpin_RocketFlare" (void)
+{
+	int flareTid = uniqueTid();
+	SpawnForced("Kingpin_RocketFlare",0,0,0,flareTid);
+	SetPointerExt(AAPTR_MASTER,0,flareTid);
+	Thing_ChangeTid(flareTid,0);
+}
+
+Script "Kingpin_NukeFlash" (void)
+{
+	FadeRange(255,255,255,1.0,0,0,0,0,1.0);
+}
+
+Script "Kingpin_Bazooka" (int type, int arg1, int arg2)
+{
+	int lTid;
+	switch(type)
+	{
+		case 0:
+			SetPointer(AAPTR_TRACER,arg1);
+			break;
+		case 1:
+			int myTid = ActivatorTid();
+			int missileTid = uniqueTid();
+			Thing_ChangeTid(0,missileTid);
+			SetActivator(0,AAPTR_Target);
+			lTid = abs(CheckInventory("Kingpin_Bazooka_LaserTiD"));
+			SetActivator(missileTid);
+			Thing_ChangeTid(missileTid,0);
+			ACS_NamedExecuteWithResult("Kingpin_Bazooka",0,lTid);
+			break;
+		case 2:
+			lTid = uniqueTid();
+			SpawnForced("Kingpin_Bazooka_Seeker",GetActorX(0),GetActorY(0),GetActorZ(0),lTid);
+			SetActivator(0,AAPTR_Target);
+			SetInventory("Kingpin_Bazooka_LaserTiD",0);
+			GiveInventory("Kingpin_Bazooka_LaserTiD",lTid);
+			break;	
+	}
+}
+
+Script "Kingpin_ThrowMoney" (void)
+{
+	int moneyTid = UniqueTid();
+	int monsterHealth = GetActorProperty(0,APROP_SpawnHealth);
+	str moneyActor = "Kingpin_CashPickup";
+	if(monsterHealth >= 1000) moneyActor = "Kingpin_CashPickupBagS";
+	else if(monsterHealth >= 500) moneyActor = "Kingpin_CashPickupBagS";
+	SpawnForced(moneyActor,GetActorX(0),GetActorY(0),GetActorZ(0)+(GetActorProperty(0,APROP_Height)*2),moneyTid);
+	SetActorAngle(moneyTid,random(0,1.0));
+	SetActorVelocity(moneyTid,4*cos(GetActorAngle(moneyTid)),4*sin(GetActorAngle(moneyTid)),random(0,4.0),0,0);
+	Thing_ChangeTid(moneyTid,random(1,monsterHealth/10));
+}
+
+Script "Kingpin_Flamethrower" (void)
+{
+	While(CheckInventory("Kingpin_Flamethrower_Hold"))
+	{
+		Playsound(0,strparam(s:"Kingpin/Flamethrower/Flame",d:((timer()%3))+1),CHAN_AUTO,1.0,0,ATTN_NORM);
+		GiveInventory("Kingpin_Flamethrower_FireTrigger",1);
+		Delay(1);
+	}
+}
+
+Script "Kingpin_FlamethrowerDistance" (int px, int py, int pz)
+{
+	int rX = GetActorX(0)/65536 - px;
+	int rY = GetActorY(0)/65536 - py;
+	int rZ = GetActorZ(0)/65536 - pz;
+	int result = sqrt(rX*rX + rY*rY + rZ*rZ);
+	//PrintBold(s:"Trail Start X: ",d:px,s:"Trail Start Y: ",d:py,s:"Trail Start Z: ",d:pz,s:"\n",s:"Trail End X: ",d:GetActorX(0)>>16,s:"Trail End Y: ",d:GetActorY(0)>>16,s:"Trail End Z: ",d:GetActorZ(0)>>16);
+	SetResultValue(result);
+}
+
+Script "Kingpin_ReturnUpgrade" (int upgrade)
+{
+	SetActivator(0,AAPTR_Target);
+	switch(upgrade)
+	{
+		case 21:
+			SetResultValue(CheckInventory("Kingpin_Flamethrower_Range"));
+			break;
+	}
+}
+
+Script "Kingpin_FlamethrowerTracer" (int upgrade)
+{
+	int myOldTid = ActivatorTid();
+	int myTid = UniqueTid();
+	Thing_ChangeTid(0, myTid);
+
+	SetActivator(0,AAPTR_Tracer);
+
+	int requiredIgnition = (ClassifyActor(0) & ACTOR_Player || ClassifyActor(0) & ACTOR_Bot ? 6 : CheckFlag(0,"NOBLOOD") ? 72 : 36)/upgrade;
+
+	int actorClass = ClassifyActor(0);
+	if(!(actorClass & ACTOR_ALIVE) && !(actorClass & ACTOR_MONSTER || (!isSinglePlayer() && !isCoop() && (isPlayerOrBot(0) || GetActorProperty(0, APROP_FRIENDLY)))))
+		terminate;
+
+	if(!CheckInventory("Kingpin_FlamethrowerHitTarget"))
+	{
+		if(!CheckInventory("Kingpin_FlamethrowerBurnt"))
+		{
+			GiveInventory("Kingpin_FlamethrowerHitTarget",1);
+			GiveInventory("Kingpin_FlamethrowerIgnition",1);
+
+			if(CheckInventory("Kingpin_FlamethrowerIgnition") >= requiredIgnition && !CheckInventory("Kingpin_FlamethrowerBurnt"))
+			{
+				TakeInventory("Kingpin_FlamethrowerHitTarget",1);
+				TakeInventory("Kingpin_FlamethrowerIgnition",50);
+				GiveInventory("Kingpin_FlamethrowerBurnt",1);
+				GiveInventory("Kingpin_FlamethrowerStacker",1);
+				ACS_NamedExecuteWithResult("Kingpin_Decorate",8);
+				int burnerTid = UniqueTid();
+				if(CheckInventory("Kingpin_IsMale")) PlaySound(0,"Kingpin/Flamethrower/Burn",CHAN_AUTO,1.0,0,ATTN_NORM);
+				SpawnForced("Kingpin_FlamethrowerBurner",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid);
+				SetActivator(myTid,AAPTR_Target);
+				SetPointerExt(AAPTR_Target,0,burnerTid);
+				SetActivator(myTid,AAPTR_Tracer);
+				SetPointerExt(AAPTR_Tracer,0,burnerTid);
+				Thing_ChangeTid(myTid, myOldTid);
+				terminate;
+			}
+
+			Thing_ChangeTid(myTid, myOldTid);
+			Delay(1);
+			TakeInventory("Kingpin_FlamethrowerHitTarget",1);
+
+			Delay(105);
+			if(!CheckInventory("Kingpin_FlamethrowerBurnt")) TakeInventory("Kingpin_FlamethrowerIgnition",1);
+		}
+		else
+		{		
+			GiveInventory("Kingpin_FlamethrowerHitTarget",1);
+			GiveInventory("Kingpin_FlamethrowerIgnition",1);
+			if(CheckInventory("Kingpin_FlamethrowerIgnition") >= requiredIgnition)
+			{
+				TakeInventory("Kingpin_FlamethrowerHitTarget",1);
+				TakeInventory("Kingpin_FlamethrowerIgnition",50);
+				GiveInventory("Kingpin_FlamethrowerStacker",1);
+				Thing_ChangeTid(myTid, myOldTid);
+				ACS_NamedExecuteWithResult("Kingpin_Decorate",8);
+				terminate;
+			}
+
+			Thing_ChangeTid(myTid, myOldTid);
+			Delay(1);
+			TakeInventory("Kingpin_FlamethrowerHitTarget",1);
+
+			Delay(105);
+			if(!CheckInventory("Kingpin_FlamethrowerBurnt")) TakeInventory("Kingpin_FlamethrowerIgnition",1);
+		}
+	}
+	else
+		Thing_ChangeTid(myTid, myOldTid);
+}
+
+Script "Kingpin_EnemyBurn" (void)
+{
+	int radius = GetActorProperty(0,APROP_Radius)/4;
+	int height = GetActorProperty(0,APROP_Height);
+	While(CheckInventory("Kingpin_OnFire"))
+	{
+		SpawnForced("Kingpin_FlamethrowerFireVisual",GetActorX(0)+randSign()*radius,GetActorY(0)+randSign()*radius,GetActorZ(0)+random(0,height*4),0);
+		Delay(2);
+	}
+}
+
+Script "Kingpin_BurnHandler" (void)
+{
+	if(ACS_NamedExecuteWithResult("Kingpin_BurningOnPlayer"))
+	{
+		while(ACS_NamedExecuteWithResult("Kingpin_BurningPlayerIsAlive") && ClassifyActor(0) > 1)
+		{
+			if(ACS_NamedExecuteWithResult("Kingpin_Decorate",10) <= 0)
+			{
+				SetActorState(0,"Remove",1);
+				terminate;
+			}
+			Delay(2);
+		}
+	}
+	else
+	{
+		while(ACS_NamedExecuteWithResult("Kingpin_BurningPlayerIsAlive") && ClassifyActor(0) > 1)
+		{
+			if(ACS_NamedExecuteWithResult("Kingpin_Decorate",10) <= 0)
+			{
+				SetActorState(0,"Remove",1);
+				terminate;
+			}
+			Delay(2);
+		}
+	}
+}
+
+Script "Kingpin_BurningPlayerIsAlive" (void)
+{
+	SetActivator(0,AAPTR_Tracer);
+	if(ClassifyActor(0) & ACTOR_Alive)
+		SetResultValue(1);
+	else
+		SetResultValue(0);
+}
+
+Script "Kingpin_BurningOnPlayer" (void)
+{
+	SetActivator(0,AAPTR_Tracer);
+	if(ClassifyActor(0) & ACTOR_Player || ClassifyActor(0) & ACTOR_Bot)
+	{
+		//ACS_NamedExecuteWithResult("Kingpin_ScreenBurn");
+		SetResultValue(1);
+	}
+	else
+	{
+		SetResultValue(0);
+	}
+}
+
+Script "Kingpin_Decorate" (int type, int arg1, int arg2)
+{
+	int result;
+	switch(type)
+	{
+		case 1:
+			SetResultValue(2-CheckInventory("Kingpin_Flamethrower_FuelPump"));
+			break;
+		case 2:
+			SetActivator(0,AAPTR_Target);
+			SetResultValue(1+(2*CheckInventory("Kingpin_Flamethrower_HotterFlame")));
+			break;
+		case 3:
+			SetResultValue(1+(2*CheckInventory("Kingpin_HMG_SelectFire")));
+			break;
+		case 4:
+			SetResultValue(CheckInventory("Kingpin_HMG_ScopeActive"));
+			break;
+		case 5:
+			if(GetActorProperty(0,APROP_Health) < -GetActorProperty(0,APROP_SpawnHealth)/((random(0,2)+(2+(GetActorProperty(0,APROP_SpawnHealth)/200)))))
+				GiveInventory("Kingpin_SetGib",1);			
+			SetResultValue(1);
+			break;
+		case 6:
+			SetResultValue(!CheckInventory("Kingpin_HMG_AntiMaterial"));
+			break;
+		case 7:
+			if(GetSectorLightLevel(0) < 64) SetActorState(0,"Light4",1);
+			else if(GetSectorLightLevel(0) < 128) SetActorState(0,"Light3",1);
+			else if(GetSectorLightLevel(0) < 192) SetActorState(0,"Light2",1);
+			else SetActorState(0,"Light1",1);
+			break;
+		case 8:
+			Delay(105);
+			TakeInventory("Kingpin_FlamethrowerStacker",1);
+			break;
+		case 9: //Flamethrower burn visuals
+			SetActivator(0,AAPTR_Tracer);
+			if(arg1 == 0)
+				SetResultValue(GetActorProperty(0,APROP_Radius)>>16);
+			else
+				SetResultValue(GetActorProperty(0,APROP_Height)>>16);
+			break;
+		case 10:
+			SetActivator(0,AAPTR_Tracer);
+			SetResultValue(CheckInventory("Kingpin_FlamethrowerStacker"));
+			break;
+		case 11:
+			switch(arg1)
+			{
+				case 1:
+					if(GetActorClass(0) == "Thug") SetActorState(0,"Next",1);
+					break;
+				case 2:
+					if(GetActorClass(0) == "Kingpin_CashPickup") SetActorState(0,"Next",1);
+					break;
+				case 3:
+					if(GetActorClass(0) == "Kingpin_CashPickupBagS") SetActorState(0,"Next",1);
+					break;
+				case 4:
+					if(GetActorClass(0) == "Kingpin_CashPickupBagL") SetActorState(0,"Next",1);
+					break;
+			}
+			break;
+		case 12:
+			SetInventory("Kingpin_Shotgun_DoubleBarrelAlternate",CheckInventory("Kingpin_ShotgunMagazine") % 2);
+			break;
+	}
+}
+
+Script "Kingpin_ScopeClient" (void) clientside
+{
+	FadeTo(0.0,0.0,0.0,1.0,0);
+	FadeTo(0.0,0.0,0.0,0.0,0.5);
+	While(CheckInventory("Kingpin_HMG_ScopeActive"))
+	{
+		SetHudSize(256,256,0);
+		SetFont("KPSCOPE");
+
+		HudMessage(s:"a"; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 1600, CR_UNTRANSLATED, 128.0, 128.0, 0, 1.0);
+
+		Delay(1);
+	}
+	FadeTo(0.0,0.0,0.0,1.0,0);
+	FadeTo(0.0,0.0,0.0,0.0,0.5);
+	HudMessage(s:""; HUDMSG_PLAIN|HUDMSG_ALPHA|HUDMSG_NOTWITHFULLMAP|HUDMSG_LAYER_UNDERHUD, 1600, CR_UNTRANSLATED, 128.0, 128.0, 0.1, 0.0);
+}
+
+Script "Kingpin_BulletDamage" (void)
+{
+	int bulletX = GetActorX(0);
+	int bulletY = GetActorY(0);
+	int bulletZ = GetActorZ(0);
+	int damage = ACS_NamedExecuteWithResult("Kingpin_DetermineBulletDamage");
+	SetActivator(0,AAPTR_Tracer);
+	int monsterX = GetActorX(0);
+	int monsterY = GetActorY(0);
+	int monsterZ = GetActorZ(0);
+	int monsterHealth = GetActorProperty(0,APROP_Health);
+	int monsterHeight = GetActorProperty(0,APROP_Height);
+	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
+
+	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
+	/*if(CheckInventory("RTCW_MetalMonster"))
+	{
+		PlaySound(0,"RTCW/BulletHitMetal",CHAN_6,0.5,0,ATTN_NORM);
+	}
+	else
+		PlaySound(0,"RTCW/BulletHitFlesh",CHAN_6,0.5,0,ATTN_NORM);*/
+
+	if(monsterWidth >= monsterHeight && !CheckInventory("IsFatButBiped"))
+	{
+		int monsterAngle = GetActorAngle(0);
+		int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
+		int angle = vang % 1.0;
+				
+		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
+		{
+			if(monsterHealth - (damage*3) <= -damage*2)
+				GiveInventory("Kingpin_BloodHeadshotGenerator",1);
+		
+			SetResultValue(damage*3);
+		}
+		else
+			SetResultValue(damage);
+	}
+	else
+	{
+		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.75))
+		{
+			if(monsterHealth - (damage*3) <= -damage*2)
+				GiveInventory("Kingpin_BloodHeadshotGenerator",1);
+		
+			int result;
+			if(GetCvar("samsara_mixerloaded"))
+				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
+			else
+				result = 0;
+
+			if(result == -1)
+			{
+				SetResultValue(-1);
+				terminate;
+			}
+			//if(StrLeft(GetActorClass(0),4)=="RTCW" && GetCvar("samsara_mixerloaded"))
+				//GiveInventory("RTCW_RemoveHat",1);
+				
+
+			SetResultValue(damage*3);
+		}
+		else
+			SetResultValue(damage);
+	}
+}
+
+Script "Kingpin_DetermineBulletDamage" (void)
+{
+	SetActivator(0,AAPTR_Target);
+	int damage;
+	if(CheckWeapon("Kingpin_Pipe")) damage = 10;
+	if(CheckWeapon("Kingpin_Crowbar")) damage = 50;
+	if(CheckWeapon("Kingpin_Pistol")) damage = CheckInventory("Kingpin_Pistol_Magnum") ? 30 : 15;
+	if(CheckWeapon("Kingpin_Shotgun")) damage = 15;
+	if(CheckWeapon("Kingpin_Tommygun")) damage = CheckInventory("Kingpin_Tommygun_Damage") ? 30 : 15;
+	if(CheckWeapon("Kingpin_HMG")) damage = 150;
+		
+	SetResultValue(damage);
+}
+
+Script "Kingpin_PawnOMatic_Initiate" (void) Net
+{
+	if(!CheckInventory("Kingpin_PawnOMaticOpen"))
+	{
+		int sTid = uniqueTid();
+		GiveInventory("Kingpin_PawnOMaticOpen",1);
+		SetPlayerProperty(0,1,PROP_TOTALLYFROZEN);
+		SpawnForced("Kingpin_PawnOMaticSoundController",0,0,0,sTid);
+		SetInventory("Kingpin_PawnOMaticSoundTid",sTid);
+		PlaySound(sTid,"PawnoMatic/Welcome",CHAN_VOICE,1.0,0,ATTN_NONE);
+		
+		ACS_NamedExecuteWithResult("Kingpin_PawnOMatic",PlayerNumber(),sTid);
+	}
+	else
+	{
+		TakeInventory("Kingpin_PawnOMaticOpen",1);
+		SetPlayerProperty(0,0,PROP_TOTALLYFROZEN);
+	}
+}
+
+str pawnOMaticUpgradeOptions [7][4][2] =
+{
+	{ {"Kingpin_Pistol_Reload", "PawnOMAtic/Mod1/Reload"}, {"Kingpin_Pistol_RateOfFire", "PawnOMAtic/Mod1/RateOfFire"}, {"Kingpin_Pistol_Magnum", "PawnOMAtic/Mod1/Magnum"}, {"Kingpin_Pistol_Silencer", "PawnOMAtic/Mod1/Silencer"} },
+	{ {"Kingpin_Shotgun_DoubleBarrel", ""}, {"Kingpin_Shotgun_BleedShot", ""}, {"Kingpin_Shotgun_Magazine", ""}, {"Kingpin_Shotgun_SelectFire", ""} },
+	{ {"Kingpin_GrenadeLauncher_Fragmentation", ""}, {"Kingpin_GrenadeLauncher_ClusterBombs", ""}, {"Kingpin_GrenadeLauncher_ConcussionGrenades", ""}, {"Kingpin_GrenadeLauncher_MagazineCapacity", ""} },
+	{ {"Kingpin_TommyGun_MagazineCapacity", ""}, {"Kingpin_TommyGun_Damage", ""}, {"Kingpin_TommyGun_Accuracy", ""}, {"Kingpin_TommyGun_Buzzsaw", ""} },
+	{ {"Kingpin_Bazooka_FastRockets", ""}, {"Kingpin_Bazooka_LaserSystem", ""}, {"Kingpin_Bazooka_HighExplosives", ""}, {"Kingpin_Bazooka_BigBubba", ""} },
+	{ {"Kingpin_Flamethrower_Range", ""}, {"Kingpin_Flamethrower_HotterFlame", ""}, {"Kingpin_Flamethrower_FuelPump", ""}, {"Kingpin_Flamethrower_Napalmer", ""} },
+	{ {"Kingpin_HMG_TacticalScope", ""}, {"Kingpin_HMG_CoolingRod", ""}, {"Kingpin_HMG_SelectFire", ""}, {"Kingpin_HMG_AntiMaterial", ""} },
+};
+
+int pawnOMaticUpgradePrices [7][4] =
+{
+	{ 25, 50, 100, 50 },
+	{ 200, 100, 150, 250 },
+	{ 50, 200, 100, 50 },
+	{ 100, 200, 100, 300 },
+	{ 50, 150, 250, 500 },
+	{ 100, 200, 100, 250 },
+	{ 100, 150, 350, 500 },
+};
+
+
+str KingpinWeapons[7] = { "Kingpin_Pistol", "Kingpin_Shotgun", "Kingpin_GrenadeLauncher", "Kingpin_TommyGun", "Kingpin_Bazooka", "Kingpin_Flamethrower", "Kingpin_HMG" };
+
+Script "Kingpin_PawnOMatic" (int playerNum, int sTid) Net Clientside
+{
+	if(playerNum != ConsolePlayerNumber())
+		terminate;
+
+	int breakloop;
+	int pawnOpen;
+	int simTimer;
+	int currentMenu = 1;
+	int currentMenuItem = 0;
+	int lastMenu = 1;
+	int currentItem = 1;
+	int triggerItems;
+	int lastInputTimer;
+	int maxInputDelay = 4;
+	int intendedItem = 1;
+	int selectedItemOpen;
+	int scrollingItem;
+	int modSelected;
+	int a;
+	while(CheckInventory("Kingpin_PawnOMaticOpen"))
+	{
+		int playerInputX = GetPlayerInput(-1,INPUT_SIDEMOVE);
+		int playerInputY = -GetPlayerInput(-1,INPUT_FORWARDMOVE);
+		int buttons = GetPlayerInput(-1,INPUT_BUTTONS);
+		int oldbuttons = GetPlayerInput(-1,INPUT_OLDBUTTONS);
+		int useKey = (buttons & BT_USE) && !(oldbuttons & BT_USE);
+		simTimer = timer();
+		SetFont(strparam(s:"KPSTOR",d:((simTimer%100)/5)+1));
+		SetHudSize(1200,800,1);
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,60,CR_UNTRANSLATED,600.0,400.0,0.0);
+		SetFont("KPLITOFF");
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,59,CR_UNTRANSLATED,600.0,400.0,0.0);
+		lastMenu = currentMenu;
+		
+		if(lastInputTimer >= maxInputDelay && !scrollingItem)
+		{		
+			if(playerInputY != 0)
+			{
+				if(!triggerItems)
+				{
+					PlaySound(sTid,"PawnOMatic/Selection",CHAN_5,1.0,0,ATTN_NONE);
+					if(playerInputY > 0) currentMenu++;
+					else if(playerInputY < 0) currentMenu--;			
+				}
+				else
+				{
+					PlaySound(sTid,"PawnOMatic/Selection",CHAN_5,1.0,0,ATTN_NONE);
+					if(playerInputY > 0) currentMenuItem++;
+					else if(playerInputY < 0) currentMenuItem--;
+					
+					if(currentMenuItem < 1) currentMenuItem = 8;
+					if(currentMenuItem > 8) currentMenuItem = 1;
+				}	
+				lastInputTimer = 0;
+				if(modSelected > 0)
+				{
+					modSelected = 0;
+					PlaySound(sTid,"PawnOMatic/NoThanks",CHAN_VOICE,1.0,0,ATTN_NONE);
+				}
+			}
+			
+			if(playerInputX != 0 || (useKey && currentMenuItem == 0))
+			{
+				PlaySound(sTid,"PawnOMatic/Selection",CHAN_5,1.0,0,ATTN_NONE);
+				if((playerInputX > 0 || useKey) && !triggerItems)
+				{
+					if(currentMenu == 8) 
+					{
+						ACS_NamedExecuteWithResult("Kingpin_PawnOMatic");
+						terminate;
+					}		
+					
+					triggerItems = 1;					
+					selectedItemOpen = currentMenu;			
+					intendedItem = 1+(4*currentMenu);
+						if(intendedItem >= 32)
+							intendedItem = 1;
+							
+					scrollingItem = 1;
+					currentMenuItem = 1;
+					
+				}
+				else if(triggerItems && playerInputX < 0)
+				{
+					triggerItems = 0;
+					selectedItemOpen = 0;	
+					intendedItem = 1;	
+					scrollingItem = 1;			
+					currentMenuItem = 0;
+				}
+				
+				lastInputTimer = 0;
+				PlaySound(sTid,"PawnOMatic/Scrollers",CHAN_6,1.0,1,ATTN_NONE);
+				
+				if(modSelected > 0)
+				{
+					modSelected = 0;
+					PlaySound(sTid,"PawnOMatic/NoThanks",CHAN_VOICE,1.0,0,ATTN_NONE);
+				}
+			}
+			
+			if(currentMenu < 1) currentMenu = 8;
+			if(currentMenu > 8) currentMenu = 1;
+		}
+		
+		if(currentItem != intendedItem)
+		{
+			if(timer()%2 == 0)
+			{
+				currentItem++;
+				if(currentItem >= 32)
+					currentItem = 1;
+			}
+		}
+		else
+		{
+			scrollingItem = 0;
+			StopSound(sTid,CHAN_6);
+		}
+		
+		SetFont(strparam(s:"KPITEM",d:currentItem));
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,56,CR_UNTRANSLATED,600.0,400.0,0.0);
+		
+		SetFont(strparam(s:"KPSELE",d:currentItem));
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,55,CR_UNTRANSLATED,600.0,400.0,0.0);
+		
+		SetFont(strparam(s:"KPSTLT1",d:currentMenu));
+		HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,58,CR_UNTRANSLATED,600.0,400.0,0.0);
+		
+		if(currentMenuItem > 0)
+		{
+			SetFont(strparam(s:"KPSTLT2",d:currentMenuItem));
+			HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,57,CR_UNTRANSLATED,600.0,400.0,0.0);
+			
+			SetFont(strparam(s:"KPDIGT",d:(pawnOMaticUpgradePrices[currentMenu-1][currentMenuItem-1]/100)%10));
+			HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,54,CR_UNTRANSLATED,574.0,400.0,0.0);
+		
+			SetFont(strparam(s:"KPDIGT",d:(pawnOMaticUpgradePrices[currentMenu-1][currentMenuItem-1]/10)%10));
+			HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,53,CR_UNTRANSLATED,600.0,400.0,0.0);
+			
+			SetFont(strparam(s:"KPDIGT",d:pawnOMaticUpgradePrices[currentMenu-1][currentMenuItem-1]%10));
+			HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,52,CR_UNTRANSLATED,626.0,400.0,0.0);
+												
+			if(lastInputTimer >= maxInputDelay && !scrollingItem && useKey && currentMenuItem < 5)
+			{
+				lastInputTimer = 0;
+				if(!CheckInventory(KingpinWeapons[currentMenu-1]))
+				{
+					PlaySound(sTid,"PawnOMatic/NoWeapon",CHAN_VOICE,1.0,0,ATTN_NONE);
+				}
+				else if(CheckInventory(pawnOMaticUpgradeOptions[currentMenu-1][currentMenuItem-1][0]))
+				{
+					PlaySound(sTid,"PawnOMatic/AlreadyHave",CHAN_VOICE,1.0,0,ATTN_NONE);
+				}
+				else if(CheckInventory("Kingpin_Cash") < pawnOMaticUpgradePrices[currentMenu-1][currentMenuItem-1])
+				{
+					PlaySound(sTid,"PawnOMatic/LowCash",CHAN_VOICE,1.0,0,ATTN_NONE);
+				}					
+				else
+				{
+					lastInputTimer = -4;
+					if(modSelected == 0)
+					{
+						PlaySound(sTid,pawnOMaticUpgradeOptions[currentMenu-1][currentMenuItem-1][1],CHAN_VOICE,1.0,0,ATTN_NONE);
+						modSelected = currentMenu;
+					}
+					else
+					{
+						PlaySound(sTid,"PawnOMatic/Register",CHAN_5,1.0,0,ATTN_NONE);
+						PlaySound(sTid,"PawnOMatic/Sold",CHAN_VOICE,1.0,0,ATTN_NONE);
+						TakeInventory("Kingpin_Cash",pawnOMaticUpgradePrices[currentMenu-1][currentMenuItem-1]);
+						GiveInventory(pawnOMaticUpgradeOptions[currentMenu-1][currentMenuItem-1][0],1);
+						modSelected = 0;
+					}
+				}
+			}
+		}
+		else
+		{
+			RemoveMessages(57,57);
+			SetFont("KPDIGT0");
+			HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,54,CR_UNTRANSLATED,574.0,400.0,0.0);	
+			HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,53,CR_UNTRANSLATED,600.0,400.0,0.0);	
+			HudMessage(s:"A";HUDMSG_PLAIN|HUDMSG_NOTWITHFULLMAP,52,CR_UNTRANSLATED,626.0,400.0,0.0);
+		}
+		
+		lastInputTimer++;
+		
+		Delay(1);
+	}
+	
+	PlaySound(sTid,"PawnOMAtic/Exit",CHAN_VOICE,1.0,0,ATTN_NONE);
+	Thing_Remove(sTid);
+	SetInventory("Kingpin_PawnOMaticSoundTid",0);
+	RemoveMessages(50,60);
+}
