@@ -1,20 +1,5 @@
 str stateNames[9] = { "Pipe", "Pistol", "Crowbar", "Shotgun", "GrenadeLauncher", "Tommygun", "Bazooka", "Flamethrower", "HMG" };
 
-Script "GlobalRecoil" (int duration, int intensity, int halfdampen)
-{
-	int i = 0;
-	for(i = 0; i < duration; i++)
-	{
-		SetActorPitch(0,GetActorPitch(0)-intensity);
-		Delay(1);
-	}
-	for(i = duration; i > 0; i--)
-	{
-		SetActorPitch(0,GetActorPitch(0)+intensity/(halfdampen+1));
-		Delay(1);
-	}
-}
-
 //A decorate won't convert a decimal to a floating point as far as my knowledge goes, so it's up to the decorate to multiply the intended decimal by 65536
 Script "Kingpin_FX" (int type, int duration, int maxSize)
 {
@@ -159,11 +144,11 @@ Script "Kingpin_GibSpawner" (void)
 	}
 }
 
-Script "Kingpin_Player" Enter
+Script "Kingpin_Player" (void)
 {
 	int currentplayeraction = 0;
 	int playerStillMoving = 0;
-	while(true)
+	while(CheckInventory("Kingpin_ClassToken"))
 	{
 		SetAmmoCapacity("Kingpin_TommyGunMagazine",50*(1+CheckInventory("Kingpin_TommyGun_MagazineCapacity")));
 		SetAmmoCapacity("Kingpin_GrenadeLauncherMagazine",3*(1+CheckInventory("Kingpin_GrenadeLauncher_MagazineCapacity")));
@@ -341,13 +326,15 @@ Script "Kingpin_FlamethrowerTracer" (int upgrade)
 
 			if(CheckInventory("Kingpin_FlamethrowerIgnition") >= requiredIgnition && !CheckInventory("Kingpin_FlamethrowerBurnt"))
 			{
+				int gender = ACS_NamedExecuteWithResult("GetActorGender");
 				TakeInventory("Kingpin_FlamethrowerHitTarget",1);
 				TakeInventory("Kingpin_FlamethrowerIgnition",50);
 				GiveInventory("Kingpin_FlamethrowerBurnt",1);
 				GiveInventory("Kingpin_FlamethrowerStacker",1);
 				ACS_NamedExecuteWithResult("Kingpin_Decorate",8);
 				int burnerTid = UniqueTid();
-				if(CheckInventory("Kingpin_IsMale")) PlaySound(0,"Kingpin/Flamethrower/Burn",CHAN_AUTO,1.0,0,ATTN_NORM);
+				if(gender == 2) PlaySound(0,"Kingpin/Flamethrower/BurnF",CHAN_AUTO,1.0,0,ATTN_NORM);
+				else if(gender == 1) PlaySound(0,"Kingpin/Flamethrower/Burn",CHAN_AUTO,1.0,0,ATTN_NORM);
 				SpawnForced("Kingpin_FlamethrowerBurner",GetActorX(0),GetActorY(0),GetActorZ(0),burnerTid);
 				SetActivator(myTid,AAPTR_Target);
 				SetPointerExt(AAPTR_Target,0,burnerTid);

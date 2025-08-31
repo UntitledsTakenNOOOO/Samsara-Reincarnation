@@ -1,0 +1,834 @@
+str BrutalityBonuses[8][2] =
+{
+	{ "Bullet Sponge", "SoF_BulletSponge" },
+	{ "Leng Tche", "SoF_LengTche" },
+	{ "Alex Murphy", "SoF_AlexMurphy" },
+	{ "The Juicer", "SoF_TheJuicer"},
+	{ "The Eviscerator", "SoF_TheEviscerator"},
+	{ "Melon Popper", "SoF_MelonPopper"},
+	{ "TV Dinner", "SoF_TVDinner" },
+	{ "Roasted", "SoF_Roasted" },
+};
+
+Script "SoF_Player" (void)
+{
+	ACS_NamedExecuteWithResult("SoF_HandleLean");
+	while(CheckInventory("SoF_ClassToken"))
+	{
+		int brutalityCounter = 0;
+		
+		for(int i = 0; i < 8; i++)
+		{
+			if(CheckInventory(strparam(s:BrutalityBonuses[i][1],s:"Timer")) <= 0) 
+			{
+				if(CheckInventory(strparam(s:BrutalityBonuses[i][1],s:"Multiplier")) > 0)
+				{
+					ACS_NamedExecuteWithResult("SoF_BrutalityRewards",i);
+					ACS_NamedExecuteWithResult("SoF_DrawBrutality",i,1,brutalityCounter);
+					SetInventory(strparam(s:BrutalityBonuses[i][1],s:"Multiplier"),0);
+					brutalityCounter++;
+				}
+			}
+			else
+			{
+				ACS_NamedExecuteWithResult("SoF_DrawBrutality",i,0,brutalityCounter);
+				brutalityCounter++;
+			}
+			
+			TakeInventory(strparam(s:BrutalityBonuses[i][1],s:"Timer"),1);
+		}
+
+		Delay(1);
+	}
+}
+
+Script "SoF_DrawBrutality" (int type, int reward, int brutalityCounter) clientside
+{
+	SetHudSize(640,400,0);
+	str primaryReward = "";
+	str secondaryReward = "";
+	
+	switch(type)
+	{
+		case 0:
+			if(reward)
+			{
+				primaryReward = strparam(s:"\cf",d:CheckInventory("SoF_BulletSpongeMultiplier"),s:"\c- Ammo 1");
+				secondaryReward = CheckInventory("SoF_BulletSpongeMultiplier") >= 5 ? strParam(s:", \cf",d:CheckInventory("SoF_BulletSpongeMultiplier")/5,s:"\c- Armor") : "";
+			}
+			break;
+		case 1:
+			if(reward)
+			{
+				primaryReward = strparam(s:"\cf",d:CheckInventory("SoF_LengTcheMultiplier"),s:"\c- Health");
+				secondaryReward = CheckInventory("SoF_LengTcheMultiplier") >= 20 ? strParam(s:", \cf",d:1,s:"\c- Knife") : "";
+			}
+			break;
+		case 2:
+			if(reward)
+			{
+				primaryReward = strparam(s:"\cf",d:CheckInventory("SoF_AlexMurphyMultiplier"),s:"\c- Ammo 1");
+				secondaryReward = CheckInventory("SoF_AlexMurphyMultiplier") >= 2 ? strParam(s:", \cf",d:CheckInventory("SoF_AlexMurphyMultiplier")/5,s:"\c- Ammo 2") : "";
+			}
+			break;
+		case 3:
+			if(reward)
+			{
+				primaryReward = strparam(s:"\cf",d:CheckInventory("SoF_TheJuicerMultiplier"),s:"\c- Armor");
+				secondaryReward = CheckInventory("SoF_TheJuicerMultiplier") >= 4 ? strParam(s:", \cf",d:CheckInventory("SoF_TheJuicerMultiplier")/4,s:"\c- Ammo 3") : "";
+			}
+			break;
+		case 4:
+			if(reward)
+			{
+				primaryReward = strparam(s:"\cf",d:CheckInventory("SoF_TheEvisceratorMultiplier"),s:"\c- Health");
+				secondaryReward = strParam(s:", \cf",d:CheckInventory("SoF_TheEvisceratorMultiplier"),s:"\c- Armor");
+			}
+			break;
+		case 5:
+			if(reward)
+			{
+				primaryReward = strparam(s:"\cf",d:CheckInventory("SoF_MelonPopperMultiplier"),s:"\c- Armor");
+				secondaryReward = CheckInventory("SoF_MelonPopperMultiplier") >= 10 ? strParam(s:", \cf",d:5,s:"\c- Ammo 2") : "";
+			}
+			break;
+		case 6:
+			if(reward)
+			{
+				primaryReward = strparam(s:"\cf",d:CheckInventory("SoF_TVDinnerMultiplier"),s:"\c- Ammo 4");
+				secondaryReward = CheckInventory("SoF_TVDinnerMultiplier") >= 4 ? strParam(s:", \cf",d:CheckInventory("SoF_TVDinnerMultiplier")/4,s:"\c- Health") : "";
+			}
+			break;
+		case 7:
+			if(reward)
+			{
+				primaryReward = strparam(s:"\cf",d:CheckInventory("SoF_RoastedMultiplier"),s:"\c- Ammo 4");
+				secondaryReward = CheckInventory("SoF_RoastedMultiplier") >= 10 ? strParam(s:", \cf",d:CheckInventory("SoF_RoastedMultiplier")/10,s:"\c- Ammo 3") : "";
+			}
+			break;
+	}
+	
+	if(reward)
+	{
+		HudMessage(s:strparam(s:BrutalityBonuses[type][0],s:" Reward:\n");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_FADEOUT,60+type*2,CR_UNTRANSLATED,320.0,384.0-(20.0*brutalityCounter),0.5,0.5);
+		HudMessage(s:primaryReward,s:secondaryReward;HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_FADEOUT,61+type*2,CR_UNTRANSLATED,320.0,392.0-(20.0*brutalityCounter),0.5,0.5);
+		SetHudClipRect(0,0,0,0,0);
+		SetFont("SMALLFONT");
+	}
+	else
+	{
+		if(CheckInventory(strparam(s:BrutalityBonuses[type][1],s:"Timer")) > 0)
+			drawBonusBar(type, brutalityCounter);
+		else RemoveMessages(60+type*2,61+type*2);
+	}
+}
+
+function void drawBonusBar (int type, int brutalityCounter)
+{
+	HudMessage(s:strparam(s:BrutalityBonuses[type][0],s:" ",s:"\cfx",d:CheckInventory(strparam(s:BrutalityBonuses[type][1],s:"Multiplier")));HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,60+type*2,CR_UNTRANSLATED,320.0,384.0-(20.0*brutalityCounter),0.0);
+	SetHudClipRect(256,392-(20*brutalityCounter),FixedMul(128.0,FixedDiv(CheckInventory(strparam(s:BrutalityBonuses[type][1],s:"Timer"))*1.0,105.0))>>16,16,0);
+	SetFont("SOFCOMBO");
+	HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,61+type*2,CR_UNTRANSLATED,320.0,392.0-(20.0*brutalityCounter),0.0);
+	SetHudClipRect(0,0,0,0,0);
+	SetFont("SMALLFONT");
+	return;
+}
+
+Script "SoF_BrutalityRewards" (int type)
+{
+	switch(type)
+	{
+		case 0:
+			GiveInventory("Clip",CheckInventory("SoF_BulletSpongeMultiplier"));
+			if(CheckInventory("SoF_BulletSpongeMultiplier") >= 5)
+				GiveInventory("ArmorBonus",CheckInventory("SoF_BulletSpongeMultiplier")/5);
+			break;
+		case 1:
+			GiveInventory("HealthBonus",CheckInventory("SoF_LengTcheMultiplier"));
+			if(CheckInventory("SoF_LengTcheMultiplier") >= 20)
+				GiveInventory("SoF_Knives",1);
+			break;
+		case 2:
+			GiveInventory("Clip",CheckInventory("SoF_AlexMurphyMultiplier"));
+			if(CheckInventory("SoF_AlexMurphyMultiplier") >= 2)
+				GiveInventory("Shell",CheckInventory("SoF_AlexMurphyMultiplier")/5);
+			break;
+		case 3:
+			GiveInventory("ArmorBonus",CheckInventory("SoF_TheJuicerMultiplier"));
+			if(CheckInventory("SoF_TheJuicerMultiplier")/4)
+				GiveInventory("RocketAmmo",CheckInventory("SoF_TheJuicerMultiplier")/4);
+			break;
+		case 4:
+			GiveInventory("HealthBonus",CheckInventory("SoF_TheEvisceratorMultiplier"));
+			GiveInventory("ArmorBonus",CheckInventory("SoF_TheEvisceratorMultiplier"));
+			break;
+		case 5:
+			GiveInventory("ArmorBonus",CheckInventory("SoF_MelonPopperMultiplier"));
+			if(CheckInventory("SoF_MelonPopperMultiplier") >= 10)
+				GiveInventory("Shell",3);
+			break;
+		case 6:
+			GiveInventory("Cell",CheckInventory("SoF_TVDinnerMultiplier"));
+			if(CheckInventory("SoF_TVDinnerMultiplier")/4)
+				GiveInventory("HealthBonus",CheckInventory("SoF_TVDinnerMultiplier")/4);
+			break;
+		case 7:
+			GiveInventory("Cell",CheckInventory("SoF_RoastedMultiplier"));
+			if(CheckInventory("SoF_RoastedMultiplier")/4)
+				GiveInventory("RocketAmmo",CheckInventory("SoF_TVDinnerMultiplier")/10);
+			break;
+	}
+}
+
+Script "SoF_HandleLean" (void)
+{
+	int leanCounter = 0;
+	while(true)
+	{
+		// Do lean stuff. I gotta do this system earlier than I'd like unfortunately
+		int buttons = GetPlayerInput(-1,INPUT_BUTTONS);
+		int sideMove = GetPlayerInput(-1,INPUT_SIDEMOVE);
+		ChangeActorRoll(0,0.00625*leanCounter,1);
+		if((buttons & BT_USER1) && sideMove != 0)
+		{
+			if(sideMove < 0)
+			{
+				SetInventory("SoF_Leaning",1);
+				SetPlayerProperty(0,1,PROP_FROZEN);
+				Thing_Stop(0);
+				if(leanCounter > -8)
+				{
+					leanCounter--;
+					doLean(-4.0);
+				}
+			}
+			else if(sideMove > 0)
+			{
+				SetInventory("SoF_Leaning",2);
+				SetPlayerProperty(0,1,PROP_FROZEN);
+				Thing_Stop(0);
+				if(leanCounter < 8)
+				{
+					leanCounter++;
+					doLean(4.0);
+				}	
+			}
+
+			if(leanCounter == 0) { SetInventory("SoF_Leaning",0); TakeInventory("SoF_FullyLeaned",1); }
+		}
+		else
+		{
+			SetInventory("SoF_Leaning",0);
+			if(leanCounter < 0)
+			{
+				//SetInventory("SoF_Leaning",2);
+				leanCounter++;
+				doLean(4.0);
+			}
+			else if(leanCounter > 0)
+			{
+				//SetInventory("SoF_Leaning",1);
+				leanCounter--;
+				doLean(-4.0);
+			}
+			else { SetPlayerProperty(0,0,PROP_FROZEN); TakeInventory("SoF_FullyLeaned",1); }
+		}
+		
+		if(buttons & BT_ATTACK) SetInventory("SoF_Shooting",1);
+		else SetInventory("SoF_Shooting",0);
+		
+		Delay(1);
+	}
+}
+
+function void doLean(int amount)
+{
+	Warp(0,0,amount,0,0,WARPF_INTERPOLATE);
+}
+
+Script "SoF_Decorate" (int operation, int arg1, int arg2)
+{
+	int newtid = 0;
+	int oldTid = 0;
+	int height = 0;
+	int radius = 0;
+	int xPos, yPos, zPos;
+	int mXPos, mYPos, mZPos;
+	int result = 0;
+	switch(operation)
+	{
+		//Check if animation frame needs to be wiped
+		case 1:
+			SetInventory("SoF_WeaponAnimState",arg1);
+			if(CheckInventory("SoF_WeaponAnimState") != CheckInventory("SoF_LastWeaponAnimState"))
+			{
+				SetInventory("SoF_WeaponAnimFrame",0);
+				SetInventory("SoF_LastWeaponAnimState",CheckInventory("SoF_WeaponAnimState"));
+			}
+			break;
+		case 2:
+			GiveInventory("SoF_SwitchHand",1);
+			Delay(15);	
+			SetInventory("SoF_SwitchHand",0);
+			break;
+		case 3:
+			SetActivator(0,AAPTR_Master);
+			GiveInventory("SoF_RemoveCorpseChildren",1);
+			SetActorState(0,"SoFGibStart",1);
+			break;
+		case 4:
+			newtid = UniqueTid();
+			Thing_ChangeTid(0,newtid);	
+			SetActivator(0,AAPTR_Master);
+			int spawnHealth = GetActorProperty(0,APROP_SpawnHealth)*10;
+			
+			if(spawnHealth > 500)
+				spawnHealth = 500;
+				
+			SetActivator(newtid,AAPTR_Default);
+			Thing_ChangeTid(newtid,0);
+			SetActorProperty(0,APROP_Health,spawnHealth);
+			break;
+		case 5:
+			SetActivator(0,AAPTR_Master);
+			if(strlen(GetActorProperty(0,APROP_PAINSOUND)) > 0 && random(0,1) == 0) PlaySound(0,GetActorProperty(0,APROP_PAINSOUND),CHAN_VOICE,1.0,0,ATTN_NORM);
+			switch(arg1)
+			{
+				case 0:
+					SetActorState(0,"Death.SoFSMGDelay",1);
+					break;
+				case 1:
+					SetActorState(0,"Death.SoFHighCaliberDelay",1);
+					break;
+			}
+			break;
+		case 6:
+			oldTID = ActivatorTID();
+			newtid = UniqueTID();
+			Thing_ChangeTID(0, newtid);
+			SetActivator(0,AAPTR_Master);
+			height = (GetActorProperty(0,APROP_Height)*4)>>16;
+			radius = GetActorProperty(0,APROP_Radius)>>16;
+			//To make up for my mistake that is too widespread to address head on, I will do it here
+			SetActorPosition(newtid,GetActorX(0),GetActorY(0),GetActorZ(0)+(height/2)*1.0,0);
+
+			SetActivator(newtid);
+			Thing_ChangeTID(newtid, oldTID);
+			int spacecube = height*radius*radius;
+			int count = spacecube/4096;
+			if(spacecube < 5000) { SetActorProperty(0,APROP_ScaleX,0.5); SetActorProperty(0,APROP_ScaleY,0.5); count*=3; }
+			else if(spacecube < 50000) { SetActorProperty(0,APROP_ScaleX,1.0); SetActorProperty(0,APROP_ScaleY,1.0); count*=3; }
+			else if(spacecube < 500000) { SetActorProperty(0,APROP_ScaleX,1.25); SetActorProperty(0,APROP_ScaleY,1.25); }
+			else if(spacecube < 1000000) { SetActorProperty(0,APROP_ScaleX,1.5); SetActorProperty(0,APROP_ScaleY,1.5); }
+			else { SetActorProperty(0,APROP_ScaleX,2.0); SetActorProperty(0,APROP_ScaleY,2.0); }
+			if(count < 2)
+				SetResultValue(1);
+			else
+				SetResultValue(count/(1+!isSinglePlayer()));
+			break;
+		case 7:
+			newtid = UniqueTID();
+			SpawnForced("SoF_GibberLooker",GetActorX(0),GetActorY(0),GetActorZ(0),newtid);
+			SetActorAngle(newtid,GetActorAngle(0));
+			SetPointerExt(AAPTR_TRACER,0,newtid);
+			break;
+		case 8:
+			SetActivator(0,AAPTR_TRACER);
+			Thing_Remove(0);
+			break;
+		case 9:
+			xPos = GetActorX(0);
+			YPos = GetActorY(0);
+			ZPos = GetActorZ(0);
+			SetActivator(0,AAPTR_MASTER);
+			mXPos = GetActorX(0);
+			mYPos = GetActorY(0);
+			mZPos = GetActorZ(0);
+			//PrintBold(s:"X Position: ",d:xPos-mXPos>>16,s:"\nY Position: ",d:yPos-mYPos>>16,s:"\nZ Position: ",d:zPos-mZPos>>16);
+			switch(arg1)
+			{
+				case 0: //X
+					SetResultValue(xPos-mXPos>>16);
+					break;
+				case 1: //Y
+					SetResultValue(yPos-mYPos>>16);
+					break;
+				case 2: //Z
+					SetResultValue(zPos-mZPos>>16);
+					break;
+			}
+			break;
+		case 10:
+			result = CheckInventory("SoF_GibberDamageType");
+			if(result == 0) result = 5;
+			SetInventory("SoF_GibberDamageType",0);
+			SetResultValue(result);
+			break;
+		case 11:
+			newtid = UniqueTid();
+			SpawnForced("SoF_RocketFlare",GetActorX(0),GetActorY(0),GetActorZ(0),newTid);
+			SetPointerExt(AAPTR_MASTER,0,newTid);
+			while(ClassifyActor(0) > 1)
+			{
+				Warp(newtid,-20.0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_MOVEPTR|WARPF_INTERPOLATE);
+				Delay(1);
+			}
+			Thing_Remove(newtid);
+			break;
+		case 12:
+			newtid = UniqueTid();
+			oldtid = UniqueTid();
+			SpawnForced("SoF_SlugParticle",GetActorX(0),GetActorY(0),GetActorZ(0),newTid);
+			SpawnForced("SoF_SlugFlare",GetActorX(0),GetActorY(0),GetActorZ(0),oldtid);
+			while(ClassifyActor(0) > 1)
+			{
+				Warp(newtid,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_MOVEPTR|WARPF_INTERPOLATE);
+				Warp(oldtid,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_MOVEPTR|WARPF_INTERPOLATE);
+				Delay(1);
+			}
+			Thing_Remove(newtid);
+			Thing_Remove(oldtid);
+			break;
+		case 13:
+			if(!GetCvar("sv_infiniteammo")) 
+			{
+				if(CheckInventory("SoF_MPG_TakeAmmo") < 2) GiveInventory("SoF_MPG_TakeAmmo",1);
+				else 
+				{
+					TakeInventory("SoF_MPGMagazine",1);
+					SetInventory("SoF_MPG_TakeAmmo",0);
+				}
+			}
+			GiveInventory("SoF_MPG_FireToken",1);
+			Delay(1);
+			GiveInventory("SoF_MPG_FireToken",1);
+			break;
+		case 14:
+			SetActivator(0,AAPTR_TRACER);
+			if((CheckActorState(0,"SoFMPGLaserExpand",true) && CheckInventory("SoF_MPG_InflationCounter") < 30) && (ClassifyActor(0) & ACTOR_ALIVE))
+			{
+				SetActorState(0,"SoFMPGLaserExpand",true);
+				SetResultValue(0);
+			}	
+			else if(CheckInventory("SoF_MPG_BossInflationCounter") < 120 && CheckFlag(0,"BOSS"))
+			{
+				GiveInventory("SoF_MPG_BossInflationCounter",1);
+				SetActorState(0,"SoFMPGLaserExpand",true);
+				SetResultValue(0);
+			}
+			else if(CheckInventory("SoF_MPG_InflationCounter") >= 30)
+			{
+				SetResultValue(GetActorProperty(0,APROP_SpawnHealth)+5000);
+			}
+			else
+			{
+				if(GetActorProperty(0,APROP_SpawnHealth) < 50) SetResultValue(1);
+				else SetResultValue(GetActorProperty(0,APROP_SpawnHealth)/50);
+			}
+			break;
+		case 15:
+			SetResultValue(CheckInventory("SoF_MPG_InflationCounter"));
+			break;
+		case 16:
+			If(CheckInventory("SoF_MPG_InflationCounter") > 1) break;
+			else
+			{
+				GiveInventory("SoF_MPGBurnStart",1);
+				int startX = GetActorProperty(0,APROP_ScaleX);
+				int startY = GetActorProperty(0,APROP_ScaleY);
+				
+				PlaySound(0,"SoF/Weapons/mpg/Expand",CHAN_AUTO,1.0,true,0.5);
+				
+				while(CheckInventory("SoF_MPG_InflationCounter") > 0 && ClassifyActor(0) > 1)
+				{
+					SetActorProperty(0,APROP_ScaleX,FixedMul(startX,1.0+(CheckInventory("SoF_MPG_InflationCounter") * 0.01)));
+					SetActorProperty(0,APROP_ScaleY,FixedMul(startY,1.0+(CheckInventory("SoF_MPG_InflationCounter") * 0.01)));
+					Delay(4);
+					if(!CheckInventory("SoF_MPG_PainExtender")) TakeInventory("SoF_MPG_InflationCounter",1);
+					else { TakeInventory("SoF_MPG_PainExtender",1); }
+				}
+				SetInventory("SoF_MPG_InflationCounter",0);
+				TakeInventory("SoF_MPGAlreadyBurning",1);
+				StopSound(0,CHAN_AUTO);
+			}
+			break;
+		//Brutality timer trackers, these are to deduct time added depending on how high the multiplier is
+		case 17:
+			str type = "";
+			switch(arg1)
+			{
+				case 0:
+					SetActivator(0,AAPTR_TARGET);
+					type = "SoF_BulletSpongeMultiplier";
+					break;
+				case 1:
+					SetActivator(0,AAPTR_TARGET);
+					type = "SoF_LengTcheMultiplier";
+					break;
+				case 2:
+					SetActivator(0,AAPTR_TARGET);
+					type = "SoF_AlexMurphyMultiplier";
+					break;
+				case 3:
+					SetActivator(0,AAPTR_TARGET);
+					type = "SoF_TheJuicerMultiplier";
+					break;
+				case 4:
+					SetActivator(0,AAPTR_TARGET);
+					type = "SoF_TheEvisceratorMultiplier";
+					break;
+				case 5:
+					type = "SoF_MelonPopperMultiplier";
+					break;
+				case 6:
+					type = "SoF_TheEvisceratorMultiplier";
+					break;
+				case 7:
+					SetActivator(0,AAPTR_TARGET);
+					type = "SoF_TVDinnerMultiplier";
+					break;
+				case 8:
+					SetActivator(0,AAPTR_TARGET);
+					type = "SoF_RoastedMultiplier";
+					break;
+			}
+			SetResultValue(105-(CheckInventory(type)*5));
+			break;
+	}
+}
+
+//A decorate won't convert a decimal to a floating point as far as my knowledge goes, so it's up to the decorate to multiply the intended decimal by 65536
+Script "SoF_FX" (int type, int duration, int maxSize)
+{
+	int i = 0;
+	int startScaleX = GetActorProperty(0,APROP_ScaleX);
+	int startScaleY = GetActorProperty(0,APROP_ScaleY);
+	int startAlpha = GetActorProperty(0,APROP_Alpha);
+	switch(type)
+	{
+		case 1:
+			for(i = 0; i <= duration; i++)
+			{
+				//SetActorProperty(0,APROP_Alpha,(1.0/duration)*i);
+				SetActorProperty(0,APROP_ScaleX,startScaleX+(maxSize/duration)*i);
+				SetActorProperty(0,APROP_ScaleY,startScaleY+(maxSize/duration)*i);
+				Delay(1);
+			}
+			for(i = duration; i >= 0; i--)
+			{
+				SetActorProperty(0,APROP_Alpha,(1.0/duration)*i);
+				Delay(1);
+			}
+			Thing_Remove(0);
+			break;
+		case 2:
+			for(i = 0; i <= duration; i++)
+			{
+				SetActorProperty(0,APROP_ScaleX,startScaleX+(maxSize/duration)*i);
+				SetActorProperty(0,APROP_ScaleY,startScaleY+(maxSize/duration)*i);
+				Delay(1);
+			}
+			Thing_Remove(0);
+			break;
+		case 3:
+			SetActorProperty(0,APROP_Alpha,0.0);
+			for(i = 0; i <= duration; i++)
+			{
+				SetActorProperty(0,APROP_Alpha,(startAlpha/duration)*i);
+				SetActorProperty(0,APROP_ScaleX,startScaleX+(maxSize/duration)*i);
+				SetActorProperty(0,APROP_ScaleY,startScaleY+(maxSize/duration)*i);
+				Delay(1);
+			}
+			for(i = duration; i >= 0; i--)
+			{
+				SetActorProperty(0,APROP_Alpha,(startAlpha/duration)*i);
+				Delay(1);
+			}
+			Thing_Remove(0);
+			break;
+		case 4:
+			for(i = 0; i <= duration; i++)
+			{
+				SetActorProperty(0,APROP_Alpha,(startAlpha/duration)*(duration-i));
+				SetActorProperty(0,APROP_ScaleX,startScaleX+(maxSize/duration)*i);
+				SetActorProperty(0,APROP_ScaleY,startScaleY+(maxSize/duration)*i);
+				Delay(1);
+			}
+			Thing_Remove(0);
+			break;
+	}
+}
+
+Script "SoF_BulletDamage" (int damage)
+{
+	str bulletType = GetActorClass(0);
+	int bulletX = GetActorX(0);
+	int bulletY = GetActorY(0);
+	int bulletZ = GetActorZ(0);
+	SetActivator(0,AAPTR_Tracer);
+	int monsterX = GetActorX(0);
+	int monsterY = GetActorY(0);
+	int monsterZ = GetActorZ(0);
+	int monsterHealth = GetActorProperty(0,APROP_Health);
+	int monsterHeight = GetActorProperty(0,APROP_Height);
+	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
+	int monsterAngle, vang, angle;
+
+	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
+
+	if(monsterWidth >= monsterHeight && !CheckInventory("IsFatButBiped"))
+	{
+		monsterAngle = GetActorAngle(0);
+		vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
+		angle = vang % 1.0;
+				
+		if(!CheckInventory("SoF_PerformedHeadShot") && !CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
+		{
+			if(bulletType != "SoF_KnifeProjectile" && monsterHealth - (damage*3) <= -damage*2)
+			{
+				SoF_HitDamageBrutalityBonus(0);
+				GiveInventory("SoF_PerformedHeadShot",1);
+				GiveInventory("SoF_BloodHeadshotGenerator",1);
+			}
+		
+			SetResultValue(damage + (2 * damage * !CheckInventory("SoF_IsDeathGibber")));
+		}
+		else
+		{
+			if(GetActorClass(0) == "SoF_DeathGibber")
+				GiveInventory("SoF_GibberSeverGenerator",1);
+				
+			SetResultValue(damage);
+		}
+	}
+	else
+	{
+		if(bulletZ > monsterZ + FixedMul(monsterHeight,0.75))
+		{
+			if(bulletType != "SoF_KnifeProjectile" && !CheckInventory("SoF_PerformedHeadShot") && monsterHealth - (damage*3) <= -damage*2)
+			{
+				SoF_HitDamageBrutalityBonus(0);
+				GiveInventory("SoF_PerformedHeadShot",1);
+				GiveInventory("SoF_BloodHeadshotGenerator",1);
+			}
+		
+			int result;
+			if(GetCvar("samsara_mixerloaded"))
+				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
+			else
+				result = 0;
+
+			if(result == -1)
+			{
+				SetResultValue(-1);
+				terminate;
+			}
+			//if(StrLeft(GetActorClass(0),4)=="RTCW" && GetCvar("samsara_mixerloaded"))
+				//GiveInventory("RTCW_RemoveHat",1);
+				
+			
+			SetResultValue(damage + (2 * damage * !CheckInventory("SoF_IsDeathGibber")));
+		}
+		else if(bulletType == "SoF_ShotgunBulletPuff" || bulletType == "SoF_KnifePuff")
+		{
+			monsterAngle = GetActorAngle(0);
+			vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
+			angle = vang % 1.0;
+			if(GetActorClass(0) == "SoF_DeathGibber")
+			{
+				if(random(0,4) == 0) 
+					if(bulletType == "SoF_KnifePuff")
+						GiveInventory("SoF_GibberSeverKnifeGenerator",1);
+					else
+						GiveInventory("SoF_GibberSeverGenerator",1);
+				SoF_SetGibberType(3);
+			}
+			else if(!CheckInventory("SoF_ShotgunStomachShot") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
+			{
+				GiveInventory("SoF_ShotgunStomachShot",1);
+				SoF_HitDamageBrutalityBonus(1);
+			}
+			
+			SetResultValue(damage);
+		}
+		else
+		{
+			if(GetActorClass(0) == "SoF_DeathGibber")
+				GiveInventory("SoF_GibberSeverGenerator",1);
+				
+			SetResultValue(damage);
+		}
+	}
+}
+
+function void SoF_HitDamageBrutalityBonus (int type)
+{
+	SetActivator(0,AAPTR_TRACER);
+	if(type == 0) { GiveInventory("SoF_MelonPopperTimer",ACS_NamedExecuteWithResult("SoF_Decorate",17,5)); GiveInventory("SoF_MelonPopperMultiplier",1); }
+	else if(type == 1) { GiveInventory("SoF_TheEvisceratorTimer",ACS_NamedExecuteWithResult("SoF_Decorate",17,6)); GiveInventory("SoF_TheEvisceratorMultiplier",1); }
+}
+
+function void SoF_SetGibberType (int count)
+{
+	SetActivator(0,AAPTR_Master);
+	SetInventory("SoF_GibberDamageType",3);
+}
+
+Script "SoF_BloodGenerator_Offsets" (void)
+{
+	int missilex = GetActorX(0);
+	int missiley = GetActorY(0);
+	int missilez = GetActorZ(0);
+	int missileAngle = GetActorAngle(0);
+	SetActivator(0,AAPTR_Tracer);
+
+	int enemyx = GetActorX(0);
+	int enemyy = GetActorY(0);
+	int enemyz = GetActorZ(0);
+	int currentangle = GetActorAngle(0);
+	int vang = VectorAngle(enemyx - missilex, enemyy - missiley);
+	int angle = vang % 1.0;
+	SetInventory("SoF_BloodGeneratorAngle",angle+65536);
+	SetInventory("SoF_BloodGeneratorBleedAngle",missileAngle+65536);
+	SetInventory("SoF_BloodGeneratorZ",(missilez - enemyz)>>16 + 65536);
+}
+
+Script "SoF_BloodGenerator_Return" (int mode)
+{
+	int result;
+	switch(mode)
+	{
+		case 1:
+			result = ((CheckInventory("SoF_BloodGeneratorAngle") - 65536)/182)+180;
+			break;
+		case 2:
+			result = CheckInventory("SoF_BloodGeneratorZ");
+			break;
+		case 3:
+			result = ((CheckInventory("SoF_BloodGeneratorBleedAngle") - 65536)/182);
+			break;
+	}
+	SetResultValue(result);
+}
+
+Script "SoF_BloodPool" (int type)
+{
+	int ownerTid = uniqueTid();
+	SpawnForced(strparam(s:"SoF_BloodPool",s:type == 1 ? "Gib" : ""),GetActorX(0),GetActorY(0),GetActorFloorZ(0),ownerTid);
+	Thing_SetTranslation(ownerTid,-1);
+	SetActivator(0,AAPTR_MASTER);
+	SetPointerExt(AAPTR_MASTER,0,ownerTid);
+	SetActorProperty(ownerTid,APROP_ScaleX,GetActorProperty(0,APROP_Radius)/20);
+	Thing_ChangeTid(ownerTid,0);
+}
+
+Script "SoF_DrawLaserToClient" (int type)
+{
+	int x = GetActorX(0);
+	int y = GetActorY(0);
+	int z = GetActorZ(0);
+	SetActivatorToTarget(0);
+	ACS_NamedExecuteWithResult("SoF_DrawMPGLaser",x,y,z,type);
+}
+
+Script "SoF_DrawMPGLaser" (int tx, int ty, int tz, int type) clientside
+{
+	int t, k = 0, l, angle, pitch, x, y, z, vx, vy, vz, mag, magI, height, space, horz, i;
+	str segment;
+	int leanMod = 0;
+	if(CheckInventory("SoF_Leaning") == 1) leanMod = 4.0;
+	else if(CheckInventory("SoF_Leaning") == 2) leanMod = -4.0;
+	
+	//Properties
+	switch(type)
+	{
+		case 0:
+			height = GetActorViewHeight(0) - 9.0;
+			space = 32;
+			horz = 8.0 + leanMod;
+			i = 40;
+			segment = "SoF_MPGLaserSegment";
+			break;
+		case 1:
+			height = GetActorViewHeight(0) - 9.0;
+			space = 16;
+			horz = 8.0 + leanMod;
+			i = 40;
+			segment = "SoF_MPGAltFireTrail";
+			break;
+	}
+	
+	int newtid = UniqueTid();
+	
+	int xoff = FixedMul(sin(GetActorAngle(0)),horz);
+	int yoff = FixedMul(cos(GetActorAngle(0)),horz);
+		
+    x = GetActorX(0) + xoff;
+	y = GetActorY(0) - yoff;
+	z = GetActorZ(0) + height;
+	
+	int vectorx = tx - x;
+	int vectory = ty - y;
+	int vectorz = tz - z;
+	angle = VectorAngle(vectorx, vectory);
+	
+	int length = magnitudeTwo(vectorx>>16,vectory>>16);
+	pitch = VectorAngle(length<<16, vectorz);
+
+    vx = tx-x; vy = ty-y; vz = tz-z; mag = magnitudeThree_f(vx, vy, vz);
+    vx = FixedDiv(vx, mag); vy = FixedDiv(vy, mag); vz = FixedDiv(vz, mag);
+    magI = ftoi(mag);
+    for (i = i; i < magI; i += space)
+    {
+        SpawnForced(segment, x+(vx*i), y+(vy*i), z+(vz*i), newtid);
+		SetActorPitch(newtid, pitch);
+		SetActorAngle(newtid, angle);
+		
+		
+		if(type == 1 && ((i % 128) == 8))
+			Delay(1);
+
+		if(i % 1500 == 0)
+			Delay(1);
+    }
+}
+
+Script "SoF_DoScope" (void) clientside
+{
+	while(CheckInventory("SoF_SniperScoped"))
+	{
+		int zoomLevel = CheckInventory("SoF_SniperZoomLevel");
+		if(zoomLevel < 6) zoomLevel = 6;
+		SetHudSize(280,240,0);
+		SetFont("SOFSCOPE");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,59,CR_UNTRANSLATED,140.0,120.0,0.0);
+		
+		SetHudSize(400,280,0);
+		SetFont(strparam(s:"SOFSCO0",d:2+CheckInventory("SoF_SniperZoomLevel")%4));
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,58,CR_UNTRANSLATED,200.0,140.0,0.0);
+		
+		SetHudSize(400,120,0);
+		SetFont("SOFSCO06");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,57,CR_UNTRANSLATED,0.0,60.0,0.0);
+		
+		SetHudSize(400,400,0);
+		SetFont("SOFSCO07");
+		HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,56,CR_UNTRANSLATED,0.0,290.0-(7.0*(zoomLevel)),0.0);
+		
+		SetHudSize(1600,1600,0);
+		SetFont("SOFSCONM");
+		HudMessage(d:CheckInventory("SoF_SniperZoomLevel");HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,55,CR_UNTRANSLATED,0.0,536.0,0.0);
+		
+		RemoveMessages(49,54);
+		
+		SetFont("SOFSCO01");
+		SetHudSize(480,480,0);
+		for(int a = 0; a < CheckInventory("SoF_SniperMagazine"); a++)
+		{
+			HudMessage(s:"A";HUDMSG_LAYER_OVERHUD|HUDMSG_NOTWITHFULLMAP|HUDMSG_PLAIN,49+a,CR_UNTRANSLATED,480.0,400.0-16.0*a,0.0);
+		}
+		
+		Delay(1);
+	}
+	RemoveMessages(49,59);
+}
