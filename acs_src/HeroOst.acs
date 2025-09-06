@@ -6,7 +6,7 @@
 #include "zcommon.acs"
 #include "commonFuncs.acs"
 
-#define musicCount 39
+#define musicCount 41
 
 int musicActivated[musicCount] = {-1};
 str musicSettings[musiccount] =
@@ -45,14 +45,16 @@ str musicSettings[musiccount] =
     "samsara_cl_heromusic_quake3", //31
     "samsara_cl_heromusic_descent", //32
     "samsara_cl_heromusic_deusex", //33
-	"samsara_cl_heromusic_doom64", //34
-	"samsara_cl_heromusic_totenkopf", //35
-	"samsara_cl_heromusic_dukelab", //36
-	"samsara_cl_heromusic_hlop", //37
-	"samsara_cl_heromusic_goldfinger" //38
+	"samsara_cl_heromusic_kingpin", //34
+	"samsara_cl_heromusic_sof", //35
+	"samsara_cl_heromusic_doom64", //36
+	"samsara_cl_heromusic_totenkopf", //37
+	"samsara_cl_heromusic_dukelab", //38
+	"samsara_cl_heromusic_hlop", //39
+	"samsara_cl_heromusic_goldfinger", //40
 };
 
-#DEFINE CLASSCOUNT 34
+#DEFINE CLASSCOUNT 36
 #DEFINE MAXTYPES 5
 #DEFINE MAXALTS 5
 
@@ -92,6 +94,8 @@ int maxGameTracks[CLASSCOUNT][MAXALTS][MAXTYPES] =
 	{ {29} }, //Quake 3
 	{ {26, 21} }, //Descent
 	{ {21, 21, 21} }, //Deus Ex
+	{ {6} }, //Kingpin
+	{ {24, 24, 24} }, //Soldier of Fortune
 };
 
 str gameMusicTypes[CLASSCOUNT][MAXALTS][MAXTYPES] =
@@ -130,6 +134,8 @@ str gameMusicTypes[CLASSCOUNT][MAXALTS][MAXTYPES] =
 	{ {"Q3TRAK"} },
 	{ {"DSTRAK", "DSCDTR"} },
 	{ {"DXAMB1", "DXAMB2", "DXFIT"} },
+	{ {"KPTRAK"} },
+	{ {"SOFAMB", "SOFAMB", "SOFFIT"} },
 };
 
 str ChristmasMusic[16] = {"CHRIST01","CHRIST02","CHRIST03","CHRIST04","CHRIST05",
@@ -249,23 +255,23 @@ script "SamsaraOST_Enter" ENTER
                         break;
 
                       case 0:
-                        if (GetUserCVar(pln, "samsara_cl_doommode") == 1) { gameoverride = 34; }
+                        if (GetUserCVar(pln, "samsara_cl_doommode") == 1) { gameoverride = 36; }
                         break;
 
                       case 3:
-                        if (GetUserCVar(pln, "samsara_cl_wolfmode") >= 2) { gameoverride = 35; }
+                        if (GetUserCVar(pln, "samsara_cl_wolfmode") >= 2) { gameoverride = 37; }
                         break;
 
                       case 5:
-                        if (GetUserCVar(pln, "samsara_cl_dukemode") == 1) { gameoverride = 36; }
+                        if (GetUserCVar(pln, "samsara_cl_dukemode") == 1) { gameoverride = 38; }
                         break;
 
                       case 19:
-                        if (GetUserCVar(pln, "samsara_cl_shephardmode") >= 1) { gameoverride = 37; }
+                        if (GetUserCVar(pln, "samsara_cl_shephardmode") >= 1) { gameoverride = 30; }
                         break;
 
                       case 26:
-                        if (GetUserCVar(pln, "samsara_cl_bondmode") >= 1) { gameoverride = 38; }
+                        if (GetUserCVar(pln, "samsara_cl_bondmode") >= 1) { gameoverride = 40; }
                         break;
                     }
                 }
@@ -294,7 +300,7 @@ script "SamsaraOST_Enter" ENTER
                     break;
 
                   case 0:
-                  case 34:
+                  case 36:
                     switchClass = gameoverride == 34;
                     settrack = Random(1, maxGameTracks[0][switchClass][0]);
 
@@ -302,7 +308,7 @@ script "SamsaraOST_Enter" ENTER
                     break;
 
                   case 3:
-                  case 35:
+                  case 37:
 					switchType = GetUserCVar(pln, "samsara_cl_wolf3dimf");
                     switchClass = gameoverride == 35;
                     settrack = Random(1, maxGameTracks[3][switchClass][switchClass ? 0 : switchType]);
@@ -317,7 +323,7 @@ script "SamsaraOST_Enter" ENTER
                     break;
 
                   case 5:
-                  case 36:
+                  case 38:
                     switchClass = gameoverride == 36;
                     settrack = Random(1, maxGameTracks[5][switchClass][0]);
 
@@ -358,7 +364,7 @@ script "SamsaraOST_Enter" ENTER
                     break;
 
                   case 19:
-                  case 37:
+                  case 39:
                     SpawnForced("HLMusicToken",GetActorX(0),GetActorY(0),GetActorZ(0),musictid);
                     if (!CheckInventory("SamsaraHeroMusicHalfLifeActive")) { ACS_NamedExecuteWithResult("SamsaraOST_HalfLifeScriptedMusicLoop",musictid); }
                     break;
@@ -371,7 +377,7 @@ script "SamsaraOST_Enter" ENTER
                     break;
 
                   case 26:
-                  case 38:
+                  case 40:
 					switchClass = gameoverride == 38;
                     settrack = Random(1, maxGameTracks[26][switchClass][0]);
                     SetInventory("BondMusicToken", settrack + 1);
@@ -385,7 +391,7 @@ script "SamsaraOST_Enter" ENTER
                     break;
 
                   case 28:
-                    if (!CheckInventory("SamsaraHeroMusicPainkillerActive")) { ACS_NamedExecuteWithResult("SamsaraOST_PainkillerScriptedMusic"); }
+                    if (!CheckInventory("SamsaraHeroMusicSamsaraOSTActive")) { ACS_NamedExecuteWithResult("SamsaraOST_AmbientFightScriptedMusic",gameoverride); }
                     break;
 
                   case 32:
@@ -396,7 +402,11 @@ script "SamsaraOST_Enter" ENTER
                     break;
 
                   case 33:
-                    if (!CheckInventory("SamsaraHeroMusicDeusExActive")) { ACS_NamedExecuteWithResult("SamsaraOST_DeusExScriptedMusic"); }
+                    if (!CheckInventory("SamsaraHeroMusicSamsaraOSTActive")) { ACS_NamedExecuteWithResult("SamsaraOST_AmbientFightScriptedMusic",gameoverride); }
+                    break;
+					
+				  case 35:
+					if (!CheckInventory("SamsaraHeroMusicSamsaraOSTActive")) { ACS_NamedExecuteWithResult("SamsaraOST_AmbientFightScriptedMusic",gameoverride); }
                     break;
                 }
             }
@@ -598,256 +608,121 @@ Script "SamsaraOST_HalfLifeScriptedMusic" (int musictid, int cause, int pln) cli
 	}
 }
 
-Script "SamsaraOST_PainkillerScriptedMusic" (void)
+function int SamsaraOST_AmbientReseed (int type, int themeseed)
 {
-	int musicvolume = 1.0;
-	int themeseed = random(1,maxGameTracks[28][0][0]);
-	int songseed = 1;
-	int targetmusicvolume = musicvolume;
-	int swapped, swaptofight, swaptoambient;
-	int laststate = 0;
-	int trigger = 1;
-	int gameoverride = CheckInventory("SamsaraHeroMusicGame") - 1;
-
-	switch(themeseed)
+	switch(type)
 	{
-		case 2: case 3: case 4: case 5: case 10: case 11: case 12: case 13: case 17: case 18: case 20: case 22: songseed = random(1,2); break;
+		case 28: 
+			switch(themeseed)
+			{
+				case 2: case 3: case 4: case 5: case 10: case 11: case 12: case 13: case 17: case 18: case 20: case 22: return random(0,1);
+			}
+			break;
+		case 33: 
+			if(themeseed == 14) return random(0,1);
+			break;
 	}
-
-    SetInventory("SamsaraHeroMusicPainkillerActive", 1);
-
-	while(CheckInventory("SamsaraHeroMusicPainkillerActive"))
-	{
-        if (GetCVar("snd_musicvolume") <= 0 || ((CheckInventory("BondClass") || CheckInventory("RTCWClass")) && isDead(0) && isSinglePlayer() && !GetCVar("sv_singleplayerrespawn")))
-        {
-            Delay(1);
-            continue;
-        }
-
-        gameoverride = CheckInventory("SamsaraHeroMusicGame") - 1;
-
-        if (gameoverride != 28) { break; }
-
-        if (CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
-        {
-            LocalSetMusic("");
-
-	        themeseed = random(1,maxGameTracks[28][0][0]);
-	        switch(themeseed)
-			{
-				case 2: case 3: case 4: case 5: case 10: case 11: case 12: case 13: case 17: case 18: case 20: case 22: songseed = random(1,2); break;
-			}
-        }
-
-		int newtid = UniqueTid();
-		SpawnSpotFacingForced("Painkiller_MusicDecider",0,newtid);
-		SetPointerExt(AAPTR_TRACER,0,newtid);
-		Thing_ChangeTid(newtid,0);
-
-		if(GetCvar("samsara_zscriptready") == 1)
-		{
-			SetMusicVolume(musicvolume);
-			if(CheckInventory("Painkiller_CombatMusic") || swaptofight == 1)
-			{
-				if(CheckInventory("Painkiller_CombatMusic") != swapped || swaptofight == 1)
-				{
-					swaptofight = 1;
-					//PrintBold(s:"Combat ",f:musicvolume);
-					if(laststate == 0)
-					{
-						trigger = 0;
-						musicvolume -= 0.01;
-					}
-					if(musicvolume < 0.0 || trigger == 1)
-					{
-						trigger = 1;
-						if(musicvolume < targetmusicvolume)
-							musicvolume += 0.01;
-						else
-						{
-							musicvolume = targetmusicvolume;
-							swaptofight = 0;
-							swaptoambient = 0;
-							swapped = 1;
-						}
-
-						if(laststate == 0)
-						{
-							switch(themeseed)
-							{
-								default:
-									LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:themeseed < 10 ? "0" : "",d:themeseed),0);
-									break;
-								case 12:
-									LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:"0",d:1),0);
-									break;
-								case 13:
-									LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:"0",d:6),0);
-									break;
-								case 17:
-									LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:"0",d:5),0);
-									break;
-
-							}
-						}
-						laststate = 1;
-					}
-				}
-				else
-				{
-					SetMusicVolume(targetmusicvolume);
-					switch(themeseed)
-					{
-						default:
-							LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:themeseed < 10 ? "0" : "",d:themeseed),0);
-							break;
-						case 12:
-							LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:"0",d:1),0);
-							break;
-						case 13:
-							LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:"0",d:6),0);
-							break;
-						case 17:
-							LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:"0",d:5),0);
-							break;
-
-					}
-				}
-			}
-			else if(CheckInventory("Painkiller_CombatMusic") == 0 || swaptoambient == 1)
-			{
-				if(CheckInventory("Painkiller_CombatMusic") != swapped || swaptoambient == 1)
-				{
-					swaptoambient = 1;
-					//PrintBold(s:"Ambient ",f:musicvolume);
-					if(laststate == 1)
-					{
-						trigger = 0;
-						musicvolume -= 0.01;
-					}
-					if(musicvolume < 0.0 || trigger == 1)
-					{
-						trigger = 1;
-						if(musicvolume < targetmusicvolume)
-							musicvolume += 0.01;
-						else
-						{
-							musicvolume = targetmusicvolume;
-							swaptofight = 0;
-							swaptoambient = 0;
-							swapped = 0;
-						}
-
-						if(laststate == 1)
-							LocalSetMusic(strparam(s:gameMusicTypes[28][0][songseed-1],s:themeseed < 10 ? "0" : "",d:themeseed),0);
-						laststate = 0;
-					}
-				}
-				else
-				{
-					SetMusicVolume(targetmusicvolume);
-					LocalSetMusic(strparam(s:gameMusicTypes[28][0][songseed-1],s:themeseed < 10 ? "0" : "",d:themeseed),0);
-				}
-			}
-		}
-		else
-		{
-			if(!CheckWeapon("Painkiller_DemonMorph") && !CheckInventory("Painkiller_GoldActive"))
-			{
-				if(CheckInventory("Painkiller_CombatMusic"))
-				{
-					TakeInventory("Painkiller_AmbientMusic",65536);
-					GiveInventory("Painkiller_CombatMusic",1);
-					switch(themeseed)
-					{
-						default:
-							LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:themeseed < 10 ? "0" : "",d:themeseed),0);
-							break;
-						case 12:
-							LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:"0",d:1),0);
-							break;
-						case 13:
-							LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:"0",d:6),0);
-							break;
-						case 17:
-							LocalSetMusic(strparam(s:gameMusicTypes[28][0][2],s:"0",d:5),0);
-							break;
-
-					}
-				}
-				else if(!CheckInventory("Painkiller_AmbientMusic"))
-				{
-					GiveInventory("Painkiller_AmbientMusic",1);
-					LocalSetMusic(strparam(s:gameMusicTypes[28][0][songseed-1],s:themeseed < 10 ? "0" : "",d:themeseed),0);
-				}
-			}
-		}
-
-		Delay(1);
-	}
-    SetInventory("SamsaraHeroMusicPainkillerActive", 0);
-	TakeInventory("Painkiller_CombatMusic",1);
-	TakeInventory("Painkiller_AmbientMusic",1);
+	return 0;
 }
 
-Script "SamsaraOST_DeusExScriptedMusic" (void)
+function void SamsaraOST_FightReseed (int type, int themeseed)
+{
+	switch(type)
+	{
+		case 28: 
+			switch(themeseed)
+			{
+				default:
+					LocalSetMusic(strparam(s:gameMusicTypes[type][0][2],s:themeseed < 10 ? "0" : "",d:themeseed),0);
+					break;
+				case 12:
+					LocalSetMusic(strparam(s:gameMusicTypes[type][0][2],s:"0",d:1),0);
+					break;
+				case 13:
+					LocalSetMusic(strparam(s:gameMusicTypes[type][0][2],s:"0",d:6),0);
+					break;
+				case 17:
+					LocalSetMusic(strparam(s:gameMusicTypes[type][0][2],s:"0",d:5),0);
+					break;
+			}
+			break;
+		case 33:
+		case 35:
+			LocalSetMusic(strparam(s:gameMusicTypes[type][0][2],s:themeseed < 10 ? "0" : "",d:themeseed),0);
+			break;		
+	}
+}
+
+script "SamsaraOST_HasTarget" (void)
+{
+    SetActivator(0,AAPTR_TRACER);
+	SetActivator(0,AAPTR_TARGET);
+	bool isally = CheckInventory("SamsaraOST_IgnoreTarget");
+
+    if ((ClassifyActor(0) & ACTOR_ALIVE) && !isally && SetActivator(0, AAPTR_TARGET)) { SetResultValue(1); }
+    else { SetResultValue(0); }
+}
+
+Script "SamsaraOST_AmbientFightScriptedMusic" (int type)
 {
 	int musicvolume = 1.0;
-	int themeseed = random(1,maxGameTracks[33][0][0]);
+	int themeseed = random(1,maxGameTracks[type][0][0]);
 	int songseed = 1;
 	int targetmusicvolume = musicvolume;
 	int swapped, swaptofight, swaptoambient;
 	int laststate = 0;
 	int trigger = 1;
+	int musicAdjust = 0.025;
 	int gameoverride = CheckInventory("SamsaraHeroMusicGame") - 1;
-
-    SetInventory("SamsaraHeroMusicDeusExActive", 1);
-
-	if(themeseed == 14) songseed = random(1,2);
-	while (CheckInventory("SamsaraHeroMusicDeusExActive"))
+	
+	SetInventory("SamsaraHeroMusicSamsaraOSTActive", 1);
+	while(CheckInventory("SamsaraHeroMusicSamsaraOSTActive"))
 	{
-        if (GetCVar("snd_musicvolume") <= 0 || ((CheckInventory("BondClass") || CheckInventory("RTCWClass")) && isDead(0) && isSinglePlayer() && !GetCVar("sv_singleplayerrespawn")))
+		if (GetCVar("snd_musicvolume") <= 0 || ((CheckInventory("BondClass") || CheckInventory("RTCWClass")) && isDead(0) && isSinglePlayer() && !GetCVar("sv_singleplayerrespawn")))
         {
             Delay(1);
             continue;
         }
-
-        gameoverride = CheckInventory("SamsaraHeroMusicGame") - 1;
-
-        if (gameoverride != 33) { break; }
-
-        if (CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
+		
+		gameoverride = CheckInventory("SamsaraHeroMusicGame") - 1;
+		
+		if (gameoverride != type) { break; }
+		
+		if (CheckInventory("SamsaraHeroMusicSelectingNextTrack"))
         {
             LocalSetMusic("");
 
-	        themeseed = random(1,maxGameTracks[33][0][0]);
-			if(themeseed == 14) songseed = random(1,2);
+	        themeseed = random(1,maxGameTracks[type][0][0]);
+	        songseed = SamsaraOST_AmbientReseed(type, themeseed);
         }
-
+		
 		int newtid = UniqueTid();
-		SpawnSpotFacingForced("DeusEx_MusicDecider",0,newtid);
+		SpawnSpotFacingForced("SamsaraOST_MusicDecider",0,newtid);
 		SetPointerExt(AAPTR_TRACER,0,newtid);
 		Thing_ChangeTid(newtid,0);
-
-		if(GetCvar("samsara_zscriptready") == 1)
+		
+		if(type == 35 && themeseed > 25)
+		{
+			LocalSetMusic(StrParam(s:gameMusicTypes[35][0][0], s:themeseed < 10 ? "0" : "", d:themeseed));
+		}
+		else if(GetCvar("samsara_zscriptready") == 1)
 		{
 			SetMusicVolume(musicvolume);
-			if(CheckInventory("DeusEx_CombatMusic") || swaptofight == 1)
+			if(CheckInventory("SamsaraOST_CombatMusic") || swaptofight == 1)
 			{
-				if(CheckInventory("DeusEx_CombatMusic") != swapped || swaptofight == 1)
+				if(CheckInventory("SamsaraOST_CombatMusic") != swapped || swaptofight == 1)
 				{
 					swaptofight = 1;
-					//PrintBold(s:"Combat ",f:musicvolume);
 					if(laststate == 0)
 					{
 						trigger = 0;
-						musicvolume -= 0.01;
+						musicvolume -= musicAdjust;
 					}
 					if(musicvolume < 0.0 || trigger == 1)
 					{
 						trigger = 1;
 						if(musicvolume < targetmusicvolume)
-							musicvolume += 0.01;
+							musicvolume += musicAdjust;
 						else
 						{
 							musicvolume = targetmusicvolume;
@@ -857,32 +732,32 @@ Script "SamsaraOST_DeusExScriptedMusic" (void)
 						}
 
 						if(laststate == 0)
-							LocalSetMusic(strparam(s:gameMusicTypes[33][0][2],s:themeseed < 10 ? "0" : "",d:themeseed),0);
+							SamsaraOST_FightReseed(type, themeseed);
+							
 						laststate = 1;
 					}
 				}
 				else
 				{
 					SetMusicVolume(targetmusicvolume);
-					LocalSetMusic(strparam(s:gameMusicTypes[33][0][2],s:themeseed < 10 ? "0" : "",d:themeseed),0);
+					SamsaraOST_FightReseed(type, themeseed);
 				}
 			}
-			else if(CheckInventory("DeusEx_CombatMusic") == 0 || swaptoambient == 1)
+			else if(CheckInventory("SamsaraOST_CombatMusic") == 0 || swaptoambient == 1)
 			{
-				if(CheckInventory("DeusEx_CombatMusic") != swapped || swaptoambient == 1)
+				if(CheckInventory("SamsaraOST_CombatMusic") != swapped || swaptoambient == 1)
 				{
 					swaptoambient = 1;
-					//PrintBold(s:"Ambient ",f:musicvolume);
 					if(laststate == 1)
 					{
 						trigger = 0;
-						musicvolume -= 0.01;
+						musicvolume -= musicAdjust;
 					}
 					if(musicvolume < 0.0 || trigger == 1)
 					{
 						trigger = 1;
 						if(musicvolume < targetmusicvolume)
-							musicvolume += 0.01;
+							musicvolume += musicAdjust;
 						else
 						{
 							musicvolume = targetmusicvolume;
@@ -892,14 +767,14 @@ Script "SamsaraOST_DeusExScriptedMusic" (void)
 						}
 
 						if(laststate == 1)
-							LocalSetMusic(strparam(s:gameMusicTypes[33][0][songseed-1],s:themeseed < 10 ? "0" : "",d:themeseed),0);
+							LocalSetMusic(strparam(s:gameMusicTypes[type][0][songseed],s:themeseed < 10 ? "0" : "",d:themeseed),0);
 						laststate = 0;
 					}
 				}
 				else
 				{
 					SetMusicVolume(targetmusicvolume);
-					LocalSetMusic(strparam(s:gameMusicTypes[33][0][songseed-1],s:themeseed < 10 ? "0" : "",d:themeseed),0);
+					LocalSetMusic(strparam(s:gameMusicTypes[type][0][songseed],s:themeseed < 10 ? "0" : "",d:themeseed),0);
 				}
 			}
 		}
@@ -907,17 +782,26 @@ Script "SamsaraOST_DeusExScriptedMusic" (void)
 		{
 			if(!CheckWeapon("Painkiller_DemonMorph") && !CheckInventory("Painkiller_GoldActive"))
 			{
-				if(CheckInventory("DeusEx_CombatMusic"))
-					LocalSetMusic(strparam(s:gameMusicTypes[33][0][2],s:themeseed < 10 ? "0" : "",d:themeseed),0);
-				else
-					LocalSetMusic(strparam(s:gameMusicTypes[33][0][songseed-1],s:themeseed < 10 ? "0" : "",d:themeseed),0);
+				if(CheckInventory("SamsaraOST_CombatMusic"))
+				{
+					TakeInventory("SamsaraOST_AmbientMusic",65536);
+					GiveInventory("SamsaraOST_CombatMusic",1);
+					SamsaraOST_FightReseed(type, themeseed);
+				}
+				else if(!CheckInventory("SamsaraOST_AmbientMusic"))
+				{
+					GiveInventory("SamsaraOST_AmbientMusic",1);
+					LocalSetMusic(strparam(s:gameMusicTypes[type][0][songseed-1],s:themeseed < 10 ? "0" : "",d:themeseed),0);
+				}
 			}
 		}
-
+		
 		Delay(1);
 	}
-    SetInventory("SamsaraHeroMusicDeusExActive", 0);
-    SetInventory("DeusEx_CombatMusic", 0);
+	
+	SetInventory("SamsaraHeroMusicSamsaraOSTActive", 0);
+	TakeInventory("SamsaraOST_CombatMusic",1);
+	TakeInventory("SamsaraOST_AmbientMusic",1);
 }
 
 script "SamsaraOST_NextSong" (void) NET
