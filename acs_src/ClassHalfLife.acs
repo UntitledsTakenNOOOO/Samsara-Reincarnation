@@ -1726,50 +1726,40 @@ Script "HalfLife_BulletDamage" (int damage)
 	int bulletX = GetActorX(0);
 	int bulletY = GetActorY(0);
 	int bulletZ = GetActorZ(0);
+
 	SetActivator(0,AAPTR_Tracer);
-	int monsterX = GetActorX(0);
-	int monsterY = GetActorY(0);
+
+	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
+
 	int monsterZ = GetActorZ(0);
-	int monsterHealth = GetActorProperty(0,APROP_Health);
 	int monsterHeight = GetActorProperty(0,APROP_Height);
 	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
-	
-	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
-	
+
 	if(!CheckInventory("IsFatButBiped") && monsterWidth > monsterHeight)
 	{
-		int monsterAngle = GetActorAngle(0);
-		int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
-		int angle = vang % 1.0;
-		
-		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
-		{			
-			SetResultValue(damage*2);
-		}
-		else
-			SetResultValue(damage);
-	}
-	else
-	{
-		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.75))
-		{
-			int result;
-			if(GetCvar("samsara_mixerloaded"))
-				result = ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
-			else
-				result = 0;
-				
-			if(result == -1)
-			{
-				SetResultValue(-1);
-				terminate;
-			}
+		int relativeAngle = abs(relativeAngleToXY(0, bulletX, bulletY));
 
+		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && (relativeAngle < 0.65 && relativeAngle > 0.35))
+		{
 			SetResultValue(damage*2);
+			terminate;
 		}
-		else
-			SetResultValue(damage);
 	}
+	else if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.75))
+	{
+		int result = GetCVar("samsara_mixerloaded") ? ACS_NamedExecuteWithResult("Goldeneye_HatShot") : 0;
+
+		if(result == -1)
+		{
+			SetResultValue(-1);
+			terminate;
+		}
+
+		SetResultValue(damage*2);
+		terminate;
+	}
+
+	SetResultValue(damage);
 }
 
 script "HLBarnacleTether" (int query, int organic) //2679
