@@ -1304,28 +1304,33 @@ Script "BondHitBox" (int damage)
 {
 	int bulletX = GetActorX(0);
 	int bulletY = GetActorY(0);
-	int bulletZ = GetActorZ(0);	
-	if(!isZDoom()) Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_USEPTR);
-	SetActivator(0,AAPTR_Tracer);
-	int monsterX = GetActorX(0);
-	int monsterY = GetActorY(0);
-	int monsterZ = GetActorZ(0);
+	int bulletZ = GetActorZ(0);
 	int newtid = UniqueTID();
 	int oldTID = ActivatorTID();
-	int monsterHealth = GetActorProperty(0,APROP_Health);
+
+	Thing_ChangeTID(0,newtid);
+
+	if(!isZDoom()) Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION|WARPF_USEPTR);
+
+	SetActivator(0,AAPTR_Tracer);
+
+	if(CheckFlag(0,"NOBLOOD"))
+	{
+		SetResultValue(damage);
+		Thing_ChangeTID(newtid,oldTID);
+		terminate;
+	}
+
+	int monsterZ = GetActorZ(0);
 	int monsterHeight = GetActorProperty(0,APROP_Height);
 	int monsterWidth = GetActorProperty(0,APROP_Radius)*2;
 	int result = damage;
 
-	if(CheckFlag(0,"NOBLOOD")) { SetResultValue(damage); terminate; }
-
 	if(!CheckInventory("IsFatButBiped") && monsterWidth > monsterHeight)
 	{
-		int monsterAngle = GetActorAngle(0);
-		int vang = VectorAngle(monsterX - bulletX, monsterY - bulletY);
-		int angle = vang % 1.0;
+		int relativeAngle = abs(relativeAngleToXY(0, bulletX, bulletY));
 
-		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && ((abs(monsterAngle - angle)) < 0.65 && (abs(monsterAngle - angle)) > 0.35))
+		if(!CheckInventory("NoHeadShots") && bulletZ > monsterZ + FixedMul(monsterHeight,0.35) && bulletZ < monsterZ + FixedMul(monsterHeight,0.65) && (relativeAngle < 0.65 && relativeAngle > 0.35))
 		{
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeHead");
 			result = damage*2;
@@ -1333,18 +1338,18 @@ Script "BondHitBox" (int damage)
 		else
 			result = damage;
 	}
-	else
+	else if(!CheckInventory("NoHeadShots"))
 	{
-		if(!CheckInventory("NoHeadShots") && (bulletZ >= monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.75)))/* && (z <= tz+GetActorProperty(0,APROP_Height))*/
+		if(bulletZ >= monsterZ + FixedMul(monsterHeight,0.75))/* && (z <= tz+monsterHeight)*/
 		{
 			if(GetCvar("samsara_mixerloaded"))
-				result = damage*ACS_NamedExecuteWithResult("Goldeneye_HatShot",0,0,0,0);
+				result = damage*ACS_NamedExecuteWithResult("Goldeneye_HatShot");
 			else
 				result = damage*2;
 
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeHead");
 		}
-		else if(!CheckInventory("NoHeadShots") && (bulletZ >= monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.5)) && (bulletZ < monsterZ+FixedMul(GetActorProperty(0,APROP_Height),0.75)))
+		else if((bulletZ >= monsterZ + FixedMul(monsterHeight,0.5)) && (bulletZ < monsterZ + FixedMul(monsterHeight,0.75)))
 		{
 			SetActorProperty(newtid,APROP_DamageType,"GoldeneyeTorso");
 		}
