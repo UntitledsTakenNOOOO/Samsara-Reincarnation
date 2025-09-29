@@ -2155,6 +2155,11 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 
 				if(dukemode != previousvalue || CheckInventory("Samsara_ModeWeaponChange"))
 				{
+                    haspistol = CheckInventory("Glock 17");
+
+                    SetInventory("Glock 17", 1);
+                    if (!haspistol) { SetInventory("Glock 17", 0); }
+
 					SetInventory("SamsaraModeCounter",dukemode);
 					TakeInventory("Samsara_ModeWeaponChange",1);
 					if (dukemode >= 0)
@@ -2292,42 +2297,70 @@ script "SamsaraSpawn" (int respawning) //624 -- SAMSARA_SPAWN
 					previousvalue = dukemode;
 				}
 
-				loadoutmode = GetCVar("samsara_duke_fallbackranged") > 0 && !CheckInventory("SamsaraHasAllLoadoutEquipment") ? GetCVar("samsara_duke_fallbackranged") - 1 : GetUserCVar(pln, "samsara_cl_duke_fallbackranged");
+                if (CheckInventory("DukeClassMode") == 1)
+                {
+                    loadoutmode = GetCVar("samsara_dukelab_fallbackranged") > 0 && !CheckInventory("SamsaraHasAllLoadoutEquipment") ? GetCVar("samsara_dukelab_fallbackranged") - 1 : GetUserCVar(pln, "samsara_cl_dukelab_fallbackranged");
 
-				if (loadoutmode > 1) { loadoutmode = 1; }
-				else if (loadoutmode < 0) { loadoutmode = 0; }
+                    if (loadoutmode > 1) { loadoutmode = 1; }
+                    else if (loadoutmode < 0) { loadoutmode = 0; }
 
-				SetInventory("SamsaraDukeLoadoutFallbackRanged", loadoutmode);
+                    SetInventory("SamsaraDukeLoadoutFallbackRanged", loadoutmode);
+                } else if (!CheckInventory("DukeClassMode")) {
+                    loadoutmode = GetCVar("samsara_duke_fallbackranged") > 0 && !CheckInventory("SamsaraHasAllLoadoutEquipment") ? GetCVar("samsara_duke_fallbackranged") - 1 : GetUserCVar(pln, "samsara_cl_duke_fallbackranged");
+
+                    if (loadoutmode > 1) { loadoutmode = 1; }
+                    else if (loadoutmode < 0) { loadoutmode = 0; }
+
+                    SetInventory("SamsaraDukeLoadoutFallbackRanged", loadoutmode);
+                }
 				
-				if (loadoutPrevValue[pln][SLOT_PISTOL] != CheckInventory("SamsaraDukeLoadoutFallbackRanged"))
-				{
-					ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_PISTOL, CheckInventory("SamsaraDukeLoadoutFallbackRanged"), pln);
-					loadoutPrevValue[pln][SLOT_PISTOL] = CheckInventory("SamsaraDukeLoadoutFallbackRanged");
-				}
+                if (dukemode == 2)
+                {
+                    if (loadoutPrevValue[pln][SLOT_PISTOL] != 0)
+                    {
+                        ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_PISTOL, 0, pln);
+                        loadoutPrevValue[pln][SLOT_PISTOL] = 0;
+                    }
 
-				if (CheckInventory("Glock 17") || CheckInventory("Duke3D_M16"))
-				{
-					if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
-					{
-						SetInventory("Glock 17", 1);
-						SetInventory("Duke3D_M16", 1);
-					} else {
-						if (!CheckInventory("SamsaraDukeLoadoutFallbackRanged"))
-						{
-							SetInventory("Glock 17", 1);
+                    if (CheckInventory("Duke3D_M16"))
+                    {
+                        SetInventory("Glock 17", 1);
 
-							if (CheckWeapon("Duke3D_M16") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon("Glock 17"); }
+                        if (CheckWeapon("Duke3D_M16") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon("Glock 17"); }
 
-							SetInventory("Duke3D_M16", 0);
-						} else if (CheckInventory("SamsaraDukeLoadoutFallbackRanged")) {
-							SetInventory("Duke3D_M16", 1);
+                        SetInventory("Duke3D_M16", 0);
+                    }
+                } else {
+                    if (loadoutPrevValue[pln][SLOT_PISTOL] != CheckInventory("SamsaraDukeLoadoutFallbackRanged"))
+                    {
+                        ACS_NamedExecuteAlways("SAMSARA_CLIENT_CLASSLOADOUT", 0, SLOT_PISTOL, CheckInventory("SamsaraDukeLoadoutFallbackRanged"), pln);
+                        loadoutPrevValue[pln][SLOT_PISTOL] = CheckInventory("SamsaraDukeLoadoutFallbackRanged");
+                    }
 
-							if (CheckWeapon("Glock 17") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon("Duke3D_M16"); }
+                    if (CheckInventory("Glock 17") || CheckInventory("Duke3D_M16"))
+                    {
+                        if (CheckInventory("SamsaraHasAllLoadoutEquipment"))
+                        {
+                            SetInventory("Glock 17", 1);
+                            SetInventory("Duke3D_M16", 1);
+                        } else {
+                            if (!CheckInventory("SamsaraDukeLoadoutFallbackRanged"))
+                            {
+                                SetInventory("Glock 17", 1);
 
-							SetInventory("Glock 17", 0);
-						}
-					}
-				}
+                                if (CheckWeapon("Duke3D_M16") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon("Glock 17"); }
+
+                                SetInventory("Duke3D_M16", 0);
+                            } else if (CheckInventory("SamsaraDukeLoadoutFallbackRanged")) {
+                                SetInventory("Duke3D_M16", 1);
+
+                                if (CheckWeapon("Glock 17") || CheckInventory("SamsaraPistolStartMapChangeHack")) { SetWeapon("Duke3D_M16"); }
+
+                                SetInventory("Glock 17", 0);
+                            }
+                        }
+                    }
+                }
 				break;
 
 			case CLASS_MARATHON:
