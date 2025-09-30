@@ -4702,6 +4702,32 @@ Model "Goldfinger_UZI"
    FrameIndex GE01 A 2 0
 }
 
+model Goldfinger_AK47Tracer
+{
+	Path "models/goldeneye/effects"
+	model 0 "bullettracer.md3"
+	skin 0 "bullettracer.png"
+	scale 2.0 0.5 0.5
+	//Offset -48 0 0
+	Offset 0 0 8
+	PITCHFROMMOMENTUM
+
+	FrameIndex GE00 A 0 0
+}
+
+model Goldfinger_AK47TracerCoop
+{
+	Path "models/goldeneye/effects"
+	model 0 "bullettracer.md3"
+	skin 0 "bullettracer.png"
+	scale 2.0 0.5 0.5
+	//Offset -48 0 0
+	Offset 0 0 8
+	PITCHFROMMOMENTUM
+
+	FrameIndex GE00 A 0 0
+}
+
 //y moves 4
 Model "Goldfinger_UZI"
 {
