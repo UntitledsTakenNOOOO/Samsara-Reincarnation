@@ -16,6 +16,7 @@ Actor Unreal_Duster : UnrealWeapon
 	Inventory.PickupMessage "You got the Combat Assault Rifle."
     Inventory.Icon "UNCMPW13"
 	Obituary "%o was filled with lead by %k's Combat Assault Rifle."
+    +ALT_USES_BOTH // for the purposes of determining switching
 	+NOALERT
 	States
 	{
@@ -102,8 +103,8 @@ Actor Unreal_Duster : UnrealWeapon
 			UN01 A 0 A_JumpIfInventory("SamsaraUnrealCARifleSecondaryCooldown",1,"ReadyActual")
 			UN01 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireStart")
 			UN01 A 0 A_JumpIfInventory("Clip",5,"AltFireStart")
-			UN01 A 0 A_JumpIfInventory("Clip",1,"ReadyActual") // can we still use the primary?
-			goto NoAmmoSwitch
+			UN01 A 0 A_CheckReload // can we still use the primary?
+			goto ReadyActual
 
 		AltFireStart:
 			UN01 A 0 A_AlertMonsters
@@ -113,8 +114,8 @@ Actor Unreal_Duster : UnrealWeapon
 			UN01 A 0 A_GiveInventory("SamsaraUnrealCARifleSecondaryAttackHandler")
 			UN01 ABCDEFG 2 Bright A_WeaponReady(WRF_NOSECONDARY)
 			UN01 H 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"AltFireWait")
-			UN01 H 0 A_JumpIfInventory("Clip",1,"AltFireWait") // can we still use the primary?
-			goto NoAmmoSwitch
+			UN01 H 0 A_CheckReload // can we still use the primary?
+			goto AltFireWait
 
 		AltFireWait:
 			UN01 H 1 A_WeaponReady(WRF_NOSECONDARY)
@@ -135,15 +136,8 @@ Actor Unreal_Duster : UnrealWeapon
 			goto AltFireFinish
 
 		AltFireFinish:
-			UN04 I 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReadyActual")
-			UN04 I 0 A_JumpIfInventory("Clip",1,"ReadyActual")
-			goto NoAmmoSwitch
-
-		// "No ammo" switch
-		NoAmmoSwitch:
-			TNT1 A 0 A_ClearReFire
-			TNT1 A 0 A_SelectWeapon("Unreal_AutoMag")
-			goto Deselect
+			UN04 I 0 A_CheckReload
+			goto ReadyActual
 	}
 }
 
