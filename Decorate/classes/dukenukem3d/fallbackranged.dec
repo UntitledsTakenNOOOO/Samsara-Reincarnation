@@ -1,12 +1,14 @@
+// Tokens
+
+actor SamsaraDukeLoadoutFallbackRanged : Boolean {}
+
+// Glock 17
+
 actor PistolFire : Boolean {}
 actor PistolReload : Boolean {}
 actor BlankFlash : Boolean {}
 actor Duke64UsingDumDums : Boolean {}
 actor SamsaraDuke64PistolAmmoCheckFailed : Boolean {}
-actor DukeM16Reload : Boolean {}
-actor SamsaraDukeLoadoutFallbackRanged : Boolean {}
-
-// Glock 17
 
 actor "Glock 17" : DukeWeapon
 {
@@ -654,7 +656,203 @@ actor DukeCasing1
 	}
 }
 
+// Life's A Beach
+
+actor SamsaraDukeLABPistolAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo checking/taking stuff
+      Pickup:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"PickupReloadable")
+      PickupNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto PickupAttack
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("Clip",1)
+        goto PickupAttack
+
+      PickupReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
+        TNT1 A 0 A_JumpIfInventory("DukePistolReload",1,1)
+        stop
+        TNT1 A 0 A_TakeInventory("DukePistolReload",1)
+        goto PickupAttack
+
+      // Attack stuff
+      PickupAttack:
+        TNT1 A 0 A_PlaySound("duke/m19112",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfTargetInLOS("PickupAttackAccurate")
+      // Inaccurate
+      PickupAttackInaccurate:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackInaccurateCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackInaccurateCoop")
+      PickupAttackInaccurateDM:
+        TNT1 A 0 A_FireBullets(4,3,-1,7,"DukePistolPuffBeach",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+
+      PickupAttackInaccurateCoop:
+        TNT1 A 0 A_FireBullets(4,3,-1,7,"DukePistolPuffBeachCoop",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+
+      // Accurate
+      PickupAttackAccurate:
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackAccurateCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackAccurateCoop")
+      PickupAttackAccurateDM:
+        TNT1 A 0 A_FireBullets(0,0,1,7,"DukePistolPuffBeach",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+
+      PickupAttackAccurateCoop:
+        TNT1 A 0 A_FireBullets(0,0,1,7,"DukePistolPuffBeachCoop",FBF_NORANDOM|FBF_NOFLASH)
+        stop
+    }
+}
+
+actor DukePistolPuffBeach : DukeBulletPuffBeach { DamageType "DukePistol" -THRUGHOST }
+
+actor DukePistolPuffBeachCoop : DukePistolPuffBeach { +MTHRUSPECIES }
+
+// Duke Nukem 64
+
+actor SamsaraDuke64PistolAttackHandler : Trigger
+{
+    States
+    {
+      // Ammo mode checking stuff
+      Pickup:
+        TNT1 A 0 A_TakeInventory("SamsaraDuke64PistolAmmoCheckFailed")
+        TNT1 A 0 A_JumpIfInventory("Duke64UsingDumDums",1,"PickupDumDum")
+      // Bullets
+      PickupBullet:
+      // Ammo checking/taking stuff
+      PickupAmmoCheckBullet:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"PickupAmmoCheckBulletReloadable")
+      PickupAmmoCheckBulletNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
+        goto PickupAttackBullet
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttackBullet")
+        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
+        goto PickupAmmoCheckFailedBullet
+        TNT1 A 0 A_TakeInventory("Clip",1)
+        goto PickupAttackBullet
+
+      PickupAmmoCheckBulletReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttackBullet")
+        TNT1 A 0 A_JumpIfInventory("DukePistolReload",1,1)
+        goto PickupAmmoCheckFailedBullet
+        TNT1 A 0 A_TakeInventory("DukePistolReload",1)
+        goto PickupAttackBullet
+
+      // Ammo checking failure stuff
+      PickupAmmoCheckFailedBullet:
+        TNT1 A 0 A_GiveInventory("SamsaraDuke64PistolAmmoCheckFailed")
+        stop
+
+      // Attack stuff
+      PickupAttackBullet:
+        TNT1 A 0 A_PlaySound("duke64/brhip",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackBulletCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackBulletCoop")
+      PickupAttackBulletDM:
+        TNT1 A 0 A_FireBullets(4,3,-1,random(7,10),"Duke64PistolPuff",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      PickupAttackBulletCoop:
+        TNT1 A 0 A_FireBullets(4,3,-1,random(7,10),"Duke64PistolPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      // Dum dum rounds
+      PickupDumDum:
+      // Ammo checking/taking stuff
+      PickupAmmoCheckDumDum:
+        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"PickupAmmoCheckDumDumReloadable")
+      PickupAmmoCheckDumDumNonReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttackDumDum")
+        TNT1 A 0 A_JumpIfInventory("Duke64DumDums",1,1)
+        goto PickupAmmoCheckFailedDumDum
+        TNT1 A 0 A_TakeInventory("Duke64DumDums",1)
+        goto PickupAttackDumDum
+
+      PickupAmmoCheckDumDumReloadable:
+        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttackDumDum")
+        TNT1 A 0 A_JumpIfInventory("DukePistolDumDumReload",1,1)
+        goto PickupAmmoCheckFailedDumDum
+        TNT1 A 0 A_TakeInventory("DukePistolDumDumReload",1)
+        goto PickupAttackDumDum
+
+      // Ammo checking failure stuff
+      PickupAmmoCheckFailedDumDum:
+        goto PickupAmmoCheckFailedBullet
+
+      // Attack stuff
+      PickupAttackDumDum:
+        TNT1 A 0 A_PlaySound("duke64/brhip",CHAN_WEAPON)
+        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackDumDumCoop")
+        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackDumDumCoop")
+      PickupAttackDumDumDM:
+        TNT1 A 0 A_FireBullets(4,3,-1,random(75,79),"Duke64PistolPuff",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      PickupAttackDumDumCoop:
+        TNT1 A 0 A_FireBullets(4,3,-1,random(75,79),"Duke64PistolPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
+        goto PickupFinish
+
+      // Finishing stuff
+      PickupFinish:
+        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 1, 1, 2)
+        stop
+    }
+}
+
+// Bullets
+
+actor Duke64PistolPuff : BulletPuffSettingless
+{
+	Alpha 1
+	DamageType "DukePistol"
+	Scale 0.25
+	VSpeed 0
+    -ALLOWPARTICLES
+	-SOLID
+	Decal DukeBulletchip
+	States
+	{
+	Spawn:
+		TNT1 A 0
+		TNT1 A 0 A_Jump(224,2)
+		TNT1 A 0 A_PlaySound("duke64/ricochet")
+		D6RC AB 2 BRIGHT Light("DUKE64_PUFF_X1")
+		D6RC CDE 2 BRIGHT Light("DUKE64_PUFF_X2")
+		D6RC FG 2 BRIGHT Light("DUKE64_PUFF_X3")
+		Stop
+	}
+}
+
+actor Duke64PistolPuffCoop : Duke64PistolPuff { +MTHRUSPECIES }
+
+// Dum dum rounds
+
+actor Duke64DumDums : Ammo
+{
+    Inventory.MaxAmount 24
+    Ammo.BackpackMaxAmount 48
+    Inventory.Icon "AMSMK0"
+    Tag "Dum Dum Rounds"
+}
+
+actor DukePistolDumDumReload : Ammo
+{
+    Inventory.MaxAmount 12
+    Tag "Glock 17 Magazine (Dum Dum Rounds)"
+    +IGNORESKILL
+}
+
 // M16
+
+actor DukeM16Reload : Boolean {}
 
 actor Duke3D_M16 : DukeWeapon
 {
@@ -938,199 +1136,5 @@ actor DukeM16ReloadAmmo : Ammo
 {
     Inventory.MaxAmount 20
     Tag "M16 Magazine"
-    +IGNORESKILL
-}
-
-// Life's A Beach
-
-actor SamsaraDukeLABPistolAttackHandler : Trigger
-{
-    States
-    {
-      // Ammo checking/taking stuff
-      Pickup:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"PickupReloadable")
-      PickupNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
-        goto PickupAttack
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-        stop
-        TNT1 A 0 A_TakeInventory("Clip",1)
-        goto PickupAttack
-
-      PickupReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttack")
-        TNT1 A 0 A_JumpIfInventory("DukePistolReload",1,1)
-        stop
-        TNT1 A 0 A_TakeInventory("DukePistolReload",1)
-        goto PickupAttack
-
-      // Attack stuff
-      PickupAttack:
-        TNT1 A 0 A_PlaySound("duke/m19112",CHAN_WEAPON)
-        TNT1 A 0 A_JumpIfTargetInLOS("PickupAttackAccurate")
-      // Inaccurate
-      PickupAttackInaccurate:
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackInaccurateCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackInaccurateCoop")
-      PickupAttackInaccurateDM:
-        TNT1 A 0 A_FireBullets(4,3,-1,7,"DukePistolPuffBeach",FBF_NORANDOM|FBF_NOFLASH)
-        stop
-
-      PickupAttackInaccurateCoop:
-        TNT1 A 0 A_FireBullets(4,3,-1,7,"DukePistolPuffBeachCoop",FBF_NORANDOM|FBF_NOFLASH)
-        stop
-
-      // Accurate
-      PickupAttackAccurate:
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackAccurateCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackAccurateCoop")
-      PickupAttackAccurateDM:
-        TNT1 A 0 A_FireBullets(0,0,1,7,"DukePistolPuffBeach",FBF_NORANDOM|FBF_NOFLASH)
-        stop
-
-      PickupAttackAccurateCoop:
-        TNT1 A 0 A_FireBullets(0,0,1,7,"DukePistolPuffBeachCoop",FBF_NORANDOM|FBF_NOFLASH)
-        stop
-    }
-}
-
-actor DukePistolPuffBeach : DukeBulletPuffBeach { DamageType "DukePistol" -THRUGHOST }
-
-actor DukePistolPuffBeachCoop : DukePistolPuffBeach { +MTHRUSPECIES }
-
-// Duke Nukem 64
-
-actor SamsaraDuke64PistolAttackHandler : Trigger
-{
-    States
-    {
-      // Ammo mode checking stuff
-      Pickup:
-        TNT1 A 0 A_TakeInventory("SamsaraDuke64PistolAmmoCheckFailed")
-        TNT1 A 0 A_JumpIfInventory("Duke64UsingDumDums",1,"PickupDumDum")
-      // Bullets
-      PickupBullet:
-      // Ammo checking/taking stuff
-      PickupAmmoCheckBullet:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"PickupAmmoCheckBulletReloadable")
-      PickupAmmoCheckBulletNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("PistolModeOn",1,1)
-        goto PickupAttackBullet
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttackBullet")
-        TNT1 A 0 A_JumpIfInventory("Clip",1,1)
-        goto PickupAmmoCheckFailedBullet
-        TNT1 A 0 A_TakeInventory("Clip",1)
-        goto PickupAttackBullet
-
-      PickupAmmoCheckBulletReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttackBullet")
-        TNT1 A 0 A_JumpIfInventory("DukePistolReload",1,1)
-        goto PickupAmmoCheckFailedBullet
-        TNT1 A 0 A_TakeInventory("DukePistolReload",1)
-        goto PickupAttackBullet
-
-      // Ammo checking failure stuff
-      PickupAmmoCheckFailedBullet:
-        TNT1 A 0 A_GiveInventory("SamsaraDuke64PistolAmmoCheckFailed")
-        stop
-
-      // Attack stuff
-      PickupAttackBullet:
-        TNT1 A 0 A_PlaySound("duke64/brhip",CHAN_WEAPON)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackBulletCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackBulletCoop")
-      PickupAttackBulletDM:
-        TNT1 A 0 A_FireBullets(4,3,-1,random(7,10),"Duke64PistolPuff",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
-
-      PickupAttackBulletCoop:
-        TNT1 A 0 A_FireBullets(4,3,-1,random(7,10),"Duke64PistolPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
-
-      // Dum dum rounds
-      PickupDumDum:
-      // Ammo checking/taking stuff
-      PickupAmmoCheckDumDum:
-        TNT1 A 0 A_JumpIfInventory("SamsaraReloadMode",2,"PickupAmmoCheckDumDumReloadable")
-      PickupAmmoCheckDumDumNonReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttackDumDum")
-        TNT1 A 0 A_JumpIfInventory("Duke64DumDums",1,1)
-        goto PickupAmmoCheckFailedDumDum
-        TNT1 A 0 A_TakeInventory("Duke64DumDums",1)
-        goto PickupAttackDumDum
-
-      PickupAmmoCheckDumDumReloadable:
-        TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,"PickupAttackDumDum")
-        TNT1 A 0 A_JumpIfInventory("DukePistolDumDumReload",1,1)
-        goto PickupAmmoCheckFailedDumDum
-        TNT1 A 0 A_TakeInventory("DukePistolDumDumReload",1)
-        goto PickupAttackDumDum
-
-      // Ammo checking failure stuff
-      PickupAmmoCheckFailedDumDum:
-        goto PickupAmmoCheckFailedBullet
-
-      // Attack stuff
-      PickupAttackDumDum:
-        TNT1 A 0 A_PlaySound("duke64/brhip",CHAN_WEAPON)
-        TNT1 A 0 A_JumpIfInventory("SPModeOn",1,"PickupAttackDumDumCoop")
-        TNT1 A 0 A_JumpIfInventory("CoopModeOn",1,"PickupAttackDumDumCoop")
-      PickupAttackDumDumDM:
-        TNT1 A 0 A_FireBullets(4,3,-1,random(75,79),"Duke64PistolPuff",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
-
-      PickupAttackDumDumCoop:
-        TNT1 A 0 A_FireBullets(4,3,-1,random(75,79),"Duke64PistolPuffCoop",FBF_NORANDOM|FBF_NOFLASH)
-        goto PickupFinish
-
-      // Finishing stuff
-      PickupFinish:
-        TNT1 A 0 ACS_NamedExecuteAlways("SamsaraRecoil", 0, 1, 1, 2)
-        stop
-    }
-}
-
-// Bullets
-
-actor Duke64PistolPuff : BulletPuffSettingless
-{
-	Alpha 1
-	DamageType "DukePistol"
-	Scale 0.25
-	VSpeed 0
-    -ALLOWPARTICLES
-	-SOLID
-	Decal DukeBulletchip
-	States
-	{
-	Spawn:
-		TNT1 A 0
-		TNT1 A 0 A_Jump(224,2)
-		TNT1 A 0 A_PlaySound("duke64/ricochet")
-		D6RC AB 2 BRIGHT Light("DUKE64_PUFF_X1")
-		D6RC CDE 2 BRIGHT Light("DUKE64_PUFF_X2")
-		D6RC FG 2 BRIGHT Light("DUKE64_PUFF_X3")
-		Stop
-	}
-}
-
-actor Duke64PistolPuffCoop : Duke64PistolPuff { +MTHRUSPECIES }
-
-// Dum dum rounds
-
-actor Duke64DumDums : Ammo
-{
-    Inventory.MaxAmount 24
-    Ammo.BackpackMaxAmount 48
-    Inventory.Icon "AMSMK0"
-    Tag "Dum Dum Rounds"
-}
-
-actor DukePistolDumDumReload : Ammo
-{
-    Inventory.MaxAmount 12
-    Tag "Glock 17 Magazine (Dum Dum Rounds)"
     +IGNORESKILL
 }
