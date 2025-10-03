@@ -853,6 +853,7 @@ actor DukePistolDumDumReload : Ammo
 // M16
 
 actor DukeM16Reload : Boolean {}
+actor SamsaraDukeM16ConsumeAmmo : Boolean {}
 
 actor Duke3D_M16 : DukeWeapon
 {
@@ -1046,10 +1047,15 @@ actor Duke3D_M16 : DukeWeapon
 		TNT1 A 0 A_JumpIfInventory("Clip",1,1)
 		goto FlashReloadFinish
 		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",0,2)
-		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,2)
+		TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"ReloadAmmoReserveGiveMagazine")
+		TNT1 A 0 A_JumpIfInventory("SamsaraDukeM16ConsumeAmmo",0,2)
+		TNT1 A 0 A_GiveInventory("SamsaraDukeM16ConsumeAmmo")
+		goto ReloadAmmoReserveGiveMagazine
 		TNT1 A 0 A_TakeInventory("Clip",1)
+		TNT1 A 0 A_TakeInventory("SamsaraDukeM16ConsumeAmmo")
+	ReloadAmmoReserveGiveMagazine:
 		TNT1 A 0 A_GiveInventory("DukeM16ReloadAmmo")
-		goto ReloadAmmo
+		goto ReloadAmmoReserve
 
 	AltFlash:
 		DKM6 A 8
@@ -1091,7 +1097,11 @@ actor SamsaraDukeM16AttackHandler : Trigger
         TNT1 A 0 A_JumpIfInventory("SamsaraHasInfiniteAmmo",1,"PickupAttack")
         TNT1 A 0 A_JumpIfInventory("Clip",1,1)
         stop
+        TNT1 A 0 A_JumpIfInventory("SamsaraDukeM16ConsumeAmmo",0,2)
+        TNT1 A 0 A_GiveInventory("SamsaraDukeM16ConsumeAmmo")
+        goto PickupAttack
         TNT1 A 0 A_TakeInventory("Clip",1)
+        TNT1 A 0 A_TakeInventory("SamsaraDukeM16ConsumeAmmo")
         goto PickupAttack
 
       PickupReloadable:
