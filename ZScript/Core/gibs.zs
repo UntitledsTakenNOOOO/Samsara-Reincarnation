@@ -204,6 +204,41 @@ Class DBT_WallBlood_ZScript : Actor
 	}
 }
 
+Class Strife_WallBlood_ZScript : Actor
+{
+	Default
+	{
+		scale 0.6;
+		speed 7;
+		health 1;
+		radius 8;
+		height 1;
+		Gravity 0.7;
+		damage 0;
+		+MISSILE;
+		+CLIENTSIDEONLY;
+		+NOTELEPORT;
+		+NOBLOCKMAP;
+		+THRUACTORS;
+	}
+	
+	States
+	{
+		Spawn:
+			TNT1 A 0;
+			TNT1 A 0
+			{
+				if(master)
+				{
+					CopyBloodColor(master);
+					A_SetAngle(master.angle+180);
+					A_SprayDecal("StrifeBloodDecal", 172, (0, 0, 0), (0, 0, 0), true, 0);
+				}
+			}
+			stop;
+	}
+}
+
 Class NashGoreGibSpawner_ZScript : Actor
 {
 	Default

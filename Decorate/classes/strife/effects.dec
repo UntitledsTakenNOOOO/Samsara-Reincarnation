@@ -243,3 +243,70 @@ Actor SamsaraJunk : Junk replaces Junk
 		Stop
 	}
 }
+
+Actor StrifeBloodSplatter
+{
+	Height 8
+	Radius 4
+	Speed 4
+	Projectile
+	-NOGRAVITY
+	+CLIENTSIDEONLY
+	States
+	{
+	Spawn:
+		SDIS LMNOPQ 3
+		SDIS R 2
+		Stop
+	Death:
+		TNT1 A 0 A_JumpIf(abs(z - floorz) <= 4,"HitFloor")
+		TNT1 A 0 A_CheckCeiling("HitCeiling")
+		TNT1 A 0 ACS_NamedExecuteWithResult("SamsaraZScript", 0, 5)
+		Stop
+	HitFloor:
+		TNT1 A 0 ACS_NamedExecuteWithResult("StrifeSpawnDecal")
+		Stop
+	HitCeiling:
+		TNT1 A 0 ACS_NamedExecuteWithResult("StrifeSpawnDecal",1)
+		Stop
+	}
+}
+
+Actor StrifeBloodDecalFloor
+{
+	Height 2
+	Radius 4
+	Scale 16.0
+	Renderstyle Translucent
+	+NOINTERACTION
+	+MOVEWITHSECTOR
+	+CLIENTSIDEONLY
+	States
+	{
+		Spawn:
+			SDIS L 0
+			SDIS L 350
+			TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraClientDecorate", 13), "Spawn")
+			goto Fadeout
+		Fadeout:
+			SDIS L 1 A_FadeOut(0.05)
+			wait
+		Remove:
+			TNT1 A 1
+			Stop
+	}
+}
+
+Actor StrifeBloodDecalCeiling : StrifeBloodDecalFloor
+{
+	States
+	{
+		Spawn:
+			SDIS L 0 NoDelay A_JumpIf(CallACS("IsThisSky")==1,"Remove")
+			Goto Spawn2
+		Spawn2:
+			SDIS L 350
+			TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("SamsaraClientDecorate", 13), "Spawn2")
+			goto Fadeout
+	}
+}
