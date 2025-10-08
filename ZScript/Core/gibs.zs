@@ -225,14 +225,17 @@ Class Strife_WallBlood_ZScript : Actor
 	States
 	{
 		Spawn:
-			TNT1 A 0;
-			TNT1 A 0
+			TNT1 A 7 NoDelay
 			{
 				if(master)
 				{
 					CopyBloodColor(master);
-					A_SetAngle(master.angle+180);
-					A_SprayDecal("StrifeBloodDecal", 172, (0, 0, 0), (0, 0, 0), true, 0);
+					for(int i = 8; i >= 0; i--)
+					{
+						A_SetAngle(random(0, 360));
+						A_SetPitch(random(-50, 50));
+						A_SprayDecal("StrifeBloodDecal", 172, (0, 0, 0), (0, 0, 0), true, 0);
+					}
 				}
 			}
 			stop;
